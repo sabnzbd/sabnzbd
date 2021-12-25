@@ -598,14 +598,14 @@ def get_admin_path(name: str, future: bool):
         return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 
-def set_chmod(path: str, permissions: int, report: bool):
-    """Set 'permissions' on 'path', report any errors when 'report' is True"""
+def set_chmod(path: str, permissions: int):
+    """Set 'permissions' on 'path'"""
     try:
         logging.debug("Applying permissions %s (octal) to %s", oct(permissions), path)
         os.chmod(path, permissions)
     except:
         lpath = path.lower()
-        if report and ".appledouble" not in lpath and ".ds_store" not in lpath:
+        if ".appledouble" not in lpath and ".ds_store" not in lpath:
             logging.error(T("Cannot change permissions of %s"), clip_path(path))
             logging.info("Traceback: ", exc_info=True)
 
@@ -613,35 +613,42 @@ def set_chmod(path: str, permissions: int, report: bool):
 def set_permissions(path: str, recursive: bool = True):
     """Give folder tree and its files their proper permissions"""
     if not sabnzbd.WIN32:
-        umask = sabnzbd.cfg.umask()
-        try:
-            # Make sure that user R+W+X is on
-            umask = int(umask, 8) | int("0700", 8)
-            report = True
-        except ValueError:
-            # No or no valid permissions
-            # Use the effective permissions of the session
-            # Don't report errors (because the system might not support it)
-            umask = int("0777", 8) & (sabnzbd.ORG_UMASK ^ int("0777", 8))
-            report = False
-
-        # Remove executable and special permissions for files
-        umask_file = umask & int("0666", 8)
+        custom_permissions = sabnzbd.cfg.permissions()
+        if custom_permissions:
+            # If user set permissions, parse them
+            custom_permissions = int(custom_permissions, 8)
 
         if os.path.isdir(path):
             if recursive:
                 # Parse the dir/file tree and set permissions
-                for root, _dirs, files in os.walk(path):
-                    set_chmod(root, umask, report)
+                for root, _, files in os.walk(path):
+                    if custom_permissions:
+                        set_chmod(root, custom_permissions)
                     for name in files:
-                        set_chmod(os.path.join(root, name), umask_file, report)
-            else:
-                set_chmod(path, umask, report)
+                        removexbits(os.path.join(root, name), custom_permissions)
+            elif custom_permissions:
+                set_chmod(path, custom_permissions)
         else:
-            set_chmod(path, umask_file, report)
+            removexbits(path, custom_permissions)
 
 
-def userxbit(filename: str) -> bool:
+UNWANTED_FILE_PERMISSIONS = stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+
+
+def removexbits(path: str, custom_permissions: int = None):
+    """Remove all the x-bits from files, respecting current or custom permissions"""
+    if os.path.isfile(path):
+        current_permissions = os.stat(path).st_mode
+        # Check if the file has any x-bits, no need to remove them otherwise
+        if custom_permissions or current_permissions & UNWANTED_FILE_PERMISSIONS:
+            # Use custom permissions as base
+            if custom_permissions:
+                current_permissions = custom_permissions
+            # Mask out the X-bits
+            set_chmod(path, current_permissions & ~UNWANTED_FILE_PERMISSIONS)
+
+
+def userxbit(path: str) -> bool:
     """Returns boolean if the x-bit for user is set on the given file.
     This is a workaround: os.access(filename, os.X_OK) does not work
     on certain mounted file systems. Does not work at all on Windows.
@@ -649,7 +656,7 @@ def userxbit(filename: str) -> bool:
     # rwx rwx rwx
     # 876 543 210      # we want bit 6 from the right, counting from 0
     userxbit = 1 << 6  # bit 6
-    rwxbits = os.stat(filename)[0]  # the first element of os.stat() is "mode"
+    rwxbits = os.stat(path)[0]  # the first element of os.stat() is "mode"
     # do logical AND, check if it is not 0:
     xbitset = (rwxbits & userxbit) > 0
     return xbitset
@@ -681,7 +688,7 @@ DIR_LOCK = threading.RLock()
 
 
 @synchronized(DIR_LOCK)
-def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
+def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bool]:
     """Create all required path elements and set umask on all
     The umask argument is ignored on Windows
     Return path if elements could be made or exists
@@ -694,14 +701,9 @@ def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
             if not os.path.exists(path):
                 os.makedirs(path)
         else:
-            # We need to build the directory recursively so we can
+            # We need to build the directory recursively, so we can
             # apply permissions to only the newly created folders
             # We cannot use os.makedirs() as it could ignore the mode
-            umask = sabnzbd.cfg.umask()
-            if umask:
-                umask = int(umask, 8) | int("0700", 8)
-
-            # Build path from root
             path_part_combined = "/"
             for path_part in path.split("/"):
                 if path_part:
@@ -710,8 +712,8 @@ def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
                     if not os.path.exists(path_part_combined):
                         os.mkdir(path_part_combined)
                         # Try to set permissions if desired, ignore failures
-                        if umask and apply_umask:
-                            set_chmod(path_part_combined, umask, report=False)
+                        if apply_permissions:
+                            set_permissions(path_part_combined, recursive=False)
         return path
     except OSError:
         logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)
@@ -731,7 +733,7 @@ def get_unique_path(dirpath: str, n: int = 0, create_dir: bool = True) -> str:
 
     if not os.path.exists(path):
         if create_dir:
-            return create_all_dirs(path, apply_umask=True)
+            return create_all_dirs(path, apply_permissions=True)
         else:
             return path
     else:
@@ -792,7 +794,7 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
             # Cannot rename, try copying
             logging.debug("File could not be renamed, trying copying: %s", path)
             try:
-                create_all_dirs(os.path.dirname(new_path), apply_umask=True)
+                create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:

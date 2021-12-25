@@ -139,7 +139,7 @@ nzb_key = OptionStr("misc", "nzb_key", create_api_key())
 ##############################################################################
 # Config - Folders
 ##############################################################################
-umask = OptionStr("misc", "permissions", validation=validate_octal)
+permissions = OptionStr("misc", "permissions", validation=validate_octal)
 download_dir = OptionDir("misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, validation=validate_safedir)
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(

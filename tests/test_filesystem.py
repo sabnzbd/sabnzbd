@@ -840,33 +840,33 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
             assert filesystem.create_all_dirs(folder) == folder
             assert os.path.exists(folder)
 
-    @set_config({"umask": "0777"})
+    @set_config({"permissions": "0777"})
     def test_permissions_777(self):
         self._permissions_runner("/test_base777")
-        self._permissions_runner("/test_base777_nomask", apply_umask=False)
+        self._permissions_runner("/test_base777_nomask", apply_permissions=False)
 
-    @set_config({"umask": "0770"})
+    @set_config({"permissions": "0770"})
     def test_permissions_770(self):
         self._permissions_runner("/test_base770")
-        self._permissions_runner("/test_base770_nomask", apply_umask=False)
+        self._permissions_runner("/test_base770_nomask", apply_permissions=False)
 
-    @set_config({"umask": "0600"})
+    @set_config({"permissions": "0600"})
     def test_permissions_600(self):
         self._permissions_runner("/test_base600")
-        self._permissions_runner("/test_base600_nomask", apply_umask=False)
+        self._permissions_runner("/test_base600_nomask", apply_permissions=False)
 
-    @set_config({"umask": "0700"})
+    @set_config({"permissions": "0700"})
     def test_permissions_450(self):
         with pytest.raises(OSError):
             self._permissions_runner("/test_base450", perms_base="0450")
 
-    def test_no_umask(self):
+    def test_no_permissions(self):
         self._permissions_runner("/test_base_perm700", perms_base="0700")
         self._permissions_runner("/test_base_perm750", perms_base="0750")
         self._permissions_runner("/test_base_perm777", perms_base="0777")
         self._permissions_runner("/test_base_perm600", perms_base="0600")
 
-    def _permissions_runner(self, test_base, perms_base="0700", apply_umask=True):
+    def _permissions_runner(self, test_base, perms_base="0700", apply_permissions=True):
         # Create base directory and set the base permissions
         perms_base_int = int(perms_base, 8)
         self.fs.create_dir(test_base, perms_base_int)
@@ -875,17 +875,15 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
 
         # Create directories with permissions
         new_dir = os.path.join(test_base, "se 1", "ep1")
-        filesystem.create_all_dirs(new_dir, apply_umask=apply_umask)
+        filesystem.create_all_dirs(new_dir, apply_permissions=apply_permissions)
 
         # If permissions needed to be set, verify the new folder has the
         # right permissions and verify the base didn't change
-        if apply_umask and cfg.umask():
-            perms_test_int = int(cfg.umask(), 8) | int("0700", 8)
+        if apply_permissions and cfg.permissions():
+            perms_test_int = int(cfg.permissions(), 8)
         else:
-            # Get the current umask, since os.mkdir masks that out
-            cur_umask = os.umask(0)
-            os.umask(cur_umask)
-            perms_test_int = int("0777", 8) & ~cur_umask
+            # Get the current permissions, since os.mkdir masks that out
+            perms_test_int = int("0777", 8) & ~sabnzbd.ORG_UMASK
         self.assert_dir_perms(new_dir, perms_test_int)
         self.assert_dir_perms(test_base, perms_base_int)
 
@@ -906,32 +904,28 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
         self.fs.is_case_sensitive = True
         self.fs.umask = int("0755", 8)  # rwxr-xr-x
 
-    def _runner(self, perms_test, perms_after):
+    def _runner(self, perms_before_test):
         """
-        Generic test runner for permissions testing. The umask is set per test
+        Generic test runner for permissions testing. The permissions are set per test
         via the relevant sab config option; the fileystem parameter in setUp().
         Note that the umask set in the environment before starting the program
-        also affects the results if sabnzbd.cfg.umask isn't set.
+        also affects the results if sabnzbd.cfg.permissions isn't set.
 
         Arguments:
             str perms_test: permissions for test objects, chmod style "0755".
-            str perms_after: expected permissions after completion of the test.
         """
-        perms_test = int(perms_test, 8)
-        if sabnzbd.cfg.umask():
-            perms_after = int(perms_after, 8)
+        # We expect the cfg.permissions to be applied, or the original to be kept if none are set
+        perms_before_test = int(perms_before_test, 8)
+        if sabnzbd.cfg.permissions():
+            perms_after_test = int(sabnzbd.cfg.permissions(), 8)
         else:
-            perms_after = int("0777", 8) & (sabnzbd.ORG_UMASK ^ int("0777", 8))
+            perms_after_test = perms_before_test
 
         # Setup and verify fake dir
         test_dir = "/test"
-        try:
-            self.fs.create_dir(test_dir, perms_test)
-        except PermissionError:
-            ffs.set_uid(0)
-            self.fs.create_dir(test_dir, perms_test)
+        self.fs.create_dir(test_dir, perms_before_test)
         assert os.path.exists(test_dir) is True
-        self.assert_dir_perms(test_dir, perms_test)
+        self.assert_dir_perms(test_dir, perms_before_test)
 
         # Setup and verify fake files
         for file in (
@@ -941,17 +935,32 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
             "another/sub/dir/WithSome.File",
         ):
             file = os.path.join(test_dir, file)
-            try:
-                self.fs.create_file(file, perms_test)
-            except PermissionError:
+            basefolder = os.path.dirname(file)
+
+            # Create the folder, so it has the expected permissions
+            if not os.path.exists(basefolder):
                 try:
+                    self.fs.create_dir(basefolder, perms_before_test)
+                except PermissionError:
                     ffs.set_uid(0)
-                    self.fs.create_file(file, perms_test)
-                except Exception:
-                    # Skip creating files, if not even using root gets the job done.
-                    break
+                    self.fs.create_file(file, perms_before_test)
+            assert os.path.exists(basefolder) is True
+            self.assert_dir_perms(basefolder, perms_before_test)
+
+            # Add a random one of the forbidden bits
+            file_perms_before_test = perms_before_test | choice(
+                (stat.S_ISUID, stat.S_ISGID, stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH)
+            )
+
+            # Then, create the file
+            try:
+                self.fs.create_file(file, file_perms_before_test)
+            except PermissionError:
+                ffs.set_uid(0)
+                self.fs.create_file(file, file_perms_before_test)
+
             assert os.path.exists(file) is True
-            assert stat.filemode(os.stat(file).st_mode)[1:] == stat.filemode(perms_test)[1:]
+            assert stat.filemode(os.stat(file).st_mode)[1:] == stat.filemode(file_perms_before_test)[1:]
 
         # Set permissions, recursive by default
         filesystem.set_permissions(test_dir)
@@ -960,13 +969,13 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
         for root, dirs, files in os.walk(test_dir):
             for directory in [os.path.join(root, d) for d in dirs]:
                 # Permissions on directories should now match perms_after
-                self.assert_dir_perms(directory, perms_after)
+                self.assert_dir_perms(directory, perms_after_test)
             for file in [os.path.join(root, f) for f in files]:
                 # Files also shouldn't have any executable or special bits set
                 assert (
                     stat.filemode(os.stat(file).st_mode)[1:]
                     == stat.filemode(
-                        perms_after & ~(stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+                        perms_after_test & ~(stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
                     )[1:]
                 )
 
@@ -977,49 +986,34 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
         ffs.set_uid(global_uid)
 
     @set_platform("linux")
-    def test_dir0777_empty_umask_setting(self):
+    def test_empty_permissions_setting(self):
         # World writable directory
-        self._runner("0777", "0700")
+        self._runner("0777")
+        self._runner("0450")
 
     @set_platform("linux")
-    def test_dir0450_empty_umask_setting(self):
-        # Insufficient access
-        self._runner("0450", "0700")
+    @set_config({"permissions": "0760"})
+    def test_dir0777_permissions0760_setting(self):
+        # World-writable directory, permissions 760
+        self._runner("0777")
 
     @set_platform("linux")
-    def test_dir0000_empty_umask_setting(self):
-        # Weird directory permissions
-        self._runner("0000", "0700")
+    @set_config({"permissions": "0617"})
+    def test_dir0450_permissions0617_setting(self):
+        # Insufficient base access
+        self._runner("0450")
 
     @set_platform("linux")
-    @set_config({"umask": "0760"})
-    def test_dir0777_umask0760_setting(self):
-        # World-writable directory, umask 760
-        self._runner("0777", "0760")
+    @set_config({"permissions": "2455"})
+    def test_dir0444_permissions2455_setting(self):
+        # Insufficient access, permissions with setgid (should be stripped)
+        self._runner("0444")
 
     @set_platform("linux")
-    @set_config({"umask": "0617"})
-    def test_dir0450_umask0617_setting(self):
-        # Insufficient access, weird umask
-        self._runner("0450", "0717")
-
-    @set_platform("linux")
-    @set_config({"umask": "0000"})
-    def test_dir0405_umask0000_setting(self):
-        # Insufficient access on all fronts, weird umask
-        self._runner("0405", "0700")
-
-    @set_platform("linux")
-    @set_config({"umask": "2455"})
-    def test_dir0444_umask2455_setting(self):
-        # Insufficient access, weird umask with setgid
-        self._runner("0444", "2755")
-
-    @set_platform("linux")
-    @set_config({"umask": "4755"})
-    def test_dir1755_umask4755_setting(self):
-        # Sticky bit on directory, umask with setuid
-        self._runner("1755", "4755")
+    @set_config({"permissions": "4755"})
+    def test_dir1755_permissions4755_setting(self):
+        # Sticky bit on directory, permissions with setuid (should be stripped)
+        self._runner("1755")
 
 
 class TestRenamer:
