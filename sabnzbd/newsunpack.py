@@ -127,7 +127,7 @@ def find_programs(curdir):
         if not sabnzbd.newsunpack.ZIP_COMMAND:
             sabnzbd.newsunpack.ZIP_COMMAND = find_on_path("unzip")
         if not sabnzbd.newsunpack.SEVEN_COMMAND:
-            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path("7za") # 7za = 7z stand-alone executable
+            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path("7za")  # 7za = 7z stand-alone executable
         if not sabnzbd.newsunpack.SEVEN_COMMAND:
             sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path("7z")
 
@@ -1051,8 +1051,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     if ret == 2 and (("Disk full." in output) or ("No space left on device" in output)):
         # note: the above does not work with 7z version 16.02, and does from with 7z 19.00 and higher
         ret = 1  # to avoid ret = 2, which would result in error message about password
-        # msg = T('Unpacking failed, no space left on device for "%s"') % setname_from_path(sevenset)
-        msg = T("Unpacking failed, write error or disk is full?")
+        msg = T("Unpacking failed, write error or disk is full?") + " (%s)" % setname_from_path(sevenset)
     elif ret == 2 and "ERROR: CRC Failed" in output:
         # We can output a more general error
         ret = 1
