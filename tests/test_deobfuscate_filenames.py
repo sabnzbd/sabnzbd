@@ -61,6 +61,7 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("abc.xyz.a4c567edbcbf27.BLA")  # by definition
         assert is_probably_obfuscated("abc.xyz.iso")  # lazy brother
         assert is_probably_obfuscated("0675e29e9abfd2.f7d069dab0b853283cc1b069a25f82.6547")
+        assert is_probably_obfuscated("[BlaBla] something [More] something b2.bef89a622e4a23f07b0d3757ad5e8a.a0 [Brrr]")
 
         # non-obfuscated names:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
