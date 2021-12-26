@@ -123,7 +123,7 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
 
     # "[BlaBla] something [More] something 5937bc5e32146e.bef89a622e4a23f07b0d3757ad5e8a.a02b264e [Brrr]"
     # So: square brackets plus 30+ hex digit
-    if re.findall(r"[a-f0-9]{30}", filebasename) and len(re.findall(r"\[\w+\]", filebasename)) >= 2 :
+    if re.findall(r"[a-f0-9]{30}", filebasename) and len(re.findall(r"\[\w+\]", filebasename)) >= 2:
         logging.debug("Obfuscated: square brackets plus a 30+ hex")
         return True
 
