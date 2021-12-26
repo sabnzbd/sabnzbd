@@ -100,15 +100,15 @@ def recover_par2_names(filelist: List[str]) -> List[str]:
 
 
 def is_probably_obfuscated(myinputfilename: str) -> bool:
-    """Returns boolean if filename is likely obfuscated. Default: True
+    """Returns boolean if filename is likely obfuscated. Default: True, so obfuscated
     myinputfilename (string) can be a plain file name, or a full path"""
 
     # Find filebasename
     path, filename = os.path.split(myinputfilename)
     filebasename, fileextension = os.path.splitext(filename)
-
-    # First fixed patterns that we know of:
     logging.debug("Checking: %s", filebasename)
+
+    # First: the patterns that are certainly obfuscated:
 
     # ...blabla.H.264/b082fa0beaa644d3aa01045d5b8d0b36.mkv is certainly obfuscated
     if re.findall(r"^[a-f0-9]{32}$", filebasename):
@@ -121,11 +121,19 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
         logging.debug("Obfuscated: starting with 40+ lower case hex digits and/or dots")
         return True
 
+    # "[BlaBla] something [More] something 5937bc5e32146e.bef89a622e4a23f07b0d3757ad5e8a.a02b264e [Brrr]"
+    # So: square brackets plus 30+ hex digit
+    if re.findall(r"[a-f0-9]{30}", filebasename) and len(re.findall(r"\[\w+\]", filebasename)) >= 2:
+        logging.debug("Obfuscated: square brackets plus a 30+ hex")
+        return True
+
     # /some/thing/abc.xyz.a4c567edbcbf27.BLA is certainly obfuscated
     if re.findall(r"^abc\.xyz", filebasename):
         logging.debug("Obfuscated: starts with 'abc.xyz'")
         # ... which we consider as obfuscated:
         return True
+
+    # Then: patterns that are not obfuscated but typical, clear names:
 
     # these are signals for the obfuscation versus non-obfuscation
     decimals = sum(1 for c in filebasename if c.isnumeric())
@@ -153,9 +161,9 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
         logging.debug("Not obfuscated: starts with a capital, and most letters are lower case")
         return False
 
-    # If we get here, no trigger for a clear name was found, so let's default to obfuscated
+    # Finally: default to obfuscated:
     logging.debug("Obfuscated (default)")
-    return True  # default not obfuscated
+    return True  # default is obfuscated
 
 
 def deobfuscate_list(filelist: List[str], usefulname: str):
