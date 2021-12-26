@@ -477,7 +477,7 @@ def print_modules():
 
     # If available, we prefer 7zip over unzip
     if sabnzbd.newsunpack.SEVEN_COMMAND:
-        seven_command_output = sabnzbd.misc.run_command(sabnzbd.newsunpack.SEVEN_COMMAND)
+        seven_command_output = sabnzbd.misc.run_command([sabnzbd.newsunpack.SEVEN_COMMAND])
         # Example: 7-Zip (z) 21.06 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-11-24
         seven_version = re.search(r"(\d+\.\d+).*Copyright", seven_command_output).group(1)
         logging.info("7za binary... found (%s), version %s", sabnzbd.newsunpack.SEVEN_COMMAND, seven_version)
