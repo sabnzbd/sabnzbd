@@ -78,11 +78,12 @@ MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
-SEVEN_COMMAND = None
+SEVENZIP_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
 PAR2_MT = True
 RAR_VERSION = 0
+SEVENZIP_VERSION = ""
 
 
 def find_programs(curdir):
@@ -98,7 +99,7 @@ def find_programs(curdir):
     if sabnzbd.DARWIN:
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
-        sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, "osx/7zip/7za")
+        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7za")
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
@@ -109,7 +110,7 @@ def find_programs(curdir):
             # 32 bit versions
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
-        sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, "win/7zip/7za.exe")
+        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
             sabnzbd.newsunpack.PAR2_COMMAND = find_on_path("par2")
@@ -126,16 +127,19 @@ def find_programs(curdir):
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path("ionice")
         if not sabnzbd.newsunpack.ZIP_COMMAND:
             sabnzbd.newsunpack.ZIP_COMMAND = find_on_path("unzip")
-        if not sabnzbd.newsunpack.SEVEN_COMMAND:
-            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path("7za")  # 7za = 7z stand-alone executable
-        if not sabnzbd.newsunpack.SEVEN_COMMAND:
-            sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path("7z")
+        if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
+            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7za")  # 7za = 7z stand-alone executable
+        if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
+            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7z")
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
         # Run check on rar version
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < sabnzbd.constants.REC_RAR_VERSION
         sabnzbd.newsunpack.RAR_VERSION = version
+
+        # Run check on 7zip
+        sabnzbd.newsunpack.SEVENZIP_VERSION = sevenzip_check(sabnzbd.newsunpack.SEVENZIP_COMMAND)
 
         # Run check on par2-multicore
         sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
@@ -279,7 +283,7 @@ def unpack_magic(
         new_zips = [zip for zip in xzips if zip not in zips]
         if new_zips:
             logging.info("Unzip starting on %s", workdir)
-            if SEVEN_COMMAND:
+            if SEVENZIP_COMMAND:
                 error, newf = unseven(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
             else:
                 error, newf = unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
@@ -977,8 +981,8 @@ def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_fol
     """Unpack single set 'sevenset' to 'extraction_path', with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
-    # Before we start, make sure the 7z binary SEVEN_COMMAND is defined
-    if not SEVEN_COMMAND:
+    # Before we start, make sure the 7z binary SEVENZIP_COMMAND is defined
+    if not SEVENZIP_COMMAND:
         msg = T('No 7za binary found, cannot unpack "%s"') % os.path.basename(sevenset)
         logging.error(msg)
         return 1, [], msg
@@ -1040,7 +1044,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     # For file-bookkeeping
     orig_dir_content = listdir_full(extraction_path)
 
-    command = [SEVEN_COMMAND, method, "-y", overwrite, parm, case, password, "-o%s" % extraction_path, name]
+    command = [SEVENZIP_COMMAND, method, "-y", overwrite, parm, case, password, "-o%s" % extraction_path, name]
     p = build_and_run_command(command)
     sabnzbd.PostProcessor.external_process = p
     output = platform_btou(p.stdout.read())
@@ -1924,7 +1928,7 @@ def create_env(nzo=None, extra_env_fields={}):
             "multipar_command": sabnzbd.newsunpack.MULTIPAR_COMMAND,
             "rar_command": sabnzbd.newsunpack.RAR_COMMAND,
             "zip_command": sabnzbd.newsunpack.ZIP_COMMAND,
-            "7zip_command": sabnzbd.newsunpack.SEVEN_COMMAND,
+            "7zip_command": sabnzbd.newsunpack.SEVENZIP_COMMAND,
             "version": sabnzbd.__version__,
         }
     )
@@ -2068,13 +2072,13 @@ def quick_check_set(set, nzo):
     return result
 
 
-def unrar_check(rar):
+def unrar_check(rar: str) -> Tuple[int, bool]:
     """Return version number of unrar, where "5.01" returns 501
     Also return whether an original version is found
     (version, original)
     """
     version = 0
-    original = ""
+    original = False
     if rar:
         try:
             version = run_command([rar])
@@ -2089,7 +2093,17 @@ def unrar_check(rar):
     return version, original
 
 
-def par2_mt_check(par2_path):
+def sevenzip_check(sevenzip: str) -> str:
+    """Return version of 7zip, currently as a string"""
+    seven_command_output = run_command([sevenzip])
+    try:
+        # Example: 7-Zip (z) 21.06 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-11-24
+        return re.search(r"(\d+\.\d+).*Copyright", seven_command_output).group(1)
+    except:
+        return ""
+
+
+def par2_mt_check(par2_path: str) -> bool:
     """Detect if we have multicore par2 variants"""
     try:
         par2_version = run_command([par2_path, "-h"])
@@ -2349,7 +2363,7 @@ def is_sevenfile(path: str) -> bool:
     """Return True if path has 7Zip-signature and 7Zip is detected"""
     with open(path, "rb") as sevenzip:
         if sevenzip.read(6) == SEVENZIP_ID:
-            return bool(SEVEN_COMMAND)
+            return bool(SEVENZIP_COMMAND)
     return False
 
 
@@ -2365,7 +2379,7 @@ class SevenZip:
     def namelist(self) -> List[str]:
         """Return list of names in 7Zip"""
         names = []
-        command = [SEVEN_COMMAND, "l", "-p", "-y", "-slt", "-sccUTF-8", self.path]
+        command = [SEVENZIP_COMMAND, "l", "-p", "-y", "-slt", "-sccUTF-8", self.path]
         output = run_command(command)
 
         re_path = re.compile("^Path = (.+)")
@@ -2380,7 +2394,7 @@ class SevenZip:
 
     def open(self, name: str) -> BinaryIO:
         """Read named file from 7Zip and return data"""
-        command = [SEVEN_COMMAND, "e", "-p", "-y", "-so", self.path, name]
+        command = [SEVENZIP_COMMAND, "e", "-p", "-y", "-so", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
         with build_and_run_command(command, stderr=subprocess.DEVNULL) as p:
             data = io.BytesIO(p.stdout.read())

@@ -681,7 +681,7 @@ class ConfigPage:
         conf["build"] = sabnzbd.__baseline__[:7]
 
         conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
-        conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
+        conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
         conf["have_sabyenc"] = sabnzbd.decoder.SABYENC_ENABLED
         conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
 

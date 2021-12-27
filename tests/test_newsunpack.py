@@ -32,12 +32,12 @@ class TestNewsUnpack:
 
     def test_is_sevenfile(self):
         # False, because the command is not set
-        assert not newsunpack.SEVEN_COMMAND
+        assert not newsunpack.SEVENZIP_COMMAND
         assert not newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
         # Set the command to get some real results
         newsunpack.find_programs(".")
-        assert newsunpack.SEVEN_COMMAND
+        assert newsunpack.SEVENZIP_COMMAND
         assert not newsunpack.is_sevenfile("tests/data/only_comments.sfv")
         assert not newsunpack.is_sevenfile("tests/data/random.bin")
         assert not newsunpack.is_sevenfile("tests/data/par2file/basic_16k.par2")

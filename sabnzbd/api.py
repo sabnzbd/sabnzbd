@@ -306,7 +306,7 @@ def _api_options(name, kwargs):
             "multipar": sabnzbd.newsunpack.MULTIPAR_COMMAND,
             "rar": sabnzbd.newsunpack.RAR_COMMAND,
             "zip": sabnzbd.newsunpack.ZIP_COMMAND,
-            "7zip": sabnzbd.newsunpack.SEVEN_COMMAND,
+            "7zip": sabnzbd.newsunpack.SEVENZIP_COMMAND,
             "nice": sabnzbd.newsunpack.NICE_COMMAND,
             "ionice": sabnzbd.newsunpack.IONICE_COMMAND,
         },
