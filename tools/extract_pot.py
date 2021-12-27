@@ -103,7 +103,7 @@ def get_context(ctx_line):
         else:
             if "logging.error(" in srcline:
                 context = "Error message"
-            elif "logging.warning(" in srcline or "warning_helpful(" in srcline:
+            elif "logging.warning(" in srcline or "helpful_warning(" in srcline:
                 context = "Warning message"
 
         if context and context not in contexts:
