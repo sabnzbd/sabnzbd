@@ -1091,15 +1091,27 @@ def all_lowercase(value):
     return None, value.lower()
 
 
-def validate_octal(value):
-    """Check if string is valid octal number"""
+def validate_permissions(value: str):
+    """Check the permissions for correct input and validate the session umask"""
+    # Octal verification
     if not value:
+        # Verify umask if no permissions are set, we need at least 700
+        if not sabnzbd.WIN32 and sabnzbd.ORG_UMASK > int("077", 8):
+            sabnzbd.misc.helpful_warning(
+                T("Current umask (%o) might not allow SABnzbd access the files and folders it creates."), sabnzbd.ORG_UMASK
+            )
         return None, value
     try:
-        int(value, 8)
-        return None, value
-    except:
+        oct_value = int(value, 8)
+    except ValueError:
         return T("%s is not a correct octal value") % value, None
+
+    # Check if we at least have user-permissions
+    if oct_value < int("700", 8):
+        sabnzbd.misc.helpful_warning(
+            T("Permissions setting of %s might not allow SABnzbd access to files and folders it creates."), value
+        )
+    return None, value
 
 
 def validate_no_unc(root, value, default):
