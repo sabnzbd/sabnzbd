@@ -1112,7 +1112,7 @@ class NzbObject(TryList):
                     self.files.insert(0, new_nzf)
                     break
 
-    def get_extra_blocks(self, setname, needed_blocks):
+    def get_extra_blocks(self, setname: str, needed_blocks: int) -> int:
         """We want par2-files of all sets that are similar to this one
         So that we also can handle multi-sets with duplicate filenames
         Returns number of added blocks in case they are available
@@ -1129,7 +1129,7 @@ class NzbObject(TryList):
             if setname_search == setname or difflib.SequenceMatcher(None, setname, setname_search).ratio() > 0.85:
                 for nzf in self.extrapars[setname_search]:
                     # Don't count extrapars that are completed already
-                    if nzf.completed:
+                    if nzf.completed or nzf in self.finished_files:
                         continue
                     block_list.append(nzf)
                     avail_blocks += nzf.blocks
@@ -1150,7 +1150,7 @@ class NzbObject(TryList):
             return added_blocks
         else:
             # Not enough
-            return False
+            return 0
 
     @synchronized(NZO_LOCK)
     def remove_article(self, article: Article, success: bool):
@@ -1278,7 +1278,7 @@ class NzbObject(TryList):
         # Create an NZF for each remaining existing file
         try:
             for existing_filename in existing_files:
-                # Create NZO's using basic information
+                # Create NZF's using basic information
                 filepath = os.path.join(wdir, existing_filename)
                 logging.info("Existing file %s added to %s", existing_filename, self.final_name)
                 tup = os.stat(filepath)
