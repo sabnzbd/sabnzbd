@@ -51,6 +51,7 @@ from sabnzbd.misc import (
     is_lan_addr,
     is_loopback_addr,
     ip_in_subnet,
+    helpful_warning,
 )
 from sabnzbd.filesystem import (
     real_path,
@@ -884,7 +885,7 @@ SPECIAL_BOOL_LIST = (
     "process_unpacked_par2",
     "queue_complete_pers",
     "api_warnings",
-    "helpfull_warnings",
+    "helpful_warnings",
     "ampm",
     "enable_unrar",
     "enable_unzip",
@@ -1067,7 +1068,7 @@ class ConfigGeneral:
             cfg.bandwidth_perc.set(bandwidth_perc)
         bandwidth_perc = cfg.bandwidth_perc()
         if bandwidth_perc and not bandwidth_max:
-            logging.warning_helpful(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+            helpful_warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
 
         config.save_config()
 

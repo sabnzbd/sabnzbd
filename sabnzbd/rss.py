@@ -31,7 +31,16 @@ from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, convert_filter, cat_to_opts, match_str, from_units, int_conv, get_base_url
+from sabnzbd.misc import (
+    cat_convert,
+    convert_filter,
+    cat_to_opts,
+    match_str,
+    from_units,
+    int_conv,
+    get_base_url,
+    helpful_warning,
+)
 import sabnzbd.emailer as emailer
 
 import feedparser
@@ -219,7 +228,7 @@ class RSSReader:
 
                 if msg:
                     # We need to escape any "%20" that could be in the warning due to the URL's
-                    logging.warning_helpful(urllib.parse.unquote(msg))
+                    helpful_warning(urllib.parse.unquote(msg))
                 elif not entries:
                     msg = T("RSS Feed %s was empty") % uri
                     logging.info(msg)

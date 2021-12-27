@@ -37,7 +37,7 @@ from sabnzbd.newswrapper import NewsWrapper
 import sabnzbd.notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo
+from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo, helpful_warning
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
@@ -428,7 +428,7 @@ class Downloader(Thread):
                 if mx:
                     self.bandwidth_limit = mx * self.bandwidth_perc / 100
                 else:
-                    logging.warning_helpful(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+                    helpful_warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
             else:
                 self.bandwidth_limit = from_units(value)
                 if mx:

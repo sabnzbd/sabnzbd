@@ -39,7 +39,7 @@ from sabnzbd.newsunpack import (
     is_sfv_file,
 )
 from threading import Thread
-from sabnzbd.misc import on_cleanup_list, is_sample
+from sabnzbd.misc import on_cleanup_list, is_sample, helpful_warning
 from sabnzbd.filesystem import (
     real_path,
     get_unique_path,
@@ -223,7 +223,7 @@ class PostProcessor(Thread):
         # First we do a dircheck
         complete_dir = sabnzbd.cfg.complete_dir.get_path()
         if sabnzbd.utils.checkdir.isFAT(complete_dir):
-            logging.warning_helpful(
+            helpful_warning(
                 T("Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB")
                 % complete_dir
             )

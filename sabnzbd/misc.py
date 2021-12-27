@@ -66,6 +66,13 @@ if sabnzbd.WIN32:
         pass
 
 
+def helpful_warning(*args, **kwargs):
+    """Wrapper to ignore helpfull warnings if desired"""
+    if sabnzbd.cfg.helpful_warnings():
+        return logging.warning(*args, **kwargs)
+    return logging.info(*args, **kwargs)
+
+
 def time_format(fmt):
     """Return time-format string adjusted for 12/24 hour clock setting"""
     if cfg.ampm() and HAVE_AMPM:
@@ -784,7 +791,7 @@ def get_all_passwords(nzo) -> List[str]:
 
             # Check size
             if len(pws) > 30:
-                logging.warning_helpful(
+                helpful_warning(
                     T(
                         "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
                     )
