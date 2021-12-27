@@ -33,6 +33,7 @@ msgstr "Chyba"
 msgid "Failed to start web-interface"
 msgstr "Nezdařilo se spustit webové rozhraní"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Šablona pro web nebyla nalezena: %s, zkouším standardní šablonu"
@@ -55,6 +56,7 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "Program par2... nenalezeno!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Nalezen UNRAR verze %s, doporučujeme verzi %s nebo vyšší. <br />"
@@ -77,6 +79,7 @@ msgstr "Program unizip... nenalezen!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr "Chybí základní moduly, stahování nemůže být spustěno."
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -90,6 +93,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP a HTTPS porty nemohou být stejné"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -453,6 +457,7 @@ msgstr "Obnovování"
 msgid "Paused"
 msgstr "Pozastaveno"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -762,6 +767,7 @@ msgstr "Nezdařilo se nahrát soubor: %s"
 msgid "Error creating SSL key and certificate"
 msgstr "Chyba při vytváření SSL klíče a certifikátu"
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1474,6 +1480,7 @@ msgstr ""
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Stará fronta nalezena, použijte Status->Repair pro konverzi fronty"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1663,6 +1670,7 @@ msgstr "Nezdařilo se stáhnout RSS z %s:%s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr ""
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS kanál %s byl prázdný"

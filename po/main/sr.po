@@ -32,6 +32,7 @@ msgstr "Грeшкa"
 msgid "Failed to start web-interface"
 msgstr "Neuspešno pokretanje web interfejsa"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Немогуће наћи веб модел: %s, програм покушава са стандардним моделом"
@@ -52,6 +53,7 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 program...NIJE pronađen!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -75,6 +77,7 @@ msgstr "unzip program...NIJE pronađen"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -87,6 +90,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP i HTTPS portovi ne mogu biti isti"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -442,6 +446,7 @@ msgstr "Nastavlja se"
 msgid "Paused"
 msgstr "Паузирано"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -757,6 +762,7 @@ msgstr ""
 msgid "Error creating SSL key and certificate"
 msgstr "Грешка креације SSL кључа и сертификата"
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1491,6 +1497,7 @@ msgstr "Грешка %s: Требате да унесете важеће име/
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Стари ред је нађен, употребити Статус->Поправи за претварање реда"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1680,6 +1687,7 @@ msgstr "Неуспешно преузимање RSS од %s: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Server %s koristi nepouzdan HTTPS sertifikat"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS фид %s је празан"

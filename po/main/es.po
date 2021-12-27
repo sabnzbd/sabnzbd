@@ -34,6 +34,7 @@ msgstr "Se ha producido un error"
 msgid "Failed to start web-interface"
 msgstr "Error al iniciar la interfaz web"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr ""
@@ -60,6 +61,7 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 binario... NO encontrado!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Su versión UnRAR es %s, recomendamos la versión %s o superior. <br />"
@@ -82,6 +84,7 @@ msgstr "unzip binario... NO encontrado!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr "Faltan módulos imprescindibles, no se puede iniciar la descarga."
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -95,6 +98,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Los puertos de HTTP y de HTTPS no pueden ser iguales"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -471,6 +475,7 @@ msgstr "Reanudando"
 msgid "Paused"
 msgstr "En pausa"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -792,6 +797,7 @@ msgstr "Error al subir archivo: %s"
 msgid "Error creating SSL key and certificate"
 msgstr "Error al crear la llave SSL y el certificado"
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1557,6 +1563,7 @@ msgstr ""
 "Se ha encontrado una cola antigua, utilice Estado->Reparar para convertir la"
 " cola"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1754,6 +1761,7 @@ msgstr "Error al recuperar RSS desde %s: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "El servidor %s utiliza un certificado HTTPS no fiable"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "El canal RSS %s estaba vacío"
