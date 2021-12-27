@@ -32,7 +32,6 @@ msgstr "Virhe"
 msgid "Failed to start web-interface"
 msgstr "Web-käyttöliittymän käynnistys epäonnistui"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Web-mallia %s ei löydy, yritetään käyttää oletusmallia"
@@ -53,7 +52,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 ohjelmaa... EI löydy!"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -78,7 +76,6 @@ msgstr "unzip-ohjelmaa... EI löydy!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -92,7 +89,6 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP- ja HTTPS-portit eivät voi olla samoja"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -452,7 +448,6 @@ msgstr "Jatketaan"
 msgid "Paused"
 msgstr "Keskeytetty"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -770,7 +765,6 @@ msgstr ""
 msgid "Error creating SSL key and certificate"
 msgstr "Virhe luotaessa SSL avainta ja sertifikaattia"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1504,7 +1498,6 @@ msgstr "Virhe %s: Syötä kelvollinen käyttäjänimi ja salasana."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Vanhan version jono havaittiin, käytä Tila->Korjaa muuntaaksesi jonon"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1694,7 +1687,6 @@ msgstr "RSS noutaminen epäonnistui kohteesta %s: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Palvelin %s käyttää epäluotettavaa HTTPS sertifikaattia"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS syöte %s oli tyhjä"
