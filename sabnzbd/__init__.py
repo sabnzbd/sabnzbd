@@ -248,9 +248,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         cfg.download_dir.set(cfg.download_dir(), create=True)
     cfg.download_dir.set_create(True)
 
-    # Set access rights for "incomplete" base folder
-    filesystem.set_permissions(cfg.download_dir.get_path(), recursive=False)
-
     # If dirscan_dir cannot be created, set a proper value anyway.
     # Maybe it's a network path that's temporarily missing.
     path = cfg.dirscan_dir.get_path()
