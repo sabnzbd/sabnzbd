@@ -192,7 +192,7 @@ class OptionDir(Option):
         section: str,
         keyword: str,
         default_val: str = "",
-        apply_umask: bool = False,
+        apply_permissions: bool = False,
         create: bool = True,
         validation: Optional[Callable] = None,
         writable: bool = True,
@@ -200,7 +200,7 @@ class OptionDir(Option):
     ):
         self.__validation: Optional[Callable] = validation
         self.__root: str = ""  # Base directory for relative paths
-        self.__apply_umask: bool = apply_umask
+        self.__apply_permissions: bool = apply_permissions
         self.__create: bool = create
         self.__writable: bool = writable
         super().__init__(section, keyword, default_val, add=add)
@@ -220,7 +220,7 @@ class OptionDir(Option):
         if value:
             path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                _, path, _ = create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
+                _, path, _ = create_real_path(self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable)
         return path
 
     def get_clipped_path(self) -> str:
@@ -253,7 +253,7 @@ class OptionDir(Option):
             if not error:
                 if value and (self.__create or create):
                     res, path, error = create_real_path(
-                        self.ident()[1], self.__root, value, self.__apply_umask, self.__writable
+                        self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable
                     )
             if not error:
                 super().set(value)

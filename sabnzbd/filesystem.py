@@ -367,7 +367,7 @@ def real_path(loc: str, path: str) -> str:
 
 
 def create_real_path(
-    name: str, loc: str, path: str, umask: bool = False, writable: bool = True
+    name: str, loc: str, path: str, apply_permissions: bool = False, writable: bool = True
 ) -> Tuple[bool, str, Optional[str]]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
@@ -380,7 +380,7 @@ def create_real_path(
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
             logging.info("%s directory: %s does not exist, try to create it", name, my_dir)
-            if not create_all_dirs(my_dir, umask):
+            if not create_all_dirs(my_dir, apply_permissions):
                 msg = T("Cannot create directory %s") % clip_path(my_dir)
                 logging.error(msg)
                 return False, my_dir, msg
@@ -689,8 +689,8 @@ DIR_LOCK = threading.RLock()
 
 @synchronized(DIR_LOCK)
 def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bool]:
-    """Create all required path elements and set umask on all
-    The umask argument is ignored on Windows
+    """Create all required path elements and set permissions on all
+    The apply_permissions argument is ignored on Windows
     Return path if elements could be made or exists
     """
     try:
@@ -837,7 +837,7 @@ def cleanup_empty_directories(path: str):
 def get_filepath(path: str, nzo, filename: str):
     """Create unique filepath"""
     # This procedure is only used by the Assembler thread
-    # It does no umask setting
+    # It does not apply permissions
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
     new_dirname = dirname = nzo.work_name
