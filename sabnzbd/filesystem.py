@@ -721,23 +721,22 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
 
 
 @synchronized(DIR_LOCK)
-def get_unique_path(dirpath: str, n: int = 0, create_dir: bool = True) -> str:
+def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str:
     """Determine a unique folder or filename"""
+    if not check_mount(path):
+        return path
 
-    if not check_mount(dirpath):
-        return dirpath
-
-    path = dirpath
+    new_path = path
     if n:
-        path = "%s.%s" % (dirpath, n)
+        new_path = "%s.%s" % (path, n)
 
-    if not os.path.exists(path):
+    if not os.path.exists(new_path):
         if create_dir:
-            return create_all_dirs(path, apply_permissions=True)
+            return create_all_dirs(new_path, apply_permissions=True)
         else:
-            return path
+            return new_path
     else:
-        return get_unique_path(dirpath, n=n + 1, create_dir=create_dir)
+        return get_unique_dir(path, n=n + 1, create_dir=create_dir)
 
 
 @synchronized(DIR_LOCK)
@@ -746,12 +745,12 @@ def get_unique_filename(path: str) -> str:
     If not, add number like: "/path/name.NUM.ext".
     """
     num = 1
-    new_path, fname = os.path.split(path)
-    name, ext = os.path.splitext(fname)
+    new_path, filename = os.path.split(path)
+    name, ext = os.path.splitext(filename)
     while os.path.exists(path):
-        fname = "%s.%d%s" % (name, num, ext)
+        filename = "%s.%d%s" % (name, num, ext)
         num += 1
-        path = os.path.join(new_path, fname)
+        path = os.path.join(new_path, filename)
     return path
 
 
@@ -831,43 +830,6 @@ def cleanup_empty_directories(path: str):
             remove_dir(path)
         except:
             pass
-
-
-@synchronized(DIR_LOCK)
-def get_filepath(path: str, nzo, filename: str):
-    """Create unique filepath"""
-    # This procedure is only used by the Assembler thread
-    # It does not apply permissions
-    # It uses the dir_lock for the (rare) case that the
-    # download_dir is equal to the complete_dir.
-    new_dirname = dirname = nzo.work_name
-    if not nzo.created:
-        for n in range(200):
-            new_dirname = dirname
-            if n:
-                new_dirname += "." + str(n)
-            try:
-                os.mkdir(os.path.join(path, new_dirname))
-                break
-            except:
-                pass
-        nzo.work_name = new_dirname
-        nzo.created = True
-
-    filepath = os.path.join(os.path.join(path, new_dirname), filename)
-    filepath, ext = os.path.splitext(filepath)
-    n = 0
-    while True:
-        if n:
-            fullpath = "%s.%d%s" % (filepath, n, ext)
-        else:
-            fullpath = filepath + ext
-        if os.path.exists(fullpath):
-            n = n + 1
-        else:
-            break
-
-    return fullpath
 
 
 @synchronized(DIR_LOCK)

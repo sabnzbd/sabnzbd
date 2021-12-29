@@ -220,7 +220,9 @@ class OptionDir(Option):
         if value:
             path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                _, path, _ = create_real_path(self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable)
+                _, path, _ = create_real_path(
+                    self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable
+                )
         return path
 
     def get_clipped_path(self) -> str:
@@ -1092,14 +1094,9 @@ def all_lowercase(value):
 
 
 def validate_permissions(value: str):
-    """Check the permissions for correct input and validate the session umask"""
+    """Check the permissions for correct input"""
     # Octal verification
     if not value:
-        # Verify umask if no permissions are set, we need at least 700
-        if not sabnzbd.WIN32 and sabnzbd.ORG_UMASK > int("077", 8):
-            sabnzbd.misc.helpful_warning(
-                T("Current umask (%o) might not allow SABnzbd access the files and folders it creates."), sabnzbd.ORG_UMASK
-            )
         return None, value
     try:
         oct_value = int(value, 8)
@@ -1109,7 +1106,7 @@ def validate_permissions(value: str):
     # Check if we at least have user-permissions
     if oct_value < int("700", 8):
         sabnzbd.misc.helpful_warning(
-            T("Permissions setting of %s might not allow SABnzbd access to files and folders it creates."), value
+            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."), value
         )
     return None, value
 

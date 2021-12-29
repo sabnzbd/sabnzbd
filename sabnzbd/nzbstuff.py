@@ -62,7 +62,7 @@ from sabnzbd.misc import (
 )
 from sabnzbd.filesystem import (
     sanitize_foldername,
-    get_unique_path,
+    get_unique_dir,
     get_admin_path,
     remove_all,
     sanitize_filename,
@@ -74,11 +74,11 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     renamer,
     remove_file,
-    get_filepath,
     make_script_path,
     globber,
     is_valid_script,
     has_unwanted_extension,
+    create_all_dirs,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -448,7 +448,7 @@ class NzbFile(TryList):
         if not self.filepath:
             self.nzo.verify_nzf_filename(self)
             filename = sanitize_filename(self.filename)
-            self.filepath = get_filepath(long_path(cfg.download_dir.get_path()), self.nzo, filename)
+            self.filepath = get_unique_filename(os.path.join(self.nzo.download_path, filename))
             self.filename = get_filename(self.filepath)
         return self.filepath
 
@@ -520,7 +520,6 @@ NzbObjectSaver = (
     "filename",
     "work_name",
     "final_name",
-    "created",
     "bytes",
     "bytes_downloaded",
     "bytes_tried",
@@ -657,7 +656,6 @@ class NzbObject(TryList):
         # Bookkeeping values
         self.meta = {}
         self.servercount: Dict[str, int] = {}  # Dict to keep bytes per server
-        self.created = False  # dirprefixes + work_name created
         self.direct_unpacker: Optional[sabnzbd.directunpacker.DirectUnpacker] = None  # The DirectUnpacker instance
         self.bytes: int = 0  # Original bytesize
         self.bytes_par2: int = 0  # Bytes available for repair
@@ -747,15 +745,14 @@ class NzbObject(TryList):
         else:
             # Determine "incomplete" folder
             work_dir = os.path.join(cfg.download_dir.get_path(), self.work_name)
-            work_dir = get_unique_path(work_dir, create_dir=True)
+            work_dir = get_unique_dir(work_dir, create_dir=True)
             set_permissions(work_dir)
 
         # Always create the admin-directory, just to be sure
         admin_dir = os.path.join(work_dir, JOB_ADMIN)
         if not os.path.exists(admin_dir):
-            os.mkdir(admin_dir)
+            create_all_dirs(admin_dir)
         _, self.work_name = os.path.split(work_dir)
-        self.created = True
 
         # When doing a retry or repair, remove old cache-files
         if reuse:

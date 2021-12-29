@@ -691,7 +691,7 @@ class TestListdirFullWin(ffs.TestCase):
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")
-class TestGetUniquePathFilename(ffs.TestCase):
+class TestGetUniqueDirFilename(ffs.TestCase):
     # Basic fake filesystem setup stanza
     def setUp(self):
         self.setUpPyfakefs()
@@ -702,25 +702,25 @@ class TestGetUniquePathFilename(ffs.TestCase):
     @set_config({"wait_ext_drive": 1})
     def test_nonexistent_dir(self):
         # Absolute path
-        assert filesystem.get_unique_path("/foo/bar", n=0, create_dir=False) == "/foo/bar"
+        assert filesystem.get_unique_dir("/foo/bar", n=0, create_dir=False) == "/foo/bar"
         # Absolute path in a location that matters to check_mount
-        assert filesystem.get_unique_path("/mnt/foo/bar", n=0, create_dir=False) == "/mnt/foo/bar"
+        assert filesystem.get_unique_dir("/mnt/foo/bar", n=0, create_dir=False) == "/mnt/foo/bar"
         # Relative path
         if self.fs.cwd != "/":
             os.chdir("/")
-        assert filesystem.get_unique_path("foo/bar", n=0, create_dir=False) == "foo/bar"
+        assert filesystem.get_unique_dir("foo/bar", n=0, create_dir=False) == "foo/bar"
 
     def test_creating_dir(self):
         # First call also creates the directory for us
-        assert filesystem.get_unique_path("/foo/bar", n=0, create_dir=True) == "/foo/bar"
+        assert filesystem.get_unique_dir("/foo/bar", n=0, create_dir=True) == "/foo/bar"
         # Verify creation of the path
         assert os.path.exists("/foo/bar") is True
         # Directories from previous loops get in the way
         for dir_n in range(1, 11):  # Go high enough for double digits
-            assert filesystem.get_unique_path("/foo/bar", n=0, create_dir=True) == "/foo/bar." + str(dir_n)
+            assert filesystem.get_unique_dir("/foo/bar", n=0, create_dir=True) == "/foo/bar." + str(dir_n)
             assert os.path.exists("/foo/bar." + str(dir_n)) is True
         # Explicitly set parameter n
-        assert filesystem.get_unique_path("/foo/bar", n=666, create_dir=True) == "/foo/bar.666"
+        assert filesystem.get_unique_dir("/foo/bar", n=666, create_dir=True) == "/foo/bar.666"
         assert os.path.exists("/foo/bar.666") is True
 
     def test_nonexistent_file(self):
@@ -745,11 +745,14 @@ class TestGetUniquePathFilename(ffs.TestCase):
         # Create obstructions
         self.fs.create_file(test_file)
         assert os.path.exists(test_file)
-        assert filesystem.get_unique_filename(test_file) == "/some/filename.1"
+        first_filename = filesystem.get_unique_filename(test_file)
+        assert first_filename == "/some/filename.1"
+        self.fs.create_file(first_filename)
+        assert filesystem.get_unique_filename(test_file) == "/some/filename.2"
 
 
 @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows specific tests")
-class TestGetUniquePathFilenameWin(ffs.TestCase):
+class TestGetUniqueDirFilenameWin(ffs.TestCase):
     # Basic fake filesystem setup stanza
     def setUp(self):
         self.setUpPyfakefs()
@@ -761,21 +764,21 @@ class TestGetUniquePathFilenameWin(ffs.TestCase):
     @set_config({"wait_ext_drive": 1})
     def test_nonexistent_dir(self):
         # Absolute path
-        assert filesystem.get_unique_path(r"C:\No\Such\Dir", n=0, create_dir=False).lower() == r"c:\no\such\dir"
+        assert filesystem.get_unique_dir(r"C:\No\Such\Dir", n=0, create_dir=False).lower() == r"c:\no\such\dir"
         # Relative path
-        assert filesystem.get_unique_path(r"foo\bar", n=0, create_dir=False).lower() == r"foo\bar"
+        assert filesystem.get_unique_dir(r"foo\bar", n=0, create_dir=False).lower() == r"foo\bar"
 
     def test_creating_dir(self):
         # First call also creates the directory for us
-        assert filesystem.get_unique_path(r"C:\foo\BAR", n=0, create_dir=True).lower() == r"c:\foo\bar"
+        assert filesystem.get_unique_dir(r"C:\foo\BAR", n=0, create_dir=True).lower() == r"c:\foo\bar"
         # Verify creation of the path
         assert os.path.exists(r"c:\foo\bar") is True
         # Directories from previous loops get in the way
         for dir_n in range(1, 11):  # Go high enough for double digits
-            assert filesystem.get_unique_path(r"c:\foo\bar", n=0, create_dir=True) == r"c:\foo\bar." + str(dir_n)
+            assert filesystem.get_unique_dir(r"c:\foo\bar", n=0, create_dir=True) == r"c:\foo\bar." + str(dir_n)
             assert os.path.exists(r"c:\foo\bar." + str(dir_n)) is True
         # Explicitly set parameter n
-        assert filesystem.get_unique_path(r"c:\Foo\Bar", n=666, create_dir=True).lower() == r"c:\foo\bar.666"
+        assert filesystem.get_unique_dir(r"c:\Foo\Bar", n=666, create_dir=True).lower() == r"c:\foo\bar.666"
         assert os.path.exists(r"c:\foo\bar.666") is True
 
     def test_nonexistent_file(self):

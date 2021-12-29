@@ -1205,6 +1205,13 @@ def main():
             sabnzbd.encoding.CODEPAGE,
         )
 
+    # Verify umask, we need at least 700
+    if not sabnzbd.WIN32 and sabnzbd.ORG_UMASK > int("077", 8):
+        sabnzbd.misc.helpful_warning(
+            T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
+            sabnzbd.ORG_UMASK,
+        )
+
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
