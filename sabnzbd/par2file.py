@@ -124,13 +124,8 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
                         break
 
                 header = f.read(8)
-
-    except (struct.error, IndexError):
-        logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
-        logging.debug("Traceback: ", exc_info=True)
-        table = {}
     except:
-        logging.info("QuickCheck parser crashed in file %s", fname)
+        logging.info("Par2 parser crashed in file %s", fname)
         logging.debug("Traceback: ", exc_info=True)
         table = {}
 

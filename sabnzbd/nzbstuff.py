@@ -1265,14 +1265,9 @@ class NzbObject(TryList):
                     existing_files.remove(existing_filename)
 
                     # Set bytes correctly
+                    nzf.bytes_left = 0
                     self.bytes_tried += nzf.bytes
                     self.bytes_downloaded += nzf.bytes
-
-                    # Process par2 files
-                    filepath = os.path.join(wdir, existing_filename)
-                    if sabnzbd.par2file.is_parfile(filepath):
-                        self.handle_par2(nzf, filepath)
-                        self.bytes_par2 += nzf.bytes
                     break
 
         # Create an NZF for each remaining existing file
@@ -1290,18 +1285,21 @@ class NzbObject(TryList):
                 self.remove_nzf(nzf)
 
                 # Set bytes correctly
+                nzf.bytes_left = 0
                 self.bytes += nzf.bytes
                 self.bytes_tried += nzf.bytes
                 self.bytes_downloaded += nzf.bytes
-
-                # Process par2 files
-                if sabnzbd.par2file.is_parfile(filepath):
-                    self.handle_par2(nzf, filepath)
-                    self.bytes_par2 += nzf.bytes
-
         except:
             logging.error(T("Error importing %s"), self.final_name)
             logging.info("Traceback: ", exc_info=True)
+
+        # Process all the par2 files in one go, because handle_par2
+        # otherwise updates the byte-counters incorrectly.
+        for nzf in self.finished_files:
+            filepath = os.path.join(wdir, nzf.filename)
+            if sabnzbd.par2file.is_parfile(filepath):
+                self.handle_par2(nzf, filepath)
+                self.bytes_par2 += nzf.bytes
 
     @property
     def pp(self):
