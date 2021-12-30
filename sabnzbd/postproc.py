@@ -653,6 +653,7 @@ def process_job(nzo: NzbObject):
     if all_ok:
         notifier.send_notification(T("Download Completed"), filename, "complete", nzo.cat)
         nzo.status = Status.COMPLETED
+        nzo.fail_msg = ""
     else:
         notifier.send_notification(T("Download Failed"), filename, "failed", nzo.cat)
         nzo.status = Status.FAILED
@@ -794,9 +795,13 @@ def parring(nzo: NzbObject, workdir: str):
 
     if re_add:
         logging.info("Re-added %s to queue", nzo.final_name)
+
+        # need to reset the status so the processing happens again
         if nzo.priority != FORCE_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         nzo.status = Status.FETCHING
+        nzo.fail_msg = ""
+
         sabnzbd.NzbQueue.add(nzo)
         sabnzbd.Downloader.resume_from_postproc()
 
