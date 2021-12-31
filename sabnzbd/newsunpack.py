@@ -1001,8 +1001,6 @@ def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_fol
             break
 
     nzo.fail_msg = ""
-    if fail == 2:
-        msg = "%s (%s)" % (T("Unpacking failed, archive requires a password"), os.path.basename(sevenset))
     if fail > 0:
         nzo.fail_msg = msg
         nzo.status = Status.FAILED
@@ -1050,19 +1048,25 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     output = platform_btou(p.stdout.read())
     logging.debug("7za output: %s", output)
 
-    ret = p.wait()
+    ret = p.wait() # contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
 
-    if ret == 2 and (("Disk full." in output) or ("No space left on device" in output)):
-        # note: the above does not work with 7z version 16.02, and does from with 7z 19.00 and higher
-        ret = 1  # to avoid ret = 2, which would result in error message about password
-        msg = T("Unpacking failed, write error or disk is full?") + " (%s)" % setname_from_path(sevenset)
-    elif ret == 2 and "ERROR: CRC Failed" in output:
-        # We can output a more general error
-        ret = 1
-        msg = T('ERROR: CRC failed in "%s"') % setname_from_path(sevenset)
-    else:
-        # Default message
-        msg = T("Could not unpack %s") % setname_from_path(sevenset)
+    msg = ""
+
+    if ret == 2:
+        # Fatal error with 7z/7za, so let's find the reason in the 7z output
+        if "Data Error in encrypted file. Wrong password?" in output:
+            msg = "%s (%s)" % (T("Unpacking failed, archive requires a password"), os.path.basename(sevenset))
+        elif "Disk full." in output or "No space left on device" in output:
+            # note: the above does not work with 7z version 16.02, and does from with 7z 19.00 and higher
+            ret = 1
+            msg = T("Unpacking failed, write error or disk is full?") + " (%s)" % setname_from_path(sevenset)
+        elif "ERROR: CRC Failed" in output:
+            # We can output a more general error
+            ret = 1
+            msg = T('ERROR: CRC failed in "%s"') % setname_from_path(sevenset)
+        else:
+            # Default message
+            msg = T("Could not unpack %s") % setname_from_path(sevenset)
 
     # What's new?
     new_files = list(set(orig_dir_content + listdir_full(extraction_path)))
