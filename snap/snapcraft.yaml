@@ -15,6 +15,7 @@ architectures:
 apps:
   sabnzbd:
     environment:
+      PATH: $SNAP/usr/lib/p7zip:$PATH
       LC_CTYPE: C.UTF-8
     command: bin/sabnzbd-wrapper
     daemon: simple
@@ -36,7 +37,6 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
       echo "python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
       chmod +x $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
-
+    prime: [-usr/bin/7z,-usr/bin/7za,-usr/bin/7zr]
     organize:
       usr/bin/unrar-nonfree: usr/bin/unrar
-
