@@ -998,6 +998,7 @@ def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_fol
             nzo.set_unpack_info("Unpack", msg, setname_from_path(sevenset))
         fail, new_files, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
         if fail != 2:
+            # anything else than a password problem (so: OK, or disk problem):
             break
 
     nzo.fail_msg = ""
@@ -1051,7 +1052,25 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     ret = p.wait() # contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
 
     msg = ""
+    # What's new?
+    new_files = list(set(orig_dir_content + listdir_full(extraction_path)))
 
+    # 7z unpack went OK:
+    if ret == 0 and delete:
+        if extensions:
+            for ext in extensions:
+                path = "%s.%s" % (sevenset, ext)
+                try:
+                    remove_file(path)
+                except:
+                    logging.warning(T("Deleting %s failed!"), path)
+        else:
+            try:
+                remove_file(sevenset)
+            except:
+                logging.warning(T("Deleting %s failed!"), sevenset)
+
+    # 7z unpack had a problem
     if ret == 2:
         # Fatal error with 7z/7za, so let's find the reason in the 7z output
         if "Data Error in encrypted file. Wrong password?" in output:
@@ -1068,22 +1087,10 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
             # Default message
             msg = T("Could not unpack %s") % setname_from_path(sevenset)
 
-    # What's new?
-    new_files = list(set(orig_dir_content + listdir_full(extraction_path)))
-
-    if ret == 0 and delete:
-        if extensions:
-            for ext in extensions:
-                path = "%s.%s" % (sevenset, ext)
-                try:
-                    remove_file(path)
-                except:
-                    logging.warning(T("Deleting %s failed!"), path)
-        else:
-            try:
-                remove_file(sevenset)
-            except:
-                logging.warning(T("Deleting %s failed!"), sevenset)
+    # 7z cases we don't handle
+    if ret > 2:
+        # 7 = Bad command line parameters, 8 = Not enough memory for operation, 255 = User stopped the process
+        msg = "Unexpected 7z error. Check debug logging"
 
     # Always return an error message, even when return code is 0
     return ret, new_files, msg
