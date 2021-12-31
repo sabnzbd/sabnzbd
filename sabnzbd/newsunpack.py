@@ -1049,7 +1049,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     output = platform_btou(p.stdout.read())
     logging.debug("7za output: %s", output)
 
-    ret = p.wait() # ret contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
+    ret = p.wait()  # ret contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
 
     msg = ""
     # What's new?
