@@ -1090,7 +1090,11 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     # 7z cases we don't handle
     if ret > 2:
         # 7 = Bad command line parameters, 8 = Not enough memory for operation, 255 = User stopped the process
-        msg = T("Unpacking failed, %s") % sevenset + ". Return code 7z/7za: %s. " % str(ret) + T("see logfile")
+        msg = (
+            T("Unpacking failed, %s") % setname_from_path(sevenset)
+            + ". Return code 7z/7za: %s. " % str(ret)
+            + T("see logfile")
+        )
 
     # Always return an error message, even when return code is 0
     return ret, new_files, msg
