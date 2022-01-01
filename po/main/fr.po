@@ -885,11 +885,6 @@ msgstr "Impossible de supprimer %s !"
 msgid "Trying unrar with password \"%s\""
 msgstr "Tentative d'extraction avec le mot de passe \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Échec de l'extraction, l'archive nécessite un mot de passe"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Extraction"
@@ -898,19 +893,9 @@ msgstr "Extraction"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Échec de l'extraction, %s n'a pas été trouvé"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "ERREUR : impossible de trouver \"%s\""
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Échec de l'extraction, erreur CRC"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "ERREUR : échec CRC pour \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
@@ -918,35 +903,18 @@ msgstr ""
 "La décompression a échoué, le fichier est trop volumineux pour le système de"
 " fichiers (FAT ?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
-"ERREUR : le fichier est trop volumineux pour le système de fichiers (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr ""
 "Échec de l'extraction, erreur d'écriture ou espace disque insuffisant ?"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "ERREUR : erreur d'écriture (%s)"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Extraction échoué, le chemin est trop long"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "ERREUR : chemin trop long  (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "ERREUR : %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Échec de l'extraction, l'archive nécessite un mot de passe"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -977,10 +945,6 @@ msgstr "Tentative 7zip avec le mot de passe \"%s\""
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr ""
 "La collection 7ZIP \"%s\" est incomplète, impossible d'extraire les fichiers"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Impossible de décompresser %s"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py

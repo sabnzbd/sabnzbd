@@ -867,11 +867,6 @@ msgstr "Ştergere %s nereuşită!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Încerc unrar cu parola \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Dezarhivare nereuşită, arhiva necesită o parolă"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Dezarhivare"
@@ -880,52 +875,26 @@ msgstr "Dezarhivare"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Dezarhivare nereuşită, nu pot găsi %s"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "EROARE: nu pot găsi \"%s\""
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Dezarhivare nereuşită, eroare CRC"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "EROARE: CRC nereuşit în \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 "Dezarhivare eșuată, fișier prea mare pentru sistemul de fișiere (FAT?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr "EROARE: fișier prea mare pentru sistemul de fișiere (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Dezarhivare nereuşită, eroare scriere sau disc plin?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "EROARE: eroare scriere (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Dezarhivare eșuată, calea este prea lungă"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "EROARE: calea este prea lungă (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "EROARE: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Dezarhivare nereuşită, arhiva necesită o parolă"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -955,10 +924,6 @@ msgstr "Încerc 7zip cu parola \"%s\""
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "Setul 7ZIP \"%s\" este incomplet, nu pot dezarhiva"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Nu pot dezarahiva %s"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py

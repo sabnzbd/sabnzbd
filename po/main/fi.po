@@ -848,11 +848,6 @@ msgstr "Kohteen %s poisto epäonnistui!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Yritetään purkaa rar arkistoa salasanalla \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Purkaminen epäonnistui, arkisto vaatii salasanan"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Puretaan"
@@ -861,51 +856,25 @@ msgstr "Puretaan"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Purkaminen epäonnistui, %s ei löydy"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "VIRHE: kohdetta \"%s\" ei löydy"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Purkaminen epäonnistui, CRC virhe"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "VIRHE: CRC epäonnistui kohteessa \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Purkaminen epäonnistui, kirjoitusvirhe tai levy täynnä?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "VIRHE: kirjoitusvirhe (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Purkaminen epäonnistui, polku on liian pitkä"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "VIRHE: polku liian pitkä (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "VIRHE: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Purkaminen epäonnistui, arkisto vaatii salasanan"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -935,10 +904,6 @@ msgstr "Yritetään purkaa 7zip arkistoa salasanalla \"%s\""
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "7ZIP setti \"%s\" on puutteellinen, ei voida purkaa"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Ei voitu purkaa %s"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py

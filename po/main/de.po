@@ -886,11 +886,6 @@ msgstr "Löschen von %s fehlgeschlagen!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Versuche entpacken mit Passwort \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Entpacken fehlgeschlagen. Archiv benötigt ein Passwort."
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Entpacken"
@@ -899,53 +894,27 @@ msgstr "Entpacken"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Entpacken fehlgeschlagen. Konnte %s nicht finden."
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "FEHLER: »%s« kann nicht gefunden werden."
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Entpacken fehlgeschlagen. CRC-Fehler"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "FEHLER: CRC in »%s« fehlgeschlagen."
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 "Entpacken fehlgeschlagen - Datei zu groß für Dateisystem (Formatierung FAT?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr "Fehler: Datei zu groß für Dateisystem (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr ""
 "Entpacken fehlgeschlagen. Fehler beim Schreiben oder volle Festplatte?"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "FEHLER: Schreibfehler %s"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Entpacken fehlgeschlagen, Pfad ist zu lang"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "FEHLER: Pfad ist zu lang (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "FEHLER: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Entpacken fehlgeschlagen. Archiv benötigt ein Passwort."
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -975,10 +944,6 @@ msgstr "Versuche 7zip mit Passwort \"%s\""
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "Das 7zip-Set \"%s\" ist unvollständig, kann nicht entpackt werden"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Konnte nicht entpacken %s"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py

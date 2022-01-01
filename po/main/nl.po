@@ -871,11 +871,6 @@ msgstr "Verwijderen van %s mislukt."
 msgid "Trying unrar with password \"%s\""
 msgstr "Unrar proberen met wachtwoord \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Uitpakken mislukt, archief vereist wachtwoord"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Uitpakken"
@@ -884,51 +879,25 @@ msgstr "Uitpakken"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Uitpakken mislukt, kan %s niet vinden"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "FOUT: \"%s\" niet te vinden"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Uitpakken mislukt, CRC-fout"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "FOUT: onjuiste CRC in \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr "Uitplakken mislukt, bestand te groot voor het bestandssysteem (FAT?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr "FOUT: bestand te groot voor het bestandssysteem (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Uitpakken mislukt,  schrijffout of schijf vol?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "FOUT: schrijffout (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Uitpakken mislukt, bestandspad is te lang"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "FOUT: bestandspad is te lang (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "FOUT: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Uitpakken mislukt, archief vereist wachtwoord"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -958,10 +927,6 @@ msgstr "Uitpakpoging met 7zip en wachtwoord '%s'"
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "De 7Zip-set '%s' is incompleet, uitpakken is niet mogelijk"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Uitpakken %s niet mogelijk"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py

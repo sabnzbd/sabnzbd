@@ -845,11 +845,6 @@ msgstr "Не удалось удалить %s!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Попытка распаковки RAR-архива с паролем «%s»"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Ошибка распаковки: архив защищён паролем"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Распаковка"
@@ -858,51 +853,25 @@ msgstr "Распаковка"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Ошибка распаковки: не удаётся найти %s"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "ОШИБКА: не удаётся найти «%s»"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Не удалось распаковать: ошибка CRC"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "ОШИБКА: неверная CRC-сумма для %s"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Не удалось распаковать: ошибка записи или на диске нет места?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "ОШИБКА: не удалось записать (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr ""
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "ОШИБКА: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Ошибка распаковки: архив защищён паролем"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -931,10 +900,6 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
 msgstr ""
 
 #. Error message

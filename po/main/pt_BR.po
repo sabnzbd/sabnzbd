@@ -847,11 +847,6 @@ msgstr "A exclusão de %s falhou!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Tentando descompactar com a senha \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "A descompactação falhou. O arquivo exige uma senha"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Descompactando"
@@ -860,51 +855,25 @@ msgstr "Descompactando"
 msgid "Unpacking failed, unable to find %s"
 msgstr "A descompactação falhou. Não foi possível encontrar %s"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "ERRO: Não foi possível encontrar \"%s\""
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "A descompactação falhou. Erro de CRC"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "ERRO: CRC falhou em \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "A descompactação falhou. Erro de escrita ou disco cheio?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "ERRO: erro de escrita (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Descompactação falhou, o caminho é muito extenso"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "ERRO: caminho muito extenso (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "ERRO: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "A descompactação falhou. O arquivo exige uma senha"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -934,10 +903,6 @@ msgstr "Testando 7zip com a senha \"%s\""
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "O arquivo 7ZIP \"%s\" está incompleto, impossível descompactar"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Não foi possível descompactar %s"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py

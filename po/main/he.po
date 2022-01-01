@@ -847,11 +847,6 @@ msgstr "מחיקת %s נכשלה!"
 msgid "Trying unrar with password \"%s\""
 msgstr "מנסה לחלץ עם הסיסמה \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "פריקה נכשלה, ארכיון דורש סיסמה"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "פורק"
@@ -860,51 +855,25 @@ msgstr "פורק"
 msgid "Unpacking failed, unable to find %s"
 msgstr "פריקה נכשלה, לא היה ניתן למצוא את %s"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "שגיאה: לא היה ניתן למצוא את \"%s\""
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "פריקה נכשלה, שגיאת CRC"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "שגיאה: CRC נכשל ב־\"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr "פריקה נכשלה, קובץ גדול מדי עבור מערכת הקבצים (FAT?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr "שגיאה: קובץ גדול מדי עבור מערכת הקבצים (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "פריקה נכשלה, שגיאת כתיבה או דיסק מלא?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "שגיאה: שגיאת כתיבה (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "פריקה נכשלה, נתיב ארוך מדי"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "שגיאה: נתיב ארוך מדי (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "שגיאה: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "פריקה נכשלה, ארכיון דורש סיסמה"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -934,10 +903,6 @@ msgstr "מנסה 7zip עם הסיסמה \"%s\""
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "ערכות 7ZIP בשם \"%s\" אינה שלמה, לא ניתן לפרוק"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "לא היה ניתן לפרוק את %s"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py

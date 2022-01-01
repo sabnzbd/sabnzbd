@@ -881,11 +881,6 @@ msgstr "¡Error al eliminar %s!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Intentado descomprimir rar con contraseña \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Error al descomprimir; El archivo está protegido por contraseña"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Descomprimiendo"
@@ -894,19 +889,9 @@ msgstr "Descomprimiendo"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Error al descomprimir; Imposible encontrar %s"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "ERROR: Imposible encontrar \"%s\""
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Error de CRC al descomprimir"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "ERROR: Ha fallado la comprobación CRC sobre \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
@@ -914,35 +899,18 @@ msgstr ""
 "La descompresión ha fallado, el archivo es demasiado grande para el sistema "
 "de archivos (FAT?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
-"ERROR: el archivo es demasiado grande para el sistema de archivos (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr ""
 "Error al descomprimir; ¿Error de escritura, o tal vez el disco está lleno?"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "ERROR: Error de escritura (%s)"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Aperture de archivo fallo, la via es muy larga"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "ERROR: via es muy larga (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "ERROR: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Error al descomprimir; El archivo está protegido por contraseña"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -972,10 +940,6 @@ msgstr "Tratando 7zip con la contraseña \"%s\""
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "7ZIP conjunto \"%s\" es incompleta, no puede desempaquetar"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "No se pudo descomprimir %s"
 
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
