@@ -977,6 +977,11 @@ msgstr "7ZIP conjunto \"%s\" es incompleta, no puede desempaquetar"
 msgid "Could not unpack %s"
 msgstr "No se pudo descomprimir %s"
 
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "ver fichero de log"
+
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Chequeo Rápido"
@@ -1621,11 +1626,6 @@ msgstr "Más"
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Error al post-procesar %s (%s)"
-
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "ver fichero de log"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"

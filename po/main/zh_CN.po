@@ -925,6 +925,11 @@ msgstr "7ZIP 分卷组 \"%s\" 不完整，无法解压"
 msgid "Could not unpack %s"
 msgstr "无法解压 %s"
 
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "查看日志文件"
+
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "快速检查"
@@ -1544,11 +1549,6 @@ msgstr "更多"
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
 msgstr "后期处理失败：%s (%s)"
-
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "查看日志文件"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"

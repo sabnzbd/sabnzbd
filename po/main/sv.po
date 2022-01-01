@@ -934,6 +934,11 @@ msgstr "7ZIP set \"%s\" är inte komplett, kan inte packa upp"
 msgid "Could not unpack %s"
 msgstr "Kunde inte packa upp %s"
 
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "se loggfil"
+
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Snabbkontrollerar"
@@ -1559,11 +1564,6 @@ msgstr "Mer"
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Efterbehandling misslyckades för %s (%s)"
-
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "se loggfil"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"

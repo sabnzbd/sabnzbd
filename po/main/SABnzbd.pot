@@ -888,6 +888,11 @@ msgstr ""
 msgid "Could not unpack %s"
 msgstr ""
 
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr ""
+
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr ""
@@ -1465,11 +1470,6 @@ msgstr ""
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
-msgstr ""
-
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
 msgstr ""
 
 #: sabnzbd/postproc.py

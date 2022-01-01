@@ -980,6 +980,11 @@ msgstr "Das 7zip-Set \"%s\" ist unvollständig, kann nicht entpackt werden"
 msgid "Could not unpack %s"
 msgstr "Konnte nicht entpacken %s"
 
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "Beachten Sie die Protokolldatei"
+
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Schnelle Überprüfung"
@@ -1623,11 +1628,6 @@ msgstr "Mehr"
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Nachbearbeitung von %s fehlgeschlagen (%s)"
-
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "Beachten Sie die Protokolldatei"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"

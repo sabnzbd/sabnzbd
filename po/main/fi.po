@@ -940,6 +940,11 @@ msgstr "7ZIP setti \"%s\" on puutteellinen, ei voida purkaa"
 msgid "Could not unpack %s"
 msgstr "Ei voitu purkaa %s"
 
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "katso lokitiedosto"
+
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Pikatarkistetaan"
@@ -1560,11 +1565,6 @@ msgstr "Lisää"
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Jälkikäsittely epäonnistui kohteelle %s (%s)"
-
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "katso lokitiedosto"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"

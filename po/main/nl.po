@@ -963,6 +963,11 @@ msgstr "De 7Zip-set '%s' is incompleet, uitpakken is niet mogelijk"
 msgid "Could not unpack %s"
 msgstr "Uitpakken %s niet mogelijk"
 
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "zie logbestand"
+
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "Snelle controle"
@@ -1594,11 +1599,6 @@ msgstr "Meer"
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Nabewerking van %s mislukt (%s)"
-
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "zie logbestand"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
