@@ -1085,9 +1085,9 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
         else:
             # ... default to a default message ... with the Return code for debugging
             msg = (
-                    T("Could not unpack %s") % setname_from_path(sevenset)
-                    + ". Return code 7z/7za: %s. " % str(ret)
-                    + T("see logfile")
+                T("Could not unpack %s") % setname_from_path(sevenset)
+                + ". Return code 7z/7za: %s. " % str(ret)
+                + T("see logfile")
             )
 
     # Always return an error message, even when return code is 0
