@@ -998,11 +998,10 @@ def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_fol
             nzo.set_unpack_info("Unpack", msg, setname_from_path(sevenset))
         fail, new_files, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
         if fail != 2:
+            # anything else than a password problem (so: OK, or disk problem):
             break
 
     nzo.fail_msg = ""
-    if fail == 2:
-        msg = "%s (%s)" % (T("Unpacking failed, archive requires a password"), os.path.basename(sevenset))
     if fail > 0:
         nzo.fail_msg = msg
         nzo.status = Status.FAILED
@@ -1050,23 +1049,13 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     output = platform_btou(p.stdout.read())
     logging.debug("7za output: %s", output)
 
-    ret = p.wait()
+    ret = p.wait()  # ret contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
 
-    if ret == 2 and (("Disk full." in output) or ("No space left on device" in output)):
-        # note: the above does not work with 7z version 16.02, and does from with 7z 19.00 and higher
-        ret = 1  # to avoid ret = 2, which would result in error message about password
-        msg = T("Unpacking failed, write error or disk is full?") + " (%s)" % setname_from_path(sevenset)
-    elif ret == 2 and "ERROR: CRC Failed" in output:
-        # We can output a more general error
-        ret = 1
-        msg = T('ERROR: CRC failed in "%s"') % setname_from_path(sevenset)
-    else:
-        # Default message
-        msg = T("Could not unpack %s") % setname_from_path(sevenset)
-
+    msg = ""
     # What's new?
     new_files = list(set(orig_dir_content + listdir_full(extraction_path)))
 
+    # 7z unpack went OK:
     if ret == 0 and delete:
         if extensions:
             for ext in extensions:
@@ -1080,6 +1069,26 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
                 remove_file(sevenset)
             except:
                 logging.warning(T("Deleting %s failed!"), sevenset)
+
+    # Anything else than 0 as RC: 7z unpack had a problem
+    if ret > 0:
+        # Let's try to find the cause:
+        if "Data Error in encrypted file. Wrong password?" in output:
+            msg = "%s (%s)" % (T("Unpacking failed, archive requires a password"), os.path.basename(sevenset))
+        elif "Disk full." in output or "No space left on device" in output:
+            # note: the above does not work with 7z version 16.02, and does work with 7z 19.00 and higher
+            ret = 1
+            msg = T("Unpacking failed, write error or disk is full?") + " (%s)" % setname_from_path(sevenset)
+        elif "ERROR: CRC Failed" in output:
+            ret = 1
+            msg = T('ERROR: CRC failed in "%s"') % setname_from_path(sevenset)
+        else:
+            # ... default to a default message ... with the Return code for debugging
+            msg = (
+                T("Could not unpack %s") % setname_from_path(sevenset)
+                + ". Return code 7z/7za: %s. " % str(ret)
+                + T("see logfile")
+            )
 
     # Always return an error message, even when return code is 0
     return ret, new_files, msg
