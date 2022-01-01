@@ -1070,31 +1070,25 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
             except:
                 logging.warning(T("Deleting %s failed!"), sevenset)
 
-    # 7z unpack had a problem
-    if ret == 2:
-        # Fatal error with 7z/7za, so let's find the reason in the 7z output
+    # Anything else than 0 as RC: 7z unpack had a problem
+    if ret > 0:
+        # Let's try to find the cause:
         if "Data Error in encrypted file. Wrong password?" in output:
             msg = "%s (%s)" % (T("Unpacking failed, archive requires a password"), os.path.basename(sevenset))
         elif "Disk full." in output or "No space left on device" in output:
-            # note: the above does not work with 7z version 16.02, and does from with 7z 19.00 and higher
+            # note: the above does not work with 7z version 16.02, and does work with 7z 19.00 and higher
             ret = 1
             msg = T("Unpacking failed, write error or disk is full?") + " (%s)" % setname_from_path(sevenset)
         elif "ERROR: CRC Failed" in output:
-            # We can output a more general error
             ret = 1
             msg = T('ERROR: CRC failed in "%s"') % setname_from_path(sevenset)
         else:
-            # Default message
-            msg = T("Could not unpack %s") % setname_from_path(sevenset)
-
-    # 7z cases we don't handle
-    if ret > 2:
-        # 7 = Bad command line parameters, 8 = Not enough memory for operation, 255 = User stopped the process
-        msg = (
-            T("Unpacking failed, %s") % setname_from_path(sevenset)
-            + ". Return code 7z/7za: %s. " % str(ret)
-            + T("see logfile")
-        )
+            # ... default to a default message ... with the Return code for debugging
+            msg = (
+                    T("Could not unpack %s") % setname_from_path(sevenset)
+                    + ". Return code 7z/7za: %s. " % str(ret)
+                    + T("see logfile")
+            )
 
     # Always return an error message, even when return code is 0
     return ret, new_files, msg
