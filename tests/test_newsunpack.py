@@ -80,21 +80,23 @@ class TestPar2Repair:
 
         # Needed to store the POpen-reference
         sabnzbd.PostProcessor = mock.Mock()
-
-        # Simple NZF mock for the filename
-        parfile = mock.Mock()
-        parfile.filename = "par2test.par2"
-
         # Mock basic NZO structure
         nzo = mock.Mock()
         nzo.admin_path = test_dir_admin
         nzo.fail_msg = ""
-        nzo.extrapars = {"test": [parfile]}
+        nzo.extrapars = {"test": []}
         nzo.md5packs = {"test": None}
+
+        for file in glob.glob("tests/data/par2repair/*.par2"):
+            # Simple NZF mock for the filename
+            parfile = mock.Mock()
+            parfile.filename = os.path.basename(file)
+            nzo.extrapars["test"].append(parfile)
 
         # We want to collect all updates
         nzo.set_action_line = mock.Mock()
         nzo.set_unpack_info = mock.Mock()
+        nzo.renamed_file = mock.Mock()
 
         # Log all
         caplog.set_level(logging.DEBUG)
@@ -102,12 +104,41 @@ class TestPar2Repair:
         # Run repair
         readd, result = newsunpack.par2_repair(nzo=nzo, workdir=test_dir, setname="test")
 
+        # Verify we only have the rar-files left
+        dir_contents = os.listdir(test_dir)
+        dir_contents.sort()
+        assert dir_contents == [
+            "__ADMIN__",
+            "notarealfile.rar",
+            "par2test.part1.rar",
+            "par2test.part2.rar",
+            "par2test.part3.rar",
+            "par2test.part4.rar",
+            "par2test.part5.rar",
+            "par2test.part6.rar",
+        ]
+
         # Always cleanup, to be sure
         shutil.rmtree(test_dir)
         assert not os.path.exists(test_dir)
 
-        # Verify process
+        # Verify result
         assert result
+
+        # Verify renames
+        nzo.renamed_file.assert_has_calls(
+            [
+                call(
+                    {
+                        "par2test.part3.rar": "foorbar.rar",
+                        "par2test.part4.rar": "stillrarbutnotagoodname.txt",
+                        "par2test.part1.rar": "par2test.part1.11.rar",
+                    }
+                )
+            ]
+        )
+
+        # Verify history updates
         nzo.set_unpack_info.assert_has_calls(
             [
                 call("Repair", "[test] Verified in 0 seconds, repair is required"),
@@ -116,7 +147,7 @@ class TestPar2Repair:
         )
 
         if sabnzbd.WIN32:
-            # Multipar output
+            # Multipar output status updates
             nzo.set_action_line.assert_has_calls(
                 [
                     call("Repair", "Quick Checking"),
@@ -127,8 +158,12 @@ class TestPar2Repair:
                     call("Checking", "04/06"),
                     call("Checking", "05/06"),
                     call("Checking", "06/06"),
-                    call("Verifying", "Checking"),
+                    # We only know total of missing files, so not how many will be found
+                    call("Checking extra files", "01/05"),
+                    call("Checking extra files", "02/05"),
                     call("Verifying", "01/03"),
+                    call("Verifying", "02/03"),
+                    call("Verifying", "03/03"),
                     call("Repairing", " 0%"),
                     call("Repairing", "100%"),
                     call("Verifying repair", "01/03"),
@@ -137,8 +172,8 @@ class TestPar2Repair:
                 ]
             )
         else:
-            # par2cmdline output
-            # Verify in chunks, as it outputs every single % during repair
+            # par2cmdline output status updates
+            # Verify output in chunks, as it outputs every single % during repair
             nzo.set_action_line.assert_has_calls(
                 [
                     call("Repair", "Quick Checking"),
@@ -148,8 +183,10 @@ class TestPar2Repair:
                     call("Verifying", "03/06"),
                     call("Verifying", "04/06"),
                     call("Verifying", "05/06"),
-                    call("Checking extra files", "06"),
-                    call("Checking extra files", "07"),
+                    call("Verifying", "06/06"),
+                    call("Checking extra files", "01"),
+                    call("Checking extra files", "02"),
+                    call("Checking extra files", "03"),
                 ]
             )
             # Check at least for 0% and 100%

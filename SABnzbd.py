@@ -986,12 +986,6 @@ def main():
     logger.setLevel(logging.WARNING)
     logger.addHandler(gui_log)
 
-    # Detect CPU architecture and Windows variant
-    # Use .machine as .processor is not always filled
-    cpu_architecture = platform.uname().machine
-    if sabnzbd.WIN32:
-        sabnzbd.WIN64 = cpu_architecture == "AMD64"
-
     if inifile:
         # INI file given, simplest case
         inifile = evaluate_inipath(inifile)
@@ -1185,7 +1179,7 @@ def main():
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
     logging.info("Python-version = %s", sys.version)
     logging.info("Dockerized = %s", sabnzbd.DOCKER)
-    logging.info("CPU architecture = %s", cpu_architecture)
+    logging.info("CPU architecture = %s", platform.uname().machine)
 
     try:
         logging.info("Platform = %s - %s", os.name, platform.platform())

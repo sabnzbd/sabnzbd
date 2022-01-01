@@ -1135,9 +1135,9 @@ def par2_repair(nzo: NzbObject, workdir: str, setname: str) -> Tuple[bool, bool]
 
             # Multipar on Windows, par2 on the other platforms
             if sabnzbd.WIN32:
-                finished, readd, used_joinables, used_for_repair = MultiPar_Verify(parfile, nzo, setname, joinables)
+                finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
-                finished, readd, used_joinables, used_for_repair = PAR_Verify(parfile, nzo, setname, joinables)
+                finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
 
             if finished:
                 result = True
@@ -1192,7 +1192,9 @@ _RE_BLOCK_FOUND = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks fr
 _RE_IS_MATCH_FOR = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
 
 
-def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
+def par2cmdline_verify(
+    parfile: str, nzo: NzbObject, setname: str, joinables: List[str]
+) -> Tuple[bool, bool, List[str], List[str]]:
     """Run par2 on par-set"""
     used_joinables = []
     used_for_repair = []
@@ -1212,7 +1214,7 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
         # Normal case, everything is named after set
         wildcard = setname + "*"
 
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    if sabnzbd.DARWIN:
         command.append(os.path.join(parfolder, wildcard))
     else:
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
@@ -1222,7 +1224,7 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
     # Only if we're not doing multicore
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+    if not sabnzbd.DARWIN:
         par2text = run_command([command[0], "-h"])
         if "No data skipping" in par2text:
             logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
@@ -1231,11 +1233,6 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
             logging.info("Detected par2cmdline version that needs basepath, adding -B<path> parameter")
             command.insert(2, "-B")
             command.insert(3, parfolder)
-
-    # par2multicore wants to see \\.\ paths on Windows
-    # See: https://github.com/sabnzbd/sabnzbd/pull/771
-    if sabnzbd.WIN32:
-        command = [clip_path(x) if x.startswith("\\\\?\\") else x for x in command]
 
     # Run the external command
     p = build_and_run_command(command)
@@ -1251,13 +1248,15 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
     reconstructed = []
 
     linebuf = ""
-    finished = 0
+    finished = False
     readd = False
 
-    verifynum = 1
+    verifynum = 0
     verifytotal = 0
     verified = 0
 
+    in_verify = False
+    in_extra_files = False
     in_verify_repaired = False
 
     # Loop over the output, whee
@@ -1278,7 +1277,7 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
         if line == "":
             continue
 
-        if "Repairing:" not in line:
+        if not line.startswith(("Repairing:", "Scanning:", "Loading:")):
             lines.append(line)
 
         if line.startswith(("Invalid option specified", "Invalid thread option", "Cannot specify recovery file count")):
@@ -1291,7 +1290,7 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
             msg = T("[%s] Verified in %s, all files correct") % (setname, format_time_string(time.time() - start))
             nzo.set_unpack_info("Repair", msg)
             logging.info("Verified in %s, all files correct", format_time_string(time.time() - start))
-            finished = 1
+            finished = True
 
         elif line.startswith("Repair is required"):
             msg = T("[%s] Verified in %s, repair is required") % (setname, format_time_string(time.time() - start))
@@ -1361,7 +1360,7 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
             msg = T("[%s] Repaired in %s") % (setname, format_time_string(time.time() - start))
             nzo.set_unpack_info("Repair", msg)
             logging.info("Repaired in %s", format_time_string(time.time() - start))
-            finished = 1
+            finished = True
 
         elif verified and line.endswith(("are missing.", "exist but are damaged.")):
             # Files that will later be verified after repair
@@ -1376,32 +1375,12 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
             if verifynum <= verifytotal:
                 nzo.set_action_line(T("Verifying repair"), "%02d/%02d" % (verifynum, verifytotal))
 
-        elif line.startswith("File:") and line.find("data blocks from") > 0:
-            m = _RE_BLOCK_FOUND.search(line)
-            if m:
-                workdir = os.path.split(parfile)[0]
-                old_name = m.group(1)
-                new_name = m.group(2)
-                if joinables:
-                    # Find out if a joinable file has been used for joining
-                    for jn in joinables:
-                        if line.find(os.path.split(jn)[1]) > 0:
-                            used_joinables.append(jn)
-                            break
-                    # Special case of joined RAR files, the "of" and "from" must both be RAR files
-                    # This prevents the joined rars files from being seen as an extra rar-set
-                    if ".rar" in old_name.lower() and ".rar" in new_name.lower():
-                        used_joinables.append(os.path.join(workdir, old_name))
-                else:
-                    logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
-                    reconstructed.append(os.path.join(workdir, old_name))
-
         elif "Could not write" in line and "at offset 0:" in line:
             # If there are joinables, this error will only happen in case of 100% complete files
             # We can just skip the retry, because par2cmdline will fail in those cases
             # becauses it refuses to scan the ".001" file
             if joinables:
-                finished = 1
+                finished = True
                 used_joinables = []
 
         elif " cannot be renamed to " in line:
@@ -1417,24 +1396,6 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
             nzo.set_unpack_info("Repair", msg, setname)
             nzo.status = Status.FAILED
 
-        # File: "oldname.rar" - is a match for "newname.rar".
-        elif "is a match for" in line:
-            m = _RE_IS_MATCH_FOR.search(line)
-            if m:
-                old_name = m.group(1)
-                new_name = m.group(2)
-                logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
-                renames[new_name] = old_name
-
-                # Show progress
-                if verifytotal == 0 or verifynum < verifytotal:
-                    verifynum += 1
-                    nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
-
-        elif "Scanning extra files" in line:
-            # Obfuscated post most likely, so reset counter to show progress
-            verifynum = 1
-
         elif "No details available for recoverable file" in line:
             msg = line.strip()
             nzo.fail_msg = msg
@@ -1447,35 +1408,71 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
             nzo.fail_msg = msg
             nzo.set_unpack_info("Repair", msg, setname)
             nzo.status = Status.FAILED
-            finished = 0
+            finished = False
 
         elif not verified:
-            if line.startswith("Verifying source files"):
-                nzo.set_action_line(T("Verifying"), "01/%02d" % verifytotal)
-                nzo.status = Status.VERIFYING
-
-            elif line.startswith("Scanning:"):
+            if line.startswith("Scanning:"):
                 pass
 
-            # Target files
-            m = TARGET_RE.match(line)
-            if m:
-                nzo.status = Status.VERIFYING
-                verifynum += 1
-                if verifytotal == 0 or verifynum < verifytotal:
+            if in_extra_files:
+                if "is a match for" in line or line.find("data blocks from") > 0:
+                    # Baldy named ones
+                    m_rename = _RE_IS_MATCH_FOR.search(line)
+                    if m_rename:
+                        old_name = m_rename.group(1)
+                        new_name = m_rename.group(2)
+                        logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
+                        renames[new_name] = old_name
+
+                    # Obfuscated and also damaged
+                    m_block = _RE_BLOCK_FOUND.search(line)
+                    if m_block:
+                        workdir = os.path.split(parfile)[0]
+                        old_name = m_block.group(1)
+                        new_name = m_block.group(2)
+                        if joinables:
+                            # Find out if a joinable file has been used for joining
+                            for jn in joinables:
+                                if line.find(os.path.split(jn)[1]) > 0:
+                                    used_joinables.append(jn)
+                                    break
+                            # Special case of joined RAR files, the "of" and "from" must both be RAR files
+                            # This prevents the joined rars files from being seen as an extra rar-set
+                            if ".rar" in old_name.lower() and ".rar" in new_name.lower():
+                                used_joinables.append(os.path.join(workdir, old_name))
+                        else:
+                            logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
+                            reconstructed.append(os.path.join(workdir, old_name))
+                        renames[new_name] = old_name
+
+                    if m_block or m_rename:
+                        # Show progress
+                        verifynum += 1
+                        nzo.set_action_line(T("Checking extra files"), "%02d" % verifynum)
+
+            elif not in_verify:
+                # Total number to verify
+                m = re.match(r"There are (\d+) recoverable files", line)
+                if m:
+                    verifytotal = int(m.group(1))
+
+                if line.startswith("Verifying source files:"):
+                    in_verify = True
+                    nzo.status = Status.VERIFYING
+            elif line.startswith("Scanning extra files:"):
+                in_verify = False
+                in_extra_files = True
+                verifynum = 0
+            else:
+                # Target files for verification
+                m = TARGET_RE.match(line)
+                if m:
+                    verifynum += 1
                     nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
-                else:
-                    nzo.set_action_line(T("Checking extra files"), "%02d" % verifynum)
 
-                # Remove redundant extra files that are just duplicates of original ones
-                if "duplicate data blocks" in line:
-                    used_for_repair.append(m.group(1))
-                continue
-
-            # Verify done
-            m = re.match(r"There are (\d+) recoverable files", line)
-            if m:
-                verifytotal = int(m.group(1))
+                    # Remove redundant extra files that are just duplicates of original ones
+                    if "duplicate data blocks" in line:
+                        used_for_repair.append(m.group(1))
 
     p.wait()
 
@@ -1500,7 +1497,9 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
 
-def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
+def multipar_verify(
+    parfile: str, nzo: NzbObject, setname: str, joinables: List[str]
+) -> Tuple[bool, bool, List[str], List[str]]:
     """Run par2 on par-set"""
     parfolder = os.path.split(parfile)[0]
     used_joinables = []
@@ -1532,11 +1531,12 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
     reconstructed = []
 
     linebuf = b""
-    finished = 0
+    finished = False
     readd = False
 
     verifynum = 0
     verifytotal = 0
+    verifyextratotal = 0
 
     in_check = False
     in_verify = False
@@ -1621,14 +1621,16 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
         # Misnamed files
         elif line.startswith("Searching misnamed file"):
             # We are in the misnamed files block
-            misnamed_files = True
+            # How many misnamed files will it try to find?
+            verifyextratotal = int(line.split()[-1])
             verifynum = 0
+            misnamed_files = True
         elif misnamed_files and "Found" in line:
             # First it reports the current filename
             m = _RE_FILENAME.search(line)
             if m:
                 verifynum += 1
-                nzo.set_action_line(T("Checking"), "%02d/%02d" % (verifynum, verifytotal))
+                nzo.set_action_line(T("Checking extra files"), "%02d/%02d" % (verifynum, verifyextratotal))
                 old_name = m.group(1)
         elif misnamed_files and "Misnamed" in line:
             # Then it finds the actual
@@ -1675,7 +1677,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
         elif line.startswith("Finding available slice"):
             # The actual scanning of the files
             in_verify = True
-            nzo.set_action_line(T("Verifying"), T("Checking"))
+            verifynum = 0
         elif in_verify:
             m = _RE_FILENAME.search(line)
             if m:
@@ -1690,7 +1692,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
                         old_name = m.group(1)
 
                     # Sometimes we don't know the total (filejoin)
-                    if verifytotal <= 1:
+                    if verifytotal < 1:
                         nzo.set_action_line(T("Verifying"), "%02d" % verifynum)
                     else:
                         nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
@@ -1704,13 +1706,6 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
                     used_for_repair.append(old_name)
                     # Need to reset it to avoid collision
                     old_name = None
-
-                else:
-                    # It's scanning extra files that don't belong to the set
-                    # For damaged files it reports the filename twice, so only then start
-                    verifynum += 1
-                    if verifynum / 2 > verifytotal:
-                        nzo.set_action_line(T("Checking extra files"), "%02d" % verifynum)
 
                 if joinables:
                     # Find out if a joinable file has been used for joining
@@ -1739,7 +1734,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
 
             # MultiPar can say 'PAR File(s) Incomplete' also when it needs more blocks
             # But the Need-more-blocks message is always last, so force failure
-            finished = 0
+            finished = False
 
         # Result of verification
         elif line.startswith("All Files Complete") or line.endswith("PAR File(s) Incomplete"):
@@ -1751,7 +1746,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
                 msg = T("[%s] Verified in %s, all files correct") % (setname, format_time_string(time.time() - start))
                 nzo.set_unpack_info("Repair", msg)
                 logging.info("Verified in %s, all files correct", format_time_string(time.time() - start))
-                finished = 1
+                finished = True
 
         elif line.startswith(("Ready to repair", "Ready to rejoin")):
             # Ready to repair!
@@ -1805,7 +1800,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
             msg = T("[%s] Repaired in %s") % (setname, format_time_string(time.time() - start))
             nzo.set_unpack_info("Repair", msg)
             logging.info("Repaired in %s", format_time_string(time.time() - start))
-            finished = 1
+            finished = True
 
         elif in_verify_repaired and line.startswith("Repaired :"):
             # Track verification of repaired files (can sometimes take a while)
@@ -1818,7 +1813,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
             nzo.fail_msg = msg
             nzo.set_unpack_info("Repair", msg, setname)
             nzo.status = Status.FAILED
-            finished = 0
+            finished = True
 
     p.wait()
 
@@ -1829,11 +1824,11 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
     logging.debug("MultiPar output was\n%s", "\n".join(lines))
 
     # Add renamed files to the collection
-    # MultiPar always(!!) renames automatically whatever it can in the 'Searching misnamed file:'-section
+    # MultiPar always automatically renames whatever it can in the 'Searching misnamed file:'-section
     # Even if the repair did not complete fully it will rename those!
-    # But the ones in 'Finding available slices'-section will only be renamed after succesfull repair
+    # But the ones in 'Finding available slices'-section will only be renamed after successful repair
     if renames:
-        # If succes, we also remove the possibly previously renamed ones
+        # If success, we also remove the possibly previously renamed ones
         if finished:
             reconstructed.extend(list(renames.values()))
 
