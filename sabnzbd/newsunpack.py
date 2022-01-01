@@ -606,7 +606,6 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extr
         if password:
             logging.debug('Trying unrar with password "%s"', password)
             msg = T('Trying unrar with password "%s"') % password
-            nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
         fail, new_files, rars = rar_extract_core(
             rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password
@@ -614,8 +613,6 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extr
         if fail != 2:
             break
 
-    if fail == 2:
-        logging.error("%s (%s)", T("Unpacking failed, archive requires a password"), get_filename(rarfile_path))
     return fail, new_files, rars
 
 
@@ -739,51 +736,41 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
             msg = T("Unpacking failed, unable to find %s") % filename
             nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
-            logging.warning(T('ERROR: unable to find "%s"'), filename)
             fail = 1
 
         elif line.endswith("- CRC failed"):
             msg = T("Unpacking failed, CRC error")
             nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
-            logging.warning(T('ERROR: CRC failed in "%s"'), setname)
             fail = 2  # Older unrar versions report a wrong password as a CRC error
 
         elif line.startswith("File too large"):
             msg = T("Unpacking failed, file too large for filesystem (FAT?)")
             nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
-            # ERROR: File too large for file system (bigfile-5000MB)
-            logging.error(T("ERROR: File too large for filesystem (%s)"), setname)
             fail = 1
 
         elif line.startswith("Write error"):
-            msg = T("Unpacking failed, write error or disk is full?")
+            msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line[11:])
             nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
-            logging.error(T("ERROR: write error (%s)"), line[11:])
             fail = 1
 
         elif line.startswith("Cannot create"):
             line2 = platform_btou(proc.readline())
             if "must not exceed 260" in line2:
                 msg = "%s: %s" % (T("Unpacking failed, path is too long"), line[13:])
-                nzo.fail_msg = msg
-                logging.error(T("ERROR: path too long (%s)"), line[13:])
             else:
-                msg = "%s: %s" % (T("Unpacking failed, write error or disk is full?"), line[13:])
-                nzo.fail_msg = msg
-                logging.error(T("ERROR: write error (%s)"), line[13:])
+                msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line[13:])
+            nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
             fail = 1
             # Kill the process (can stay in endless loop on Windows Server)
             p.kill()
 
         elif line.startswith("ERROR: "):
-            msg = T("ERROR: %s") % line[7:]
-            nzo.fail_msg = msg
-            logging.warning(msg)
-            nzo.set_unpack_info("Unpack", msg, setname)
+            nzo.fail_msg = line
+            nzo.set_unpack_info("Unpack", line, setname)
             fail = 1
 
         elif (
@@ -1005,7 +992,7 @@ def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_fol
     if fail > 0:
         nzo.fail_msg = msg
         nzo.status = Status.FAILED
-        logging.error(msg)
+
     return fail, new_files, msg
 
 
@@ -1074,21 +1061,18 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     if ret > 0:
         # Let's try to find the cause:
         if "Data Error in encrypted file. Wrong password?" in output:
-            msg = "%s (%s)" % (T("Unpacking failed, archive requires a password"), os.path.basename(sevenset))
+            msg = T("Unpacking failed, archive requires a password")
         elif "Disk full." in output or "No space left on device" in output:
             # note: the above does not work with 7z version 16.02, and does work with 7z 19.00 and higher
             ret = 1
-            msg = T("Unpacking failed, write error or disk is full?") + " (%s)" % setname_from_path(sevenset)
+            msg = T("Unpacking failed, write error or disk is full?")
         elif "ERROR: CRC Failed" in output:
             ret = 1
-            msg = T('ERROR: CRC failed in "%s"') % setname_from_path(sevenset)
+            msg = T("Unpacking failed, CRC error")
         else:
-            # ... default to a default message ... with the Return code for debugging
-            msg = (
-                T("Could not unpack %s") % setname_from_path(sevenset)
-                + ". Return code 7z/7za: %s. " % str(ret)
-                + T("see logfile")
-            )
+            # Default message
+            msg = T("Unpacking failed, %s") % T("see logfile")
+            logging.info("7za return code: %s", ret)
 
     # Always return an error message, even when return code is 0
     return ret, new_files, msg
