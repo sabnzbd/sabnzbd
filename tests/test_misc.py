@@ -193,6 +193,8 @@ class TestMisc:
         assert "1 Stunde 1 Minuten 1 Sekunde" == misc.format_time_string(60 * 60 + 60 + 1)
         assert "1 Tag 59 Sekunden" == misc.format_time_string(86400 + 59)
         assert "2 Tage 2 Stunden 2 Sekunden" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
+        # Reset language
+        lang.set_language()
 
     def test_int_conv(self):
         assert 0 == misc.int_conv("0")

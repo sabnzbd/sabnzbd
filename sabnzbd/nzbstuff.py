@@ -534,7 +534,6 @@ NzbObjectSaver = (
     "groups",
     "avg_date",
     "md5of16k",
-    "partable",
     "extrapars",
     "md5packs",
     "files",
@@ -664,7 +663,6 @@ class NzbObject(TryList):
         self.bytes_missing: int = 0  # Bytes missing
         self.bad_articles: int = 0  # How many bad (non-recoverable) articles
 
-        self.partable: Dict[str, NzbFile] = {}  # Holds one parfile-name for each set
         self.extrapars: Dict[str, List[NzbFile]] = {}  # Holds the extra parfile names for all sets
         self.md5packs: Dict[str, Dict[str, bytes]] = {}  # Holds the md5pack for each set (name: hash)
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
@@ -1017,9 +1015,6 @@ class NzbObject(TryList):
         if parset not in self.extrapars:
             self.extrapars[parset] = []
 
-        # Set this one as the main one
-        self.partable[parset] = nzf
-
         lparset = parset.lower()
         for xnzf in self.files[:]:
             # Move only when not current NZF and filename was extractable from subject
@@ -1072,10 +1067,10 @@ class NzbObject(TryList):
                 nzf.set_par2(setname, vol, block)
                 logging.debug("Got additional md5pack for set %s", nzf.setname)
 
-                # Make sure it exists, could be removed by newsunpack
-                if setname not in self.extrapars:
-                    self.extrapars[setname] = []
-                self.extrapars[setname].append(nzf)
+            # Make sure it exists, could be removed by newsunpack
+            if setname not in self.extrapars:
+                self.extrapars[setname] = []
+            self.extrapars[setname].append(nzf)
 
         elif self.repair:
             # For some reason this par2 file is broken but we still want repair
@@ -1442,18 +1437,15 @@ class NzbObject(TryList):
         return False
 
     @synchronized(NZO_LOCK)
-    def remove_parset(self, setname: str):
-        if setname in self.extrapars:
-            self.extrapars.pop(setname)
-        if setname in self.partable:
-            self.partable.pop(setname)
-
-    @synchronized(NZO_LOCK)
     def remove_extrapar(self, parfile: NzbFile):
         """Remove par file from any/all sets"""
-        for _set in self.extrapars:
-            if parfile in self.extrapars[_set]:
-                self.extrapars[_set].remove(parfile)
+        for parset in list(self.extrapars):
+            if parfile in self.extrapars[parset]:
+                self.extrapars[parset].remove(parfile)
+            # Remove empty sets, when we found (based on md5of16k pack)
+            # that all par2 files actually belong to a different set
+            if not self.extrapars[parset]:
+                self.extrapars.pop(parset)
 
     @synchronized(NZO_LOCK)
     def prospective_add(self, nzf: NzbFile):

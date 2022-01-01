@@ -60,10 +60,10 @@ from sabnzbd.filesystem import (
     TS_RE,
     build_filelists,
 )
-from sabnzbd.nzbstuff import NzbObject, NzbFile
+from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import Status
+from sabnzbd.constants import Status, JOB_ADMIN
 
 # Regex globals
 RAR_RE_V3 = re.compile(r"\.(?P<ext>part\d*)$", re.I)
@@ -1081,19 +1081,18 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 ##############################################################################
 # PAR2 Functions
 ##############################################################################
-def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
-    """Try to repair a set, return readd or correctness"""
-    # Check if file exists, otherwise see if another is done
-    parfile_path = os.path.join(workdir, parfile_nzf.filename)
-    if not os.path.exists(parfile_path) and nzo.extrapars[setname]:
-        for new_par in nzo.extrapars[setname]:
-            test_parfile = os.path.join(workdir, new_par.filename)
-            if os.path.exists(test_parfile):
-                parfile_nzf = new_par
-                break
-        else:
-            # No file was found, we assume this set already finished
-            return False, True
+def par2_repair(nzo: NzbObject, workdir: str, setname: str) -> Tuple[bool, bool]:
+    """Try to repair a set, return readd and correctness"""
+    # Check which of the files exists
+    for new_par in nzo.extrapars[setname]:
+        test_parfile = os.path.join(workdir, new_par.filename)
+        if os.path.exists(test_parfile):
+            parfile_nzf = new_par
+            break
+    else:
+        # No file was found, we assume this set already finished
+        logging.info("No par2 files found on disk for set %s", setname)
+        return False, True
 
     parfile = os.path.join(workdir, parfile_nzf.filename)
     old_dir_content = os.listdir(workdir)
@@ -1136,26 +1135,15 @@ def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
 
             # Multipar on Windows, par2 on the other platforms
             if sabnzbd.WIN32:
-                finished, readd, datafiles, used_joinables, used_for_repair = MultiPar_Verify(
-                    parfile, nzo, setname, joinables, single=single
-                )
+                finished, readd, used_joinables, used_for_repair = MultiPar_Verify(parfile, nzo, setname, joinables)
             else:
-                finished, readd, datafiles, used_joinables, used_for_repair = PAR_Verify(
-                    parfile, nzo, setname, joinables, single=single
-                )
+                finished, readd, used_joinables, used_for_repair = PAR_Verify(parfile, nzo, setname, joinables)
 
             if finished:
                 result = True
                 logging.info("Par verify finished ok on %s!", parfile)
-
-                # Remove this set so we don't try to check it again
-                nzo.remove_parset(parfile_nzf.setname)
             else:
                 logging.info("Par verify failed on %s!", parfile)
-
-                if not readd:
-                    # Failed to repair -> remove this set
-                    nzo.remove_parset(parfile_nzf.setname)
                 return readd, False
         except:
             msg = sys.exc_info()[1]
@@ -1202,11 +1190,9 @@ def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
 
 _RE_BLOCK_FOUND = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
 _RE_IS_MATCH_FOR = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
-_RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
-_RE_LOADED_PAR2 = re.compile(r"Loaded (\d+) new packets")
 
 
-def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
+def PAR_Verify(parfile, nzo: NzbObject, setname, joinables):
     """Run par2 on par-set"""
     used_joinables = []
     used_for_repair = []
@@ -1219,7 +1205,7 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
-    if single or len(globber(parfolder, setname + "*")) < 2:
+    if len(nzo.extrapars) == 1 or len(globber(parfolder, setname + "*")) < 2:
         # Support bizarre naming conventions
         wildcard = "*"
     else:
@@ -1261,7 +1247,6 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
     # Set up our variables
     lines = []
-    datafiles = []
     renames = {}
     reconstructed = []
 
@@ -1385,7 +1370,6 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
         elif line.startswith("Verifying repaired files"):
             in_verify_repaired = True
-            nzo.set_action_line(T("Verifying repair"), "%02d/%02d" % (verifynum, verifytotal))
 
         elif in_verify_repaired and line.startswith("Target"):
             verifynum += 1
@@ -1486,8 +1470,6 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
                 # Remove redundant extra files that are just duplicates of original ones
                 if "duplicate data blocks" in line:
                     used_for_repair.append(m.group(1))
-                else:
-                    datafiles.append(m.group(1))
                 continue
 
             # Verify done
@@ -1512,13 +1494,13 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
         # Use 'used_joinables' as a vehicle to get rid of the files
         used_joinables.extend(reconstructed)
 
-    return finished, readd, datafiles, used_joinables, used_for_repair
+    return finished, readd, used_joinables, used_for_repair
 
 
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
 
-def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
+def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables):
     """Run par2 on par-set"""
     parfolder = os.path.split(parfile)[0]
     used_joinables = []
@@ -1529,30 +1511,13 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
     start = time.time()
 
     # Caching of verification implemented by adding -vs/-vd
-    # Force output of utf-8 by adding -uo
     # But not really required due to prospective-par2
-    command = [str(MULTIPAR_COMMAND), "r", "-uo", "-vs2", "-vd%s" % parfolder, parfile]
+    # Force output of utf-8 by adding -uo
+    command = [str(MULTIPAR_COMMAND), "r", "-uo", "-vs2", "-vd%s" % nzo.admin_path, parfile]
 
-    # Check if there are maybe par2cmdline/par2tbb commands supplied
-    if "-t" in cfg.par_option() or "-p" in cfg.par_option():
-        logging.info("Removing old par2cmdline/par2tbb options for MultiPar")
-        cfg.par_option.set("")
-
-    # Only add user-options if supplied
-    options = cfg.par_option().strip()
-    if options:
-        # We wrongly instructed users to use /x parameter style instead of -x
-        options = options.replace("/", "-", 1)
-        command.insert(2, options)
-
-    # Append the wildcard for this set
-    if single or len(globber(parfolder, setname + "*")) < 2:
-        # Support bizarre naming conventions
-        wildcard = "*"
-    else:
-        # Normal case, everything is named after set
-        wildcard = setname + "*"
-    command.append(os.path.join(parfolder, wildcard))
+    # Support bizarre naming conventions by scanning all files
+    if len(nzo.extrapars) == 1 or len(globber(parfolder, setname + "*")) < 2:
+        command.insert(2, "-vl2")
 
     # Run MultiPar
     p = build_and_run_command(command)
@@ -1563,7 +1528,6 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
     # Set up our variables
     lines = []
-    datafiles = []
     renames = {}
     reconstructed = []
 
@@ -1644,10 +1608,10 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
         # ----------------- Start check/verify stage
         elif line.startswith("Recovery Set ID"):
-            # Remove files were MultiPar stores verification result when repaired succesfull
+            # Remove files were MultiPar stores verification result when repaired successful
             recovery_id = line.split()[-1]
-            used_for_repair.append("2_%s.bin" % recovery_id)
-            used_for_repair.append("2_%s.ini" % recovery_id)
+            used_for_repair.append(os.path.join(JOB_ADMIN, "2_%s.bin" % recovery_id))
+            used_for_repair.append(os.path.join(JOB_ADMIN, "2_%s.ini" % recovery_id))
 
         elif line.startswith("Input File total count"):
             # How many files will it try to find?
@@ -1674,7 +1638,6 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
                 logging.debug('MultiPar will rename "%s" to "%s"', old_name, new_name)
                 renames[new_name] = old_name
                 # New name is also part of data!
-                datafiles.append(new_name)
                 reconstructed.append(old_name)
 
         # ----------------- Checking stage
@@ -1717,12 +1680,9 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
             m = _RE_FILENAME.search(line)
             if m:
                 # It prints the filename couple of times, so we save it to check
-                # 'datafiles' will not contain all data-files in par-set, only the
-                # ones that got scanned, but it's ouput is never used!
                 nzo.status = Status.VERIFYING
                 if line.split()[1] in ("Damaged", "Found"):
                     verifynum += 1
-                    datafiles.append(m.group(1))
 
                     # Set old_name in case it was misnamed and found (not when we are joining)
                     old_name = None
@@ -1740,9 +1700,6 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
                     new_name = m.group(1)
                     logging.debug('MultiPar will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
-                    # Put it back with it's new name!
-                    datafiles.pop()
-                    datafiles.append(new_name)
                     # Need to remove the old file after repair (Multipar keeps it)
                     used_for_repair.append(old_name)
                     # Need to reset it to avoid collision
@@ -1760,7 +1717,6 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
                     for jn in joinables:
                         if line.find(os.path.split(jn)[1]) > 0:
                             used_joinables.append(jn)
-                            datafiles.append(m.group(1))
                             break
 
         elif line.startswith("Need"):
@@ -1787,13 +1743,15 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
         # Result of verification
         elif line.startswith("All Files Complete") or line.endswith("PAR File(s) Incomplete"):
-            # Completed without damage!
-            # 'PAR File(s) Incomplete' is reported for success
-            # but when there are very similar filenames in the folder
-            msg = T("[%s] Verified in %s, all files correct") % (setname, format_time_string(time.time() - start))
-            nzo.set_unpack_info("Repair", msg)
-            logging.info("Verified in %s, all files correct", format_time_string(time.time() - start))
-            finished = 1
+            # 'PAR File(s) Incomplete' is also reported for success when there are very similar filenames in the folder
+            # See: https://github.com/Yutaka-Sawada/MultiPar/issues/54
+            # Check if there was damage, by inspecting the number of missing blocks
+            if "Input File Slice lost" in lines[-2] and int(lines[-2].split()[-1]) == 0:
+                # Completed without damage!
+                msg = T("[%s] Verified in %s, all files correct") % (setname, format_time_string(time.time() - start))
+                nzo.set_unpack_info("Repair", msg)
+                logging.info("Verified in %s, all files correct", format_time_string(time.time() - start))
+                finished = 1
 
         elif line.startswith(("Ready to repair", "Ready to rejoin")):
             # Ready to repair!
@@ -1886,7 +1844,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
         workdir = os.path.split(parfile)[0]
         used_joinables.extend([os.path.join(workdir, name) for name in reconstructed])
 
-    return finished, readd, datafiles, used_joinables, used_for_repair
+    return finished, readd, used_joinables, used_for_repair
 
 
 def create_env(nzo=None, extra_env_fields={}):

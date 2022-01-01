@@ -734,31 +734,31 @@ def parring(nzo: NzbObject, workdir: str):
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.admin_path, remove=False) or {}
+    logging.debug("Verified sets: %s", verified)
 
     # If all were verified successfully, we skip the rest of the checks
     if verified and all(verified.values()):
-        logging.info("Skipping repair, all sets previously verified: %s", verified)
+        logging.info("Skipping verification and repair, all sets previously verified: %s", verified)
         return par_error, re_add
 
     if nzo.extrapars:
         # Need to make a copy because it can change during iteration
-        single = len(nzo.extrapars) == 1
         for setname in list(nzo.extrapars):
+            # We do not care about repairing
             if cfg.ignore_samples() and is_sample(setname.lower()):
+                logging.info("Skipping verification and repair of %s because it looks like a sample", setname)
                 continue
             # Skip sets that were already tried
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
-                parfile_nzf = nzo.partable[setname]
+                need_re_add, res = par2_repair(nzo, workdir, setname)
+                re_add = re_add or need_re_add
+                verified[setname] = res
 
-                # Check if file maybe wasn't deleted and if we maybe have more files in the parset
-                if os.path.exists(os.path.join(nzo.download_path, parfile_nzf.filename)) or nzo.extrapars[setname]:
-                    need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
-                    re_add = re_add or need_re_add
-                    verified[setname] = res
-                else:
-                    continue
+                # Update the general repair-state
                 par_error = par_error or not res
+            else:
+                logging.info("Skipping verification and repair of %s as it was previously verified", setname)
 
     # Skip other checks and RAR-rename if there was a par2 problem
     if not par_error:
@@ -805,6 +805,7 @@ def parring(nzo: NzbObject, workdir: str):
         sabnzbd.NzbQueue.add(nzo)
         sabnzbd.Downloader.resume_from_postproc()
 
+    logging.debug("Verified sets: %s", verified)
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.admin_path)
 
     logging.info("Verification and repair finished for %s", nzo.final_name)
