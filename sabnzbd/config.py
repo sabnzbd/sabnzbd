@@ -1100,6 +1100,9 @@ def validate_permissions(value: str):
         return None, value
     try:
         oct_value = int(value, 8)
+        # Block setting it to 0
+        if not oct_value:
+            raise ValueError
     except ValueError:
         return T("%s is not a correct octal value") % value, None
 

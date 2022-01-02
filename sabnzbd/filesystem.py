@@ -638,12 +638,12 @@ UNWANTED_FILE_PERMISSIONS = stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_
 def removexbits(path: str, custom_permissions: int = None):
     """Remove all the x-bits from files, respecting current or custom permissions"""
     if os.path.isfile(path):
-        current_permissions = os.stat(path).st_mode
+        # Use custom permissions as base
+        current_permissions = custom_permissions
+        if not custom_permissions:
+            current_permissions = os.stat(path).st_mode
         # Check if the file has any x-bits, no need to remove them otherwise
         if custom_permissions or current_permissions & UNWANTED_FILE_PERMISSIONS:
-            # Use custom permissions as base
-            if custom_permissions:
-                current_permissions = custom_permissions
             # Mask out the X-bits
             set_chmod(path, current_permissions & ~UNWANTED_FILE_PERMISSIONS)
 
