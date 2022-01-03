@@ -100,6 +100,13 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "לא היה ניתן לטעון תעודות נוספות מחבילת תעודות"
 
@@ -365,6 +372,13 @@ msgstr "פרמטר שגוי"
 #: sabnzbd/config.py
 msgid "%s is not a correct octal value"
 msgstr "%s אינו ערך אוקטלי נכון"
+
+#. Warning message
+#: sabnzbd/config.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
 
 #: sabnzbd/config.py
 msgid "UNC path \"%s\" not allowed here"

@@ -97,6 +97,13 @@ msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载
 
 #. Warning message
 #: SABnzbd.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -361,6 +368,13 @@ msgstr "参数不正确"
 #: sabnzbd/config.py
 msgid "%s is not a correct octal value"
 msgstr "%s 不是有效的八进制值"
+
+#. Warning message
+#: sabnzbd/config.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
 
 #: sabnzbd/config.py
 msgid "UNC path \"%s\" not allowed here"
