@@ -28,7 +28,7 @@ from sabnzbd.config import (
     OptionDir,
     OptionStr,
     OptionList,
-    validate_octal,
+    validate_permissions,
     validate_safedir,
     all_lowercase,
     create_api_key,
@@ -139,11 +139,13 @@ nzb_key = OptionStr("misc", "nzb_key", create_api_key())
 ##############################################################################
 # Config - Folders
 ##############################################################################
-umask = OptionStr("misc", "permissions", validation=validate_octal)
-download_dir = OptionDir("misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, validation=validate_safedir)
+permissions = OptionStr("misc", "permissions", validation=validate_permissions)
+download_dir = OptionDir(
+    "misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, apply_permissions=True, validation=validate_safedir
+)
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
-    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_umask=True, validation=validate_notempty
+    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_permissions=True, validation=validate_notempty
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)

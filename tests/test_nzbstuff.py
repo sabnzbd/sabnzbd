@@ -24,7 +24,6 @@ class TestNZO:
         nzo = nzbstuff.NzbObject("test_basic")
         assert nzo.work_name == "test_basic"
         assert not nzo.files
-        assert not nzo.created
 
         # Create NZB-file to import
         nzb_fp = create_and_read_nzb_fp("basic_rar5")

@@ -42,7 +42,7 @@ from threading import Thread
 from sabnzbd.misc import on_cleanup_list, is_sample, helpful_warning
 from sabnzbd.filesystem import (
     real_path,
-    get_unique_path,
+    get_unique_dir,
     move_to_path,
     make_script_path,
     long_path,
@@ -486,7 +486,7 @@ def process_job(nzo: NzbObject):
                 if not all_ok:
                     # Rename failed folders so they are easy to recognize
                     workdir_complete = tmp_workdir_complete.replace("_UNPACK_", "_FAILED_")
-                    workdir_complete = get_unique_path(workdir_complete, create_dir=False)
+                    workdir_complete = get_unique_dir(workdir_complete, create_dir=False)
 
                 try:
                     newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
@@ -699,9 +699,9 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     complete_dir = sanitize_and_trim_path(complete_dir)
 
     if one_folder:
-        workdir_complete = create_all_dirs(complete_dir, apply_umask=True)
+        workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)
     else:
-        workdir_complete = get_unique_path(os.path.join(complete_dir, nzo.final_name), create_dir=True)
+        workdir_complete = get_unique_dir(os.path.join(complete_dir, nzo.final_name), create_dir=True)
         marker_file = set_marker(workdir_complete)
 
     if not workdir_complete or not os.path.exists(workdir_complete):
@@ -710,7 +710,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
 
     if cfg.folder_rename() and not one_folder:
         prefixed_path = prefix(workdir_complete, "_UNPACK_")
-        tmp_workdir_complete = get_unique_path(prefix(workdir_complete, "_UNPACK_"), create_dir=False)
+        tmp_workdir_complete = get_unique_dir(prefix(workdir_complete, "_UNPACK_"), create_dir=False)
 
         try:
             renamer(workdir_complete, tmp_workdir_complete)
