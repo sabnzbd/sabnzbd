@@ -29,7 +29,7 @@ import zlib
 import io
 import shutil
 import functools
-from typing import Tuple, List, BinaryIO
+from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
@@ -86,10 +86,10 @@ RAR_VERSION = 0
 SEVENZIP_VERSION = ""
 
 
-def find_programs(curdir):
+def find_programs(curdir: str):
     """Find external programs"""
 
-    def check(path, program):
+    def check(path: str, program:str) -> Optional[str]:
         p = os.path.abspath(os.path.join(path, program))
         if os.access(p, os.X_OK):
             return p
@@ -174,7 +174,7 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, status):
+def external_processing(extern_proc: str, nzo: NzbObject, complete_dir:str, nicename:str, status:int) -> Tuple[str,int]:
     """Run a user postproc script, return console output and exit value"""
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
@@ -233,8 +233,8 @@ def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, sta
 
 
 def unpack_magic(
-    nzo: NzbObject, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0
-):
+    nzo: NzbObject, workdir:str, workdir_complete:str, dele:bool, one_folder:bool, joinables:List[str], zips:List[str], rars:List[str], sevens:List[str], ts:List[str], depth:int=0
+) -> Tuple[Union[int, bool], List[str]]:
     """Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'"""
     if depth > 5:
         logging.warning(T("Unpack nesting too deep [%s]"), nzo.final_name)
@@ -338,22 +338,22 @@ def unpack_magic(
 ##############################################################################
 # Filejoin Functions
 ##############################################################################
-def match_ts(file):
+def match_ts(file: str) -> Tuple[str, int]:
     """Return True if file is a joinable TS file"""
     match = TS_RE.search(file)
     if not match:
-        return False, "", 0
+        return "", 0
 
     num = int(match.group(1))
     try:
-        set = file[: match.start()]
-        set += ".ts"
+        setname = file[: match.start()]
+        setname += ".ts"
     except:
-        set = ""
-    return match, set, num
+        setname = ""
+    return setname, num
 
 
-def clean_up_joinables(names):
+def clean_up_joinables(names: List[str]):
     """Remove joinable files and their .1 backups"""
     for name in names:
         if os.path.exists(name):
@@ -369,11 +369,11 @@ def clean_up_joinables(names):
                 pass
 
 
-def get_seq_number(name):
+def get_seq_number(name: str) -> int:
     """Return sequence number if name as an int"""
     head, tail = os.path.splitext(name)
     if tail == ".ts":
-        match, set, num = match_ts(name)
+        _, num = match_ts(name)
     else:
         num = tail[1:]
     if num.isdigit():
@@ -382,7 +382,7 @@ def get_seq_number(name):
         return 0
 
 
-def file_join(nzo: NzbObject, workdir, workdir_complete, delete, joinables):
+def file_join(nzo: NzbObject, workdir: str, workdir_complete: str, delete:bool, joinables:List[str]) -> Tuple[bool, List[str]]:
     """Join and joinable files in 'workdir' to 'workdir_complete' and
     when successful, delete originals
     """
@@ -395,7 +395,7 @@ def file_join(nzo: NzbObject, workdir, workdir_complete, delete, joinables):
     for joinable in joinables:
         head, tail = os.path.splitext(joinable)
         if tail == ".ts":
-            head = match_ts(joinable)[1]
+            head, _ = match_ts(joinable)
         if head not in joinable_sets:
             joinable_sets[head] = []
         joinable_sets[head].append(joinable)
@@ -1842,7 +1842,7 @@ def multipar_verify(
     return finished, readd, used_joinables, used_for_repair
 
 
-def create_env(nzo=None, extra_env_fields={}):
+def create_env(nzo:Optional[NzbObject]=None, extra_env_fields:Dict[str, Any]={})->Optional[Dict[str, Any]]:
     """Modify the environment for pp-scripts with extra information
     macOS: Return copy of environment without PYTHONPATH and PYTHONHOME
     other: return None
@@ -1902,7 +1902,7 @@ def create_env(nzo=None, extra_env_fields={}):
     return env
 
 
-def rar_volumelist(rarfile_path, password, known_volumes):
+def rar_volumelist(rarfile_path:str, password:str, known_volumes:List[str]) -> List[str]:
     """List volumes that are part of this rarset
     and merge them with parsed paths list, removing duplicates.
     We assume RarFile is right and use parsed paths as backup.
@@ -1932,7 +1932,7 @@ def rar_volumelist(rarfile_path, password, known_volumes):
 
 
 # Sort the various RAR filename formats properly :\
-def rar_sort(a, b):
+def rar_sort(a:str, b:str)->int:
     """Define sort method for rar file names"""
     aext = a.split(".")[-1]
     bext = b.split(".")[-1]
@@ -1947,9 +1947,9 @@ def rar_sort(a, b):
         return cmp(a, b)
 
 
-def quick_check_set(set, nzo):
+def quick_check_set(setname: str, nzo: NzbObject)->bool:
     """Check all on-the-fly md5sums of a set"""
-    md5pack = nzo.md5packs.get(set)
+    md5pack = nzo.md5packs.get(setname)
     if md5pack is None:
         return False
 
@@ -2061,7 +2061,7 @@ def par2_mt_check(par2_path: str) -> bool:
     return False
 
 
-def is_sfv_file(myfile):
+def is_sfv_file(myfile: str) -> bool:
     """Checks if given file is a SFV file, and returns result as boolean"""
     # based on https://stackoverflow.com/a/7392391/5235502
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
@@ -2105,7 +2105,7 @@ def is_sfv_file(myfile):
     return sfv_info_line_counter >= 1
 
 
-def sfv_check(sfvs, nzo: NzbObject, workdir):
+def sfv_check(sfvs: List[str], nzo: NzbObject, workdir:str) -> bool:
     """Verify files using SFV files"""
     # Update status
     nzo.status = Status.VERIFYING
