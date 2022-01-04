@@ -51,7 +51,7 @@ stages:
           size: "0 B"
           noofslots_total: 0
           status: "Idle"
-          timeleft: "0:00:00"
+          timeleft: "0:00"
           eta: "unknown"
           refresh_rate: !re_match "[0-9]*"
           interface_settings: !re_match ".*"
@@ -91,7 +91,7 @@ stages:
           # Verify only a bunch of key response parameters with a regex using
           # positive looksaheads, so parameters match regardless of their order
           # of appearance in the text output
-          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total': 0)(?=.*'status': 'Idle')(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots': 0)(?=.*'slots': \\[\\]).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total': 0)(?=.*'status': 'Idle')(?=.*'timeleft': '0:00')(?=.*'eta': 'unknown')(?=.*'noofslots': 0)(?=.*'slots': \\[\\]).*}}$"
 
 
 ---
@@ -149,7 +149,7 @@ stages:
             <size>0 B</size>
             <noofslots_total>0</noofslots_total>
             <status>Idle</status>
-            <timeleft>0:00:00</timeleft>
+            <timeleft>0:00</timeleft>
             <eta>unknown</eta>
             <refresh_rate>!anything</refresh_rate>
             <interface_settings>!anything</interface_settings>

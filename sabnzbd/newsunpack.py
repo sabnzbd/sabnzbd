@@ -880,7 +880,7 @@ def unzip(nzo: NzbObject, workdir_complete: str, one_folder: bool, zips: List[st
             else:
                 extraction_path = os.path.split(_zip)[0]
 
-            if ZIP_Extract(_zip, extraction_path, one_folder):
+            if unzip_core(_zip, extraction_path, one_folder):
                 unzip_failed = True
             else:
                 i += 1
@@ -919,7 +919,7 @@ def unzip(nzo: NzbObject, workdir_complete: str, one_folder: bool, zips: List[st
         return True, []
 
 
-def ZIP_Extract(zipfile, extraction_path, one_folder):
+def unzip_core(zipfile, extraction_path, one_folder):
     """Unzip single zip set 'zipfile' to 'extraction_path'"""
     command = ["%s" % ZIP_COMMAND, "-o", "-Pnone", "%s" % clip_path(zipfile), "-d%s" % extraction_path]
 
@@ -2213,6 +2213,14 @@ def crc_calculate(path):
                 break
             crc = zlib.crc32(data, crc)
     return b"%08x" % (crc & 0xFFFFFFFF)
+
+
+def add_time_left(perc:float, start: float) -> str:
+    """Calculate time left based on current progress, if it is taking more than 10 seconds"""
+    time_used = time.time() - start
+    if time_used > 10:
+        return ""
+    return ""
 
 
 def analyse_show(name: str) -> Tuple[str, str, str, str, bool]:
