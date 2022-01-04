@@ -58,6 +58,7 @@ from sabnzbd.filesystem import (
     get_ext,
     TS_RE,
     build_filelists,
+    get_filename,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import SeriesSorter
@@ -1155,9 +1156,9 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             nzo.set_action_line(T("Repair"), T("Starting Repair"))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, zips, rars, sevens, ts = build_filelists(nzo.download_path, check_rar=False)
+            joinables, _, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
-            # Multipar on Windows, par2 on the other platforms
+            # Multipar on Windows, par2cmdline on the other platforms
             if sabnzbd.WIN32:
                 finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
@@ -1370,7 +1371,8 @@ def par2cmdline_verify(
             start = time.time()
             nzo.set_action_line(T("Repairing"), "%2d%%" % 0)
 
-        elif line.startswith("Repairing:"):
+        elif line.startswith(("Repairing:", "Processing:")):
+            # "Processing" is shown when it is only joining files without repairing
             chunks = line.split()
             per = float(chunks[-1][:-1])
             nzo.set_action_line(T("Repairing"), "%2d%%" % per)
@@ -1453,7 +1455,7 @@ def par2cmdline_verify(
                         if joinables:
                             # Find out if a joinable file has been used for joining
                             for jn in joinables:
-                                if line.find(os.path.split(jn)[1]) > 0:
+                                if get_filename(jn) == old_name:
                                     used_joinables.append(jn)
                                     break
                             # Special case of joined RAR files, the "of" and "from" must both be RAR files
@@ -1463,7 +1465,7 @@ def par2cmdline_verify(
                         else:
                             logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
                             reconstructed.append(os.path.join(workdir, old_name))
-                        renames[new_name] = old_name
+                            renames[new_name] = old_name
 
                     if m_block or m_rename:
                         # Show progress
@@ -1709,7 +1711,7 @@ def multipar_verify(
                         old_name = m.group(1)
 
                     # Sometimes we don't know the total (filejoin)
-                    if verifytotal < 1:
+                    if verifytotal <= 1 or verifynum > verifytotal:
                         nzo.set_action_line(T("Verifying"), "%02d" % verifynum)
                     else:
                         nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
@@ -1727,7 +1729,7 @@ def multipar_verify(
                 if joinables:
                     # Find out if a joinable file has been used for joining
                     for jn in joinables:
-                        if line.find(os.path.split(jn)[1]) > 0:
+                        if get_filename(jn) == m.group(1):
                             used_joinables.append(jn)
                             break
 
@@ -1775,6 +1777,7 @@ def multipar_verify(
 
             # Set message for user in case of joining
             if line.startswith("Ready to rejoin"):
+                # There is no status-update when it is joining
                 nzo.set_action_line(T("Joining"), "%2d" % len(used_joinables))
             else:
                 # If we are repairing a joinable set, it won't actually
@@ -1788,7 +1791,7 @@ def multipar_verify(
             in_repair = True
             nzo.set_action_line(T("Repairing"), "%2d%%" % 0)
 
-        elif in_repair and line.startswith("Verifying repair"):
+        elif line.startswith("Verifying repair"):
             in_repair = False
             in_verify_repaired = True
             # How many will be checked?

@@ -24,6 +24,7 @@ import os.path
 import shutil
 from unittest.mock import call
 
+from sabnzbd.filesystem import build_filelists
 from tests.testhelper import *
 
 import sabnzbd
@@ -64,22 +65,28 @@ class TestNewsUnpackFunctions:
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestPar2Repair:
-    def test_basic(self, caplog):
-        # Create data-directory with all we have
+    @staticmethod
+    def _run_par2repair(testdir, caplog, skip_file=None):
+        # Create data-directory with copy of our test-files
         test_dir = os.path.join(SAB_CACHE_DIR, "par2repair_temp")
         test_dir_admin = os.path.join(test_dir, JOB_ADMIN)
         os.mkdir(test_dir)
         assert os.path.exists(test_dir)
         os.mkdir(test_dir_admin)
         assert os.path.exists(test_dir_admin)
-        for file in glob.glob("tests/data/par2repair/*"):
-            shutil.copy(file, test_dir)
+
+        # Copy all test files
+        for file in glob.glob(testdir + "/*"):
+            # Skip specific file to test repair
+            if not skip_file or not file.endswith(skip_file):
+                shutil.copy(file, test_dir)
 
         # Make sure all programs are found
         newsunpack.find_programs(".")
 
         # Needed to store the POpen-reference
         sabnzbd.PostProcessor = mock.Mock()
+
         # Mock basic NZO structure
         nzo = mock.Mock()
         nzo.download_path = test_dir
@@ -88,7 +95,7 @@ class TestPar2Repair:
         nzo.extrapars = {"test": []}
         nzo.md5packs = {"test": None}
 
-        for file in glob.glob("tests/data/par2repair/*.par2"):
+        for file in glob.glob(testdir + "/*.par2"):
             # Simple NZF mock for the filename
             parfile = mock.Mock()
             parfile.filename = os.path.basename(file)
@@ -99,15 +106,37 @@ class TestPar2Repair:
         nzo.set_unpack_info = mock.Mock()
         nzo.renamed_file = mock.Mock()
 
-        # Log all
-        caplog.set_level(logging.DEBUG)
-
         # Run repair
-        readd, result = newsunpack.par2_repair(nzo=nzo, setname="test")
+        with caplog.at_level(logging.DEBUG):
+            readd, result = newsunpack.par2_repair(nzo=nzo, setname="test")
 
         # Verify we only have the rar-files left
         dir_contents = os.listdir(test_dir)
         dir_contents.sort()
+
+        # Always cleanup, to be sure
+        shutil.rmtree(test_dir)
+        assert not os.path.exists(test_dir)
+
+        # Verify result
+        assert result
+        assert not readd
+
+        # Verify history updates
+        nzo.set_unpack_info.assert_has_calls(
+            [
+                call("Repair", "[test] Verified in 0 seconds, repair is required"),
+                call("Repair", "[test] Repaired in 0 seconds"),
+            ]
+        )
+
+        # Check externally
+        return nzo, dir_contents
+
+    def test_basic(self, caplog):
+        # Run code
+        nzo, dir_contents = self._run_par2repair("tests/data/par2repair/basic", caplog)
+
         assert dir_contents == [
             "__ADMIN__",
             "notarealfile.rar",
@@ -119,13 +148,6 @@ class TestPar2Repair:
             "par2test.part6.rar",
         ]
 
-        # Always cleanup, to be sure
-        shutil.rmtree(test_dir)
-        assert not os.path.exists(test_dir)
-
-        # Verify result
-        assert result
-
         # Verify renames
         nzo.renamed_file.assert_has_calls(
             [
@@ -136,14 +158,6 @@ class TestPar2Repair:
                         "par2test.part1.rar": "par2test.part1.11.rar",
                     }
                 )
-            ]
-        )
-
-        # Verify history updates
-        nzo.set_unpack_info.assert_has_calls(
-            [
-                call("Repair", "[test] Verified in 0 seconds, repair is required"),
-                call("Repair", "[test] Repaired in 0 seconds"),
             ]
         )
 
@@ -188,20 +202,151 @@ class TestPar2Repair:
                     call("Checking extra files", "01"),
                     call("Checking extra files", "02"),
                     call("Checking extra files", "03"),
+                    call("Repairing", " 0%"),
                 ]
             )
-            # Check at least for 0% and 100%
             nzo.set_action_line.assert_has_calls(
                 [
-                    call("Repairing", " 0%"),
                     call("Repairing", "100%"),
-                ],
-                any_order=True,
-            )
-            nzo.set_action_line.assert_has_calls(
-                [
                     call("Verifying repair", "01/03"),
                     call("Verifying repair", "02/03"),
                     call("Verifying repair", "03/03"),
+                ]
+            )
+
+    def test_filejoin(self, caplog):
+        # Run code
+        nzo, dir_contents = self._run_par2repair("tests/data/par2repair/filejoin", caplog)
+
+        # All joinable files will be removed
+        assert dir_contents == ["__ADMIN__", "par2test.bin"]
+
+        # There are no renames in case of filejoin by par2repair!
+        nzo.renamed_file.assert_not_called()
+
+        if sabnzbd.WIN32:
+            # Multipar output status updates, which is limited because Multipar doesn't say much..
+            nzo.set_action_line.assert_has_calls(
+                [
+                    call("Repair", "Quick Checking"),
+                    call("Repair", "Starting Repair"),
+                    call("Checking", "01/01"),
+                    call("Verifying", "01"),
+                    call("Verifying", "02"),
+                    call("Verifying", "03"),
+                    call("Verifying", "04"),
+                    call("Verifying", "05"),
+                    call("Verifying", "06"),
+                    call("Verifying", "07"),
+                    call("Verifying", "08"),
+                    call("Verifying", "09"),
+                    call("Verifying", "10"),
+                    call("Verifying", "11"),
+                    call("Joining", "11"),
+                    call("Verifying repair", "01/01"),
+                ]
+            )
+        else:
+            # par2cmdline output status updates
+            # Verify output in chunks, as it outputs every single % during repair
+            nzo.set_action_line.assert_has_calls(
+                [
+                    call("Repair", "Quick Checking"),
+                    call("Repair", "Starting Repair"),
+                    call("Verifying", "01/01"),
+                    call("Checking extra files", "01"),
+                    call("Checking extra files", "02"),
+                    call("Checking extra files", "03"),
+                    call("Checking extra files", "04"),
+                    call("Checking extra files", "05"),
+                    call("Checking extra files", "06"),
+                    call("Checking extra files", "07"),
+                    call("Checking extra files", "08"),
+                    call("Checking extra files", "09"),
+                    call("Checking extra files", "10"),
+                    call("Checking extra files", "11"),
+                    call("Repairing", " 0%"),
+                ]
+            )
+            nzo.set_action_line.assert_has_calls(
+                [
+                    call("Repairing", "100%"),
+                    call("Verifying repair", "01/01"),
+                ]
+            )
+
+    def test_broken_filejoin(self, caplog):
+        # Run code
+        nzo, dir_contents = self._run_par2repair("tests/data/par2repair/filejoin", caplog, skip_file="par2test.bin.005")
+
+        # There are no renames in case of filejoin by par2repair!
+        nzo.renamed_file.assert_not_called()
+
+        if sabnzbd.WIN32:
+            # All joinable files will be kept by Multipar if it is a broken filejoin
+            # See: https://github.com/Yutaka-Sawada/MultiPar/issues/56
+            assert dir_contents == [
+                "__ADMIN__",
+                "par2test.bin",
+                "par2test.bin.001",
+                "par2test.bin.002",
+                "par2test.bin.003",
+                "par2test.bin.004",
+                "par2test.bin.006",
+                "par2test.bin.007",
+                "par2test.bin.008",
+                "par2test.bin.009",
+                "par2test.bin.010",
+                "par2test.bin.011",
+            ]
+
+            # Multipar output status updates, which is limited because Multipar doesn't say much..
+            nzo.set_action_line.assert_has_calls(
+                [
+                    call("Repair", "Quick Checking"),
+                    call("Repair", "Starting Repair"),
+                    call("Checking", "01/01"),
+                    call("Verifying", "01"),
+                    call("Verifying", "02"),
+                    call("Verifying", "03"),
+                    call("Verifying", "04"),
+                    call("Verifying", "05"),
+                    call("Verifying", "06"),
+                    call("Verifying", "07"),
+                    call("Verifying", "08"),
+                    call("Verifying", "09"),
+                    call("Verifying", "10"),
+                    call("Repairing", " 0%"),
+                    call("Repairing", "100%"),
+                    call("Verifying repair", "01/01"),
+                ]
+            )
+        else:
+            # All joinable files will be removed
+            assert dir_contents == ["__ADMIN__", "par2test.bin"]
+
+            # Verify output in chunks, as it outputs every single % during repair
+            nzo.set_action_line.assert_has_calls(
+                [
+                    call("Repair", "Quick Checking"),
+                    call("Repair", "Starting Repair"),
+                    call("Verifying", "01/01"),
+                    call("Checking extra files", "01"),
+                    call("Checking extra files", "02"),
+                    call("Checking extra files", "03"),
+                    call("Checking extra files", "04"),
+                    call("Checking extra files", "05"),
+                    call("Checking extra files", "06"),
+                    call("Checking extra files", "07"),
+                    call("Checking extra files", "08"),
+                    call("Checking extra files", "09"),
+                    call("Checking extra files", "10"),
+                    call("Repairing", " 0%"),
+                ]
+            )
+            nzo.set_action_line.assert_has_calls(
+                [
+                    call("Repairing", "100%"),
+                    call("Verifying repair", "01/01"),
                 ]
             )
