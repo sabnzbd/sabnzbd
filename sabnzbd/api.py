@@ -1479,7 +1479,7 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
             or is_propagating
             or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
         ) and priority != FORCE_PRIORITY:
-            slot["timeleft"] = "0:00:00"
+            slot["timeleft"] = "0:00"
             slot["eta"] = "unknown"
         else:
             running_bytes += bytesleft
@@ -1865,26 +1865,33 @@ def get_active_history(queue, items):
 
 
 def calc_timeleft(bytesleft, bps):
-    """Calculate the time left in the format HH:MM:SS"""
+    """Based on bytesleft and bps calculate the time left in the format HH:MM:SS"""
+    if bytesleft <= 0 or bps <= 0:
+        return "0:00"
+    return format_time_left(int(bytesleft / bps))
+
+
+def format_time_left(totalseconds: int) -> str:
+    """Calculate the time left in the format [DD:][HH:]MM:SS"""
     try:
-        if bytesleft <= 0:
-            return "0:00:00"
-        totalseconds = int(bytesleft / bps)
         minutes, seconds = divmod(totalseconds, 60)
         hours, minutes = divmod(minutes, 60)
         days, hours = divmod(hours, 24)
-        if minutes < 10:
-            minutes = "0%s" % minutes
         if seconds < 10:
             seconds = "0%s" % seconds
-        if days > 0:
-            if hours < 10:
-                hours = "0%s" % hours
-            return "%s:%s:%s:%s" % (days, hours, minutes, seconds)
+        if hours > 0:
+            if minutes < 10:
+                minutes = "0%s" % minutes
+            if days > 0:
+                if hours < 10:
+                    hours = "0%s" % hours
+                return "%s:%s:%s:%s" % (days, hours, minutes, seconds)
+            else:
+                return "%s:%s:%s" % (hours, minutes, seconds)
         else:
-            return "%s:%s:%s" % (hours, minutes, seconds)
+            return "%s:%s" % (minutes, seconds)
     except:
-        return "0:00:00"
+        return "0:00"
 
 
 def list_cats(default=True):

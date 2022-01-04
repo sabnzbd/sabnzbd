@@ -550,7 +550,7 @@ function QueueModel(parent, data) {
             return glitterTranslate.paused;
         }
         // Just the time
-        return rewriteTime(self.timeLeft());
+        return self.timeLeft();
     });
 
     // Icon to better show force-priority

@@ -267,11 +267,6 @@ function ViewModel() {
             Download timing and pausing
         ***/
         var timeString = response.queue.timeleft;
-        if(timeString === '') {
-            timeString = '0:00';
-        } else {
-            timeString = rewriteTime(response.queue.timeleft)
-        }
 
         // Paused main queue
         if(self.downloadsPaused()) {
