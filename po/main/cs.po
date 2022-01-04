@@ -1005,12 +1005,12 @@ msgid "Disk full"
 msgstr "Plný disk"
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Ověřuji"
-
-#: sabnzbd/newsunpack.py
 msgid "Checking extra files"
 msgstr "Kontroluji další soubory"
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Ověřuji"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py

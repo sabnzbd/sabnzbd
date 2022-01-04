@@ -1029,12 +1029,12 @@ msgid "Disk full"
 msgstr "Schijf is vol"
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Verifiëren"
-
-#: sabnzbd/newsunpack.py
 msgid "Checking extra files"
 msgstr "Controleren van extra bestanden"
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Verifiëren"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py

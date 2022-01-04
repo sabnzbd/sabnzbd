@@ -1010,12 +1010,12 @@ msgid "Disk full"
 msgstr "Disk fuld"
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Bekræfter"
-
-#: sabnzbd/newsunpack.py
 msgid "Checking extra files"
 msgstr "Tjekker ekstra filer"
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Bekræfter"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py

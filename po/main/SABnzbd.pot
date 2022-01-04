@@ -945,11 +945,11 @@ msgid "Disk full"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
+msgid "Checking extra files"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
-msgid "Checking extra files"
+msgid "Verifying"
 msgstr ""
 
 #. PP status
