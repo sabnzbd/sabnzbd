@@ -274,18 +274,12 @@ def all_possible_extensions(file_path: str) -> List[str]:
 
 def what_is_most_likely_extension(file_path: str) -> str:
     """Returns most_likely extension, with a leading dot"""
-    for possible_extension in all_possible_extensions(file_path):
-        # let's see if technically-suggested extension by puremagic is also likely IRL
-        if possible_extension in ALL_EXT:
-            # Yes, looks likely
-            return possible_extension
 
-    # Check if text or NZB, as puremagic is not good at that.
+    # First: Check if text or NZB, as puremagic is not good at that.
     try:
         # Only read the start, don't need the whole file
         with open(file_path, "r") as inp_file:
             txt = inp_file.read(200).lower()
-
         # Yes, a text file ... so let's check if it's even an NZB:
         if "!doctype nzb public" in txt or "<nzb xmlns=" in txt:
             # yes, contains NZB signals:
@@ -293,8 +287,14 @@ def what_is_most_likely_extension(file_path: str) -> str:
         else:
             return ".txt"
     except UnicodeDecodeError:
-        # not txt (and not nzb)
+        # not txt (and thus not nzb)
         pass
+
+    for possible_extension in all_possible_extensions(file_path):
+        # let's see if technically-suggested extension by puremagic is also likely IRL
+        if possible_extension in ALL_EXT:
+            # Yes, looks likely
+            return possible_extension
 
     # no popular extension found, so just trust puremagic and return the first extension (if any)
     try:
