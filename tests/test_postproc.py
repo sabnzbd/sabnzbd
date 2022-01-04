@@ -41,7 +41,8 @@ class TestPostProc:
             # And now let the magic happen:
             nzo = mock.Mock()
             nzo.final_name = "somedownloadname"
-            number_renamed_files = rar_renamer(nzo, workingdir)
+            nzo.download_path = workingdir
+            number_renamed_files = rar_renamer(nzo)
 
             # run check on the resulting files
             if expected_filename_matches:

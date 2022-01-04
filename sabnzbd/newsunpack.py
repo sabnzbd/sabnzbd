@@ -56,7 +56,6 @@ from sabnzbd.filesystem import (
     listdir_full,
     setname_from_path,
     get_ext,
-    get_filename,
     TS_RE,
     build_filelists,
 )
@@ -66,10 +65,14 @@ import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
 
 # Regex globals
-RAR_RE_V3 = re.compile(r"\.(?P<ext>part\d*)$", re.I)
-TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
-EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
-EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
+RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
+RAR_EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
+RAR_EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
+SEVENZIP_PATH_RE = re.compile("^Path = (.+)")
+PAR2_TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
+PAR2_BLOCK_FOUND_RE = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
+PAR2_IS_MATCH_FOR_RE = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
+PAR2_FILENAME_RE = re.compile(r'"([^"]+)"')
 
 # Constants
 SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
@@ -89,7 +92,7 @@ SEVENZIP_VERSION = ""
 def find_programs(curdir: str):
     """Find external programs"""
 
-    def check(path: str, program:str) -> Optional[str]:
+    def check(path: str, program: str) -> Optional[str]:
         p = os.path.abspath(os.path.join(path, program))
         if os.access(p, os.X_OK):
             return p
@@ -174,7 +177,9 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(extern_proc: str, nzo: NzbObject, complete_dir:str, nicename:str, status:int) -> Tuple[str,int]:
+def external_processing(
+    extern_proc: str, nzo: NzbObject, complete_dir: str, nicename: str, status: int
+) -> Tuple[str, int]:
     """Run a user postproc script, return console output and exit value"""
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
@@ -232,10 +237,18 @@ def external_processing(extern_proc: str, nzo: NzbObject, complete_dir:str, nice
     return output, ret
 
 
-def unpack_magic(
-    nzo: NzbObject, workdir:str, workdir_complete:str, dele:bool, one_folder:bool, joinables:List[str], zips:List[str], rars:List[str], sevens:List[str], ts:List[str], depth:int=0
+def unpacker(
+    nzo: NzbObject,
+    workdir_complete: str,
+    one_folder: bool,
+    joinables: List[str] = [],
+    zips: List[str] = [],
+    rars: List[str] = [],
+    sevens: List[str] = [],
+    ts: List[str] = [],
+    depth: int = 0,
 ) -> Tuple[Union[int, bool], List[str]]:
-    """Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'"""
+    """Do a recursive unpack from all archives in 'download_path' to 'workdir_complete'"""
     if depth > 5:
         logging.warning(T("Unpack nesting too deep [%s]"), nzo.final_name)
         return False, []
@@ -243,9 +256,11 @@ def unpack_magic(
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(nzo.download_path)
     else:
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete, check_both=dele)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(
+            nzo.download_path, workdir_complete, check_both=nzo.delete
+        )
 
     force_rerun = False
     newfiles = []
@@ -255,50 +270,50 @@ def unpack_magic(
     if cfg.enable_filejoin():
         new_joins = [jn for jn in xjoinables if jn not in joinables]
         if new_joins:
-            logging.info("Filejoin starting on %s", workdir)
-            error, newf = file_join(nzo, workdir, workdir_complete, dele, new_joins)
+            logging.info("Filejoin starting on %s", nzo.download_path)
+            error, newf = file_join(nzo, workdir_complete, new_joins)
             if newf:
                 newfiles.extend(newf)
-            logging.info("Filejoin finished on %s", workdir)
+            logging.info("Filejoin finished on %s", nzo.download_path)
 
     if cfg.enable_unrar():
         new_rars = [rar for rar in xrars if rar not in rars]
         if new_rars:
-            logging.info("Unrar starting on %s", workdir)
-            error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, one_folder, new_rars)
+            logging.info("Unrar starting on %s", nzo.download_path)
+            error, newf = rar_unpack(nzo, workdir_complete, one_folder, new_rars)
             if newf:
                 newfiles.extend(newf)
-            logging.info("Unrar finished on %s", workdir)
+            logging.info("Unrar finished on %s", nzo.download_path)
 
     if cfg.enable_7zip():
         new_sevens = [seven for seven in xsevens if seven not in sevens]
         if new_sevens:
-            logging.info("7za starting on %s", workdir)
-            error, newf = unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens)
+            logging.info("7za starting on %s", nzo.download_path)
+            error, newf = unseven(nzo, workdir_complete, one_folder, new_sevens)
             if newf:
                 newfiles.extend(newf)
-            logging.info("7za finished on %s", workdir)
+            logging.info("7za finished on %s", nzo.download_path)
 
     if cfg.enable_unzip():
-        new_zips = [zip for zip in xzips if zip not in zips]
+        new_zips = [zipfile for zipfile in xzips if zipfile not in zips]
         if new_zips:
-            logging.info("Unzip starting on %s", workdir)
+            logging.info("Unzip starting on %s", nzo.download_path)
             if SEVENZIP_COMMAND:
-                error, newf = unseven(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
+                error, newf = unseven(nzo, workdir_complete, one_folder, new_zips)
             else:
-                error, newf = unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
+                error, newf = unzip(nzo, workdir_complete, one_folder, new_zips)
             if newf:
                 newfiles.extend(newf)
-            logging.info("Unzip finished on %s", workdir)
+            logging.info("Unzip finished on %s", nzo.download_path)
 
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
         if new_ts:
-            logging.info("TS Joining starting on %s", workdir)
-            error, newf = file_join(nzo, workdir, workdir_complete, dele, new_ts)
+            logging.info("TS Joining starting on %s", nzo.download_path)
+            error, newf = file_join(nzo, workdir_complete, new_ts)
             if newf:
                 newfiles.extend(newf)
-            logging.info("TS Joining finished on %s", workdir)
+            logging.info("TS Joining finished on %s", nzo.download_path)
 
     # Refresh history and set output
     nzo.set_action_line()
@@ -318,15 +333,13 @@ def unpack_magic(
 
     # Double-check that we didn't miss any files in workdir
     # But only if dele=True, otherwise of course there will be files left
-    if rerun and dele and depth == 1 and any(build_filelists(workdir)):
+    if rerun and nzo.delete and depth == 1 and any(build_filelists(nzo.download_path)):
         force_rerun = True
         # Clear lists to force re-scan of files
         xjoinables, xzips, xrars, xsevens, xts = ([], [], [], [], [])
 
     if rerun and (cfg.enable_recursive() or new_ts or new_joins or force_rerun):
-        z, y = unpack_magic(
-            nzo, workdir, workdir_complete, dele, one_folder, xjoinables, xzips, xrars, xsevens, xts, depth
-        )
+        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xzips, xrars, xsevens, xts, depth)
         if z:
             error = z
         if y:
@@ -382,7 +395,7 @@ def get_seq_number(name: str) -> int:
         return 0
 
 
-def file_join(nzo: NzbObject, workdir: str, workdir_complete: str, delete:bool, joinables:List[str]) -> Tuple[bool, List[str]]:
+def file_join(nzo: NzbObject, workdir_complete: str, joinables: List[str]) -> Tuple[bool, List[str]]:
     """Join and joinable files in 'workdir' to 'workdir_complete' and
     when successful, delete originals
     """
@@ -410,7 +423,7 @@ def file_join(nzo: NzbObject, workdir: str, workdir_complete: str, delete:bool, 
             # If par2 already did the work, just remove the files
             if os.path.exists(joinable_set):
                 logging.debug("file_join(): Skipping %s, (probably) joined by par2", joinable_set)
-                if delete:
+                if nzo.delete:
                     clean_up_joinables(current)
                 # done, go to next set
                 continue
@@ -423,7 +436,7 @@ def file_join(nzo: NzbObject, workdir: str, workdir_complete: str, delete:bool, 
             # Prepare joined file
             filename = joinable_set
             if workdir_complete:
-                filename = filename.replace(workdir, workdir_complete)
+                filename = filename.replace(nzo.download_path, workdir_complete)
             logging.debug("file_join(): Assembling %s", filename)
 
             # Join the segments
@@ -438,7 +451,7 @@ def file_join(nzo: NzbObject, workdir: str, workdir_complete: str, delete:bool, 
                     nzo.set_action_line(T("Joining"), "%.0f%%" % perc)
                     with open(joinable, "rb") as f:
                         shutil.copyfileobj(f, joined_file, bufsize)
-                    if delete:
+                    if nzo.delete:
                         remove_file(joinable)
                     n += 1
 
@@ -473,16 +486,17 @@ def file_join(nzo: NzbObject, workdir: str, workdir_complete: str, delete:bool, 
 ##############################################################################
 # (Un)Rar Functions
 ##############################################################################
-def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, rars):
-    """Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
+def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: List[str]) -> Tuple[int, List[str]]:
+    """Unpack multiple sets 'rars' of RAR files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     When 'one_folder' is set, all files will be in a single folder
     """
+    fail = 0
     newfiles = extracted_files = []
     rar_sets = {}
     for rar in rars:
         rar_set = setname_from_path(rar)
-        if RAR_RE_V3.search(rar_set):
+        if RAR_V3_RE.search(rar_set):
             # Remove the ".partXX" part
             rar_set = os.path.splitext(rar_set)[0]
         if rar_set not in rar_sets:
@@ -497,7 +511,7 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
 
         rarpath = rar_sets[rar_set][0]
 
-        if workdir_complete and rarpath.startswith(workdir):
+        if workdir_complete and rarpath.startswith(nzo.download_path):
             extraction_path = workdir_complete
         else:
             extraction_path = os.path.split(rarpath)[0]
@@ -527,7 +541,7 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
         # Did we already direct-unpack it? Not when recursive-unpacking
         if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
             logging.info("Set %s completed by DirectUnpack", rar_set)
-            fail = False
+            fail = 0
             success = True
             rars, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
         else:
@@ -539,7 +553,7 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
                 success = not fail
             except:
                 success = False
-                fail = True
+                fail = 1
                 msg = sys.exc_info()[1]
                 nzo.fail_msg = T("Unpacking failed, %s") % msg
                 setname = nzo.final_name
@@ -571,7 +585,7 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
             newfiles = []
 
         # Delete the old files if we have to
-        if success and delete and newfiles:
+        if success and nzo.delete and newfiles:
             for rar in rars:
                 try:
                     remove_file(rar)
@@ -592,13 +606,15 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
     return fail, extracted_files
 
 
-def rar_extract(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extraction_path):
+def rar_extract(
+    rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str
+) -> Tuple[int, List[str], List[str]]:
     """Unpack single rar set 'rarfile' to 'extraction_path',
     with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
     """
     fail = 0
-    new_files = None
+    new_files = []
     rars = []
     passwords = get_all_passwords(nzo)
 
@@ -616,7 +632,9 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extr
     return fail, new_files, rars
 
 
-def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extraction_path, password):
+def rar_extract_core(
+    rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str, password: str
+) -> Tuple[int, List[str], List[str]]:
     """Unpack single rar set 'rarfile_path' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
@@ -717,7 +735,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
         lines.append(line)
 
         if line.startswith("Extracting from"):
-            filename = re.search(EXTRACTFROM_RE, line).group(1)
+            filename = re.search(RAR_EXTRACTFROM_RE, line).group(1)
             if filename not in rarfiles:
                 rarfiles.append(filename)
             curr += 1
@@ -804,7 +822,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
             fail = 3
 
         else:
-            m = re.search(EXTRACTED_RE, line)
+            m = re.search(RAR_EXTRACTED_RE, line)
             if m:
                 # In case of flat-unpack, UnRar still prints the whole path (?!)
                 unpacked_file = m.group(2)
@@ -817,7 +835,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
                 proc.close()
             p.wait()
             logging.debug("UNRAR output %s", "\n".join(lines))
-            return fail, (), ()
+            return fail, [], []
 
     if proc:
         proc.close()
@@ -838,8 +856,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
 ##############################################################################
 # (Un)Zip Functions
 ##############################################################################
-def unzip(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, zips):
-    """Unpack multiple sets 'zips' of ZIP files from 'workdir' to 'workdir_complete.
+def unzip(nzo: NzbObject, workdir_complete: str, one_folder: bool, zips: List[str]):
+    """Unpack multiple sets 'zips' of ZIP files from 'download_path' to 'workdir_complete.
     When 'delete' is ste, originals will be deleted.
     """
 
@@ -855,7 +873,7 @@ def unzip(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, zips):
             logging.info("Starting extract on zipfile: %s ", _zip)
             nzo.set_action_line(T("Unpacking"), "%s" % setname_from_path(_zip))
 
-            if workdir_complete and _zip.startswith(workdir):
+            if workdir_complete and _zip.startswith(nzo.download_path):
                 extraction_path = workdir_complete
             else:
                 extraction_path = os.path.split(_zip)[0]
@@ -872,7 +890,7 @@ def unzip(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, zips):
         new_files = list(set(orig_dir_content + listdir_full(workdir_complete)))
 
         # Delete the old files if we have to
-        if delete and not unzip_failed:
+        if nzo.delete and not unzip_failed:
             i = 0
 
             for _zip in zips:
@@ -916,8 +934,8 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
 ##############################################################################
 # 7Zip Functions
 ##############################################################################
-def unseven(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, sevens):
-    """Unpack multiple sets '7z' of 7Zip files from 'workdir' to 'workdir_complete.
+def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: List[str]):
+    """Unpack multiple sets '7z' of 7Zip files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
     i = 0
@@ -944,12 +962,12 @@ def unseven(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, seven
         logging.info("Starting extract on 7zip set/file: %s ", seven)
         nzo.set_action_line(T("Unpacking"), "%s" % setname_from_path(seven))
 
-        if workdir_complete and seven.startswith(workdir):
+        if workdir_complete and seven.startswith(nzo.download_path):
             extraction_path = workdir_complete
         else:
             extraction_path = os.path.split(seven)[0]
 
-        res, new_files_set, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder, delete)
+        res, new_files_set, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder)
         if res:
             unseven_failed = True
             nzo.set_unpack_info("Unpack", msg, setname_from_path(seven))
@@ -964,7 +982,9 @@ def unseven(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, seven
     return unseven_failed, new_files
 
 
-def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_folder, delete):
+def seven_extract(
+    nzo: NzbObject, sevenset: str, extensions: List[str], extraction_path: str, one_folder: bool
+) -> Tuple[int, List[str], str]:
     """Unpack single set 'sevenset' to 'extraction_path', with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
@@ -983,7 +1003,9 @@ def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_fol
             logging.debug(msg)
             nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname_from_path(sevenset))
-        fail, new_files, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
+        fail, new_files, msg = seven_extract_core(
+            sevenset, extensions, extraction_path, one_folder, nzo.delete, password
+        )
         if fail != 2:
             # anything else than a password problem (so: OK, or disk problem):
             break
@@ -996,7 +1018,9 @@ def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_fol
     return fail, new_files, msg
 
 
-def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password):
+def seven_extract_core(
+    sevenset, extensions, extraction_path, one_folder, delete, password
+) -> Tuple[int, List[str], str]:
     """Unpack single 7Z set 'sevenset' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
@@ -1081,11 +1105,11 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 ##############################################################################
 # PAR2 Functions
 ##############################################################################
-def par2_repair(nzo: NzbObject, workdir: str, setname: str) -> Tuple[bool, bool]:
+def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
     """Try to repair a set, return readd and correctness"""
     # Check which of the files exists
     for new_par in nzo.extrapars[setname]:
-        test_parfile = os.path.join(workdir, new_par.filename)
+        test_parfile = os.path.join(nzo.download_path, new_par.filename)
         if os.path.exists(test_parfile):
             parfile_nzf = new_par
             break
@@ -1094,8 +1118,8 @@ def par2_repair(nzo: NzbObject, workdir: str, setname: str) -> Tuple[bool, bool]
         logging.info("No par2 files found on disk for set %s", setname)
         return False, True
 
-    parfile = os.path.join(workdir, parfile_nzf.filename)
-    old_dir_content = os.listdir(workdir)
+    parfile = os.path.join(nzo.download_path, parfile_nzf.filename)
+    old_dir_content = os.listdir(nzo.download_path)
     used_joinables = ()
     joinables = ()
     used_for_repair = ()
@@ -1131,7 +1155,7 @@ def par2_repair(nzo: NzbObject, workdir: str, setname: str) -> Tuple[bool, bool]
             nzo.set_action_line(T("Repair"), T("Starting Repair"))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, zips, rars, sevens, ts = build_filelists(workdir, check_rar=False)
+            joinables, zips, rars, sevens, ts = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2 on the other platforms
             if sabnzbd.WIN32:
@@ -1155,22 +1179,22 @@ def par2_repair(nzo: NzbObject, workdir: str, setname: str) -> Tuple[bool, bool]
     try:
         if cfg.enable_par_cleanup():
             deletables = []
-            new_dir_content = os.listdir(workdir)
+            new_dir_content = os.listdir(nzo.download_path)
 
             # Remove extra files created during repair and par2 base files
             for path in new_dir_content:
                 if os.path.splitext(path)[1] == ".1" and path not in old_dir_content:
-                    deletables.append(os.path.join(workdir, path))
-            deletables.append(os.path.join(workdir, setname + ".par2"))
-            deletables.append(os.path.join(workdir, setname + ".PAR2"))
+                    deletables.append(os.path.join(nzo.download_path, path))
+            deletables.append(os.path.join(nzo.download_path, setname + ".par2"))
+            deletables.append(os.path.join(nzo.download_path, setname + ".PAR2"))
             deletables.append(parfile)
 
             # Add output of par2-repair to remove
             deletables.extend(used_joinables)
-            deletables.extend([os.path.join(workdir, f) for f in used_for_repair])
+            deletables.extend([os.path.join(nzo.download_path, f) for f in used_for_repair])
 
             # Delete pars of the set
-            deletables.extend([os.path.join(workdir, nzf.filename) for nzf in setpars])
+            deletables.extend([os.path.join(nzo.download_path, nzf.filename) for nzf in setpars])
 
             for filepath in deletables:
                 if filepath in joinables:
@@ -1186,10 +1210,6 @@ def par2_repair(nzo: NzbObject, workdir: str, setname: str) -> Tuple[bool, bool]
         logging.error(T('Error "%s" while running par2_repair on set %s'), msg, setname, exc_info=True)
 
     return readd, result
-
-
-_RE_BLOCK_FOUND = re.compile(r'File: "([^"]+)" - found \d+ of \d+ data blocks from "([^"]+)"')
-_RE_IS_MATCH_FOR = re.compile(r'File: "([^"]+)" - is a match for "([^"]+)"')
 
 
 def par2cmdline_verify(
@@ -1417,7 +1437,7 @@ def par2cmdline_verify(
             if in_extra_files:
                 if "is a match for" in line or line.find("data blocks from") > 0:
                     # Baldy named ones
-                    m_rename = _RE_IS_MATCH_FOR.search(line)
+                    m_rename = PAR2_IS_MATCH_FOR_RE.search(line)
                     if m_rename:
                         old_name = m_rename.group(1)
                         new_name = m_rename.group(2)
@@ -1425,7 +1445,7 @@ def par2cmdline_verify(
                         renames[new_name] = old_name
 
                     # Obfuscated and also damaged
-                    m_block = _RE_BLOCK_FOUND.search(line)
+                    m_block = PAR2_BLOCK_FOUND_RE.search(line)
                     if m_block:
                         workdir = os.path.split(parfile)[0]
                         old_name = m_block.group(1)
@@ -1465,7 +1485,7 @@ def par2cmdline_verify(
                 verifynum = 0
             else:
                 # Target files for verification
-                m = TARGET_RE.match(line)
+                m = PAR2_TARGET_RE.match(line)
                 if m:
                     verifynum += 1
                     nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
@@ -1492,9 +1512,6 @@ def par2cmdline_verify(
         used_joinables.extend(reconstructed)
 
     return finished, readd, used_joinables, used_for_repair
-
-
-_RE_FILENAME = re.compile(r'"([^"]+)"')
 
 
 def multipar_verify(
@@ -1627,14 +1644,14 @@ def multipar_verify(
             misnamed_files = True
         elif misnamed_files and "Found" in line:
             # First it reports the current filename
-            m = _RE_FILENAME.search(line)
+            m = PAR2_FILENAME_RE.search(line)
             if m:
                 verifynum += 1
                 nzo.set_action_line(T("Checking extra files"), "%02d/%02d" % (verifynum, verifyextratotal))
                 old_name = m.group(1)
         elif misnamed_files and "Misnamed" in line:
             # Then it finds the actual
-            m = _RE_FILENAME.search(line)
+            m = PAR2_FILENAME_RE.search(line)
             if m and old_name:
                 new_name = m.group(1)
                 logging.debug('MultiPar will rename "%s" to "%s"', old_name, new_name)
@@ -1652,7 +1669,7 @@ def multipar_verify(
             in_check = True
             nzo.status = Status.VERIFYING
         elif in_check:
-            m = _RE_FILENAME.search(line)
+            m = PAR2_FILENAME_RE.search(line)
             if m:
                 # Only increase counter if it was really the detection line
                 if line.startswith("= ") or "%" not in line:
@@ -1679,7 +1696,7 @@ def multipar_verify(
             in_verify = True
             verifynum = 0
         elif in_verify:
-            m = _RE_FILENAME.search(line)
+            m = PAR2_FILENAME_RE.search(line)
             if m:
                 # It prints the filename couple of times, so we save it to check
                 nzo.status = Status.VERIFYING
@@ -1842,7 +1859,7 @@ def multipar_verify(
     return finished, readd, used_joinables, used_for_repair
 
 
-def create_env(nzo:Optional[NzbObject]=None, extra_env_fields:Dict[str, Any]={})->Optional[Dict[str, Any]]:
+def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any] = {}) -> Optional[Dict[str, Any]]:
     """Modify the environment for pp-scripts with extra information
     macOS: Return copy of environment without PYTHONPATH and PYTHONHOME
     other: return None
@@ -1902,7 +1919,7 @@ def create_env(nzo:Optional[NzbObject]=None, extra_env_fields:Dict[str, Any]={})
     return env
 
 
-def rar_volumelist(rarfile_path:str, password:str, known_volumes:List[str]) -> List[str]:
+def rar_volumelist(rarfile_path: str, password: str, known_volumes: List[str]) -> List[str]:
     """List volumes that are part of this rarset
     and merge them with parsed paths list, removing duplicates.
     We assume RarFile is right and use parsed paths as backup.
@@ -1932,7 +1949,7 @@ def rar_volumelist(rarfile_path:str, password:str, known_volumes:List[str]) -> L
 
 
 # Sort the various RAR filename formats properly :\
-def rar_sort(a:str, b:str)->int:
+def rar_sort(a: str, b: str) -> int:
     """Define sort method for rar file names"""
     aext = a.split(".")[-1]
     bext = b.split(".")[-1]
@@ -1947,7 +1964,7 @@ def rar_sort(a:str, b:str)->int:
         return cmp(a, b)
 
 
-def quick_check_set(setname: str, nzo: NzbObject)->bool:
+def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     """Check all on-the-fly md5sums of a set"""
     md5pack = nzo.md5packs.get(setname)
     if md5pack is None:
@@ -2105,7 +2122,7 @@ def is_sfv_file(myfile: str) -> bool:
     return sfv_info_line_counter >= 1
 
 
-def sfv_check(sfvs: List[str], nzo: NzbObject, workdir:str) -> bool:
+def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
     """Verify files using SFV files"""
     # Update status
     nzo.status = Status.VERIFYING
@@ -2127,7 +2144,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject, workdir:str) -> bool:
     for nzf in nzf_list:
         verifynum += 1
         nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
-        calculated_crc32[nzf.filename] = crc_calculate(os.path.join(workdir, nzf.filename))
+        calculated_crc32[nzf.filename] = crc_calculate(os.path.join(nzo.download_path, nzf.filename))
 
     sfv_parse_results = {}
     nzo.set_action_line(T("Trying SFV verification"), "...")
@@ -2328,9 +2345,8 @@ class SevenZip:
         command = [SEVENZIP_COMMAND, "l", "-p", "-y", "-slt", "-sccUTF-8", self.path]
         output = run_command(command)
 
-        re_path = re.compile("^Path = (.+)")
         for line in output.split("\n"):
-            m = re_path.search(line)
+            m = SEVENZIP_PATH_RE.search(line)
             if m:
                 names.append(m.group(1).strip("\r"))
         if names:

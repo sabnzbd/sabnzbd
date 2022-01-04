@@ -25,7 +25,7 @@ import subprocess
 import time
 import threading
 import logging
-from typing import Optional
+from typing import Optional, Dict, List, Tuple
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -34,7 +34,7 @@ from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
-from sabnzbd.newsunpack import EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
+from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
@@ -64,7 +64,7 @@ class DirectUnpacker(threading.Thread):
         self.total_volumes = {}
         self.unpack_time = 0.0
 
-        self.success_sets = {}
+        self.success_sets: Dict[str, Tuple[List[str], List[str]]] = {}
         self.next_sets = []
 
         self.duplicate_lines = 0
@@ -270,12 +270,12 @@ class DirectUnpacker(threading.Thread):
 
                 elif linebuf_encoded.startswith("Extracting from"):
                     # List files we used
-                    filename = re.search(EXTRACTFROM_RE, linebuf_encoded).group(1)
+                    filename = re.search(RAR_EXTRACTFROM_RE, linebuf_encoded).group(1)
                     if filename not in rarfiles:
                         rarfiles.append(filename)
                 else:
                     # List files we extracted
-                    m = re.search(EXTRACTED_RE, linebuf_encoded)
+                    m = re.search(RAR_EXTRACTED_RE, linebuf_encoded)
                     if m:
                         # In case of flat-unpack, UnRar still prints the whole path (?!)
                         unpacked_file = m.group(2)

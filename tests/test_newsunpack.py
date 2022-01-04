@@ -82,6 +82,7 @@ class TestPar2Repair:
         sabnzbd.PostProcessor = mock.Mock()
         # Mock basic NZO structure
         nzo = mock.Mock()
+        nzo.download_path = test_dir
         nzo.admin_path = test_dir_admin
         nzo.fail_msg = ""
         nzo.extrapars = {"test": []}
@@ -102,7 +103,7 @@ class TestPar2Repair:
         caplog.set_level(logging.DEBUG)
 
         # Run repair
-        readd, result = newsunpack.par2_repair(nzo=nzo, workdir=test_dir, setname="test")
+        readd, result = newsunpack.par2_repair(nzo=nzo, setname="test")
 
         # Verify we only have the rar-files left
         dir_contents = os.listdir(test_dir)

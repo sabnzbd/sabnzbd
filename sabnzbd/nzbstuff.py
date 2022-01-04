@@ -568,6 +568,7 @@ NzbObjectSaver = (
     "first_articles",
     "first_articles_count",
     "md5sum",
+    "download_path",
     "servercount",
     "unwanted_ext",
     "renames",
@@ -721,6 +722,9 @@ class NzbObject(TryList):
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum: Optional[str] = None
 
+        # Path is empty in case of a future NZB
+        self.download_path = ""
+
         if nzb_fp is None and not reuse:
             # This is a slot for a future NZB, ready now
             # It can also be a retry of a failed job with no extra NZB-file
@@ -739,18 +743,18 @@ class NzbObject(TryList):
 
         # Reuse the existing directory
         if reuse and os.path.exists(reuse):
-            work_dir = long_path(reuse)
+            self.download_path = long_path(reuse)
         else:
             # Determine "incomplete" folder
-            work_dir = os.path.join(cfg.download_dir.get_path(), self.work_name)
-            work_dir = get_unique_dir(work_dir, create_dir=True)
-            set_permissions(work_dir)
+            self.download_path = os.path.join(cfg.download_dir.get_path(), self.work_name)
+            self.download_path = long_path(get_unique_dir(self.download_path, create_dir=True))
+            set_permissions(self.download_path)
 
         # Always create the admin-directory, just to be sure
-        admin_dir = os.path.join(work_dir, JOB_ADMIN)
+        admin_dir = os.path.join(self.download_path, JOB_ADMIN)
         if not os.path.exists(admin_dir):
             create_all_dirs(admin_dir)
-        _, self.work_name = os.path.split(work_dir)
+        _, self.work_name = os.path.split(self.download_path)
 
         # When doing a retry or repair, remove old cache-files
         if reuse:
@@ -924,7 +928,7 @@ class NzbObject(TryList):
                     accept = 2
 
         if reuse:
-            self.check_existing_files(work_dir)
+            self.check_existing_files(self.download_path)
 
         # Sort the files in the queue
         self.sort_nzfs()
@@ -1294,13 +1298,13 @@ class NzbObject(TryList):
                 self.bytes_par2 += nzf.bytes
 
     @property
-    def pp(self):
+    def pp(self) -> Optional[int]:
         if self.repair is None:
             return None
         else:
             return opts_to_pp(self.repair, self.unpack, self.delete)
 
-    def set_pp(self, value):
+    def set_pp(self, value: int):
         self.repair, self.unpack, self.delete = pp_to_opts(value)
         logging.info("Set pp=%s for job %s", value, self.final_name)
         # Abort unpacking if not desired anymore
@@ -1796,14 +1800,6 @@ class NzbObject(TryList):
         return long_path(get_admin_path(self.work_name, self.futuretype))
 
     @property
-    def download_path(self):
-        """Return the full path for the download folder"""
-        if self.futuretype:
-            return ""
-        else:
-            return long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
-
-    @property
     def group(self):
         if self.groups:
             return self.groups[0]
@@ -1903,12 +1899,9 @@ class NzbObject(TryList):
             self.action_line = "%s: %s" % (action, msg)
         else:
             self.action_line = ""
+        logging.debug(self.action_line)
         # Make sure it's updated in the interface
         sabnzbd.history_updated()
-
-    @property
-    def repair_opts(self):
-        return self.repair, self.unpack, self.delete
 
     @synchronized(NZO_LOCK)
     def save_to_disk(self):
@@ -2066,6 +2059,8 @@ class NzbObject(TryList):
             for nzf in self.files + self.finished_files:
                 if sabnzbd.par2file.is_parfile(nzf.filename):
                     self.bytes_par2 += nzf.bytes
+        if self.download_path is None:
+            self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)

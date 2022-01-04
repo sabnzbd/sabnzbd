@@ -347,8 +347,8 @@ class SeriesSorter(BaseSorter):
         self,
         nzo: Optional[NzbObject],
         job_name: str,
-        path: str,
-        cat: str,
+        path: Optional[str],
+        cat: Optional[str],
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ):
