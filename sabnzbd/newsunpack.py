@@ -1182,6 +1182,15 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             deletables = []
             new_dir_content = os.listdir(nzo.download_path)
 
+            # If Multipar or par2cmdline repairs a broken part of a joinable, it doesn't list it as such.
+            # So we need to manually add all joinables of the set to the list of used joinables.
+            # We assume at least 1 of them was not broken, so we can use it as a base to find the rest.
+            if used_joinables:
+                for used_jn in used_joinables[:]:
+                    for jn in joinables:
+                        if get_filename(jn).startswith(setname_from_path(used_jn)) and jn not in used_joinables:
+                            used_joinables.append(jn)
+
             # Remove extra files created during repair and par2 base files
             for path in new_dir_content:
                 if os.path.splitext(path)[1] == ".1" and path not in old_dir_content:
@@ -1779,10 +1788,6 @@ def multipar_verify(
             if line.startswith("Ready to rejoin"):
                 # There is no status-update when it is joining
                 nzo.set_action_line(T("Joining"), "%2d" % len(used_joinables))
-            else:
-                # If we are repairing a joinable set, it won't actually
-                # do the joining. So we can't remove those files!
-                used_joinables = []
 
         # ----------------- Repair stage
         elif "Recovering slice" in line:
