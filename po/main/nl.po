@@ -1041,6 +1041,10 @@ msgstr "Controleren"
 msgid "Trying SFV verification"
 msgstr "Probeer SFV-verificatie"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "over"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "De server staat geen SSL toe op deze poort"
@@ -4811,10 +4815,6 @@ msgstr "Onderwerp"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Selectie"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "over"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"

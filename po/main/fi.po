@@ -1015,6 +1015,10 @@ msgstr "Tarkistetaan"
 msgid "Trying SFV verification"
 msgstr "Yritetään SFV varmennusta"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "jäljellä"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Tämä palvelin ei salli SSL yhteyksiä tähän porttiin"
@@ -4719,10 +4723,6 @@ msgstr "Otsikko"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Valinta"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "jäljellä"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"

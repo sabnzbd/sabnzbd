@@ -999,6 +999,10 @@ msgstr "正在检查"
 msgid "Trying SFV verification"
 msgstr "正在尝试  SFV 验证"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "剩余"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "该服务器不允许在该端口使用 SSL"
@@ -4624,10 +4628,6 @@ msgstr "主题"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "选择"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "剩余"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"

@@ -1017,6 +1017,10 @@ msgstr "Kontroluji"
 msgid "Trying SFV verification"
 msgstr "Zkouším SFV ověření"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr ""
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Tento server nepovoluje SSL na tomto portu"
@@ -4610,10 +4614,6 @@ msgstr ""
 #. Job details page, section header
 #: sabnzbd/skintext.py
 msgid "Selection"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "left"
 msgstr ""
 
 #: sabnzbd/skintext.py

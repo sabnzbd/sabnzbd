@@ -1013,6 +1013,10 @@ msgstr "בודק"
 msgid "Trying SFV verification"
 msgstr "מנסה וידוא SFV"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "נותר"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "שרת זה אינו מתיר SSL על פתחה זו"
@@ -4718,10 +4722,6 @@ msgstr "נושא"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "בחירה"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "נותר"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"

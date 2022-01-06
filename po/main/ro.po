@@ -1038,6 +1038,10 @@ msgstr "Se verifică"
 msgid "Trying SFV verification"
 msgstr "Încerc verificare SFV"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "rămas"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Acest server nu permite SSL pe acest port"
@@ -4730,10 +4734,6 @@ msgstr "Subiect"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Selecţie"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "rămas"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"

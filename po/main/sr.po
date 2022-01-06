@@ -1008,6 +1008,10 @@ msgstr "Провера"
 msgid "Trying SFV verification"
 msgstr "Pokušaj SFV provere"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "остало"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Ovaj server ne dozvoljava SSL na ovom portu"
@@ -4676,10 +4680,6 @@ msgstr "Тема"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Избор"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "остало"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"

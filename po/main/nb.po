@@ -1012,6 +1012,10 @@ msgstr "Undersøker"
 msgid "Trying SFV verification"
 msgstr "Prøver SFV-verifisering"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "gjenstår"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Denne serveren tillater ikke SSL på denne porten"
@@ -4691,10 +4695,6 @@ msgstr "Emvne"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Utvalg"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "gjenstår"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"

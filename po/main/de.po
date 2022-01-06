@@ -1060,6 +1060,10 @@ msgstr "Wird überprüft"
 msgid "Trying SFV verification"
 msgstr "Versuche SFV-Überprüfung"
 
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "rest"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Dieser Server erlaubt kein SSL auf diesem Port"
@@ -4856,10 +4860,6 @@ msgstr "Betreff"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Auswahl"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "rest"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
