@@ -29,7 +29,7 @@ import zlib
 import io
 import shutil
 import functools
-from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union, Literal
+from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
@@ -488,9 +488,7 @@ def file_join(nzo: NzbObject, workdir_complete: str, joinables: List[str]) -> Tu
 ##############################################################################
 # (Un)Rar Functions
 ##############################################################################
-def rar_unpack(
-    nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: List[str]
-) -> Tuple[Literal[0, 1, 2, 3], List[str]]:
+def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: List[str]) -> Tuple[int, List[str]]:
     """Unpack multiple sets 'rars' of RAR files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     When 'one_folder' is set, all files will be in a single folder
@@ -612,7 +610,7 @@ def rar_unpack(
 
 def rar_extract(
     rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str
-) -> Tuple[Literal[0, 1, 2, 3], List[str], List[str]]:
+) -> Tuple[int, List[str], List[str]]:
     """Unpack single rar set 'rarfile' to 'extraction_path',
     with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
@@ -638,7 +636,7 @@ def rar_extract(
 
 def rar_extract_core(
     rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str, password: str
-) -> Tuple[Literal[0, 1, 2, 3], List[str], List[str]]:
+) -> Tuple[int, List[str], List[str]]:
     """Unpack single rar set 'rarfile_path' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
@@ -1015,7 +1013,7 @@ def seven_extract(
 
 def seven_extract_core(
     nzo: NzbObject, seven_path: str, extraction_path: str, seven_set: str, one_folder: bool, password: str
-) -> Tuple[Literal[0, 1, 2], List[str]]:
+) -> Tuple[int, List[str]]:
     """Unpack single 7Z set 'sevenset' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
