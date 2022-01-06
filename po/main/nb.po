@@ -911,10 +911,6 @@ msgstr ""
 msgid "Trying 7zip with password \"%s\""
 msgstr "Prøver 7zip med password \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "7ZIP set \"%s\" er ikke komplett, kan ikke pakke ut"
-
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "see logfile"

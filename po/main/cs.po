@@ -915,10 +915,6 @@ msgstr "7za nebylo nalezeno, nemohu rozbalit \"%s\""
 msgid "Trying 7zip with password \"%s\""
 msgstr "Zkouším 7zip s heslem \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "Sada 7zip \"%s\" je nekompletní, nelze rozbalit"
-
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "see logfile"

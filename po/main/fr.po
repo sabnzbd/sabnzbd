@@ -959,11 +959,6 @@ msgstr "Aucun binaire 7za trouvé, impossible de décompresser \"%s\""
 msgid "Trying 7zip with password \"%s\""
 msgstr "Tentative 7zip avec le mot de passe \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr ""
-"La collection 7ZIP \"%s\" est incomplète, impossible d'extraire les fichiers"
-
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "see logfile"

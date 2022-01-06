@@ -935,10 +935,6 @@ msgstr "Nu s-a găsit binar 7za, nu pot dezarhiva „%s”"
 msgid "Trying 7zip with password \"%s\""
 msgstr "Încerc 7zip cu parola \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "Setul 7ZIP \"%s\" este incomplet, nu pot dezarhiva"
-
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "see logfile"

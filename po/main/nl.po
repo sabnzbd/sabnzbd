@@ -938,10 +938,6 @@ msgstr "Geen 7za-programma gevonden, kan \"%s\" niet uitpakken"
 msgid "Trying 7zip with password \"%s\""
 msgstr "Uitpakpoging met 7zip en wachtwoord '%s'"
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "De 7Zip-set '%s' is incompleet, uitpakken is niet mogelijk"
-
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "see logfile"

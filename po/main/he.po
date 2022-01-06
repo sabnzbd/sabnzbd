@@ -914,10 +914,6 @@ msgstr "בינארי 7za לא נמצא, לא ניתן לפרוק את \"%s\""
 msgid "Trying 7zip with password \"%s\""
 msgstr "מנסה 7zip עם הסיסמה \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "ערכות 7ZIP בשם \"%s\" אינה שלמה, לא ניתן לפרוק"
-
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "see logfile"

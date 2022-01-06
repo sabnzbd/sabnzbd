@@ -915,10 +915,6 @@ msgstr ""
 msgid "Trying 7zip with password \"%s\""
 msgstr "Yritetään purkaa 7zip arkistoa salasanalla \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "7ZIP setti \"%s\" on puutteellinen, ei voida purkaa"
-
 #. Error message
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "see logfile"
