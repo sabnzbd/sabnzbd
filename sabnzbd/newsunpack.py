@@ -29,7 +29,7 @@ import zlib
 import io
 import shutil
 import functools
-from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union
+from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union, Literal
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
@@ -59,6 +59,7 @@ from sabnzbd.filesystem import (
     TS_RE,
     build_filelists,
     get_filename,
+    SEVENMULTI_RE,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import SeriesSorter
@@ -487,7 +488,9 @@ def file_join(nzo: NzbObject, workdir_complete: str, joinables: List[str]) -> Tu
 ##############################################################################
 # (Un)Rar Functions
 ##############################################################################
-def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: List[str]) -> Tuple[int, List[str]]:
+def rar_unpack(
+    nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: List[str]
+) -> Tuple[Literal[0, 1, 2, 3], List[str]]:
     """Unpack multiple sets 'rars' of RAR files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     When 'one_folder' is set, all files will be in a single folder
@@ -609,10 +612,10 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: Li
 
 def rar_extract(
     rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str
-) -> Tuple[int, List[str], List[str]]:
+) -> Tuple[Literal[0, 1, 2, 3], List[str], List[str]]:
     """Unpack single rar set 'rarfile' to 'extraction_path',
     with password tries
-    Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
+    Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
     fail = 0
     new_files = []
@@ -635,7 +638,7 @@ def rar_extract(
 
 def rar_extract_core(
     rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str, password: str
-) -> Tuple[int, List[str], List[str]]:
+) -> Tuple[Literal[0, 1, 2, 3], List[str], List[str]]:
     """Unpack single rar set 'rarfile_path' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
@@ -847,9 +850,9 @@ def rar_extract_core(
 
     logging.debug("UNRAR output %s", "\n".join(lines))
     nzo.fail_msg = ""
-    msg = T("Unpacked %s files/folders in %s") % (str(len(extracted)), format_time_string(time.time() - start))
+    msg = T("Unpacked %s files/folders in %s") % (len(extracted), format_time_string(time.time() - start))
     nzo.set_unpack_info("Unpack", msg, setname)
-    logging.info("%s", msg)
+    logging.info(msg)
 
     return 0, extracted, rarfiles
 
@@ -887,8 +890,8 @@ def unzip(nzo: NzbObject, workdir_complete: str, one_folder: bool, zips: List[st
         msg = T("%s files in %s") % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info("Unpack", msg)
 
-        # What's new?
-        new_files = list(set(orig_dir_content + listdir_full(workdir_complete)))
+        # What's new? Use symmetric difference
+        new_files = list(set(orig_dir_content) ^ set(listdir_full(workdir_complete)))
 
         # Delete the old files if we have to
         if nzo.delete and not unzip_failed:
@@ -939,92 +942,84 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: Lis
     """Unpack multiple sets '7z' of 7Zip files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
-    i = 0
+    # Before we start, make sure the 7z binary SEVENZIP_COMMAND is defined
+    if not SEVENZIP_COMMAND:
+        msg = T('No 7za binary found, cannot unpack "%s"') % nzo.final_name
+        logging.error(msg)
+        nzo.fail_msg = msg
+        nzo.status = Status.FAILED
+        nzo.set_unpack_info("Unpack", msg)
+        return 1, []
+
     unseven_failed = False
     new_files = []
-    tms = time.time()
 
     # Find multi-volume sets, because 7zip will not provide actual set members
-    sets = {}
+    seven_sets = {}
     for seven in sevens:
-        name, ext = os.path.splitext(seven)
-        ext = ext.strip(".")
-        if not ext.isdigit():
-            name = seven
-            ext = None
-        if name not in sets:
-            sets[name] = []
-        if ext:
-            sets[name].append(ext)
+        setname = setname_from_path(seven)
+        if SEVENMULTI_RE.search(setname):
+            # Remove the ".001" part
+            setname = os.path.splitext(setname)[0]
+        if setname not in seven_sets:
+            seven_sets[setname] = []
+        seven_sets[setname].append(seven)
 
     # Unpack each set
-    for seven in sets:
-        extensions = sets[seven]
-        logging.info("Starting extract on 7zip set/file: %s ", seven)
-        nzo.set_action_line(T("Unpacking"), "%s" % setname_from_path(seven))
+    for seven_set in seven_sets:
+        logging.info("Starting extract on 7zip set/file: %s ", seven_set)
+        nzo.set_action_line(T("Unpacking"), setname_from_path(seven_set))
 
-        if workdir_complete and seven.startswith(nzo.download_path):
+        seven_path = seven_sets[seven_set][0]
+
+        if workdir_complete and seven_path.startswith(nzo.download_path):
             extraction_path = workdir_complete
         else:
-            extraction_path = os.path.split(seven)[0]
+            extraction_path = os.path.split(seven_path)[0]
 
-        res, new_files_set, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder)
-        if res:
-            unseven_failed = True
-            nzo.set_unpack_info("Unpack", msg, setname_from_path(seven))
-        else:
-            i += 1
+        res, new_files_set = seven_extract(nzo, seven_path, seven_set, extraction_path, one_folder)
+        if not res and nzo.delete:
+            for seven in seven_sets[seven_set]:
+                try:
+                    remove_file(seven)
+                except:
+                    logging.warning(T("Deleting %s failed!"), seven)
         new_files.extend(new_files_set)
-
-    if not unseven_failed:
-        msg = T("%s files in %s") % (str(i), format_time_string(time.time() - tms))
-        nzo.set_unpack_info("Unpack", msg)
 
     return unseven_failed, new_files
 
 
 def seven_extract(
-    nzo: NzbObject, sevenset: str, extensions: List[str], extraction_path: str, one_folder: bool
-) -> Tuple[int, List[str], str]:
+    nzo: NzbObject, seven_path: str, seven_set: str, extraction_path: str, one_folder: bool
+) -> Tuple[int, List[str]]:
     """Unpack single set 'sevenset' to 'extraction_path', with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
-    # Before we start, make sure the 7z binary SEVENZIP_COMMAND is defined
-    if not SEVENZIP_COMMAND:
-        msg = T('No 7za binary found, cannot unpack "%s"') % os.path.basename(sevenset)
-        logging.error(msg)
-        return 1, [], msg
-
     fail = 0
+    new_files = []
+
     passwords = get_all_passwords(nzo)
 
     for password in passwords:
         if password:
             msg = T('Trying 7zip with password "%s"') % password
             logging.debug(msg)
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname_from_path(sevenset))
-        fail, new_files, msg = seven_extract_core(
-            sevenset, extensions, extraction_path, one_folder, nzo.delete, password
-        )
+            nzo.set_unpack_info("Unpack", msg, seven_set)
+        fail, new_files = seven_extract_core(nzo, seven_path, extraction_path, seven_set, one_folder, password)
         if fail != 2:
             # anything else than a password problem (so: OK, or disk problem):
             break
 
-    nzo.fail_msg = ""
-    if fail > 0:
-        nzo.fail_msg = msg
-        nzo.status = Status.FAILED
-
-    return fail, new_files, msg
+    return fail, new_files
 
 
 def seven_extract_core(
-    sevenset, extensions, extraction_path, one_folder, delete, password
-) -> Tuple[int, List[str], str]:
+    nzo: NzbObject, seven_path: str, extraction_path: str, seven_set: str, one_folder: bool, password: str
+) -> Tuple[Literal[0, 1, 2], List[str]]:
     """Unpack single 7Z set 'sevenset' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
+    start = time.time()
     if one_folder:
         method = "e"  # Unpack without folders
     else:
@@ -1042,45 +1037,20 @@ def seven_extract_core(
     else:
         password = "-p"
 
-    if len(extensions) > 0:
-        name = "%s.001" % sevenset
-        parm = "-tsplit"
-    else:
-        name = sevenset
-        parm = "-tzip" if sevenset.lower().endswith(".zip") else "-t7z"
-
-    if not os.path.exists(name):
-        return 1, [], T('7ZIP set "%s" is incomplete, cannot unpack') % setname_from_path(sevenset)
-
     # For file-bookkeeping
     orig_dir_content = listdir_full(extraction_path)
 
-    command = [SEVENZIP_COMMAND, method, "-y", overwrite, parm, case, password, "-o%s" % extraction_path, name]
+    command = [SEVENZIP_COMMAND, method, "-y", overwrite, case, password, "-o%s" % extraction_path, seven_path]
     p = build_and_run_command(command)
     sabnzbd.PostProcessor.external_process = p
     output = platform_btou(p.stdout.read())
     logging.debug("7za output: %s", output)
 
-    ret = p.wait()  # ret contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
+    # ret contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
+    ret = p.wait()
 
-    msg = ""
-    # What's new?
-    new_files = list(set(orig_dir_content + listdir_full(extraction_path)))
-
-    # 7z unpack went OK:
-    if ret == 0 and delete:
-        if extensions:
-            for ext in extensions:
-                path = "%s.%s" % (sevenset, ext)
-                try:
-                    remove_file(path)
-                except:
-                    logging.warning(T("Deleting %s failed!"), path)
-        else:
-            try:
-                remove_file(sevenset)
-            except:
-                logging.warning(T("Deleting %s failed!"), sevenset)
+    # What's new? Use symmetric difference
+    new_files = list(set(orig_dir_content) ^ set(listdir_full(extraction_path)))
 
     # Anything else than 0 as RC: 7z unpack had a problem
     if ret > 0:
@@ -1098,9 +1068,15 @@ def seven_extract_core(
             # Default message
             msg = T("Unpacking failed, %s") % T("see logfile")
             logging.info("7za return code: %s", ret)
+        nzo.fail_msg = msg
+        nzo.status = Status.FAILED
+    else:
+        nzo.fail_msg = ""
+        msg = T("Unpacked %s files/folders in %s") % (len(new_files), format_time_string(time.time() - start))
+        nzo.set_unpack_info("Unpack", msg, seven_set)
+        logging.info(msg)
 
-    # Always return an error message, even when return code is 0
-    return ret, new_files, msg
+    return ret, new_files
 
 
 ##############################################################################
