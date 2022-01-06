@@ -776,6 +776,7 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
     ok = True
     overwrite = sabnzbd.cfg.overwrite_files()
     new_path = os.path.abspath(new_path)
+    new_path_dir = os.path.dirname(new_path)
     if overwrite and os.path.exists(new_path):
         try:
             os.remove(new_path)
@@ -786,14 +787,15 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
 
     if new_path:
         logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
+        if not os.path.exists(new_path_dir):
+            create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
         try:
             # First try cheap rename
             renamer(path, new_path)
-        except:
+        except Exception as err:
             # Cannot rename, try copying
-            logging.debug("File could not be renamed, trying copying: %s", path)
+            logging.debug("File could not be renamed (error: %s), trying copying: %s", err, path)
             try:
-                create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
