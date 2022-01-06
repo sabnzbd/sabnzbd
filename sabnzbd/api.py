@@ -59,6 +59,7 @@ from sabnzbd.misc import (
     create_https_certificates,
     calc_age,
     opts_to_pp,
+    format_time_left,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
 from sabnzbd.encoding import xml_name, utob
@@ -1869,29 +1870,6 @@ def calc_timeleft(bytesleft, bps):
     if bytesleft <= 0 or bps <= 0:
         return "0:00"
     return format_time_left(int(bytesleft / bps))
-
-
-def format_time_left(totalseconds: int) -> str:
-    """Calculate the time left in the format [DD:][HH:]MM:SS"""
-    try:
-        minutes, seconds = divmod(totalseconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-        if seconds < 10:
-            seconds = "0%s" % seconds
-        if hours > 0:
-            if minutes < 10:
-                minutes = "0%s" % minutes
-            if days > 0:
-                if hours < 10:
-                    hours = "0%s" % hours
-                return "%s:%s:%s:%s" % (days, hours, minutes, seconds)
-            else:
-                return "%s:%s:%s" % (hours, minutes, seconds)
-        else:
-            return "%s:%s" % (minutes, seconds)
-    except:
-        return "0:00"
 
 
 def list_cats(default=True):

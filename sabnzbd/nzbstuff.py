@@ -1894,12 +1894,11 @@ class NzbObject(TryList):
         else:
             self.unpack_info[key] = [msg]
 
-    def set_action_line(self, action=None, msg=None):
+    def set_action_line(self, action: Optional[str] = None, msg: Optional[str] = None):
         if action and msg:
-            self.action_line = "%s: %s" % (action, msg)
+            self.action_line = "%s: %s" % (action, msg.strip())
         else:
             self.action_line = ""
-        logging.debug(self.action_line)
         # Make sure it's updated in the interface
         sabnzbd.history_updated()
 

@@ -188,7 +188,7 @@ class TestPar2Repair:
                     call("Verifying", "02/03"),
                     call("Verifying", "03/03"),
                     call("Repairing", " 0%"),
-                    call("Repairing", "100%"),
+                    call("Repairing", "100% "),
                     call("Verifying repair", "01/03"),
                     call("Verifying repair", "02/03"),
                     call("Verifying repair", "03/03"),
@@ -215,7 +215,7 @@ class TestPar2Repair:
             )
             nzo.set_action_line.assert_has_calls(
                 [
-                    call("Repairing", "100%"),
+                    call("Repairing", "100% "),
                     call("Verifying repair", "01/03"),
                     call("Verifying repair", "02/03"),
                     call("Verifying repair", "03/03"),
@@ -278,7 +278,7 @@ class TestPar2Repair:
             )
             nzo.set_action_line.assert_has_calls(
                 [
-                    call("Repairing", "100%"),
+                    call("Repairing", "100% "),
                     call("Verifying repair", "01/01"),
                 ]
             )
@@ -312,7 +312,7 @@ class TestPar2Repair:
                     call("Verifying", "08"),
                     call("Verifying", "09"),
                     call("Repairing", " 0%"),
-                    call("Repairing", "100%"),
+                    call("Repairing", "100% "),
                     call("Verifying repair", "01/01"),
                 ]
             )
@@ -337,7 +337,7 @@ class TestPar2Repair:
             )
             nzo.set_action_line.assert_has_calls(
                 [
-                    call("Repairing", "100%"),
+                    call("Repairing", "100% "),
                     call("Verifying repair", "01/01"),
                 ]
             )

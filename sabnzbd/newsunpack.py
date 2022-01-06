@@ -43,6 +43,7 @@ from sabnzbd.misc import (
     cmp,
     run_command,
     build_and_run_command,
+    format_time_left,
 )
 from sabnzbd.filesystem import (
     make_script_path,
@@ -741,7 +742,8 @@ def rar_extract_core(
             if filename not in rarfiles:
                 rarfiles.append(filename)
             curr += 1
-            nzo.set_action_line(T("Unpacking"), "%02d/%02d" % (curr, numrars))
+            perc = (curr / numrars) * 100
+            nzo.set_action_line(T("Unpacking"), "%02d/%02d %s" % (curr, numrars, add_time_left(perc, start)))
 
         elif line.find("recovery volumes found") > -1:
             inrecovery = True  # and thus start ignoring "Cannot find volume" for a while
@@ -1258,6 +1260,7 @@ def par2cmdline_verify(
     verifynum = 0
     verifytotal = 0
     verified = 0
+    perc = 0
 
     in_verify = False
     in_extra_files = False
@@ -1357,9 +1360,12 @@ def par2cmdline_verify(
         elif line.startswith(("Repairing:", "Processing:")):
             # "Processing" is shown when it is only joining files without repairing
             chunks = line.split()
-            per = float(chunks[-1][:-1])
-            nzo.set_action_line(T("Repairing"), "%2d%%" % per)
-            nzo.status = Status.REPAIRING
+            new_perc = float(chunks[-1][:-1])
+            # Only send updates for whole-percentage updates
+            if new_perc - perc > 1:
+                perc = new_perc
+                nzo.set_action_line(T("Repairing"), "%2d%% %s" % (perc, add_time_left(perc, start)))
+                nzo.status = Status.REPAIRING
 
         elif line.startswith("Repair complete"):
             msg = T("[%s] Repaired in %s") % (setname, format_time_string(time.time() - start))
@@ -1780,8 +1786,8 @@ def multipar_verify(
         elif in_repair:
             try:
                 # Line with percentage of repair (nothing else)
-                per = float(line[:-1])
-                nzo.set_action_line(T("Repairing"), "%2d%%" % per)
+                perc = float(line[:-1])
+                nzo.set_action_line(T("Repairing"), "%2d%% %s" % (perc, add_time_left(perc, start)))
                 nzo.status = Status.REPAIRING
             except:
                 # Checksum error
@@ -2215,11 +2221,12 @@ def crc_calculate(path):
     return b"%08x" % (crc & 0xFFFFFFFF)
 
 
-def add_time_left(perc:float, start: float) -> str:
+def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Optional[float] = None) -> str:
     """Calculate time left based on current progress, if it is taking more than 10 seconds"""
-    time_used = time.time() - start
+    if not time_used:
+        time_used = time.time() - start_time
     if time_used > 10:
-        return ""
+        return " - %s %s" % (format_time_left(int((100 - perc) / (perc / time_used))), T("left"))
     return ""
 
 
