@@ -238,6 +238,7 @@ DOWNLOAD_EXT = (
     "srr",
     "srs",
     "srt",
+    "ssa",
     "strings",
     "sub",
     "sup",
