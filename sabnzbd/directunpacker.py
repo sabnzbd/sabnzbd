@@ -34,7 +34,7 @@ from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
-from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist
+from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
@@ -306,7 +306,11 @@ class DirectUnpacker(threading.Thread):
                     if not last_volume_linebuf or last_volume_linebuf != linebuf:
                         # Next volume
                         self.cur_volume += 1
-                        self.nzo.set_action_line(T("Direct Unpack"), self.get_formatted_stats())
+                        perc = (self.cur_volume / self.total_volumes[self.cur_setname]) * 100
+                        self.nzo.set_action_line(
+                            T("Direct Unpack"),
+                            "%s %s" % (self.get_formatted_stats(), add_time_left(perc, time_used=self.unpack_time)),
+                        )
                         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
