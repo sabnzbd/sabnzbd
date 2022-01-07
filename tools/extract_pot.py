@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2011-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ with open("sabnzbd/version.py") as version_file:
 HEADER = (
     r"""#
 # SABnzbd Translation Template file __TYPE__
-# Copyright 2011-2021 The SABnzbd-Team
+# Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
 #
 msgid ""
