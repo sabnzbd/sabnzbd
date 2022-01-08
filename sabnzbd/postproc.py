@@ -301,17 +301,21 @@ class PostProcessor(Thread):
             # Allow download to proceed
             sabnzbd.Downloader.resume_from_postproc()
 
+
 def contains_dvd_or_bluray_structure(dirpath: str) -> bool:
     # input path to a directory (or file)
     # returns: True if it is DVD or Bluray directory structure
     # todo: remove next 2 lines
-    #contains_dvd_structure = os.path.isdir(os.path.join(dirpath, "VIDEO_TS")) or os.path.isdir(os.path.join(dirpath, "video_ts"))
-    #contains_bluray_structure = os.path.isdir(os.path.join(dirpath, "BDMV")) or os.path.isdir(os.path.join(dirpath, "bdmv"))
+    # contains_dvd_structure = os.path.isdir(os.path.join(dirpath, "VIDEO_TS")) or os.path.isdir(os.path.join(dirpath, "video_ts"))
+    # contains_bluray_structure = os.path.isdir(os.path.join(dirpath, "BDMV")) or os.path.isdir(os.path.join(dirpath, "bdmv"))
     triggering_dirnames = ["VIDEO_TS", "BDMV", "BDSVM"]
     for dirname in triggering_dirnames:
-        if os.path.isdir(os.path.join(dirpath, dirname.upper())) or os.path.isdir(os.path.join(dirpath, dirname.lower())):
+        if os.path.isdir(os.path.join(dirpath, dirname.upper())) or os.path.isdir(
+            os.path.join(dirpath, dirname.lower())
+        ):
             return True
     return False
+
 
 def process_job(nzo: NzbObject):
     """Process one job"""
