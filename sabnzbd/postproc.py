@@ -310,9 +310,7 @@ def contains_dvd_or_bluray_structure(dirpath: str) -> bool:
     # contains_bluray_structure = os.path.isdir(os.path.join(dirpath, "BDMV")) or os.path.isdir(os.path.join(dirpath, "bdmv"))
     triggering_dirnames = ["VIDEO_TS", "BDMV", "BDSVM"]
     for dirname in triggering_dirnames:
-        if os.path.isdir(os.path.join(dirpath, dirname.upper())) or os.path.isdir(
-            os.path.join(dirpath, dirname.lower())
-        ):
+        if os.path.isdir(os.path.join(dirpath, dirname.upper())) or os.path.isdir(os.path.join(dirpath, dirname.lower())):
             return True
     return False
 
