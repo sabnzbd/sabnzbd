@@ -148,35 +148,6 @@ msgstr "Signaali %s kaapattu, tallennetaan ja lopetetaan..."
 msgid "Fatal error at saving state"
 msgstr "Vakava virhe tallennettaessa tilaa"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Yritetään noutaa NZB osoitteesta %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Kohteen %s tallentaminen epäonnistui"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Väliaikaistiedostoa ei voida luoda kohteelle %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Yritettiin asettaa tila ei olemassa olevalle palvelimelle %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Virhe tiedostossa tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Kohteen %s lataaminen epäonnistui"
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -337,6 +308,14 @@ msgstr "avainsanat"
 msgid "Quota spent, pausing downloading"
 msgstr "Latausrajoitus saavutettu, keskeytetään lataukset"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Virheellinen parametri"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "TUNT polku \"%s\" ei ole sallittu"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s ei ole kelvollinen sähköpostiosoite"
@@ -348,6 +327,21 @@ msgstr "Palvelimen osoite vaaditaan"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s ei ole oikea oktaalinen arvo"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -368,29 +362,6 @@ msgstr "Ei voitu luoda varmuuskopiotiedostoa kohteelle %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Virheellisesti koodattu salasana %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Virheellinen parametri"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s ei ole oikea oktaalinen arvo"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "TUNT polku \"%s\" ei ole sallittu"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
 
 #. Error message
 #: sabnzbd/database.py
@@ -635,6 +606,21 @@ msgstr "Kohteen %s siirtäminen kohteeseen %s epäonnistui"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Virhe tiedostossa tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Kohteen %s tallentaminen epäonnistui"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Kohteen %s lataaminen epäonnistui"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1135,10 +1121,10 @@ msgstr "Ilmoitusskriptiä \"%s\" ei ole olemassa"
 msgid "Failed to send Windows notification"
 msgstr "Windows-ilmoituksen lähetys epäonnistui"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Virhe tuotaessa %s tiedostoa kohteesta %s"
+msgid "Cannot create temp file for %s"
+msgstr "Väliaikaistiedostoa ei voida luoda kohteelle %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1149,6 +1135,11 @@ msgstr "Virhe lisättäessä %s, poistetaan"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Virhe poistettaessa %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Virhe tuotaessa %s tiedostoa kohteesta %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1751,6 +1742,11 @@ msgstr "Tuntematon toiminto: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Ajastettu tuntemattomalle palvelimelle %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Yritettiin asettaa tila ei olemassa olevalle palvelimelle %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5129,6 +5125,10 @@ msgstr "NZB tiedostoa ei voida käyttää"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "Osoitteen nouto epäonnistui; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Yritetään noutaa NZB osoitteesta %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

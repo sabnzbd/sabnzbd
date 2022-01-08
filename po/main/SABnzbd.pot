@@ -129,35 +129,6 @@ msgstr ""
 msgid "Fatal error at saving state"
 msgstr ""
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr ""
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr ""
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr ""
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr ""
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr ""
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -314,6 +285,14 @@ msgstr ""
 msgid "Quota spent, pausing downloading"
 msgstr ""
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr ""
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr ""
@@ -324,6 +303,19 @@ msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
 msgstr ""
 
 #. Warning message
@@ -344,27 +336,6 @@ msgstr ""
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
-msgstr ""
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/config.py
-msgid "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
 msgstr ""
 
 #. Error message
@@ -595,6 +566,21 @@ msgstr ""
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -1072,9 +1058,9 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
+msgid "Cannot create temp file for %s"
 msgstr ""
 
 #. Error message
@@ -1085,6 +1071,11 @@ msgstr ""
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
 msgstr ""
 
 #. Error message
@@ -1650,6 +1641,11 @@ msgstr ""
 #. Warning message
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
 msgstr ""
 
 #. Queue status "download" - Post processing pick list - Config->RSS button "download item"
@@ -4807,6 +4803,10 @@ msgstr ""
 
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
+msgstr ""
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
 msgstr ""
 
 #: sabnzbd/utils/servertests.py

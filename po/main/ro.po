@@ -150,35 +150,6 @@ msgstr "Semnal %s  prins, salvez şi ies..."
 msgid "Fatal error at saving state"
 msgstr "Eroare fatală la salvare"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Încerc să descarc NZB de la %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Salvarea %s nereuşită"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Nu pot crea fişier temporar pentru %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Încerc să setez starea unui server nexistent %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Eroare în tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Încărcarea %s nereuşită"
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -345,6 +316,14 @@ msgstr "cuvinte cheie"
 msgid "Quota spent, pausing downloading"
 msgstr "Cotă epuizată, întrerupem descărcarea"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Parametru Incorect"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "cale UNC \"%s\" nu este premisă aici"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s nu este o adresă email validă"
@@ -356,6 +335,21 @@ msgstr "Adresă server necesară"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s nu este o valoare octală corectă"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Eroare: Coada nu este goală, nu pot schimba dosar."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -376,29 +370,6 @@ msgstr "Nu pot crea copie de rezervă pentru %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Parolă %s codificată greşit"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Parametru Incorect"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s nu este o valoare octală corectă"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "cale UNC \"%s\" nu este premisă aici"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Eroare: Coada nu este goală, nu pot schimba dosar."
 
 #. Error message
 #: sabnzbd/database.py
@@ -648,6 +619,21 @@ msgstr "Mutare %s în %s nereuşită"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Eroare în tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Salvarea %s nereuşită"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Încărcarea %s nereuşită"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1160,10 +1146,10 @@ msgstr "Scriptul de notificare \"%s\" nu există"
 msgid "Failed to send Windows notification"
 msgstr "Nu am putut trimite notificări în Fereastră"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Importare %s a fişierelor de la %s nereuşită"
+msgid "Cannot create temp file for %s"
+msgstr "Nu pot crea fişier temporar pentru %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1174,6 +1160,11 @@ msgstr "Eroare adăugare %s, ştergem"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Eroare ştergere %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Importare %s a fişierelor de la %s nereuşită"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1784,6 +1775,11 @@ msgstr "Acţiune necunoscută: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Planificare pentru un server inexistent %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Încerc să setez starea unui server nexistent %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5138,6 +5134,10 @@ msgstr "Fişier NZB Inutilizabil"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "Descărcare URL nereuşită; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Încerc să descarc NZB de la %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

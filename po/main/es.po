@@ -155,35 +155,6 @@ msgstr "Señal %s capturado, guardando y saliendo..."
 msgid "Fatal error at saving state"
 msgstr "Error grave al guardar estado"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Tratando de buscar NZB de %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Guardar de %s no se pudo completar."
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "No se puede crear el archivo temporal para %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Intentando cambiar el estado de servidor inexistente %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Fallo en tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Cargar de %s no se pudo completar."
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -354,6 +325,14 @@ msgstr "palabras clave"
 msgid "Quota spent, pausing downloading"
 msgstr "Quota gastado, pausando cola"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Parámetro incorrecto"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "Ruta de acceso UNC \"%s\" no permitido aqui"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s no es una dirección de correo electrónico válida."
@@ -365,6 +344,21 @@ msgstr "Se necesita la dirección del servidor"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s no es un valor octal correcto"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Error: Cola no esta vacía, no se puede cambiar el directorio"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -385,29 +379,6 @@ msgstr "No se puede crear copia de seguridad del archivo %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Contraseña incorrectamente codificado %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Parámetro incorrecto"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s no es un valor octal correcto"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "Ruta de acceso UNC \"%s\" no permitido aqui"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Error: Cola no esta vacía, no se puede cambiar el directorio"
 
 #. Error message
 #: sabnzbd/database.py
@@ -660,6 +631,21 @@ msgstr "Error al mover %s a %s"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Fallo en tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Guardar de %s no se pudo completar."
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Cargar de %s no se pudo completar."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1183,10 +1169,10 @@ msgstr "El script de notificación \"%s\" no existe"
 msgid "Failed to send Windows notification"
 msgstr "Fallo al mandar la notificación de Windows"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Error al importar %s ficheros desde %s"
+msgid "Cannot create temp file for %s"
+msgstr "No se puede crear el archivo temporal para %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1197,6 +1183,11 @@ msgstr "Error al añadir %s, eliminando"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Error al quitar %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Error al importar %s ficheros desde %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1817,6 +1808,11 @@ msgstr "Acción desconocida: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Planificación para servidor %s inexistente"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Intentando cambiar el estado de servidor inexistente %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5245,6 +5241,10 @@ msgstr "Archivo NZB inusable"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "Error al recuperar la URL; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Tratando de buscar NZB de %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

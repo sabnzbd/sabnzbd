@@ -142,35 +142,6 @@ msgstr "Signal %s primljen, snimanje i napuštanje..."
 msgid "Fatal error at saving state"
 msgstr "Fatalna greška pri snimanju trenutnog stanja"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Pokušaj da se učita NZB sa %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Snimanje %s neuspešno"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Nemoguće kreiranje privremene datoteke za %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Покушај постављања статуса за непостојећи сервер %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Грешка у tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Učitavanje %s neuspešno"
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -331,6 +302,14 @@ msgstr "кључне речи"
 msgid "Quota spent, pausing downloading"
 msgstr "Kvota utrošena, pauziram preuzimanja"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Погрешан параметар"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "UNC путања \"%s\" није дозвољена"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s nije ispravna email adresa"
@@ -342,6 +321,21 @@ msgstr "Потребна је адреса сервера"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s nije ispravna oktalna vrednost"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Грешка: ред није празан, фасцикла се не може променити."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -362,29 +356,6 @@ msgstr "Ne može se kreirati sigurnosna kopija za %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Pogrešno šifrovana lozinka %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Погрешан параметар"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s nije ispravna oktalna vrednost"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC путања \"%s\" није дозвољена"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Грешка: ред није празан, фасцикла се не може променити."
 
 #. Error message
 #: sabnzbd/database.py
@@ -629,6 +600,21 @@ msgstr "Neuspešno premeštanje %s u %s"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Грешка у tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Snimanje %s neuspešno"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Učitavanje %s neuspešno"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1128,10 +1114,10 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Неуспешан унос %s датотеке са %s"
+msgid "Cannot create temp file for %s"
+msgstr "Nemoguće kreiranje privremene datoteke za %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1142,6 +1128,11 @@ msgstr "Грешка додавања %s, уклањање"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Greška pri uklanjanju %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Неуспешан унос %s датотеке са %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1744,6 +1735,11 @@ msgstr "Непозната акција: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Планификација за непостојећи сервер %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Покушај постављања статуса за непостојећи сервер %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5082,6 +5078,10 @@ msgstr "NZB датотека неупотребљива"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "Погрешно учитавање УРЛ-а; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Pokušaj da se učita NZB sa %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

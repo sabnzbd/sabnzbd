@@ -145,35 +145,6 @@ msgstr "Signal %s mottatt, lagrer og avslutter..."
 msgid "Fatal error at saving state"
 msgstr "Kritisk feil ved lagring av tilstand"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Forsøker å hente NZB fra %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Lagring av %s mislyktes"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Kan ikke lage midlertidig fil for %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Forsøker å sette status på ikke-eksisterende server %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Feil i tempfil.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Lasting av %s mislyktes"
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -334,6 +305,14 @@ msgstr "nøkkelord"
 msgid "Quota spent, pausing downloading"
 msgstr "Kvote oppbrukt, setter nedlasting på pause"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Feil parameter"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "UNC-sti \"%s\" er ikke tillatt her"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s er ikke en godkjent e-post-adresse"
@@ -345,6 +324,21 @@ msgstr "Krever server-adresse"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s er ikke en korrekt oktal verdi"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Feil: Køen er ikke tom, kan ikke bytte mappe."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -365,29 +359,6 @@ msgstr "Kan ikke sikkerhetskopiere fil %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Feil kodet passord %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Feil parameter"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s er ikke en korrekt oktal verdi"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-sti \"%s\" er ikke tillatt her"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Feil: Køen er ikke tom, kan ikke bytte mappe."
 
 #. Error message
 #: sabnzbd/database.py
@@ -631,6 +602,21 @@ msgstr "Kunne ikke flytte %s til %s"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Feil i tempfil.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Lagring av %s mislyktes"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Lasting av %s mislyktes"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1132,10 +1118,10 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr "Klarte ikke å sende Windows melding"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Kunne ikke importere %s filer fra %s"
+msgid "Cannot create temp file for %s"
+msgstr "Kan ikke lage midlertidig fil for %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1146,6 +1132,11 @@ msgstr "Kunne ikke legge til %s, tar bort"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Feil ved fjerning av %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Kunne ikke importere %s filer fra %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1748,6 +1739,11 @@ msgstr "Ukjent handling: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Skjema for ikke eksisterende server %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Forsøker å sette status på ikke-eksisterende server %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5100,6 +5096,10 @@ msgstr "Feil, Ubrukelig akrivfil"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "URL henting mislyktes; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Forsøker å hente NZB fra %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

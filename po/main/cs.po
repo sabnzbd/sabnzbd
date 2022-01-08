@@ -147,35 +147,6 @@ msgstr "Zachycen signál %s, ukládám a ukončuji..."
 msgid "Fatal error at saving state"
 msgstr "Neopravitelná chyba při ukládání  stavového souboru"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Zkouším stáhnout NZB z %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Ukládání %s selhalo"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Nelze vytvořit dočasný soubor pro %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Zkouším aktualizovat stav neexistujícího serveru %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Chyba v tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Načítání %s selhalo"
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -340,6 +311,14 @@ msgstr "klíčová slova"
 msgid "Quota spent, pausing downloading"
 msgstr "Kvóta přesažena, pozastavuji stahování"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Nesprávný parametr"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "UNC cesta \"%s\" zde není povolena"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s není validní emailová adresa"
@@ -351,6 +330,21 @@ msgstr "Adresa serveru je vyžadována"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s neni validní skript"
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s není hodnota v osmičkové soustavě"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Chyba: Fronta nené prázdná, nelze změnit složku."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -371,29 +365,6 @@ msgstr "Nelze vytvořit zálohu souboru %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr ""
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Nesprávný parametr"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s není hodnota v osmičkové soustavě"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC cesta \"%s\" zde není povolena"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Chyba: Fronta nené prázdná, nelze změnit složku."
 
 #. Error message
 #: sabnzbd/database.py
@@ -631,6 +602,21 @@ msgstr "Chyba přesunu %s do %s"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr "Zablokován pokus vytvořit adresář %s"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Chyba v tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Ukládání %s selhalo"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Načítání %s selhalo"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1139,10 +1125,10 @@ msgstr "Notifikační skript \"%s\" neexistuje"
 msgid "Failed to send Windows notification"
 msgstr "Nepodařilo se odeslat Windows oznámení"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Nezdařilo se importovat %s souborů z %s"
+msgid "Cannot create temp file for %s"
+msgstr "Nelze vytvořit dočasný soubor pro %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1153,6 +1139,11 @@ msgstr "Chyba při přidávání %s, odstraněno"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Chyba při odstraňování %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Nezdařilo se importovat %s souborů z %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1727,6 +1718,11 @@ msgstr "Neznámá akce: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr ""
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Zkouším aktualizovat stav neexistujícího serveru %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5008,6 +5004,10 @@ msgstr ""
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr ""
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Zkouším stáhnout NZB z %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

@@ -143,35 +143,6 @@ msgstr "אות %s נתפס, שומר ויוצא…"
 msgid "Fatal error at saving state"
 msgstr "שגיאה חמורה במצב שמירה"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "מנסה למשוך קובץ NZB מן %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "שמירת %s נכשלה"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "לא ניתן ליצור קובץ זמני עבור %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "מנסה לקבוע מעמד של שרת בלתי קיים %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "כישלון ב־tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "טעינת %s נכשלה"
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -333,6 +304,14 @@ msgstr "מילות מפתח"
 msgid "Quota spent, pausing downloading"
 msgstr "מכסה נוצלה, משהה הורדה"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "פרמטר שגוי"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "נתיב UNC \"%s\" אינו מותר כאן"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s אינה כתובת דוא״ל תקפה"
@@ -344,6 +323,21 @@ msgstr "כתובת שרת דרושה"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s הוא לא תסריט תקף"
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s אינו ערך אוקטלי נכון"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "שגיאה: התור אינו ריק, לא ניתן לשנות תיקייה."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -364,29 +358,6 @@ msgstr "לא ניתן ליצור קובץ גיבוי עבור %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "סיסמה מקודדת באופן שגוי %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "פרמטר שגוי"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s אינו ערך אוקטלי נכון"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "נתיב UNC \"%s\" אינו מותר כאן"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "שגיאה: התור אינו ריק, לא ניתן לשנות תיקייה."
 
 #. Error message
 #: sabnzbd/database.py
@@ -632,6 +603,21 @@ msgstr "נכשל בהעברת %s אל %s"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr "ניסיון נחסם ליצור תיקייה %s"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "כישלון ב־tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "שמירת %s נכשלה"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "טעינת %s נכשלה"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1135,10 +1121,10 @@ msgstr "תסריט ההתראה \"%s\" אינו קיים"
 msgid "Failed to send Windows notification"
 msgstr "נכשל בשליחת התראת Windows"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "נכשל ביבוא %s קבצים מן %s"
+msgid "Cannot create temp file for %s"
+msgstr "לא ניתן ליצור קובץ זמני עבור %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1149,6 +1135,11 @@ msgstr "שגיאה בזמן הוספת %s, מסיר"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "שגיאה בהסרת %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "נכשל ביבוא %s קבצים מן %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1755,6 +1746,11 @@ msgstr "פעולה בלתי ידועה: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "תזמן עבור שרת בלתי קיים %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "מנסה לקבוע מעמד של שרת בלתי קיים %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5127,6 +5123,10 @@ msgstr "קובץ NZB בלתי שמיש"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "משיכת כתובת נכשלה; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "מנסה למשוך קובץ NZB מן %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

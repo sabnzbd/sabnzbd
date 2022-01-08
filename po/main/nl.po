@@ -152,35 +152,6 @@ msgstr "Signaal %s ontvangen, opslaan en afsluiten..."
 msgid "Fatal error at saving state"
 msgstr "Onherstelbare fout bij opslaan status"
 
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Probeer NZB op te halen van %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Opslaan van %s lukt niet"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Kan geen tijdelijk bestand maken voor %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Poging de status van niet-bestaande server %s in te stellen"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Probleem met tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Inlezen van %s mislukt"
-
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
@@ -349,6 +320,14 @@ msgstr "trefwoorden"
 msgid "Quota spent, pausing downloading"
 msgstr "Quotum verbruikt, download is gestopt"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Incorrecte parameter"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "UNC-pad '%s' hier niet toegestaan."
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s is geen geldig e-mailadres"
@@ -360,6 +339,23 @@ msgstr "Serveradres verplicht"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s is geen geldig script."
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s is geen correct octaal getal"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+"Ingestelde rechten van %s zouden kunnen beletten dat SABnzbd toegang heeft "
+"tot de aangemaakte bestanden en mappen."
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -380,31 +376,6 @@ msgstr "Backupbestand maken voor %s niet mogelijk"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Foutief gecodeerd wachtwoord %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Incorrecte parameter"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s is geen correct octaal getal"
-
-#. Warning message
-#: sabnzbd/config.py
-msgid ""
-"Permissions setting of %s might deny SABnzbd access to the files and folders"
-" it creates."
-msgstr ""
-"Ingestelde rechten van %s zouden kunnen beletten dat SABnzbd toegang heeft "
-"tot de aangemaakte bestanden en mappen."
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-pad '%s' hier niet toegestaan."
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #. Error message
 #: sabnzbd/database.py
@@ -656,6 +627,21 @@ msgstr "Verplaatsen van %s naar %s mislukt"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr "Poging om map %s aan te maken geblokkeerd"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Probleem met tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Opslaan van %s lukt niet"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Inlezen van %s mislukt"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -1169,10 +1155,10 @@ msgstr "Meldingsscript '%s' bestaat niet"
 msgid "Failed to send Windows notification"
 msgstr "Versturen Windows-melding mislukt"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Importeren van %s bestanden van %s mislukt"
+msgid "Cannot create temp file for %s"
+msgstr "Kan geen tijdelijk bestand maken voor %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1183,6 +1169,11 @@ msgstr "Fout bij toevoegen van %s, wordt weer verwijderd"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Fout bij verwijderen van %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Importeren van %s bestanden van %s mislukt"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1792,6 +1783,11 @@ msgstr "Onbekende actie: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Taak voor niet bestaande server %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Poging de status van niet-bestaande server %s in te stellen"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -5225,6 +5221,10 @@ msgstr "Onbruikbaar NZB-bestand"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "URL ophalen mislukt; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Probeer NZB op te halen van %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."
