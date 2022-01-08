@@ -147,6 +147,7 @@ if __name__ == "__main__":
     patch_version_file(RELEASE_VERSION)
 
     # To draft a release or not to draft a release?
+    ON_GITHUB_ACTIONS = os.environ.get("CI", False)
     RELEASE_THIS = "refs/tags/" in os.environ.get("GITHUB_REF", "")
 
     # Rename release notes file
@@ -244,13 +245,14 @@ if __name__ == "__main__":
         # Run PyInstaller and check output
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
-        # Make sure we created a fully universal2 release
-        for bin_to_check in glob.glob("dist/SABnzbd.app/Contents/MacOS/**/*.so", recursive=True):
-            print("Checking if binary is universal2: %s" % bin_to_check)
-            file_output = run_external_command(["file", bin_to_check])
-            # Make sure we have both arm64 and x86
-            if not ("x86_64" in file_output and "arm64" in file_output):
-                raise RuntimeError("Non-universal2 binary found!")
+        # Make sure we created a fully universal2 release when releasing or during CI
+        if RELEASE_THIS or ON_GITHUB_ACTIONS:
+            for bin_to_check in glob.glob("dist/SABnzbd.app/Contents/MacOS/**/*.so", recursive=True):
+                print("Checking if binary is universal2: %s" % bin_to_check)
+                file_output = run_external_command(["file", bin_to_check])
+                # Make sure we have both arm64 and x86
+                if not ("x86_64" in file_output and "arm64" in file_output):
+                    raise RuntimeError("Non-universal2 binary found!")
 
         # Only continue if we can sign
         if authority:
