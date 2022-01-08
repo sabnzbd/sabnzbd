@@ -1480,7 +1480,7 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
             or is_propagating
             or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
         ) and priority != FORCE_PRIORITY:
-            slot["timeleft"] = "0:00"
+            slot["timeleft"] = "0:00:00"
             slot["eta"] = "unknown"
         else:
             running_bytes += bytesleft
@@ -1868,7 +1868,7 @@ def get_active_history(queue, items):
 def calc_timeleft(bytesleft, bps):
     """Based on bytesleft and bps calculate the time left in the format HH:MM:SS"""
     if bytesleft <= 0 or bps <= 0:
-        return "0:00"
+        return "0:00:00"
     return format_time_left(int(bytesleft / bps))
 
 

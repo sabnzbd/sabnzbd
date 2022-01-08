@@ -2226,7 +2226,7 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     if not time_used:
         time_used = time.time() - start_time
     if time_used > 10:
-        return " - %s %s" % (format_time_left(int((100 - perc) / (perc / time_used))), T("left"))
+        return " - %s %s" % (format_time_left(int((100 - perc) / (perc / time_used)), short_format=True), T("left"))
     return ""
 
 

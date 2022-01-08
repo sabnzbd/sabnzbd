@@ -52,7 +52,7 @@ stages:
           size: !re_search "[0-9][0-9.]*.?(\ [A-Z]+)?"
           noofslots_total: !anyint
           status: "Paused"
-          timeleft: "0:00"
+          timeleft: "0:00:00"
           eta: "unknown"
           refresh_rate: !re_match "[0-9]*"
           interface_settings: !re_match ".*"
@@ -81,7 +81,7 @@ stages:
             mbmissing: !re_search "[0-9][0-9.]*.?(\ [A-Z]+)?"
             direct_unpack: !re_match "[0-9]+"
             status: "Paused"
-            timeleft: "0:00"
+            timeleft: "0:00:00"
             eta: "unknown"
             avg_age: "!anystr"
             has_rating: !anybool
@@ -114,7 +114,7 @@ stages:
           # Verify only a bunch of key response parameters with a regex using
           # positive looksaheads, so parameters match regardless of their order
           # of appearance in the text output
-          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00')(?=.*'eta': 'unknown')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
 
 
 ---
@@ -174,7 +174,7 @@ stages:
             <size>!anystr</size>
             <noofslots_total>!anyint</noofslots_total>
             <status>!anystr</status>
-            <timeleft>0:00</timeleft>
+            <timeleft>0:00:00</timeleft>
             <eta>unknown</eta>
             <refresh_rate>!anything</refresh_rate>
             <interface_settings>!anything</interface_settings>
@@ -206,7 +206,7 @@ stages:
             <mbmissing>!anyfloat</mbmissing>
             <direct_unpack>!anyint</direct_unpack>
             <status>!anystr</status>
-            <timeleft>0:00</timeleft>
+            <timeleft>0:00:00</timeleft>
             <eta>unknown</eta>
             <avg_age>!anystr</avg_age>
             <has_rating>!anybool</has_rating>

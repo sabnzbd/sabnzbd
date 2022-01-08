@@ -81,27 +81,31 @@ def time_format(fmt):
         return fmt
 
 
-def format_time_left(totalseconds: int) -> str:
-    """Calculate the time left in the format [DD:][HH:]MM:SS"""
-    try:
-        minutes, seconds = divmod(totalseconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-        if seconds < 10:
-            seconds = "0%s" % seconds
-        if hours > 0:
-            if minutes < 10:
-                minutes = "0%s" % minutes
-            if days > 0:
-                if hours < 10:
-                    hours = "0%s" % hours
-                return "%s:%s:%s:%s" % (days, hours, minutes, seconds)
+def format_time_left(totalseconds: int, short_format: bool = False) -> str:
+    """Calculate the time left in the format [DD:]HH:MM:SS or [DD:][HH:]MM:SS"""
+    if totalseconds > 0:
+        try:
+            minutes, seconds = divmod(totalseconds, 60)
+            hours, minutes = divmod(minutes, 60)
+            days, hours = divmod(hours, 24)
+            if seconds < 10:
+                seconds = "0%s" % seconds
+            if hours > 0 or not short_format:
+                if minutes < 10:
+                    minutes = "0%s" % minutes
+                if days > 0:
+                    if hours < 10:
+                        hours = "0%s" % hours
+                    return "%s:%s:%s:%s" % (days, hours, minutes, seconds)
+                else:
+                    return "%s:%s:%s" % (hours, minutes, seconds)
             else:
-                return "%s:%s:%s" % (hours, minutes, seconds)
-        else:
-            return "%s:%s" % (minutes, seconds)
-    except:
+                return "%s:%s" % (minutes, seconds)
+        except:
+            pass
+    if short_format:
         return "0:00"
+    return "0:00:00"
 
 
 def calc_age(date: datetime.datetime, trans: bool = False) -> str:
