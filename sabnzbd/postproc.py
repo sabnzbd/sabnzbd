@@ -301,6 +301,17 @@ class PostProcessor(Thread):
             # Allow download to proceed
             sabnzbd.Downloader.resume_from_postproc()
 
+def contains_dvd_or_bluray_structure(dirpath: str) -> bool:
+    # input path to a directory (or file)
+    # returns: True if it is DVD or Bluray directory structure
+    # todo: remove next 2 lines
+    #contains_dvd_structure = os.path.isdir(os.path.join(dirpath, "VIDEO_TS")) or os.path.isdir(os.path.join(dirpath, "video_ts"))
+    #contains_bluray_structure = os.path.isdir(os.path.join(dirpath, "BDMV")) or os.path.isdir(os.path.join(dirpath, "bdmv"))
+    triggering_dirnames = ["VIDEO_TS", "BDMV", "BDSVM"]
+    for dirname in triggering_dirnames:
+        if os.path.isdir(os.path.join(dirpath, dirname.upper())) or os.path.isdir(os.path.join(dirpath, dirname.lower())):
+            return True
+    return False
 
 def process_job(nzo: NzbObject):
     """Process one job"""
@@ -521,9 +532,12 @@ def process_job(nzo: NzbObject):
                     newfiles = deobfuscate.recover_par2_names(newfiles)
 
                 if cfg.deobfuscate_final_filenames():
-                    # Deobfuscate the filenames
-                    logging.info("Running deobfuscate")
-                    deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
+                    if not contains_dvd_or_bluray_structure(workdir_complete):
+                        # Deobfuscate the filenames
+                        logging.info("Running deobfuscate")
+                        deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
+                    else:
+                        logging.debug("Not running deobfuscate, because DVD or Bluray structure found")
 
                 # Run the user script
                 script_path = make_script_path(script)
