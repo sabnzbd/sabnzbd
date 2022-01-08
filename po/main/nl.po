@@ -4,12 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2021
+# Rik Brouwer, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
+"Last-Translator: Rik Brouwer, 2022\n"
 "Language-Team: Dutch (https://www.transifex.com/sabnzbd/teams/111101/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -110,6 +111,8 @@ msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
 msgstr ""
+"Huidige umask (%o) zou kunnen beletten dat SABnzbd toegang heeft tot de "
+"aangemaakte bestanden en mappen."
 
 #. Warning message
 #: SABnzbd.py
@@ -392,6 +395,8 @@ msgid ""
 "Permissions setting of %s might deny SABnzbd access to the files and folders"
 " it creates."
 msgstr ""
+"Ingestelde rechten van %s zouden kunnen beletten dat SABnzbd toegang heeft "
+"tot de aangemaakte bestanden en mappen."
 
 #: sabnzbd/config.py
 msgid "UNC path \"%s\" not allowed here"
