@@ -196,6 +196,25 @@ class TestMisc:
         # Reset language
         lang.set_language()
 
+    def test_format_time_left(self):
+        assert "0:00:00" == misc.format_time_left(0)
+        assert "0:00:00" == misc.format_time_left(-1)
+        assert "0:00:01" == misc.format_time_left(1)
+        assert "0:01:01" == misc.format_time_left(60 + 1)
+        assert "0:11:10" == misc.format_time_left(60 * 11 + 10)
+        assert "3:11:10" == misc.format_time_left(60 * 60 * 3 + 60 * 11 + 10)
+        assert "13:11:10" == misc.format_time_left(60 * 60 * 13 + 60 * 11 + 10)
+        assert "1:09:11:10" == misc.format_time_left(60 * 60 * 33 + 60 * 11 + 10)
+
+    def test_format_time_left_short(self):
+        assert "0:00" == misc.format_time_left(0, short_format=True)
+        assert "0:01" == misc.format_time_left(1, short_format=True)
+        assert "1:01" == misc.format_time_left(60 + 1, short_format=True)
+        assert "11:10" == misc.format_time_left(60 * 11 + 10, short_format=True)
+        assert "3:11:10" == misc.format_time_left(60 * 60 * 3 + 60 * 11 + 10, short_format=True)
+        assert "13:11:10" == misc.format_time_left(60 * 60 * 13 + 60 * 11 + 10, short_format=True)
+        assert "1:09:11:10" == misc.format_time_left(60 * 60 * 33 + 60 * 11 + 10, short_format=True)
+
     def test_int_conv(self):
         assert 0 == misc.int_conv("0")
         assert 10 == misc.int_conv("10")

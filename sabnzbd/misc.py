@@ -82,7 +82,7 @@ def time_format(fmt):
 
 
 def format_time_left(totalseconds: int, short_format: bool = False) -> str:
-    """Calculate the time left in the format [DD:]HH:MM:SS or [DD:][HH:]MM:SS"""
+    """Calculate the time left in the format [DD:]HH:MM:SS or [DD:][HH:]MM:SS (short_format)"""
     if totalseconds > 0:
         try:
             minutes, seconds = divmod(totalseconds, 60)
