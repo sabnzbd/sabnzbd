@@ -536,12 +536,9 @@ def process_job(nzo: NzbObject):
                     newfiles = deobfuscate.recover_par2_names(newfiles)
 
                 if cfg.deobfuscate_final_filenames():
-                    if not contains_dvd_or_bluray_structure(workdir_complete):
-                        # Deobfuscate the filenames
-                        logging.info("Running deobfuscate")
-                        deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
-                    else:
-                        logging.debug("Not running deobfuscate, because DVD or Bluray structure found")
+                    # Deobfuscate the filenames
+                    logging.info("Running deobfuscate")
+                    deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
 
                 # Run the user script
                 script_path = make_script_path(script)
