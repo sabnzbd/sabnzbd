@@ -190,7 +190,6 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
         logging.info("Skipped DVD/Bluray files: %s", list(set(filelist) - set(newlist)))
     filelist = newlist
 
-
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info
     # Example: if 'kjladsflkjadf.adsflkjads' is probably a PNG, rename to 'kjladsflkjadf.adsflkjads.png'
