@@ -178,21 +178,18 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
 
     # to be sure, only keep really existing files:
     filelist = [f for f in filelist if os.path.isfile(f)]
-    # and leave out files inside a DVD or Bluray structure:
+    # and leave out all files inside a typical DVD or Bluray directory:
     ignored_movie_folders_with_dir_sep = tuple(os.path.sep + f + os.path.sep for f in IGNORED_MOVIE_FOLDERS)
-    # newlist = [f for f in filelist if not match_str(f, ignored_movie_folders_with_dir_sep)] # shorter
-
     newlist = []
     for file in filelist:
         if match_str(file, ignored_movie_folders_with_dir_sep):
             logging.debug("Skipping %s because of DVD/Bluray indicator", file)
         else:
             newlist.append(file)
-
     if newlist != filelist:
         logging.info("Skipped DVD/Bluray files: %s", list(set(filelist) - set(newlist)))
     filelist = newlist
-    # logging.debug("filelist now contains %s", filelist)
+
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info
