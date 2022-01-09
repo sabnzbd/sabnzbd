@@ -206,11 +206,10 @@ class TestDeobfuscateFinalResult:
         deobfuscate_list(myfilelist, jobname)
 
         # ... but because inside "VIDEO_TS" directory, the file should not be touched / renamed:
-        assert os.path.isfile(output_file1) # should stil be there
+        assert os.path.isfile(output_file1)  # should stil be there
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
-
 
     def test_deobfuscate_big_file_small_accompanying_files(self):
         # input: myiso.iso, with accompanying files (.srt files in this case)
