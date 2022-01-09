@@ -179,7 +179,7 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
     # to be sure, only keep really existing files:
     filelist = [f for f in filelist if os.path.isfile(f)]
 
-    # and leave out all files inside a typical DVD or Bluray directory:
+    # Do not deobfuscate/rename any files inside a typical DVD or Bluray directory:
     ignored_movie_folders_with_dir_sep = tuple(os.path.sep + f + os.path.sep for f in IGNORED_MOVIE_FOLDERS)
     newlist = [f for f in filelist if not match_str(f, ignored_movie_folders_with_dir_sep)]
     if newlist != filelist:
