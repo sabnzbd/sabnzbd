@@ -36,6 +36,8 @@ import re
 from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
+from sabnzbd.misc import match_str
+from sabnzbd.constants import IGNORED_MOVIE_FOLDERS
 from typing import List
 
 # Files to exclude and minimal file size for renaming
@@ -176,6 +178,20 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
 
     # to be sure, only keep really existing files:
     filelist = [f for f in filelist if os.path.isfile(f)]
+    # and leave out files inside a DVD or Bluray structure:
+    # filelist = [f for f in filelist if not match_str(f, IGNORED_MOVIE_FOLDERS)]
+    logging.debug("filelist now contains %s", filelist)
+    newlist = []
+    for file in filelist:
+        if match_str(file, IGNORED_MOVIE_FOLDERS):
+            logging.info("Skipping %s because of DVD/Bluray indicator", file)
+            #filelist.remove(file)
+        else:
+            newlist.append(file)
+    filelist = newlist
+    logging.debug("filelist now contains %s", filelist)
+
+
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info
