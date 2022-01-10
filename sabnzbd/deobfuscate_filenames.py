@@ -187,7 +187,7 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
             "Skipping deobfuscation because of DVD/Bluray directory name(s), like: %s",
             str(match_ignored_movie_folders)[:200],
         )
-        return  # bail out
+        return  # bail out of deobfuscate
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info
