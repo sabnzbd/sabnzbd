@@ -184,7 +184,8 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
     match_ignored_movie_folders = [f for f in filelist if match_str(f, ignored_movie_folders_with_dir_sep)]
     if match_ignored_movie_folders:
         logging.info(
-            "Skipping deobfuscation because of DVD/Bluray directory name(s), like: %s", str(match_ignored_movie_folders)[:200]
+            "Skipping deobfuscation because of DVD/Bluray directory name(s), like: %s",
+            str(match_ignored_movie_folders)[:200],
         )
         return  # bail out
 
