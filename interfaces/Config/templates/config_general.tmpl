@@ -222,7 +222,34 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
+    </form>
 
+    <form action="uploadConfig" method="post" name="fullform" class="fullform" autocomplete="off" enctype="multipart/form-data">
+    <input type="hidden" id="apikey" name="apikey" value="$apikey" />
+    <input type="hidden" id="ajax" name="ajax" value="1" />
+    <input type="hidden" name="output" value="json" />
+    <div class="section">
+        <div class="col2">
+            <h3>$T('Backup') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <p><b>$T('restartRequired')</b></p>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="download_backup">$T('download_backup')</label>
+                    <span class="desc"><a href="$caller_url/backup/?apikey=$apikey">$T('download_backup')</a></span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="upload_backup">$T('upload_backup')</label>
+                    <input type="file" name="admin_backup" id="admin_backup" />
+                    <span class="desc">$T('explain-admin_backup')</span>
+                </div>
+                <div class="field-pair">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                </div>
+            </fieldset>
+        </div>
+    </div>
     </form>
 </div><!-- /colmask -->
 

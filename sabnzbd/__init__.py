@@ -175,6 +175,7 @@ WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
 EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = 1
+RESTORE_DATA = None
 
 # Condition used to handle the main loop in SABnzbd.py
 SABSTOP_CONDITION = Condition(Lock())

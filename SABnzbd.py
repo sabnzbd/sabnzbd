@@ -1573,6 +1573,8 @@ def main():
         if sabnzbd.TRIGGER_RESTART:
             logging.info("Performing triggered restart")
             sabnzbd.shutdown_program()
+            if sabnzbd.RESTORE_DATA:
+                config.restore_config(sabnzbd.RESTORE_DATA)
 
             # Add arguments and make sure we are in the right directory
             if sabnzbd.Downloader.paused:

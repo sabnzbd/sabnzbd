@@ -31,11 +31,14 @@ import socket
 import ssl
 import functools
 import copy
+import io
+import zipfile
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
 from typing import Optional, Callable, Union, Any, Dict
 from guessit.api import properties as guessit_properties
+from threading import Thread
 
 import sabnzbd
 from sabnzbd.misc import (
@@ -453,6 +456,28 @@ class MainPage:
 
         sabnzbd.shutdown_program()
         return T("SABnzbd shutdown finished")
+
+    @secured_expose(check_configlock=True)
+    def backup(self, **kwargs):
+        adminpath = cfg.admin_dir.get_path()
+        logging.debug("Backing up %s + %s", adminpath, config.CFG.filename)
+        adminfiles = [f for f in os.listdir(adminpath) if os.path.isfile(os.path.join(adminpath, f))]
+
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+            for file_name in adminfiles:
+                full_path = os.path.join(adminpath, file_name)
+                with open(full_path, "rb") as data:
+                    zip_file.writestr(file_name, data.read())
+
+            with open(config.CFG.filename, "rb") as data:
+                zip_file.writestr("sabnzbd.ini", data.read())
+
+        cherrypy.response.headers["Content-Type"] = "application/zip"
+        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
+        content = zip_buffer.getvalue()
+        zip_buffer.close()
+        return content
 
     @secured_expose(check_api_key=True, access_type=1)
     def api(self, **kwargs):
@@ -1065,6 +1090,29 @@ class ConfigGeneral:
             return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
         else:
             raise Raiser(self.__root)
+
+    @secured_expose(check_api_key=True, check_configlock=True)
+    def uploadConfig(self, **kwargs):
+        admin_backup = kwargs.get("admin_backup")
+
+        # Only accept the backup file if it can be opened as a zip archive and contains sabnzbd.ini
+        valid_backup = False
+        try:
+            # Read the zip file into RAM so that it can be closed and deleted before restart
+            backup_ref = io.BytesIO(admin_backup.file.read())
+            admin_backup.file.close()
+            admin_zip_ref = zipfile.ZipFile(backup_ref, "r")
+            for f in admin_zip_ref.infolist():
+                if f.filename == "sabnzbd.ini":
+                    valid_backup = True
+        except:
+            valid_backup = False
+
+        if valid_backup:
+            sabnzbd.RESTORE_DATA = admin_zip_ref
+            Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
+        else:
+            logging.warning("Invalid backup archive, missing sabnzb.ini")
 
 
 def change_web_dir(web_dir):

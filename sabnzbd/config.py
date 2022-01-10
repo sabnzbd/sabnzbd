@@ -915,6 +915,20 @@ def save_config(force=False):
     return res
 
 
+def restore_config(admin_zip_ref):
+    adminpath = sabnzbd.cfg.admin_dir.get_path()
+    for file in admin_zip_ref.infolist():
+        if file.filename == "sabnzbd.ini":
+            destination_file = CFG.filename
+        else:
+            destination_file = os.path.join(adminpath, file.filename)
+        logging.debug("Writing %s to %s", file.filename, destination_file)
+        with open(destination_file, "wb") as destination_ref:
+            destination_ref.write(admin_zip_ref.read(file.filename))
+    admin_zip_ref.close()
+    logging.debug("Finished writing config files")
+
+
 def get_servers() -> Dict[str, ConfigServer]:
     global CFG_DATABASE
     try:
