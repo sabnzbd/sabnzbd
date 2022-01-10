@@ -284,10 +284,25 @@ class TestMisc:
     )
     def test_list_to_cmd(self, test_input, expected_output):
         """Test to convert list to a cmd.exe-compatible command string"""
-
         res = misc.list2cmdline(test_input)
         # Make sure the output is cmd.exe-compatible
         assert res == expected_output
+
+    def test_recursive_html_escape(self):
+        """Very basic test if the recursive clean-up works"""
+        input_test = {
+            "foo": "<b>?ar'\"",
+            "test_list": ["test&1", 'test"2'],
+            "test_nested_list": [["test&1", 'test"2', 4]],
+            "test_dict": {"test": ["test<>1", "#"]},
+        }
+        # Dict is updated in-place
+        misc.recursive_html_escape(input_test)
+        # Have to check them by hand
+        assert input_test["foo"] == "&lt;b&gt;?ar&#x27;&quot;"
+        assert input_test["test_list"] == ["test&amp;1", "test&quot;2"]
+        assert input_test["test_nested_list"] == [["test&amp;1", "test&quot;2", 4]]
+        assert input_test["test_dict"]["test"] == ["test&lt;&gt;1", "#"]
 
     @pytest.mark.parametrize(
         "value, result",

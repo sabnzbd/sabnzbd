@@ -32,10 +32,11 @@ import time
 import datetime
 import inspect
 import ctypes
+import html
 import ipaddress
 import socks
 from threading import Thread
-from typing import Union, Tuple, Any, AnyStr, Optional, List
+from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict
 
 import sabnzbd
 import sabnzbd.getipaddress
@@ -1067,6 +1068,25 @@ def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
     else:
         lines = text.split(b"\r\n")
         return ubtou(lines[0])
+
+
+def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclude_items: Tuple[str, ...] = ()):
+    """Recursively update the input_dict in-place with html-safe values"""
+    if isinstance(input_dict_or_list, (dict, list)):
+        if isinstance(input_dict_or_list, dict):
+            iterator = input_dict_or_list.items()
+        else:
+            # For lists we use enumerate
+            iterator = enumerate(input_dict_or_list)
+
+        for key, value in iterator:
+            # We ignore any other than str and those on the exclude_items-list
+            if isinstance(value, str) and key not in exclude_items:
+                input_dict_or_list[key] = html.escape(value, quote=True)
+            if isinstance(value, (dict, list)):
+                recursive_html_escape(value)
+    else:
+        raise ValueError("Expected dict or str, got %s" % type(input_dict_or_list))
 
 
 def list2cmdline(lst: List[str]) -> str:
