@@ -1103,6 +1103,10 @@ class ConfigGeneral:
             admin_backup.file.close()
             admin_zip_ref = zipfile.ZipFile(backup_ref, "r")
             for f in admin_zip_ref.infolist():
+                if "/" in f.filename or "\\" in f.filename:
+                    logging.debug("Backup archive contains invalid file %s", f.filename)
+                    valid_backup = False
+                    break
                 if f.filename == "sabnzbd.ini":
                     valid_backup = True
         except:
@@ -1112,7 +1116,7 @@ class ConfigGeneral:
             sabnzbd.RESTORE_DATA = admin_zip_ref
             Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
         else:
-            logging.warning("Invalid backup archive, missing sabnzb.ini")
+            logging.warning("Invalid backup archive, bad file or missing sabnzb.ini")
 
 
 def change_web_dir(web_dir):
