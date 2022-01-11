@@ -11,12 +11,13 @@
 # Andreas Kames, 2021
 # Safihre <safihre@sabnzbd.org>, 2021
 # Simon W., 2021
+# Nils Briggen, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Simon W., 2021\n"
+"Last-Translator: Nils Briggen, 2022\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -119,6 +120,8 @@ msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
 msgstr ""
+"Die aktuellen Zugriffseinstellungen (%o) könnte SABnzbd den Zugriff auf die "
+"erstellten Dateien und Ordner von SABnzbd verweigern."
 
 #. Warning message
 #: SABnzbd.py
@@ -356,6 +359,8 @@ msgid ""
 "Permissions setting of %s might deny SABnzbd access to the files and folders"
 " it creates."
 msgstr ""
+"Die aktuellen Zugriffseinstellungen (%s) könnte SABnzbd den Zugriff auf die "
+"erstellten Dateien und Ordner von SABnzbd verweigern."
 
 #: sabnzbd/cfg.py
 msgid "Error: Queue not empty, cannot change folder."
