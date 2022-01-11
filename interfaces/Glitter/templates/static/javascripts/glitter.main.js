@@ -597,37 +597,6 @@ function ViewModel() {
         }
     })
 
-    // Save the rest in config if global-settings
-    var saveInterfaceSettings = function(newValue) {
-        if(self.useGlobalOptions()) {
-            var interfaceSettings = {
-                "dateFormat": self.dateFormat,
-                "extraQueueColumns": self.extraQueueColumns,
-                "extraHistoryColumns": self.extraHistoryColumns,
-                "displayCompact": self.displayCompact,
-                "displayFullWidth": self.displayFullWidth,
-                "displayTabbed": self.displayTabbed,
-                "confirmDeleteQueue": self.confirmDeleteQueue,
-                "confirmDeleteHistory": self.confirmDeleteHistory
-            };
-            callAPI({
-                mode: "set_config",
-                section: "misc",
-                keyword: "interface_settings",
-                value: ko.toJSON(interfaceSettings)
-            })
-        }
-    }
-
-    self.dateFormat.subscribe(saveInterfaceSettings);
-    self.extraQueueColumns.subscribe(saveInterfaceSettings);
-    self.extraHistoryColumns.subscribe(saveInterfaceSettings);
-    self.displayCompact.subscribe(saveInterfaceSettings);
-    self.displayFullWidth.subscribe(saveInterfaceSettings);
-    self.displayTabbed.subscribe(saveInterfaceSettings);
-    self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
-    self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
-
     /***
          Add NZB's
     ***/
@@ -1081,6 +1050,26 @@ function ViewModel() {
         }
     }
 
+    // Save the rest in config if global-settings
+    var saveInterfaceSettings = function(newValue) {
+        var interfaceSettings = {
+            "dateFormat": self.dateFormat,
+            "extraQueueColumns": self.extraQueueColumns,
+            "extraHistoryColumns": self.extraHistoryColumns,
+            "displayCompact": self.displayCompact,
+            "displayFullWidth": self.displayFullWidth,
+            "displayTabbed": self.displayTabbed,
+            "confirmDeleteQueue": self.confirmDeleteQueue,
+            "confirmDeleteHistory": self.confirmDeleteHistory
+        };
+        callAPI({
+            mode: "set_config",
+            section: "misc",
+            keyword: "interface_settings",
+            value: ko.toJSON(interfaceSettings)
+        })
+    }
+
     // Get the speed-limit, refresh rate and server names
     callAPI({
         mode: 'get_config'
@@ -1109,6 +1098,16 @@ function ViewModel() {
                 self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
                 self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
             }
+
+            // Only subscribe now to prevent collisions between localStorage and config settings updates
+            self.dateFormat.subscribe(saveInterfaceSettings);
+            self.extraQueueColumns.subscribe(saveInterfaceSettings);
+            self.extraHistoryColumns.subscribe(saveInterfaceSettings);
+            self.displayCompact.subscribe(saveInterfaceSettings);
+            self.displayFullWidth.subscribe(saveInterfaceSettings);
+            self.displayTabbed.subscribe(saveInterfaceSettings);
+            self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
+            self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
         }
 
         // Set bandwidth limit
