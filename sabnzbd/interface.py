@@ -1115,8 +1115,12 @@ class ConfigGeneral:
         if valid_backup:
             sabnzbd.RESTORE_DATA = admin_zip_ref
             Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
+            return sabnzbd.api.report(data={"result": True, "message": "Success"})
         else:
-            logging.warning("Invalid backup archive, bad file or missing sabnzb.ini")
+            logging.warning("Invalid backup archive, bad file or missing sabnzbd.ini")
+            return sabnzbd.api.report(
+                data={"result": False, "message": "Invalid backup archive, bad file or missing sabnzbd.ini"}
+            )
 
 
 def change_web_dir(web_dir):

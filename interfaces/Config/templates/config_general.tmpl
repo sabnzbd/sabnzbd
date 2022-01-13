@@ -224,7 +224,7 @@
     </div><!-- /section -->
     </form>
 
-    <form action="uploadConfig" method="post" name="fullform" class="fullform" autocomplete="off" enctype="multipart/form-data">
+    <form action="uploadConfig" method="post" name="uploadConfigForm" id="uploadConfigForm" class="fullform" autocomplete="off" enctype="multipart/form-data">
     <input type="hidden" id="apikey" name="apikey" value="$apikey" />
     <input type="hidden" id="ajax" name="ajax" value="1" />
     <input type="hidden" name="output" value="json" />
@@ -245,7 +245,10 @@
                     <span class="desc">$T('explain-admin_backup')</span>
                 </div>
                 <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default uploadConfig"><span class="glyphicon glyphicon-ok"></span> $T('button-uploadConfig')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
                 </div>
             </fieldset>
         </div>
@@ -399,6 +402,40 @@
         }
     })
 
+    // Upload config
+    \$('.uploadConfig').click(function(event){
+        removeObfuscation()
+        var theButton = \$(this)
+        var resultBox = theButton.parents('.col1').find('.result-box .alert');
+        theButton.attr("disabled", "disabled")
+        theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
+        formData = new FormData(document.querySelector('#uploadConfigForm'))
+        \$.ajax({
+            type: "POST",
+            url: "uploadConfig/",
+            data: formData,
+            processData: false,
+            contentType: false
+        }).then(function(data) {
+            // Let's replace the link
+            msg = data.value.message
+            msg = msg.replace('-', '<br>')
+            // Fill the box and enable the button
+            resultBox.removeClass('alert-success alert-danger').show()
+            resultBox.html(msg)
+            theButton.removeAttr("disabled")
+            theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
+
+            // Success or not?
+            if(data.value.result) {
+                resultBox.addClass('alert-success')
+                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+            } else {
+                resultBox.addClass('alert-danger')
+                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
+            }
+        });
+    });
 });
 </script>
 
