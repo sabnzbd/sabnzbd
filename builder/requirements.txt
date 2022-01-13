@@ -1,5 +1,5 @@
 # Basic build requirements
-pyinstaller
+pyinstaller>=4.8
 setuptools
 pkginfo
 certifi
