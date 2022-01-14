@@ -25,6 +25,8 @@ import re
 import shutil
 import threading
 import uuid
+import io
+import zipfile
 from typing import List, Dict, Any, Callable, Optional, Union, Tuple
 from urllib.parse import urlparse
 
@@ -915,18 +917,24 @@ def save_config(force=False):
     return res
 
 
-def restore_config(admin_zip_ref):
+def restore_config(admin_backup_data):
+    """Restore admin files from zip file"""
     adminpath = sabnzbd.cfg.admin_dir.get_path()
-    for file in admin_zip_ref.infolist():
-        if file.filename == "sabnzbd.ini":
-            destination_file = CFG.filename
-        else:
-            destination_file = os.path.join(adminpath, file.filename)
-        logging.debug("Writing %s to %s", file.filename, destination_file)
-        with open(destination_file, "wb") as destination_ref:
-            destination_ref.write(admin_zip_ref.read(file.filename))
-    admin_zip_ref.close()
-    logging.debug("Finished writing config files")
+    try:
+        with io.BytesIO(admin_backup_data) as backup_ref:
+            with zipfile.ZipFile(backup_ref, "r") as admin_zip_ref:
+                for file in admin_zip_ref.infolist():
+                    if file.filename == "sabnzbd.ini":
+                        destination_file = CFG.filename
+                    else:
+                        destination_file = os.path.join(adminpath, file.filename)
+                    logging.debug("Writing %s to %s", file.filename, destination_file)
+                    with open(destination_file, "wb") as destination_ref:
+                        destination_ref.write(admin_zip_ref.read(file.filename))
+        logging.debug("Finished writing config files")
+    except:
+        logging.warning("Could not restore config")
+        logging.info("Traceback: ", exc_info=True)
 
 
 def get_servers() -> Dict[str, ConfigServer]:
