@@ -33,7 +33,7 @@ from urllib.parse import urlparse
 import configobj
 
 import sabnzbd
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, ADMIN_FILES
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
@@ -917,20 +917,57 @@ def save_config(force=False):
     return res
 
 
-def restore_config(admin_backup_data):
+def make_backup_config():
+    """Put config data in a zip file"""
+    adminpath = sabnzbd.cfg.admin_dir.get_path()
+    logging.debug("Backing up %s + %s", adminpath, CFG.filename)
+    with io.BytesIO() as zip_buffer:
+        with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
+            for filename in ADMIN_FILES:
+                full_path = os.path.join(adminpath, filename)
+                if os.path.isfile(full_path):
+                    with open(full_path, "rb") as data:
+                        zip_ref.writestr(filename, data.read())
+            with open(CFG.filename, "rb") as data:
+                zip_ref.writestr("sabnzbd.ini", data.read())
+        backup_config_data = zip_buffer.getvalue()
+    return backup_config_data
+
+
+def validate_backup_config(backup_config_data):
+    """Check that the zip file only contains allowed files and that sabnzbd.ini is there"""
+    valid_files = list(ADMIN_FILES)
+    valid_files.append("sabnzbd.ini")
+    valid_backup = False
+    try:
+        with io.BytesIO(backup_config_data) as backup_ref:
+            with zipfile.ZipFile(backup_ref, "r") as zip_ref:
+                for f in zip_ref.infolist():
+                    if f.filename not in valid_files:
+                        logging.debug("Backup archive contains invalid file %s, allowed: %s", f.filename, valid_files)
+                        valid_backup = False
+                        break
+                    if f.filename == "sabnzbd.ini":
+                        valid_backup = True
+    except:
+        valid_backup = False
+    return valid_backup
+
+
+def restore_backup_config(backup_config_data):
     """Restore admin files from zip file"""
     adminpath = sabnzbd.cfg.admin_dir.get_path()
     try:
-        with io.BytesIO(admin_backup_data) as backup_ref:
-            with zipfile.ZipFile(backup_ref, "r") as admin_zip_ref:
-                for file in admin_zip_ref.infolist():
+        with io.BytesIO(backup_config_data) as backup_ref:
+            with zipfile.ZipFile(backup_ref, "r") as zip_ref:
+                for file in zip_ref.infolist():
                     if file.filename == "sabnzbd.ini":
                         destination_file = CFG.filename
                     else:
                         destination_file = os.path.join(adminpath, file.filename)
                     logging.debug("Writing %s to %s", file.filename, destination_file)
                     with open(destination_file, "wb") as destination_ref:
-                        destination_ref.write(admin_zip_ref.read(file.filename))
+                        destination_ref.write(zip_ref.read(file.filename))
         logging.debug("Finished writing config files")
     except:
         logging.warning(T("Could not restore config"))
