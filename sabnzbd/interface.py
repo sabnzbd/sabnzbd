@@ -38,7 +38,6 @@ from xml.sax.saxutils import escape
 from Cheetah.Template import Template
 from typing import Optional, Callable, Union, Any, Dict
 from guessit.api import properties as guessit_properties
-from threading import Thread
 
 import sabnzbd
 from sabnzbd.misc import (
