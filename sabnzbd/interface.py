@@ -1106,8 +1106,8 @@ class ConfigGeneral:
         try:
             # Read the zip file into RAM so that it can be closed and deleted before restart
             admin_backup_data = admin_backup.file.read()
+            admin_backup.file.close()
             with io.BytesIO(admin_backup_data) as backup_ref:
-                admin_backup.file.close()
                 with zipfile.ZipFile(backup_ref, "r") as admin_zip_ref:
                     for f in admin_zip_ref.infolist():
                         if f.filename not in valid_files:
