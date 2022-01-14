@@ -933,7 +933,7 @@ def restore_config(admin_backup_data):
                         destination_ref.write(admin_zip_ref.read(file.filename))
         logging.debug("Finished writing config files")
     except:
-        logging.warning("Could not restore config")
+        logging.warning(T("Could not restore config"))
         logging.info("Traceback: ", exc_info=True)
 
 
