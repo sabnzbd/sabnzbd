@@ -35,7 +35,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
         # Language-selection
         self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
         self.selenium_wrapper(self.driver.find_element_by_id, "en").click()
-        self.selenium_wrapper(self.driver.find_element_by_css_selector, ".btn.btn-default").click()
+        self.selenium_wrapper(self.driver.find_element_by_css_selector, "button.btn.btn-default").click()
 
         # Fill server-info
         self.no_page_crash()
