@@ -978,7 +978,9 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: Lis
             extraction_path = os.path.split(seven_path)[0]
 
         res, new_files_set = seven_extract(nzo, seven_path, seven_set, extraction_path, one_folder)
-        if not res and nzo.delete:
+        if res:
+            unseven_failed = True
+        elif nzo.delete:
             for seven in seven_sets[seven_set]:
                 try:
                     remove_file(seven)
