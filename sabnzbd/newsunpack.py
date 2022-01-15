@@ -970,6 +970,8 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: Lis
         logging.info("Starting extract on 7zip set/file: %s ", seven_set)
         nzo.set_action_line(T("Unpacking"), setname_from_path(seven_set))
 
+        # Sort, so that x.001 is the first one
+        seven_sets[seven_set].sort()
         seven_path = seven_sets[seven_set][0]
 
         if workdir_complete and seven_path.startswith(nzo.download_path):
