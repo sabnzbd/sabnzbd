@@ -460,7 +460,7 @@ class MainPage:
     def backup(self, **kwargs):
         cherrypy.response.headers["Content-Type"] = "application/zip"
         cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
-        return config.make_backup_config()
+        return config.create_config_backup()
 
     @secured_expose(check_api_key=True, access_type=1)
     def api(self, **kwargs):
@@ -1076,21 +1076,22 @@ class ConfigGeneral:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def uploadConfig(self, **kwargs):
-        backup_config_file = kwargs.get("backup_config_file")
-        # Only accept the backup file if it can be opened as a zip archive and only contains allowed file names
-        valid_backup = False
+        """Restore a config backup"""
+        config_backup_file = kwargs.get("config_backup_file")
+
+        # Only accept the backup file if it can be opened as a zip archive and only contains a config file
         try:
-            backup_config_data = backup_config_file.file.read()
-            backup_config_file.file.close()
-            valid_backup = config.validate_backup_config(backup_config_data)
+            config_backup_data = config_backup_file.file.read()
+            config_backup_file.file.close()
+            valid_backup = config.validate_config_backup(config_backup_data)
         except:
             valid_backup = False
 
         if valid_backup:
-            sabnzbd.RESTORE_DATA = backup_config_data
+            sabnzbd.RESTORE_DATA = config_backup_data
             return sabnzbd.api.report(data={"success": True, "restart_req": True})
         else:
-            return sabnzbd.api.report(error="Invalid backup archive, bad file or missing sabnzbd.ini")
+            return sabnzbd.api.report(error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):

@@ -19,6 +19,7 @@
 tests.test_functional_downloads - Test the downloading flow
 """
 import sabnzbd.filesystem as filesystem
+from sabnzbd.constants import DEF_INI_FILE
 from tests.testhelper import *
 
 
@@ -27,7 +28,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
         """Check if the wizard was already performed.
         If not: run the wizard!
         """
-        with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
+        with open(os.path.join(SAB_CACHE_DIR, DEF_INI_FILE), "r") as config_file:
             if f"[[{SAB_NEWSSERVER_HOST}]]" not in config_file.read():
                 self.start_wizard()
 

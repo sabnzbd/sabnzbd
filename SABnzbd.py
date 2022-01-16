@@ -1573,8 +1573,6 @@ def main():
         if sabnzbd.TRIGGER_RESTART:
             logging.info("Performing triggered restart")
             sabnzbd.shutdown_program()
-            if sabnzbd.RESTORE_DATA:
-                config.restore_backup_config(sabnzbd.RESTORE_DATA)
 
             # Add arguments and make sure we are in the right directory
             if sabnzbd.Downloader.paused:
@@ -1583,6 +1581,10 @@ def main():
                 sabnzbd.RESTART_ARGS.append("--autorestarted")
             sys.argv = sabnzbd.RESTART_ARGS
             os.chdir(org_dir)
+
+            # Restore backup
+            if sabnzbd.RESTORE_DATA:
+                config.restore_config_backup(sabnzbd.RESTORE_DATA)
 
             # Binaries require special restart
             if hasattr(sys, "frozen"):
