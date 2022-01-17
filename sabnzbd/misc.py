@@ -1080,11 +1080,13 @@ def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclu
             iterator = enumerate(input_dict_or_list)
 
         for key, value in iterator:
-            # We ignore any other than str and those on the exclude_items-list
-            if isinstance(value, str) and key not in exclude_items:
-                input_dict_or_list[key] = html.escape(value, quote=True)
-            if isinstance(value, (dict, list)):
-                recursive_html_escape(value)
+            # Ignore any keys that are not safe to convert
+            if key not in exclude_items:
+                # We ignore any other than str
+                if isinstance(value, str):
+                    input_dict_or_list[key] = html.escape(value, quote=True)
+                if isinstance(value, (dict, list)):
+                    recursive_html_escape(value, exclude_items=exclude_items)
     else:
         raise ValueError("Expected dict or str, got %s" % type(input_dict_or_list))
 
