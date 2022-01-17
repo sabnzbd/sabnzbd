@@ -30,6 +30,7 @@ import hashlib
 import socket
 import ssl
 import functools
+import copy
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
@@ -367,8 +368,11 @@ def check_apikey(kwargs):
 
 def template_filtered_response(file: str, search_list: Dict[str, Any]):
     """Wrapper for Cheetah response"""
-    recursive_html_escape(search_list, exclude_items=("webdir",))
-    return Template(file=file, searchList=[search_list], compilerSettings=CHEETAH_DIRECTIVES).respond()
+    # We need a copy, because otherwise source-dicts might be modified
+    search_list_copy = copy.deepcopy(search_list)
+    # 'filters' is excluded because the RSS-filters are listed twice
+    recursive_html_escape(search_list_copy, exclude_items=("webdir", "filters"))
+    return Template(file=file, searchList=[search_list_copy], compilerSettings=CHEETAH_DIRECTIVES).respond()
 
 
 def log_warning_and_ip(txt):
@@ -1445,7 +1449,7 @@ class ConfigRss:
 
         if filt:
             feed_cfg.filters.update(
-                int(kwargs.get("index", 0)), (cat, pp, script, kwargs.get("filter_type"), filt, prio, enabled)
+                int(kwargs.get("index", 0)), [cat, pp, script, kwargs.get("filter_type"), filt, prio, enabled]
             )
 
             # Move filter if requested
