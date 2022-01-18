@@ -938,10 +938,10 @@ class ConfigSpecial:
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         conf["switches"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default()) for kw in SPECIAL_BOOL_LIST
+            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
         ]
         conf["entries"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default()) for kw in SPECIAL_VALUE_LIST
+            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_VALUE_LIST
         ]
         conf["entries"].extend(
             [

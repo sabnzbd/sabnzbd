@@ -237,7 +237,7 @@ class TestSecuredExpose:
             self.check_inet_blocks(inet_exposure=inet_exposure)
 
         # Reset it
-        sabnzbd.cfg.inet_exposure.set(sabnzbd.cfg.inet_exposure.default())
+        sabnzbd.cfg.inet_exposure.set(sabnzbd.cfg.inet_exposure.default)
 
     @set_config({"inet_exposure": 5, "username": "foo", "password": "bar"})
     def test_inet_exposure_login_for_external(self):

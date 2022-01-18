@@ -245,7 +245,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Maybe it's a network path that's temporarily missing.
     path = cfg.dirscan_dir.get_path()
     if not os.path.exists(path):
-        filesystem.create_real_path(cfg.dirscan_dir.ident(), "", path, False)
+        filesystem.create_real_path(cfg.dirscan_dir.keyword, "", path, False)
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)

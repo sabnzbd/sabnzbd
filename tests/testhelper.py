@@ -80,7 +80,7 @@ def set_config(settings_dict):
 
             # Reset values
             for item in settings_dict:
-                getattr(cfg, item).set(getattr(cfg, item).default())
+                getattr(cfg, item).set(getattr(cfg, item).default)
             return value
 
         return wrapper_func

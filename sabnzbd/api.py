@@ -135,7 +135,7 @@ def _api_set_config_default(name, kwargs):
     for keyword in keywords:
         item = config.get_config("misc", keyword)
         if item:
-            item.set(item.default())
+            item.set(item.default)
     config.save_config()
     return report()
 
@@ -966,8 +966,8 @@ def _api_config_regenerate_certs(kwargs):
     # Make sure we only over-write default locations
     result = False
     if (
-        sabnzbd.cfg.https_cert() is sabnzbd.cfg.https_cert.default()
-        and sabnzbd.cfg.https_key() is sabnzbd.cfg.https_key.default()
+        sabnzbd.cfg.https_cert() is sabnzbd.cfg.https_cert.default
+        and sabnzbd.cfg.https_key() is sabnzbd.cfg.https_key.default
     ):
         https_cert = sabnzbd.cfg.https_cert.get_path()
         https_key = sabnzbd.cfg.https_key.get_path()
