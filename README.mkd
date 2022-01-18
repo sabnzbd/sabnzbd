@@ -1,6 +1,9 @@
 Release Notes - SABnzbd 3.5.0 Release Candidate 3
 =========================================================
 
+## Changes and bugfixes since 3.5.0 Release Candidate 3
+- RSS-feed URLs were corrupted.
+
 ## Changes and bugfixes since 3.5.0 Release Candidate 2
 - Failed 7zip unpack was not reported.
 - Multivolume 7zip's were not always unpacked.
