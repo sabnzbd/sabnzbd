@@ -42,19 +42,23 @@ jobs:
         name: Windows installer
     - name: Set up Python 3.8 (32bit and legacy)
       uses: actions/setup-python@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         python-version: "3.8"
         architecture: "x86"
     - name: Install Python dependencies (32bit and legacy)
+      if: startsWith(github.ref, 'refs/tags/')
       run: |
         python --version
         pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
     - name: Build Windows standalone binary (32bit and legacy)
+      if: startsWith(github.ref, 'refs/tags/')
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (32bit and legacy)
       uses: actions/upload-artifact@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         path: "*-win32-bin.zip"
         name: Windows Windows standalone binary (32bit and legacy)
