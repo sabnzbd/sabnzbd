@@ -1819,10 +1819,10 @@ class ConfigCats:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save(self, **kwargs):
         name = kwargs.get("name", "*")
+        newname = kwargs.get("newname", "")
         if name == "*":
             newname = name
-        else:
-            newname = re.sub('"', "", kwargs.get("newname", ""))
+
         if newname:
             # Check if this cat-dir is not sub-folder of incomplete
             if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):

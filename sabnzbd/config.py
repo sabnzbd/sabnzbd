@@ -392,7 +392,7 @@ class ConfigServer:
 
     def __init__(self, name, values):
 
-        self.__name = name
+        self.__name = clean_section_name(name)
         name = "servers," + self.__name
 
         self.displayname = OptionStr(name, "displayname", add=False)
@@ -500,8 +500,8 @@ class ConfigCat:
     """Class defining a single category"""
 
     def __init__(self, name: str, values: Dict[str, Any]):
-        self.__name = name
-        name = "categories," + name
+        self.__name = clean_section_name(name)
+        name = "categories," + self.__name
 
         self.order = OptionNumber(name, "order", 0, 0, 100, add=False)
         self.pp = OptionStr(name, "pp", add=False)
@@ -603,8 +603,8 @@ class ConfigRSS:
     """Class defining a single Feed definition"""
 
     def __init__(self, name, values):
-        self.__name = name
-        name = "rss," + name
+        self.__name = clean_section_name(name)
+        name = "rss," + self.__name
 
         self.uri = OptionList(name, "uri", add=False)
         self.cat = OptionStr(name, "cat", add=False)
@@ -685,8 +685,6 @@ def delete_from_database(section, keyword):
     """Remove section/keyword from INI database"""
     global CFG_DATABASE, CFG_OBJ, CFG_MODIFIED
     del CFG_DATABASE[section][keyword]
-    if section == "servers" and "[" in keyword:
-        keyword = keyword.replace("[", "{").replace("]", "}")
     try:
         del CFG_OBJ[section][keyword]
     except KeyError:
@@ -844,7 +842,7 @@ def _read_config(path, try_backup=False):
             ConfigRSS(rss_feed, CFG_OBJ["rss"][rss_feed])
     if "servers" in CFG_OBJ:
         for server in CFG_OBJ["servers"]:
-            ConfigServer(server.replace("{", "[").replace("}", "]"), CFG_OBJ["servers"][server])
+            ConfigServer(server, CFG_OBJ["servers"][server])
 
     CFG_MODIFIED = False
     return True, ""
@@ -867,15 +865,10 @@ def save_config(force=False):
             if section not in CFG_OBJ:
                 CFG_OBJ[section] = {}
 
-            for subsec in CFG_DATABASE[section]:
-                if section == "servers":
-                    subsec_mod = subsec.replace("[", "{").replace("]", "}")
-                else:
-                    subsec_mod = subsec
-                if subsec_mod not in CFG_OBJ[section]:
-                    CFG_OBJ[section][subsec_mod] = {}
-                items = CFG_DATABASE[section][subsec].get_dict()
-                CFG_OBJ[section][subsec_mod] = items
+            for subsection in CFG_DATABASE[section]:
+                if subsection not in CFG_OBJ[section]:
+                    CFG_OBJ[section][subsection] = {}
+                CFG_OBJ[section][subsection] = CFG_DATABASE[section][subsection].get_dict()
         else:
             for option in CFG_DATABASE[section]:
                 config_option = CFG_DATABASE[section][option]
@@ -1011,6 +1004,16 @@ def get_rss() -> Dict[str, ConfigRSS]:
 def get_filename():
     global CFG_OBJ
     return CFG_OBJ.filename
+
+
+def clean_section_name(section: str) -> str:
+    """Make a section name suitable to be used in the INI,
+    since it can't have starting "[" or a trailing "]".
+    Unfortuantly, ConfigObj doesn't do this for us."""
+    new_section_name = section.strip("[]")
+    if not new_section_name:
+        raise ValueError("Invalid section name %s, nothing left after cleaning" % section)
+    return new_section_name
 
 
 __PW_PREFIX = "!!!encoded!!!"
