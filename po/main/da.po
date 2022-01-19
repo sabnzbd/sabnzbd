@@ -401,6 +401,18 @@ msgstr "Dekoder fejl: Ikke mere hukommelse"
 msgid "Unknown Error while decoding %s"
 msgstr "Ukendt fejl under afkodning af %s"
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate skipped due to DVD/Bluray directories"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate corrected the extension of %d file(s)"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr ""
@@ -1772,6 +1784,11 @@ msgstr "Sammenlægger filer"
 #: sabnzbd/skintext.py
 msgid "Unpack"
 msgstr "Udpak"
+
+#. PP phase "deobfuscate"
+#: sabnzbd/skintext.py
+msgid "Deobfuscate"
+msgstr ""
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py

@@ -407,6 +407,18 @@ msgstr "Eroare decodare: lipsă memorie"
 msgid "Unknown Error while decoding %s"
 msgstr "Eroare Necunoscută în timpul decodării %s"
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate skipped due to DVD/Bluray directories"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate corrected the extension of %d file(s)"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr "Dezarhivare directă"
@@ -1796,6 +1808,11 @@ msgstr "Uneşte fişierele"
 #: sabnzbd/skintext.py
 msgid "Unpack"
 msgstr "Dezarhivează"
+
+#. PP phase "deobfuscate"
+#: sabnzbd/skintext.py
+msgid "Deobfuscate"
+msgstr ""
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py

@@ -397,6 +397,18 @@ msgstr "כישלון מפענח: אין זיכרון"
 msgid "Unknown Error while decoding %s"
 msgstr "שגיאה בלתי ידועה בעת פענוח %s"
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate skipped due to DVD/Bluray directories"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate corrected the extension of %d file(s)"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr "פריקה ישירה"
@@ -1770,6 +1782,11 @@ msgstr "אחד קבצים"
 #: sabnzbd/skintext.py
 msgid "Unpack"
 msgstr "פרוק"
+
+#. PP phase "deobfuscate"
+#: sabnzbd/skintext.py
+msgid "Deobfuscate"
+msgstr ""
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
