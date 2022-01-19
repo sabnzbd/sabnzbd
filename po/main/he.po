@@ -4,13 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
-# ION, 2021
+# ION, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: ION, 2021\n"
+"Last-Translator: ION, 2022\n"
 "Language-Team: Hebrew (https://www.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -104,6 +104,8 @@ msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
 msgstr ""
+"פקודת umask נוכחית (%o) עשויה לדחות גישה מן SABnzbd אל הקבצים והתיקיות שהוא "
+"יוצר."
 
 #. Warning message
 #: SABnzbd.py
@@ -334,6 +336,7 @@ msgid ""
 "Permissions setting of %s might deny SABnzbd access to the files and folders"
 " it creates."
 msgstr ""
+"הגדרת הרשאות של %s עשויה לדחות גישה מן SABnzbd אל הקבצים והתיקיות שהוא יוצר."
 
 #: sabnzbd/cfg.py
 msgid "Error: Queue not empty, cannot change folder."
