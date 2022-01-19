@@ -26,6 +26,7 @@ SKIN_TEXT = {
     "stage-repair": TT("Repair"),  #: PP phase "repair"
     "stage-filejoin": TT("Join files"),  #: PP phase "filejoin"
     "stage-unpack": TT("Unpack"),  #: PP phase "unpack"
+    "stage-deobfuscate": TT("Deobfuscate"),  #: PP phase "deobfuscate"
     "stage-script": TT("Script"),  #: PP phase "script"
     "stage-source": TT("Source"),  #: PP Source of the NZB (path or URL)
     "stage-servers": TT("Servers"),  #: PP Distribution over servers

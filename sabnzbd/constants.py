@@ -113,7 +113,16 @@ INTERFACE_PRIORITIES = {
     LOW_PRIORITY: "Low",
 }
 
-STAGES = {"Source": 0, "Download": 1, "Servers": 2, "Repair": 3, "Filejoin": 4, "Unpack": 5, "Script": 6}
+STAGES = {
+    "Source": 0,
+    "Download": 1,
+    "Servers": 2,
+    "Repair": 3,
+    "Filejoin": 4,
+    "Unpack": 5,
+    "Deobfuscate": 6,
+    "Script": 7,
+}
 
 VALID_ARCHIVES = (".zip", ".rar", ".7z")
 VALID_NZB_FILES = (".nzb", ".gz", ".bz2")

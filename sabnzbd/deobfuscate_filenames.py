@@ -168,13 +168,13 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
-def deobfuscate_list(filelist: List[str], usefulname: str):
-    """Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
-
-    # Methods
-    # 1. based on par2 (if any)
-    # 2. if no meaningful extension, add it
-    # 3. based on detecting obfuscated filenames
+def deobfuscate(nzo, filelist: List[str], usefulname: str):
+    """Check all files in filelist, and deobfuscate: rename to filename based on usefulname.
+    Methods
+    # 1. if no meaningful extension, add it
+    # 2. based on detecting obfuscated filenames"""
+    # Can't be imported directly due to circular import
+    nzo: sabnzbd.nzbstuff.NzbObject
 
     # to be sure, only keep really existing files:
     filelist = [f for f in filelist if os.path.isfile(f)]
@@ -187,12 +187,14 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
             "Skipping deobfuscation because of DVD/Bluray directory name(s), like: %s",
             str(match_ignored_movie_folders)[:200],
         )
-        return  # bail out of deobfuscate
+        nzo.set_unpack_info("Deobfuscate", T("Deobfuscate skipped due to DVD/Bluray directories"))
+        return
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info
     # Example: if 'kjladsflkjadf.adsflkjads' is probably a PNG, rename to 'kjladsflkjadf.adsflkjads.png'
     newlist = []
+    nr_ext_renamed = 0
     for file in filelist:
         if file_extension.has_popular_extension(file):
             # common extension, like .doc or .iso, so assume OK and change nothing
@@ -206,10 +208,14 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
                 logging.info("Deobfuscate renaming (adding extension) %s to %s", file, new_name)
                 renamer(file, new_name)
                 newlist.append(new_name)
+                nr_ext_renamed += 1
             else:
                 # no new extension found
                 newlist.append(file)
-    filelist = newlist
+
+    if nr_ext_renamed:
+        nzo.set_unpack_info("Deobfuscate", T("Deobfuscate corrected the extension of %d file(s)") % nr_ext_renamed)
+        filelist = newlist
 
     # Now we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
     excluded_file_exts = EXCLUDED_FILE_EXTS
@@ -236,6 +242,7 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
     logging.debug("Trying to see if there are qualifying files to be deobfuscated")
     # We start with he biggest file ... probably the most important file
     filelist = sorted(filelist, key=os.path.getsize, reverse=True)
+    nr_files_renamed = 0
     for filename in filelist:
         # check that file is still there (and not renamed by the secondary renaming process below)
         if not os.path.isfile(filename):
@@ -265,5 +272,9 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
                     logging.info("Deobfuscate renaming %s to %s", otherfile, new_name)
                     # Rename and make sure the new filename is unique
                     renamer(otherfile, new_name)
+                    nr_files_renamed += 1
         else:
             logging.debug("%s excluded from deobfuscation based on size, extension or non-obfuscation", filename)
+
+    if nr_files_renamed:
+        nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d file(s)") % nr_files_renamed)
