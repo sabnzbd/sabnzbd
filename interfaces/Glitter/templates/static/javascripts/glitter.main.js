@@ -274,22 +274,22 @@ function ViewModel() {
         }
 
         document.onkeydown = function(e) {
-            if (e.code === "KeyP") {
+            if (e.code === 'KeyP') {
                 self.pauseToggle();
             };
-            if (e.code === "KeyA") {
-                $("#modal-add-nzb").modal("show");
+            if (e.code === 'KeyA') {
+                $('#modal-add-nzb').modal('show');
             };
-            if (e.code === "KeyC") {
-                window.location.href = "./config/";
+            if (e.code === 'KeyC') {
+                window.location.href = './config/';
             };
-            if (e.code === "KeyS") {
+            if (e.code === 'KeyS') {
                 if ($('#modal-options').hasClass('in')) {
-                    $("#modal-options").modal("hide");
+                    $('#modal-options').modal('hide');
                     return;
                 };
                 self.loadStatusInfo(true, true)
-                $("#modal-options").modal("show");
+                $('#modal-options').modal('show');
             };
         }
         
