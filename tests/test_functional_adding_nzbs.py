@@ -339,7 +339,7 @@ class TestAddingNZBs:
                 if STAGES[stage] == DEFAULT_PRIORITY:
                     return handle_default_cat(stage, STAGES, return_state)
 
-        # # ...and finally the Default category (stage 0)
+        # ...and finally the Default category (stage 0)
         if STAGES[0] not in (None, DEFAULT_PRIORITY):
             if STAGES[0] in REGULAR_PRIOS:
                 # Avoid falling back to priority Force after setting a job state
@@ -605,10 +605,13 @@ class TestAddingNZBs:
         job = self._prep_priority_tester(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None)
 
         # Verify job is paused and correctly labeled, and given the right (fallback) priority
-        assert "DUPLICATE" in job["labels"]
+        if FORCE_PRIORITY not in [expected_prio, prio_add]:
+            # Forced jobs are exempt from dupe detection (issue #2002)
+            assert "DUPLICATE" in job["labels"]
         assert job["priority"] == ALL_PRIOS.get(expected_prio)
         # Priority Force overrules the duplicate pause
-        assert job["status"] == "Paused" if expected_prio != FORCE_PRIORITY else "Downloading"
+        if FORCE_PRIORITY not in [expected_prio, prio_add]:
+            assert job["status"] == "Paused"
 
         # Reset duplicate handling (0), nzb_backup_dir ("")
         get_api_result(mode="set_config_default", extra_arguments={"keyword": ["no_dupes", "nzb_backup_dir"]})
