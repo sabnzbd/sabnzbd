@@ -273,6 +273,26 @@ function ViewModel() {
             timeString = rewriteTime(response.queue.timeleft)
         }
 
+        document.onkeydown = function(e) {
+            if (e.code === "KeyP") {
+                self.pauseToggle();
+            };
+            if (e.code === "KeyA") {
+                $("#modal-add-nzb").modal("show");
+            };
+            if (e.code === "KeyC") {
+                window.location.href = "./config/";
+            };
+            if (e.code === "KeyS") {
+                if ($('#modal-options').hasClass('in')) {
+                    $("#modal-options").modal("hide");
+                    return;
+                };
+                self.loadStatusInfo(true, true)
+                $("#modal-options").modal("show");
+            };
+        }
+        
         // Paused main queue
         if(self.downloadsPaused()) {
             if(response.queue.pause_int == '0') {
