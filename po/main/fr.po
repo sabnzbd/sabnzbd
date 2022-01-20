@@ -425,15 +425,15 @@ msgstr "Erreur inconnue lors du décodage de %s"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate skipped due to DVD/Bluray directories"
-msgstr ""
+msgstr "Désobfuscation ignorée à cause des répertoires DVD/Bluray"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate corrected the extension of %d file(s)"
-msgstr ""
+msgstr "La désobfuscation a corrigé l'extension de %d fichier(s)"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
-msgstr ""
+msgstr "La désobfuscation a renommé %d fichier(s)"
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -1843,7 +1843,7 @@ msgstr "Décompresser"
 #. PP phase "deobfuscate"
 #: sabnzbd/skintext.py
 msgid "Deobfuscate"
-msgstr ""
+msgstr "Désobfuscation"
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
