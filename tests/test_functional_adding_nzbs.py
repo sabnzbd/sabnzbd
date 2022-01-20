@@ -608,6 +608,8 @@ class TestAddingNZBs:
         if FORCE_PRIORITY not in [expected_prio, prio_add]:
             # Forced jobs are exempt from dupe detection (issue #2002)
             assert "DUPLICATE" in job["labels"]
+        else:
+            assert "DUPLICATE" not in job["labels"]
         assert job["priority"] == ALL_PRIOS.get(expected_prio)
         # Priority Force overrules the duplicate pause
         if FORCE_PRIORITY not in [expected_prio, prio_add]:
