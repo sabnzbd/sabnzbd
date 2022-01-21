@@ -29,6 +29,14 @@ jobs:
     - name: Install system dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar p7zip-full par2
+    - name: Get pip cache dir
+      id: pip-cache
+      run: echo "::set-output name=dir::$(pip cache dir)"
+    - name: Cache Python dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-${{ matrix.python-version }}-ci-pip-${{ hashFiles('**/requirements.txt', '**/PKG-INFO') }}
     - name: Install Python dependencies
       run: |
         python --version
@@ -37,5 +45,3 @@ jobs:
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
       run: pytest -s
-
-

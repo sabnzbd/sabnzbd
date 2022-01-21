@@ -10,6 +10,11 @@ jobs:
       AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v2
+    - name: Cache Python dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~\AppData\Local\pip\Cache
+        key: windows-pip-release-${{ hashFiles('**/requirements.txt', '**/PKG-INFO') }}
     - name: Set up Python 3.10 (64bit)
       uses: actions/setup-python@v2
       with:
@@ -94,6 +99,11 @@ jobs:
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
       run: sudo installer -pkg ~/python.pkg -target /
+    - name: Cache Python dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/Library/Caches/pip
+        key: macos-pip-release-${{ hashFiles('**/requirements.txt', '**/PKG-INFO') }}
     - name: Install Python dependencies
       # We have to manually install a few packages:
       # 1.  cffi will pick up the single-arch libffi from Homebrew, while Apple provides universal2-version
