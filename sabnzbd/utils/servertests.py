@@ -94,17 +94,9 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         while not nw.connected:
             nw.clear_data()
             nw.recv_chunk(block=True)
-            #print("SJ nw.status_code: ", nw.status_code)
-            print("SJ nw.data: ", nw.data)
             if nw.status_code == 500:
                 # we got "500 Access Denied" instead of nice welcome message "200 Welcome to ..."
-                print("breakie breakie")
-                return(False, nw.data[0].strip().decode() + ", instead of Welcome message")
-                break
-                print("not here")
-                return_status = (False, "Bad welcome " + nw.data)
-                nw.hard_reset(send_quit=True)
-                return return_status
+                return (False, nw.data[0].strip().decode() + ", instead of Welcome message")
             # Handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
             read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
             if read_sockets:
@@ -145,8 +137,6 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             # Some internal error, not always safe to close connection
             return False, str(sys.exc_info()[1])
 
-    print("SJ 200 nw.data: ", nw.data)
-
     if nw.status_code == 480:
         return_status = (False, T("Server requires username and password."))
     elif nw.status_code == 100 or str(nw.status_code).startswith(("2", "4")):
@@ -154,7 +144,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
     elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
         return_status = (False, T("Authentication failed, check username/password."))
     elif nw.status_code == 500:
-        return_status = (False, "not a nice Welcome message")
+        return_status = (False, "not a nice Welcome message") # todo: we never get here ... nw.status_code overwritten
     elif clues_too_many(nntp_to_msg(nw.data)):
         return_status = (False, T("Too many connections, please pause downloading or try again later"))
     else:
