@@ -35,7 +35,7 @@ class TestConfig:
     def test_config(self):
         FULL_INI_PATH = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DEF_INI_FILE)
         shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), FULL_INI_PATH)
-        _, _ = config.read_config(FULL_INI_PATH)
+        config.read_config(FULL_INI_PATH)
 
         config_backup_data = config.create_config_backup()
 

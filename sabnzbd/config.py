@@ -964,7 +964,6 @@ def restore_config_backup(config_backup_data):
                         zip_ref.getinfo(filename)
                         destination_file = os.path.join(adminpath, filename)
                         logging.debug("Writing backup of %s to %s", filename, destination_file)
-                        print(filename)
                         with open(destination_file, "wb") as destination_ref:
                             destination_ref.write(zip_ref.read(filename))
                     except KeyError:
