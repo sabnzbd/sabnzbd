@@ -103,8 +103,6 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
                 nw.recv_chunk(block=True)
             nw.finish_connect(nw.status_code)
 
-
-
     except socket.timeout:
         if port != 119 and not ssl:
             return False, T("Timed out: Try enabling SSL or connecting on a different port.")
@@ -144,7 +142,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
     elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
         return_status = (False, T("Authentication failed, check username/password."))
     elif nw.status_code == 500:
-        return_status = (False, "not a nice Welcome message") # todo: we never get here ... nw.status_code overwritten
+        return_status = (False, "not a nice Welcome message")  # todo: we never get here ... nw.status_code overwritten
     elif clues_too_many(nntp_to_msg(nw.data)):
         return_status = (False, T("Too many connections, please pause downloading or try again later"))
     else:
