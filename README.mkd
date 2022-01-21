@@ -27,7 +27,7 @@ Release Notes - SABnzbd 3.5.0 Release Candidate 3
 - Reduced memory usage during and after parsing `.nzb` files.
 - Handle multiple passwords stored in NZB-file.
 - macOS/Linux: `Permissions` are only applied if any are set.
-- macOS/Windows: updated to Python 3.10.1.
+- macOS/Windows: updated to Python 3.10.2.
 - macOS: run native on M1 systems. However, included tools 
   (`par2`, `unrar` and `7za`) still require Rosetta emulation.
 - Snap: updated to `core20` base and restore 7zip support.
