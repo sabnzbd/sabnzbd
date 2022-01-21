@@ -960,13 +960,21 @@ def restore_config_backup(config_backup_data):
                 # Write the rest of the admin files that we want to recover
                 adminpath = sabnzbd.cfg.admin_dir.get_path()
                 for filename in CONFIG_BACKUP_FILES:
-                    destination_file = os.path.join(adminpath, filename)
-                    logging.debug("Writing backup of %s to %s", filename, destination_file)
-                    with open(destination_file, "wb") as destination_ref:
-                        destination_ref.write(zip_ref.read(filename))
+                    try:
+                        zip_ref.getinfo(filename)
+                        destination_file = os.path.join(adminpath, filename)
+                        logging.debug("Writing backup of %s to %s", filename, destination_file)
+                        print(filename)
+                        with open(destination_file, "wb") as destination_ref:
+                            destination_ref.write(zip_ref.read(filename))
+                    except KeyError:
+                        # File not in archive
+                        pass
+                return True
     except:
         logging.warning(T("Could not restore backup"))
         logging.info("Traceback: ", exc_info=True)
+        return False
 
 
 def get_servers() -> Dict[str, ConfigServer]:
