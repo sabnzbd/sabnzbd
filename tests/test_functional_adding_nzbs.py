@@ -605,10 +605,13 @@ class TestAddingNZBs:
         job = self._prep_priority_tester(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None)
 
         # Verify job is paused and correctly labeled, and given the right (fallback) priority
-        assert "DUPLICATE" in job["labels"]
         assert job["priority"] == ALL_PRIOS.get(expected_prio)
-        # Priority Force overrules the duplicate pause
-        assert job["status"] == "Paused" if expected_prio != FORCE_PRIORITY else "Downloading"
+        if expected_prio == FORCE_PRIORITY:
+            assert "DUPLICATE" not in job["labels"]
+            assert job["status"] == "Downloading"
+        else:
+            assert "DUPLICATE" in job["labels"]
+            assert job["status"] == "Paused"
 
         # Reset duplicate handling (0), nzb_backup_dir ("")
         get_api_result(mode="set_config_default", extra_arguments={"keyword": ["no_dupes", "nzb_backup_dir"]})

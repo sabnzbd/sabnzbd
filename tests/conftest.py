@@ -66,8 +66,8 @@ def run_sabnzbd(clean_cache_dir):
         except requests.ConnectionError:
             sabnzbd_process.kill()
             sabnzbd_process.communicate(timeout=10)
-        except Exception:
-            warn("Failed to shutdown the sabnzbd process")
+        except Exception as err:
+            warn("Failed to shutdown the sabnzbd process: %s" % err)
 
     # Copy basic config file with API key
     shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
@@ -152,16 +152,16 @@ def run_sabnews_and_selenium(request):
     try:
         sabnews_process.kill()
         sabnews_process.communicate(timeout=10)
-    except:
-        warn("Failed to shutdown the sabnews process")
+    except Exception as err:
+        warn("Failed to shutdown the sabnews process: %s" % err)
 
     # Shutdown Selenium/Chrome
     try:
         driver.close()
         driver.quit()
-    except:
+    except Exception as err:
         # If something else fails, this can cause very non-informative long tracebacks
-        warn("Failed to shutdown the selenium/chromedriver process")
+        warn("Failed to shutdown the selenium/chromedriver process: %s" % err)
 
 
 @pytest.fixture(scope="class")

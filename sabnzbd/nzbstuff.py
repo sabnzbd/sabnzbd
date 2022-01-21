@@ -777,10 +777,10 @@ class NzbObject(TryList):
                     self.purge_data()
                     raise ValueError
 
-            # Check against identical checksum or series/season/episode if not repair or forced
+            # Check against identical checksum or series/season/episode if not repair
             # Have to check for duplicate before saving the backup, as it will
             # trigger the duplicate-detection based on the backup
-            if not reuse and dup_check and self.priority not in (FORCE_PRIORITY, REPAIR_PRIORITY):
+            if not reuse and dup_check and self.priority != REPAIR_PRIORITY:
                 duplicate, series_duplicate = self.has_duplicates()
 
             # Copy to backup
@@ -878,6 +878,10 @@ class NzbObject(TryList):
             self.pause()
             self.oversized = True
             self.priority = LOW_PRIORITY
+
+        # If the job is forced in any way, skip duplicate check
+        if self.priority == FORCE_PRIORITY:
+            duplicate = series_duplicate = False
 
         # Handle duplicates
         if duplicate and (
