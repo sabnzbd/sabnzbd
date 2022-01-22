@@ -4850,6 +4850,10 @@ msgid "Confirm History Deletions"
 msgstr "确认历史删除"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "您希望在多久之后/什么时候暂停? (用英语作答!)"
 

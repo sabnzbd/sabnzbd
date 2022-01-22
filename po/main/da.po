@@ -4946,6 +4946,10 @@ msgid "Confirm History Deletions"
 msgstr "Bekræft Historik-fjernelse"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Hvor længe eller indtil hvornår du vil standse? (på engelsk!)"
 
