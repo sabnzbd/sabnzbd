@@ -144,8 +144,11 @@ def find_programs(curdir: str):
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < sabnzbd.constants.REC_RAR_VERSION
         sabnzbd.newsunpack.RAR_VERSION = version
 
-        # Run check on 7zip
-        sabnzbd.newsunpack.SEVENZIP_VERSION = sevenzip_check(sabnzbd.newsunpack.SEVENZIP_COMMAND)
+        # Run version check on 7zip (if found)
+        if sabnzbd.newsunpack.SEVENZIP_COMMAND:
+            sabnzbd.newsunpack.SEVENZIP_VERSION = sevenzip_check(sabnzbd.newsunpack.SEVENZIP_COMMAND)
+        else:
+            sabnzbd.newsunpack.SEVENZIP_VERSION = 0
 
         # Run check on par2-multicore
         sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
