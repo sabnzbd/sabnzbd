@@ -384,7 +384,7 @@ msgstr "Impossible de créer le fichier de sauvegarde pour %s"
 #. Warning message
 #: sabnzbd/config.py
 msgid "Could not restore backup"
-msgstr ""
+msgstr "Impossible de restaurer la sauvegarde"
 
 #. Error message
 #: sabnzbd/config.py
@@ -730,7 +730,7 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
-msgstr ""
+msgstr "Archives de sauvegarde non valides"
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -3143,11 +3143,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Download backup"
-msgstr ""
+msgstr "Télécharger la sauvegarde"
 
 #: sabnzbd/skintext.py
 msgid "Save or restore a backup of the configuration file and databases."
 msgstr ""
+"Sauvegarder ou restaurer une sauvegarde du fichier de configuration et des "
+"bases de données."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -5252,7 +5254,7 @@ msgstr "Lancer l'assistant"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"
-msgstr ""
+msgstr "Restaurer la sauvegarde"
 
 #: sabnzbd/skintext.py
 msgid ""
