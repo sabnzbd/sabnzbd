@@ -1218,8 +1218,12 @@ function ViewModel() {
                 window.location.href = './config/';
             }
             if (e.code === 'KeyS') {
-                self.loadStatusInfo(true, true)
-                $('#modal-options').modal('show');
+                if ($('#modal-options').hasClass('in')) {
+					$("#modal-options").modal("hide");
+				} else {
+					self.loadStatusInfo(true, true)
+					$("#modal-options").modal("show");
+				};
             }
         }
     }
