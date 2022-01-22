@@ -371,6 +371,8 @@ SKIN_TEXT = {
     "explain-cache_limitstr": TT(
         'Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'
     ),
+    "download-backup": TT("Download backup"),
+    "explain-admin_backup": TT("Save or restore a backup of the configuration file and databases."),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
         "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
@@ -996,6 +998,7 @@ SKIN_TEXT = {
     "wizard-goto": TT("Go to SABnzbd"),  #: Wizard step
     "wizard-exit": TT("Exit SABnzbd"),  #: Wizard EXIT button on first page
     "wizard-start": TT("Start Wizard"),  #: Wizard START button on first page
+    "restore-backup": TT("Restore backup"),
     # Special
     "yourRights": TT(
         """

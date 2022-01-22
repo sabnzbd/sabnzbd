@@ -215,7 +215,7 @@ $.fn.extractFormDataTo = function(target) {
  * (c) 2015 SABnzbd Team, Inc. All rights reserved.
  */
 function config_success() {
-    $('.saveButton').each(function () {
+    $('.saveButton[disabled=disabled]').each(function () {
         $(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-ok"></span> '+configTranslate.saveChanges);
     });
     // Let us leave!
@@ -223,7 +223,7 @@ function config_success() {
     formHasChanged = false;
 }
 function config_failure() {
-    $('.saveButton').each(function () {
+    $('.saveButton[disabled=disabled]').each(function () {
         $(this).removeAttr("disabled").addClass('btn-danger').html('<span class="glyphicon glyphicon-remove"></span> '+configTranslate.failed);
     });
     // Can't go yet..
@@ -345,8 +345,9 @@ $(document).ready(function () {
         datatype: 'json',
         // But first remove Obfuscation!
         beforeSerialize: removeObfuscation,
-        beforeSubmit: function () {
-            $('.saveButton').each(function () {
+        beforeSubmit: function (arr, form, options) {
+            // Only in the current form
+            form.find('.saveButton').each(function () {
                 $(this).attr("disabled", "disabled").removeClass('btn-danger').html('<span class="glyphicon glyphicon-transfer"></span> ' + configTranslate.saving);
             });
         },

@@ -372,6 +372,11 @@ msgstr "Schrijven naar het INI-bestand %s lukt niet"
 msgid "Cannot create backup file for %s"
 msgstr "Backupbestand maken voor %s niet mogelijk"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -712,6 +717,10 @@ msgid ""
 msgstr ""
 "De Map voor verwerkte downloads mag niet een map in de Tijdelijke download "
 "map zijn."
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -3107,6 +3116,14 @@ msgstr ""
 "/><i>In bytes, in K,M,G notatie. Bijvoorbeeld: \"64M\" of \"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Opschoon lijst"
 
@@ -5027,6 +5044,10 @@ msgid "Confirm History Deletions"
 msgstr "Bevestig verwijderen uit geschiedenis"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Voor hoe lang of tot wanneer wilt u pauzeren? (in het Engels!)"
 
@@ -5179,6 +5200,10 @@ msgstr "Stop SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Wizard starten"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""

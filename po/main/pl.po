@@ -350,6 +350,11 @@ msgstr "Nie można zapisać pliku INI %s"
 msgid "Cannot create backup file for %s"
 msgstr "Nie można utworzyć kopii zapasowej %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -683,6 +688,10 @@ msgstr ""
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -3048,6 +3057,14 @@ msgstr ""
 "Przykład: \"64M\" lub \"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Lista czyszczenia"
 
@@ -4909,6 +4926,10 @@ msgid "Confirm History Deletions"
 msgstr "Potwierdzaj usuwanie z historii"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Jak długo lub do kiedy chcesz wstrzymać? (po angielsku!)"
 
@@ -5059,6 +5080,10 @@ msgstr "Wyjście z SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Uruchom kreatora konfiguracji"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""

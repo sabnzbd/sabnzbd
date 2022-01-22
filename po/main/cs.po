@@ -361,6 +361,11 @@ msgstr "Nelze zapisovat do INI souboru %s"
 msgid "Cannot create backup file for %s"
 msgstr "Nelze vytvořit zálohu souboru %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -684,6 +689,10 @@ msgstr "Nezdařený pokus o přihlášení od %s"
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -3007,6 +3016,14 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr ""
 
@@ -4820,6 +4837,10 @@ msgid "Confirm History Deletions"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr ""
 
@@ -4967,6 +4988,10 @@ msgstr ""
 #. Wizard START button on first page
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
 msgstr ""
 
 #: sabnzbd/skintext.py

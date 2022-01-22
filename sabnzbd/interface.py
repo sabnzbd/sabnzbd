@@ -691,6 +691,12 @@ class ConfigPage:
             search_list=conf,
         )
 
+    @secured_expose(check_configlock=True, check_api_key=True)
+    def backup(self, **kwargs):
+        cherrypy.response.headers["Content-Type"] = "application/zip"
+        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
+        return config.create_config_backup()
+
 
 ##############################################################################
 LIST_DIRPAGE = (
@@ -1065,6 +1071,22 @@ class ConfigGeneral:
             return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
         else:
             raise Raiser(self.__root)
+
+    @secured_expose(check_api_key=True, check_configlock=True)
+    def uploadConfig(self, **kwargs):
+        """Restore a config backup"""
+        config_backup_file = kwargs.get("config_backup_file")
+
+        # Only accept the backup file if it can be opened as a zip archive and only contains a config file
+        try:
+            config_backup_data = config_backup_file.file.read()
+            config_backup_file.file.close()
+            if config.validate_config_backup(config_backup_data):
+                sabnzbd.RESTORE_DATA = config_backup_data
+                return sabnzbd.api.report(data={"success": True, "restart_req": True})
+        except:
+            pass
+        return sabnzbd.api.report(error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):

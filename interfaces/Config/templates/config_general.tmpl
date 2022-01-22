@@ -9,220 +9,247 @@
         </label>
     </div>
     <form action="saveGeneral" method="post" name="fullform" class="fullform" autocomplete="off">
-    <input type="hidden" id="apikey" name="apikey" value="$apikey" />
-    <input type="hidden" id="ajax" name="ajax" value="1" />
-    <input type="hidden" name="output" value="json" />
-    <div class="section">
-        <div class="col2">
-            <h3>$T('webServer') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            <p><b>$T('restartRequired')</b></p>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="host">$T('opt-host')</label>
-                    <input type="text" name="host" id="host" value="$host" />
-                    <span class="desc">$T('explain-host')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="port">$T('opt-port')</label>
-                    <input type="number" name="port" id="port" value="$port" size="8" data-original="$port" />
-                    <span class="desc">$T('explain-port')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="enable_https">$T('opt-enable_https')</label>
-                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked" data-original="1"' else ""#-->/>
-                    <span class="desc">$T('explain-enable_https')</span>
-                    <span class="desc"><span class="label label-warning">$T('warning').upper()</span> $T('explain-enable_https_warning')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="web_dir">$T('opt-web_dir')</label>
-                    <select name="web_dir" id="web_dir">
-                    <!--#for $webline in $web_list#-->
-                        <!--#if $webline.lower() == $web_dir.lower()#-->
-                            <option value="$webline" selected="selected">$webline</option>
-                        <!--#else#-->
-                            <option value="$webline">$webline</option>
-                        <!--#end if#-->
-                    <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url">$caller_url</a></span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="language">$T('opt-language')</label>
-                    <select name="language" id="language" class="select">
-                    <!--#for $webline in $lang_list#-->
-                        <!--#if $webline[0].lower() == $language.lower()#-->
-                            <option value="$webline[0]" selected="selected">$webline[1]</option>
-                        <!--#else#-->
-                            <option value="$webline[0]">$webline[1]</option>
-                        <!--#end if#-->
-                    <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('explain-language')</span>
-                    <div class="alert alert-info alert-translate">
-                       $T('explain-ask-language') <a href="https://sabnzbd.org/wiki/translate" target="_blank" class="alert-link">https://sabnzbd.org/wiki/translate</a>
+        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
+        <input type="hidden" id="ajax" name="ajax" value="1" />
+        <input type="hidden" name="output" value="json" />
+        <div class="section">
+            <div class="col2">
+                <h3>$T('webServer') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                <p><b>$T('restartRequired')</b></p>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="host">$T('opt-host')</label>
+                        <input type="text" name="host" id="host" value="$host" />
+                        <span class="desc">$T('explain-host')</span>
                     </div>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="https_port">$T('opt-https_port')</label>
-                    <input type="number" name="https_port" id="https_port" value="$https_port" size="8" data-original="$https_port" />
-                    <span class="desc">$T('explain-https_port')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="https_cert">$T('opt-https_cert')</label>
-                    <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
-                        <span class="glyphicon glyphicon-repeat"></span>
-                    </button>
-                    <span class="desc">$T('explain-https_cert')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="https_key">$T('opt-https_key')</label>
-                    <input type="text" name="https_key" id="https_key" value="$https_key" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
-                        <span class="glyphicon glyphicon-repeat"></span>
-                    </button>
-                    <span class="desc">$T('explain-https_key')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="https_chain">$T('opt-https_chain')</label>
-                    <input type="text" name="https_chain" id="https_chain" value="$https_chain" />
-                    <span class="desc">$T('explain-https_chain')</span>
-                </div>
-                <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                    <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
-                </div>
-            </fieldset>
-        </div>
-    </div>
-    <div class="section">
-        <div class="col2">
-            <h3>$T('security') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            <p><b>$T('restartRequired')</b></p>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
-                <div class="field-pair">
-                    <label class="config" for="${pid}_wu">$T('opt-web_username')</label>
-                    <input type="text" name="${pid}_wu" id="${pid}_wu" value="$username" data-hide="username" />
-                    <span class="desc">$T('explain-web_username')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="${pid}_wp">$T('opt-web_password')</label>
-                    <input type="text" name="${pid}_wp" id="${pid}_wp" value="$password" data-hide="password" />
-                    <span class="desc">$T('explain-web_password')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
-                        <select name="inet_exposure" id="inet_exposure" class="select">
-                            <optgroup label="API">
-                                <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
-                                <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected"' else ""#-->>$T('inet-nzb')</option>
-                                <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
-                                <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
-                            </optgroup>
-                            <optgroup label="$T('inet-fullapi') &amp; $T('opt-web_dir')">
-                                <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
-                                <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
-                            </optgroup>
+                    <div class="field-pair">
+                        <label class="config" for="port">$T('opt-port')</label>
+                        <input type="number" name="port" id="port" value="$port" size="8" data-original="$port" />
+                        <span class="desc">$T('explain-port')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="enable_https">$T('opt-enable_https')</label>
+                        <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked" data-original="1"' else ""#-->/>
+                        <span class="desc">$T('explain-enable_https')</span>
+                        <span class="desc"><span class="label label-warning">$T('warning').upper()</span> $T('explain-enable_https_warning')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="web_dir">$T('opt-web_dir')</label>
+                        <select name="web_dir" id="web_dir">
+                        <!--#for $webline in $web_list#-->
+                            <!--#if $webline.lower() == $web_dir.lower()#-->
+                                <option value="$webline" selected="selected">$webline</option>
+                            <!--#else#-->
+                                <option value="$webline">$webline</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
                         </select>
-                    <span class="desc">$T('explain-inet_exposure')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="apikey_display">$T('opt-apikey')</label>
-                    <input type="text" id="apikey_display" class="fileBrowserField" value="$apikey" readonly />
-                    <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$apikey" ><span class="glyphicon glyphicon-qrcode"></span></button>
-                    <button class="btn btn-default generate_key" id="generate_new_apikey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
-                    <span class="desc">$T('explain-apikey')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="nzbkey">$T('opt-nzbkey')</label>
-                    <input type="text" id="nzbkey" class="fileBrowserField" value="$nzb_key" readonly />
-                    <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$nzb_key" ><span class="glyphicon glyphicon-qrcode"></span></button>
-                    <button class="btn btn-default generate_key" id="generate_new_nzbkey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
-                    <span class="desc">$T('explain-nzbkey')</span>
-                </div>
-                <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('cmenu-switches') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
-                    <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-auto_browser')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
-                    <select name="check_new_rel" id="check_new_rel">
-                        <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
-                        <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected"' else ""#--> >$T('on')</option>
-                        <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected"' else ""#--> >$T('also-test')</option>
-                    </select>
-                    <span class="desc">$T('explain-check_new_rel')</span>
-                </div>
-                <div class="field-pair advanced-settings <!--#if int($certificate_validation) == 0 then "disabled" else ""#-->">
-                    <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
-                    <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#--> />
-                    <span class="desc">$T('explain-enable_https_verification')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="socks5_proxy_url">$T('opt-socks5_proxy_url')</label>
-                    <input type="text" name="socks5_proxy_url" id="socks5_proxy_url" value="$socks5_proxy_url" placeholder="socks5://username:password@hostname:port" />
-                    <span class="desc">$T('explain-socks5_proxy_url') <br/>$T('readwiki')</span>
-                </div>
-                <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-    <div class="section">
-        <div class="col2">
-            <h3>$T('tuning') <a href="$helpuri$help_uri#toc2" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-        </div><!-- /col2 -->
-        <div class="col1">
-            <fieldset>
-                <div class="field-pair value-and-select">
-                    <label class="config" for="bandwidth_max_value">$T('opt-bandwidth_max')</label>
-                    <input type="number" name="bandwidth_max_value" id="bandwidth_max_value" class="smaller_input" />
-                    <select name="bandwidth_max_dropdown" id="bandwidth_max_dropdown">
-                        <option value="">B/s</option>
-                        <option value="K">KB/s</option>
-                        <option value="M" selected>MB/s</option>
-                    </select>
-                    <input type="hidden" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" />
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="bandwidth_perc">$T('opt-bandwidth_perc')</label>
-                    <input type="number" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" step="10" min="0" max="100"/>
-                    <span class="desc">$T('explain-bandwidth_perc')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
-                    <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" class="smaller_input" />
-                    <span class="desc">$T('explain-cache_limitstr').replace("64M", "256M").replace("128M", "512M")</span>
-                </div>
-                <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
+                        <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url">$caller_url</a></span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="language">$T('opt-language')</label>
+                        <select name="language" id="language" class="select">
+                        <!--#for $webline in $lang_list#-->
+                            <!--#if $webline[0].lower() == $language.lower()#-->
+                                <option value="$webline[0]" selected="selected">$webline[1]</option>
+                            <!--#else#-->
+                                <option value="$webline[0]">$webline[1]</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                        </select>
+                        <span class="desc">$T('explain-language')</span>
+                        <div class="alert alert-info alert-translate">
+                           $T('explain-ask-language') <a href="https://sabnzbd.org/wiki/translate" target="_blank" class="alert-link">https://sabnzbd.org/wiki/translate</a>
+                        </div>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <h5 class="darkred nomargin">$T('base-folder'): <span class="path">$my_lcldata</span></h5>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="https_port">$T('opt-https_port')</label>
+                        <input type="number" name="https_port" id="https_port" value="$https_port" size="8" data-original="$https_port" />
+                        <span class="desc">$T('explain-https_port')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="https_cert">$T('opt-https_cert')</label>
+                        <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
+                        <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
+                            <span class="glyphicon glyphicon-repeat"></span>
+                        </button>
+                        <span class="desc">$T('explain-https_cert')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="https_key">$T('opt-https_key')</label>
+                        <input type="text" name="https_key" id="https_key" value="$https_key" />
+                        <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
+                            <span class="glyphicon glyphicon-repeat"></span>
+                        </button>
+                        <span class="desc">$T('explain-https_key')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="https_chain">$T('opt-https_chain')</label>
+                        <input type="text" name="https_chain" id="https_chain" value="$https_chain" />
+                        <span class="desc">$T('explain-https_chain')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                        <button class="btn btn-default sabnzbd_restart"><span class="glyphicon glyphicon-refresh"></span> $T('button-restart') SABnzbd</button>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="section">
+            <div class="col2">
+                <h3>$T('security') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                <p><b>$T('restartRequired')</b></p>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
+                    <div class="field-pair">
+                        <label class="config" for="${pid}_wu">$T('opt-web_username')</label>
+                        <input type="text" name="${pid}_wu" id="${pid}_wu" value="$username" data-hide="username" />
+                        <span class="desc">$T('explain-web_username')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="${pid}_wp">$T('opt-web_password')</label>
+                        <input type="text" name="${pid}_wp" id="${pid}_wp" value="$password" data-hide="password" />
+                        <span class="desc">$T('explain-web_password')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="inet_exposure">$T('opt-inet_exposure')</label>
+                            <select name="inet_exposure" id="inet_exposure" class="select">
+                                <optgroup label="API">
+                                    <option value="0" <!--#if $inet_exposure == 0 then 'selected="selected"' else ""#-->>$T('inet-local')</option>
+                                    <option value="1" <!--#if $inet_exposure == 1 then 'selected="selected"' else ""#-->>$T('inet-nzb')</option>
+                                    <option value="2" <!--#if $inet_exposure == 2 then 'selected="selected"' else ""#-->>$T('inet-api')</option>
+                                    <option value="3" <!--#if $inet_exposure == 3 then 'selected="selected"' else ""#-->>$T('inet-fullapi')</option>
+                                </optgroup>
+                                <optgroup label="$T('inet-fullapi') &amp; $T('opt-web_dir')">
+                                    <option value="4" <!--#if $inet_exposure == 4 then 'selected="selected"' else ""#-->>$T('inet-ui')</option>
+                                    <option value="5" <!--#if $inet_exposure == 5 then 'selected="selected"' else ""#-->>$T('inet-ui') - $T('inet-external_login')</option>
+                                </optgroup>
+                            </select>
+                        <span class="desc">$T('explain-inet_exposure')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="apikey_display">$T('opt-apikey')</label>
+                        <input type="text" id="apikey_display" class="fileBrowserField" value="$apikey" readonly />
+                        <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$apikey" ><span class="glyphicon glyphicon-qrcode"></span></button>
+                        <button class="btn btn-default generate_key" id="generate_new_apikey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
+                        <span class="desc">$T('explain-apikey')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="nzbkey">$T('opt-nzbkey')</label>
+                        <input type="text" id="nzbkey" class="fileBrowserField" value="$nzb_key" readonly />
+                        <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$nzb_key" ><span class="glyphicon glyphicon-qrcode"></span></button>
+                        <button class="btn btn-default generate_key" id="generate_new_nzbkey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
+                        <span class="desc">$T('explain-nzbkey')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('cmenu-switches') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="auto_browser">$T('opt-auto_browser')</label>
+                        <input type="checkbox" name="auto_browser" id="auto_browser" value="1" <!--#if int($auto_browser) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-auto_browser')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="check_new_rel">$T('opt-check_new_rel')</label>
+                        <select name="check_new_rel" id="check_new_rel">
+                            <option value="0" <!--#if $check_new_rel == 0 then 'selected="selected"' else ""#--> >$T('off')</option>
+                            <option value="1" <!--#if $check_new_rel == 1 then 'selected="selected"' else ""#--> >$T('on')</option>
+                            <option value="2" <!--#if $check_new_rel == 2 then 'selected="selected"' else ""#--> >$T('also-test')</option>
+                        </select>
+                        <span class="desc">$T('explain-check_new_rel')</span>
+                    </div>
+                    <div class="field-pair advanced-settings <!--#if int($certificate_validation) == 0 then "disabled" else ""#-->">
+                        <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
+                        <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#--> />
+                        <span class="desc">$T('explain-enable_https_verification')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="socks5_proxy_url">$T('opt-socks5_proxy_url')</label>
+                        <input type="text" name="socks5_proxy_url" id="socks5_proxy_url" value="$socks5_proxy_url" placeholder="socks5://username:password@hostname:port" />
+                        <span class="desc">$T('explain-socks5_proxy_url') <br/>$T('readwiki')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+        <div class="section">
+            <div class="col2">
+                <h3>$T('tuning') <a href="$helpuri$help_uri#toc2" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair value-and-select">
+                        <label class="config" for="bandwidth_max_value">$T('opt-bandwidth_max')</label>
+                        <input type="number" name="bandwidth_max_value" id="bandwidth_max_value" class="smaller_input" />
+                        <select name="bandwidth_max_dropdown" id="bandwidth_max_dropdown">
+                            <option value="">B/s</option>
+                            <option value="K">KB/s</option>
+                            <option value="M" selected>MB/s</option>
+                        </select>
+                        <input type="hidden" name="bandwidth_max" id="bandwidth_max" value="$bandwidth_max" />
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="bandwidth_perc">$T('opt-bandwidth_perc')</label>
+                        <input type="number" name="bandwidth_perc" id="bandwidth_perc" value="$bandwidth_perc" step="10" min="0" max="100"/>
+                        <span class="desc">$T('explain-bandwidth_perc')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="cache_limit">$T('opt-cache_limitstr')</label>
+                        <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" class="smaller_input" />
+                        <span class="desc">$T('explain-cache_limitstr').replace("64M", "256M").replace("128M", "512M")</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
+    </form>
 
+    <form action="uploadConfig" method="post" name="fullform" class="fullform" autocomplete="off" enctype="multipart/form-data">
+        <input type="hidden" name="apikey" value="$apikey" />
+        <input type="hidden" name="ajax" value="1" />
+        <input type="hidden" name="output" value="json" />
+        <div class="section">
+            <div class="col2">
+                <h3>$T('backup') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                <p><b>$T('restartRequired')</b></p>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="download_backup">$T('download-backup')</label>
+                        <span class="desc"><a class="btn btn-default" href="../backup/?apikey=$apikey" target="_blank" id="download_backup"><span class="glyphicon glyphicon-download-alt"></span> $T('download-backup')</a></span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="config_backup_file">$T('restore-backup')</label>
+                        <input type="file" name="config_backup_file" id="config_backup_file" />
+                        <span class="desc">$T('explain-admin_backup')</span>
+                    </div>
+                    <div class="field-pair">
+                        <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-open"></span> $T('restore-backup')</button>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
     </form>
 </div><!-- /colmask -->
 

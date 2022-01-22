@@ -350,6 +350,11 @@ msgstr "无法写入 INI 文件 %s"
 msgid "Cannot create backup file for %s"
 msgstr "无法为 %s 创建备份文件"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -673,6 +678,10 @@ msgstr "%s 中有失败的登陆请求"
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -3015,6 +3024,14 @@ msgid ""
 msgstr "在内存中缓存文章，以减轻硬盘访问压力。<br /><i>单位为字节，可以选择加上 K、M、G 后缀。例如: \"64M\" 或 \"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "清理列表"
 
@@ -4833,6 +4850,10 @@ msgid "Confirm History Deletions"
 msgstr "确认历史删除"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "您希望在多久之后/什么时候暂停? (用英语作答!)"
 
@@ -4981,6 +5002,10 @@ msgstr "退出 SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "启动向导"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""

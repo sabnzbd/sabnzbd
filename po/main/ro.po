@@ -366,6 +366,11 @@ msgstr "Nu pot scrie în fişierul INI %s"
 msgid "Cannot create backup file for %s"
 msgstr "Nu pot crea copie de rezervă pentru %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -704,6 +709,10 @@ msgid ""
 msgstr ""
 "Directorul de descărcări finalizate nu poate fi același, sau un subdirector "
 "al directorului de descărcări temporare"
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -3079,6 +3088,14 @@ msgstr ""
 "octeţi, opţional urmaţi de K,M,G. De exemplu : \"64M\" sau\"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Listă Curăţenie"
 
@@ -4941,6 +4958,10 @@ msgid "Confirm History Deletions"
 msgstr "Confirmă Ştergere Istoric"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Cât timp sau până când doriți să întrerupeți? (în Engleză!)"
 
@@ -5092,6 +5113,10 @@ msgstr "Închide SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Porneşte Vrăjitor"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""

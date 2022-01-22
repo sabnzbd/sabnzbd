@@ -2050,12 +2050,14 @@ def unrar_check(rar: str) -> Tuple[int, bool]:
 
 def sevenzip_check(sevenzip: str) -> str:
     """Return version of 7zip, currently as a string"""
-    try:
-        seven_command_output = run_command([sevenzip])
-        # Example: 7-Zip (z) 21.06 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-11-24
-        return re.search(r"(\d+\.\d+).*Copyright", seven_command_output).group(1)
-    except:
-        return ""
+    if sevenzip:
+        try:
+            seven_command_output = run_command([sevenzip])
+            # Example: 7-Zip (z) 21.06 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-11-24
+            return re.search(r"(\d+\.\d+).*Copyright", seven_command_output).group(1)
+        except:
+            pass
+    return ""
 
 
 def par2_mt_check(par2_path: str) -> bool:

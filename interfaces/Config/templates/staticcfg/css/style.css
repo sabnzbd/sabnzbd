@@ -139,6 +139,9 @@ label.wide,
     font-size: 12px;
     font-style: italic;
 }
+.desc .btn {
+    font-style: normal;
+}
 .desc.narrow {
     margin: 0 0 0 200px!important;
 }

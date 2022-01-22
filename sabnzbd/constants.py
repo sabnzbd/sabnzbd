@@ -65,6 +65,13 @@ SABYENC_VERSION_REQUIRED = "4.0.0"
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
 
+CONFIG_BACKUP_FILES = [
+    BYTES_FILE_NAME,
+    RSS_FILE_NAME,
+    RATING_FILE_NAME,
+    DB_HISTORY_NAME,
+]
+
 DEF_DOWNLOAD_DIR = os.path.normpath("Downloads/incomplete")
 DEF_COMPLETE_DIR = os.path.normpath("Downloads/complete")
 DEF_ADMIN_DIR = "admin"

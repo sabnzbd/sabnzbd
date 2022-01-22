@@ -352,6 +352,11 @@ msgstr "Ne može da se upiše u INI datoteku %s"
 msgid "Cannot create backup file for %s"
 msgstr "Ne može se kreirati sigurnosna kopija za %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -680,6 +685,10 @@ msgstr ""
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -3033,6 +3042,14 @@ msgstr ""
 "опционо додати K,M,G. Пример: \"64M\" или \"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Списак чишћења"
 
@@ -4886,6 +4903,10 @@ msgid "Confirm History Deletions"
 msgstr "Потврда брисања хронологије"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Koliko dugo ili dokle želite da pauzirate? (na engleskom!)"
 
@@ -5036,6 +5057,10 @@ msgstr "Затвори SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Покрени чаробњака"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""

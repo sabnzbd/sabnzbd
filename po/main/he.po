@@ -357,6 +357,11 @@ msgstr "לא ניתן לכתוב אל קובץ INI %s"
 msgid "Cannot create backup file for %s"
 msgstr "לא ניתן ליצור קובץ גיבוי עבור %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -689,6 +694,10 @@ msgid ""
 msgstr ""
 "תיקיית ההורדות השלמות אינה יכולה להיות אותה תיקייה או תת־תיקייה של תיקיית "
 "ההורדות הזמניות"
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -3057,6 +3066,14 @@ msgstr ""
 " לדוגמה: \"64M\" או \"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "רשימת ניקוי"
 
@@ -4932,6 +4949,10 @@ msgid "Confirm History Deletions"
 msgstr "אשר מחיקות היסטוריה"
 
 #: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "כמה זמן או עד מתי תרצה להשהות? (באנגלית!)"
 
@@ -5084,6 +5105,10 @@ msgstr "צא מן SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "התחל אשף"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
