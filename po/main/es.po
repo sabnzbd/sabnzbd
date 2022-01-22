@@ -375,6 +375,11 @@ msgstr "No se puede escribir al archivo INI %s"
 msgid "Cannot create backup file for %s"
 msgstr "No se puede crear copia de seguridad del archivo %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -713,6 +718,10 @@ msgstr "Intento fallido de inicio de sesión desde %s"
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -3131,6 +3140,14 @@ msgstr ""
 "bytes, opcionalmente seguido de K,M,G. Por ejemplo: \"64M\" o \"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Lista de elementos a limpiar"
 
@@ -5198,6 +5215,10 @@ msgstr "Salir SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Iniciar Asistente"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""

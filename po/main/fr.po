@@ -381,6 +381,11 @@ msgstr "Impossible d'écrire dans le fichier INI %s"
 msgid "Cannot create backup file for %s"
 msgstr "Impossible de créer le fichier de sauvegarde pour %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -722,6 +727,10 @@ msgid ""
 msgstr ""
 "Le dossier des téléchargements terminés ne peut pas être le même dossier que"
 " les téléchargements temporaires, ni être l'un de ses sous-dossiers"
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -3133,6 +3142,14 @@ msgstr ""
 "Octets, peut être suivi de K,M,G. Par exemple : \"64M\" ou \"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Nettoyer la liste"
 
@@ -5232,6 +5249,10 @@ msgstr "Quitter SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Lancer l'assistant"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
