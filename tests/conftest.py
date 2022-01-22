@@ -27,6 +27,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from warnings import warn
 
+from sabnzbd.constants import DEF_INI_FILE
 from tests.testhelper import *
 
 
@@ -70,7 +71,7 @@ def run_sabnzbd(clean_cache_dir):
             warn("Failed to shutdown the sabnzbd process: %s" % err)
 
     # Copy basic config file with API key
-    shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
+    shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, DEF_INI_FILE))
 
     # Check if we have language files
     locale_dir = os.path.join(SAB_BASE_DIR, "..", "locale")

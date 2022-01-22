@@ -1582,6 +1582,10 @@ def main():
             sys.argv = sabnzbd.RESTART_ARGS
             os.chdir(org_dir)
 
+            # Restore backup
+            if sabnzbd.RESTORE_DATA:
+                config.restore_config_backup(sabnzbd.RESTORE_DATA)
+
             # Binaries require special restart
             if hasattr(sys, "frozen"):
                 if sabnzbd.DARWIN:
