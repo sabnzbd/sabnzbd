@@ -18,6 +18,7 @@ function ViewModel() {
     self.displayFullWidth = ko.observable(false).extend({ persist: 'displayFullWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
     self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
+    self.keyboardShortcuts = ko.observable(true).extend({ persist: 'keyboardShortcuts' });
     self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
     self.extraHistoryColumns = ko.observableArray([]).extend({ persist: 'extraHistoryColumns' });
     self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
@@ -1050,18 +1051,24 @@ function ViewModel() {
         }
     }
 
+    self.globalInterfaceSettings = [
+        'dateFormat',
+        'extraQueueColumns',
+        'extraHistoryColumns',
+        'displayCompact',
+        'displayFullWidth',
+        'displayTabbed',
+        'confirmDeleteQueue',
+        'confirmDeleteHistory',
+        'keyboardShortcuts'
+    ]
+
     // Save the rest in config if global-settings
     var saveInterfaceSettings = function(newValue) {
-        var interfaceSettings = {
-            "dateFormat": self.dateFormat,
-            "extraQueueColumns": self.extraQueueColumns,
-            "extraHistoryColumns": self.extraHistoryColumns,
-            "displayCompact": self.displayCompact,
-            "displayFullWidth": self.displayFullWidth,
-            "displayTabbed": self.displayTabbed,
-            "confirmDeleteQueue": self.confirmDeleteQueue,
-            "confirmDeleteHistory": self.confirmDeleteHistory
-        };
+        var interfaceSettings = {}
+        for (const setting of self.globalInterfaceSettings) {
+            interfaceSettings[setting] = self[setting]
+        }
         callAPI({
             mode: "set_config",
             section: "misc",
@@ -1087,27 +1094,19 @@ function ViewModel() {
             self.queue.paginationLimit(response.config.misc.queue_limit.toString())
 
             // Import the rest of the settings
+
             if(response.config.misc.interface_settings) {
                 var interfaceSettings = JSON.parse(response.config.misc.interface_settings);
-                self.dateFormat(interfaceSettings['dateFormat']);
-                self.extraQueueColumns(interfaceSettings['extraQueueColumns']);
-                self.extraHistoryColumns(interfaceSettings['extraHistoryColumns']);
-                self.displayCompact(interfaceSettings['displayCompact']);
-                self.displayFullWidth(interfaceSettings['displayFullWidth']);
-                self.displayTabbed(interfaceSettings['displayTabbed']);
-                self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
-                self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
+                for (const setting of self.globalInterfaceSettings){
+                    if(setting in interfaceSettings) {
+                        self[setting](interfaceSettings[setting]);
+                    }
+                }
             }
-
             // Only subscribe now to prevent collisions between localStorage and config settings updates
-            self.dateFormat.subscribe(saveInterfaceSettings);
-            self.extraQueueColumns.subscribe(saveInterfaceSettings);
-            self.extraHistoryColumns.subscribe(saveInterfaceSettings);
-            self.displayCompact.subscribe(saveInterfaceSettings);
-            self.displayFullWidth.subscribe(saveInterfaceSettings);
-            self.displayTabbed.subscribe(saveInterfaceSettings);
-            self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
-            self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
+            for (const setting of self.globalInterfaceSettings) {
+                self[setting].subscribe(saveInterfaceSettings);
+            }
         }
 
         // Set bandwidth limit
@@ -1205,6 +1204,24 @@ function ViewModel() {
             css: 'warning',
             clear: function() { self.clearMessages('LocalStorageMsg')}
         });
+    }
+
+    document.onkeydown = function(e) {
+        if(self.keyboardShortcuts()) {
+            if (e.code === 'KeyP') {
+                self.pauseToggle();
+            }
+            if (e.code === 'KeyA') {
+                $('#modal-add-nzb').modal('show');
+            }
+            if (e.code === 'KeyC') {
+                window.location.href = './config/';
+            }
+            if (e.code === 'KeyS') {
+                self.loadStatusInfo(true, true)
+                $('#modal-options').modal('show');
+            }
+        }
     }
 
     /***
