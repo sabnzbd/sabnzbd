@@ -31,8 +31,6 @@ import socket
 import ssl
 import functools
 import copy
-import io
-import zipfile
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
@@ -456,12 +454,6 @@ class MainPage:
         sabnzbd.shutdown_program()
         return T("SABnzbd shutdown finished")
 
-    @secured_expose(check_configlock=True, check_api_key=True)
-    def backup(self, **kwargs):
-        cherrypy.response.headers["Content-Type"] = "application/zip"
-        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
-        return config.create_config_backup()
-
     @secured_expose(check_api_key=True, access_type=1)
     def api(self, **kwargs):
         """Redirect to API-handler, we check the access_type in the API-handler"""
@@ -698,6 +690,12 @@ class ConfigPage:
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
             search_list=conf,
         )
+
+    @secured_expose(check_configlock=True, check_api_key=True)
+    def backup(self, **kwargs):
+        cherrypy.response.headers["Content-Type"] = "application/zip"
+        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
+        return config.create_config_backup()
 
 
 ##############################################################################
@@ -1083,15 +1081,12 @@ class ConfigGeneral:
         try:
             config_backup_data = config_backup_file.file.read()
             config_backup_file.file.close()
-            valid_backup = config.validate_config_backup(config_backup_data)
+            if config.validate_config_backup(config_backup_data):
+                sabnzbd.RESTORE_DATA = config_backup_data
+                return sabnzbd.api.report(data={"success": True, "restart_req": True})
         except:
-            valid_backup = False
-
-        if valid_backup:
-            sabnzbd.RESTORE_DATA = config_backup_data
-            return sabnzbd.api.report(data={"success": True, "restart_req": True})
-        else:
-            return sabnzbd.api.report(error=T("Invalid backup archive"))
+            pass
+        return sabnzbd.api.report(error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):

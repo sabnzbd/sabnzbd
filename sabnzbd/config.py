@@ -920,7 +920,7 @@ def save_config(force=False):
 def create_config_backup():
     """Put config data in a zip file"""
     adminpath = sabnzbd.cfg.admin_dir.get_path()
-    logging.debug("Backing up %s + %s", adminpath, CFG.filename)
+    logging.debug("Backing up %s + %s", adminpath, CFG_OBJ.filename)
     with io.BytesIO() as zip_buffer:
         with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
             for filename in CONFIG_BACKUP_FILES:
@@ -928,12 +928,12 @@ def create_config_backup():
                 if os.path.isfile(full_path):
                     with open(full_path, "rb") as data:
                         zip_ref.writestr(filename, data.read())
-            with open(CFG.filename, "rb") as data:
+            with open(CFG_OBJ.filename, "rb") as data:
                 zip_ref.writestr(DEF_INI_FILE, data.read())
         return zip_buffer.getvalue()
 
 
-def validate_config_backup(config_backup_data):
+def validate_config_backup(config_backup_data: bytes) -> bool:
     """Check that the zip file contains a sabnzbd.ini"""
     try:
         with io.BytesIO(config_backup_data) as backup_ref:
@@ -945,17 +945,17 @@ def validate_config_backup(config_backup_data):
         return False
 
 
-def restore_config_backup(config_backup_data):
+def restore_config_backup(config_backup_data: bytes) -> bool:
     """Restore configuration files from zip file"""
     try:
         with io.BytesIO(config_backup_data) as backup_ref:
             with zipfile.ZipFile(backup_ref, "r") as zip_ref:
                 # Write config file first and read it
-                logging.debug("Writing backup of config-file to %s", CFG.filename)
-                with open(CFG.filename, "wb") as destination_ref:
+                logging.debug("Writing backup of config-file to %s", CFG_OBJ.filename)
+                with open(CFG_OBJ.filename, "wb") as destination_ref:
                     destination_ref.write(zip_ref.read(DEF_INI_FILE))
-                logging.debug("Loading backup config-file")
-                read_config(CFG.filename)
+                logging.debug("Loading settings from backup config-file")
+                read_config(CFG_OBJ.filename)
 
                 # Write the rest of the admin files that we want to recover
                 adminpath = sabnzbd.cfg.admin_dir.get_path()
@@ -969,11 +969,9 @@ def restore_config_backup(config_backup_data):
                     except KeyError:
                         # File not in archive
                         pass
-                return True
     except:
         logging.warning(T("Could not restore backup"))
         logging.info("Traceback: ", exc_info=True)
-        return False
 
 
 def get_servers() -> Dict[str, ConfigServer]:
