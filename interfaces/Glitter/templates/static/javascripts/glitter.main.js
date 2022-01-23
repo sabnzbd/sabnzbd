@@ -1208,19 +1208,23 @@ function ViewModel() {
 
     document.onkeydown = function(e) {
         if(self.keyboardShortcuts()) {
-            if (e.code === 'KeyP') {
-                self.pauseToggle();
+            // Do not act if the user is typing something
+            if($("input:focus, textarea:focus").length === 0) {
+                if (e.code === 'KeyP') {
+                    self.pauseToggle();
+                }
+                if (e.code === 'KeyA') {
+                    $('#modal-add-nzb').modal('show');
+                }
+                if (e.code === 'KeyC') {
+                    window.location.href = './config/';
+                }
+                if (e.code === 'KeyS') {
+                    self.loadStatusInfo(true, true)
+                    $('#modal-options').modal('show');
+                }
             }
-            if (e.code === 'KeyA') {
-                $('#modal-add-nzb').modal('show');
-            }
-            if (e.code === 'KeyC') {
-                window.location.href = './config/';
-            }
-            if (e.code === 'KeyS') {
-                self.loadStatusInfo(true, true)
-                $('#modal-options').modal('show');
-            }
+
         }
     }
 
