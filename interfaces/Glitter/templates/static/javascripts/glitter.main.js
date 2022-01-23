@@ -1208,6 +1208,9 @@ function ViewModel() {
 
     document.onkeydown = function(e) {
         if(self.keyboardShortcuts()) {
+            // Ignore if the user used a combination
+            if(e.altKey || e.metaKey || e.ctrlKey) return;
+
             // Do not act if the user is typing something
             if($("input:focus, textarea:focus").length === 0) {
                 if (e.code === 'KeyP') {
