@@ -94,10 +94,6 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         while not nw.connected:
             nw.clear_data()
             nw.recv_chunk(block=True)
-            # Handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
-            read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
-            if read_sockets:
-                nw.recv_chunk(block=True)
             nw.finish_connect(nw.status_code)
 
     except socket.timeout:

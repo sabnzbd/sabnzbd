@@ -114,7 +114,7 @@ class NewsWrapper:
             self.pass_sent = False
             self.pass_ok = False
 
-        if code in (400, 502):
+        if code in (400, 500, 502):
             raise NNTPPermanentError(nntp_to_msg(self.data))
         elif not self.user_sent:
             command = utob("authinfo user %s\r\n" % self.server.username)
