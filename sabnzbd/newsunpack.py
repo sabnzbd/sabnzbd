@@ -105,7 +105,7 @@ def find_programs(curdir: str):
     if sabnzbd.MACOS:
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
-        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7za")
+        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7zz")
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
