@@ -29,18 +29,18 @@ jobs:
     - name: Install system dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar p7zip-full par2
-    - name: Get pip cache dir
-      id: pip-cache
-      run: echo "::set-output name=dir::$(pip cache dir)"
-    - name: Cache Python dependencies
-      uses: actions/cache@v2
+    - name: Cache Python virtualenv
+      uses: syphar/restore-virtualenv@v1.2
+      id: cache-virtualenv
       with:
-        path: ${{ steps.pip-cache.outputs.dir }}
-        key: ${{ runner.os }}-${{ matrix.python-version }}-ci-pip-${{ hashFiles('**/requirements.txt', '**/PKG-INFO') }}
+        custom_cache_key_element: "ci"
+        requirement_files: |
+          **/requirements.txt
+          PKG-INFO
     - name: Install Python dependencies
+      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python --version
-        pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
