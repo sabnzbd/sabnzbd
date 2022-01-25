@@ -86,7 +86,7 @@ class TestSortingFunctions:
                 else:
                     assert guess[key] == value
 
-    @pytest.mark.parametrize("platform", ["linux", "darwin", "win32"])
+    @pytest.mark.parametrize("platform", ["linux", "macos", "win32"])
     @pytest.mark.parametrize(
         "path, result_unix, result_win",
         [

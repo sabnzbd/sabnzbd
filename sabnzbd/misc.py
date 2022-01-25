@@ -61,7 +61,7 @@ if sabnzbd.WIN32:
     except ImportError:
         pass
 
-if sabnzbd.DARWIN:
+if sabnzbd.MACOS:
     from sabnzbd.utils import sleepless
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
@@ -621,9 +621,9 @@ def get_cache_limit():
         if sabnzbd.WIN32:
             # Windows
             mem_bytes = get_windows_memory()
-        elif sabnzbd.DARWIN:
+        elif sabnzbd.MACOS:
             # macOS
-            mem_bytes = get_darwin_memory()
+            mem_bytes = get_macos_memory()
         else:
             # Linux
             mem_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
@@ -642,7 +642,7 @@ def get_cache_limit():
         pass
 
     # Always at least minimum on Windows/macOS
-    if sabnzbd.WIN32 and sabnzbd.DARWIN:
+    if sabnzbd.WIN32 and sabnzbd.MACOS:
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
@@ -675,7 +675,7 @@ def get_windows_memory():
     return stat.ullTotalPhys
 
 
-def get_darwin_memory():
+def get_macos_memory():
     """Use system-call to extract total memory on macOS"""
     system_output = run_command(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
@@ -721,7 +721,7 @@ _HAVE_STATM = _PAGE_SIZE and memory_usage()
 def loadavg():
     """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+    if not sabnzbd.WIN32 and not sabnzbd.MACOS:
         opt = cfg.show_sysload()
         if opt:
             try:
@@ -1297,7 +1297,7 @@ def system_shutdown():
 
     if sabnzbd.WIN32:
         sabnzbd.powersup.win_shutdown()
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_shutdown()
     else:
         sabnzbd.powersup.linux_shutdown()
@@ -1308,7 +1308,7 @@ def system_hibernate():
     logging.info("Performing system hybernation")
     if sabnzbd.WIN32:
         sabnzbd.powersup.win_hibernate()
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_hibernate()
     else:
         sabnzbd.powersup.linux_hibernate()
@@ -1319,7 +1319,7 @@ def system_standby():
     logging.info("Performing system standby")
     if sabnzbd.WIN32:
         sabnzbd.powersup.win_standby()
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_standby()
     else:
         sabnzbd.powersup.linux_standby()

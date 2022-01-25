@@ -433,7 +433,7 @@ email_rss = OptionBool("misc", "email_rss", False)
 email_cats = OptionList("misc", "email_cats", ["*"])
 
 # [ncenter]
-ncenter_enable = OptionBool("ncenter", "ncenter_enable", sabnzbd.DARWIN)
+ncenter_enable = OptionBool("ncenter", "ncenter_enable", sabnzbd.MACOS)
 ncenter_cats = OptionList("ncenter", "ncenter_cats", ["*"])
 ncenter_prio_startup = OptionBool("ncenter", "ncenter_prio_startup", True)
 ncenter_prio_download = OptionBool("ncenter", "ncenter_prio_download", False)
@@ -465,7 +465,7 @@ acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", True)
 acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
-ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.DARWIN)
+ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.MACOS)
 ntfosd_cats = OptionList("ntfosd", "ntfosd_cats", ["*"])
 ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", True)
 ntfosd_prio_download = OptionBool("ntfosd", "ntfosd_prio_download", False)

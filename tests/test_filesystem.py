@@ -52,13 +52,13 @@ class TestFileFolderNameSanitizer:
         # They should act the same
         assert filesystem.sanitize_filename("test:aftertest") == filesystem.sanitize_foldername("test:aftertest")
 
-    @set_platform("darwin")
-    def test_colon_handling_darwin(self):
+    @set_platform("macos")
+    def test_colon_handling_macos(self):
         assert filesystem.sanitize_filename("test:aftertest") == "aftertest"
         assert filesystem.sanitize_filename(":aftertest") == "aftertest"
         assert filesystem.sanitize_filename("::aftertest") == "aftertest"
         assert filesystem.sanitize_filename(":after:test") == "test"
-        # Empty after sanitising with darwin colon handling
+        # Empty after sanitising with macos colon handling
         assert filesystem.sanitize_filename(":") == "unknown"
         assert filesystem.sanitize_filename("test:") == "unknown"
         assert filesystem.sanitize_filename("test: ") == "unknown"
@@ -80,7 +80,7 @@ class TestFileFolderNameSanitizer:
 
     @set_platform("linux")
     def test_win_devices_not_win(self):
-        # Linux and Darwin are the same for this
+        # Linux and macOS are the same for this
         assert filesystem.sanitize_filename(None) is None
         assert filesystem.sanitize_filename("aux.txt") == "aux.txt"
         assert filesystem.sanitize_filename("txt.aux") == "txt.aux"
@@ -438,7 +438,7 @@ class TestCheckMountLinux(ffs.TestCase):
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")
-class TestCheckMountDarwin(ffs.TestCase):
+class TestCheckMountMacOS(ffs.TestCase):
     # Our faked macos directory
     test_dir = "/Volumes/test/dir"
 
@@ -451,31 +451,31 @@ class TestCheckMountDarwin(ffs.TestCase):
         # Verify the fake filesystem does its thing
         assert os.path.exists(self.test_dir) is True
 
-    @set_platform("darwin")
-    def test_bare_mountpoint_darwin(self):
+    @set_platform("macos")
+    def test_bare_mountpoint_macos(self):
         assert filesystem.check_mount("/Volumes") is True
         assert filesystem.check_mount("/Volumes/") is True
 
-    @set_platform("darwin")
-    def test_existing_dir_darwin(self):
+    @set_platform("macos")
+    def test_existing_dir_macos(self):
         assert filesystem.check_mount("/Volumes/test") is True
         assert filesystem.check_mount("/Volumes/test/dir/") is True
         # Filesystem is set case-insensitive for this platform
         assert filesystem.check_mount("/VOLUMES/test") is True
         assert filesystem.check_mount("/volumes/Test/dir/") is True
 
-    @set_platform("darwin")
+    @set_platform("macos")
     # Cut down a bit on the waiting time
     @set_config({"wait_ext_drive": 1})
-    def test_dir_nonexistent_darwin(self):
+    def test_dir_nonexistent_macos(self):
         # Within /Volumes
         assert filesystem.check_mount("/Volumes/nosuchdir") is False  # Issue #1457
         assert filesystem.check_mount("/Volumes/noSuchDir/") is False
         assert filesystem.check_mount("/Volumes/nosuchDIR/subdir") is False
         assert filesystem.check_mount("/Volumes/NOsuchdir/subdir/") is False
 
-    @set_platform("darwin")
-    def test_dir_outsider_darwin(self):
+    @set_platform("macos")
+    def test_dir_outsider_macos(self):
         # Outside of /Volumes
         assert filesystem.check_mount("/test/that/") is True
         # Root directory

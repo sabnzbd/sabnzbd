@@ -197,7 +197,7 @@ def sanitize_filename(name: str) -> str:
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
 
-    if ":" in name and sabnzbd.DARWIN:
+    if ":" in name and sabnzbd.MACOS:
         # Compensate for the foolish way par2 on macOS handles a colon character
         name = name[name.rfind(":") + 1 :]
 
@@ -403,7 +403,7 @@ def same_file(a: str, b: str) -> int:
     return 1 if A and B are actually the same path
     return 2 if B is a subfolder of A
     """
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    if sabnzbd.WIN32 or sabnzbd.MACOS:
         a = clip_path(a.lower())
         b = clip_path(b.lower())
 
@@ -431,7 +431,7 @@ def check_mount(path: str) -> bool:
     """Return False if volume isn't mounted on Linux or macOS
     Retry 6 times with an interval of 1 sec.
     """
-    if sabnzbd.DARWIN:
+    if sabnzbd.MACOS:
         m = re.search(r"^(/Volumes/[^/]+)", path, re.I)
     elif sabnzbd.WIN32:
         m = re.search(r"^([a-z]:\\)", path, re.I)
@@ -533,7 +533,7 @@ def fix_unix_encoding(folder: str):
     This happens for example when files are created
     on Windows but unpacked/repaired on linux
     """
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+    if not sabnzbd.WIN32 and not sabnzbd.MACOS:
         for root, dirs, files in os.walk(folder):
             for name in files:
                 new_name = correct_unknown_encoding(name)
@@ -1018,7 +1018,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
             return disk_size / GIGI, available / GIGI
         except:
             return 0.0, 0.0
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         # MacOS diskfree ... via c-lib call statfs()
         disk_size, available = disk_free_macos_clib_statfs64(dir_to_check)
         return disk_size / GIGI, available / GIGI

@@ -2175,7 +2175,7 @@ class ConfigNotify:
         conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
         conf["categories"] = list_cats(False)
         conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
-        conf["have_ncenter"] = sabnzbd.DARWIN and sabnzbd.FOUNDATION
+        conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION
         conf["scripts"] = list_scripts(default=False, none=True)
 
         for section in NOTIFY_OPTIONS:

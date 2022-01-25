@@ -30,7 +30,7 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WIN32 = DARWIN = FOUNDATION = WIN64 = DOCKER = False
+WIN32 = WIN64 = MACOS = FOUNDATION = DOCKER = False
 KERNEL32 = LIBC = MACOSLIBC = None
 
 if os.name == "nt":
@@ -64,7 +64,7 @@ elif os.name == "posix":
 
     # Parse macOS version numbers
     if platform.system().lower() == "darwin":
-        DARWIN = True
+        MACOS = True
         MACOSLIBC = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the MacOS C library
         try:
             import Foundation

@@ -178,7 +178,7 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
-                    <!--#if not $nt#-->
+                    <!--#if not $windows#-->
                     <div class="field-pair advanced-settings <!--#if not $have_nice then "disabled" else "" #-->">
                         <label class="config" for="nice">$T('opt-nice')</label>
                         <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
@@ -297,7 +297,7 @@
                         <input type="checkbox" name="replace_dots" id="replace_dots" value="1" <!--#if int($replace_dots) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-replace_dots')</span>
                     </div>
-                    <!--#if not $nt#-->
+                    <!--#if not $windows#-->
                     <div class="field-pair">
                         <label class="config" for="sanitize_safe">$T('opt-sanitize_safe')</label>
                         <input type="checkbox" name="sanitize_safe" id="sanitize_safe" value="1" <!--#if int($sanitize_safe) > 0 then 'checked="checked"' else ""#--> />

@@ -122,7 +122,7 @@ def send_notification(title, msg, gtype, job_cat=None):
     """Send Notification message"""
     logging.info("Sending notification: %s - %s (type=%s, job_cat=%s)", title, msg, gtype, job_cat)
     # Notification Center
-    if sabnzbd.DARWIN and sabnzbd.cfg.ncenter_enable():
+    if sabnzbd.MACOS and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, "ncenter") and check_cat("ncenter", job_cat):
             send_notification_center(title, msg, gtype)
 

@@ -102,7 +102,7 @@ def find_programs(curdir: str):
         else:
             return None
 
-    if sabnzbd.DARWIN:
+    if sabnzbd.MACOS:
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7za")
@@ -138,7 +138,7 @@ def find_programs(curdir: str):
         if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
             sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7z")
 
-    if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+    if not (sabnzbd.WIN32 or sabnzbd.MACOS):
         # Run check on rar version
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < sabnzbd.constants.REC_RAR_VERSION
@@ -1028,7 +1028,7 @@ def seven_extract_core(
         method = "e"  # Unpack without folders
     else:
         method = "x"  # Unpack with folders
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    if sabnzbd.WIN32 or sabnzbd.MACOS:
         case = "-ssc-"  # Case insensitive
     else:
         case = "-ssc"  # Case sensitive
@@ -1224,7 +1224,7 @@ def par2cmdline_verify(
         # Normal case, everything is named after set
         wildcard = setname + "*"
 
-    if sabnzbd.DARWIN:
+    if sabnzbd.MACOS:
         command.append(os.path.join(parfolder, wildcard))
     else:
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
@@ -1234,7 +1234,7 @@ def par2cmdline_verify(
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
     # Only if we're not doing multicore
-    if not sabnzbd.DARWIN:
+    if not sabnzbd.MACOS:
         par2text = run_command([command[0], "-h"])
         if "No data skipping" in par2text:
             logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
@@ -1899,7 +1899,7 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
             # Catch key errors
             pass
 
-    if sabnzbd.DARWIN:
+    if sabnzbd.MACOS:
         if "PYTHONPATH" in env:
             del env["PYTHONPATH"]
         if "PYTHONHOME" in env:

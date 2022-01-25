@@ -95,25 +95,25 @@ def set_platform(platform):
         def wrapper_func(*args, **kwargs):
             # Save original values
             is_windows = sabnzbd.WIN32
-            is_darwin = sabnzbd.DARWIN
+            is_macos = sabnzbd.MACOS
 
             # Set current platform
             if platform == "win32":
                 sabnzbd.WIN32 = True
-                sabnzbd.DARWIN = False
-            elif platform == "darwin":
+                sabnzbd.MACOS = False
+            elif platform == "macos":
                 sabnzbd.WIN32 = False
-                sabnzbd.DARWIN = True
+                sabnzbd.MACOS = True
             elif platform == "linux":
                 sabnzbd.WIN32 = False
-                sabnzbd.DARWIN = False
+                sabnzbd.MACOS = False
 
             # Perform test
             value = func(*args, **kwargs)
 
             # Reset values
             sabnzbd.WIN32 = is_windows
-            sabnzbd.DARWIN = is_darwin
+            sabnzbd.MACOS = is_macos
 
             return value
 

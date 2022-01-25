@@ -397,7 +397,7 @@ def get_user_profile_paths():
         sabnzbd.DIR_HOME = long_path(sabnzbd.DIR_HOME)
         return
 
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         home = os.environ.get("HOME")
         if home:
             sabnzbd.DIR_LCLDATA = "%s/Library/Application Support/SABnzbd" % home
@@ -458,7 +458,7 @@ def print_modules():
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
             helpful_warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
-        elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+        elif not (sabnzbd.WIN32 or sabnzbd.MACOS):
             logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
         logging.error(T("unrar binary... NOT found"))
@@ -468,7 +468,7 @@ def print_modules():
     # If available, we prefer 7zip over unzip
     if sabnzbd.newsunpack.SEVENZIP_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+        if not (sabnzbd.WIN32 or sabnzbd.MACOS):
             logging.info("7za binary version %s", sabnzbd.newsunpack.SEVENZIP_VERSION)
     else:
         logging.info(T("7za binary... NOT found!"))
@@ -616,7 +616,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = cherryhost
 
         # Some systems don't like brackets in numerical ipv6
-        if sabnzbd.DARWIN:
+        if sabnzbd.MACOS:
             cherryhost = cherryhost.strip("[]")
         else:
             try:
@@ -631,7 +631,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
-    if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+    if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.MACOS:
         # On the Ubuntu family, localhost leads to problems for CherryPy
         ips = ip_extract()
         if "127.0.0.1" in ips and "::1" in ips:
@@ -640,7 +640,7 @@ def get_webhost(cherryhost, cherryport, https_port):
                 browserhost = "127.0.0.1"
 
     # This is to please Chrome on macOS
-    if cherryhost == "localhost" and sabnzbd.DARWIN:
+    if cherryhost == "localhost" and sabnzbd.MACOS:
         cherryhost = "127.0.0.1"
         browserhost = "localhost"
 
@@ -1192,7 +1192,7 @@ def main():
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
+    if not sabnzbd.WIN32 and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
         helpful_warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
@@ -1588,7 +1588,7 @@ def main():
 
             # Binaries require special restart
             if hasattr(sys, "frozen"):
-                if sabnzbd.DARWIN:
+                if sabnzbd.MACOS:
                     # On macOS restart of app instead of embedded python
                     my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
                     my_args = " ".join(sys.argv[1:])
@@ -1613,7 +1613,7 @@ def main():
     sys.stdout.flush()
     sabnzbd.pid_file()
 
-    if hasattr(sys, "frozen") and sabnzbd.DARWIN:
+    if hasattr(sys, "frozen") and sabnzbd.MACOS:
         try:
             AppHelper.stopEventLoop()
         except:
@@ -1751,7 +1751,7 @@ if __name__ == "__main__":
         if not handle_windows_service():
             main()
 
-    elif sabnzbd.DARWIN and sabnzbd.FOUNDATION:
+    elif sabnzbd.MACOS and sabnzbd.FOUNDATION:
         # macOS binary runner
         from threading import Thread
         from PyObjCTools import AppHelper
