@@ -1288,7 +1288,7 @@ def par2cmdline_verify(
         if line == "":
             continue
 
-        if not line.startswith(("Repairing:", "Scanning:", "Loading:")):
+        if not line.startswith(("Repairing:", "Scanning:", "Loading:", "Solving:", "Constructing:")):
             lines.append(line)
 
         if line.startswith(("Invalid option specified", "Invalid thread option", "Cannot specify recovery file count")):
