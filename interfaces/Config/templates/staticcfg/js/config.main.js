@@ -24,7 +24,6 @@ document.onkeydown = function(e) {
                 if (nextTabLocation >= configTabs.length) {
                     nextTabLocation = 0;
                 }
-                console.log(nextTabLocation);
                 window.location.pathname = configTabs[nextTabLocation];
             }
             if (e.code === 'ArrowLeft') {
