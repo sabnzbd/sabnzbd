@@ -103,8 +103,15 @@ def find_programs(curdir: str):
             return None
 
     if sabnzbd.MACOS:
-        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
-        sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
+        if sabnzbd.MACOSARM64:
+            # M1 (ARM64) versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/arm64/par2")
+            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/arm64/unrar")
+        else:
+            # Regular x64 versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
+            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
+        # The 7zip binary is universal2
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7zz")
 
     if sabnzbd.WIN32:
@@ -116,6 +123,7 @@ def find_programs(curdir: str):
             # 32 bit versions
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
+        # We just use the 32 bit version
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
