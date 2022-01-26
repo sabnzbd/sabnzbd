@@ -1,0 +1,1 @@
+This version is the single-threaded par2cmdline, compiling of multithreaded (OpenMP) version failed due to shared library problems.
