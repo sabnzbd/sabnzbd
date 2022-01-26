@@ -258,6 +258,7 @@ if __name__ == "__main__":
             files_to_sign = [
                 "dist/SABnzbd.app/Contents/MacOS/osx/par2/par2-sl64",
                 "dist/SABnzbd.app/Contents/MacOS/osx/par2/arm64/par2",
+                "dist/SABnzbd.app/Contents/MacOS/osx/par2/arm64/libomp.dylib",
                 "dist/SABnzbd.app/Contents/MacOS/osx/unrar/unrar",
                 "dist/SABnzbd.app/Contents/MacOS/osx/unrar/arm64/unrar",
                 "dist/SABnzbd.app/Contents/MacOS/osx/7zip/7zz",
