@@ -8,6 +8,7 @@ cherrypy
 portend
 chardet
 notify2
+PySocks
 puremagic
 guessit>=3.1.0
 

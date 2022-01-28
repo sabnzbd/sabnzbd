@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,7 +31,16 @@ from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, convert_filter, cat_to_opts, match_str, from_units, int_conv, get_base_url
+from sabnzbd.misc import (
+    cat_convert,
+    convert_filter,
+    cat_to_opts,
+    match_str,
+    from_units,
+    int_conv,
+    get_base_url,
+    helpful_warning,
+)
 import sabnzbd.emailer as emailer
 
 import feedparser
@@ -76,7 +85,7 @@ class RSSReader:
         self.shutdown = False
 
         try:
-            self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
+            self.jobs = sabnzbd.filesystem.load_admin(RSS_FILE_NAME)
             if self.jobs:
                 for feed in self.jobs:
                     remove_obsolete(self.jobs[feed], list(self.jobs[feed]))
@@ -219,7 +228,7 @@ class RSSReader:
 
                 if msg:
                     # We need to escape any "%20" that could be in the warning due to the URL's
-                    logging.warning_helpful(urllib.parse.unquote(msg))
+                    helpful_warning(urllib.parse.unquote(msg))
                 elif not entries:
                     msg = T("RSS Feed %s was empty") % uri
                     logging.info(msg)
@@ -491,7 +500,7 @@ class RSSReader:
 
     @synchronized(RSS_LOCK)
     def save(self):
-        sabnzbd.save_admin(self.jobs, RSS_FILE_NAME)
+        sabnzbd.filesystem.save_admin(self.jobs, RSS_FILE_NAME)
 
     @synchronized(RSS_LOCK)
     def delete(self, feed):
@@ -644,7 +653,7 @@ def _HandleLink(
         jobs[link]["status"] = "D"
         jobs[link]["time_downloaded"] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
-        sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
+        sabnzbd.urlgrabber.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
     else:
         if star:
             jobs[link]["status"] = flag + "*"

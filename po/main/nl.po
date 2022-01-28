@@ -1,15 +1,16 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2021 The SABnzbd-Team
+# Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2021
+# Rik Brouwer, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
+"Last-Translator: Rik Brouwer, 2022\n"
 "Language-Team: Dutch (https://www.transifex.com/sabnzbd/teams/111101/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,6 +107,15 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+"Huidige umask (%o) zou kunnen beletten dat SABnzbd toegang heeft tot de "
+"aangemaakte bestanden en mappen."
+
+#. Warning message
+#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Extra certificaten uit het certifi pakket konden niet geladen worden"
 
@@ -141,35 +151,6 @@ msgstr "Signaal %s ontvangen, opslaan en afsluiten..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Onherstelbare fout bij opslaan status"
-
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Probeer NZB op te halen van %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Opslaan van %s lukt niet"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Kan geen tijdelijk bestand maken voor %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Poging de status van niet-bestaande server %s in te stellen"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Probleem met tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Inlezen van %s mislukt"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -339,6 +320,14 @@ msgstr "trefwoorden"
 msgid "Quota spent, pausing downloading"
 msgstr "Quotum verbruikt, download is gestopt"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Incorrecte parameter"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "UNC-pad '%s' hier niet toegestaan."
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s is geen geldig e-mailadres"
@@ -350,6 +339,23 @@ msgstr "Serveradres verplicht"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s is geen geldig script."
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s is geen correct octaal getal"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+"Ingestelde rechten van %s zouden kunnen beletten dat SABnzbd toegang heeft "
+"tot de aangemaakte bestanden en mappen."
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -370,22 +376,6 @@ msgstr "Backupbestand maken voor %s niet mogelijk"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Foutief gecodeerd wachtwoord %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Incorrecte parameter"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s is geen correct octaal getal"
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-pad '%s' hier niet toegestaan."
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #. Error message
 #: sabnzbd/database.py
@@ -419,10 +409,6 @@ msgstr "Ongeldig loggen van fase in geschiedenis voor %s"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "Decoder fout: onvoldoende geheugen"
-
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode gevonden, alleen yEnc codering wordt ondersteund [%s]"
 
 #. Warning message
 #: sabnzbd/decoder.py
@@ -582,8 +568,7 @@ msgid "No recipients given, no email sent"
 msgstr "Geen geadresseerden opgegeven, e-mail niet verstuurd"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "%s kan niet gelezen worden"
 
@@ -642,6 +627,21 @@ msgstr "Verplaatsen van %s naar %s mislukt"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr "Poging om map %s aan te maken geblokkeerd"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Probleem met tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Opslaan van %s lukt niet"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Inlezen van %s mislukt"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -876,11 +876,6 @@ msgstr "Verwijderen van %s mislukt."
 msgid "Trying unrar with password \"%s\""
 msgstr "Unrar proberen met wachtwoord \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Uitpakken mislukt, archief vereist wachtwoord"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Uitpakken"
@@ -889,51 +884,25 @@ msgstr "Uitpakken"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Uitpakken mislukt, kan %s niet vinden"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "FOUT: \"%s\" niet te vinden"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Uitpakken mislukt, CRC-fout"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "FOUT: onjuiste CRC in \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr "Uitplakken mislukt, bestand te groot voor het bestandssysteem (FAT?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr "FOUT: bestand te groot voor het bestandssysteem (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Uitpakken mislukt,  schrijffout of schijf vol?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "FOUT: schrijffout (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Uitpakken mislukt, bestandspad is te lang"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "FOUT: bestandspad is te lang (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "FOUT: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Uitpakken mislukt, archief vereist wachtwoord"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -960,13 +929,10 @@ msgstr "Geen 7za-programma gevonden, kan \"%s\" niet uitpakken"
 msgid "Trying 7zip with password \"%s\""
 msgstr "Uitpakpoging met 7zip en wachtwoord '%s'"
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "De 7Zip-set '%s' is incompleet, uitpakken is niet mogelijk"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Uitpakken %s niet mogelijk"
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "zie logbestand"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
@@ -1050,12 +1016,12 @@ msgid "Disk full"
 msgstr "Schijf is vol"
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Verifiëren"
-
-#: sabnzbd/newsunpack.py
 msgid "Checking extra files"
 msgstr "Controleren van extra bestanden"
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Verifiëren"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
@@ -1065,6 +1031,10 @@ msgstr "Controleren"
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Probeer SFV-verificatie"
+
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "over"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
@@ -1185,10 +1155,10 @@ msgstr "Meldingsscript '%s' bestaat niet"
 msgid "Failed to send Windows notification"
 msgstr "Versturen Windows-melding mislukt"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Importeren van %s bestanden van %s mislukt"
+msgid "Cannot create temp file for %s"
+msgstr "Kan geen tijdelijk bestand maken voor %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1199,6 +1169,11 @@ msgstr "Fout bij toevoegen van %s, wordt weer verwijderd"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Fout bij verwijderen van %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Importeren van %s bestanden van %s mislukt"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1216,8 +1191,8 @@ msgstr "Download aan wachtrij toegevoegd"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Foutief NZB-bestand %s, overslaan (reden=%s, regel=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "Corrupte NZB %s wordt overgeslagen (foutmelding: %s)"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
@@ -1600,11 +1575,6 @@ msgstr "Meer"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Nabewerking van %s mislukt (%s)"
 
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "zie logbestand"
-
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
 msgstr "Nabewerking is afgebroken"
@@ -1813,6 +1783,11 @@ msgstr "Onbekende actie: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Taak voor niet bestaande server %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Poging de status van niet-bestaande server %s in te stellen"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -3772,6 +3747,14 @@ msgstr ""
 "feeds."
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr "SOCKS5 Proxy"
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr "Gebruik een SOCKS5 proxy server voor alle uitgaande verbindingen."
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "Server"
 
@@ -4033,6 +4016,19 @@ msgstr "Strikt"
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 is de hoogste en 99 de laagste prioriteit"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr "Vereist"
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+"Het downloaden zal een aantal minuten gepauzeerd worden wanneer deze server "
+"niet beschikbaar is."
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
@@ -4218,6 +4214,14 @@ msgstr "Gedownload"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "Alle feeds nu uitlezen"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
+"Notificaties zullen worden verstuurd voor alle downloads als de "
+"<em>Standaard</em> categorie geselecteerd is."
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4505,7 +4509,13 @@ msgstr "Indexer Categorieën / Groepen"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr "Selecteer minstens 1 categorie."
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Serie sorteren"
 
@@ -4533,7 +4543,8 @@ msgstr "Standaardinstellingen"
 msgid "Example"
 msgstr "Voorbeeld"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "Film sorteren"
 
@@ -4685,7 +4696,8 @@ msgstr "In mappen"
 msgid "No folders"
 msgstr "Geen mappen"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Datum sorteren"
 
@@ -4724,7 +4736,7 @@ msgstr "eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt Property"
-msgstr "GuessIt eigenschap"
+msgstr "GuessIt Eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt.Property"
@@ -4804,10 +4816,6 @@ msgstr "Onderwerp"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Selectie"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "over"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -5213,6 +5221,10 @@ msgstr "Onbruikbaar NZB-bestand"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "URL ophalen mislukt; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Probeer NZB op te halen van %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

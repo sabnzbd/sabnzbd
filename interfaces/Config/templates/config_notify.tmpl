@@ -1,5 +1,5 @@
 <!--#set global $pane="Email"#-->
-<!--#set global $help_uri="configuration/3.4/notifications"#-->
+<!--#set global $help_uri="configuration/3.5/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#def show_notify_checkboxes($section_label)#-->
@@ -49,9 +49,9 @@
                 <div class="field-pair">
                     <label class="config" for="email_endjob">$T('opt-email_endjob')</label>
                     <select name="email_endjob" id="email_endjob">
-                        <option value="0" <!--#if int($email_endjob) == "0" then 'selected="selected"' else ""#--> >$T('email-never')</option>
-                        <option value="1" <!--#if int($email_endjob) == "1" then 'selected="selected"' else ""#--> >$T('email-always')</option>
-                        <option value="2" <!--#if int($email_endjob) == "2" then 'selected="selected"' else ""#--> >$T('email-errorOnly')</option>
+                        <option value="0" <!--#if int($email_endjob) == 0 then 'selected="selected"' else ""#--> >$T('email-never')</option>
+                        <option value="1" <!--#if int($email_endjob) == 1 then 'selected="selected"' else ""#--> >$T('email-always')</option>
+                        <option value="2" <!--#if int($email_endjob) == 2 then 'selected="selected"' else ""#--> >$T('email-errorOnly')</option>
                     </select>
                 </div>
                 <div class="field-pair">

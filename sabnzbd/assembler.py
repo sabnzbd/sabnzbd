@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,8 +24,8 @@ import queue
 import logging
 import re
 from threading import Thread
-from time import sleep
 import hashlib
+import ctypes
 from typing import Tuple, Optional, List
 
 import sabnzbd
@@ -41,7 +41,6 @@ from sabnzbd.filesystem import (
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
-import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
 
@@ -119,6 +118,8 @@ class Assembler(Thread):
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
                             logging.info("Traceback: ", exc_info=True)
+                            if sabnzbd.WIN32:
+                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32))
                             # Pause without saving
                             sabnzbd.Downloader.pause()
                         continue
@@ -298,7 +299,6 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
                 # Open the rar
-                rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
                 zf = rarfile.RarFile(filepath, single_file_check=True)
 
                 # Check for encryption

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@
 
 import sys
 
-if sys.hexversion < 0x03060000:
-    print("Sorry, requires Python 3.6 or above")
+if sys.hexversion < 0x03070000:
+    print("Sorry, requires Python 3.7 or above")
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
@@ -32,6 +32,7 @@ import signal
 import socket
 import platform
 import subprocess
+import multiprocessing
 import ssl
 import time
 import re
@@ -48,6 +49,7 @@ try:
     import chardet
     import guessit
     import puremagic
+    import socks
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
@@ -89,12 +91,13 @@ from sabnzbd.misc import (
     is_localhost,
     is_lan_addr,
     ip_in_subnet,
+    helpful_warning,
+    set_https_verification,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
 import sabnzbd.config as config
 import sabnzbd.cfg
-import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
@@ -108,11 +111,10 @@ try:
     import win32event
     import win32service
     import win32ts
-    import pywintypes
     import servicemanager
     from win32com.shell import shell, shellcon
 
-    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
+    from sabnzbd.utils.apireg import get_connection_info, set_connection_info
     import sabnzbd.sabtray
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
@@ -129,16 +131,6 @@ def guard_loglevel():
     """Callback function for guarding loglevel"""
     global LOG_FLAG
     LOG_FLAG = True
-
-
-def warning_helpful(*args, **kwargs):
-    """Wrapper to ignore helpfull warnings if desired"""
-    if sabnzbd.cfg.helpfull_warnings():
-        return logging.warning(*args, **kwargs)
-    return logging.info(*args, **kwargs)
-
-
-logging.warning_helpful = warning_helpful
 
 
 class GUIHandler(logging.Handler):
@@ -248,7 +240,7 @@ def print_version():
             """
 %s-%s
 
-Copyright (C) 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -333,7 +325,7 @@ def identify_web_template(key, defweb, wdir):
     full_main = real_path(full_dir, DEF_MAIN_TMPL)
 
     if not os.path.exists(full_main):
-        logging.warning_helpful(T("Cannot find web template: %s, trying standard template"), full_main)
+        helpful_warning(T("Cannot find web template: %s, trying standard template"), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
@@ -465,9 +457,7 @@ def print_modules():
         if sabnzbd.newsunpack.RAR_PROBLEM:
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
-            logging.warning_helpful(
-                T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str
-            )
+            helpful_warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
             logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
@@ -476,8 +466,10 @@ def print_modules():
         sabnzbd.NO_DOWNLOADING = True
 
     # If available, we prefer 7zip over unzip
-    if sabnzbd.newsunpack.SEVEN_COMMAND:
-        logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVEN_COMMAND)
+    if sabnzbd.newsunpack.SEVENZIP_COMMAND:
+        logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVENZIP_COMMAND)
+        if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+            logging.info("7za binary version %s", sabnzbd.newsunpack.SEVENZIP_VERSION)
     else:
         logging.info(T("7za binary... NOT found!"))
 
@@ -637,7 +629,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
-        logging.warning_helpful(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
+        helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
     if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         # On the Ubuntu family, localhost leads to problems for CherryPy
@@ -690,9 +682,9 @@ def is_sabnzbd_running(url):
     try:
         url = "%s&mode=version" % url
         # Do this without certificate verification, few installations will have that
-        prev = sabnzbd.set_https_verification(False)
+        prev = set_https_verification(False)
         ver = get_from_url(url)
-        sabnzbd.set_https_verification(prev)
+        set_https_verification(prev)
         return ver and (re.search(r"\d+\.\d+\.", ver) or ver.strip() == sabnzbd.__version__)
     except:
         return False
@@ -720,10 +712,10 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
     if is_sabnzbd_running(url):
         # Upload any specified nzb files to the running instance
         if upload_nzbs:
-            prev = sabnzbd.set_https_verification(False)
+            prev = set_https_verification(False)
             for f in upload_nzbs:
                 upload_file_to_sabnzbd(url, f)
-            sabnzbd.set_https_verification(prev)
+            set_https_verification(prev)
         else:
             # Launch the web browser and quit since sabnzbd is already running
             # Trim away everything after the final slash in the URL
@@ -995,12 +987,6 @@ def main():
     logger.setLevel(logging.WARNING)
     logger.addHandler(gui_log)
 
-    # Detect CPU architecture and Windows variant
-    # Use .machine as .processor is not always filled
-    cpu_architecture = platform.uname().machine
-    if sabnzbd.WIN32:
-        sabnzbd.WIN64 = cpu_architecture == "AMD64"
-
     if inifile:
         # INI file given, simplest case
         inifile = evaluate_inipath(inifile)
@@ -1194,7 +1180,7 @@ def main():
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
     logging.info("Python-version = %s", sys.version)
     logging.info("Dockerized = %s", sabnzbd.DOCKER)
-    logging.info("CPU architecture = %s", cpu_architecture)
+    logging.info("CPU architecture = %s", platform.uname().machine)
 
     try:
         logging.info("Platform = %s - %s", os.name, platform.platform())
@@ -1207,11 +1193,18 @@ def main():
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
-        logging.warning_helpful(
+        helpful_warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
             ),
             sabnzbd.encoding.CODEPAGE,
+        )
+
+    # Verify umask, we need at least 700
+    if not sabnzbd.WIN32 and sabnzbd.ORG_UMASK > int("077", 8):
+        sabnzbd.misc.helpful_warning(
+            T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
+            sabnzbd.ORG_UMASK,
         )
 
     # SSL Information
@@ -1469,6 +1462,9 @@ def main():
     if sabnzbd.NO_DOWNLOADING:
         return
 
+    # Apply proxy, if configured, before main requests are made
+    sabnzbd.misc.set_socks5_proxy()
+
     # Start all SABnzbd tasks
     logging.info("Starting %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
     try:
@@ -1480,7 +1476,7 @@ def main():
     # Upload any nzb/zip/rar/nzb.gz/nzb.bz2 files from file association
     if upload_nzbs:
         for upload_nzb in upload_nzbs:
-            sabnzbd.add_nzbfile(upload_nzb)
+            sabnzbd.nzbparser.add_nzbfile(upload_nzb)
 
     # Set URL for browser
     if enable_https:
@@ -1561,7 +1557,7 @@ def main():
         # 30 sec polling tasks
         if not timer % 10:
             # Keep OS awake (if needed)
-            sabnzbd.keep_awake()
+            sabnzbd.misc.keep_awake()
             # Restart scheduler (if needed)
             sabnzbd.Scheduler.restart(plan_restart=False)
             # Save config (if needed)
@@ -1740,6 +1736,9 @@ def handle_windows_service():
 
 
 if __name__ == "__main__":
+    # Require for freezing
+    multiprocessing.freeze_support()
+
     # We can only register these in the main thread
     signal.signal(signal.SIGINT, sabnzbd.sig_handler)
     signal.signal(signal.SIGTERM, sabnzbd.sig_handler)

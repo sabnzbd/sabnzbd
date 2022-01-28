@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -179,8 +179,8 @@ class TestConfigRSS(SABnzbdBaseTest):
 
     def test_rss_basic_flow(self, httpserver: HTTPServer):
         # Setup the response for the NZB
-        nzb_data = create_and_read_nzb("basic_rar5")
-        httpserver.expect_request("/test_nzb.nzb").respond_with_data(nzb_data)
+        nzb_fp = create_and_read_nzb_fp("basic_rar5")
+        httpserver.expect_request("/test_nzb.nzb").respond_with_data(nzb_fp.read())
         nzb_url = httpserver.url_for("/test_nzb.nzb")
 
         # Set the response for the RSS-feed, replacing the URL to the NZB

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -169,7 +169,7 @@ class StatusIcon(Thread):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             for filename in dialog.get_filenames():
-                sabnzbd.add_nzbfile(filename)
+                sabnzbd.nzbparser.add_nzbfile(filename)
         dialog.destroy()
 
     def opencomplete(self, icon):
@@ -198,7 +198,7 @@ class StatusIcon(Thread):
 
     def resume(self):
         sabnzbd.Scheduler.plan_resume(0)
-        sabnzbd.unpause_all()
+        sabnzbd.downloader.unpause_all()
 
     def rss(self, icon):
         sabnzbd.Scheduler.force_rss()

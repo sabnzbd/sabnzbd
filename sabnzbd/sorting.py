@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -347,8 +347,8 @@ class SeriesSorter(BaseSorter):
         self,
         nzo: Optional[NzbObject],
         job_name: str,
-        path: str,
-        cat: str,
+        path: Optional[str],
+        cat: Optional[str],
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ):

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -161,7 +161,7 @@ class BPSMeter:
 
     def save(self):
         """Save admin to disk"""
-        sabnzbd.save_admin(
+        sabnzbd.filesystem.save_admin(
             (
                 self.last_update,
                 self.grand_total,
@@ -203,7 +203,7 @@ class BPSMeter:
         res = False
         quota = self.left = cfg.quota_size.get_float()  # Quota for this period
         self.have_quota = bool(cfg.quota_size())
-        data = sabnzbd.load_admin(BYTES_FILE_NAME)
+        data = sabnzbd.filesystem.load_admin(BYTES_FILE_NAME)
         try:
             (
                 self.last_update,

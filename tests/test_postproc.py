@@ -9,7 +9,6 @@ tests.test_postproc- Tests of various functions in newspack, among which rar_ren
 """
 
 import shutil
-from distutils.dir_util import copy_tree
 from unittest import mock
 
 from sabnzbd.postproc import *
@@ -35,15 +34,15 @@ class TestPostProc:
 
             # create a fresh copy
             try:
-                # shutil.copytree(sourcedir, workingdir) gives problems on AppVeyor, so:
-                copy_tree(sourcedir, workingdir)
+                shutil.copytree(sourcedir, workingdir)
             except:
                 pytest.fail("Could not create copy of files for rar_renamer")
 
             # And now let the magic happen:
             nzo = mock.Mock()
             nzo.final_name = "somedownloadname"
-            number_renamed_files = rar_renamer(nzo, workingdir)
+            nzo.download_path = workingdir
+            number_renamed_files = rar_renamer(nzo)
 
             # run check on the resulting files
             if expected_filename_matches:

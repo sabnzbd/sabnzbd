@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,15 +28,15 @@ from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
+import ssl
 from typing import List, Dict, Optional, Union
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.newswrapper import NewsWrapper
-import sabnzbd.notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo
+from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo, helpful_warning
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
@@ -73,6 +73,8 @@ class Server:
         "ssl",
         "ssl_verify",
         "ssl_ciphers",
+        "ssl_context",
+        "required",
         "optional",
         "retention",
         "send_group",
@@ -103,12 +105,13 @@ class Server:
         timeout,
         threads,
         priority,
-        ssl,
+        use_ssl,
         ssl_verify,
         ssl_ciphers,
         send_group,
         username=None,
         password=None,
+        required=False,
         optional=False,
         retention=0,
     ):
@@ -122,9 +125,11 @@ class Server:
         self.timeout: int = timeout
         self.threads: int = threads
         self.priority: int = priority
-        self.ssl: bool = ssl
+        self.ssl: bool = use_ssl
         self.ssl_verify: int = ssl_verify
         self.ssl_ciphers: str = ssl_ciphers
+        self.ssl_context: Optional[ssl.SSLContext] = None
+        self.required: bool = required
         self.optional: bool = optional
         self.retention: int = retention
         self.send_group: bool = send_group
@@ -183,7 +188,7 @@ class Server:
                 logging.debug("%s: Connecting to address %s", self.host, ip)
             elif cfg.load_balancing() == 2:
                 # RFC6555 / Happy Eyeballs:
-                ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
+                ip = happyeyeballs(self.host, port=self.port)
                 if ip:
                     logging.debug("%s: Connecting to address %s", self.host, ip)
                 else:
@@ -312,6 +317,7 @@ class Downloader(Thread):
             ssl_ciphers = srv.ssl_ciphers()
             username = srv.username()
             password = srv.password()
+            required = srv.required()
             optional = srv.optional()
             retention = int(srv.retention() * 24 * 3600)  # days ==> seconds
             send_group = srv.send_group()
@@ -344,6 +350,7 @@ class Downloader(Thread):
                     send_group,
                     username,
                     password,
+                    required,
                     optional,
                     retention,
                 )
@@ -363,8 +370,11 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
-        """Set downloader to specified paused state"""
-        self.paused = state
+        """Set downloader to new paused state if it is changed"""
+        if self.paused != state:
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(state)
+            self.paused = state
 
     @NzbQueueLocker
     def resume(self):
@@ -372,6 +382,8 @@ class Downloader(Thread):
         if self.paused and sabnzbd.WEB_DIR:
             logging.info("Resuming")
             sabnzbd.notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(False)
         self.paused = False
 
     @NzbQueueLocker
@@ -381,6 +393,8 @@ class Downloader(Thread):
             self.paused = True
             logging.info("Pausing")
             sabnzbd.notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(True)
             if self.is_paused():
                 sabnzbd.BPSMeter.reset()
             if cfg.autodisconnect():
@@ -413,7 +427,7 @@ class Downloader(Thread):
                 if mx:
                     self.bandwidth_limit = mx * self.bandwidth_perc / 100
                 else:
-                    logging.warning_helpful(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+                    helpful_warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
             else:
                 self.bandwidth_limit = from_units(value)
                 if mx:
@@ -473,12 +487,16 @@ class Downloader(Thread):
             if server.errormsg != errormsg:
                 server.errormsg = errormsg
                 logging.warning(errormsg)
-                logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
+                if not server.required:
+                    logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
 
             # Not fully the same as the code below for optional servers
             server.bad_cons = 0
-            server.deactivate()
-            self.plan_server(server, _PENALTY_TIMEOUT)
+            if server.required:
+                sabnzbd.Scheduler.plan_required_server_resume()
+            else:
+                server.deactivate()
+                self.plan_server(server, _PENALTY_TIMEOUT)
 
         # Optional and active server had too many problems.
         # Disable it now and send a re-enable plan to the scheduler
@@ -528,11 +546,11 @@ class Downloader(Thread):
 
     def run(self):
         # First check IPv6 connectivity
-        sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
+        sabnzbd.EXTERNAL_IPV6 = sabnzbd.misc.test_ipv6()
         logging.debug("External IPv6 test result: %s", sabnzbd.EXTERNAL_IPV6)
 
         # Then we check SSL certificate checking
-        sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.test_cert_checking()
+        sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
 
         # Kick BPS-Meter to check quota
@@ -835,12 +853,17 @@ class Downloader(Thread):
                                 penalty = _PENALTY_UNKNOWN
                                 block = True
                             if block or (penalty and server.optional):
+                                retry_article = False
                                 if server.active:
-                                    server.deactivate()
-                                    if penalty and (block or server.optional):
-                                        self.plan_server(server, penalty)
-                                # Note that the article is discard for this server
-                                self.__reset_nw(nw, retry_article=False, send_quit=True)
+                                    if server.required:
+                                        sabnzbd.Scheduler.plan_required_server_resume()
+                                        retry_article = True
+                                    else:
+                                        server.deactivate()
+                                        if penalty and (block or server.optional):
+                                            self.plan_server(server, penalty)
+                                # Note that the article is discard for this server if the server is not required
+                                self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
                             continue
                         except:
                             logging.error(
@@ -1127,3 +1150,17 @@ def check_server_quota():
                 logging.warning(T("Server %s has used the specified quota"), server.displayname())
                 server.quota.set("")
                 config.save_config()
+
+
+def pause_all():
+    """Pause all activities than cause disk access"""
+    sabnzbd.PAUSED_ALL = True
+    sabnzbd.Downloader.pause()
+    logging.debug("PAUSED_ALL active")
+
+
+def unpause_all():
+    """Resume all activities"""
+    sabnzbd.PAUSED_ALL = False
+    sabnzbd.Downloader.resume()
+    logging.debug("PAUSED_ALL inactive")

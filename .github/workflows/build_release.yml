@@ -10,11 +10,11 @@ jobs:
       AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9 (64bit)
+    - name: Set up Python 3.10 (64bit)
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
-        architecture: x64
+        python-version: "3.10"
+        architecture: "x64"
     - name: Install Python dependencies (64bit)
       run: |
         python --version
@@ -43,8 +43,8 @@ jobs:
     - name: Set up Python 3.8 (32bit and legacy)
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
-        architecture: x86
+        python-version: "3.8"
+        architecture: "x86"
     - name: Install Python dependencies (32bit and legacy)
       run: |
         python --version
@@ -64,7 +64,7 @@ jobs:
 
   build_macos:
     name: Build macOS binary
-    runs-on: macos-latest
+    runs-on: macos-11
     env:
       SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
       NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
@@ -73,8 +73,10 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: 3.9.7
-      MACOSX_DEPLOYMENT_TARGET: 10.9
+      PYTHON_VERSION: "3.10.2"
+      MACOSX_DEPLOYMENT_TARGET: "10.9"
+      # We need to force compile for universal2 support
+      CFLAGS: -arch arm64 -arch x86_64
     steps:
     - uses: actions/checkout@v2
     - name: Cache Python download
@@ -85,15 +87,31 @@ jobs:
         key: macOS-Python-${{ env.PYTHON_VERSION }}
     - name: Get Python
       if: steps.cache-python-download.outputs.cache-hit != 'true'
-      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx10.9.pkg -o ~/python.pkg
+      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
       run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
+      # We have to manually install a few packages:
+      # 1.  cffi will pick up the single-arch libffi from Homebrew, while Apple provides universal2-version
+      #     of libffi with XCode. So we forcefully have to remove the Homebrew one.
+      # 2.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
+      #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
+      #     https://github.com/pyca/cryptography/issues/5918
+      # 3.  We need to build the PyInstaller bootloader from sources:
+      #     https://github.com/pyinstaller/pyinstaller/issues/6235
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        pip3 install --upgrade -r requirements.txt
-        pip3 install --upgrade -r builder/requirements.txt
+        
+        brew uninstall libffi --ignore-dependencies
+        ARCHFLAGS="-arch x86_64 -arch arm64" pip3 install --upgrade cffi --no-binary cffi
+        pip3 install --upgrade -r requirements.txt --no-binary sabyenc3
+        
+        pip3 uninstall cryptography -y
+        pip3 download cryptography --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
+        pip3 install cryptography --no-cache-dir --no-index --find-links .
+        
+        PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
     - name: Import macOS codesign certificates
       uses: apple-actions/import-codesign-certs@v1
       if: env.SIGNING_AUTH
@@ -112,3 +130,21 @@ jobs:
     - name: Prepare official release
       if: env.AUTOMATION_GITHUB_TOKEN && startsWith(github.ref, 'refs/tags/')
       run: python3 builder/package.py release
+
+  release_snap:
+    name: Release Snap
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    env:
+      SNAP_TOKEN: ${{ secrets.SNAP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+      - name: Release latest available Snap
+        run: |
+          sudo snap install snapcraft --classic
+          echo "${SNAP_TOKEN}" | snapcraft login --with -
+          python3 snap/local/release_snap.py

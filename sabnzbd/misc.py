@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,7 +18,9 @@
 """
 sabnzbd.misc - misc classes
 """
+
 import os
+import ssl
 import sys
 import logging
 import urllib.request
@@ -30,25 +32,19 @@ import time
 import datetime
 import inspect
 import ctypes
+import html
 import ipaddress
-from typing import Union, Tuple, Any, AnyStr, Optional, List
+import socks
+from threading import Thread
+from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict
 
 import sabnzbd
-from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
+import sabnzbd.getipaddress
+from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX, REPAIR_REQUEST
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import userxbit
-
-TAB_UNITS = ("", "K", "M", "G", "T", "P")
-RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
-RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
-RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
-RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
-RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
-
-# Check if strings are defined for AM and PM
-HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file, is_valid_script
 
 if sabnzbd.WIN32:
     try:
@@ -65,6 +61,26 @@ if sabnzbd.WIN32:
     except ImportError:
         pass
 
+if sabnzbd.DARWIN:
+    from sabnzbd.utils import sleepless
+
+TAB_UNITS = ("", "K", "M", "G", "T", "P")
+RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
+RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
+RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
+RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
+RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
+
+# Check if strings are defined for AM and PM
+HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
+
+
+def helpful_warning(*args, **kwargs):
+    """Wrapper to ignore helpfull warnings if desired"""
+    if sabnzbd.cfg.helpful_warnings():
+        return logging.warning(*args, **kwargs)
+    return logging.info(*args, **kwargs)
+
 
 def time_format(fmt):
     """Return time-format string adjusted for 12/24 hour clock setting"""
@@ -72,6 +88,33 @@ def time_format(fmt):
         return fmt.replace("%H:%M:%S", "%I:%M:%S %p").replace("%H:%M", "%I:%M %p")
     else:
         return fmt
+
+
+def format_time_left(totalseconds: int, short_format: bool = False) -> str:
+    """Calculate the time left in the format [DD:]HH:MM:SS or [DD:][HH:]MM:SS (short_format)"""
+    if totalseconds > 0:
+        try:
+            minutes, seconds = divmod(totalseconds, 60)
+            hours, minutes = divmod(minutes, 60)
+            days, hours = divmod(hours, 24)
+            if seconds < 10:
+                seconds = "0%s" % seconds
+            if hours > 0 or not short_format:
+                if minutes < 10:
+                    minutes = "0%s" % minutes
+                if days > 0:
+                    if hours < 10:
+                        hours = "0%s" % hours
+                    return "%s:%s:%s:%s" % (days, hours, minutes, seconds)
+                else:
+                    return "%s:%s:%s" % (hours, minutes, seconds)
+            else:
+                return "%s:%s" % (minutes, seconds)
+        except:
+            pass
+    if short_format:
+        return "0:00"
+    return "0:00:00"
 
 
 def calc_age(date: datetime.datetime, trans: bool = False) -> str:
@@ -752,16 +795,15 @@ def create_https_certificates(ssl_cert, ssl_key):
 
 
 def get_all_passwords(nzo) -> List[str]:
-    """Get all passwords, from the NZB, meta and password file. In case the correct password is
-    already known, only that password is returned."""
+    """Get all passwords, from the NZB, meta and password file. In case a working password is
+    already known, try it first."""
+    passwords = []
     if nzo.correct_password:
-        return [nzo.correct_password]
+        passwords.append(nzo.correct_password)
 
     if nzo.password:
         logging.info("Found a password that was set by the user: %s", nzo.password)
-        passwords = [nzo.password.strip()]
-    else:
-        passwords = []
+        passwords.append(nzo.password.strip())
 
     meta_passwords = nzo.meta.get("password", [])
     pw = nzo.nzo_info.get("password")
@@ -785,7 +827,7 @@ def get_all_passwords(nzo) -> List[str]:
 
             # Check size
             if len(pws) > 30:
-                logging.warning_helpful(
+                helpful_warning(
                     T(
                         "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
                     )
@@ -1028,6 +1070,27 @@ def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
         return ubtou(lines[0])
 
 
+def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclude_items: Tuple[str, ...] = ()):
+    """Recursively update the input_dict in-place with html-safe values"""
+    if isinstance(input_dict_or_list, (dict, list)):
+        if isinstance(input_dict_or_list, dict):
+            iterator = input_dict_or_list.items()
+        else:
+            # For lists we use enumerate
+            iterator = enumerate(input_dict_or_list)
+
+        for key, value in iterator:
+            # Ignore any keys that are not safe to convert
+            if key not in exclude_items:
+                # We ignore any other than str
+                if isinstance(value, str):
+                    input_dict_or_list[key] = html.escape(value, quote=True)
+                if isinstance(value, (dict, list)):
+                    recursive_html_escape(value, exclude_items=exclude_items)
+    else:
+        raise ValueError("Expected dict or str, got %s" % type(input_dict_or_list))
+
+
 def list2cmdline(lst: List[str]) -> str:
     """convert list to a cmd.exe-compatible command string"""
     nlst = []
@@ -1106,3 +1169,221 @@ def run_command(cmd: List[str], **kwargs):
         txt = platform_btou(p.stdout.read())
         p.wait()
     return txt
+
+
+def run_script(script):
+    """Run a user script (queue complete only)"""
+    script_path = make_script_path(script)
+    if script_path:
+        try:
+            script_output = run_command([script_path])
+            logging.info("Output of queue-complete script %s: \n%s", script, script_output)
+        except:
+            logging.info("Failed queue-complete script %s, Traceback: ", script, exc_info=True)
+
+
+def set_socks5_proxy():
+    if cfg.socks5_proxy_url():
+        proxy = urllib.parse.urlparse(cfg.socks5_proxy_url())
+        logging.info("Using Socks5 proxy %s:%s", proxy.hostname, proxy.port)
+        socks.set_default_proxy(
+            socks.SOCKS5,
+            proxy.hostname,
+            proxy.port,
+            True,  # use remote DNS, default
+            proxy.username,
+            proxy.password,
+        )
+        socket.socket = socks.socksocket
+
+
+def set_https_verification(value):
+    """Set HTTPS-verification state while returning current setting
+    False = disable verification
+    """
+    prev = ssl._create_default_https_context == ssl.create_default_context
+    if value:
+        ssl._create_default_https_context = ssl.create_default_context
+    else:
+        ssl._create_default_https_context = ssl._create_unverified_context
+    return prev
+
+
+def test_ipv6():
+    """Check if external IPv6 addresses are reachable"""
+    if not cfg.selftest_host():
+        # User disabled the test, assume active IPv6
+        return True
+    try:
+        info = sabnzbd.getipaddress.addresslookup6(cfg.selftest_host())
+    except:
+        logging.debug(
+            "Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0]
+        )
+        return False
+
+    try:
+        af, socktype, proto, canonname, sa = info[0]
+        with socket.socket(af, socktype, proto) as sock:
+            sock.settimeout(2)  # 2 second timeout
+            sock.connect(sa[0:2])
+        logging.debug("Test IPv6: IPv6 test successful. Enabling IPv6")
+        return True
+    except socket.error:
+        logging.debug("Test IPv6: Cannot reach IPv6 test host. Disabling IPv6")
+        return False
+    except:
+        logging.debug("Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s", sys.exc_info()[0])
+        return False
+
+
+def test_cert_checking():
+    """Test quality of certificate validation"""
+    # User disabled the test, assume proper SSL certificates
+    if not cfg.selftest_host():
+        return True
+
+    # Try a connection to our test-host
+    try:
+        ctx = ssl.create_default_context()
+        base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
+        ssl_sock.settimeout(2.0)
+        ssl_sock.connect((cfg.selftest_host(), 443))
+        ssl_sock.close()
+        return True
+    except (socket.gaierror, socket.timeout):
+        # Non-SSL related error.
+        # We now assume that certificates work instead of forcing
+        # lower quality just because some (temporary) internet problem
+        logging.info("Could not determine system certificate validation quality due to connection problems")
+        return True
+    except:
+        # Seems something is still wrong
+        set_https_verification(False)
+    return False
+
+
+def request_repair():
+    """Request a full repair on next restart"""
+    path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
+    try:
+        with open(path, "w") as f:
+            f.write("\n")
+    except:
+        pass
+
+
+def check_repair_request():
+    """Return True if repair request found, remove afterwards"""
+    path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
+    if os.path.exists(path):
+        try:
+            remove_file(path)
+        except:
+            pass
+        return True
+    return False
+
+
+def system_shutdown():
+    """Shutdown system after halting download and saving bookkeeping"""
+    logging.info("Performing system shutdown")
+
+    # Do not use regular shutdown, as we should be able to still send system-shutdown
+    Thread(target=sabnzbd.halt).start()
+    while sabnzbd.__INITIALIZED__:
+        time.sleep(1.0)
+
+    if sabnzbd.WIN32:
+        sabnzbd.powersup.win_shutdown()
+    elif sabnzbd.DARWIN:
+        sabnzbd.powersup.osx_shutdown()
+    else:
+        sabnzbd.powersup.linux_shutdown()
+
+
+def system_hibernate():
+    """Hibernate system"""
+    logging.info("Performing system hybernation")
+    if sabnzbd.WIN32:
+        sabnzbd.powersup.win_hibernate()
+    elif sabnzbd.DARWIN:
+        sabnzbd.powersup.osx_hibernate()
+    else:
+        sabnzbd.powersup.linux_hibernate()
+
+
+def system_standby():
+    """Standby system"""
+    logging.info("Performing system standby")
+    if sabnzbd.WIN32:
+        sabnzbd.powersup.win_standby()
+    elif sabnzbd.DARWIN:
+        sabnzbd.powersup.osx_standby()
+    else:
+        sabnzbd.powersup.linux_standby()
+
+
+def change_queue_complete_action(action, new=True):
+    """Action or script to be performed once the queue has been completed
+    Scripts are prefixed with 'script_'
+    When "new" is False, check whether non-script actions are acceptable
+    """
+    _action = None
+    _argument = None
+    if action.startswith("script_") and is_valid_script(action.replace("script_", "", 1)):
+        # all scripts are labeled script_xxx
+        _action = sabnzbd.misc.run_script
+        _argument = action.replace("script_", "", 1)
+    elif new or cfg.queue_complete_pers():
+        if action == "shutdown_pc":
+            _action = system_shutdown
+        elif action == "hibernate_pc":
+            _action = system_hibernate
+        elif action == "standby_pc":
+            _action = system_standby
+        elif action == "shutdown_program":
+            _action = sabnzbd.shutdown_program
+        else:
+            action = None
+    else:
+        action = None
+
+    if new:
+        cfg.queue_complete.set(action or "")
+        config.save_config()
+
+    sabnzbd.QUEUECOMPLETE = action
+    sabnzbd.QUEUECOMPLETEACTION = _action
+    sabnzbd.QUEUECOMPLETEARG = _argument
+
+
+def keep_awake():
+    """If we still have work to do, keep Windows/macOS system awake"""
+    if sabnzbd.KERNEL32 or sabnzbd.FOUNDATION:
+        if sabnzbd.cfg.keep_awake():
+            ES_CONTINUOUS = 0x80000000
+            ES_SYSTEM_REQUIRED = 0x00000001
+            if (not sabnzbd.Downloader.is_paused() and not sabnzbd.NzbQueue.is_empty()) or (
+                not sabnzbd.PostProcessor.paused and not sabnzbd.PostProcessor.empty()
+            ):
+                if sabnzbd.KERNEL32:
+                    # Set ES_SYSTEM_REQUIRED until the next call
+                    sabnzbd.KERNEL32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+                else:
+                    sleepless.keep_awake("SABnzbd is busy downloading and/or post-processing")
+            else:
+                if sabnzbd.KERNEL32:
+                    # Allow the regular state again
+                    sabnzbd.KERNEL32.SetThreadExecutionState(ES_CONTINUOUS)
+                else:
+                    sleepless.allow_sleep()
+
+
+def history_updated():
+    """To make sure we always have a fresh history"""
+    sabnzbd.LAST_HISTORY_UPDATE += 1
+    # Never go over the limit
+    if sabnzbd.LAST_HISTORY_UPDATE + 1 >= sys.maxsize:
+        sabnzbd.LAST_HISTORY_UPDATE = 1

@@ -55,6 +55,7 @@ function ViewModel() {
     self.statusInfo = {};
     self.statusInfo.folders = ko.observableArray([]);
     self.statusInfo.servers = ko.observableArray([]);
+    self.statusInfo.active_socks5_proxy = ko.observable();
     self.statusInfo.localipv4 = ko.observable();
     self.statusInfo.publicipv4 = ko.observable();
     self.statusInfo.ipv6 = ko.observable();
@@ -596,37 +597,6 @@ function ViewModel() {
         }
     })
 
-    // Save the rest in config if global-settings
-    var saveInterfaceSettings = function(newValue) {
-        if(self.useGlobalOptions()) {
-            var interfaceSettings = {
-                "dateFormat": self.dateFormat,
-                "extraQueueColumns": self.extraQueueColumns,
-                "extraHistoryColumns": self.extraHistoryColumns,
-                "displayCompact": self.displayCompact,
-                "displayFullWidth": self.displayFullWidth,
-                "displayTabbed": self.displayTabbed,
-                "confirmDeleteQueue": self.confirmDeleteQueue,
-                "confirmDeleteHistory": self.confirmDeleteHistory
-            };
-            callAPI({
-                mode: "set_config",
-                section: "misc",
-                keyword: "interface_settings",
-                value: ko.toJSON(interfaceSettings)
-            })
-        }
-    }
-
-    self.dateFormat.subscribe(saveInterfaceSettings);
-    self.extraQueueColumns.subscribe(saveInterfaceSettings);
-    self.extraHistoryColumns.subscribe(saveInterfaceSettings);
-    self.displayCompact.subscribe(saveInterfaceSettings);
-    self.displayFullWidth.subscribe(saveInterfaceSettings);
-    self.displayTabbed.subscribe(saveInterfaceSettings);
-    self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
-    self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
-
     /***
          Add NZB's
     ***/
@@ -773,6 +743,7 @@ function ViewModel() {
                 self.statusInfo.completedirspeed(data.status.completedirspeed)
                 self.statusInfo.internetbandwidth(data.status.internetbandwidth)
                 self.statusInfo.dnslookup(data.status.dnslookup)
+                self.statusInfo.active_socks5_proxy(data.status.active_socks5_proxy)
                 self.statusInfo.localipv4(data.status.localipv4)
                 self.statusInfo.publicipv4(data.status.publicipv4)
                 self.statusInfo.ipv6(data.status.ipv6 || glitterTranslate.noneText)
@@ -1079,6 +1050,26 @@ function ViewModel() {
         }
     }
 
+    // Save the rest in config if global-settings
+    var saveInterfaceSettings = function(newValue) {
+        var interfaceSettings = {
+            "dateFormat": self.dateFormat,
+            "extraQueueColumns": self.extraQueueColumns,
+            "extraHistoryColumns": self.extraHistoryColumns,
+            "displayCompact": self.displayCompact,
+            "displayFullWidth": self.displayFullWidth,
+            "displayTabbed": self.displayTabbed,
+            "confirmDeleteQueue": self.confirmDeleteQueue,
+            "confirmDeleteHistory": self.confirmDeleteHistory
+        };
+        callAPI({
+            mode: "set_config",
+            section: "misc",
+            keyword: "interface_settings",
+            value: ko.toJSON(interfaceSettings)
+        })
+    }
+
     // Get the speed-limit, refresh rate and server names
     callAPI({
         mode: 'get_config'
@@ -1107,6 +1098,16 @@ function ViewModel() {
                 self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
                 self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
             }
+
+            // Only subscribe now to prevent collisions between localStorage and config settings updates
+            self.dateFormat.subscribe(saveInterfaceSettings);
+            self.extraQueueColumns.subscribe(saveInterfaceSettings);
+            self.extraHistoryColumns.subscribe(saveInterfaceSettings);
+            self.displayCompact.subscribe(saveInterfaceSettings);
+            self.displayFullWidth.subscribe(saveInterfaceSettings);
+            self.displayTabbed.subscribe(saveInterfaceSettings);
+            self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
+            self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
         }
 
         // Set bandwidth limit
@@ -1115,6 +1116,9 @@ function ViewModel() {
 
         // Save servers (for reporting functionality of OZnzb)
         self.servers = response.config.servers;
+
+        // Already set if we are using a proxy
+        if(response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)
 
         // Update message
         if(newRelease) {

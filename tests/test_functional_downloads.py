@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,8 +18,6 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
-import sys
-
 import sabnzbd.filesystem as filesystem
 from tests.testhelper import *
 

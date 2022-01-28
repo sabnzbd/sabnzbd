@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2012-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -569,6 +569,8 @@ SKIN_TEXT = {
     "explain-enable_https_verification": TT(
         "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
     ),
+    "opt-socks5_proxy_url": TT("SOCKS5 Proxy"),
+    "explain-socks5_proxy_url": TT("Use the specified SOCKS5 proxy for all outgoing connections."),
     "swtag-server": TT("Server"),
     "swtag-queue": TT("Queue"),
     "swtag-pp": TT("Post processing"),
@@ -644,6 +646,10 @@ SKIN_TEXT = {
     "ssl_verify-strict": TT("Strict"),
     "srv-priority": TT("Priority"),  #: Server priority
     "explain-svrprio": TT("0 is highest priority, 100 is the lowest priority"),  #: Explain server priority
+    "srv-required": TT("Required"),  #: Server required tickbox
+    "explain-required": TT(
+        "In case of connection failures, the download queue will be paused for a few minutes instead of skipping this server"
+    ),  #: Explain server required tickbox
     "srv-optional": TT("Optional"),  #: Server optional tickbox
     "explain-optional": TT(
         "For unreliable servers, will be ignored longer in case of failures"

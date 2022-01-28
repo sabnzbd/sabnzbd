@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,7 +18,11 @@
 """
 sabnzbd.cfg - Configuration Parameters
 """
+
+import logging
 import re
+import argparse
+from typing import List, Tuple
 
 import sabnzbd
 from sabnzbd.config import (
@@ -28,13 +32,7 @@ from sabnzbd.config import (
     OptionDir,
     OptionStr,
     OptionList,
-    validate_octal,
-    validate_safedir,
-    all_lowercase,
     create_api_key,
-    validate_notempty,
-    clean_nice_ionice_parameters,
-    validate_strip_right_slash,
 )
 from sabnzbd.constants import (
     DEF_HOST,
@@ -48,9 +46,74 @@ from sabnzbd.constants import (
     DEF_FOLDER_MAX,
 )
 
+
 ##############################################################################
-# Email validation support
+# Default Validation handlers
 ##############################################################################
+class ErrorCatchingArgumentParser(argparse.ArgumentParser):
+    def error(self, status=0, message=None):
+        # Need to override so it doesn't raise SystemExit
+        if status:
+            raise ValueError
+
+
+def clean_nice_ionice_parameters(value):
+    """Verify that the passed parameters are not exploits"""
+    if value:
+        parser = ErrorCatchingArgumentParser()
+
+        # Nice parameters
+        parser.add_argument("-n", "--adjustment", type=int)
+
+        # Ionice parameters, not supporting -p
+        parser.add_argument("--classdata", type=int)
+        parser.add_argument("-c", "--class", type=int)
+        parser.add_argument("-t", "--ignore", action="store_true")
+
+        try:
+            parser.parse_args(value.split())
+        except ValueError:
+            # Also log at start-up if invalid parameter was set in the ini
+            msg = "%s: %s" % (T("Incorrect parameter"), value)
+            logging.error(msg)
+            return msg, None
+    return None, value
+
+
+def all_lowercase(value):
+    """Lowercase everything!"""
+    if isinstance(value, list):
+        # If list, for each item
+        return None, [item.lower() for item in value]
+    return None, value.lower()
+
+
+def validate_no_unc(root, value, default):
+    """Check if path isn't a UNC path"""
+    # Only need to check the 'value' part
+    if value and not value.startswith(r"\\"):
+        return validate_notempty(root, value, default)
+    else:
+        return T('UNC path "%s" not allowed here') % value, None
+
+
+def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
+    """Don't split single indexer tags like "TV > HD"
+    into ['TV', '>', 'HD']
+    """
+    if len(value) == 3:
+        if value[1] == ">":
+            return None, [" ".join(value)]
+    return None, value
+
+
+def validate_strip_right_slash(value):
+    """Strips the right slash"""
+    if value:
+        return None, value.rstrip("/")
+    return None, value
+
+
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
@@ -83,6 +146,43 @@ def validate_script(value):
     elif (value and value == "None") or not value:
         return None, "None"
     return T("%s is not a valid script") % value, None
+
+
+def validate_permissions(value: str):
+    """Check the permissions for correct input"""
+    # Octal verification
+    if not value:
+        return None, value
+    try:
+        oct_value = int(value, 8)
+        # Block setting it to 0
+        if not oct_value:
+            raise ValueError
+    except ValueError:
+        return T("%s is not a correct octal value") % value, None
+
+    # Check if we at least have user-permissions
+    if oct_value < int("700", 8):
+        sabnzbd.misc.helpful_warning(
+            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."), value
+        )
+    return None, value
+
+
+def validate_safedir(root, value, default):
+    """Allow only when queues are empty and no UNC"""
+    if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
+        return validate_no_unc(root, value, default)
+    else:
+        return T("Error: Queue not empty, cannot change folder."), None
+
+
+def validate_notempty(root, value, default):
+    """If value is empty, return default"""
+    if value:
+        return None, value
+    else:
+        return None, default
 
 
 ##############################################################################
@@ -139,11 +239,13 @@ nzb_key = OptionStr("misc", "nzb_key", create_api_key())
 ##############################################################################
 # Config - Folders
 ##############################################################################
-umask = OptionStr("misc", "permissions", validation=validate_octal)
-download_dir = OptionDir("misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, validation=validate_safedir)
+permissions = OptionStr("misc", "permissions", validation=validate_permissions)
+download_dir = OptionDir(
+    "misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, apply_permissions=True, validation=validate_safedir
+)
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
-    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_umask=True, validation=validate_notempty
+    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_permissions=True, validation=validate_notempty
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
@@ -260,6 +362,7 @@ rss_rate = OptionNumber("misc", "rss_rate", 60, 15, 24 * 60)
 ampm = OptionBool("misc", "ampm", False)
 replace_illegal = OptionBool("misc", "replace_illegal", True)
 start_paused = OptionBool("misc", "start_paused", False)
+preserve_paused_state = OptionBool("misc", "preserve_paused_state", False)
 enable_par_cleanup = OptionBool("misc", "enable_par_cleanup", True)
 process_unpacked_par2 = OptionBool("misc", "process_unpacked_par2", True)
 enable_unrar = OptionBool("misc", "enable_unrar", True)
@@ -278,7 +381,7 @@ html_login = OptionBool("misc", "html_login", True)
 osx_menu = OptionBool("misc", "osx_menu", True)
 osx_speed = OptionBool("misc", "osx_speed", True)
 warn_dupl_jobs = OptionBool("misc", "warn_dupl_jobs", True)
-helpfull_warnings = OptionBool("misc", "helpfull_warnings", True)
+helpful_warnings = OptionBool("misc", "helpful_warnings", True)
 keep_awake = OptionBool("misc", "keep_awake", True)
 win_menu = OptionBool("misc", "win_menu", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
@@ -289,7 +392,7 @@ api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
 disable_key = OptionBool("misc", "disable_api_key", False, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
-require_modern_tls = OptionBool("misc", "require_modern_tls", False)
+allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 num_decoders = OptionNumber("misc", "num_decoders", 3)
 
 # Text values
@@ -311,6 +414,7 @@ local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
+socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 
 
 ##############################################################################
@@ -470,3 +574,51 @@ def set_root_folders2():
     https_cert.set_root(admin_dir.get_path())
     https_key.set_root(admin_dir.get_path())
     https_chain.set_root(admin_dir.get_path())
+
+
+##############################################################################
+# Callbacks for settings
+##############################################################################
+def new_limit():
+    """Callback for article cache changes"""
+    sabnzbd.ArticleCache.new_limit(cache_limit.get_int())
+
+
+def guard_restart():
+    """Callback for config options requiring a restart"""
+    sabnzbd.RESTART_REQ = True
+
+
+def guard_top_only():
+    """Callback for change of top_only option"""
+    sabnzbd.NzbQueue.set_top_only(top_only())
+
+
+def guard_pause_on_pp():
+    """Callback for change of pause-download-on-pp"""
+    if pause_on_post_processing():
+        pass  # Not safe to idle downloader, because we don't know
+        # if post-processing is active now
+    else:
+        sabnzbd.Downloader.resume_from_postproc()
+
+
+def guard_quota_size():
+    """Callback for change of quota_size"""
+    sabnzbd.BPSMeter.change_quota()
+
+
+def guard_quota_dp():
+    """Callback for change of quota_day or quota_period"""
+    sabnzbd.Scheduler.restart()
+
+
+def guard_language():
+    """Callback for change of the interface language"""
+    sabnzbd.lang.set_language(language())
+    sabnzbd.api.clear_trans_cache()
+
+
+def guard_https_ver():
+    """Callback for change of https verification"""
+    sabnzbd.misc.set_https_verification(enable_https_verification())

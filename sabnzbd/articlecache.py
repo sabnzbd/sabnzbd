@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -129,7 +129,9 @@ class ArticleCache:
                 logging.debug("Failed to load %s from cache, probably already deleted", article)
                 return data
         elif article.art_id:
-            data = sabnzbd.load_data(article.art_id, nzo.admin_path, remove=True, do_pickle=False, silent=True)
+            data = sabnzbd.filesystem.load_data(
+                article.art_id, nzo.admin_path, remove=True, do_pickle=False, silent=True
+            )
         nzo.remove_saved_article(article)
         return data
 
@@ -156,7 +158,7 @@ class ArticleCache:
                     # Could fail if already deleted by flush_articles or load_data
                     logging.debug("Failed to flush %s from cache, probably already deleted or written to disk", article)
             elif article.art_id:
-                sabnzbd.remove_data(article.art_id, article.nzf.nzo.admin_path)
+                sabnzbd.filesystem.remove_data(article.art_id, article.nzf.nzo.admin_path)
 
     @staticmethod
     def __flush_article_to_disk(article: Article, data):
@@ -167,4 +169,4 @@ class ArticleCache:
 
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
-        sabnzbd.save_data(data, article.get_art_id(), nzo.admin_path, do_pickle=False, silent=True)
+        sabnzbd.filesystem.save_data(data, article.get_art_id(), nzo.admin_path, do_pickle=False, silent=True)

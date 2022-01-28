@@ -1,41 +1,36 @@
-Release Notes - SABnzbd 3.4.2
+Release Notes - SABnzbd 3.5.0
 =========================================================
 
-## Bugfixes since 3.4.1
-- Sorting requires at least 1 category to be selected since 3.4.0.
-  Warning will be shown if no category is selected.
-- Sorting would fail if `%ext` or `%fn` was not used.
-- Job failure due to Sorting-problems was not shown in the History.
-- `Ignore Samples` did not remove all sample files.
-- Crash when `.par2` files were missing during download.
-- Prevent scanning the whole file to identify the correct extension.
-- `.rXX`, `.cbz` and `.cbr` extensions were wrongly renamed.
-- Processing unpacked `.par2` files would also process source
-  `.par2` files and could result in duplicate (`.1`) filenames.
-- Always show the number of MB missing during download.
+## Changes since 3.4.2
+- Removed Python 3.6 support.
+- SOCKS5 proxy support for all outgoing connections.
+- Restored support for UUencoded jobs.
+- `Required` server option: in case of connection failures, the queue
+  will be paused for a few minutes instead of skipping the server.
+- Added Special option to preserve paused state after a restart.
+- Show an estimated time-left indicator for repair and unpacking. 
+- Require TLS version 1.2 or higher for SSL news server connections.
+- Setting custom ciphers forces the maximum TLS version to 1.2.
+- Reduced memory usage during and after parsing `.nzb` files.
+- Handle multiple passwords stored in NZB-file.
+- macOS/Linux: `Permissions` are only applied if any are set.
+- macOS/Windows: updated to Python 3.10.2.
+- macOS: run native on M1 systems. However, included tools 
+  (`par2`, `unrar` and `7za`) still require Rosetta emulation.
+- Snap: updated to `core20` base and restore 7zip support.
 
-## Bugfixes since 3.4.0
-- macOS: Failed to run on M1 systems or older macOS versions.
-
-## Changes since 3.3.1
-- Extended `Deobfuscate final filenames` to attempt to set the correct 
-  file extension based on the file signature if the file extension is 
-  not present or meaningless.
-- Added additional pattern keys that can be used in the `Sort String`
-  for Sorting, by using the `guessit` package internally for parsing.
-- If unpacked files contain `.par2` files they will always be read and
-  used to rename any matching files.
-- Regular expressions can be used to specify `Unwanted extensions`.
-- Not all passwords will be tried if a matching one was found.
-- Some interface-only options were added as API-call.
-- The Plush skin has been removed.
-
-## Bugfixes since 3.3.1
-- Duplicate check based on `.nzb` MD5 was performed before it was calculated.
-- Enforce `local_ranges` for broadcasts (Bonjour/SSDP).
-- Correctly parse the filename in `Content-Disposition` header.
-- `Warning` instead of `Info` when there is a restart due to crashed thread.
-- Only run Direct Unpack if `enable_unrar` is enabled.
+## Bugfixes since 3.4.2
+- Global interface settings would not always be applied correctly.
+- Email notification setting was not shown correctly.
+- Improvements and fixes for `Defobfuscate final filenames`.
+- `Post-Process Only Verified Jobs` would not always work as intended.
+- Correctly detect too little disk space when unpacking 7zip's.
+- Improvements to handling of repair by MultiPar and par2cmdline.
+- HTML characters in configuration fields were shown incorrectly.
+- On Retry the number of downloaded bytes could exceed the total bytes.
+- `unrar` logging of Direct Unpack was not logged if it was aborted.
+- Windows: `portable.cmd` was not included in the release.
+- Windows: print low-level Windows error on `IOError`.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x 
@@ -52,4 +47,4 @@ Release Notes - SABnzbd 3.4.2
   that automatically verify, repair, extract and clean up posts downloaded
   from Usenet.
 
-  (c) Copyright 2007-2021 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2022 by "The SABnzbd-team" \<team@sabnzbd.org\>

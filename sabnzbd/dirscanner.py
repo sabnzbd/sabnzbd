@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -70,7 +70,7 @@ class DirScanner(threading.Thread):
 
         self.newdir()
         try:
-            dirscan_dir, self.ignored, self.suspected = sabnzbd.load_admin(SCAN_FILE_NAME)
+            dirscan_dir, self.ignored, self.suspected = sabnzbd.filesystem.load_admin(SCAN_FILE_NAME)
             if dirscan_dir != self.dirscan_dir:
                 self.ignored = {}
                 self.suspected = {}
@@ -110,7 +110,7 @@ class DirScanner(threading.Thread):
 
     def save(self):
         """Save dir scanner bookkeeping"""
-        sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), SCAN_FILE_NAME)
+        sabnzbd.filesystem.save_admin((self.dirscan_dir, self.ignored, self.suspected), SCAN_FILE_NAME)
 
     def run(self):
         """Start the scanner"""
@@ -178,7 +178,7 @@ class DirScanner(threading.Thread):
                         continue
 
                     # Add the NZB's
-                    res, _ = sabnzbd.add_nzbfile(path, catdir=catdir, keep=False)
+                    res, _ = sabnzbd.nzbparser.add_nzbfile(path, catdir=catdir, keep=False)
                     if res < 0:
                         # Retry later, for example when we can't read the file
                         self.suspected[path] = stat_tuple

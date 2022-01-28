@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,16 +25,15 @@ import time
 import logging
 import queue
 import urllib.request
-import urllib.error
 import urllib.parse
 from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
 import base64
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Union
 
 import sabnzbd
-from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
+from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES, DEFAULT_PRIORITY
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
 import sabnzbd.cfg as cfg
@@ -250,7 +249,9 @@ class URLGrabber(Thread):
 
                 # If no filename, make one
                 if not filename:
-                    filename = sabnzbd.get_new_id("url", os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER))
+                    filename = sabnzbd.filesystem.get_new_id(
+                        "url", os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
+                    )
 
                 # Write data to temp file
                 path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER, filename)
@@ -259,7 +260,7 @@ class URLGrabber(Thread):
 
                 # Check if nzb file
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
-                    res, _ = sabnzbd.add_nzbfile(
+                    res, _ = sabnzbd.nzbparser.add_nzbfile(
                         path,
                         pp=pp,
                         script=script,
@@ -390,3 +391,40 @@ def filename_from_content_disposition(content_disposition: str) -> Optional[str]
         filename = os.path.basename(filename).lstrip(".").strip()
         if filename:
             return filename
+
+
+def add_url(
+    url: str,
+    pp: Optional[Union[int, str]] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+    nzbname: Optional[str] = None,
+    password: Optional[str] = None,
+):
+    """Add NZB based on a URL, attributes optional"""
+    if "http" not in url:
+        return
+    if not pp or pp == "-1":
+        pp = None
+    if script and script.lower() == "default":
+        script = None
+    if cat and cat.lower() == "default":
+        cat = None
+    logging.info("Fetching %s", url)
+
+    # Add feed name if it came from RSS
+    msg = T("Trying to fetch NZB from %s") % url
+    if nzbname:
+        msg = "%s - %s" % (nzbname, msg)
+
+    # Generate the placeholder
+    future_nzo = sabnzbd.NzbQueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
+
+    # Set password
+    if not future_nzo.password:
+        future_nzo.password = password
+
+    # Get it!
+    sabnzbd.URLGrabber.add(url, future_nzo)
+    return future_nzo.nzo_id

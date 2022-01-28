@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@ import re
 from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
+from sabnzbd.misc import match_str
+from sabnzbd.constants import IGNORED_MOVIE_FOLDERS
 from typing import List
 
 # Files to exclude and minimal file size for renaming
@@ -100,15 +102,15 @@ def recover_par2_names(filelist: List[str]) -> List[str]:
 
 
 def is_probably_obfuscated(myinputfilename: str) -> bool:
-    """Returns boolean if filename is likely obfuscated. Default: True
+    """Returns boolean if filename is likely obfuscated. Default: True, so obfuscated
     myinputfilename (string) can be a plain file name, or a full path"""
 
     # Find filebasename
     path, filename = os.path.split(myinputfilename)
     filebasename, fileextension = os.path.splitext(filename)
-
-    # First fixed patterns that we know of:
     logging.debug("Checking: %s", filebasename)
+
+    # First: the patterns that are certainly obfuscated:
 
     # ...blabla.H.264/b082fa0beaa644d3aa01045d5b8d0b36.mkv is certainly obfuscated
     if re.findall(r"^[a-f0-9]{32}$", filebasename):
@@ -121,11 +123,19 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
         logging.debug("Obfuscated: starting with 40+ lower case hex digits and/or dots")
         return True
 
+    # "[BlaBla] something [More] something 5937bc5e32146e.bef89a622e4a23f07b0d3757ad5e8a.a02b264e [Brrr]"
+    # So: square brackets plus 30+ hex digit
+    if re.findall(r"[a-f0-9]{30}", filebasename) and len(re.findall(r"\[\w+\]", filebasename)) >= 2:
+        logging.debug("Obfuscated: square brackets plus a 30+ hex")
+        return True
+
     # /some/thing/abc.xyz.a4c567edbcbf27.BLA is certainly obfuscated
     if re.findall(r"^abc\.xyz", filebasename):
         logging.debug("Obfuscated: starts with 'abc.xyz'")
         # ... which we consider as obfuscated:
         return True
+
+    # Then: patterns that are not obfuscated but typical, clear names:
 
     # these are signals for the obfuscation versus non-obfuscation
     decimals = sum(1 for c in filebasename if c.isnumeric())
@@ -153,9 +163,9 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
         logging.debug("Not obfuscated: starts with a capital, and most letters are lower case")
         return False
 
-    # If we get here, no trigger for a clear name was found, so let's default to obfuscated
+    # Finally: default to obfuscated:
     logging.debug("Obfuscated (default)")
-    return True  # default not obfuscated
+    return True  # default is obfuscated
 
 
 def deobfuscate_list(filelist: List[str], usefulname: str):
@@ -168,6 +178,16 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
 
     # to be sure, only keep really existing files:
     filelist = [f for f in filelist if os.path.isfile(f)]
+
+    # Do not deobfuscate/rename anything if there is a typical DVD or Bluray directory:
+    ignored_movie_folders_with_dir_sep = tuple(os.path.sep + f + os.path.sep for f in IGNORED_MOVIE_FOLDERS)
+    match_ignored_movie_folders = [f for f in filelist if match_str(f, ignored_movie_folders_with_dir_sep)]
+    if match_ignored_movie_folders:
+        logging.info(
+            "Skipping deobfuscation because of DVD/Bluray directory name(s), like: %s",
+            str(match_ignored_movie_folders)[:200],
+        )
+        return  # bail out of deobfuscate
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info

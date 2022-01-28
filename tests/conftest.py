@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -135,11 +135,6 @@ def run_sabnews_and_selenium(request):
         # Useful for stability on Linux/macOS, doesn't work on Windows
         if not sys.platform.startswith("win"):
             driver_options.add_argument("--single-process")
-
-        # On Linux we want to use the PPA Chrome
-        # This makes sure we always match Chrome and chromedriver
-        if not sys.platform.startswith(("win", "darwin")):
-            driver_options.binary_location = "/usr/bin/chromium-browser"
 
     # Start the driver and pass it on to all the classes
     driver = webdriver.Chrome(options=driver_options)

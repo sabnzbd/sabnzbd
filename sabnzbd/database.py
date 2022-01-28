@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -453,7 +453,7 @@ _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output="", script_line="", series_info=False):
     """Collects all the information needed for the database"""
     completed = int(time.time())
-    pp = _PP_LOOKUP.get(opts_to_pp(*nzo.repair_opts), "X")
+    pp = _PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X")
 
     if script_output:
         # Compress the output of the script

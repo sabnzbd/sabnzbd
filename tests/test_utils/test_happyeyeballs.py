@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ class TestHappyEyeballs:
         assert "." in ip or ":" in ip
 
     def test_google_https(self):
-        ip = happyeyeballs("www.google.com", port=443, ssl=True)
+        ip = happyeyeballs("www.google.com", port=443)
         assert "." in ip or ":" in ip
 
     def test_not_resolvable(self):

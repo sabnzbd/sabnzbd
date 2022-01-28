@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -61,6 +61,7 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("abc.xyz.a4c567edbcbf27.BLA")  # by definition
         assert is_probably_obfuscated("abc.xyz.iso")  # lazy brother
         assert is_probably_obfuscated("0675e29e9abfd2.f7d069dab0b853283cc1b069a25f82.6547")
+        assert is_probably_obfuscated("[BlaBla] something [More] something b2.bef89a622e4a23f07b0d3757ad5e8a.a0 [Brrr]")
 
         # non-obfuscated names:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
@@ -181,6 +182,31 @@ class TestDeobfuscateFinalResult:
 
         # Check the renaming
         assert os.path.isfile(os.path.join(subsubdirname, jobname + ".bin"))  # ... it should be renamed to the jobname
+
+        # Done. Remove (non-empty) directory
+        shutil.rmtree(dirname)
+
+    def test_no_deobfuscate_DVD_dir(self):
+        # test of typical DVD directory structure ... no deobfuscating should happen
+
+        # Create a working directory, with a VIDEO_TS subdirectory
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+        subdirname = os.path.join(dirname, "VIDEO_TS")
+        os.mkdir(subdirname)
+        # Create a big enough file with a non-useful, obfuscated filename (which normally should get renamed)
+        output_file1 = os.path.join(subdirname, "111c1c9e2bdfb5114044bf25152b7eab.bin")
+        create_big_file(output_file1)
+        assert os.path.isfile(output_file1)
+
+        # create the filelist, with just the above file
+        myfilelist = [output_file1]
+        # and now unleash deobfuscate() on that filelist, with a useful jobname:
+        jobname = "My DVD 2021"
+        deobfuscate_list(myfilelist, jobname)
+
+        # ... but because inside "VIDEO_TS" directory, the file should not be touched / renamed:
+        assert os.path.isfile(output_file1)  # should stil be there
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)

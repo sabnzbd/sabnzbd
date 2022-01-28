@@ -21,4 +21,3 @@ minimum_perc = 0
 source_file = po/nsis/SABnsis.pot
 source_lang = en
 type = PO
-

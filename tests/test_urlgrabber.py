@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,7 +25,6 @@ import urllib.parse
 import pytest_httpbin
 
 import sabnzbd.urlgrabber as urlgrabber
-import sabnzbd.version
 from sabnzbd.cfg import selftest_host
 from tests.testhelper import *
 

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,10 +19,8 @@
 sabnzbd.osxmenu - macOS Top Menu
 """
 
-import objc
 from Foundation import *
 from AppKit import *
-from PyObjCTools import AppHelper
 from objc import YES, NO
 
 import os
@@ -40,7 +38,6 @@ from sabnzbd.panic import launch_a_browser
 
 from sabnzbd.api import fast_queue
 import sabnzbd.config as config
-import sabnzbd.downloader
 
 status_icons = {
     "idle": "icons/sabnzbd_osx_idle.tiff",
@@ -80,9 +77,7 @@ class SABnzbdDelegate(NSObject):
                 # Path is modified for the binary
                 icon_path = os.path.join(os.path.dirname(sys.executable), "..", "Resources", status_icons[icon])
             self.icons[icon] = NSImage.alloc().initByReferencingFile_(icon_path)
-            if sabnzbd.DARWIN_VERSION > 9:
-                # Support for Yosemite Dark Mode
-                self.icons[icon].setTemplate_(YES)
+            self.icons[icon].setTemplate_(YES)
 
         self.status_item.setImage_(self.icons["idle"])
         self.status_item.setAlternateImage_(self.icons["clicked"])
@@ -435,13 +430,8 @@ class SABnzbdDelegate(NSObject):
             style.setMaximumLineHeight_(9.0)
             style.setParagraphSpacing_(-3.0)
 
-            # In Big Sur the offset was changed
-            baseline_offset = 5.0
-            if sabnzbd.DARWIN_VERSION >= 16:
-                baseline_offset = baseline_offset * -1
-
             titleAttributes = {
-                NSBaselineOffsetAttributeName: baseline_offset,
+                NSBaselineOffsetAttributeName: -5.0,
                 NSFontAttributeName: NSFont.menuFontOfSize_(9.0),
                 NSParagraphStyleAttributeName: style,
             }
@@ -522,7 +512,7 @@ class SABnzbdDelegate(NSObject):
             logging.info("[osx] receiving from macOS : %s", filename)
             if os.path.exists(filename):
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
-                    sabnzbd.add_nzbfile(filename, keep=True)
+                    sabnzbd.nzbparser.add_nzbfile(filename, keep=True)
         # logging.info('opening done')
 
     def applicationShouldTerminate_(self, sender):

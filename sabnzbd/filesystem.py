@@ -18,19 +18,20 @@
 """
 sabnzbd.misc - filesystem operations
 """
-
+import gzip
 import os
+import pickle
 import sys
 import logging
 import re
 import shutil
+import tempfile
 import threading
 import time
 import fnmatch
 import stat
-import zipfile
 import ctypes
-from typing import Union, List, Tuple, Any, Dict, Optional
+from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
     import win32api
@@ -368,7 +369,7 @@ def real_path(loc: str, path: str) -> str:
 
 
 def create_real_path(
-    name: str, loc: str, path: str, umask: bool = False, writable: bool = True
+    name: str, loc: str, path: str, apply_permissions: bool = False, writable: bool = True
 ) -> Tuple[bool, str, Optional[str]]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
@@ -381,7 +382,7 @@ def create_real_path(
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
             logging.info("%s directory: %s does not exist, try to create it", name, my_dir)
-            if not create_all_dirs(my_dir, umask):
+            if not create_all_dirs(my_dir, apply_permissions):
                 msg = T("Cannot create directory %s") % clip_path(my_dir)
                 logging.error(msg)
                 return False, my_dir, msg
@@ -424,40 +425,6 @@ def same_file(a: str, b: str) -> int:
             return 1
         else:
             return is_subfolder
-
-
-def is_archive(path: str) -> Tuple[int, Any, str]:
-    """Check if file in path is an ZIP, RAR or 7z file
-    :param path: path to file
-    :return: (zf, status, expected_extension)
-            status: -1==Error/Retry, 0==OK, 1==Ignore
-    """
-    if zipfile.is_zipfile(path):
-        try:
-            zf = zipfile.ZipFile(path)
-            return 0, zf, ".zip"
-        except:
-            logging.info(T("Cannot read %s"), path, exc_info=True)
-            return -1, None, ""
-    elif rarfile.is_rarfile(path):
-        try:
-            # Set path to tool to open it
-            rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
-            zf = rarfile.RarFile(path)
-            return 0, zf, ".rar"
-        except:
-            logging.info(T("Cannot read %s"), path, exc_info=True)
-            return -1, None, ""
-    elif sabnzbd.newsunpack.is_sevenfile(path):
-        try:
-            zf = sabnzbd.newsunpack.SevenZip(path)
-            return 0, zf, ".7z"
-        except:
-            logging.info(T("Cannot read %s"), path, exc_info=True)
-            return -1, None, ""
-    else:
-        logging.info("Archive %s is not a real archive!", os.path.basename(path))
-        return 1, None, ""
 
 
 def check_mount(path: str) -> bool:
@@ -633,14 +600,14 @@ def get_admin_path(name: str, future: bool):
         return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 
-def set_chmod(path: str, permissions: int, report: bool):
-    """Set 'permissions' on 'path', report any errors when 'report' is True"""
+def set_chmod(path: str, permissions: int):
+    """Set 'permissions' on 'path'"""
     try:
         logging.debug("Applying permissions %s (octal) to %s", oct(permissions), path)
         os.chmod(path, permissions)
     except:
         lpath = path.lower()
-        if report and ".appledouble" not in lpath and ".ds_store" not in lpath:
+        if ".appledouble" not in lpath and ".ds_store" not in lpath:
             logging.error(T("Cannot change permissions of %s"), clip_path(path))
             logging.info("Traceback: ", exc_info=True)
 
@@ -648,35 +615,42 @@ def set_chmod(path: str, permissions: int, report: bool):
 def set_permissions(path: str, recursive: bool = True):
     """Give folder tree and its files their proper permissions"""
     if not sabnzbd.WIN32:
-        umask = sabnzbd.cfg.umask()
-        try:
-            # Make sure that user R+W+X is on
-            umask = int(umask, 8) | int("0700", 8)
-            report = True
-        except ValueError:
-            # No or no valid permissions
-            # Use the effective permissions of the session
-            # Don't report errors (because the system might not support it)
-            umask = int("0777", 8) & (sabnzbd.ORG_UMASK ^ int("0777", 8))
-            report = False
-
-        # Remove executable and special permissions for files
-        umask_file = umask & int("0666", 8)
+        custom_permissions = sabnzbd.cfg.permissions()
+        if custom_permissions:
+            # If user set permissions, parse them
+            custom_permissions = int(custom_permissions, 8)
 
         if os.path.isdir(path):
             if recursive:
                 # Parse the dir/file tree and set permissions
-                for root, _dirs, files in os.walk(path):
-                    set_chmod(root, umask, report)
+                for root, _, files in os.walk(path):
+                    if custom_permissions:
+                        set_chmod(root, custom_permissions)
                     for name in files:
-                        set_chmod(os.path.join(root, name), umask_file, report)
-            else:
-                set_chmod(path, umask, report)
+                        removexbits(os.path.join(root, name), custom_permissions)
+            elif custom_permissions:
+                set_chmod(path, custom_permissions)
         else:
-            set_chmod(path, umask_file, report)
+            removexbits(path, custom_permissions)
 
 
-def userxbit(filename: str) -> bool:
+UNWANTED_FILE_PERMISSIONS = stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+
+
+def removexbits(path: str, custom_permissions: int = None):
+    """Remove all the x-bits from files, respecting current or custom permissions"""
+    if os.path.isfile(path):
+        # Use custom permissions as base
+        current_permissions = custom_permissions
+        if not custom_permissions:
+            current_permissions = os.stat(path).st_mode
+        # Check if the file has any x-bits, no need to remove them otherwise
+        if custom_permissions or current_permissions & UNWANTED_FILE_PERMISSIONS:
+            # Mask out the X-bits
+            set_chmod(path, current_permissions & ~UNWANTED_FILE_PERMISSIONS)
+
+
+def userxbit(path: str) -> bool:
     """Returns boolean if the x-bit for user is set on the given file.
     This is a workaround: os.access(filename, os.X_OK) does not work
     on certain mounted file systems. Does not work at all on Windows.
@@ -684,7 +658,7 @@ def userxbit(filename: str) -> bool:
     # rwx rwx rwx
     # 876 543 210      # we want bit 6 from the right, counting from 0
     userxbit = 1 << 6  # bit 6
-    rwxbits = os.stat(filename)[0]  # the first element of os.stat() is "mode"
+    rwxbits = os.stat(path)[0]  # the first element of os.stat() is "mode"
     # do logical AND, check if it is not 0:
     xbitset = (rwxbits & userxbit) > 0
     return xbitset
@@ -716,9 +690,9 @@ DIR_LOCK = threading.RLock()
 
 
 @synchronized(DIR_LOCK)
-def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
-    """Create all required path elements and set umask on all
-    The umask argument is ignored on Windows
+def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bool]:
+    """Create all required path elements and set permissions on all
+    The apply_permissions argument is ignored on Windows
     Return path if elements could be made or exists
     """
     try:
@@ -729,14 +703,9 @@ def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
             if not os.path.exists(path):
                 os.makedirs(path)
         else:
-            # We need to build the directory recursively so we can
+            # We need to build the directory recursively, so we can
             # apply permissions to only the newly created folders
             # We cannot use os.makedirs() as it could ignore the mode
-            umask = sabnzbd.cfg.umask()
-            if umask:
-                umask = int(umask, 8) | int("0700", 8)
-
-            # Build path from root
             path_part_combined = "/"
             for path_part in path.split("/"):
                 if path_part:
@@ -745,8 +714,8 @@ def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
                     if not os.path.exists(path_part_combined):
                         os.mkdir(path_part_combined)
                         # Try to set permissions if desired, ignore failures
-                        if umask and apply_umask:
-                            set_chmod(path_part_combined, umask, report=False)
+                        if apply_permissions:
+                            set_permissions(path_part_combined, recursive=False)
         return path
     except OSError:
         logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)
@@ -754,23 +723,22 @@ def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
 
 
 @synchronized(DIR_LOCK)
-def get_unique_path(dirpath: str, n: int = 0, create_dir: bool = True) -> str:
+def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str:
     """Determine a unique folder or filename"""
+    if not check_mount(path):
+        return path
 
-    if not check_mount(dirpath):
-        return dirpath
-
-    path = dirpath
+    new_path = path
     if n:
-        path = "%s.%s" % (dirpath, n)
+        new_path = "%s.%s" % (path, n)
 
-    if not os.path.exists(path):
+    if not os.path.exists(new_path):
         if create_dir:
-            return create_all_dirs(path, apply_umask=True)
+            return create_all_dirs(new_path, apply_permissions=True)
         else:
-            return path
+            return new_path
     else:
-        return get_unique_path(dirpath, n=n + 1, create_dir=create_dir)
+        return get_unique_dir(path, n=n + 1, create_dir=create_dir)
 
 
 @synchronized(DIR_LOCK)
@@ -779,12 +747,12 @@ def get_unique_filename(path: str) -> str:
     If not, add number like: "/path/name.NUM.ext".
     """
     num = 1
-    new_path, fname = os.path.split(path)
-    name, ext = os.path.splitext(fname)
+    new_path, filename = os.path.split(path)
+    name, ext = os.path.splitext(filename)
     while os.path.exists(path):
-        fname = "%s.%d%s" % (name, num, ext)
+        filename = "%s.%d%s" % (name, num, ext)
         num += 1
-        path = os.path.join(new_path, fname)
+        path = os.path.join(new_path, filename)
     return path
 
 
@@ -810,6 +778,7 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
     ok = True
     overwrite = sabnzbd.cfg.overwrite_files()
     new_path = os.path.abspath(new_path)
+    new_path_dir = os.path.dirname(new_path)
     if overwrite and os.path.exists(new_path):
         try:
             os.remove(new_path)
@@ -820,14 +789,15 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
 
     if new_path:
         logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
+        if not os.path.exists(new_path_dir):
+            create_all_dirs(os.path.dirname(new_path), apply_permissions=True)
         try:
             # First try cheap rename
             renamer(path, new_path)
-        except:
+        except Exception as err:
             # Cannot rename, try copying
-            logging.debug("File could not be renamed, trying copying: %s", path)
+            logging.debug("File could not be renamed (error: %s), trying copying: %s", err, path)
             try:
-                create_all_dirs(os.path.dirname(new_path), apply_umask=True)
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
@@ -864,43 +834,6 @@ def cleanup_empty_directories(path: str):
             remove_dir(path)
         except:
             pass
-
-
-@synchronized(DIR_LOCK)
-def get_filepath(path: str, nzo, filename: str):
-    """Create unique filepath"""
-    # This procedure is only used by the Assembler thread
-    # It does no umask setting
-    # It uses the dir_lock for the (rare) case that the
-    # download_dir is equal to the complete_dir.
-    new_dirname = dirname = nzo.work_name
-    if not nzo.created:
-        for n in range(200):
-            new_dirname = dirname
-            if n:
-                new_dirname += "." + str(n)
-            try:
-                os.mkdir(os.path.join(path, new_dirname))
-                break
-            except:
-                pass
-        nzo.work_name = new_dirname
-        nzo.created = True
-
-    filepath = os.path.join(os.path.join(path, new_dirname), filename)
-    filepath, ext = os.path.splitext(filepath)
-    n = 0
-    while True:
-        if n:
-            fullpath = "%s.%d%s" % (filepath, n, ext)
-        else:
-            fullpath = filepath + ext
-        if os.path.exists(fullpath):
-            n = n + 1
-        else:
-            break
-
-    return fullpath
 
 
 @synchronized(DIR_LOCK)
@@ -957,7 +890,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
                     time.sleep(2)
                 else:
                     raise
-        raise OSError("Failed to rename")
+        raise OSError("Failed to rename (Winerr %s)" % hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32))
     else:
         shutil.move(old, new)
         return new
@@ -1145,3 +1078,166 @@ def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
         __DISKS_SAME = __LAST_DISK_RESULT["download_dir"] == __LAST_DISK_RESULT["complete_dir"]
 
     return __LAST_DISK_RESULT
+
+
+def get_new_id(prefix, folder, check_list=None):
+    """Return unique prefixed admin identifier within folder
+    optionally making sure that id is not in the check_list.
+    """
+    for n in range(100):
+        try:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+            fd, path = tempfile.mkstemp("", "SABnzbd_%s_" % prefix, folder)
+            os.close(fd)
+            head, tail = os.path.split(path)
+            if not check_list or tail not in check_list:
+                return tail
+        except:
+            logging.error(T("Failure in tempfile.mkstemp"))
+            logging.info("Traceback: ", exc_info=True)
+            break
+    # Cannot create unique id, crash the process
+    raise IOError
+
+
+def save_data(data, _id, path, do_pickle=True, silent=False):
+    """Save data to a diskfile"""
+    if not silent:
+        logging.debug("[%s] Saving data for %s in %s", sabnzbd.misc.caller_name(), _id, path)
+    path = os.path.join(path, _id)
+
+    # We try 3 times, to avoid any dict or access problems
+    for t in range(3):
+        try:
+            with open(path, "wb") as data_file:
+                if do_pickle:
+                    pickle.dump(data, data_file, protocol=pickle.HIGHEST_PROTOCOL)
+                else:
+                    data_file.write(data)
+            break
+        except:
+            if silent:
+                # This can happen, probably a removed folder
+                pass
+            elif t == 2:
+                logging.error(T("Saving %s failed"), path)
+                logging.info("Traceback: ", exc_info=True)
+            else:
+                # Wait a tiny bit before trying again
+                time.sleep(0.1)
+
+
+def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
+    """Read data from disk file"""
+    path = os.path.join(path, data_id)
+
+    if not os.path.exists(path):
+        logging.info("[%s] %s missing", sabnzbd.misc.caller_name(), path)
+        return None
+
+    if not silent:
+        logging.debug("[%s] Loading data for %s from %s", sabnzbd.misc.caller_name(), data_id, path)
+
+    try:
+        with open(path, "rb") as data_file:
+            if do_pickle:
+                try:
+                    data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
+                except UnicodeDecodeError:
+                    # Could be Python 2 data that we can load using old encoding
+                    data = pickle.load(data_file, encoding="latin1")
+            else:
+                data = data_file.read()
+
+        if remove:
+            remove_file(path)
+    except:
+        logging.error(T("Loading %s failed"), path)
+        logging.info("Traceback: ", exc_info=True)
+        return None
+
+    return data
+
+
+def remove_data(_id: str, path: str):
+    """Remove admin file"""
+    path = os.path.join(path, _id)
+    try:
+        if os.path.exists(path):
+            remove_file(path)
+    except:
+        logging.debug("Failed to remove %s", path)
+
+
+def save_admin(data: Any, data_id: str):
+    """Save data in admin folder in specified format"""
+    logging.debug("[%s] Saving data for %s", sabnzbd.misc.caller_name(), data_id)
+    save_data(data, data_id, sabnzbd.cfg.admin_dir.get_path())
+
+
+def load_admin(data_id: str, remove=False, silent=False) -> Any:
+    """Read data in admin folder in specified format"""
+    logging.debug("[%s] Loading data for %s", sabnzbd.misc.caller_name(), data_id)
+    return load_data(data_id, sabnzbd.cfg.admin_dir.get_path(), remove=remove, silent=silent)
+
+
+def check_incomplete_vs_complete():
+    """Make sure download_dir and complete_dir are not identical
+    or that download_dir is not a subfolder of complete_dir"""
+    complete = sabnzbd.cfg.complete_dir.get_path()
+    if same_file(sabnzbd.cfg.download_dir.get_path(), complete):
+        if real_path("X", sabnzbd.cfg.download_dir()) == long_path(sabnzbd.cfg.download_dir()):
+            # Abs path, so set download_dir as an abs path inside the complete_dir
+            sabnzbd.cfg.download_dir.set(os.path.join(complete, "incomplete"))
+        else:
+            sabnzbd.cfg.download_dir.set("incomplete")
+        return False
+    return True
+
+
+def wait_for_download_folder():
+    """Wait for download folder to become available"""
+    while not sabnzbd.cfg.download_dir.test_path():
+        logging.debug('Waiting for "incomplete" folder')
+        time.sleep(2.0)
+
+
+def backup_exists(filename: str) -> bool:
+    """Return True if backup exists and no_dupes is set"""
+    path = sabnzbd.cfg.nzb_backup_dir.get_path()
+    return path and os.path.exists(os.path.join(path, filename + ".gz"))
+
+
+def backup_nzb(nzb_path: str):
+    """Backup NZB file, return path to nzb if it was saved"""
+    nzb_backup_dir = sabnzbd.cfg.nzb_backup_dir.get_path()
+    if nzb_backup_dir:
+        logging.debug("Saving copy of %s in %s", get_filename(nzb_path), nzb_backup_dir)
+        shutil.copy(nzb_path, nzb_backup_dir)
+
+
+def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
+    """Save compressed NZB file in folder, return path to saved nzb file"""
+    if filename.endswith(".nzb"):
+        filename += ".gz"
+    else:
+        filename += ".nzb.gz"
+    full_nzb_path = os.path.join(folder, filename)
+
+    # Skip existing ones, as it might be queue-repair
+    if not os.path.exists(full_nzb_path):
+        logging.info("Saving %s", full_nzb_path)
+        try:
+            # Have to get around the path being put inside the tgz
+            with open(full_nzb_path, "wb") as tgz_file:
+                # We only need minimal compression to prevent huge files
+                with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
+                    shutil.copyfileobj(data_fp, gzip_file)
+        except:
+            logging.error(T("Saving %s failed"), full_nzb_path)
+            logging.info("Traceback: ", exc_info=True)
+    else:
+        logging.info("Skipping existing file %s", full_nzb_path)
+
+    return full_nzb_path

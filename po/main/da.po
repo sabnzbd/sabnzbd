@@ -1,15 +1,15 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2021 The SABnzbd-Team
+# Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
+# Safihre <safihre@sabnzbd.org>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
 "Language-Team: Danish (https://www.transifex.com/sabnzbd/teams/111101/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -104,6 +104,13 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -139,35 +146,6 @@ msgstr "Signal %s modtaget, gemmer og lukker..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Fatal fejl ved lagring af state"
-
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Forsøger at hente NZB fra %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Gemmes %s mislykkedes"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Kan ikke oprette temp fil for %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Forsøger at sætte status på ikke eksisterende server %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Fejl i tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Downloadning af %s mislykkedes"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -333,6 +311,14 @@ msgstr "nøgleord"
 msgid "Quota spent, pausing downloading"
 msgstr "Kvote brugt, pause downloading"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Fejl parameter"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "UNC søgning \"%s\" er ikke tilladt her"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s er ikke en godkendt e-mail adresse"
@@ -344,6 +330,21 @@ msgstr "Kræver serveradresse"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s er ikke et korrekt ciffer værdi"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Fejl: Køen er ikke tom, kan ikke skifte mappe."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -364,22 +365,6 @@ msgstr "Kan ikke oprette backup fil for %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Forkert kodet adgangskode%s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Fejl parameter"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s er ikke et korrekt ciffer værdi"
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC søgning \"%s\" er ikke tilladt her"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Fejl: Køen er ikke tom, kan ikke skifte mappe."
 
 #. Error message
 #: sabnzbd/database.py
@@ -410,10 +395,6 @@ msgstr "Forkert logning i historiken av %s"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "Dekoder fejl: Ikke mere hukommelse"
-
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
 
 #. Warning message
 #: sabnzbd/decoder.py
@@ -570,8 +551,7 @@ msgid "No recipients given, no email sent"
 msgstr "Ingen modtagere givet, ingen e-mail sendt"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Kan ikke læse %s"
 
@@ -630,6 +610,21 @@ msgstr "Det lykkedes ikke at flytte %s til %s"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Fejl i tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Gemmes %s mislykkedes"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Downloadning af %s mislykkedes"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -857,11 +852,6 @@ msgstr "Fjernelse af %s mislykkedes!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Forsøger unrar med adgangskode \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Udpakning mislykkedes, arkivet kræver adgangskode"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Udpakker"
@@ -870,51 +860,25 @@ msgstr "Udpakker"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Udpakning mislykkedes, kunne ikke finde %s"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "FEJL: lykkedes ikke at finde \"%s\""
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Udpakning mislykkedes, CRC-fejl"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "FEJL: CRC mislykkedes i \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr "Udpakningen fejlede, da filen er for stor til filsystemet (FAT?)"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr "FEJL: Fil for stor til filsystem (%s)"
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Udpakning mislykkedes, skrivefejl eller disken fuld?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "FEJL: skrivefejll (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Udpakningen mislykkedes, stien er for lang"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "FEJL: stien for lang (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "FEJL: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Udpakning mislykkedes, arkivet kræver adgangskode"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -941,13 +905,10 @@ msgstr ""
 msgid "Trying 7zip with password \"%s\""
 msgstr "Forsøger 7zip med adgangskode \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "7ZIP sæt \"%s\" er ufuldstændig, kan ikke udpakke"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Kan ikke udpakke %s"
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "se logfil"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
@@ -1031,12 +992,12 @@ msgid "Disk full"
 msgstr "Disk fuld"
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Bekræfter"
-
-#: sabnzbd/newsunpack.py
 msgid "Checking extra files"
 msgstr "Tjekker ekstra filer"
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Bekræfter"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
@@ -1046,6 +1007,10 @@ msgstr "Kontrollerer"
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Forsøger SFV verifikation"
+
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "tilbage"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
@@ -1163,10 +1128,10 @@ msgstr "Notification scriptet \"%s\" findes ikke"
 msgid "Failed to send Windows notification"
 msgstr "Det lykkedes ikke at sende Windows notification"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Det lykkedes ikke at importere %s filer fra %s"
+msgid "Cannot create temp file for %s"
+msgstr "Kan ikke oprette temp fil for %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1177,6 +1142,11 @@ msgstr "Det lykkedes ikke at tilføje %s, slette"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Fejl ved fjernelse af %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Det lykkedes ikke at importere %s filer fra %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1194,8 +1164,8 @@ msgstr "NZB tilføjet i køen"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Ødelagt NZB fil %s, springer over (årsag=%s, linje=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "Ødelagt NZB fil %s, springer over (årsag=%s)"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
@@ -1573,11 +1543,6 @@ msgstr "Mere"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Efterbehandling mislykkedes for %s (%s)"
 
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "se logfil"
-
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
 msgstr ""
@@ -1786,6 +1751,11 @@ msgstr "Ukendt handling: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Tidsplan for ikke-eksisterende server %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Forsøger at sætte status på ikke eksisterende server %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -3702,6 +3672,14 @@ msgstr ""
 "kilder ved hjælp HTTPS."
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "Server"
 
@@ -3949,6 +3927,17 @@ msgstr "Streng"
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 er højeste prioritet, 100 er den laveste prioritet"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
@@ -4133,6 +4122,12 @@ msgstr "Hentet"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "Læs alle Feeds nu"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4416,7 +4411,13 @@ msgstr "Indekseringen kategorier/grupper"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Serie sortering"
 
@@ -4444,7 +4445,8 @@ msgstr "Forudindstillinger"
 msgid "Example"
 msgstr "Eksempel"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "Film sortering"
 
@@ -4596,7 +4598,8 @@ msgstr "I mappe"
 msgid "No folders"
 msgstr "Ingen mappe"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Dato sortering"
 
@@ -4715,10 +4718,6 @@ msgstr "Emne"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Udvælgelse"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "tilbage"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -5122,6 +5121,10 @@ msgstr "Fejl, Ubrugelig arkivfil"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "URL hentning mislykkedes; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Forsøger at hente NZB fra %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

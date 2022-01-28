@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
 """
 sabnzbd.config - Configuration Support
 """
-import argparse
+
 import logging
 import os
 import re
@@ -30,7 +30,7 @@ from urllib.parse import urlparse
 
 import configobj
 
-import sabnzbd.misc
+import sabnzbd
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
@@ -192,7 +192,7 @@ class OptionDir(Option):
         section: str,
         keyword: str,
         default_val: str = "",
-        apply_umask: bool = False,
+        apply_permissions: bool = False,
         create: bool = True,
         validation: Optional[Callable] = None,
         writable: bool = True,
@@ -200,7 +200,7 @@ class OptionDir(Option):
     ):
         self.__validation: Optional[Callable] = validation
         self.__root: str = ""  # Base directory for relative paths
-        self.__apply_umask: bool = apply_umask
+        self.__apply_permissions: bool = apply_permissions
         self.__create: bool = create
         self.__writable: bool = writable
         super().__init__(section, keyword, default_val, add=add)
@@ -220,7 +220,9 @@ class OptionDir(Option):
         if value:
             path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                _, path, _ = create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
+                _, path, _ = create_real_path(
+                    self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable
+                )
         return path
 
     def get_clipped_path(self) -> str:
@@ -253,7 +255,7 @@ class OptionDir(Option):
             if not error:
                 if value and (self.__create or create):
                     res, path, error = create_real_path(
-                        self.ident()[1], self.__root, value, self.__apply_umask, self.__writable
+                        self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable
                     )
             if not error:
                 super().set(value)
@@ -409,6 +411,7 @@ class ConfigServer:
         self.ssl_verify = OptionNumber(name, "ssl_verify", 2, add=False)
         self.ssl_ciphers = OptionStr(name, "ssl_ciphers", add=False)
         self.enable = OptionBool(name, "enable", True, add=False)
+        self.required = OptionBool(name, "required", False, add=False)
         self.optional = OptionBool(name, "optional", False, add=False)
         self.retention = OptionNumber(name, "retention", 0, add=False)
         self.expire_date = OptionStr(name, "expire_date", add=False)
@@ -442,6 +445,7 @@ class ConfigServer:
             "ssl_ciphers",
             "send_group",
             "enable",
+            "required",
             "optional",
             "retention",
             "expire_date",
@@ -476,6 +480,7 @@ class ConfigServer:
         output_dict["ssl_verify"] = self.ssl_verify()
         output_dict["ssl_ciphers"] = self.ssl_ciphers()
         output_dict["enable"] = self.enable()
+        output_dict["required"] = self.required()
         output_dict["optional"] = self.optional()
         output_dict["retention"] = self.retention()
         output_dict["expire_date"] = self.expire_date()
@@ -509,7 +514,7 @@ class ConfigCat:
         self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", "Default", add=False)
         self.dir = OptionDir(name, "dir", add=False, create=False)
-        self.newzbin = OptionList(name, "newzbin", add=False, validation=validate_single_tag)
+        self.newzbin = OptionList(name, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
@@ -1011,17 +1016,7 @@ def get_filename():
     return CFG.filename
 
 
-##############################################################################
-# Default Validation handlers
-##############################################################################
 __PW_PREFIX = "!!!encoded!!!"
-
-
-class ErrorCatchingArgumentParser(argparse.ArgumentParser):
-    def error(self, status=0, message=None):
-        # Need to override so it doesn't raise SystemExit
-        if status:
-            raise ValueError
 
 
 def encode_password(pw):
@@ -1055,90 +1050,6 @@ def decode_password(pw, name):
         return decPW
     else:
         return pw
-
-
-def clean_nice_ionice_parameters(value):
-    """Verify that the passed parameters are not exploits"""
-    if value:
-        parser = ErrorCatchingArgumentParser()
-
-        # Nice parameters
-        parser.add_argument("-n", "--adjustment", type=int)
-
-        # Ionice parameters, not supporting -p
-        parser.add_argument("--classdata", type=int)
-        parser.add_argument("-c", "--class", type=int)
-        parser.add_argument("-t", "--ignore", action="store_true")
-
-        try:
-            parser.parse_args(value.split())
-        except ValueError:
-            # Also log at start-up if invalid parameter was set in the ini
-            msg = "%s: %s" % (T("Incorrect parameter"), value)
-            logging.error(msg)
-            return msg, None
-    return None, value
-
-
-def all_lowercase(value):
-    """Lowercase everything!"""
-    if isinstance(value, list):
-        # If list, for each item
-        return None, [item.lower() for item in value]
-    return None, value.lower()
-
-
-def validate_octal(value):
-    """Check if string is valid octal number"""
-    if not value:
-        return None, value
-    try:
-        int(value, 8)
-        return None, value
-    except:
-        return T("%s is not a correct octal value") % value, None
-
-
-def validate_no_unc(root, value, default):
-    """Check if path isn't a UNC path"""
-    # Only need to check the 'value' part
-    if value and not value.startswith(r"\\"):
-        return validate_notempty(root, value, default)
-    else:
-        return T('UNC path "%s" not allowed here') % value, None
-
-
-def validate_safedir(root, value, default):
-    """Allow only when queues are empty and no UNC"""
-    if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
-        return validate_no_unc(root, value, default)
-    else:
-        return T("Error: Queue not empty, cannot change folder."), None
-
-
-def validate_notempty(root, value, default):
-    """If value is empty, return default"""
-    if value:
-        return None, value
-    else:
-        return None, default
-
-
-def validate_strip_right_slash(value):
-    """Strips the right slash"""
-    if value:
-        return None, value.rstrip("/")
-    return None, value
-
-
-def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
-    """Don't split single indexer tags like "TV > HD"
-    into ['TV', '>', 'HD']
-    """
-    if len(value) == 3:
-        if value[1] == ">":
-            return None, [" ".join(value)]
-    return None, value
 
 
 def create_api_key():

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2011-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ with open("sabnzbd/version.py") as version_file:
 HEADER = (
     r"""#
 # SABnzbd Translation Template file __TYPE__
-# Copyright 2011-2021 The SABnzbd-Team
+# Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
 #
 msgid ""
@@ -103,7 +103,7 @@ def get_context(ctx_line):
         else:
             if "logging.error(" in srcline:
                 context = "Error message"
-            elif "logging.warning(" in srcline or "logging.warning_helpful(" in srcline:
+            elif "logging.warning(" in srcline or "helpful_warning(" in srcline:
                 context = "Warning message"
 
         if context and context not in contexts:

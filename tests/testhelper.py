@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,10 +18,12 @@
 """
 tests.testhelper - Basic helper functions
 """
-
+import io
 import os
 import time
 from http.client import RemoteDisconnected
+from typing import BinaryIO, Optional, Dict
+
 import pytest
 from random import choice, randint
 import requests
@@ -138,21 +140,21 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.json()
 
 
-def create_nzb(nzb_dir, metadata=None):
+def create_nzb(nzb_dir: str, metadata: Optional[Dict[str, str]] = None) -> str:
     """Create NZB from directory using SABNews"""
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
     return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata)
 
 
-def create_and_read_nzb(nzbdir):
+def create_and_read_nzb_fp(nzbdir: str, metadata: Optional[Dict[str, str]] = None) -> BinaryIO:
     """Create NZB, return data and delete file"""
     # Create NZB-file to import
-    nzb_path = create_nzb(nzbdir)
-    with open(nzb_path, "r") as nzb_data_fp:
+    nzb_path = create_nzb(nzbdir, metadata)
+    with open(nzb_path, "rb") as nzb_data_fp:
         nzb_data = nzb_data_fp.read()
     # Remove the created NZB-file
     os.remove(nzb_path)
-    return nzb_data
+    return io.BytesIO(nzb_data)
 
 
 def random_name(lenghth: int = 16) -> str:
@@ -208,7 +210,7 @@ class FakeHistoryDB(db.HistoryDB):
             nzo.nzo_id = "SABnzbd_nzo_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(8)))
             nzo.bytes_downloaded = randint(1024, 1024 ** 4)
             nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-            nzo.repair_opts = pp_to_opts(choice(list(db._PP_LOOKUP.keys())))  # for "pp"
+            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(db._PP_LOOKUP.keys())))  # for "pp"
             nzo.nzo_info = {"download_time": randint(1, 10 ** 4)}
             nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
             nzo.futuretype = False  # for "report", only True when fetching an URL

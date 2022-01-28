@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2021 The SABnzbd-Team
+# Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
@@ -97,6 +97,13 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -132,35 +139,6 @@ msgstr "Odebrano sygnał %s, zapisywanie i zamykanie programu..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Błąd krytyczny podczas zapisywania stanu"
-
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Próba pobrania NZB z %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Nie udało się zapisać %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Nie można utworzyć tymczasowego pliku dla %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Próba ustawienia statusu nieistniejącego serwera %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Błąd w tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Nie udało się wczytać %s"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -322,6 +300,14 @@ msgstr "słowa kluczowe"
 msgid "Quota spent, pausing downloading"
 msgstr "Przekroczono limit, wstrzymywanie pobierania"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Błędny parametr"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "Ścieżka UNC \"%s\" niedozwolona"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s nie jest prawidłowym adresem email"
@@ -333,6 +319,21 @@ msgstr "Wymagane jest podanie adresu serwera"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s nie jest prawidłową wartością w systemie ósemkowym"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Błąd: Kolejka nie jest pusta, nie można zmienić katalogu."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -353,22 +354,6 @@ msgstr "Nie można utworzyć kopii zapasowej %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Nieprawidłowo zakodowane hasło %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Błędny parametr"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s nie jest prawidłową wartością w systemie ósemkowym"
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "Ścieżka UNC \"%s\" niedozwolona"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Błąd: Kolejka nie jest pusta, nie można zmienić katalogu."
 
 #. Error message
 #: sabnzbd/database.py
@@ -398,10 +383,6 @@ msgstr "Nieprawidłowy log etapu w historii dla %s"
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
-msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
 #. Warning message
@@ -561,8 +542,7 @@ msgid "No recipients given, no email sent"
 msgstr "Nie podano adresatów, wiadomość nie została wysłana"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Nie można odczytać %s"
 
@@ -621,6 +601,21 @@ msgstr "Nie udało się przenieść %s do %s"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Błąd w tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Nie udało się zapisać %s"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Nie udało się wczytać %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -848,11 +843,6 @@ msgstr "Usuwanie %s nie powiodło się!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Próba rozpakowania archiwum RAR z użyciem hasła \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Rozpakowywanie nie powiodło się, archiwum wymaga podania hasła"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Rozpakowywanie"
@@ -861,51 +851,25 @@ msgstr "Rozpakowywanie"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Rozpakowywanie nie powiodło się, nie można znaleźć %s"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "BŁĄD: nie można znaleźć \"%s\""
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Rozpakowywanie nie powiodło się, błąd CRC"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "BŁĄD: nieprawidłowa suma kontrolna CRC w \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Rozpakowywanie nie powiodło się, błąd zapisu lub zapełniony dysk?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "BŁĄD: błąd zapisu (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Rozpakowywanie nie powiodło się, zbyt długa ścieżka"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "BŁĄD: zbyt długa ścieżka (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "BŁĄD: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Rozpakowywanie nie powiodło się, archiwum wymaga podania hasła"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -932,13 +896,10 @@ msgstr ""
 msgid "Trying 7zip with password \"%s\""
 msgstr "Próba rozpakowania archiwum 7zip z użyciem hasła \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "Zestaw 7zip \"%s\" jest niekompletny, nie można rozpakować"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Nie można rozpakować %s"
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "sprawdź logi"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
@@ -1022,12 +983,12 @@ msgid "Disk full"
 msgstr "Dysk pełny"
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Weryfikowanie"
-
-#: sabnzbd/newsunpack.py
 msgid "Checking extra files"
 msgstr ""
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Weryfikowanie"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
@@ -1037,6 +998,10 @@ msgstr "Sprawdzanie"
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Próba weryfikacji SFV"
+
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "pozostało"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
@@ -1154,10 +1119,10 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Nie udało się zaimportować %s plików z %s"
+msgid "Cannot create temp file for %s"
+msgstr "Nie można utworzyć tymczasowego pliku dla %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1168,6 +1133,11 @@ msgstr "Błąd podczas dodawania %s, usuwanie"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Błąd podczas usuwania %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Nie udało się zaimportować %s plików z %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1185,8 +1155,8 @@ msgstr "NZB dodany do kolejki"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Nieprawidłowy plik NZB %s, pomijam (powód=%s, linia=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
@@ -1568,11 +1538,6 @@ msgstr "Więcej"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Przetwarzanie końcowe nie powiodło się dla %s (%s)"
 
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "sprawdź logi"
-
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
 msgstr ""
@@ -1779,6 +1744,11 @@ msgstr "Nieznane działanie: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Harmonogram dla nieistniejącego serwera %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Próba ustawienia statusu nieistniejącego serwera %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -3687,6 +3657,14 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "Serwer"
 
@@ -3935,6 +3913,17 @@ msgstr ""
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 oznacza najwyższy priorytet, 99 - najniższy"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
@@ -4118,6 +4107,12 @@ msgstr "Pobrane"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "Czytaj teraz wszystkie kanały"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4397,7 +4392,13 @@ msgstr ""
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Sortowanie seriali"
 
@@ -4425,7 +4426,8 @@ msgstr "Predefiniowane"
 msgid "Example"
 msgstr "Przykład"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr ""
 
@@ -4577,7 +4579,8 @@ msgstr "W katalogach"
 msgid "No folders"
 msgstr "Brak katalogów"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Sortowanie według daty"
 
@@ -4696,10 +4699,6 @@ msgstr "Temat"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Zaznaczenie"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "pozostało"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -5102,6 +5101,10 @@ msgstr "Bezużyteczny plik NZB"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "Pobieranie URL nie powiodło się; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Próba pobrania NZB z %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

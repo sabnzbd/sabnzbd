@@ -16,17 +16,23 @@ POPULAR_EXT = (
     "3g2",
     "3gp",
     "7z",
+    "aac",
+    "abw",
     "ai",
     "aif",
     "apk",
+    "arc",
     "arj",
     "asp",
     "aspx",
     "avi",
+    "azw",
     "bak",
     "bat",
     "bin",
     "bmp",
+    "bz",
+    "bz2",
     "c",
     "cab",
     "cda",
@@ -34,13 +40,12 @@ POPULAR_EXT = (
     "cfg",
     "cfm",
     "cgi",
-    "cgi",
-    "cgi",
     "class",
     "com",
     "cpl",
     "cpp",
     "cs",
+    "csh",
     "css",
     "csv",
     "cur",
@@ -57,19 +62,22 @@ POPULAR_EXT = (
     "email",
     "eml",
     "emlx",
+    "eot",
+    "epub",
     "exe",
     "flv",
     "fnt",
     "fon",
     "gadget",
     "gif",
+    "gz",
     "h",
     "h264",
     "htm",
     "html",
     "icns",
     "ico",
-    "ico",
+    "ics",
     "ini",
     "iso",
     "jar",
@@ -77,6 +85,8 @@ POPULAR_EXT = (
     "jpeg",
     "jpg",
     "js",
+    "json",
+    "jsonld",
     "jsp",
     "key",
     "lnk",
@@ -85,6 +95,7 @@ POPULAR_EXT = (
     "mdb",
     "mid",
     "midi",
+    "mjs",
     "mkv",
     "mov",
     "mp3",
@@ -92,23 +103,24 @@ POPULAR_EXT = (
     "mpa",
     "mpeg",
     "mpg",
+    "mpkg",
     "msg",
-    "msi",
     "msi",
     "odp",
     "ods",
     "odt",
     "oft",
+    "oga",
     "ogg",
+    "ogv",
+    "ogx",
+    "opus",
     "ost",
     "otf",
     "part",
     "pdf",
     "php",
-    "php",
     "pkg",
-    "pl",
-    "pl",
     "pl",
     "png",
     "pps",
@@ -117,8 +129,6 @@ POPULAR_EXT = (
     "ps",
     "psd",
     "pst",
-    "py",
-    "py",
     "py",
     "rar",
     "rm",
@@ -133,22 +143,27 @@ POPULAR_EXT = (
     "swift",
     "sys",
     "tar",
-    "tar",
-    "gz",
     "tex",
     "tif",
     "tiff",
     "tmp",
     "toast",
+    "ts",
     "ttf",
     "txt",
     "vb",
     "vcd",
     "vcf",
     "vob",
+    "vsd",
     "wav",
+    "weba",
+    "webm",
+    "webp",
     "wma",
     "wmv",
+    "woff",
+    "woff2",
     "wpd",
     "wpl",
     "wsf",
@@ -156,6 +171,8 @@ POPULAR_EXT = (
     "xls",
     "xlsm",
     "xlsx",
+    "xml",
+    "xul",
     "z",
     "zip",
 )
@@ -221,6 +238,7 @@ DOWNLOAD_EXT = (
     "srr",
     "srs",
     "srt",
+    "ssa",
     "strings",
     "sub",
     "sup",
@@ -257,18 +275,12 @@ def all_possible_extensions(file_path: str) -> List[str]:
 
 def what_is_most_likely_extension(file_path: str) -> str:
     """Returns most_likely extension, with a leading dot"""
-    for possible_extension in all_possible_extensions(file_path):
-        # let's see if technically-suggested extension by puremagic is also likely IRL
-        if possible_extension in ALL_EXT:
-            # Yes, looks likely
-            return possible_extension
 
-    # Check if text or NZB, as puremagic is not good at that.
+    # First: Check if text or NZB, as puremagic is not good at that.
     try:
         # Only read the start, don't need the whole file
         with open(file_path, "r") as inp_file:
             txt = inp_file.read(200).lower()
-
         # Yes, a text file ... so let's check if it's even an NZB:
         if "!doctype nzb public" in txt or "<nzb xmlns=" in txt:
             # yes, contains NZB signals:
@@ -276,8 +288,14 @@ def what_is_most_likely_extension(file_path: str) -> str:
         else:
             return ".txt"
     except UnicodeDecodeError:
-        # not txt (and not nzb)
+        # not txt (and thus not nzb)
         pass
+
+    for possible_extension in all_possible_extensions(file_path):
+        # let's see if technically-suggested extension by puremagic is also likely IRL
+        if possible_extension in ALL_EXT:
+            # Yes, looks likely
+            return possible_extension
 
     # no popular extension found, so just trust puremagic and return the first extension (if any)
     try:

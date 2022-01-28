@@ -2,16 +2,22 @@ name: sabnzbd
 summary: SABnzbd
 description: The automated Usenet download tool
 confinement: strict
-base: core18
+base: core20
 grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 adopt-info: sabnzbd
 
+architectures:
+  - build-on: arm64
+  - build-on: armhf
+  - build-on: amd64
+
 apps:
   sabnzbd:
     environment:
+      PATH: $SNAP/usr/lib/p7zip:$PATH
       LC_CTYPE: C.UTF-8
-    command: python3 $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
+    command: bin/sabnzbd-wrapper
     daemon: simple
     plugs: [network, home, network-bind, removable-media]
 
@@ -19,8 +25,7 @@ parts:
   sabnzbd:
     plugin: python
     source: .
-    python-version: python3
-    requirements: [snap/requirements_snap.txt, requirements.txt]
+    requirements: [snap/local/requirements_snap.txt, requirements.txt]
     stage-packages: [python3-dev, libdb5.3, unrar, p7zip-full, par2]
     build-packages: [libffi-dev, python3-dev, libssl-dev, cargo]
     override-build: |
@@ -29,5 +34,9 @@ parts:
       python3 tools/make_mo.py
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt
       cp -R $SNAPCRAFT_PART_BUILD $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      echo "python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
+    prime: [-usr/bin/7z,-usr/bin/7za,-usr/bin/7zr]
     organize:
       usr/bin/unrar-nonfree: usr/bin/unrar

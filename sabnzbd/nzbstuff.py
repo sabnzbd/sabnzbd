@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import List, Dict, Any, Tuple, Optional, Union
+from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO
 
 # SABnzbd modules
 import sabnzbd
@@ -62,7 +62,7 @@ from sabnzbd.misc import (
 )
 from sabnzbd.filesystem import (
     sanitize_foldername,
-    get_unique_path,
+    get_unique_dir,
     get_admin_path,
     remove_all,
     sanitize_filename,
@@ -74,11 +74,11 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     renamer,
     remove_file,
-    get_filepath,
     make_script_path,
     globber,
     is_valid_script,
     has_unwanted_extension,
+    create_all_dirs,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -242,7 +242,7 @@ class Article(TryList):
     def get_art_id(self):
         """Return unique article storage name, create if needed"""
         if not self.art_id:
-            self.art_id = sabnzbd.get_new_id("article", self.nzf.nzo.admin_path)
+            self.art_id = sabnzbd.filesystem.get_new_id("article", self.nzf.nzo.admin_path)
         return self.art_id
 
     def search_new_server(self):
@@ -355,7 +355,7 @@ class NzbFile(TryList):
         self.bytes_left: int = file_bytes
 
         self.nzo: NzbObject = nzo
-        self.nzf_id: str = sabnzbd.get_new_id("nzf", nzo.admin_path)
+        self.nzf_id: str = sabnzbd.filesystem.get_new_id("nzf", nzo.admin_path)
         self.deleted = False
         self.import_finished = False
 
@@ -379,7 +379,7 @@ class NzbFile(TryList):
             # Any articles left?
             if raw_article_db:
                 # Save the rest
-                sabnzbd.save_data(raw_article_db, self.nzf_id, nzo.admin_path)
+                sabnzbd.filesystem.save_data(raw_article_db, self.nzf_id, nzo.admin_path)
             else:
                 # All imported
                 self.import_finished = True
@@ -387,7 +387,7 @@ class NzbFile(TryList):
     def finish_import(self):
         """Load the article objects from disk"""
         logging.debug("Finishing import on %s", self.filename)
-        raw_article_db = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
+        raw_article_db = sabnzbd.filesystem.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
         if raw_article_db:
             # Convert 2.x.x jobs
             if isinstance(raw_article_db, dict):
@@ -448,7 +448,7 @@ class NzbFile(TryList):
         if not self.filepath:
             self.nzo.verify_nzf_filename(self)
             filename = sanitize_filename(self.filename)
-            self.filepath = get_filepath(long_path(cfg.download_dir.get_path()), self.nzo, filename)
+            self.filepath = get_unique_filename(os.path.join(self.nzo.download_path, filename))
             self.filename = get_filename(self.filepath)
         return self.filepath
 
@@ -520,7 +520,6 @@ NzbObjectSaver = (
     "filename",
     "work_name",
     "final_name",
-    "created",
     "bytes",
     "bytes_downloaded",
     "bytes_tried",
@@ -535,7 +534,6 @@ NzbObjectSaver = (
     "groups",
     "avg_date",
     "md5of16k",
-    "partable",
     "extrapars",
     "md5packs",
     "files",
@@ -570,6 +568,7 @@ NzbObjectSaver = (
     "first_articles",
     "first_articles_count",
     "md5sum",
+    "download_path",
     "servercount",
     "unwanted_ext",
     "renames",
@@ -588,13 +587,13 @@ class NzbObject(TryList):
         filename: str,
         pp: Optional[int] = None,
         script: Optional[str] = None,
-        nzb_data: Optional[str] = None,
+        nzb_fp: Optional[BinaryIO] = None,
         futuretype: bool = False,
         cat: Optional[str] = None,
         url: Optional[str] = None,
         priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
         nzbname: Optional[str] = None,
-        status: Status = Status.QUEUED,
+        status: str = Status.QUEUED,
         nzo_info: Optional[Dict[str, Any]] = None,
         reuse: Optional[str] = None,
         dup_check: bool = True,
@@ -602,13 +601,13 @@ class NzbObject(TryList):
         super().__init__()
 
         self.filename = filename  # Original filename
-        if nzbname and nzb_data:
+        if nzbname and nzb_fp:
             self.work_name = nzbname  # Use nzbname if set and only for non-future slot
         else:
             self.work_name = filename
 
         # For future-slots we keep the name given by URLGrabber
-        if nzb_data is None:
+        if nzb_fp is None:
             self.final_name = self.work_name = filename
         else:
             # Remove trailing .nzb and .par(2)
@@ -648,7 +647,7 @@ class NzbObject(TryList):
             self.script = script
 
         # Information fields
-        self.url = url or filename
+        self.url = url
         self.groups = []
         self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
@@ -657,7 +656,6 @@ class NzbObject(TryList):
         # Bookkeeping values
         self.meta = {}
         self.servercount: Dict[str, int] = {}  # Dict to keep bytes per server
-        self.created = False  # dirprefixes + work_name created
         self.direct_unpacker: Optional[sabnzbd.directunpacker.DirectUnpacker] = None  # The DirectUnpacker instance
         self.bytes: int = 0  # Original bytesize
         self.bytes_par2: int = 0  # Bytes available for repair
@@ -666,7 +664,6 @@ class NzbObject(TryList):
         self.bytes_missing: int = 0  # Bytes missing
         self.bad_articles: int = 0  # How many bad (non-recoverable) articles
 
-        self.partable: Dict[str, NzbFile] = {}  # Holds one parfile-name for each set
         self.extrapars: Dict[str, List[NzbFile]] = {}  # Holds the extra parfile names for all sets
         self.md5packs: Dict[str, Dict[str, bytes]] = {}  # Holds the md5pack for each set (name: hash)
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
@@ -725,7 +722,10 @@ class NzbObject(TryList):
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum: Optional[str] = None
 
-        if nzb_data is None and not reuse:
+        # Path is empty in case of a future NZB
+        self.download_path = ""
+
+        if nzb_fp is None and not reuse:
             # This is a slot for a future NZB, ready now
             # It can also be a retry of a failed job with no extra NZB-file
             return
@@ -743,31 +743,31 @@ class NzbObject(TryList):
 
         # Reuse the existing directory
         if reuse and os.path.exists(reuse):
-            work_dir = long_path(reuse)
+            self.download_path = long_path(reuse)
         else:
             # Determine "incomplete" folder
-            work_dir = os.path.join(cfg.download_dir.get_path(), self.work_name)
-            work_dir = get_unique_path(work_dir, create_dir=True)
-            set_permissions(work_dir)
+            self.download_path = os.path.join(cfg.download_dir.get_path(), self.work_name)
+            self.download_path = long_path(get_unique_dir(self.download_path, create_dir=True))
+            set_permissions(self.download_path)
 
         # Always create the admin-directory, just to be sure
-        admin_dir = os.path.join(work_dir, JOB_ADMIN)
+        admin_dir = os.path.join(self.download_path, JOB_ADMIN)
         if not os.path.exists(admin_dir):
-            os.mkdir(admin_dir)
-        _, self.work_name = os.path.split(work_dir)
-        self.created = True
+            create_all_dirs(admin_dir)
+        _, self.work_name = os.path.split(self.download_path)
 
         # When doing a retry or repair, remove old cache-files
         if reuse:
             remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
-        if nzb_data and "<nzb" in nzb_data:
+        if nzb_fp:
+            full_nzb_path = sabnzbd.filesystem.save_compressed(admin_dir, filename, nzb_fp)
             try:
-                sabnzbd.nzbparser.nzbfile_parser(nzb_data, self)
+                sabnzbd.nzbparser.nzbfile_parser(full_nzb_path, self)
             except Exception as err:
                 self.incomplete = True
-                logging.warning(T("Invalid NZB file %s, skipping (reason=%s, line=%s)"), filename, err, "1")
+                logging.warning(T("Invalid NZB file %s, skipping (error: %s)"), filename, err)
                 logging.info("Traceback: ", exc_info=True)
 
                 # Some people want to keep the broken files
@@ -783,8 +783,8 @@ class NzbObject(TryList):
             if not reuse and dup_check and self.priority != REPAIR_PRIORITY:
                 duplicate, series_duplicate = self.has_duplicates()
 
-            sabnzbd.backup_nzb(filename, nzb_data)
-            sabnzbd.save_compressed(admin_dir, filename, nzb_data)
+            # Copy to backup
+            sabnzbd.filesystem.backup_nzb(full_nzb_path)
 
         if not self.files and not reuse:
             self.purge_data()
@@ -928,7 +928,7 @@ class NzbObject(TryList):
                     accept = 2
 
         if reuse:
-            self.check_existing_files(work_dir)
+            self.check_existing_files(self.download_path)
 
         # Sort the files in the queue
         self.sort_nzfs()
@@ -1019,9 +1019,6 @@ class NzbObject(TryList):
         if parset not in self.extrapars:
             self.extrapars[parset] = []
 
-        # Set this one as the main one
-        self.partable[parset] = nzf
-
         lparset = parset.lower()
         for xnzf in self.files[:]:
             # Move only when not current NZF and filename was extractable from subject
@@ -1074,10 +1071,10 @@ class NzbObject(TryList):
                 nzf.set_par2(setname, vol, block)
                 logging.debug("Got additional md5pack for set %s", nzf.setname)
 
-                # Make sure it exists, could be removed by newsunpack
-                if setname not in self.extrapars:
-                    self.extrapars[setname] = []
-                self.extrapars[setname].append(nzf)
+            # Make sure it exists, could be removed by newsunpack
+            if setname not in self.extrapars:
+                self.extrapars[setname] = []
+            self.extrapars[setname].append(nzf)
 
         elif self.repair:
             # For some reason this par2 file is broken but we still want repair
@@ -1111,7 +1108,7 @@ class NzbObject(TryList):
                     self.files.insert(0, new_nzf)
                     break
 
-    def get_extra_blocks(self, setname, needed_blocks):
+    def get_extra_blocks(self, setname: str, needed_blocks: int) -> int:
         """We want par2-files of all sets that are similar to this one
         So that we also can handle multi-sets with duplicate filenames
         Returns number of added blocks in case they are available
@@ -1128,7 +1125,7 @@ class NzbObject(TryList):
             if setname_search == setname or difflib.SequenceMatcher(None, setname, setname_search).ratio() > 0.85:
                 for nzf in self.extrapars[setname_search]:
                     # Don't count extrapars that are completed already
-                    if nzf.completed:
+                    if nzf.completed or nzf in self.finished_files:
                         continue
                     block_list.append(nzf)
                     avail_blocks += nzf.blocks
@@ -1149,7 +1146,7 @@ class NzbObject(TryList):
             return added_blocks
         else:
             # Not enough
-            return False
+            return 0
 
     @synchronized(NZO_LOCK)
     def remove_article(self, article: Article, success: bool):
@@ -1236,7 +1233,7 @@ class NzbObject(TryList):
         existing_files = globber(wdir, "*.*")
 
         # Substitute renamed files
-        renames = sabnzbd.load_data(RENAMES_FILE, self.admin_path, remove=True)
+        renames = sabnzbd.filesystem.load_data(RENAMES_FILE, self.admin_path, remove=True)
         if renames:
             for name in renames:
                 if name in existing_files or renames[name] in existing_files:
@@ -1264,20 +1261,15 @@ class NzbObject(TryList):
                     existing_files.remove(existing_filename)
 
                     # Set bytes correctly
+                    nzf.bytes_left = 0
                     self.bytes_tried += nzf.bytes
                     self.bytes_downloaded += nzf.bytes
-
-                    # Process par2 files
-                    filepath = os.path.join(wdir, existing_filename)
-                    if sabnzbd.par2file.is_parfile(filepath):
-                        self.handle_par2(nzf, filepath)
-                        self.bytes_par2 += nzf.bytes
                     break
 
         # Create an NZF for each remaining existing file
         try:
             for existing_filename in existing_files:
-                # Create NZO's using basic information
+                # Create NZF's using basic information
                 filepath = os.path.join(wdir, existing_filename)
                 logging.info("Existing file %s added to %s", existing_filename, self.final_name)
                 tup = os.stat(filepath)
@@ -1289,27 +1281,30 @@ class NzbObject(TryList):
                 self.remove_nzf(nzf)
 
                 # Set bytes correctly
+                nzf.bytes_left = 0
                 self.bytes += nzf.bytes
                 self.bytes_tried += nzf.bytes
                 self.bytes_downloaded += nzf.bytes
-
-                # Process par2 files
-                if sabnzbd.par2file.is_parfile(filepath):
-                    self.handle_par2(nzf, filepath)
-                    self.bytes_par2 += nzf.bytes
-
         except:
             logging.error(T("Error importing %s"), self.final_name)
             logging.info("Traceback: ", exc_info=True)
 
+        # Process all the par2 files in one go, because handle_par2
+        # otherwise updates the byte-counters incorrectly.
+        for nzf in self.finished_files:
+            filepath = os.path.join(wdir, nzf.filename)
+            if sabnzbd.par2file.is_parfile(filepath):
+                self.handle_par2(nzf, filepath)
+                self.bytes_par2 += nzf.bytes
+
     @property
-    def pp(self):
+    def pp(self) -> Optional[int]:
         if self.repair is None:
             return None
         else:
             return opts_to_pp(self.repair, self.unpack, self.delete)
 
-    def set_pp(self, value):
+    def set_pp(self, value: int):
         self.repair, self.unpack, self.delete = pp_to_opts(value)
         logging.info("Set pp=%s for job %s", value, self.final_name)
         # Abort unpacking if not desired anymore
@@ -1446,18 +1441,15 @@ class NzbObject(TryList):
         return False
 
     @synchronized(NZO_LOCK)
-    def remove_parset(self, setname: str):
-        if setname in self.extrapars:
-            self.extrapars.pop(setname)
-        if setname in self.partable:
-            self.partable.pop(setname)
-
-    @synchronized(NZO_LOCK)
     def remove_extrapar(self, parfile: NzbFile):
         """Remove par file from any/all sets"""
-        for _set in self.extrapars:
-            if parfile in self.extrapars[_set]:
-                self.extrapars[_set].remove(parfile)
+        for parset in list(self.extrapars):
+            if parfile in self.extrapars[parset]:
+                self.extrapars[parset].remove(parfile)
+            # Remove empty sets, when we found (based on md5of16k pack)
+            # that all par2 files actually belong to a different set
+            if not self.extrapars[parset]:
+                self.extrapars.pop(parset)
 
     @synchronized(NZO_LOCK)
     def prospective_add(self, nzf: NzbFile):
@@ -1578,9 +1570,7 @@ class NzbObject(TryList):
         if dups:
             download_msgs.append(T("%s articles had non-matching duplicates") % dups)
         self.set_unpack_info("Download", "<br/>".join(download_msgs), unique=True)
-
-        if self.url:
-            self.set_unpack_info("Source", self.url, unique=True)
+        self.set_unpack_info("Source", self.url or self.filename, unique=True)
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, article_type: str):
@@ -1744,7 +1734,7 @@ class NzbObject(TryList):
             and not is_probably_obfuscated(yenc_filename)
             and not nzf.filename.endswith(".par2")
         ):
-            logging.info("Detected filename from yenc: %s -> %s", nzf.filename, yenc_filename)
+            logging.info("Detected filename from yenc or uu: %s -> %s", nzf.filename, yenc_filename)
             self.renamed_file(yenc_filename, nzf.filename)
             nzf.filename = yenc_filename
 
@@ -1810,14 +1800,6 @@ class NzbObject(TryList):
         return long_path(get_admin_path(self.work_name, self.futuretype))
 
     @property
-    def download_path(self):
-        """Return the full path for the download folder"""
-        if self.futuretype:
-            return ""
-        else:
-            return long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
-
-    @property
     def group(self):
         if self.groups:
             return self.groups[0]
@@ -1845,14 +1827,14 @@ class NzbObject(TryList):
         # Delete all, or just basic files
         if self.futuretype:
             # Remove temporary file left from URL-fetches
-            sabnzbd.remove_data(self.nzo_id, self.admin_path)
+            sabnzbd.filesystem.remove_data(self.nzo_id, self.admin_path)
         elif delete_all_data:
             remove_all(self.download_path, recursive=True)
         else:
             # We remove any saved articles and save the renames file
             remove_all(self.download_path, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(self.download_path, "SABnzbd_article_*", keep_folder=True)
-            sabnzbd.save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
+            sabnzbd.filesystem.save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
 
     def gather_info(self, full=False):
         queued_files = []
@@ -1912,24 +1894,20 @@ class NzbObject(TryList):
         else:
             self.unpack_info[key] = [msg]
 
-    def set_action_line(self, action=None, msg=None):
+    def set_action_line(self, action: Optional[str] = None, msg: Optional[str] = None):
         if action and msg:
-            self.action_line = "%s: %s" % (action, msg)
+            self.action_line = "%s: %s" % (action, msg.strip())
         else:
             self.action_line = ""
         # Make sure it's updated in the interface
-        sabnzbd.history_updated()
-
-    @property
-    def repair_opts(self):
-        return self.repair, self.unpack, self.delete
+        sabnzbd.misc.history_updated()
 
     @synchronized(NZO_LOCK)
     def save_to_disk(self):
         """Save job's admin to disk"""
         self.save_attribs()
         if self.nzo_id and not self.is_gone():
-            sabnzbd.save_data(self, self.nzo_id, self.admin_path)
+            sabnzbd.filesystem.save_data(self, self.nzo_id, self.admin_path)
 
     def save_attribs(self):
         """Save specific attributes for Retry"""
@@ -1937,11 +1915,11 @@ class NzbObject(TryList):
         for attrib in NzoAttributeSaver:
             attribs[attrib] = getattr(self, attrib)
         logging.debug("Saving attributes %s for %s", attribs, self.final_name)
-        sabnzbd.save_data(attribs, ATTRIB_FILE, self.admin_path, silent=True)
+        sabnzbd.filesystem.save_data(attribs, ATTRIB_FILE, self.admin_path, silent=True)
 
     def load_attribs(self) -> Tuple[Optional[str], Optional[int], Optional[str]]:
         """Load saved attributes and return them to be parsed"""
-        attribs = sabnzbd.load_data(ATTRIB_FILE, self.admin_path, remove=False)
+        attribs = sabnzbd.filesystem.load_data(ATTRIB_FILE, self.admin_path, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
 
         # If attributes file somehow does not exists
@@ -2005,7 +1983,7 @@ class NzbObject(TryList):
                     res,
                 )
                 if not res and cfg.backup_for_duplicates():
-                    res = sabnzbd.backup_exists(self.filename)
+                    res = sabnzbd.filesystem.backup_exists(self.filename)
                     logging.debug("Duplicate checked NZB against backup: filename=%s, result=%s", self.filename, res)
 
             # Dupe check off nzb filename
@@ -2080,6 +2058,8 @@ class NzbObject(TryList):
             for nzf in self.files + self.finished_files:
                 if sabnzbd.par2file.is_parfile(nzf.filename):
                     self.bytes_par2 += nzf.bytes
+        if self.download_path is None:
+            self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)

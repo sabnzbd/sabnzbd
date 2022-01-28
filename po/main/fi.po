@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2021 The SABnzbd-Team
+# Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
@@ -104,6 +104,13 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -140,35 +147,6 @@ msgstr "Signaali %s kaapattu, tallennetaan ja lopetetaan..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Vakava virhe tallennettaessa tilaa"
-
-#: sabnzbd/__init__.py
-msgid "Trying to fetch NZB from %s"
-msgstr "Yritetään noutaa NZB osoitteesta %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Saving %s failed"
-msgstr "Kohteen %s tallentaminen epäonnistui"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Cannot create temp file for %s"
-msgstr "Väliaikaistiedostoa ei voida luoda kohteelle %s"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Trying to set status of non-existing server %s"
-msgstr "Yritettiin asettaa tila ei olemassa olevalle palvelimelle %s"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Failure in tempfile.mkstemp"
-msgstr "Virhe tiedostossa tempfile.mkstemp"
-
-#. Error message
-#: sabnzbd/__init__.py
-msgid "Loading %s failed"
-msgstr "Kohteen %s lataaminen epäonnistui"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -330,6 +308,14 @@ msgstr "avainsanat"
 msgid "Quota spent, pausing downloading"
 msgstr "Latausrajoitus saavutettu, keskeytetään lataukset"
 
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Virheellinen parametri"
+
+#: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "TUNT polku \"%s\" ei ole sallittu"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s ei ole kelvollinen sähköpostiosoite"
@@ -341,6 +327,21 @@ msgstr "Palvelimen osoite vaaditaan"
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s ei ole oikea oktaalinen arvo"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Error: Queue not empty, cannot change folder."
+msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -361,22 +362,6 @@ msgstr "Ei voitu luoda varmuuskopiotiedostoa kohteelle %s"
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
 msgstr "Virheellisesti koodattu salasana %s"
-
-#: sabnzbd/config.py, sabnzbd/interface.py
-msgid "Incorrect parameter"
-msgstr "Virheellinen parametri"
-
-#: sabnzbd/config.py
-msgid "%s is not a correct octal value"
-msgstr "%s ei ole oikea oktaalinen arvo"
-
-#: sabnzbd/config.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "TUNT polku \"%s\" ei ole sallittu"
-
-#: sabnzbd/config.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
 
 #. Error message
 #: sabnzbd/database.py
@@ -406,10 +391,6 @@ msgstr "Virheellinen tila lokihistoriassa kohteelle %s"
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
-msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
 #. Warning message
@@ -566,8 +547,7 @@ msgid "No recipients given, no email sent"
 msgstr "Vastaanottajaa ei määritelty, sähköpostia ei lähetetty"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Ei voida lukea %s"
 
@@ -626,6 +606,21 @@ msgstr "Kohteen %s siirtäminen kohteeseen %s epäonnistui"
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
 msgstr ""
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "Virhe tiedostossa tempfile.mkstemp"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "Kohteen %s tallentaminen epäonnistui"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "Kohteen %s lataaminen epäonnistui"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -853,11 +848,6 @@ msgstr "Kohteen %s poisto epäonnistui!"
 msgid "Trying unrar with password \"%s\""
 msgstr "Yritetään purkaa rar arkistoa salasanalla \"%s\""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, archive requires a password"
-msgstr "Purkaminen epäonnistui, arkisto vaatii salasanan"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Puretaan"
@@ -866,51 +856,25 @@ msgstr "Puretaan"
 msgid "Unpacking failed, unable to find %s"
 msgstr "Purkaminen epäonnistui, %s ei löydy"
 
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: unable to find \"%s\""
-msgstr "VIRHE: kohdetta \"%s\" ei löydy"
-
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
 msgstr "Purkaminen epäonnistui, CRC virhe"
-
-#. Warning message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: CRC failed in \"%s\""
-msgstr "VIRHE: CRC epäonnistui kohteessa \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
-
-#. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Purkaminen epäonnistui, kirjoitusvirhe tai levy täynnä?"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "ERROR: write error (%s)"
-msgstr "VIRHE: kirjoitusvirhe (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Purkaminen epäonnistui, polku on liian pitkä"
 
-#. Error message
 #: sabnzbd/newsunpack.py
-msgid "ERROR: path too long (%s)"
-msgstr "VIRHE: polku liian pitkä (%s)"
-
-#: sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "VIRHE: %s"
+msgid "Unpacking failed, archive requires a password"
+msgstr "Purkaminen epäonnistui, arkisto vaatii salasanan"
 
 #: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
@@ -937,13 +901,10 @@ msgstr ""
 msgid "Trying 7zip with password \"%s\""
 msgstr "Yritetään purkaa 7zip arkistoa salasanalla \"%s\""
 
-#: sabnzbd/newsunpack.py
-msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
-msgstr "7ZIP setti \"%s\" on puutteellinen, ei voida purkaa"
-
-#: sabnzbd/newsunpack.py
-msgid "Could not unpack %s"
-msgstr "Ei voitu purkaa %s"
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "katso lokitiedosto"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
@@ -1024,12 +985,12 @@ msgid "Disk full"
 msgstr "Levy täynnä"
 
 #: sabnzbd/newsunpack.py
-msgid "Verifying"
-msgstr "Varmennetaan"
-
-#: sabnzbd/newsunpack.py
 msgid "Checking extra files"
 msgstr ""
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Varmennetaan"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
@@ -1039,6 +1000,10 @@ msgstr "Tarkistetaan"
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Yritetään SFV varmennusta"
+
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "jäljellä"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
@@ -1156,10 +1121,10 @@ msgstr "Ilmoitusskriptiä \"%s\" ei ole olemassa"
 msgid "Failed to send Windows notification"
 msgstr "Windows-ilmoituksen lähetys epäonnistui"
 
-#. Warning message
+#. Error message
 #: sabnzbd/nzbparser.py
-msgid "Failed to import %s files from %s"
-msgstr "Virhe tuotaessa %s tiedostoa kohteesta %s"
+msgid "Cannot create temp file for %s"
+msgstr "Väliaikaistiedostoa ei voida luoda kohteelle %s"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1170,6 +1135,11 @@ msgstr "Virhe lisättäessä %s, poistetaan"
 #: sabnzbd/nzbparser.py
 msgid "Error removing %s"
 msgstr "Virhe poistettaessa %s"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "Virhe tuotaessa %s tiedostoa kohteesta %s"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1187,8 +1157,8 @@ msgstr "NZB lisätty jonoon"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Virheellinen NZB tiedosto %s, ohitetaan (syy=%s, rivi=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
@@ -1566,11 +1536,6 @@ msgstr "Lisää"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Jälkikäsittely epäonnistui kohteelle %s (%s)"
 
-#. Error message
-#: sabnzbd/postproc.py
-msgid "see logfile"
-msgstr "katso lokitiedosto"
-
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
 msgstr ""
@@ -1777,6 +1742,11 @@ msgstr "Tuntematon toiminto: %s"
 #: sabnzbd/scheduler.py
 msgid "Schedule for non-existing server %s"
 msgstr "Ajastettu tuntemattomalle palvelimelle %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Yritettiin asettaa tila ei olemassa olevalle palvelimelle %s"
 
 #. Queue status "download" - Post processing pick list - Config->RSS button
 #. "download item"
@@ -3704,6 +3674,14 @@ msgstr ""
 "protokollan avulla."
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "Palvelin"
 
@@ -3950,6 +3928,17 @@ msgstr "Tiukka"
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 on suurin prioriteetti, 99 on pienin prioriteetti"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
@@ -4133,6 +4122,12 @@ msgstr "Ladattu"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "Lue kaikki syötteet nyt"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4416,7 +4411,13 @@ msgstr "Indeksoijan kategoriat / ryhmä"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Sarjojen lajittelu"
 
@@ -4444,7 +4445,8 @@ msgstr "Esiasetukset"
 msgid "Example"
 msgstr "Esimerkki"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr ""
 
@@ -4596,7 +4598,8 @@ msgstr "Kansioissa"
 msgid "No folders"
 msgstr "Ei kansioita"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Päivämäärän lajittelu"
 
@@ -4716,10 +4719,6 @@ msgstr "Otsikko"
 #: sabnzbd/skintext.py
 msgid "Selection"
 msgstr "Valinta"
-
-#: sabnzbd/skintext.py
-msgid "left"
-msgstr "jäljellä"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -5126,6 +5125,10 @@ msgstr "NZB tiedostoa ei voida käyttää"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "Osoitteen nouto epäonnistui; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "Yritetään noutaa NZB osoitteesta %s"
 
 #: sabnzbd/utils/servertests.py
 msgid "The hostname is not set."

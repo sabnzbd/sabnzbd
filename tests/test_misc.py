@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -193,6 +193,27 @@ class TestMisc:
         assert "1 Stunde 1 Minuten 1 Sekunde" == misc.format_time_string(60 * 60 + 60 + 1)
         assert "1 Tag 59 Sekunden" == misc.format_time_string(86400 + 59)
         assert "2 Tage 2 Stunden 2 Sekunden" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
+        # Reset language
+        lang.set_language()
+
+    def test_format_time_left(self):
+        assert "0:00:00" == misc.format_time_left(0)
+        assert "0:00:00" == misc.format_time_left(-1)
+        assert "0:00:01" == misc.format_time_left(1)
+        assert "0:01:01" == misc.format_time_left(60 + 1)
+        assert "0:11:10" == misc.format_time_left(60 * 11 + 10)
+        assert "3:11:10" == misc.format_time_left(60 * 60 * 3 + 60 * 11 + 10)
+        assert "13:11:10" == misc.format_time_left(60 * 60 * 13 + 60 * 11 + 10)
+        assert "1:09:11:10" == misc.format_time_left(60 * 60 * 33 + 60 * 11 + 10)
+
+    def test_format_time_left_short(self):
+        assert "0:00" == misc.format_time_left(0, short_format=True)
+        assert "0:01" == misc.format_time_left(1, short_format=True)
+        assert "1:01" == misc.format_time_left(60 + 1, short_format=True)
+        assert "11:10" == misc.format_time_left(60 * 11 + 10, short_format=True)
+        assert "3:11:10" == misc.format_time_left(60 * 60 * 3 + 60 * 11 + 10, short_format=True)
+        assert "13:11:10" == misc.format_time_left(60 * 60 * 13 + 60 * 11 + 10, short_format=True)
+        assert "1:09:11:10" == misc.format_time_left(60 * 60 * 33 + 60 * 11 + 10, short_format=True)
 
     def test_int_conv(self):
         assert 0 == misc.int_conv("0")
@@ -263,10 +284,25 @@ class TestMisc:
     )
     def test_list_to_cmd(self, test_input, expected_output):
         """Test to convert list to a cmd.exe-compatible command string"""
-
         res = misc.list2cmdline(test_input)
         # Make sure the output is cmd.exe-compatible
         assert res == expected_output
+
+    def test_recursive_html_escape(self):
+        """Very basic test if the recursive clean-up works"""
+        input_test = {
+            "foo": "<b>?ar'\"",
+            "test_list": ["test&1", 'test"2'],
+            "test_nested_list": [["test&1", 'test"2', 4]],
+            "test_dict": {"test": ["test<>1", "#"]},
+        }
+        # Dict is updated in-place
+        misc.recursive_html_escape(input_test)
+        # Have to check them by hand
+        assert input_test["foo"] == "&lt;b&gt;?ar&#x27;&quot;"
+        assert input_test["test_list"] == ["test&amp;1", "test&quot;2"]
+        assert input_test["test_nested_list"] == [["test&amp;1", "test&quot;2", 4]]
+        assert input_test["test_dict"]["test"] == ["test&lt;&gt;1", "#"]
 
     @pytest.mark.parametrize(
         "value, result",

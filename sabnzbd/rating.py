@@ -110,7 +110,7 @@ class Rating(Thread):
         self.ratings = {}
         self.nzo_indexer_map = {}
         try:
-            rating_data = sabnzbd.load_admin(RATING_FILE_NAME)
+            rating_data = sabnzbd.filesystem.load_admin(RATING_FILE_NAME)
             if rating_data:
                 self.version, self.ratings, self.nzo_indexer_map = rating_data
         except:
@@ -142,7 +142,7 @@ class Rating(Thread):
 
     @synchronized(RATING_LOCK)
     def save(self):
-        sabnzbd.save_admin((self.version, self.ratings, self.nzo_indexer_map), RATING_FILE_NAME)
+        sabnzbd.filesystem.save_admin((self.version, self.ratings, self.nzo_indexer_map), RATING_FILE_NAME)
 
     # The same file may be uploaded multiple times creating a new nzo_id each time
     @synchronized(RATING_LOCK)

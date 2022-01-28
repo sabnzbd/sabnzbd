@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,8 @@ sabnzbd.notifier - Send notifications to any notification services
 
 import os.path
 import logging
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.parse
 import http.client
 import json
 from threading import Thread

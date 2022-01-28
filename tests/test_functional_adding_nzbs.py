@@ -26,7 +26,6 @@ import sys
 from random import choice, randint, sample
 from string import ascii_lowercase, digits
 
-import sabnzbd.config
 from sabnzbd.constants import (
     DUP_PRIORITY,
     PAUSED_PRIORITY,

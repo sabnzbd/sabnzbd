@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -59,15 +59,14 @@ from sabnzbd.misc import (
     create_https_certificates,
     calc_age,
     opts_to_pp,
+    format_time_left,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup, active_socks5_proxy
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 from sabnzbd.lang import is_rtl
-import sabnzbd.notifier
-import sabnzbd.rss
 import sabnzbd.emailer
 import sabnzbd.sorting
 
@@ -195,7 +194,7 @@ def _api_queue_rename(value, kwargs):
 
 def _api_queue_change_complete_action(value, kwargs):
     """API: accepts value(=action)"""
-    sabnzbd.change_queue_complete_action(value)
+    sabnzbd.misc.change_queue_complete_action(value)
     return report()
 
 
@@ -307,7 +306,7 @@ def _api_options(name, kwargs):
             "multipar": sabnzbd.newsunpack.MULTIPAR_COMMAND,
             "rar": sabnzbd.newsunpack.RAR_COMMAND,
             "zip": sabnzbd.newsunpack.ZIP_COMMAND,
-            "7zip": sabnzbd.newsunpack.SEVEN_COMMAND,
+            "7zip": sabnzbd.newsunpack.SEVENZIP_COMMAND,
             "nice": sabnzbd.newsunpack.NICE_COMMAND,
             "ionice": sabnzbd.newsunpack.IONICE_COMMAND,
         },
@@ -331,7 +330,7 @@ def _api_addfile(name, kwargs):
             # Indexer category, so do mapping
             cat = cat_convert(xcat)
         # Add the NZB-file
-        res, nzo_ids = sabnzbd.add_nzbfile(
+        res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
             name,
             pp=kwargs.get("pp"),
             script=kwargs.get("script"),
@@ -386,7 +385,7 @@ def _api_addlocalfile(name, kwargs):
             password = kwargs.get("password")
 
             if get_ext(name) in VALID_ARCHIVES + VALID_NZB_FILES:
-                res, nzo_ids = sabnzbd.add_nzbfile(
+                res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
                     name,
                     pp=pp,
                     script=script,
@@ -553,7 +552,7 @@ def _api_history(name, kwargs):
                 history_db.remove_failed(search)
             if special in ("all", "completed"):
                 history_db.remove_completed(search)
-            sabnzbd.history_updated()
+            sabnzbd.misc.history_updated()
             return report()
         elif value:
             jobs = value.split(",")
@@ -565,7 +564,7 @@ def _api_history(name, kwargs):
                     history_db = sabnzbd.get_db_connection()
                     remove_all(history_db.get_path(job), recursive=True)
                     history_db.remove_history(job)
-            sabnzbd.history_updated()
+            sabnzbd.misc.history_updated()
             return report()
         else:
             return report(_MSG_NO_VALUE)
@@ -634,7 +633,7 @@ def _api_addurl(name, kwargs):
     password = kwargs.get("password", "")
 
     if name:
-        nzo_id = sabnzbd.add_url(name, pp, script, cat, priority, nzbname, password)
+        nzo_id = sabnzbd.urlgrabber.add_url(name, pp, script, cat, priority, nzbname, password)
         # Reporting a list of NZO's, for compatibility with other add-methods
         return report(keyword="", data={"status": True, "nzo_ids": [nzo_id]})
     else:
@@ -650,7 +649,7 @@ def _api_pause(name, kwargs):
 
 def _api_resume(name, kwargs):
     sabnzbd.Scheduler.plan_resume(0)
-    sabnzbd.unpause_all()
+    sabnzbd.downloader.unpause_all()
     return report()
 
 
@@ -753,7 +752,7 @@ def _api_restart(name, kwargs):
 
 def _api_restart_repair(name, kwargs):
     logging.info("Queue repair requested by API")
-    sabnzbd.request_repair()
+    sabnzbd.misc.request_repair()
     # Do the shutdown async to still send goodbye to browser
     Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
     return report()
@@ -1336,6 +1335,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
     # Dashboard: Connection information
     if not int_conv(skip_dashboard):
+        info["active_socks5_proxy"] = active_socks5_proxy()
         info["localipv4"] = localipv4()
         info["publicipv4"] = publicipv4()
         info["ipv6"] = ipv6()
@@ -1580,7 +1580,7 @@ def retry_job(job, new_nzb=None, password=None):
         history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
-            nzo_id = sabnzbd.add_url(url, pp, script, cat)
+            nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat)
         else:
             path = history_db.get_path(job)
             nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)
@@ -1865,26 +1865,10 @@ def get_active_history(queue, items):
 
 
 def calc_timeleft(bytesleft, bps):
-    """Calculate the time left in the format HH:MM:SS"""
-    try:
-        if bytesleft <= 0:
-            return "0:00:00"
-        totalseconds = int(bytesleft / bps)
-        minutes, seconds = divmod(totalseconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-        if minutes < 10:
-            minutes = "0%s" % minutes
-        if seconds < 10:
-            seconds = "0%s" % seconds
-        if days > 0:
-            if hours < 10:
-                hours = "0%s" % hours
-            return "%s:%s:%s:%s" % (days, hours, minutes, seconds)
-        else:
-            return "%s:%s:%s" % (hours, minutes, seconds)
-    except:
+    """Based on bytesleft and bps calculate the time left in the format HH:MM:SS"""
+    if bytesleft <= 0 or bps <= 0:
         return "0:00:00"
+    return format_time_left(int(bytesleft / bps))
 
 
 def list_cats(default=True):
