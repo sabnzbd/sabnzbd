@@ -1,17 +1,5 @@
-Release Notes - SABnzbd 3.5.0 Release Candidate 3
+Release Notes - SABnzbd 3.5.0
 =========================================================
-
-## Changes and bugfixes since 3.5.0 Release Candidate 3
-- RSS-feed URLs were corrupted.
-
-## Changes and bugfixes since 3.5.0 Release Candidate 2
-- Failed 7zip unpack was not reported.
-- Multivolume 7zip's were not always unpacked.
-
-## Changes and bugfixes since 3.5.0 Release Candidate 1
-- `Defobfuscate final filenames` is skipped for DVD's and Blu-ray's.
-- HTML characters in configuration fields were shown incorrectly. 
-- Global interface settings would not always be applied correctly.
 
 ## Changes since 3.4.2
 - Removed Python 3.6 support.
@@ -23,7 +11,6 @@ Release Notes - SABnzbd 3.5.0 Release Candidate 3
 - Show an estimated time-left indicator for repair and unpacking. 
 - Require TLS version 1.2 or higher for SSL news server connections.
 - Setting custom ciphers forces the maximum TLS version to 1.2.
-- Print low-level Windows status error on `IOError`.
 - Reduced memory usage during and after parsing `.nzb` files.
 - Handle multiple passwords stored in NZB-file.
 - macOS/Linux: `Permissions` are only applied if any are set.
@@ -33,14 +20,17 @@ Release Notes - SABnzbd 3.5.0 Release Candidate 3
 - Snap: updated to `core20` base and restore 7zip support.
 
 ## Bugfixes since 3.4.2
+- Global interface settings would not always be applied correctly.
 - Email notification setting was not shown correctly.
 - Improvements and fixes for `Defobfuscate final filenames`.
 - `Post-Process Only Verified Jobs` would not always work as intended.
 - Correctly detect too little disk space when unpacking 7zip's.
 - Improvements to handling of repair by MultiPar and par2cmdline.
+- HTML characters in configuration fields were shown incorrectly.
 - On Retry the number of downloaded bytes could exceed the total bytes.
 - `unrar` logging of Direct Unpack was not logged if it was aborted.
 - Windows: `portable.cmd` was not included in the release.
+- Windows: print low-level Windows error on `IOError`.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x 
