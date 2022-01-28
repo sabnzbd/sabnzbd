@@ -360,7 +360,7 @@ msgstr "לא ניתן ליצור קובץ גיבוי עבור %s"
 #. Warning message
 #: sabnzbd/config.py
 msgid "Could not restore backup"
-msgstr ""
+msgstr "לא היה ניתן לשחזר גיבוי"
 
 #. Error message
 #: sabnzbd/config.py
@@ -404,15 +404,15 @@ msgstr "שגיאה בלתי ידועה בעת פענוח %s"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate skipped due to DVD/Bluray directories"
-msgstr ""
+msgstr "אי־האפלה דולגה עקב תיקיות DVD/Blu-ray"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate corrected the extension of %d file(s)"
-msgstr ""
+msgstr "אי־האפלה תיקנה את הסיומת של %d קבצים"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
-msgstr ""
+msgstr "אי־האפלה שינתה שם של %d קבצים"
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -697,7 +697,7 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
-msgstr ""
+msgstr "ארכיון בלתי תקף של גיבוי"
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -1795,7 +1795,7 @@ msgstr "פרוק"
 #. PP phase "deobfuscate"
 #: sabnzbd/skintext.py
 msgid "Deobfuscate"
-msgstr ""
+msgstr "אי־האפלה"
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
@@ -3067,11 +3067,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Download backup"
-msgstr ""
+msgstr "הורד גיבוי"
 
 #: sabnzbd/skintext.py
 msgid "Save or restore a backup of the configuration file and databases."
-msgstr ""
+msgstr "שמור או שחזר גיבוי של קובץ התצורה ומסדי נתונים."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -4950,7 +4950,7 @@ msgstr "אשר מחיקות היסטוריה"
 
 #: sabnzbd/skintext.py
 msgid "Keyboard shortcuts"
-msgstr ""
+msgstr "קיצורי דרך במקלדת"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
@@ -5108,7 +5108,7 @@ msgstr "התחל אשף"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"
-msgstr ""
+msgstr "שחזר גיבוי"
 
 #: sabnzbd/skintext.py
 msgid ""
