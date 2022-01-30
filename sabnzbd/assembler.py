@@ -219,7 +219,8 @@ class Assembler(Thread):
         if not nzf.md5:
             nzf.md5 = hashlib.md5()
 
-        with open(nzf.filepath, "ab") as fout:
+        # We write large article-sized chunks, so we can safely skip the buffering of Python
+        with open(nzf.filepath, "ab", buffering=0) as fout:
             for article in nzf.decodetable:
                 # Break if deleted during writing
                 if nzf.nzo.status is Status.DELETED:
