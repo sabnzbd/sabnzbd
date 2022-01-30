@@ -208,21 +208,21 @@ class FakeHistoryDB(db.HistoryDB):
             nzo.status = choice([Status.COMPLETED, choice(self.status_options)])
             nzo.fail_msg = "¡Fracaso absoluto!" if nzo.status == Status.FAILED else ""
             nzo.nzo_id = "SABnzbd_nzo_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(8)))
-            nzo.bytes_downloaded = randint(1024, 1024 ** 4)
+            nzo.bytes_downloaded = randint(1024, 1024**4)
             nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
             nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(db._PP_LOOKUP.keys())))  # for "pp"
-            nzo.nzo_info = {"download_time": randint(1, 10 ** 4)}
+            nzo.nzo_info = {"download_time": randint(1, 10**4)}
             nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
             nzo.futuretype = False  # for "report", only True when fetching an URL
             nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
 
             # Mock time when calling add_history_db() to randomize completion times
-            almost_time = mock.Mock(return_value=time.time() - randint(0, 10 ** 8))
+            almost_time = mock.Mock(return_value=time.time() - randint(0, 10**8))
             with mock.patch("time.time", almost_time):
                 self.add_history_db(
                     nzo,
                     storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
-                    postproc_time=randint(1, 10 ** 3),
+                    postproc_time=randint(1, 10**3),
                     script_output="",
                     script_line="",
                 )

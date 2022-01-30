@@ -124,12 +124,12 @@ class TestMisc:
         assert "10.0 M" == misc.to_units(1024 * 1024 * 10)
         assert "100.0 M" == misc.to_units(1024 * 1024 * 100)
         assert "9.8 G" == misc.to_units(1024 * 1024 * 10000)
-        assert "1024.0 P" == misc.to_units(1024 ** 6)
+        assert "1024.0 P" == misc.to_units(1024**6)
 
     def test_unit_back_and_forth(self):
         assert 100 == misc.from_units(misc.to_units(100))
         assert 1024 == misc.from_units(misc.to_units(1024))
-        assert 1024 ** 3 == misc.from_units(misc.to_units(1024 ** 3))
+        assert 1024**3 == misc.from_units(misc.to_units(1024**3))
 
     def test_caller_name(self):
         @set_config({"log_level": 0})
