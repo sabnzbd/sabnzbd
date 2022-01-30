@@ -140,8 +140,8 @@ jobs:
         pip3 install --upgrade -r requirements.txt --no-binary sabyenc3
         
         pip3 uninstall cryptography -y
-        pip3 download cryptography --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
-        pip3 install cryptography --no-cache-dir --no-index --find-links .
+        pip3 download -r builder/osx/requirements.txt --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
+        pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
         
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
     - name: Import macOS codesign certificates
