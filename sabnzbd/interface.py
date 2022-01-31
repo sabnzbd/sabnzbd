@@ -144,12 +144,16 @@ def secured_expose(
         # Check if config is locked
         if check_configlock and cfg.configlock():
             cherrypy.response.status = 403
-            return _MSG_ACCESS_DENIED_CONFIG_LOCK
+            if cfg.api_warnings():
+                return _MSG_ACCESS_DENIED_CONFIG_LOCK
+            return
 
         # Check if external access and if it's allowed
         if not check_access(access_type=access_type, warn_user=True):
             cherrypy.response.status = 403
-            return _MSG_ACCESS_DENIED
+            if cfg.api_warnings():
+                return _MSG_ACCESS_DENIED
+            return
 
         # Verify login status, only for non-key pages
         if check_for_login and not check_api_key and not check_login():
@@ -158,14 +162,18 @@ def secured_expose(
         # Verify host used for the visit
         if not check_hostname():
             cherrypy.response.status = 403
-            return _MSG_ACCESS_DENIED_HOSTNAME
+            if cfg.api_warnings():
+                return _MSG_ACCESS_DENIED_HOSTNAME
+            return
 
         # Some pages need correct API key
         if check_api_key:
             msg = check_apikey(kwargs)
             if msg:
                 cherrypy.response.status = 403
-                return msg
+                if cfg.api_warnings():
+                    return msg
+                return
 
         # All good, cool!
         return wrap_func(*args, **kwargs)
