@@ -248,3 +248,13 @@ class TestSecuredExpose:
         # Remote user: redirect to login
         set_remote_host_or_ip(hostname="100.100.100.100", remote_ip="11.11.11.11")
         self.check_full_access(redirect_match=r".*login.*")
+
+    @set_config({"api_warnings": False})
+    def test_no_text_warnings(self):
+        assert self.main_page.index() is None
+        assert cherrypy.response.status == 403
+        assert self.main_page.api(mode="queue") is None
+        assert cherrypy.response.status == 403
+        set_remote_host_or_ip(hostname="not_me")
+        assert self.main_page.api() is None
+        assert cherrypy.response.status == 403
