@@ -26,6 +26,7 @@ from nntplib import NNTPPermanentError
 import time
 import logging
 import ssl
+import sys
 from typing import List, Optional, Tuple, AnyStr
 
 import sabnzbd
@@ -279,7 +280,14 @@ class NNTP:
         # Create SSL-context if it is needed and not created yet
         if self.nw.server.ssl and not self.nw.server.ssl_context:
             # Setup the SSL socket
-            self.nw.server.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+            self.nw.server.ssl_context = ssl.SSLContext()
+            self.nw.server.ssl_context.verify_mode = ssl.CERT_REQUIRED
+            self.nw.server.ssl_context.check_hostname = True
+
+            if "win32" in sys.platform:
+                for storename in ("CA", "ROOT"):
+                    _ssl_load_windows_store_certs(self.nw.server.ssl_context, storename)
+            self.nw.server.ssl_context.set_default_verify_paths()
 
             # Only verify hostname when we're strict
             if self.nw.server.ssl_verify < 2:
@@ -398,3 +406,21 @@ class NNTP:
 
     def __repr__(self):
         return "<NNTP: %s:%s>" % (self.host, self.nw.server.port)
+
+
+def _ssl_load_windows_store_certs(ssl_context, storename):
+    # Code from https://github.com/yt-dlp/yt-dlp/commit/599ca418ac75ab1c0baf97f184f32ac48aa759ed
+    try:
+        certs = [
+            cert
+            for cert, encoding, trust in ssl.enum_certificates(storename)
+            if encoding == "x509_asn" and (trust is True or ssl.Purpose.SERVER_AUTH.oid in trust)
+        ]
+    except PermissionError:
+        return
+    for cert in certs:
+        try:
+            ssl_context.load_verify_locations(cadata=cert)
+        except ssl.SSLError:
+            logging.debug("Failed to load cert %s", cert)
+            pass
