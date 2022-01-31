@@ -733,7 +733,7 @@ def loadavg():
     return p
 
 
-def format_time_string(seconds):
+def format_time_string(seconds: float) -> str:
     """Return a formatted and translated time string"""
 
     def unit(single, n):
