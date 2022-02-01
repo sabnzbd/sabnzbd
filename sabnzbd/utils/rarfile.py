@@ -390,12 +390,15 @@ BSIZE = 32 * 1024
 
 def _get_rar_version(xfile):
     """Check quickly whether file is rar archive."""
-    with XFile(xfile) as fd:
-        buf = fd.read(len(RAR5_ID))
-    if buf.startswith(RAR_ID):
-        return 3
-    elif buf.startswith(RAR5_ID):
-        return 5
+    try:
+        with XFile(xfile) as fd:
+            buf = fd.read(len(RAR5_ID))
+        if buf.startswith(RAR_ID):
+            return 3
+        elif buf.startswith(RAR5_ID):
+            return 5
+    except FileNotFoundError:
+        pass
     return 0
 
 
