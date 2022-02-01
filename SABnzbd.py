@@ -1227,7 +1227,10 @@ def main():
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
         # List the number of certificates available (can take up to 1.5 seconds)
-        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
+        try:
+            logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
+        except ssl.SSLError:
+            logging.info("Broken SSL, functionality will be limited.")
 
         # List networking
         logging.debug("Local IPv4 address = %s", localipv4())

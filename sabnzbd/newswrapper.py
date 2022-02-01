@@ -280,14 +280,18 @@ class NNTP:
         # Create SSL-context if it is needed and not created yet
         if self.nw.server.ssl and not self.nw.server.ssl_context:
             # Setup the SSL socket
-            self.nw.server.ssl_context = ssl.SSLContext()
-            self.nw.server.ssl_context.verify_mode = ssl.CERT_REQUIRED
-            self.nw.server.ssl_context.check_hostname = True
+            try:
+                self.nw.server.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+            except ssl.SSLError:
+                logging.debug("Broken SSL, trying workaround")
+                self.nw.server.ssl_context = ssl.SSLContext()
+                self.nw.server.ssl_context.verify_mode = ssl.CERT_REQUIRED
+                self.nw.server.ssl_context.check_hostname = True
 
-            if "win32" in sys.platform:
-                for storename in ("CA", "ROOT"):
-                    _ssl_load_windows_store_certs(self.nw.server.ssl_context, storename)
-            self.nw.server.ssl_context.set_default_verify_paths()
+                if "win32" in sys.platform:
+                    for storename in ("CA", "ROOT"):
+                        _ssl_load_windows_store_certs(self.nw.server.ssl_context, storename)
+                self.nw.server.ssl_context.set_default_verify_paths()
 
             # Only verify hostname when we're strict
             if self.nw.server.ssl_verify < 2:
