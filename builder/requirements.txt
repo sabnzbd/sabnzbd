@@ -2,7 +2,7 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 pyinstaller==4.8
 pyinstaller-hooks-contrib==2022.0
-setuptools
+setuptools==60.6.0
 pkginfo
 certifi
 pygithub
