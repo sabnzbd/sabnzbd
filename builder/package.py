@@ -353,50 +353,24 @@ if __name__ == "__main__":
 
                 # Upload to Apple
                 print("Sending zip to Apple notarization service")
-                upload_process = run_external_command(
+                upload_result = run_external_command(
                     [
                         "xcrun",
-                        "altool",
-                        "--notarize-app",
-                        "-t",
-                        "osx",
-                        "-f",
+                        "notarytool",
+                        "submit",
                         notarization_zip,
-                        "--primary-bundle-id",
-                        "org.sabnzbd.sabnzbd",
-                        "-u",
+                        "--apple-id",
                         notarization_user,
-                        "-p",
+                        "--team-id",
+                        authority,
+                        "--password",
                         notarization_pass,
+                        "--wait",
                     ],
                 )
 
-                # Extract the notarization ID
-                m = re.match(".*RequestUUID = (.*?)\n", upload_process, re.S)
-                if not m:
-                    raise RuntimeError("No UUID created")
-                uuid = m.group(1)
-
-                print("Checking notarization of UUID: %s (every 30 seconds)" % uuid)
-                notarization_in_progress = True
-                while notarization_in_progress:
-                    time.sleep(30)
-                    check_status = run_external_command(
-                        [
-                            "xcrun",
-                            "altool",
-                            "--notarization-info",
-                            uuid,
-                            "-u",
-                            notarization_user,
-                            "-p",
-                            notarization_pass,
-                        ],
-                    )
-                    notarization_in_progress = "Status: in progress" in check_status
-
                 # Check if success
-                if "Status: success" not in check_status:
+                if "status: accepted" not in upload_result.lower():
                     raise RuntimeError("Failed to notarize..")
 
                 # Staple the notarization!
