@@ -20,10 +20,13 @@ import platform
 import re
 import sys
 import os
+import tempfile
 import time
 import shutil
 import subprocess
 import tarfile
+import urllib.request
+import urllib.error
 import pkginfo
 import github
 
@@ -112,6 +115,57 @@ def patch_version_file(release_name):
 
     with open(VERSION_FILE, "w") as ver:
         ver.write(version_file)
+
+
+def test_sab_binary(binary_path: str):
+    """Wrapper to have a simple start-up test for the binary"""
+    with tempfile.TemporaryDirectory() as config_dir:
+        sabnzbd_process = subprocess.Popen(
+            [binary_path, "--browser", "0", "--logging", "2", "--config", config_dir],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+
+        # Wait for SAB to respond
+        base_url = "http://127.0.0.1:8080/"
+        for _ in range(10):
+            try:
+                urllib.request.urlopen(base_url, timeout=1).read()
+                break
+            except urllib.error.URLError:
+                time.sleep(1)
+        else:
+            raise urllib.error.URLError("Could not connect to SABnzbd")
+
+        # Open a number of API calls and pages, to see if we are really up
+        pages_to_test = [
+            "",
+            "wizard",
+            "config",
+            "config/server",
+            "config/categories",
+            "config/scheduling",
+            "config/rss",
+            "config/general",
+            "config/folders",
+            "config/switches",
+            "config/sorting",
+            "config/notify",
+            "config/special",
+            "api?mode=version",
+        ]
+        for url in pages_to_test:
+            print("Testing: %s%s" % (base_url, url))
+            assert b"500 Internal Server Error" not in urllib.request.urlopen(base_url + url, timeout=1).read()
+
+        # Shut it down
+        sabnzbd_process.terminate()
+        sabnzbd_process.communicate(timeout=10)
+
+        # Print logs for verification
+        with open("%s/logs/sabnzbd.log" % config_dir, "r") as log_file:
+            print(log_file.read())
 
 
 if __name__ == "__main__":
@@ -226,10 +280,13 @@ if __name__ == "__main__":
             )
 
         # Rename the folder
-        os.rename("dist/SABnzbd", RELEASE_NAME)
+        shutil.copytree("dist/SABnzbd", RELEASE_NAME)
 
         # Create the archive
         run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, RELEASE_NAME])
+
+        # Test the release, as the very last step to not mess with any release code
+        test_sab_binary("dist/SABnzbd/SABnzbd.exe")
 
     if "app" in sys.argv:
         # Must be run on macOS
@@ -354,6 +411,9 @@ if __name__ == "__main__":
                 print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:
             print("Signing skipped, missing SIGNING_AUTH.")
+
+        # Test the release, as the very last step to not mess with any release code
+        test_sab_binary("dist/SABnzbd.app/Contents/MacOS/SABnzbd")
 
     if "source" in sys.argv:
         # Prepare Source distribution package.
