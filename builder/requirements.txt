@@ -2,6 +2,8 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 pyinstaller==4.8
 pyinstaller-hooks-contrib==2022.0
+altgraph==0.17.2
+wrapt==1.13.3
 setuptools==60.6.0
 pkginfo
 certifi

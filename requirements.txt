@@ -14,6 +14,8 @@ jaraco.collections==3.5.1
 jaraco.text==3.7.0
 jaraco.classes==3.2.1
 jaraco.context==4.1.1
+more-itertools==8.12.0
+tempora==5.0.1
 portend==3.1.0
 chardet==4.0.0
 PySocks==1.7.1
