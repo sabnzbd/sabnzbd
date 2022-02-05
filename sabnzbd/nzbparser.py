@@ -34,7 +34,15 @@ from typing import Optional, Dict, Any, Union, List, Tuple
 import sabnzbd
 from sabnzbd import nzbstuff
 from sabnzbd.encoding import utob, correct_unknown_encoding
-from sabnzbd.filesystem import get_filename, is_valid_script, get_ext, setname_from_path, clip_path, remove_file
+from sabnzbd.filesystem import (
+    get_filename,
+    is_valid_script,
+    get_ext,
+    setname_from_path,
+    clip_path,
+    remove_file,
+    remove_data,
+)
 from sabnzbd.misc import name_to_cat
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES
 from sabnzbd.utils import rarfile
@@ -469,7 +477,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 else:
                     logging.info("Error importing %s, skipping", file_name)
                     if nzf.nzf_id:
-                        sabnzbd.remove_data(nzf.nzf_id, nzo.admin_path)
+                        remove_data(nzf.nzf_id, nzo.admin_path)
                     skipped_files += 1
                 element.clear()
 
