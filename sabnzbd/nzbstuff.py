@@ -1741,13 +1741,17 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def verify_all_filenames_and_resort(self):
         """Verify all filenames based on par2 info and then re-sort files.
-        Locked so all files are verified at once without interuptions.
+        Locked so all files are verified at once without interruptions.
         """
         logging.info("Checking all filenames for %s", self.final_name)
         for nzf_verify in self.files:
             self.verify_nzf_filename(nzf_verify)
         logging.info("Re-sorting %s after getting filename information", self.final_name)
         self.sort_nzfs()
+
+        # Also trigger it again for Direct Unpack, if it's active
+        if self.direct_unpacker:
+            self.direct_unpacker.set_volumes_for_nzo()
 
     @synchronized(NZO_LOCK)
     def renamed_file(self, name_set, old_name=None):
