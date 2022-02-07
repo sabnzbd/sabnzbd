@@ -108,6 +108,7 @@ class DirectUnpacker(threading.Thread):
 
     def set_volumes_for_nzo(self):
         """Loop over all files to detect the names"""
+        logging.debug("Parsing setname and volume information for %s" % self.nzo.final_name)
         none_counter = 0
         found_counter = 0
         for nzf in self.nzo.files + self.nzo.finished_files:
@@ -310,11 +311,7 @@ class DirectUnpacker(threading.Thread):
                     if not last_volume_linebuf or last_volume_linebuf != linebuf:
                         # Next volume
                         self.cur_volume += 1
-                        perc = (self.cur_volume / self.total_volumes[self.cur_setname]) * 100
-                        self.nzo.set_action_line(
-                            T("Direct Unpack"),
-                            "%s %s" % (self.get_formatted_stats(), add_time_left(perc, time_used=self.unpack_time)),
-                        )
+                        self.nzo.set_action_line(T("Direct Unpack"), self.get_formatted_stats(include_time_left=True))
                         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
@@ -509,13 +506,18 @@ class DirectUnpacker(threading.Thread):
             # Reset settings
             self.reset_active()
 
-    def get_formatted_stats(self):
+    def get_formatted_stats(self, include_time_left: bool = False) -> str:
         """Get percentage or number of rar's done"""
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
             if self.total_volumes[self.cur_setname] >= self.cur_volume and self.cur_volume:
-                return "%02d/%02d" % (self.cur_volume, self.total_volumes[self.cur_setname])
-        return self.cur_volume
+                formatted_stats = "%02d/%02d" % (self.cur_volume, self.total_volumes[self.cur_setname])
+                if include_time_left:
+                    formatted_stats += add_time_left(
+                        (self.cur_volume / self.total_volumes[self.cur_setname]) * 100, time_used=self.unpack_time
+                    )
+                return formatted_stats
+        return str(self.cur_volume)
 
 
 def analyze_rar_filename(filename):
