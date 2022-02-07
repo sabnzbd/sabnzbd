@@ -216,21 +216,6 @@ msgstr "Compilación de regex para término fallo: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Muy poco espacio en disco forzando PAUSA"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disco lleno! Pausando la cola"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Error de disco al crear el archivo %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Error grave en el ensamblador"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -281,6 +266,21 @@ msgstr "Se ha abortado el trabajo \"%s\" debido a su puntuación (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Abortado, se ha encontrado un filtro de calificación (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disco lleno! Pausando la cola"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Error de disco al crear el archivo %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Error grave en el ensamblador"
 
 #. Warning message
 #: sabnzbd/assembler.py

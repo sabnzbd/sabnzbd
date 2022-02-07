@@ -203,21 +203,6 @@ msgstr "Neuspešna kompilacija regularne ekspresije za termin pretrage: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Premalo prostora na disku, prisiljena PAUZA"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disk je pun! Tera Pause"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Greška na disku prilikom kreiranja datoteke %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Fatalna greška u Assembler-u"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -262,6 +247,21 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Prekinuto, filter ocene se poklopio (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disk je pun! Tera Pause"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Greška na disku prilikom kreiranja datoteke %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Fatalna greška u Assembler-u"
 
 #. Warning message
 #: sabnzbd/assembler.py

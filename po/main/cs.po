@@ -208,21 +208,6 @@ msgstr "Nepodařilo se zkompilovat regex pro hledaný výraz: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Příliš málo místa na disku, přenos POZASTAVEN"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Plný disk! Vynucené pozastavení"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Probém s vytvořením souboru %s na disku"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Neopravitelná chyba v Assembleru"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -271,6 +256,21 @@ msgstr "Zrušený úkol \"%s\" kvůli hodnocení (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Zrušeno, zachyceno hodnotícím filtrem (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Plný disk! Vynucené pozastavení"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Probém s vytvořením souboru %s na disku"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Neopravitelná chyba v Assembleru"
 
 #. Warning message
 #: sabnzbd/assembler.py

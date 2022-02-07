@@ -224,21 +224,6 @@ msgstr ""
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Angehalten wegen zu wenig freiem Speicherplatz"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Festplatte voll! Downloads werden angehalten."
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Festplattenfehler beim Anlegen der Datei %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Schwerer Fehler im Assembler"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -287,6 +272,21 @@ msgstr "Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Abbruch, Bewertungsfilter stimmt überein (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Festplatte voll! Downloads werden angehalten."
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Festplattenfehler beim Anlegen der Datei %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Schwerer Fehler im Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

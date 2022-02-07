@@ -211,21 +211,6 @@ msgstr "Compilarea unei căutări regex nereuşită: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Prea puţin spaţiu disc forţez PAUZĂ"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disc plin! Pauză Forţată"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Eroare disc la crearea fişierului %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Eroare fatală în  Assembler"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -274,6 +259,21 @@ msgstr "Sarcina \"%s\" anulată datorită ratingului (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Abandonat, filtru de rating potrivit (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disc plin! Pauză Forţată"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Eroare disc la crearea fişierului %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Eroare fatală în  Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

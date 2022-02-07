@@ -208,21 +208,6 @@ msgstr "Det lykkedes ikke at kompilere regex for søgestreng: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "For lidt diskplads tvinger system i PAUSE"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disken er fuld! Pauser"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Diskfejl ved oprettelse af fil %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Fatal fejl i Assembler"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -271,6 +256,21 @@ msgstr "Afbrudt job \"%s\" på grund af rating (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Afbrudt, rating filter matchede (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disken er fuld! Pauser"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Diskfejl ved oprettelse af fil %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Fatal fejl i Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

@@ -213,21 +213,6 @@ msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Te weinig schijfruimte, pauze geforceerd"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Schijf is vol; gedwongen pauze"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Schrijffout bij opslaan van bestand %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Onherstelbare fout in de Assembler"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -276,6 +261,21 @@ msgstr "Download '%s' afgebroken vanwege rating (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Afgebroken, ratingfilter komt overeen (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Schijf is vol; gedwongen pauze"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Schrijffout bij opslaan van bestand %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Onherstelbare fout in de Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

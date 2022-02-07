@@ -219,21 +219,6 @@ msgstr "Echec de la compilation de regex pour la recherche du terme : %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Espace disque faible, PAUSE forcée"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disque plein ! Pause forcée"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Erreur de disque lors de la création du fichier %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Erreur fatale dans l'assembleur"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -284,6 +269,21 @@ msgstr "Tâche \"%s\" annulée à cause du classement (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Tâche annulée, le filtre de classement a été vérifié (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disque plein ! Pause forcée"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Erreur de disque lors de la création du fichier %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Erreur fatale dans l'assembleur"
 
 #. Warning message
 #: sabnzbd/assembler.py

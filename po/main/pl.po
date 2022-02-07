@@ -201,21 +201,6 @@ msgstr "Błąd kompilacji wyrażenia regularnego dla wyszukiwania: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Zbyt mało miejsca na dysku, wymuszanie WSTRZYMANIA"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Dysk pełny! Wstrzymuję pobieranie"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Błąd dysku podczas tworzenia pliku %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Błąd krytyczny w module składającym"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -260,6 +245,21 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Przerwano, odfiltrowane z powodu oceny (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Dysk pełny! Wstrzymuję pobieranie"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Błąd dysku podczas tworzenia pliku %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Błąd krytyczny w module składającym"
 
 #. Warning message
 #: sabnzbd/assembler.py

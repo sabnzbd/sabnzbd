@@ -205,21 +205,6 @@ msgstr "Не удалось составить регулярное выраже
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Приостановка из-за нехватки места на диске"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "На диске нет места Принудительная приостановка"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Ошибка диска при создании файла %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr ""
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -263,6 +248,21 @@ msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
+msgstr ""
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "На диске нет места Принудительная приостановка"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Ошибка диска при создании файла %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
 msgstr ""
 
 #. Warning message

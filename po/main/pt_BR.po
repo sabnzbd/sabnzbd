@@ -205,21 +205,6 @@ msgstr "Falha ao compilar a expressão para o termo pesquisado: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Muito pouco espaço em disco. Forçando PAUSE"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disco cheio! Forçando Pausa"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Erro de disco na criação do arquivo %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Erro fatal no Assembler"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -264,6 +249,21 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Interrompido, filtro de pontuação encontrado (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disco cheio! Forçando Pausa"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Erro de disco na criação do arquivo %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Erro fatal no Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

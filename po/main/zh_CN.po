@@ -201,21 +201,6 @@ msgstr "为搜索关键词编译正则表达式失败: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "磁盘空间过低，强制 *暂停*"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "磁盘已满! 强制暂停"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "创建文件 %s 时磁盘出错"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Assembler 出现致命错误"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -260,6 +245,21 @@ msgstr "任务“%s”已中止，由于评分过低 (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "已中止，评分筛选器已命中 (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "磁盘已满! 强制暂停"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "创建文件 %s 时磁盘出错"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Assembler 出现致命错误"
 
 #. Warning message
 #: sabnzbd/assembler.py

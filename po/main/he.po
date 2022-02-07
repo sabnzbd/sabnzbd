@@ -206,21 +206,6 @@ msgstr "עבור מונח חיפוש regex נכשל בליקוט: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "שטח דיסק קטן מדי, מאלץ השהיה"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "דיסק מלא! מאלץ השהיה"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "שגיאת דיסק ביצירת קובץ %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "שגיאה חמורה ב־Assembler"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -266,6 +251,21 @@ msgstr "העבודה \"%s\" בוטלה בגלל דירוג (%s)"
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "בוטל, מסנן דירוג היה תואם (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "דיסק מלא! מאלץ השהיה"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "שגיאת דיסק ביצירת קובץ %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "שגיאה חמורה ב־Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

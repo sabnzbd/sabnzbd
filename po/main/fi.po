@@ -209,21 +209,6 @@ msgstr "Regex käännös epäonnistui hakutermille: %s"
 msgid "Too little diskspace forcing PAUSE"
 msgstr "Levytilaa ei ole tarpeeksi, pakotetaan KESKEYTYS"
 
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Levy täynnä! Pakotetaan keskeytys"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Levyvirhe luotaessa tiedostoa %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Vakava virhe kohteessa Assembler"
-
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
@@ -268,6 +253,21 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Peruutettu, luokituksessa esiintyi suodatinosuma (%s)"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Levy täynnä! Pakotetaan keskeytys"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Levyvirhe luotaessa tiedostoa %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Vakava virhe kohteessa Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py
