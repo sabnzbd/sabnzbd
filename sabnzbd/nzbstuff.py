@@ -1459,7 +1459,6 @@ class NzbObject(TryList):
     def prospective_add(self, nzf: NzbFile):
         """Add par2 files to compensate for missing articles"""
         # Get some blocks!
-        return
         if not nzf.is_par2:
             for parset in self.extrapars:
                 # Due to strong obfuscation on article-level the parset could have a different name
