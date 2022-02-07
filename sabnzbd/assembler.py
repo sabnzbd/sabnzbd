@@ -110,7 +110,7 @@ class Assembler(Thread):
                         self.assemble(nzf, file_done)
                     except IOError as err:
                         # If job was deleted or in active post-processing, ignore error
-                        if not nzo.deleted and not nzo.is_gone() and not nzo.pp_active:
+                        if not nzo.deleted and not nzo.pp_active:
                             # 28 == disk full => pause downloader
                             if err.errno == 28:
                                 logging.error(T("Disk full! Forcing Pause"))

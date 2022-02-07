@@ -1407,7 +1407,7 @@ class NzbObject(TryList):
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id and not self.is_gone():
+        if self.nzo_id and not self.deleted:
             self.save_to_disk()
 
     def resume(self):
@@ -1608,7 +1608,7 @@ class NzbObject(TryList):
                             if sabnzbd.Downloader.highest_server(server):
                                 nzf.finish_import()
                                 # Still not finished? Something went wrong...
-                                if not nzf.import_finished and not self.is_gone():
+                                if not nzf.import_finished and not self.deleted:
                                     logging.error(T("Error importing %s"), nzf)
                                     nzf_remove_list.append(nzf)
                                     nzf.nzo.status = Status.PAUSED
@@ -1910,7 +1910,7 @@ class NzbObject(TryList):
     def save_to_disk(self):
         """Save job's admin to disk"""
         self.save_attribs()
-        if self.nzo_id and not self.is_gone():
+        if self.nzo_id and not self.deleted:
             sabnzbd.filesystem.save_data(self, self.nzo_id, self.admin_path)
 
     def save_attribs(self):
@@ -1926,7 +1926,7 @@ class NzbObject(TryList):
         attribs = sabnzbd.filesystem.load_data(ATTRIB_FILE, self.admin_path, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
 
-        # If attributes file somehow does not exists
+        # If attributes file somehow does not exist
         if not attribs:
             return None, None, None
 
@@ -1940,7 +1940,7 @@ class NzbObject(TryList):
         return attribs["cat"], attribs["pp"], attribs["script"]
 
     @synchronized(NZO_LOCK)
-    def build_pos_nzf_table(self, nzf_ids):
+    def build_pos_nzf_table(self, nzf_ids: List[str]) -> Dict[int, NzbFile]:
         pos_nzf_table = {}
         for nzf_id in nzf_ids:
             if nzf_id in self.files_table:
@@ -1951,7 +1951,7 @@ class NzbObject(TryList):
         return pos_nzf_table
 
     @synchronized(NZO_LOCK)
-    def cleanup_nzf_ids(self, nzf_ids):
+    def cleanup_nzf_ids(self, nzf_ids: List[str]):
         for nzf_id in nzf_ids[:]:
             if nzf_id in self.files_table:
                 if self.files_table[nzf_id] not in self.files:
@@ -2006,10 +2006,6 @@ class NzbObject(TryList):
                     )
 
         return res, series
-
-    def is_gone(self):
-        """Is this job still going somehow?"""
-        return self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
