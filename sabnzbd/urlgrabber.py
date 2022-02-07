@@ -116,7 +116,7 @@ class URLGrabber(Thread):
                 if future_nzo:
                     # If nzo entry deleted, give up
                     try:
-                        deleted = future_nzo.deleted
+                        deleted = future_nzo.removed_from_queue
                     except AttributeError:
                         deleted = True
                     if deleted:

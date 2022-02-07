@@ -239,7 +239,7 @@ class NzbQueue:
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
-            if not nzo.deleted:
+            if not nzo.removed_from_queue:
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
                 if save_nzo is None or nzo is save_nzo:
                     if not nzo.futuretype:
@@ -338,7 +338,7 @@ class NzbQueue:
 
         # Reset try_lists, markers and evaluate the scheduling settings
         nzo.reset_try_list()
-        nzo.deleted = False
+        nzo.removed_from_queue = False
         priority = nzo.priority
         if sabnzbd.Scheduler.analyse(False, priority):
             nzo.status = Status.PAUSED
@@ -395,12 +395,10 @@ class NzbQueue:
             logging.info("[%s] Removing job %s", caller_name(), nzo.final_name)
 
             # Set statuses
-            nzo.deleted = True
+            nzo.removed_from_queue = True
+            self.__nzo_list.remove(nzo)
             if cleanup:
                 nzo.status = Status.DELETED
-            self.__nzo_list.remove(nzo)
-
-            if cleanup:
                 nzo.purge_data(delete_all_data=delete_all_data)
             self.save(False)
             return nzo_id
@@ -737,8 +735,8 @@ class NzbQueue:
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzo.deleted or nzf.deleted:
-            logging.debug("No further processing of article for file %s, no longer in queue", nzf.filename)
+        if nzo.pp_or_finished or nzf.deleted:
+            logging.debug("Discarding article for file %s: deleted or already post-processing", nzf.filename)
             # If this file is needed later (par2 file added back to queue), it would be damaged because
             # we discard this article. So we reset it to be picked up again if needed.
             # But not reset all articles, as it could cause problems for articles still attached to a server.
@@ -777,9 +775,9 @@ class NzbQueue:
     def end_job(self, nzo: NzbObject):
         """Send NZO to the post-processing queue"""
         # Notify assembler to call postprocessor
-        if not nzo.deleted:
+        if not nzo.removed_from_queue:
             logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
-            nzo.deleted = True
+            nzo.removed_from_queue = True
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result

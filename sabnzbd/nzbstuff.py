@@ -546,7 +546,7 @@ NzbObjectSaver = (
     "saved_articles",
     "nzo_id",
     "futuretype",
-    "deleted",
+    "removed_from_queue",
     "parsed",
     "action_line",
     "unpack_info",
@@ -687,7 +687,7 @@ class NzbObject(TryList):
         self.nzo_id: Optional[str] = None
 
         self.futuretype = futuretype
-        self.deleted = False
+        self.removed_from_queue = False
         self.to_be_removed = False
         self.parsed = False
         self.duplicate = False
@@ -719,7 +719,7 @@ class NzbObject(TryList):
         self.encrypted = 0
         self.url_wait: Optional[float] = None
         self.url_tries = 0
-        self.pp_active = False  # Signals active post-processing (not saved)
+        self.pp_active = False
         self.md5sum: Optional[str] = None
 
         # Path is empty in case of a future NZB
@@ -1404,10 +1404,15 @@ class NzbObject(TryList):
             self.final_name = sanitize_foldername(name)
             self.save_to_disk()
 
+    @property
+    def pp_or_finished(self):
+        """We don't want any more articles if we are post-processing or in the final state"""
+        return self.pp_active or self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
+
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id and not self.deleted:
+        if self.nzo_id and not self.removed_from_queue:
             self.save_to_disk()
 
     def resume(self):
@@ -1608,7 +1613,7 @@ class NzbObject(TryList):
                             if sabnzbd.Downloader.highest_server(server):
                                 nzf.finish_import()
                                 # Still not finished? Something went wrong...
-                                if not nzf.import_finished and not self.deleted:
+                                if not nzf.import_finished and not self.removed_from_queue:
                                     logging.error(T("Error importing %s"), nzf)
                                     nzf_remove_list.append(nzf)
                                     nzf.nzo.status = Status.PAUSED
@@ -1910,7 +1915,7 @@ class NzbObject(TryList):
     def save_to_disk(self):
         """Save job's admin to disk"""
         self.save_attribs()
-        if self.nzo_id and not self.deleted:
+        if self.nzo_id and not self.removed_from_queue:
             sabnzbd.filesystem.save_data(self, self.nzo_id, self.admin_path)
 
     def save_attribs(self):
