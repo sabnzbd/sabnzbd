@@ -952,7 +952,7 @@ class Downloader(Thread):
         # Make sure it is not in the readable sockets
         self.remove_socket(nw)
 
-        if nw.article and not nw.article.nzf.nzo.deleted:
+        if nw.article and not nw.article.nzf.nzo.removed_from_queue:
             # Only some errors should count towards the total tries for each server
             if count_article_try:
                 nw.article.tries += 1
