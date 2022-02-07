@@ -506,7 +506,7 @@ class DirectUnpacker(threading.Thread):
             # Reset settings
             self.reset_active()
 
-    def get_formatted_stats(self, include_time_left: bool = False) -> str:
+    def get_formatted_stats(self, include_time_left: bool = False):
         """Get percentage or number of rar's done"""
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
@@ -517,7 +517,7 @@ class DirectUnpacker(threading.Thread):
                         (self.cur_volume / self.total_volumes[self.cur_setname]) * 100, time_used=self.unpack_time
                     )
                 return formatted_stats
-        return str(self.cur_volume)
+        return self.cur_volume
 
 
 def analyze_rar_filename(filename):
