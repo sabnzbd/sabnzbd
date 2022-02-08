@@ -2,12 +2,14 @@ name: Build binaries and source distribution
 
 on: [push, pull_request]
 
+env:
+  AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+
 jobs:
   build_windows:
     name: Build Windows binary
     runs-on: windows-latest
-    env:
-      AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.10 (64bit)
@@ -85,11 +87,11 @@ jobs:
   build_macos:
     name: Build macOS binary
     runs-on: macos-11
+    timeout-minutes: 15
     env:
       SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
       NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
       NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
-      AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
