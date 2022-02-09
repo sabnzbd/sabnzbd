@@ -27,6 +27,7 @@ import subprocess
 import tarfile
 import urllib.request
 import urllib.error
+import configobj
 import pkginfo
 import github
 
@@ -157,14 +158,16 @@ def test_sab_binary(binary_path: str):
         ]
         for url in pages_to_test:
             print("Testing: %s%s" % (base_url, url))
-            assert b"500 Internal Server Error" not in urllib.request.urlopen(base_url + url, timeout=1).read()
+            if b"500 Internal Server Error" in urllib.request.urlopen(base_url + url, timeout=1).read():
+                raise RuntimeError("Crash in %s" % url)
 
-        # Shut it down
-        sabnzbd_process.terminate()
+        # Parse API-key so we can do a graceful shutdown
+        sab_config = configobj.ConfigObj(os.path.join(config_dir, "sabnzbd.ini"))
+        urllib.request.urlopen(base_url + "shutdown/?apikey=" + sab_config["misc"]["api_key"], timeout=10)
         sabnzbd_process.communicate(timeout=10)
 
         # Print logs for verification
-        with open("%s/logs/sabnzbd.log" % config_dir, "r") as log_file:
+        with open(os.path.join(config_dir, "logs", "sabnzbd.log"), "r") as log_file:
             print(log_file.read())
 
 
