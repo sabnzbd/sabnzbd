@@ -228,7 +228,7 @@ class PostProcessor(Thread):
                 % complete_dir
             )
         else:
-            logging.info("Completed Download Folder %s is not on FAT", complete_dir)
+            logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
 
         # Start looping
         check_eoq = False
