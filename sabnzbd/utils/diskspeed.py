@@ -18,7 +18,7 @@ def diskspeedmeasure(my_dirname: str) -> float:
     In case of problems (ie non-writable dir or file), return 0.0
     """
 
-    logging.debug("starting diskspeedmeasure()")
+    logging.debug("starting diskspeedmeasure() on %s", my_dirname)
 
     maxtime = 0.5  # sec
     total_written = 0
