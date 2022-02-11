@@ -890,7 +890,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
                     time.sleep(2)
                 else:
                     raise
-        raise OSError("Failed to rename (Winerr %s)" % hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32))
+        raise OSError("Failed to rename (Winerr %s)" % hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32))
     else:
         shutil.move(old, new)
         return new

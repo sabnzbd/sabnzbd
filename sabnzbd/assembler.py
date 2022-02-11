@@ -193,7 +193,7 @@ class Assembler(Thread):
                             # Log traceback
                             logging.info("Traceback: ", exc_info=True)
                             if sabnzbd.WIN32:
-                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32))
+                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32))
                             # Pause without saving
                             sabnzbd.Downloader.pause()
                         else:

@@ -399,7 +399,7 @@ class ConfigServer:
 
         self.displayname = OptionStr(name, "displayname", add=False)
         self.host = OptionStr(name, "host", add=False)
-        self.port = OptionNumber(name, "port", 119, 0, 2**16 - 1, add=False)
+        self.port = OptionNumber(name, "port", 119, 0, 2 ** 16 - 1, add=False)
         self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
         self.username = OptionStr(name, "username", add=False)
         self.password = OptionPassword(name, "password", add=False)
