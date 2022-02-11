@@ -264,7 +264,7 @@ class TestOtherApi(ApiTestFunctions):
             if round(limit_pct / 100 * linespeed_value) > 20:
                 speed_abs = str(round(limit_pct / 100 * linespeed_value)) + "M"
             else:
-                speed_abs = str(round(limit_pct * 2 ** 10 * linespeed_value / 100)) + "K"
+                speed_abs = str(round(limit_pct * 2**10 * linespeed_value / 100)) + "K"
         else:
             speed_abs = str(round(limit_pct / 100 * from_units(linespeed)))
         assert self._get_api_json("config", extra_args={"name": "speedlimit", "value": speed_abs})["status"] is True
@@ -615,7 +615,7 @@ class TestQueueApi(ApiTestFunctions):
         def size_in_bytes(size):
             # Helper function for list.sort() to deal with B/KB/MB in size values
             if size.endswith(" MB"):
-                return float(size.strip(" MB")) * 1024 ** 2
+                return float(size.strip(" MB")) * 1024**2
             if size.endswith(" KB"):
                 return float(size.strip(" KB")) * 1024
             if size.endswith(" B"):
