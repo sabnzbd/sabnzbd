@@ -25,6 +25,7 @@ import functools
 import urllib.request
 import urllib.error
 import socks
+import logging
 
 import sabnzbd
 import sabnzbd.cfg
@@ -73,6 +74,7 @@ def active_socks5_proxy():
 
 
 def localipv4():
+    logging.debug("starting localipv4()")
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
             # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
@@ -80,6 +82,7 @@ def localipv4():
             ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
+    logging.debug("done with localipv4(): %s", ipv4)
     return ipv4
 
 
@@ -88,6 +91,7 @@ def publicipv4():
     public ipv4 needs special attention, meaning forcing
     IPv4 connections, and not allowing IPv6 connections
     """
+    logging.debug("starting publicipv4()")
     public_ipv4 = None
     try:
         ipv4_found = False
@@ -96,6 +100,7 @@ def publicipv4():
     except (ValueError, socket.error, multiprocessing.context.TimeoutError):
         # something very bad: no urllib2, no resolving of selftest_host, no network at all
         # Or strange DSM problem: https://github.com/sabnzbd/sabnzbd/issues/2008
+        logging.debug("problem with publicipv4()")
         return public_ipv4
 
     # we got one or more IPv4 address(es), so let's connect to them
@@ -124,10 +129,12 @@ def publicipv4():
 
     if not ipv4_found:
         public_ipv4 = None
+    logging.debug("done with publicipv4(): %s", public_ipv4)
     return public_ipv4
 
 
 def ipv6():
+    logging.debug("starting ipv6()")
     try:
         with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s_ipv6:
             # IPv6 prefix for documentation purpose
@@ -135,4 +142,5 @@ def ipv6():
             ipv6_address = s_ipv6.getsockname()[0]
     except:
         ipv6_address = None
+    logging.debug("done with ipv6(): %s", ipv6_address)
     return ipv6_address
