@@ -19,7 +19,6 @@ def diskspeedmeasure(my_dirname: str) -> float:
     """
 
     logging.debug("starting diskspeedmeasure() on %s", my_dirname)
-
     maxtime = 0.5  # sec
     total_written = 0
     filename = os.path.join(my_dirname, "outputTESTING.txt")
