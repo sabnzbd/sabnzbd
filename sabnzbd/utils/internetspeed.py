@@ -61,7 +61,7 @@ def internetspeed() -> float:
     """
 
     # Determine the biggest URL that can be downloaded within timeframe
-    maxtime = 8  # seconds
+    maxtime = 4  # seconds
     url_to_do = None
     for size, sizeurl in SIZE_URL_LIST:
         expectedtime = size / base_megabytes_per_second
