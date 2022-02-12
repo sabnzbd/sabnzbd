@@ -404,6 +404,8 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 file_name = ""
                 if element.attrib.get("subject"):
                     file_name = element.attrib.get("subject")
+                elif element.attrib.get("poster"):
+                    file_name = element.attrib.get("poster")
 
                 # Don't fail if no date present
                 try:
