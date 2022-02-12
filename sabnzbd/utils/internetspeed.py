@@ -55,14 +55,14 @@ def internetspeed() -> float:
         return 0.0
 
     """
-    Based on this first, small download, do a bigger download; the biggest download that still fits in total 6 seconds
+    Based on this first, small download, do a bigger download; the biggest download that still fits in total 8 seconds
     Rationale: a bigger download could yield higher MB/s because the 'starting delay' is relatively less
-    Calculation as example: 
-    We do two downloads, so one download must fit in 3 seconds
+    We do two downloads, so one download must fit in 4 seconds
+    Note: a slow DNS lookup does influence the total time, so the measured speed
     """
 
     # Determine the biggest URL that can be downloaded within timeframe
-    maxtime = 3  # seconds
+    maxtime = 8  # seconds
     url_to_do = None
     for size, sizeurl in SIZE_URL_LIST:
         expectedtime = size / base_megabytes_per_second
