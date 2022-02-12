@@ -45,7 +45,6 @@ def bytes_to_bits(megabytes_per_second: float) -> float:
 def internetspeed() -> float:
     """Report Internet speed in MB/s as a float"""
     # Do basic test with a small download
-    logging.debug("starting internetspeed()")
     logging.debug("Basic measurement, with small download:")
     urlbasic = SIZE_URL_LIST[0][1]  # get first URL, which is smallest download
     base_megabytes_per_second = measure_speed_from_url(urlbasic)
@@ -58,7 +57,7 @@ def internetspeed() -> float:
     Based on this first, small download, do a bigger download; the biggest download that still fits in total 8 seconds
     Rationale: a bigger download could yield higher MB/s because the 'starting delay' is relatively less
     We do two downloads, so one download must fit in 4 seconds
-    Note: a slow DNS lookup does influence the total time, so the measured speed
+    Note: a slow DNS lookup does influence the total time, so the measured speed (read: seemingly lower speed)
     """
 
     # Determine the biggest URL that can be downloaded within timeframe

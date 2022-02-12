@@ -74,7 +74,6 @@ def active_socks5_proxy():
 
 
 def localipv4():
-    logging.debug("starting localipv4()")
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
             # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
@@ -91,7 +90,6 @@ def publicipv4():
     public ipv4 needs special attention, meaning forcing
     IPv4 connections, and not allowing IPv6 connections
     """
-    logging.debug("starting publicipv4()")
     public_ipv4 = None
     try:
         ipv4_found = False
@@ -134,7 +132,6 @@ def publicipv4():
 
 
 def ipv6():
-    logging.debug("starting ipv6()")
     try:
         with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s_ipv6:
             # IPv6 prefix for documentation purpose
