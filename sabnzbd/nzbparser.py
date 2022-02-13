@@ -400,12 +400,10 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
             # Parse the files
             if element.tag.lower() == "file":
-                # Get subject and date
-                file_name = ""
+                # Get subject and date, don't fail, if subject is missing
+                file_name = "No subject"
                 if element.attrib.get("subject"):
                     file_name = element.attrib.get("subject")
-                elif element.attrib.get("poster"):
-                    file_name = element.attrib.get("poster")
 
                 # Don't fail if no date present
                 try:
