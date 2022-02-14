@@ -1,8 +1,11 @@
-Release Notes - SABnzbd 3.5.1 Release Candidate 1
+Release Notes - SABnzbd 3.5.1 Release Candidate 2
 =========================================================
 
 ## Changes and bugfixes since 3.5.0
 - Small changes in file assembly and Direct Unpack processing.
+- Changes to the transition from download to active post-processing.
+- Malformed NZB files could result in a crash.
+- Prevent crash in Direct Unpack for obfuscated posts.
 - RSS feeds with HTML-characters in the name resulted in crashes.
 - macOS: failed to start on older macOS versions.
 
