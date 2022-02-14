@@ -6,6 +6,7 @@ import time
 import os
 import sys
 import logging
+import time
 
 _DUMP_DATA_SIZE = 10 * 1024 * 1024
 _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)
@@ -17,6 +18,7 @@ def diskspeedmeasure(my_dirname: str) -> float:
     Then divide bytes written by time passed
     In case of problems (ie non-writable dir or file), return 0.0
     """
+    start = time.time()
     maxtime = 0.5  # sec
     total_written = 0
     filename = os.path.join(my_dirname, "outputTESTING.txt")
@@ -47,7 +49,8 @@ def diskspeedmeasure(my_dirname: str) -> float:
         return 0.0
 
     disk_writing_speed_megabyte_per_second = total_written / total_time / 1024 / 1024
-    logging.debug("done with diskspeedmeasure() on %s: %s", my_dirname, disk_writing_speed_megabyte_per_second)
+    duration = time.time() - start
+    logging.debug("Disk speed of %s is %.2f MB/s, in %.2f seconds", my_dirname, disk_writing_speed_megabyte_per_second, duration)
     return disk_writing_speed_megabyte_per_second
 
 

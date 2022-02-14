@@ -46,6 +46,7 @@ def internetspeed() -> float:
     """Report Internet speed in MB/s as a float"""
     # Do basic test with a small download
     logging.debug("Basic measurement, with small download:")
+    start = time.time()
     urlbasic = SIZE_URL_LIST[0][1]  # get first URL, which is smallest download
     base_megabytes_per_second = measure_speed_from_url(urlbasic)
     logging.debug("Speed in MB/s: %.2f", base_megabytes_per_second)
@@ -78,7 +79,8 @@ def internetspeed() -> float:
             logging.debug("Speed in MB/s: %.2f", measured_megabytes_per_second)
             max_megabytes_per_second = max(max_megabytes_per_second, measured_megabytes_per_second)
 
-    logging.debug("done with internetspeed(): %s", max_megabytes_per_second)
+    duration = time.time() - start
+    logging.debug("Internetspeed %.2f MB/s in %.2f seconds", max_megabytes_per_second, duration)
     return max_megabytes_per_second
 
 

@@ -2,6 +2,7 @@ import platform
 import subprocess
 import locale
 import logging
+import time
 from .pystone import pystones
 
 
@@ -46,14 +47,14 @@ def getcpu():
             # Can fail on special platforms (like Snapcraft or embedded)
             pass
 
-    logging.debug("done with getcpu(): %s", cputype)
-
+    logging.debug("CPU is %s", cputype)
     return cputype
 
 
 def getpystone():
     # Start calculation
     maxpystone = 0
+    start = time.time()
     # Start with a short run, find the the pystone, and increase runtime until duration took > 0.1 second
     for pyseed in [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]:
         duration, pystonefloat = pystones(pyseed)
@@ -61,7 +62,8 @@ def getpystone():
         # Stop when pystone() has been running for at least 0.1 second
         if duration > 0.1:
             break
-    logging.debug("done with getpystone(): %s", maxpystone)
+    duration = time.time() - start
+    logging.debug("Pystone %s in %.2f seconds", maxpystone, duration)
     return maxpystone
 
 
