@@ -400,8 +400,9 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
             # Parse the files
             if element.tag.lower() == "file":
-                # Get subject and date, don't fail, if subject is missing
-                file_name = "No subject"
+                # Get subject and date
+                # Don't fail, if subject is missing
+                file_name = "unknown"
                 if element.attrib.get("subject"):
                     file_name = element.attrib.get("subject")
 
