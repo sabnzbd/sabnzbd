@@ -50,9 +50,7 @@ def diskspeedmeasure(my_dirname: str) -> float:
 
     megabyte_per_second = total_written / total_time / 1024 / 1024
     duration = time.time() - start
-    logging.debug(
-        "Disk speed of %s is %.2f MB/s, in %.2f seconds", my_dirname, megabyte_per_second, duration
-    )
+    logging.debug("Disk speed of %s is %.2f MB/s, in %.2f seconds", my_dirname, megabyte_per_second, duration)
     return megabyte_per_second
 
 
