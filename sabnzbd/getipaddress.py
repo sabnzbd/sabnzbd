@@ -25,6 +25,8 @@ import functools
 import urllib.request
 import urllib.error
 import socks
+import logging
+import time
 
 import sabnzbd
 import sabnzbd.cfg
@@ -80,6 +82,7 @@ def localipv4():
             ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
+    logging.debug("Local IPv4 %s", ipv4)
     return ipv4
 
 
@@ -88,6 +91,7 @@ def publicipv4():
     public ipv4 needs special attention, meaning forcing
     IPv4 connections, and not allowing IPv6 connections
     """
+    start = time.time()
     public_ipv4 = None
     try:
         ipv4_found = False
@@ -96,6 +100,7 @@ def publicipv4():
     except (ValueError, socket.error, multiprocessing.context.TimeoutError):
         # something very bad: no urllib2, no resolving of selftest_host, no network at all
         # Or strange DSM problem: https://github.com/sabnzbd/sabnzbd/issues/2008
+        logging.debug("problem with publicipv4()")
         return public_ipv4
 
     # we got one or more IPv4 address(es), so let's connect to them
@@ -124,6 +129,9 @@ def publicipv4():
 
     if not ipv4_found:
         public_ipv4 = None
+
+    duration = time.time() - start
+    logging.debug("Public IPv4 is %s in %.2f seconds", public_ipv4, duration)
     return public_ipv4
 
 
@@ -135,4 +143,5 @@ def ipv6():
             ipv6_address = s_ipv6.getsockname()[0]
     except:
         ipv6_address = None
+    logging.debug("IPv6 %s", ipv6_address)
     return ipv6_address
