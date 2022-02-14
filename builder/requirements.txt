@@ -7,7 +7,7 @@ wrapt==1.13.3
 setuptools==60.9.0
 pkginfo==1.8.2
 PyGithub==1.55
-charset-normalizer==2.0.11
+charset-normalizer==2.0.12
 certifi
 
 # For the macOS build
