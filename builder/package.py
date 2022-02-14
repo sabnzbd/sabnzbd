@@ -30,6 +30,7 @@ import urllib.error
 import configobj
 import pkginfo
 import github
+from typing import List
 
 
 VERSION_FILE = "sabnzbd/version.py"
@@ -79,12 +80,12 @@ def delete_files_glob(name):
             os.remove(f)
 
 
-def run_external_command(command):
+def run_external_command(command: List[str], print_output: bool = True):
     """Wrapper to ease the use of calling external programs"""
     process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output, _ = process.communicate()
     ret = process.wait()
-    if output:
+    if (output and print_output) or ret != 0:
         print(output)
     if ret != 0:
         raise RuntimeError("Command returned non-zero exit code %s!" % ret)
@@ -311,13 +312,33 @@ if __name__ == "__main__":
         if RELEASE_THIS or ON_GITHUB_ACTIONS:
             for bin_to_check in glob.glob("dist/SABnzbd.app/Contents/MacOS/**/*.so", recursive=True):
                 print("Checking if binary is universal2: %s" % bin_to_check)
-                file_output = run_external_command(["file", bin_to_check])
+                file_output = run_external_command(["file", bin_to_check], print_output=False)
                 # Make sure we have both arm64 and x86
                 if not ("x86_64" in file_output and "arm64" in file_output):
                     raise RuntimeError("Non-universal2 binary found!")
 
         # Only continue if we can sign
         if authority:
+            # We use PyInstaller to sign the main SABnzbd executable and the SABnzbd.app
+            files_already_signed = [
+                "dist/SABnzbd.app/Contents/MacOS/SABnzbd",
+                "dist/SABnzbd.app",
+            ]
+            for file_to_check in files_already_signed:
+                print("Checking signature of %s" % file_to_check)
+                sign_result = run_external_command(
+                    [
+                        "codesign",
+                        "-dv",
+                        "-r-",
+                        file_to_check,
+                    ],
+                    print_output=False,
+                )
+                if authority not in sign_result or "adhoc" in sign_result:
+                    raise RuntimeError("Signature of %s seems invalid!" % file_to_check)
+
+            # Sign all the other executables
             files_to_sign = [
                 "dist/SABnzbd.app/Contents/MacOS/osx/par2/par2-sl64",
                 "dist/SABnzbd.app/Contents/MacOS/osx/par2/arm64/par2",
@@ -325,10 +346,7 @@ if __name__ == "__main__":
                 "dist/SABnzbd.app/Contents/MacOS/osx/unrar/unrar",
                 "dist/SABnzbd.app/Contents/MacOS/osx/unrar/arm64/unrar",
                 "dist/SABnzbd.app/Contents/MacOS/osx/7zip/7zz",
-                "dist/SABnzbd.app/Contents/MacOS/SABnzbd",
-                "dist/SABnzbd.app",
             ]
-
             for file_to_sign in files_to_sign:
                 print("Signing %s with hardended runtime" % file_to_sign)
                 run_external_command(
@@ -341,12 +359,11 @@ if __name__ == "__main__":
                         "runtime",
                         "--entitlements",
                         "builder/osx/entitlements.plist",
-                        "-i",
-                        "org.sabnzbd.sabnzbd",
                         "-s",
                         authority,
                         file_to_sign,
                     ],
+                    print_output=False,
                 )
                 print("Signed %s!" % file_to_sign)
 

@@ -15,6 +15,7 @@ jobs:
             scripts
             tools
             builder
+            builder/SABnzbd.spec
             tests
             --line-length=120
             --target-version=py37
