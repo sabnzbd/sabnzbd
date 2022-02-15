@@ -27,25 +27,27 @@ import urllib.error
 import socks
 import logging
 import time
+from typing import Callable
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
 
+# Initialize pool to be re-used later
+THREAD_POOL = multiprocessing.pool.ThreadPool()
 
-def timeout(max_timeout):
+
+def timeout(max_timeout: float):
     """Timeout decorator, parameter in seconds."""
 
-    def timeout_decorator(item):
+    def timeout_decorator(item: Callable) -> Callable:
         """Wrap the original function."""
 
         @functools.wraps(item)
         def func_wrapper(*args, **kwargs):
             """Closure for function."""
-            with multiprocessing.pool.ThreadPool(processes=1) as pool:
-                async_result = pool.apply_async(item, args, kwargs)
-                # raises a TimeoutError if execution exceeds max_timeout
-                return async_result.get(max_timeout)
+            # Raises a TimeoutError if execution exceeds max_timeout
+            return THREAD_POOL.apply_async(item, args, kwargs).get(max_timeout)
 
         return func_wrapper
 
