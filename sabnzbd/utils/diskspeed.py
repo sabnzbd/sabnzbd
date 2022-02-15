@@ -12,7 +12,7 @@ _DUMP_DATA_SIZE = 10 * 1024 * 1024
 _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)
 
 
-def diskspeedmeasure(my_dirname: str) -> float:
+def diskspeedmeasure(dirname: str) -> float:
     """Returns writing speed to my_dirname in MB/s
     method: keep writing a file, until certain time is passed.
     Then divide bytes written by time passed
@@ -21,7 +21,7 @@ def diskspeedmeasure(my_dirname: str) -> float:
     start = time.time()
     maxtime = 0.5  # sec
     total_written = 0
-    filename = os.path.join(my_dirname, "outputTESTING.txt")
+    filename = os.path.join(dirname, "outputTESTING.txt")
 
     try:
         # Use low-level I/O
@@ -45,12 +45,11 @@ def diskspeedmeasure(my_dirname: str) -> float:
         os.remove(filename)
     except (PermissionError, NotADirectoryError, FileNotFoundError):
         # Could not write, so ... report 0.0
-        logging.debug("Problem with diskspeedmeasure() on %s", my_dirname)
+        logging.debug("Failed to measure disk speed on %s", dirname)
         return 0.0
 
     megabyte_per_second = total_written / total_time / 1024 / 1024
-    duration = time.time() - start
-    logging.debug("Disk speed of %s is %.2f MB/s, in %.2f seconds", my_dirname, megabyte_per_second, duration)
+    logging.debug("Disk speed of %s = %.2f MB/s (in %.2f seconds)", dirname, megabyte_per_second, time.time() - start)
     return megabyte_per_second
 
 

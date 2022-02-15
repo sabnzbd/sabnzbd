@@ -79,8 +79,7 @@ def internetspeed() -> float:
             logging.debug("Speed in MB/s: %.2f", measured_megabytes_per_second)
             max_megabytes_per_second = max(max_megabytes_per_second, measured_megabytes_per_second)
 
-    duration = time.time() - start
-    logging.debug("Internetspeed %.2f MB/s in %.2f seconds", max_megabytes_per_second, duration)
+    logging.debug("Internet Bandwidth = %.2f MB/s (in %.2f seconds)", max_megabytes_per_second, time.time() - start)
     return max_megabytes_per_second
 
 

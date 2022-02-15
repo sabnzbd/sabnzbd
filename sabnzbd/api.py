@@ -64,7 +64,7 @@ from sabnzbd.misc import (
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup, active_socks5_proxy
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 from sabnzbd.lang import is_rtl
 import sabnzbd.emailer
@@ -1339,12 +1339,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         info["localipv4"] = localipv4()
         info["publicipv4"] = publicipv4()
         info["ipv6"] = ipv6()
-        # Dashboard: DNS-check
-        try:
-            addresslookup(cfg.selftest_host())
-            info["dnslookup"] = "OK"
-        except:
-            info["dnslookup"] = None
+        info["dnslookup"] = dnslookup()
 
     info["servers"] = []
     # Servers-list could be modified during iteration, so we need a copy

@@ -107,7 +107,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-NameserverDNS') &nbsp; </div>
-                            <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: !statusInfo.dnslookup() ? '$T('dashboard-connectionError')' : statusInfo.dnslookup(), css: { 'options-bad-status' : (statusInfo.dnslookup() != 'OK') }"></div>
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: !statusInfo.dnslookup() ? '$T('dashboard-connectionError')' : 'OK', css: { 'options-bad-status' : !statusInfo.dnslookup() }"></div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
                         <hr/>

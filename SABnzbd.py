@@ -100,7 +100,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup
 from sabnzbd.utils.getperformance import getpystone, getcpu
 import sabnzbd.utils.ssdp as ssdp
 
@@ -1230,13 +1230,14 @@ def main():
         logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
 
         # List networking
-        logging.debug("Local IPv4 address = %s", localipv4())
-        logging.debug("Public IPv4 address = %s", publicipv4())
-        logging.debug("IPv6 address = %s", ipv6())
+        localipv4()
+        publicipv4()
+        ipv6()
+        dnslookup()
 
-        # Measure and log system performance measured by pystone and - if possible - CPU model
-        logging.debug("CPU Pystone available performance = %s", getpystone())
-        logging.debug("CPU model = %s", getcpu())
+        # Measure basic system performance measured by pystone and - if possible - CPU model
+        getpystone()
+        getcpu()
 
     logging.info("Using INI file %s", inifile)
 

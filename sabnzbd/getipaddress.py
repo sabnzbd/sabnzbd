@@ -74,6 +74,18 @@ def active_socks5_proxy():
     return None
 
 
+def dnslookup():
+    """Perform a basic DNS lookup"""
+    start = time.time()
+    try:
+        addresslookup(sabnzbd.cfg.selftest_host())
+        result = True
+    except:
+        result = False
+    logging.debug("DNS Lookup = %s (in %.2f seconds)", result, time.time() - start)
+    return result
+
+
 def localipv4():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
@@ -82,7 +94,8 @@ def localipv4():
             ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
-    logging.debug("Local IPv4 %s", ipv4)
+
+    logging.debug("Local IPv4 address = %s", ipv4)
     return ipv4
 
 
@@ -100,7 +113,7 @@ def publicipv4():
     except (ValueError, socket.error, multiprocessing.context.TimeoutError):
         # something very bad: no urllib2, no resolving of selftest_host, no network at all
         # Or strange DSM problem: https://github.com/sabnzbd/sabnzbd/issues/2008
-        logging.debug("problem with publicipv4()")
+        logging.debug("Failed to detect public IPv4 address")
         return public_ipv4
 
     # we got one or more IPv4 address(es), so let's connect to them
@@ -130,8 +143,7 @@ def publicipv4():
     if not ipv4_found:
         public_ipv4 = None
 
-    duration = time.time() - start
-    logging.debug("Public IPv4 is %s in %.2f seconds", public_ipv4, duration)
+    logging.debug("Public IPv4 address = %s (in %.2f seconds)", public_ipv4, time.time() - start)
     return public_ipv4
 
 
@@ -143,5 +155,6 @@ def ipv6():
             ipv6_address = s_ipv6.getsockname()[0]
     except:
         ipv6_address = None
-    logging.debug("IPv6 %s", ipv6_address)
+
+    logging.debug("IPv6 address = %s", ipv6_address)
     return ipv6_address

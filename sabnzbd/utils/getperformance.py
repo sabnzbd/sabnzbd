@@ -47,7 +47,7 @@ def getcpu():
             # Can fail on special platforms (like Snapcraft or embedded)
             pass
 
-    logging.debug("CPU is %s", cputype)
+    logging.debug("CPU model = %s", cputype)
     return cputype
 
 
@@ -62,8 +62,8 @@ def getpystone():
         # Stop when pystone() has been running for at least 0.1 second
         if duration > 0.1:
             break
-    duration = time.time() - start
-    logging.debug("Pystone %s in %.2f seconds", maxpystone, duration)
+
+    logging.debug("Pystone performance = %d (in %.2f seconds)", maxpystone, time.time() - start)
     return maxpystone
 
 
