@@ -27,6 +27,7 @@ import datetime
 import time
 import json
 import getpass
+import multiprocessing
 import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any
@@ -1295,6 +1296,10 @@ def handle_cat_api(kwargs):
     return name
 
 
+# Initialize pool to be re-used later
+THREAD_POOL = multiprocessing.pool.ThreadPool()
+
+
 def build_status(calculate_performance: bool = False, skip_dashboard: bool = False) -> Dict[str, Any]:
     # build up header full of basic information
     info = build_header(trans_functions=False)
@@ -1308,6 +1313,9 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
     # Calculate performance measures, if requested
     if int_conv(calculate_performance):
+        # Perform the internetspeed measure in separate thread
+        internetspeed_future = THREAD_POOL.apply_async(internetspeed)
+
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
@@ -1316,7 +1324,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed_future.get(), 1)
 
     # Dashboard: Speed of System
     info["cpumodel"] = getcpu()
