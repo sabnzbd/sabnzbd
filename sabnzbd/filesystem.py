@@ -41,7 +41,7 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX
+from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
 
@@ -600,14 +600,13 @@ def get_admin_path(name: str, future: bool):
         return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 
-def set_chmod(path: str, permissions: int):
+def set_chmod(path: str, permissions: int, allow_failures: bool = False):
     """Set 'permissions' on 'path'"""
     try:
         logging.debug("Applying permissions %s (octal) to %s", oct(permissions), path)
         os.chmod(path, permissions)
     except:
-        lpath = path.lower()
-        if ".appledouble" not in lpath and ".ds_store" not in lpath:
+        if not allow_failures and not sabnzbd.misc.match_str(path, IGNORED_FILES_AND_FOLDERS):
             logging.error(T("Cannot change permissions of %s"), clip_path(path))
             logging.info("Traceback: ", exc_info=True)
 
@@ -642,12 +641,15 @@ def removexbits(path: str, custom_permissions: int = None):
     if os.path.isfile(path):
         # Use custom permissions as base
         current_permissions = custom_permissions
+        allow_failures = False
         if not custom_permissions:
             current_permissions = os.stat(path).st_mode
+            # Allow failures if no custom permissions are set, changing permissions might not be supported
+            allow_failures = True
         # Check if the file has any x-bits, no need to remove them otherwise
         if custom_permissions or current_permissions & UNWANTED_FILE_PERMISSIONS:
             # Mask out the X-bits
-            set_chmod(path, current_permissions & ~UNWANTED_FILE_PERMISSIONS)
+            set_chmod(path, current_permissions & ~UNWANTED_FILE_PERMISSIONS, allow_failures)
 
 
 def userxbit(path: str) -> bool:
@@ -762,9 +764,8 @@ def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
     filelist = []
     for root, dirs, files in os.walk(input_dir):
         for file in files:
-            if ".AppleDouble" not in root and ".DS_Store" not in root:
-                p = os.path.join(root, file)
-                filelist.append(p)
+            if not sabnzbd.misc.match_str(root, IGNORED_FILES_AND_FOLDERS):
+                filelist.append(os.path.join(root, file))
         if not recursive:
             break
     return filelist

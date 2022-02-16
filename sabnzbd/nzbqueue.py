@@ -48,7 +48,7 @@ from sabnzbd.constants import (
     STOP_PRIORITY,
     VERIFIED_FILE,
     Status,
-    IGNORED_FOLDERS,
+    IGNORED_FILES_AND_FOLDERS,
     QNFO,
     DIRECT_WRITE_TRIGGER,
 )
@@ -154,7 +154,7 @@ class NzbQueue:
         # Repair unregistered folders
         for folder in globber_full(cfg.download_dir.get_path()):
             name = os.path.basename(folder)
-            if os.path.isdir(folder) and name not in registered and name not in IGNORED_FOLDERS:
+            if os.path.isdir(folder) and name not in registered and name not in IGNORED_FILES_AND_FOLDERS:
                 if action:
                     logging.info("Repairing job %s", folder)
                     self.repair_job(folder)
