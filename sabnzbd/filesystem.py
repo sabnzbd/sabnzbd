@@ -609,6 +609,8 @@ def set_chmod(path: str, permissions: int, allow_failures: bool = False):
         if not allow_failures and not sabnzbd.misc.match_str(path, IGNORED_FILES_AND_FOLDERS):
             logging.error(T("Cannot change permissions of %s"), clip_path(path))
             logging.info("Traceback: ", exc_info=True)
+        else:
+            logging.debug("Could not change permissions of %s", path)
 
 
 def set_permissions(path: str, recursive: bool = True):
