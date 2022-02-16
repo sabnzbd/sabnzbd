@@ -120,7 +120,7 @@ VALID_NZB_FILES = (".nzb", ".gz", ".bz2")
 
 CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->", "prioritizeSearchListOverSelf": True}
 
-IGNORED_FOLDERS = ("@eaDir", ".appleDouble")
+IGNORED_FILES_AND_FOLDERS = ("@eaDir", ".appleDouble", ".DS_Store")
 IGNORED_MOVIE_FOLDERS = ("video_ts", "audio_ts", "bdmv")
 
 EXCLUDED_GUESSIT_PROPERTIES = [
