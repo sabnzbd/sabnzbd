@@ -20,10 +20,14 @@ import platform
 import re
 import sys
 import os
+import tempfile
 import time
 import shutil
 import subprocess
 import tarfile
+import urllib.request
+import urllib.error
+import configobj
 import pkginfo
 import github
 
@@ -112,6 +116,62 @@ def patch_version_file(release_name):
 
     with open(VERSION_FILE, "w") as ver:
         ver.write(version_file)
+
+
+def test_sab_binary(binary_path: str):
+    """Wrapper to have a simple start-up test for the binary"""
+    with tempfile.TemporaryDirectory() as config_dir:
+        sabnzbd_process = subprocess.Popen(
+            [binary_path, "--browser", "0", "--logging", "2", "--config", config_dir],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+
+        # Wait for SAB to respond
+        base_url = "http://127.0.0.1:8080/"
+        for _ in range(10):
+            try:
+                urllib.request.urlopen(base_url, timeout=1).read()
+                break
+            except urllib.error.URLError:
+                time.sleep(1)
+        else:
+            raise urllib.error.URLError("Could not connect to SABnzbd")
+
+        # Open a number of API calls and pages, to see if we are really up
+        pages_to_test = [
+            "",
+            "wizard",
+            "config",
+            "config/server",
+            "config/categories",
+            "config/scheduling",
+            "config/rss",
+            "config/general",
+            "config/folders",
+            "config/switches",
+            "config/sorting",
+            "config/notify",
+            "config/special",
+            "api?mode=version",
+        ]
+        for url in pages_to_test:
+            print("Testing: %s%s" % (base_url, url))
+            if b"500 Internal Server Error" in urllib.request.urlopen(base_url + url, timeout=1).read():
+                raise RuntimeError("Crash in %s" % url)
+
+        # Parse API-key so we can do a graceful shutdown
+        sab_config = configobj.ConfigObj(os.path.join(config_dir, "sabnzbd.ini"))
+        urllib.request.urlopen(base_url + "shutdown/?apikey=" + sab_config["misc"]["api_key"], timeout=10)
+        sabnzbd_process.wait()
+
+        # Print logs for verification
+        with open(os.path.join(config_dir, "logs", "sabnzbd.log"), "r") as log_file:
+            print(log_file.read())
+
+        # So we have time to print the file before the directory is removed
+        time.sleep(1)
 
 
 if __name__ == "__main__":
@@ -226,10 +286,13 @@ if __name__ == "__main__":
             )
 
         # Rename the folder
-        os.rename("dist/SABnzbd", RELEASE_NAME)
+        shutil.copytree("dist/SABnzbd", RELEASE_NAME)
 
         # Create the archive
         run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, RELEASE_NAME])
+
+        # Test the release, as the very last step to not mess with any release code
+        test_sab_binary("dist/SABnzbd/SABnzbd.exe")
 
     if "app" in sys.argv:
         # Must be run on macOS
@@ -296,50 +359,24 @@ if __name__ == "__main__":
 
                 # Upload to Apple
                 print("Sending zip to Apple notarization service")
-                upload_process = run_external_command(
+                upload_result = run_external_command(
                     [
                         "xcrun",
-                        "altool",
-                        "--notarize-app",
-                        "-t",
-                        "osx",
-                        "-f",
+                        "notarytool",
+                        "submit",
                         notarization_zip,
-                        "--primary-bundle-id",
-                        "org.sabnzbd.sabnzbd",
-                        "-u",
+                        "--apple-id",
                         notarization_user,
-                        "-p",
+                        "--team-id",
+                        authority,
+                        "--password",
                         notarization_pass,
+                        "--wait",
                     ],
                 )
 
-                # Extract the notarization ID
-                m = re.match(".*RequestUUID = (.*?)\n", upload_process, re.S)
-                if not m:
-                    raise RuntimeError("No UUID created")
-                uuid = m.group(1)
-
-                print("Checking notarization of UUID: %s (every 30 seconds)" % uuid)
-                notarization_in_progress = True
-                while notarization_in_progress:
-                    time.sleep(30)
-                    check_status = run_external_command(
-                        [
-                            "xcrun",
-                            "altool",
-                            "--notarization-info",
-                            uuid,
-                            "-u",
-                            notarization_user,
-                            "-p",
-                            notarization_pass,
-                        ],
-                    )
-                    notarization_in_progress = "Status: in progress" in check_status
-
                 # Check if success
-                if "Status: success" not in check_status:
+                if "status: accepted" not in upload_result.lower():
                     raise RuntimeError("Failed to notarize..")
 
                 # Staple the notarization!
@@ -351,6 +388,9 @@ if __name__ == "__main__":
                 print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:
             print("Signing skipped, missing SIGNING_AUTH.")
+
+        # Test the release, as the very last step to not mess with any release code
+        test_sab_binary("dist/SABnzbd.app/Contents/MacOS/SABnzbd")
 
     if "source" in sys.argv:
         # Prepare Source distribution package.

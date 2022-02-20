@@ -41,9 +41,9 @@ ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 DEF_FOLDER_MAX = 256 - 10
 DEF_FILE_MAX = 255 - 10  # max filename length on modern filesystems, minus some room for extra chars later on
 
-GIGI = float(2 ** 30)
-MEBI = float(2 ** 20)
-KIBI = float(2 ** 10)
+GIGI = float(2**30)
+MEBI = float(2**20)
+KIBI = float(2**10)
 
 BYTES_FILE_NAME_OLD = "totals9.sab"
 BYTES_FILE_NAME = "totals10.sab"
@@ -120,7 +120,7 @@ VALID_NZB_FILES = (".nzb", ".gz", ".bz2")
 
 CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->", "prioritizeSearchListOverSelf": True}
 
-IGNORED_FOLDERS = ("@eaDir", ".appleDouble")
+IGNORED_FILES_AND_FOLDERS = ("@eaDir", ".appleDouble", ".DS_Store")
 IGNORED_MOVIE_FOLDERS = ("video_ts", "audio_ts", "bdmv")
 
 EXCLUDED_GUESSIT_PROPERTIES = [

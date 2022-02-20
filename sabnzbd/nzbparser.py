@@ -34,7 +34,15 @@ from typing import Optional, Dict, Any, Union, List, Tuple
 import sabnzbd
 from sabnzbd import nzbstuff
 from sabnzbd.encoding import utob, correct_unknown_encoding
-from sabnzbd.filesystem import get_filename, is_valid_script, get_ext, setname_from_path, clip_path, remove_file
+from sabnzbd.filesystem import (
+    get_filename,
+    is_valid_script,
+    get_ext,
+    setname_from_path,
+    clip_path,
+    remove_file,
+    remove_data,
+)
 from sabnzbd.misc import name_to_cat
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES
 from sabnzbd.utils import rarfile
@@ -393,7 +401,8 @@ def nzbfile_parser(full_nzb_path: str, nzo):
             # Parse the files
             if element.tag.lower() == "file":
                 # Get subject and date
-                file_name = ""
+                # Don't fail, if subject is missing
+                file_name = "unknown"
                 if element.attrib.get("subject"):
                     file_name = element.attrib.get("subject")
 
@@ -435,7 +444,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                     nzo.increase_bad_articles_counter("duplicate_articles")
                                 else:
                                     logging.info("Skipping duplicate article (%s)", article_id)
-                            elif segment_size <= 0 or segment_size >= 2 ** 23:
+                            elif segment_size <= 0 or segment_size >= 2**23:
                                 # Perform sanity check (not negative, 0 or larger than 8MB) on article size
                                 # We use this value later to allocate memory in cache and sabyenc
                                 logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
@@ -469,7 +478,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 else:
                     logging.info("Error importing %s, skipping", file_name)
                     if nzf.nzf_id:
-                        sabnzbd.remove_data(nzf.nzf_id, nzo.admin_path)
+                        remove_data(nzf.nzf_id, nzo.admin_path)
                     skipped_files += 1
                 element.clear()
 

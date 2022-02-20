@@ -85,9 +85,8 @@ class ArticleCache:
     def save_article(self, article: Article, data: bytes):
         """Save article in cache, either memory or disk"""
         nzo = article.nzf.nzo
-        if nzo.is_gone():
-            # Do not discard this article because the
-            # file might still be processed at this moment!!
+        # Skip if already post-processing or fully finished
+        if nzo.pp_or_finished:
             return
 
         # Register article for bookkeeping in case the job is deleted
@@ -162,11 +161,8 @@ class ArticleCache:
 
     @staticmethod
     def __flush_article_to_disk(article: Article, data):
-        nzo = article.nzf.nzo
-        if nzo.is_gone():
-            # Don't store deleted jobs
-            return
-
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
-        sabnzbd.filesystem.save_data(data, article.get_art_id(), nzo.admin_path, do_pickle=False, silent=True)
+        sabnzbd.filesystem.save_data(
+            data, article.get_art_id(), article.nzf.nzo.admin_path, do_pickle=False, silent=True
+        )

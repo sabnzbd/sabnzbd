@@ -105,12 +105,86 @@ class Assembler(Thread):
                 filepath = nzf.prepare_filepath()
 
                 if filepath:
-                    logging.debug("Decoding part of %s", filepath)
                     try:
+                        logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzf, file_done)
+
+                        # Continue after partly written data
+                        if not file_done:
+                            continue
+
+                        # Clean-up admin data
+                        logging.info("Decoding finished %s", filepath)
+                        nzf.remove_admin()
+
+                        # Do rar-related processing
+                        if rarfile.is_rarfile(filepath):
+                            # Encryption and unwanted extension detection
+                            rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
+                            if rar_encrypted:
+                                if cfg.pause_on_pwrar() == 1:
+                                    logging.warning(
+                                        T(
+                                            'Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
+                                        ),
+                                        nzo.final_name,
+                                    )
+                                    nzo.pause()
+                                else:
+                                    logging.warning(
+                                        T(
+                                            'Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
+                                        ),
+                                        nzo.final_name,
+                                    )
+                                    nzo.fail_msg = T("Aborted, encryption detected")
+                                    sabnzbd.NzbQueue.end_job(nzo)
+
+                            if unwanted_file:
+                                # Don't repeat the warning after a user override of an unwanted extension pause
+                                if nzo.unwanted_ext == 0:
+                                    logging.warning(
+                                        T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
+                                        nzo.final_name,
+                                        unwanted_file,
+                                    )
+                                logging.debug(T("Unwanted extension is in rar file %s"), filepath)
+                                if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
+                                    logging.debug("Unwanted extension ... pausing")
+                                    nzo.unwanted_ext = 1
+                                    nzo.pause()
+                                if cfg.action_on_unwanted_extensions() == 2:
+                                    logging.debug("Unwanted extension ... aborting")
+                                    nzo.fail_msg = T("Aborted, unwanted extension detected")
+                                    sabnzbd.NzbQueue.end_job(nzo)
+
+                            # Add to direct unpack
+                            nzo.add_to_direct_unpacker(nzf)
+
+                        elif par2file.is_parfile(filepath):
+                            # Parse par2 files, cloaked or not
+                            nzo.handle_par2(nzf, filepath)
+
+                        filter_output, reason = nzo_filtered_by_rating(nzo)
+                        if filter_output == 1:
+                            logging.warning(
+                                T('Paused job "%s" because of rating (%s)'),
+                                nzo.final_name,
+                                reason,
+                            )
+                            nzo.pause()
+                        elif filter_output == 2:
+                            logging.warning(
+                                T('Aborted job "%s" because of rating (%s)'),
+                                nzo.final_name,
+                                reason,
+                            )
+                            nzo.fail_msg = T("Aborted, rating filter matched (%s)") % reason
+                            sabnzbd.NzbQueue.end_job(nzo)
+
                     except IOError as err:
-                        # If job was deleted or in active post-processing, ignore error
-                        if not nzo.deleted and not nzo.is_gone() and not nzo.pp_active:
+                        # If job was deleted/finished or in active post-processing, ignore error
+                        if not nzo.pp_or_finished:
                             # 28 == disk full => pause downloader
                             if err.errno == 28:
                                 logging.error(T("Disk full! Forcing Pause"))
@@ -119,87 +193,14 @@ class Assembler(Thread):
                             # Log traceback
                             logging.info("Traceback: ", exc_info=True)
                             if sabnzbd.WIN32:
-                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32))
+                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32))
                             # Pause without saving
                             sabnzbd.Downloader.pause()
-                        continue
+                        else:
+                            logging.debug("Ignoring error %s for %s, already finished or in post-proc", err, filepath)
                     except:
                         logging.error(T("Fatal error in Assembler"), exc_info=True)
                         break
-
-                    # Continue after partly written data
-                    if not file_done:
-                        continue
-
-                    # Clean-up admin data
-                    logging.info("Decoding finished %s", filepath)
-                    nzf.remove_admin()
-
-                    # Do rar-related processing
-                    if rarfile.is_rarfile(filepath):
-                        # Encryption and unwanted extension detection
-                        rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
-                        if rar_encrypted:
-                            if cfg.pause_on_pwrar() == 1:
-                                logging.warning(
-                                    T(
-                                        'Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                                    ),
-                                    nzo.final_name,
-                                )
-                                nzo.pause()
-                            else:
-                                logging.warning(
-                                    T(
-                                        'Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                                    ),
-                                    nzo.final_name,
-                                )
-                                nzo.fail_msg = T("Aborted, encryption detected")
-                                sabnzbd.NzbQueue.end_job(nzo)
-
-                        if unwanted_file:
-                            # Don't repeat the warning after a user override of an unwanted extension pause
-                            if nzo.unwanted_ext == 0:
-                                logging.warning(
-                                    T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
-                                    nzo.final_name,
-                                    unwanted_file,
-                                )
-                            logging.debug(T("Unwanted extension is in rar file %s"), filepath)
-                            if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
-                                logging.debug("Unwanted extension ... pausing")
-                                nzo.unwanted_ext = 1
-                                nzo.pause()
-                            if cfg.action_on_unwanted_extensions() == 2:
-                                logging.debug("Unwanted extension ... aborting")
-                                nzo.fail_msg = T("Aborted, unwanted extension detected")
-                                sabnzbd.NzbQueue.end_job(nzo)
-
-                        # Add to direct unpack
-                        nzo.add_to_direct_unpacker(nzf)
-
-                    elif par2file.is_parfile(filepath):
-                        # Parse par2 files, cloaked or not
-                        nzo.handle_par2(nzf, filepath)
-
-                    filter_output, reason = nzo_filtered_by_rating(nzo)
-                    if filter_output == 1:
-                        logging.warning(
-                            T('Paused job "%s" because of rating (%s)'),
-                            nzo.final_name,
-                            reason,
-                        )
-                        nzo.pause()
-                    elif filter_output == 2:
-                        logging.warning(
-                            T('Aborted job "%s" because of rating (%s)'),
-                            nzo.final_name,
-                            reason,
-                        )
-                        nzo.fail_msg = T("Aborted, rating filter matched (%s)") % reason
-                        sabnzbd.NzbQueue.end_job(nzo)
-
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
                 sabnzbd.PostProcessor.process(nzo)
@@ -214,7 +215,8 @@ class Assembler(Thread):
         if not nzf.md5:
             nzf.md5 = hashlib.md5()
 
-        with open(nzf.filepath, "ab") as fout:
+        # We write large article-sized chunks, so we can safely skip the buffering of Python
+        with open(nzf.filepath, "ab", buffering=0) as fout:
             for article in nzf.decodetable:
                 # Break if deleted during writing
                 if nzf.nzo.status is Status.DELETED:

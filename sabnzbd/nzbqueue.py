@@ -48,7 +48,7 @@ from sabnzbd.constants import (
     STOP_PRIORITY,
     VERIFIED_FILE,
     Status,
-    IGNORED_FOLDERS,
+    IGNORED_FILES_AND_FOLDERS,
     QNFO,
     DIRECT_WRITE_TRIGGER,
 )
@@ -154,7 +154,7 @@ class NzbQueue:
         # Repair unregistered folders
         for folder in globber_full(cfg.download_dir.get_path()):
             name = os.path.basename(folder)
-            if os.path.isdir(folder) and name not in registered and name not in IGNORED_FOLDERS:
+            if os.path.isdir(folder) and name not in registered and name not in IGNORED_FILES_AND_FOLDERS:
                 if action:
                     logging.info("Repairing job %s", folder)
                     self.repair_job(folder)
@@ -239,7 +239,7 @@ class NzbQueue:
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list[:]:
-            if not nzo.is_gone():
+            if not nzo.removed_from_queue:
                 nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
                 if save_nzo is None or nzo is save_nzo:
                     if not nzo.futuretype:
@@ -338,7 +338,7 @@ class NzbQueue:
 
         # Reset try_lists, markers and evaluate the scheduling settings
         nzo.reset_try_list()
-        nzo.deleted = False
+        nzo.removed_from_queue = False
         priority = nzo.priority
         if sabnzbd.Scheduler.analyse(False, priority):
             nzo.status = Status.PAUSED
@@ -395,12 +395,10 @@ class NzbQueue:
             logging.info("[%s] Removing job %s", caller_name(), nzo.final_name)
 
             # Set statuses
-            nzo.deleted = True
-            if cleanup and not nzo.is_gone():
-                nzo.status = Status.DELETED
+            nzo.removed_from_queue = True
             self.__nzo_list.remove(nzo)
-
             if cleanup:
+                nzo.status = Status.DELETED
                 nzo.purge_data(delete_all_data=delete_all_data)
             self.save(False)
             return nzo_id
@@ -737,47 +735,49 @@ class NzbQueue:
         nzf = article.nzf
         nzo = nzf.nzo
 
-        if nzf.deleted:
-            logging.debug("Discarding article %s, no longer in queue", article.article)
+        if nzo.pp_or_finished or nzf.deleted:
+            logging.debug("Discarding article for file %s: deleted or already post-processing", nzf.filename)
+            # If this file is needed later (par2 file added back to queue), it would be damaged because
+            # we discard this article. So we reset it to be picked up again if needed.
+            # But not reset all articles, as it could cause problems for articles still attached to a server.
+            article.reset_try_list()
+            nzf.reset_try_list()
             return
 
         articles_left, file_done, post_done = nzo.remove_article(article, success)
 
-        if nzo.is_gone():
-            logging.debug("Discarding article for file %s, no longer in queue", nzf.filename)
-        else:
-            # Write data if file is done or at trigger time
-            if file_done or (articles_left and (articles_left % DIRECT_WRITE_TRIGGER) == 0):
-                if not nzo.precheck:
-                    # Only start decoding if we have a filename and type
-                    # The type is only set if sabyenc could decode the article
-                    if nzf.filename and nzf.type:
-                        sabnzbd.Assembler.process(nzo, nzf, file_done)
-                    elif nzf.filename.lower().endswith(".par2"):
-                        # Broken par2 file, try to get another one
-                        nzo.promote_par2(nzf)
+        # Write data if file is done or at trigger time
+        if file_done or (articles_left and (articles_left % DIRECT_WRITE_TRIGGER) == 0):
+            if not nzo.precheck:
+                # Only start decoding if we have a filename and type
+                # The type is only set if sabyenc could decode the article
+                if nzf.filename and nzf.type:
+                    sabnzbd.Assembler.process(nzo, nzf, file_done)
+                elif nzf.filename.lower().endswith(".par2"):
+                    # Broken par2 file, try to get another one
+                    nzo.promote_par2(nzf)
 
-            # Save bookkeeping in case of crash
-            if file_done and (nzo.next_save is None or time.time() > nzo.next_save):
-                nzo.save_to_disk()
-                sabnzbd.BPSMeter.save()
-                if nzo.save_timeout is None:
-                    nzo.next_save = None
-                else:
-                    nzo.next_save = time.time() + nzo.save_timeout
+        # Save bookkeeping in case of crash
+        if file_done and (nzo.next_save is None or time.time() > nzo.next_save):
+            nzo.save_to_disk()
+            sabnzbd.BPSMeter.save()
+            if nzo.save_timeout is None:
+                nzo.next_save = None
+            else:
+                nzo.next_save = time.time() + nzo.save_timeout
 
-            # Remove post from Queue
-            if post_done:
-                nzo.set_download_report()
-                self.end_job(nzo)
+        # Remove post from Queue
+        if post_done:
+            nzo.set_download_report()
+            self.end_job(nzo)
 
     @NzbQueueLocker
     def end_job(self, nzo: NzbObject):
         """Send NZO to the post-processing queue"""
         # Notify assembler to call postprocessor
-        if not nzo.deleted:
+        if not nzo.removed_from_queue:
             logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
-            nzo.deleted = True
+            nzo.removed_from_queue = True
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result

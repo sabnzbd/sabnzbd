@@ -53,7 +53,7 @@
                                 </td>
                                 <td class="title">
                                     <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
-                                         $feed_item
+                                         $feed_item_html
                                     </a>
                                 </td>
                                 <td class="controls">
@@ -102,7 +102,7 @@
     </div>
     <!--#end if#-->
     <!--#if $active_feed#-->
-    <!--#set $feed = $active_feed#-->
+    <!--#set $feed = html.unescape($active_feed)#-->
     <div class="section rss-section">
         <div class="padTable">
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
@@ -113,12 +113,12 @@
             <!--#if $error#-->
             <div class="alert alert-danger">
                 <span class="glyphicon glyphicon-exclamation-sign"></span>
-                <!--#echo html.escape($error)#-->
+                $error
             </div>
             <!--#end if#-->
             <form action="upd_rss_feed" method="post">
                 <input type="hidden" name="apikey" value="$apikey" />
-                <input type="hidden" name="feed" value="$feed" />
+                <input type="hidden" name="feed" value="$active_feed" />
                 <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
                 <table class="catTable">
                     <thead>
@@ -210,7 +210,7 @@
             <form action="upd_rss_filter" method="post">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="index" value="$rss[$feed]['filtercount']" />
-                <input type="hidden" name="feed" value="$feed" />
+                <input type="hidden" name="feed" value="$active_feed" />
                 <table class="catTable">
                     <tbody>
                         <tr>
@@ -286,7 +286,7 @@
                 <form action="upd_rss_filter" method="post" autocomplete="off">
                     <input type="hidden" name="apikey" value="$apikey" />
                     <input type="hidden" name="index" value="$fnum" />
-                    <input type="hidden" name="feed" value="$feed" />
+                    <input type="hidden" name="feed" value="$active_feed" />
                     <table class="catTable">
                         <tbody>
                             <tr class="<!--#if $odd then " alt " else " "#--> <!--#if $filter[3]!="A" and $filter[3]!="S" then 'disabled_options_rule' else ""#-->">
@@ -363,13 +363,13 @@
             <!--#end for#-->
             <form action="download_rss_feed" method="post">
                 <input type="hidden" name="apikey" value="$apikey" />
-                <input type="hidden" name="feed" value="$feed" />
+                <input type="hidden" name="feed" value="$active_feed" />
                 <div class="padding">
-                    <button type="button" class="btn btn-default testFeed" rel="$feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
+                    <button type="button" class="btn btn-default testFeed" rel="$active_feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                     <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-forward"></span> $T('button-forceFeed')</button>
                     <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('rss-done')</button>
                     <!--#if $evalButton#-->
-                      <button type="button" class="btn btn-default evalFeed" rel="$feed"><span class="glyphicon glyphicon-ok-circle"></span> $T('button-evalFeed')</button>
+                      <button type="button" class="btn btn-default evalFeed" rel="$active_feed"><span class="glyphicon glyphicon-ok-circle"></span> $T('button-evalFeed')</button>
                     <!--#end if#-->
                 </div>
             </form>
@@ -402,7 +402,7 @@
                     <tr class="infoTableSeperator">
                         <td>
                             <form action="download" method="get">
-                                <input type="hidden" value="$feed" name="feed" />
+                                <input type="hidden" value="$active_feed" name="feed" />
                                 <input type="hidden" name="apikey" value="$apikey" />
                                 <input type="hidden" name="url" value="$job['url']" />
                                 <input type="hidden" name="nzbname" value="$job['nzbname']" />
@@ -446,7 +446,7 @@
                     <tr class="infoTableSeperator">
                         <td>
                             <form action="download" method="get">
-                                <input type="hidden" value="$feed" name="feed" />
+                                <input type="hidden" value="$active_feed" name="feed" />
                                 <input type="hidden" name="apikey" value="$apikey" />
                                 <input type="hidden" name="url" value="$job['url']" />
                                 <input type="hidden" name="nzbname" value="$job['nzbname']" />
@@ -475,7 +475,7 @@
         <div class="tab-pane padTable" id="rss-tab-done">
             <!--#if $downloaded#-->
             <form action="clean_rss_jobs" method="post">
-                <input type="hidden" value="$feed" name="feed" />
+                <input type="hidden" value="$active_feed" name="feed" />
                 <input type="hidden" name="apikey" value="$apikey" />
                 <table class="catTable">
                     <thead>

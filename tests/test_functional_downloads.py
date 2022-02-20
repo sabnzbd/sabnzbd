@@ -92,10 +92,10 @@ class TestDownloadFlow(SABnzbdBaseTest):
                     '//div[@id="history-tab"]//tr[td/div/span[contains(text(), "%s")]]/td[contains(@class, "status")]'
                     % test_job_name
                 ).text
+                # Always sleep to give it some time
+                time.sleep(1)
                 if status_text == "Completed":
                     break
-                else:
-                    time.sleep(1)
             except WebDriverException:
                 time.sleep(1)
         else:

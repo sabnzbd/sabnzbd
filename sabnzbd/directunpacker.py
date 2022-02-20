@@ -54,20 +54,20 @@ class DirectUnpacker(threading.Thread):
 
         self.nzo: NzbObject = nzo
         self.active_instance: Optional[subprocess.Popen] = None
-        self.killed = False
+        self.killed: bool = False
         self.next_file_lock = threading.Condition(threading.RLock())
 
         self.unpack_dir_info = None
         self.rarfile_nzf: Optional[NzbFile] = None
-        self.cur_setname = None
-        self.cur_volume = 0
-        self.total_volumes = {}
-        self.unpack_time = 0.0
+        self.cur_setname: Optional[str] = None
+        self.cur_volume: int = 0
+        self.total_volumes: Dict[str, int] = {}
+        self.unpack_time: float = 0.0
 
         self.success_sets: Dict[str, Tuple[List[str], List[str]]] = {}
-        self.next_sets = []
+        self.next_sets: List[NzbFile] = []
 
-        self.duplicate_lines = 0
+        self.duplicate_lines: int = 0
 
         nzo.direct_unpacker = self
 
@@ -108,6 +108,7 @@ class DirectUnpacker(threading.Thread):
 
     def set_volumes_for_nzo(self):
         """Loop over all files to detect the names"""
+        logging.debug("Parsing setname and volume information for %s" % self.nzo.final_name)
         none_counter = 0
         found_counter = 0
         for nzf in self.nzo.files + self.nzo.finished_files:
@@ -292,9 +293,13 @@ class DirectUnpacker(threading.Thread):
 
                 # Possible that the instance was deleted while locked
                 if not self.killed:
+                    # Sometimes the assembler is still working on the file, resulting in "Unexpected end of archive".
+                    # So we delay a tiny bit before we continue. This is not the cleanest solution, but it works.
+                    time.sleep(0.1)
+
                     # If unrar stopped or is killed somehow, writing will cause a crash
                     try:
-                        # Give unrar some time to do it's thing
+                        # Give unrar some time to do its thing
                         self.active_instance.stdin.write(b"C\n")
                         start_time = time.time()
                         time.sleep(0.1)
@@ -306,11 +311,7 @@ class DirectUnpacker(threading.Thread):
                     if not last_volume_linebuf or last_volume_linebuf != linebuf:
                         # Next volume
                         self.cur_volume += 1
-                        perc = (self.cur_volume / self.total_volumes[self.cur_setname]) * 100
-                        self.nzo.set_action_line(
-                            T("Direct Unpack"),
-                            "%s %s" % (self.get_formatted_stats(), add_time_left(perc, time_used=self.unpack_time)),
-                        )
+                        self.nzo.set_action_line(T("Direct Unpack"), self.get_formatted_stats(include_time_left=True))
                         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
@@ -389,7 +390,7 @@ class DirectUnpacker(threading.Thread):
         # The first NZF
         self.rarfile_nzf = self.have_next_volume()
 
-        # Ignore if maybe this set is not there any more
+        # Ignore if maybe this set is not there anymore
         # This can happen due to race/timing issues when creating the sets
         if not self.rarfile_nzf:
             return
@@ -505,12 +506,17 @@ class DirectUnpacker(threading.Thread):
             # Reset settings
             self.reset_active()
 
-    def get_formatted_stats(self):
+    def get_formatted_stats(self, include_time_left: bool = False):
         """Get percentage or number of rar's done"""
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
             if self.total_volumes[self.cur_setname] >= self.cur_volume and self.cur_volume:
-                return "%02d/%02d" % (self.cur_volume, self.total_volumes[self.cur_setname])
+                formatted_stats = "%02d/%02d" % (self.cur_volume, self.total_volumes[self.cur_setname])
+                if include_time_left:
+                    formatted_stats += add_time_left(
+                        (self.cur_volume / self.total_volumes[self.cur_setname]) * 100, time_used=self.unpack_time
+                    )
+                return formatted_stats
         return self.cur_volume
 
 

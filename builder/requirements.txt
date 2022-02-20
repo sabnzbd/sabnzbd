@@ -1,9 +1,18 @@
 # Basic build requirements
-pyinstaller>=4.8
-setuptools
-pkginfo
+# Note that not all sub-dependencies are listed, but only ones we know could cause trouble
+pyinstaller==4.8
+pyinstaller-hooks-contrib==2022.0
+altgraph==0.17.2
+wrapt==1.13.3
+setuptools==60.6.0
+pkginfo==1.8.2
+PyGithub==1.55
+charset-normalizer==2.0.11
 certifi
-pygithub
 
-# For the OSX build specific
-dmgbuild; sys_platform == 'darwin'
+# For the macOS build
+dmgbuild==1.5.2; sys_platform == 'darwin'
+mac-alias==2.2.0; sys_platform == 'darwin'
+macholib==1.15.2; sys_platform == 'darwin'
+ds-store==1.3.0; sys_platform == 'darwin'
+PyNaCl==1.5.0; sys_platform == 'darwin'

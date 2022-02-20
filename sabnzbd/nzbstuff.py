@@ -546,7 +546,7 @@ NzbObjectSaver = (
     "saved_articles",
     "nzo_id",
     "futuretype",
-    "deleted",
+    "removed_from_queue",
     "parsed",
     "action_line",
     "unpack_info",
@@ -687,7 +687,7 @@ class NzbObject(TryList):
         self.nzo_id: Optional[str] = None
 
         self.futuretype = futuretype
-        self.deleted = False
+        self.removed_from_queue = False
         self.to_be_removed = False
         self.parsed = False
         self.duplicate = False
@@ -719,7 +719,7 @@ class NzbObject(TryList):
         self.encrypted = 0
         self.url_wait: Optional[float] = None
         self.url_tries = 0
-        self.pp_active = False  # Signals active post-processing (not saved)
+        self.pp_active = False
         self.md5sum: Optional[str] = None
 
         # Path is empty in case of a future NZB
@@ -1404,10 +1404,15 @@ class NzbObject(TryList):
             self.final_name = sanitize_foldername(name)
             self.save_to_disk()
 
+    @property
+    def pp_or_finished(self):
+        """We don't want any more articles if we are post-processing or in the final state"""
+        return self.pp_active or self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
+
     def pause(self):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
-        if self.nzo_id and not self.is_gone():
+        if self.nzo_id and not self.removed_from_queue:
             self.save_to_disk()
 
     def resume(self):
@@ -1608,7 +1613,7 @@ class NzbObject(TryList):
                             if sabnzbd.Downloader.highest_server(server):
                                 nzf.finish_import()
                                 # Still not finished? Something went wrong...
-                                if not nzf.import_finished and not self.is_gone():
+                                if not nzf.import_finished and not self.removed_from_queue:
                                     logging.error(T("Error importing %s"), nzf)
                                     nzf_remove_list.append(nzf)
                                     nzf.nzo.status = Status.PAUSED
@@ -1741,13 +1746,17 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def verify_all_filenames_and_resort(self):
         """Verify all filenames based on par2 info and then re-sort files.
-        Locked so all files are verified at once without interuptions.
+        Locked so all files are verified at once without interruptions.
         """
         logging.info("Checking all filenames for %s", self.final_name)
         for nzf_verify in self.files:
             self.verify_nzf_filename(nzf_verify)
         logging.info("Re-sorting %s after getting filename information", self.final_name)
         self.sort_nzfs()
+
+        # Also trigger it again for Direct Unpack, if it's active
+        if self.direct_unpacker:
+            self.direct_unpacker.set_volumes_for_nzo()
 
     @synchronized(NZO_LOCK)
     def renamed_file(self, name_set, old_name=None):
@@ -1906,7 +1915,7 @@ class NzbObject(TryList):
     def save_to_disk(self):
         """Save job's admin to disk"""
         self.save_attribs()
-        if self.nzo_id and not self.is_gone():
+        if self.nzo_id and not self.removed_from_queue:
             sabnzbd.filesystem.save_data(self, self.nzo_id, self.admin_path)
 
     def save_attribs(self):
@@ -1922,7 +1931,7 @@ class NzbObject(TryList):
         attribs = sabnzbd.filesystem.load_data(ATTRIB_FILE, self.admin_path, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
 
-        # If attributes file somehow does not exists
+        # If attributes file somehow does not exist
         if not attribs:
             return None, None, None
 
@@ -1936,7 +1945,7 @@ class NzbObject(TryList):
         return attribs["cat"], attribs["pp"], attribs["script"]
 
     @synchronized(NZO_LOCK)
-    def build_pos_nzf_table(self, nzf_ids):
+    def build_pos_nzf_table(self, nzf_ids: List[str]) -> Dict[int, NzbFile]:
         pos_nzf_table = {}
         for nzf_id in nzf_ids:
             if nzf_id in self.files_table:
@@ -1947,7 +1956,7 @@ class NzbObject(TryList):
         return pos_nzf_table
 
     @synchronized(NZO_LOCK)
-    def cleanup_nzf_ids(self, nzf_ids):
+    def cleanup_nzf_ids(self, nzf_ids: List[str]):
         for nzf_id in nzf_ids[:]:
             if nzf_id in self.files_table:
                 if self.files_table[nzf_id] not in self.files:
@@ -2002,10 +2011,6 @@ class NzbObject(TryList):
                     )
 
         return res, series
-
-    def is_gone(self):
-        """Is this job still going somehow?"""
-        return self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
