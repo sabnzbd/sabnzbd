@@ -86,7 +86,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
     return setname, vol, block
 
 
-def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
+def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[str, bytes]]:
     """Get the hash table and the first-16k hash table from a PAR2 file
     Return as dictionary, indexed on names or hashes for the first-16 table
     The input md5of16k is modified in place and thus not returned!
@@ -104,7 +104,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
             header = f.read(8)
             while header:
                 if header == PAR_PKT_ID:
-                    name, filehash, hash16k, nr_files = parse_par2_packet(f)
+                    name, filehash, hash16k, set_id, nr_files = parse_par2_packet(f)
                     if name:
                         table[name] = filehash
                         if hash16k not in md5of16k:
@@ -136,13 +136,15 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
             old_name = md5of16k.pop(hash16k)
             logging.debug("Par2-16k signature of %s not unique, discarding", old_name)
 
-    return table
+    return set_id, table
 
 
-def parse_par2_packet(f: BinaryIO) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[int]]:
+def parse_par2_packet(
+    f: BinaryIO,
+) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[str], Optional[int]]:
     """Look up and analyze a PAR2 packet"""
 
-    filename, filehash, hash16k, nr_files = nothing = None, None, None, None
+    filename, filehash, hash16k, set_id, nr_files = nothing = None, None, None, None, None
 
     # All packages start with a header before the body
     # 8	  : PAR2\x00PKT
@@ -167,6 +169,9 @@ def parse_par2_packet(f: BinaryIO) -> Tuple[Optional[str], Optional[bytes], Opti
     md5.update(data)
     if md5sum != md5.digest():
         return nothing
+
+    # Get the Recovery Set ID
+    set_id = data[:16].hex()
 
     # See if it's any of the packages we care about
     par2_packet_type = data[16:32]
@@ -194,4 +199,4 @@ def parse_par2_packet(f: BinaryIO) -> Tuple[Optional[str], Optional[bytes], Opti
         # 4  : Number of files in the recovery set
         nr_files = struct.unpack("<I", data[40:44])[0]
 
-    return filename, filehash, hash16k, nr_files
+    return filename, filehash, hash16k, set_id, nr_files

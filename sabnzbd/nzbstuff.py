@@ -1028,7 +1028,9 @@ class NzbObject(TryList):
             # Move only when not current NZF and filename was extractable from subject
             if xnzf.filename:
                 setname, vol, block = sabnzbd.par2file.analyse_par2(xnzf.filename)
-                # Don't postpone header-only-files, to extract all possible md5of16k
+                # Don't postpone header-only-files, so we can extract all
+                # possible md5of16k and md5pack's even if the filenames are bad
+                # Usually they are all downloaded as first_articles
                 if setname and block and matcher(lparset, setname.lower()):
                     xnzf.set_par2(parset, vol, block)
                     # Don't postpone if all par2 are desired and should be kept or not repairing
@@ -1056,12 +1058,16 @@ class NzbObject(TryList):
         nzf.set_par2(setname, vol, block)
 
         # Parse the file contents for hashes
-        pack = sabnzbd.par2file.parse_par2_file(filepath, nzf.nzo.md5of16k)
+        set_id, pack = sabnzbd.par2file.parse_par2_file(filepath, nzf.nzo.md5of16k)
 
         # If we couldn't parse it, we ignore it
         if pack:
             if pack not in self.md5packs.values():
                 logging.debug("Got md5pack for set %s", nzf.setname)
+                # Verify that we are not over-writing existing set with the same name, but different values
+                if setname in self.md5packs:
+                    logging.debug("Found duplicate md5pack-setname: %s, using set ID", setname)
+                    setname = set_id
                 self.md5packs[setname] = pack
                 # See if we need to postpone some pars
                 self.postpone_pars(nzf, setname)
