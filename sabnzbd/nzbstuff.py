@@ -1883,7 +1883,9 @@ class NzbObject(TryList):
             self.status,
             self.priority,
             self.bytes_missing,
-            self.direct_unpacker.get_formatted_stats() if self.direct_unpacker else 0,
+            self.direct_unpacker.get_formatted_stats()
+            if (self.direct_unpacker and self.direct_unpacker.active_instance)
+            else 0,
         )
 
     def get_nzf_by_id(self, nzf_id: str) -> NzbFile:
