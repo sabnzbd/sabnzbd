@@ -857,7 +857,6 @@ def rar_extract_core(
     rarfiles = rar_volumelist(rarfile_path, password, rarfiles)
 
     logging.debug("UNRAR output %s", "\n".join(lines))
-    nzo.fail_msg = ""
     msg = T("Unpacked %s files/folders in %s") % (len(extracted), format_time_string(time.time() - start))
     nzo.set_unpack_info("Unpack", msg, setname)
     logging.info(msg)
@@ -1083,7 +1082,6 @@ def seven_extract_core(
         nzo.fail_msg = msg
         nzo.status = Status.FAILED
     else:
-        nzo.fail_msg = ""
         msg = T("Unpacked %s files/folders in %s") % (len(new_files), format_time_string(time.time() - start))
         nzo.set_unpack_info("Unpack", msg, seven_set)
         logging.info(msg)
