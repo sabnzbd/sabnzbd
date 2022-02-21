@@ -581,14 +581,16 @@ def get_access_info():
     # Access_url is used to provide the user a link to SABnzbd depending on the host
     cherryhost = cfg.cherryhost()
     host = socket.gethostname().lower()
+    logging.info("hostname is", host)
     socks = [host]
+
+    try:
+        addresses = socket.getaddrinfo(host, None)
+    except:
+        addresses = []
 
     if cherryhost == "0.0.0.0":
         # Grab a list of all ips for the hostname
-        try:
-            addresses = socket.getaddrinfo(host, None)
-        except:
-            addresses = []
         for addr in addresses:
             address = addr[4][0]
             # Filter out ipv6 addresses (should not be allowed)
@@ -597,7 +599,6 @@ def get_access_info():
         socks.insert(0, "localhost")
     elif cherryhost == "::":
         # Grab a list of all ips for the hostname
-        addresses = socket.getaddrinfo(host, None)
         for addr in addresses:
             address = addr[4][0]
             # Only ipv6 addresses will work
