@@ -48,7 +48,12 @@ parts:
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr -DLIBPATH=/lib
     stage-packages:
-      - lib32stdc++6
+      - to amd64:
+        - lib32stdc++6
     build-packages:
-      - gcc-multilib
-      - g++-multilib
+      - to arm64:
+        - g++-multilib-arm-linux-gnueabihf
+        - gcc-multilib-arm-linux-gnueabihf
+      - else:
+        - gcc-multilib
+        - g++-multilib
