@@ -66,6 +66,15 @@ SKIN_TEXT = {
     "sch-disable_quota": TT("Disable quota management"),  #: Config->Scheduler
     "sch-pause_cat": TT("Pause jobs with category"),  #: Config->Scheduler
     "sch-resume_cat": TT("Resume jobs with category"),  #: Config->Scheduler
+    "prowl-off": TT("Off"),  #: Prowl priority
+    "prowl-very-low": TT("Very Low"),  #: Prowl priority
+    "prowl-moderate": TT("Moderate"),  #: Prowl priority
+    "prowl-normal": TT("Normal"),  #: Prowl priority
+    "prowl-high": TT("High"),  #: Prowl priority
+    "prowl-emergency": TT("Emergency"),  #: Prowl priority
+    "pushover-off": TT("Off"),  #: Prowl priority
+    "pushover-low": TT("Low"),  #: Prowl priority
+    "pushover-high": TT("High"),  #: Prowl priority
     # General texts
     "default": TT("Default"),  #: Default value, used in dropdown menus
     "none": TT("None"),  #: No value, used in dropdown menus
@@ -733,6 +742,35 @@ SKIN_TEXT = {
     "section-NC": TT("Notification Center"),  #: Header for macOS Notfication Center section
     "section-AC": TT("Windows Notifications"),
     "section-OSD": TT("NotifyOSD"),  #: Header for Ubuntu's NotifyOSD notifications section
+    "section-Prowl": TT("Prowl"),  #: Header for Prowl notification section
+    "opt-prowl_enable": TT("Enable Prowl notifications"),  #: Prowl settings
+    "explain-prowl_enable": TT("Requires a Prowl account"),  #: Prowl settings
+    "opt-prowl_apikey": TT("API key for Prowl"),  #: Prowl settings
+    "explain-prowl_apikey": TT("Personal API key for Prowl (required)"),  #: Prowl settings
+    "section-Pushover": TT("Pushover"),  #: Header for Pushover notification section
+    "opt-pushover_enable": TT("Enable Pushover notifications"),  #: Pushover settings
+    "explain-pushover_enable": TT("Requires a Pushover account"),  #: Pushoversettings
+    "opt-pushover_token": TT("Application Token"),  #: Pushover settings
+    "explain-pushover_token": TT("Application token (required)"),  #: Pushover settings
+    "opt-pushover_userkey": TT("User Key"),  #: Pushover settings
+    "explain-pushover_userkey": TT("User Key (required)"),  #: Pushover settings
+    "opt-pushover_device": TT("Device(s)"),  #: Pushover settings
+    "explain-pushover_device": TT("Device(s) to which message should be sent"),  #: Pushover settings
+    "opt-pushover_emergency_retry": TT("Emergency retry"),  #: Pushover settings
+    "explain-pushover_emergency_retry": TT(
+        "How often (in seconds) the same notification will be sent"
+    ),  #: Pushover settings
+    "opt-pushover_emergency_expire": TT("Emergency expire"),  #: Pushover settings
+    "explain-pushover_emergency_expire": TT(
+        "How many seconds your notification will continue to be retried"
+    ),  #: Pushover settings
+    "section-Pushbullet": TT("Pushbullet"),  #: Header for Pushbullet notification section
+    "opt-pushbullet_enable": TT("Enable Pushbullet notifications"),  #: Pushbullet settings
+    "explain-pushbullet_enable": TT("Requires a Pushbullet account"),  #: Pushbulletsettings
+    "opt-pushbullet_apikey": TT("Personal API key"),  #: Pushbullet settings
+    "explain-pushbullet_apikey": TT("Your personal Pushbullet API key (required)"),  #: Pushbullet settings
+    "opt-pushbullet_device": TT("Device"),  #: Pushbullet settings
+    "explain-pushbullet_device": TT("Device to which message should be sent"),  #: Pushbullet settings
     "section-NScript": TT("Notification Script"),  #: Header for Notification Script notification section
     "opt-nscript_enable": TT("Enable notification script"),  #: Notification Script settings
     "opt-nscript_script": TT("Script"),  #: Notification Script settings

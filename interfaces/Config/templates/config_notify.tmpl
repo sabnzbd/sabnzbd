@@ -215,6 +215,154 @@
             </fieldset>
         </div>
     </div>
+    <div class="section" id="prowl">
+        <div class="col2">
+            <h3>$T('section-Prowl')</h3>
+            <table>
+                <tr>
+                    <td><input type="checkbox" name="prowl_enable" id="prowl_enable" value="1" <!--#if int($prowl_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><label for="prowl_enable"> $T('opt-prowl_enable')</label></td>
+                </tr>
+            </table>
+            <em>$T('explain-prowl_enable')</em>
+            $show_cat_box('prowl')
+        </div>
+        <div class="col1" <!--#if int($prowl_enable) > 0 then '' else 'style="display:none"'#-->>
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="prowl_apikey">$T('opt-prowl_apikey')</label>
+                    <input type="text" name="prowl_apikey" id="prowl_apikey" value="$prowl_apikey" />
+                    <span class="desc">$T('explain-prowl_apikey')</span>
+                </div>
+                <!--#set $section_label = 'prowl'#-->
+                <!--#for $type in $notify_types#-->
+                    <div class="field-pair">
+                        <label class="config" for="${section_label}_prio_$type">
+                            $T($notify_types[$type]).replace('/', ' / ')
+                        </label>
+                        <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
+                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == "-3" then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
+                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == "-2" then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == "-1" then 'selected="selected"' else ""#--> >$T('prowl-moderate')</option>
+                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == "0"  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == "1"  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
+                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == "2"  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                        </select>
+                    </div>
+                <!--#end for#-->
+                <div class="field-pair no-field-pair-bg">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_prowl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="section" id="pushover">
+        <div class="col2">
+            <h3>$T('section-Pushover')</h3>
+            <table>
+                <tr>
+                    <td><input type="checkbox" name="pushover_enable" id="pushover_enable" value="1" <!--#if int($pushover_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><label for="pushover_enable"> $T('opt-pushover_enable')</label></td>
+                </tr>
+            </table>
+            <em>$T('explain-pushover_enable')</em>
+            $show_cat_box('pushover')
+        </div>
+        <div class="col1" <!--#if int($pushover_enable) > 0 then '' else 'style="display:none"'#-->>
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="pushover_token">$T('opt-pushover_token')</label>
+                    <input type="text" name="pushover_token" id="pushover_token" value="$pushover_token" />
+                    <span class="desc">$T('explain-pushover_token')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_userkey">$T('opt-pushover_userkey')</label>
+                    <input type="text" name="pushover_userkey" id="pushover_userkey" value="$pushover_userkey" />
+                    <span class="desc">$T('explain-pushover_userkey')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_device">$T('opt-pushover_device')</label>
+                    <input type="text" name="pushover_device" id="pushover_device" value="$pushover_device" />
+                    <span class="desc">$T('explain-pushover_device')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_emergency_retry">$T('opt-pushover_emergency_retry')</label>
+                    <input type="text" name="pushover_emergency_retry" id="pushover_emergency_retry" value="$pushover_emergency_retry" />
+                    <span class="desc">$T('explain-pushover_emergency_retry')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_emergency_expire">$T('opt-pushover_emergency_expire')</label>
+                    <input type="text" name="pushover_emergency_expire" id="pushover_emergency_expire" value="$pushover_emergency_expire" />
+                    <span class="desc">$T('explain-pushover_emergency_expire')</span>
+                </div>
+                <!--#set $section_label = 'pushover'#-->
+                <!--#for $type in $notify_types#-->
+                    <div class="field-pair">
+                        <label class="config" for="${section_label}_prio_$type">
+                            $T($notify_types[$type]).replace('/', ' / ')
+                        </label>
+                        <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
+                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == "-3" then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == "-2" then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == "-1" then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == "0"  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == "1"  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
+                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == "2"  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                        </select>
+                    </div>
+                <!--#end for#-->
+                <div class="field-pair no-field-pair-bg">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_pushover"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="section" id="pushbullet">
+        <div class="col2">
+            <h3>$T('section-Pushbullet')</h3>
+            <table>
+                <tr>
+                    <td><input type="checkbox" name="pushbullet_enable" id="pushbullet_enable" value="1" <!--#if int($pushbullet_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><label for="pushbullet_enable"> $T('opt-pushbullet_enable')</label></td>
+                </tr>
+            </table>
+            <em>$T('explain-pushbullet_enable')</em>
+            $show_cat_box('pushbullet')
+        </div>
+        <div class="col1" <!--#if int($pushbullet_enable) > 0 then '' else 'style="display:none"'#-->>
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="pushbullet_apikey">$T('opt-pushbullet_apikey')</label>
+                    <input type="text" name="pushbullet_apikey" id="pushbullet_apikey" value="$pushbullet_apikey" />
+                    <span class="desc">$T('explain-pushbullet_apikey')</span>
+                </div>
+                <!--#if 0#-->
+                <div class="field-pair">
+                    <label class="config" for="pushbullet_device">$T('opt-pushbullet_device')</label>
+                    <input type="text" name="pushbullet_device" id="pushbullet_device" value="$pushbullet_device" />
+                    <span class="desc">$T('explain-pushbullet_device')</span>
+                </div>
+                <!--#end if#-->
+                $show_notify_checkboxes('pushbullet')
+                <div class="field-pair no-field-pair-bg">
+                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                   <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
+           </fieldset>
+       </div>
+    </div>
     </form>
 </div><!-- /colmask -->
 
@@ -278,7 +426,7 @@
             }
         })
     }
-    \$('#test_email, #test_notif, #test_windows, #test_osd, #test_nscript').click(function () {
+    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_osd, #test_nscript').click(function () {
         testNotification(this)
     })
 });
