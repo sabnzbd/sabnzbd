@@ -1102,31 +1102,6 @@ msgstr "Niedostępne"
 msgid "Failed to send macOS notification"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/notifier.py
-msgid "Failed to send Prowl message"
-msgstr "Błąd wysyłania wiadomości Prowl"
-
-#. Error message
-#: sabnzbd/notifier.py
-msgid "Bad response from Pushover (%s): %s"
-msgstr "Zła odpowiedź od Pushover (%s): %s"
-
-#. Error message - Warning message
-#: sabnzbd/notifier.py
-msgid "Failed to send pushover message"
-msgstr "Nie udało się wysłać wiadomości Pushover"
-
-#. Error message
-#: sabnzbd/notifier.py
-msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Zła odpowiedź od Pushbullet (%s): %s"
-
-#. Warning message
-#: sabnzbd/notifier.py
-msgid "Failed to send pushbullet message"
-msgstr "Nie udało się wysłać wiadomości Pushbullet"
-
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Script returned exit code %s and output \"%s\""
@@ -1966,41 +1941,6 @@ msgstr ""
 msgid "Resume jobs with category"
 msgstr ""
 
-#. Prowl priority - Three way switch for duplicates
-#: sabnzbd/skintext.py
-msgid "Off"
-msgstr "Brak"
-
-#. Prowl priority
-#: sabnzbd/skintext.py
-msgid "Very Low"
-msgstr "Bardzo niski"
-
-#. Prowl priority
-#: sabnzbd/skintext.py
-msgid "Moderate"
-msgstr "Średni"
-
-#. Prowl priority - Priority pick list
-#: sabnzbd/skintext.py
-msgid "Normal"
-msgstr "Normalny"
-
-#. Prowl priority - Priority pick list
-#: sabnzbd/skintext.py
-msgid "High"
-msgstr "Wysoki"
-
-#. Prowl priority
-#: sabnzbd/skintext.py
-msgid "Emergency"
-msgstr "Awaryjny"
-
-#. Prowl priority - Priority pick list
-#: sabnzbd/skintext.py
-msgid "Low"
-msgstr "Niski"
-
 #. Megabytes
 #: sabnzbd/skintext.py
 msgid "MB"
@@ -2419,6 +2359,21 @@ msgstr "U"
 #: sabnzbd/skintext.py
 msgid "Force"
 msgstr "Wymuś"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "Normal"
+msgstr "Normalny"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "High"
+msgstr "Wysoki"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "Low"
+msgstr "Niski"
 
 #. Priority pick list
 #: sabnzbd/skintext.py
@@ -3452,6 +3407,11 @@ msgid ""
 "the download name"
 msgstr ""
 
+#. Three way switch for duplicates
+#: sabnzbd/skintext.py
+msgid "Off"
+msgstr "Brak"
+
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
 msgid "Discard"
@@ -4249,129 +4209,6 @@ msgstr "Powiadomienia Windows"
 #: sabnzbd/skintext.py
 msgid "NotifyOSD"
 msgstr "NotifyOSD"
-
-#. Header for Prowl notification section
-#: sabnzbd/skintext.py
-msgid "Prowl"
-msgstr "Prowl"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "Enable Prowl notifications"
-msgstr "Włącz powiadomienia Prowl"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "Requires a Prowl account"
-msgstr "Wymaga konta Prowl"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "API key for Prowl"
-msgstr "Klucz API Prowl"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "Personal API key for Prowl (required)"
-msgstr "Prywatny klucz API Prowl (wymagany)"
-
-#. Header for Pushover notification section
-#: sabnzbd/skintext.py
-msgid "Pushover"
-msgstr "Pushover"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Enable Pushover notifications"
-msgstr "Włącz powiadomienia Pushover"
-
-#. Pushoversettings
-#: sabnzbd/skintext.py
-msgid "Requires a Pushover account"
-msgstr "Wymaga konta Pushover"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Application Token"
-msgstr "Token aplikacji"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Application token (required)"
-msgstr "Token aplikacji (wymagany)"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "User Key"
-msgstr "Klucz użytkownika"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "User Key (required)"
-msgstr "Klucz użytkownika (wymagany)"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Device(s)"
-msgstr "Urządzenie(-a)"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Device(s) to which message should be sent"
-msgstr "Urządzenie(-a), do którego(-ych) mają być wysyłane powiadomienia"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Emergency retry"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "How often (in seconds) the same notification will be sent"
-msgstr ""
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Emergency expire"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "How many seconds your notification will continue to be retried"
-msgstr ""
-
-#. Header for Pushbullet notification section
-#: sabnzbd/skintext.py
-msgid "Pushbullet"
-msgstr "Pushbullet"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Enable Pushbullet notifications"
-msgstr "Włącz powiadomienia Pushbullet"
-
-#. Pushbulletsettings
-#: sabnzbd/skintext.py
-msgid "Requires a Pushbullet account"
-msgstr "Wymaga konta Pushbullet"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Personal API key"
-msgstr "Prywatny klucz API"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Your personal Pushbullet API key (required)"
-msgstr "Prywatny klucz API Pushbullet (wymagany)"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Device"
-msgstr "Urządzenie"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Device to which message should be sent"
-msgstr "Urządzenie, do którego mają być wysyłane powiadomienia"
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py

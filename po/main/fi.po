@@ -1104,31 +1104,6 @@ msgstr "Ei saatavilla"
 msgid "Failed to send macOS notification"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/notifier.py
-msgid "Failed to send Prowl message"
-msgstr "Prowl viestin lähetys epäonnistui"
-
-#. Error message
-#: sabnzbd/notifier.py
-msgid "Bad response from Pushover (%s): %s"
-msgstr "Virheellinen vastaus Pushoverilta (%s): %s"
-
-#. Error message - Warning message
-#: sabnzbd/notifier.py
-msgid "Failed to send pushover message"
-msgstr "Pushover viestin lähetys epäonnistui"
-
-#. Error message
-#: sabnzbd/notifier.py
-msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Virheellinen vastaus Pushbulletilta (%s): %s"
-
-#. Warning message
-#: sabnzbd/notifier.py
-msgid "Failed to send pushbullet message"
-msgstr "Pushbullet viestin lähetys epäonnistui"
-
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Script returned exit code %s and output \"%s\""
@@ -1964,41 +1939,6 @@ msgstr ""
 msgid "Resume jobs with category"
 msgstr ""
 
-#. Prowl priority - Three way switch for duplicates
-#: sabnzbd/skintext.py
-msgid "Off"
-msgstr "Ei käytössä"
-
-#. Prowl priority
-#: sabnzbd/skintext.py
-msgid "Very Low"
-msgstr "Erittäin vähäinen"
-
-#. Prowl priority
-#: sabnzbd/skintext.py
-msgid "Moderate"
-msgstr "Kohtalainen"
-
-#. Prowl priority - Priority pick list
-#: sabnzbd/skintext.py
-msgid "Normal"
-msgstr "Normaali"
-
-#. Prowl priority - Priority pick list
-#: sabnzbd/skintext.py
-msgid "High"
-msgstr "Korkea"
-
-#. Prowl priority
-#: sabnzbd/skintext.py
-msgid "Emergency"
-msgstr "Hälytys"
-
-#. Prowl priority - Priority pick list
-#: sabnzbd/skintext.py
-msgid "Low"
-msgstr "Matala"
-
 #. Megabytes
 #: sabnzbd/skintext.py
 msgid "MB"
@@ -2417,6 +2357,21 @@ msgstr "D"
 #: sabnzbd/skintext.py
 msgid "Force"
 msgstr "Pakota"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "Normal"
+msgstr "Normaali"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "High"
+msgstr "Korkea"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "Low"
+msgstr "Matala"
 
 #. Priority pick list
 #: sabnzbd/skintext.py
@@ -3464,6 +3419,11 @@ msgid ""
 "the download name"
 msgstr ""
 
+#. Three way switch for duplicates
+#: sabnzbd/skintext.py
+msgid "Off"
+msgstr "Ei käytössä"
+
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
 msgid "Discard"
@@ -4264,129 +4224,6 @@ msgstr "Windows-ilmoitukset"
 #: sabnzbd/skintext.py
 msgid "NotifyOSD"
 msgstr "IlmoitusOSD"
-
-#. Header for Prowl notification section
-#: sabnzbd/skintext.py
-msgid "Prowl"
-msgstr "Prowl"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "Enable Prowl notifications"
-msgstr "Prowl ilmoitukset käytössä"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "Requires a Prowl account"
-msgstr "Vaatii Prowl-tilin"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "API key for Prowl"
-msgstr "Prowl API avain"
-
-#. Prowl settings
-#: sabnzbd/skintext.py
-msgid "Personal API key for Prowl (required)"
-msgstr "Prowlin henkilökohtainen API avain (pakollinen)"
-
-#. Header for Pushover notification section
-#: sabnzbd/skintext.py
-msgid "Pushover"
-msgstr "Pushover"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Enable Pushover notifications"
-msgstr "Pushover ilmoitukset käytössä"
-
-#. Pushoversettings
-#: sabnzbd/skintext.py
-msgid "Requires a Pushover account"
-msgstr "Vaatii Pushover tilin"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Application Token"
-msgstr "Ohjelman token"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Application token (required)"
-msgstr "Ohjelman token (pakollinen)"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "User Key"
-msgstr "Käyttäjän avain"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "User Key (required)"
-msgstr "Käyttäjän avain (pakollinen)"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Device(s)"
-msgstr "Laitteet"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Device(s) to which message should be sent"
-msgstr "Laitteet joihin viesti lähetetään"
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Emergency retry"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "How often (in seconds) the same notification will be sent"
-msgstr ""
-
-#. Pushover settings
-#: sabnzbd/skintext.py
-msgid "Emergency expire"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "How many seconds your notification will continue to be retried"
-msgstr ""
-
-#. Header for Pushbullet notification section
-#: sabnzbd/skintext.py
-msgid "Pushbullet"
-msgstr "Pushbullet"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Enable Pushbullet notifications"
-msgstr "Pushbullet ilmoitukset käytössä"
-
-#. Pushbulletsettings
-#: sabnzbd/skintext.py
-msgid "Requires a Pushbullet account"
-msgstr "Vaatii Pushbullet tilin"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Personal API key"
-msgstr "Henkilökohtainen API avain"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Your personal Pushbullet API key (required)"
-msgstr "Henkilökohtainen Pushbullet API avain (pakollinen)"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Device"
-msgstr "Laite"
-
-#. Pushbullet settings
-#: sabnzbd/skintext.py
-msgid "Device to which message should be sent"
-msgstr "Laite johon viesti lähetetään"
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
