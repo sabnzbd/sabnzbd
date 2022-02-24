@@ -869,27 +869,6 @@ def _api_test_osd(name, kwargs):
     return report(error=res)
 
 
-def _api_test_prowl(name, kwargs):
-    """API: send a test Prowl notification, return result"""
-    logging.info("Sending Prowl notification")
-    res = sabnzbd.notifier.send_prowl("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
-    return report(error=res)
-
-
-def _api_test_pushover(name, kwargs):
-    """API: send a test Pushover notification, return result"""
-    logging.info("Sending Pushover notification")
-    res = sabnzbd.notifier.send_pushover("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
-    return report(error=res)
-
-
-def _api_test_pushbullet(name, kwargs):
-    """API: send a test Pushbullet notification, return result"""
-    logging.info("Sending Pushbullet notification")
-    res = sabnzbd.notifier.send_pushbullet("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
-    return report(error=res)
-
-
 def _api_test_nscript(name, kwargs):
     """API: execute a test notification script, return result"""
     logging.info("Executing notification script")
@@ -1067,9 +1046,6 @@ _api_table = {
     "test_windows": (_api_test_windows, 3),
     "test_notif": (_api_test_notif, 3),
     "test_osd": (_api_test_osd, 3),
-    "test_pushover": (_api_test_pushover, 3),
-    "test_pushbullet": (_api_test_pushbullet, 3),
-    "test_prowl": (_api_test_prowl, 3),
     "test_nscript": (_api_test_nscript, 3),
 }
 
