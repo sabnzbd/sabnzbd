@@ -1,6 +1,7 @@
 # Testing requirements
 selenium
 requests
+pkginfo
 pytest
 pyfakefs
 pytest-httpbin
