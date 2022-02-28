@@ -139,9 +139,7 @@ def run_sabnews_and_selenium(request):
 
     # Start the driver and pass it on to all the classes
     driver = webdriver.Chrome(options=driver_options)
-    for item in request.node.items:
-        parent_class = item.getparent(pytest.Class)
-        parent_class.obj.driver = driver
+    SABnzbdBaseTest.driver = driver
 
     # Start SABNews
     sabnews_process = subprocess.Popen([sys.executable, os.path.join(SAB_BASE_DIR, "sabnews.py")])

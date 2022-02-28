@@ -230,6 +230,8 @@ class FakeHistoryDB(db.HistoryDB):
 
 @pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
 class SABnzbdBaseTest:
+    driver = None
+
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test
         assert "500 Internal Server Error" not in self.driver.title
