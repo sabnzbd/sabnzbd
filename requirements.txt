@@ -33,7 +33,7 @@ rebulk==3.1.0
 pywin32==303; sys_platform == 'win32'
 
 # macOS system calls
-pyobjc==8.1; sys_platform == 'darwin'
+pyobjc==8.3; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
