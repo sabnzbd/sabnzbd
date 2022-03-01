@@ -305,6 +305,37 @@ if __name__ == "__main__":
         notarization_user = os.environ.get("NOTARIZATION_USER")
         notarization_pass = os.environ.get("NOTARIZATION_PASS")
 
+        # We need to sign all the included binaries before packaging them
+        # Otherwise the signature of the main application becomes invalid
+        if authority:
+            files_to_sign = [
+                "osx/par2/par2-sl64",
+                "osx/par2/arm64/par2",
+                "osx/par2/arm64/libomp.dylib",
+                "osx/unrar/unrar",
+                "osx/unrar/arm64/unrar",
+                "osx/7zip/7zz",
+            ]
+            for file_to_sign in files_to_sign:
+                print("Signing %s with hardended runtime" % file_to_sign)
+                run_external_command(
+                    [
+                        "codesign",
+                        "--deep",
+                        "--force",
+                        "--timestamp",
+                        "--options",
+                        "runtime",
+                        "--entitlements",
+                        "builder/osx/entitlements.plist",
+                        "-s",
+                        authority,
+                        file_to_sign,
+                    ],
+                    print_output=False,
+                )
+                print("Signed %s!" % file_to_sign)
+
         # Run PyInstaller and check output
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
@@ -319,38 +350,32 @@ if __name__ == "__main__":
 
         # Only continue if we can sign
         if authority:
-            files_to_sign = [
-                "dist/SABnzbd.app/Contents/MacOS/osx/par2/par2-sl64",
-                "dist/SABnzbd.app/Contents/MacOS/osx/par2/arm64/par2",
-                "dist/SABnzbd.app/Contents/MacOS/osx/par2/arm64/libomp.dylib",
-                "dist/SABnzbd.app/Contents/MacOS/osx/unrar/unrar",
-                "dist/SABnzbd.app/Contents/MacOS/osx/unrar/arm64/unrar",
-                "dist/SABnzbd.app/Contents/MacOS/osx/7zip/7zz",
+            # We use PyInstaller to sign the main SABnzbd executable and the SABnzbd.app
+            files_already_signed = [
                 "dist/SABnzbd.app/Contents/MacOS/SABnzbd",
                 "dist/SABnzbd.app",
             ]
-
-            for file_to_sign in files_to_sign:
-                print("Signing %s with hardended runtime" % file_to_sign)
-                run_external_command(
+            for file_to_check in files_already_signed:
+                print("Checking signature of %s" % file_to_check)
+                sign_result = run_external_command(
                     [
                         "codesign",
+                        "-dv",
+                        "-r-",
+                        file_to_check,
+                    ],
+                    print_output=False,
+                ) + run_external_command(
+                    [
+                        "codesign",
+                        "--verify",
                         "--deep",
-                        "--force",
-                        "--timestamp",
-                        "--options",
-                        "runtime",
-                        "--entitlements",
-                        "builder/osx/entitlements.plist",
-                        "-i",
-                        "org.sabnzbd.sabnzbd",
-                        "-s",
-                        authority,
-                        file_to_sign,
+                        file_to_check,
                     ],
                     print_output=False,
                 )
-                print("Signed %s!" % file_to_sign)
+                if authority not in sign_result or "adhoc" in sign_result or "invalid" in sign_result:
+                    raise RuntimeError("Signature of %s seems invalid!" % file_to_check)
 
             # Only notarize for real builds that we want to deploy
             if notarization_user and notarization_pass and RELEASE_THIS:
