@@ -1,5 +1,4 @@
 # -*- mode: python -*-
-import os
 import re
 import sys
 import pkginfo
@@ -127,7 +126,6 @@ pyi_analysis = Analysis(
 
 pyz = PYZ(pyi_analysis.pure, pyi_analysis.zipped_data)
 
-# macOS specific parameters are ignored on other platforms
 exe = EXE(
     pyz,
     pyi_analysis.scripts,
@@ -140,8 +138,6 @@ exe = EXE(
     icon="icons/sabnzbd.ico",
     version=version_info,
     target_arch="universal2",
-    entitlements_file="builder/osx/entitlements.plist",
-    codesign_identity=os.environ.get("SIGNING_AUTH"),
 )
 
 coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.zipfiles, pyi_analysis.datas, name="SABnzbd")
@@ -193,10 +189,4 @@ if sys.platform == "darwin":
         "LSEnvironment": {"LANG": "en_US.UTF-8", "LC_ALL": "en_US.UTF-8"},
     }
 
-    app = BUNDLE(
-        coll,
-        name="SABnzbd.app",
-        icon="builder/osx/image/sabnzbdplus.icns",
-        bundle_identifier="org.sabnzbd.sabnzbd",
-        info_plist=info_plist,
-    )
+    app = BUNDLE(coll, name="SABnzbd.app", icon="builder/osx/image/sabnzbdplus.icns", info_plist=info_plist)
