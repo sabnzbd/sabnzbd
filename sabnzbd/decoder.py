@@ -76,6 +76,9 @@ class Decoder:
             self.decoder_workers.append(DecoderWorker(self.decoder_queue))
 
     def start(self):
+        # Log the optimization used by SABYenc
+        # If it is not installed, the decoder should never be started
+        logging.info("SABYenc is using SIMD set: %s", sabyenc3.decoder_simd)
         for decoder_worker in self.decoder_workers:
             decoder_worker.start()
 
@@ -237,7 +240,7 @@ class DecoderWorker(Thread):
 
 def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
     # Let SABYenc do all the heavy lifting
-    decoded_data, yenc_filename, crc, crc_expected, crc_correct = sabyenc3.decode_usenet_chunks(raw_data, article.bytes)
+    decoded_data, yenc_filename, crc_correct = sabyenc3.decode_usenet_chunks(raw_data)
 
     # Mark as decoded
     article.decoded = True
