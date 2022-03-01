@@ -30,7 +30,7 @@ jobs:
         run: |
           python3 tools/make_mo.py
       - name: Push translatable and translated texts back to repo
-        uses: stefanzweifel/git-auto-commit-action@v4.5.1
+        uses: stefanzweifel/git-auto-commit-action@v4.13.1
         if: env.TX_TOKEN
         with:
           commit_message: Update translatable texts
