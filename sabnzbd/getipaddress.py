@@ -33,9 +33,6 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
 
-# Initialize pool to be re-used later
-THREAD_POOL = multiprocessing.pool.ThreadPool()
-
 
 def timeout(max_timeout: float):
     """Timeout decorator, parameter in seconds."""
@@ -47,7 +44,7 @@ def timeout(max_timeout: float):
         def func_wrapper(*args, **kwargs):
             """Closure for function."""
             # Raises a TimeoutError if execution exceeds max_timeout
-            return THREAD_POOL.apply_async(item, args, kwargs).get(max_timeout)
+            return sabnzbd.THREAD_POOL.submit(item, *args, **kwargs).result(max_timeout)
 
         return func_wrapper
 

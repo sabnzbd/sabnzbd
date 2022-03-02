@@ -21,8 +21,10 @@ import datetime
 import ctypes.util
 import time
 import socket
+
 import cherrypy
 import platform
+import concurrent.futures
 import sys
 from threading import Lock, Condition
 
@@ -180,6 +182,9 @@ RESTORE_DATA = None
 
 # Condition used to handle the main loop in SABnzbd.py
 SABSTOP_CONDITION = Condition(Lock())
+
+# General threadpool
+THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
@@ -371,6 +376,8 @@ def halt():
         sabnzbd.utils.ssdp.stop_ssdp()
 
         sabnzbd.directunpacker.abort_all()
+
+        sabnzbd.THREAD_POOL.shutdown(wait=False)
 
         logging.debug("Stopping RSSReader")
         sabnzbd.RSSReader.stop()
