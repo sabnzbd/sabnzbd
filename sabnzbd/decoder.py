@@ -36,11 +36,13 @@ from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version
 SABYENC_VERSION = None
+SABYENC_FILE = None
 try:
     import sabyenc3
 
     SABYENC_ENABLED = True
     SABYENC_VERSION = sabyenc3.__version__
+    SABYENC_FILE = sabyenc3.__file__
     # Verify version to at least match minor version
     if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
         raise ImportError
