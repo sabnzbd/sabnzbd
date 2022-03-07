@@ -127,6 +127,11 @@ pyi_analysis = Analysis(
 
 pyz = PYZ(pyi_analysis.pure, pyi_analysis.zipped_data)
 
+codesign_identity = os.environ.get("SIGNING_AUTH")
+if not codesign_identity:
+    # PyInstaller needs specifically None, not just an empty value
+    codesign_identity = None
+
 # macOS specific parameters are ignored on other platforms
 exe = EXE(
     pyz,
@@ -141,7 +146,7 @@ exe = EXE(
     version=version_info,
     target_arch="universal2",
     entitlements_file="builder/osx/entitlements.plist",
-    codesign_identity=os.environ.get("SIGNING_AUTH"),
+    codesign_identity=codesign_identity,
 )
 
 coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.zipfiles, pyi_analysis.datas, name="SABnzbd")
