@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python 3.10 (64bit)
       uses: actions/setup-python@v3
       with:
@@ -100,7 +100,7 @@ jobs:
       # We need to force compile for universal2 support
       CFLAGS: -arch arm64 -arch x86_64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Cache Python download
       id: cache-python-download
       uses: actions/cache@v2
@@ -172,7 +172,7 @@ jobs:
     env:
       SNAP_TOKEN: ${{ secrets.SNAP_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
