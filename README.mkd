@@ -1,5 +1,8 @@
-Release Notes - SABnzbd 3.5.1
+Release Notes - SABnzbd 3.5.2
 =========================================================
+
+## Bugfix since 3.5.1
+- Reverted change to file assembly that resulted in disk errors.
 
 ## Changes and bugfixes since 3.5.0
 - Prevent permissions errors on systems that do not support them.
