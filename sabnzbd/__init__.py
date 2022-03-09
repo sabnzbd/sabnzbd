@@ -318,6 +318,12 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         cfg.cache_limit.set(misc.get_cache_limit())
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
+    # Notify about the removed support of Prowl/Pushover/Pushbullet
+    if cfg.prowl_enable() or cfg.pushbullet_enable() or cfg.pushover_enable():
+        misc.helpful_warning(
+            "Support for Prowl/Pushover/Pushbullet will be removed in SABnzbd 3.6.0. Please switch to the Notification Script 'nzb-notify' to continue using these services."
+        )
+
     logging.info("All processes started")
     sabnzbd.RESTART_REQ = False
     sabnzbd.__INITIALIZED__ = True
