@@ -681,7 +681,7 @@ def _get_link(entry):
 
     # GUID usually has URL to result on page
     infourl = None
-    if entry.get("id") and entry.id != link and entry.id.startswith("http"):
+    if entry.get("id") and entry.id != link and entry.id.lower().startswith("http"):
         infourl = entry.id
 
     if size == 0:
@@ -716,7 +716,7 @@ def _get_link(entry):
     except (KeyError, IndexError):
         season = episode = 0
 
-    if link and "http" in link.lower():
+    if link and link.lower().startswith("http"):
         try:
             category = entry.cattext
         except AttributeError:
