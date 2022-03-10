@@ -80,7 +80,7 @@ class Decoder:
     def start(self):
         # Log the optimization used by SABYenc
         # If it is not installed, the decoder should never be started
-        logging.info("SABYenc is using SIMD set: %s", sabyenc3.decoder_simd)
+        logging.info("SABYenc is using SIMD set: %s", sabyenc3.simd)
         for decoder_worker in self.decoder_workers:
             decoder_worker.start()
 
