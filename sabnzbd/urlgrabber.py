@@ -63,8 +63,6 @@ class URLGrabber(Thread):
     def __init__(self):
         super().__init__()
         self.queue: queue.Queue[Tuple[Optional[str], Optional[NzbObject]]] = queue.Queue()
-        for url_nzo_tup in sabnzbd.NzbQueue.get_urls():
-            self.queue.put(url_nzo_tup)
         self.shutdown = False
 
     def add(self, url: str, future_nzo: NzbObject, when: Optional[int] = None):
@@ -87,7 +85,11 @@ class URLGrabber(Thread):
         self.queue.put((None, None))
 
     def run(self):
-        self.shutdown = False
+        # Read all URL's to grab from the queue
+        for url_nzo_tup in sabnzbd.NzbQueue.get_urls():
+            self.queue.put(url_nzo_tup)
+
+        # Start fetching
         while not self.shutdown:
             # Set NzbObject object to None so reference from this thread
             # does not keep the object alive in the future (see #1628)
@@ -403,7 +405,7 @@ def add_url(
     password: Optional[str] = None,
 ):
     """Add NZB based on a URL, attributes optional"""
-    if "http" not in url:
+    if not url.lower().startswith("http"):
         return
     if not pp or pp == "-1":
         pp = None
