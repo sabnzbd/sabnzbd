@@ -352,10 +352,10 @@ class DirectUnpacker(threading.Thread):
         return False
 
     def wait_for_next_volume(self):
-        """Wait for the correct volume to appear
-        But stop if it was killed or the NZB is done
+        """Wait for the correct volume to appear but stop if it was killed
+        or the NZB is in post-processing and no new files will be downloaded.
         """
-        while not self.have_next_volume() and not self.killed and self.nzo.files:
+        while not self.have_next_volume() and not self.killed and not self.nzo.pp_active:
             with self.next_file_lock:
                 self.next_file_lock.wait()
 
