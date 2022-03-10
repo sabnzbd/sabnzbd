@@ -191,9 +191,13 @@ class Assembler(Thread):
                             else:
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
-                            logging.info("Traceback: ", exc_info=True)
                             if sabnzbd.WIN32:
-                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32))
+                                logging.info(
+                                    "Winerror: %s - %s",
+                                    err.winerror,
+                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32),
+                                )
+                            logging.info("Traceback: ", exc_info=True)
                             # Pause without saving
                             sabnzbd.Downloader.pause()
                         else:
