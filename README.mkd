@@ -1,8 +1,9 @@
-Release Notes - SABnzbd 3.5.2
+Release Notes - SABnzbd 3.5.3 Release Candidate 1
 =========================================================
 
-## Bugfix since 3.5.1
-- Reverted change to file assembly that resulted in disk errors.
+## Bugfix since 3.5.0
+- Prevent disk errors due to Direct Unpack being too aggressive.
+- URL's waiting to fetch get stuck indefinitely upon restart.
 
 ## Changes and bugfixes since 3.5.0
 - Prevent permissions errors on systems that do not support them.
