@@ -2706,6 +2706,18 @@ msgstr "Navnserver / DNS oppslag"
 msgid "CPU Model"
 msgstr "CPU-modell"
 
+#: sabnzbd/skintext.py
+msgid "Download speed limited by"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "CPU"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Disk speed"
+msgstr ""
+
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"

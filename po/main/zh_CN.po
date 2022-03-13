@@ -2691,6 +2691,18 @@ msgstr "域名服务器 / DNS 查询"
 msgid "CPU Model"
 msgstr "CPU 型号"
 
+#: sabnzbd/skintext.py
+msgid "Download speed limited by"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "CPU"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Disk speed"
+msgstr ""
+
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
