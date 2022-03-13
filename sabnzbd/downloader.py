@@ -533,9 +533,13 @@ class Downloader(Thread):
 
         # See if we need to delay because the queues are full
         logged = False
-        while not self.shutdown and (sabnzbd.Decoder.queue_full() or sabnzbd.Assembler.queue_full()):
+        decoder_full = sabnzbd.Decoder.queue_full()
+        assembler_full = sabnzbd.Assembler.queue_full()
+        while not self.shutdown and (decoder_full or assembler_full):
             if not logged:
                 # Only log once, to not waste any CPU-cycles
+                sabnzbd.BPSMeter.delayed_decoder += int(decoder_full)
+                sabnzbd.BPSMeter.delayed_assembler += int(assembler_full)
                 logging.debug(
                     "Delaying - Decoder queue: %s - Assembler queue: %s",
                     sabnzbd.Decoder.decoder_queue.qsize(),

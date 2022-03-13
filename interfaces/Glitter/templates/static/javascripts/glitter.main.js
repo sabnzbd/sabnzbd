@@ -62,9 +62,10 @@ function ViewModel() {
     self.statusInfo.publicipv4 = ko.observable();
     self.statusInfo.ipv6 = ko.observable();
     self.statusInfo.dnslookup = ko.observable();
+    self.statusInfo.delayed_decoder = ko.observable();
+    self.statusInfo.delayed_assembler = ko.observable();
     self.statusInfo.pystone = ko.observable();
     self.statusInfo.cpumodel = ko.observable();
-
     self.statusInfo.downloaddir = ko.observable();
     self.statusInfo.downloaddirspeed = ko.observable();
     self.statusInfo.completedir = ko.observable();
@@ -733,6 +734,8 @@ function ViewModel() {
         }, 30000).then(function(data) {
             // Update basic
             self.statusInfo.folders(data.status.folders)
+            self.statusInfo.delayed_decoder(data.status.delayed_decoder)
+            self.statusInfo.delayed_assembler(data.status.delayed_assembler)
 
             // Update the full set if the data is available
             if("dnslookup" in data.status) {

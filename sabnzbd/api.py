@@ -1297,6 +1297,10 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         # Internet bandwidth
         sabnzbd.INTERNET_BANDWIDTH = round(internetspeed_future.result(), 1)
 
+    # How often did we delay?
+    info["delayed_decoder"] = sabnzbd.BPSMeter.delayed_decoder
+    info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
+
     # Dashboard: Speed of System
     info["cpumodel"] = getcpu()
     info["pystone"] = sabnzbd.PYSTONE_SCORE
