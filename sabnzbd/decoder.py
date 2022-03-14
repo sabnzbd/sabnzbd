@@ -74,15 +74,17 @@ class Decoder:
         # Initialize queue and servers
         self.decoder_queue = queue.Queue()
 
+        # If no SIMD is available, use at least 2 decoders
+        num_decoders = cfg.num_simd_decoders()
+        if not SABYENC_SIMD:
+            num_decoders = max(2, num_decoders)
+
         # Initialize decoders
         self.decoder_workers = []
-        for i in range(cfg.num_decoders()):
+        for i in range(num_decoders):
             self.decoder_workers.append(DecoderWorker(self.decoder_queue))
 
     def start(self):
-        # Log the optimization used by SABYenc
-        # If it is not installed, the decoder should never be started
-        logging.info("SABYenc is using SIMD set: %s", sabyenc3.simd)
         for decoder_worker in self.decoder_workers:
             decoder_worker.start()
 
@@ -117,7 +119,7 @@ class Decoder:
 
 
 class DecoderWorker(Thread):
-    """The actuall workhorse that handles decoding!"""
+    """The actual workhorse that handles decoding!"""
 
     def __init__(self, decoder_queue):
         super().__init__()

@@ -421,6 +421,7 @@ def print_modules():
     if sabnzbd.decoder.SABYENC_ENABLED:
         # Yes, we have SABYenc, and it's the correct version, so it's enabled
         logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
+        logging.info("SABYenc module is using SIMD set: %s", sabnzbd.decoder.SABYENC_SIMD)
     else:
         # Something wrong with SABYenc, so let's determine and print what:
         if sabnzbd.decoder.SABYENC_VERSION:
