@@ -992,7 +992,6 @@ GENERAL_LIST = (
     "host",
     "port",
     "username",
-    "refresh_rate",
     "language",
     "cache_limit",
     "inet_exposure",

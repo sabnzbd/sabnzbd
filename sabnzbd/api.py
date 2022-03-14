@@ -1396,10 +1396,8 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
     except:
         info["eta"] = T("unknown")
 
-    info["refresh_rate"] = str(cfg.refresh_rate()) if cfg.refresh_rate() > 0 else ""
     info["scripts"] = list_scripts()
     info["categories"] = list_cats()
-    info["rating_enable"] = bool(cfg.rating_enable())
     info["noofslots"] = qnfo.q_fullsize
     info["start"] = start
     info["limit"] = limit
@@ -1678,7 +1676,6 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     anfo = sabnzbd.ArticleCache.cache_info()
     header["cache_art"] = str(anfo.article_sum)
     header["cache_size"] = to_units(anfo.cache_size, "B")
-    header["cache_max"] = str(anfo.cache_limit)
 
     return header
 
