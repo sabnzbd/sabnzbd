@@ -135,7 +135,7 @@ def test_sab_binary(binary_path: str):
             try:
                 urllib.request.urlopen(base_url, timeout=1).read()
                 break
-            except urllib.error.URLError:
+            except:
                 time.sleep(1)
         else:
             raise urllib.error.URLError("Could not connect to SABnzbd")
