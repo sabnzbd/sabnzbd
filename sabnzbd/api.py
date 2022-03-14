@@ -1275,11 +1275,12 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     # build up header full of basic information
     info = build_header(trans_functions=False)
 
-    info["logfile"] = sabnzbd.LOGFILE
-    info["weblogfile"] = sabnzbd.WEBLOGFILE
+    info["logfile"] = clip_path(sabnzbd.LOGFILE)
+    info["weblogfile"] = clip_path(sabnzbd.WEBLOGFILE)
+    info["webdir"] = clip_path(info["webdir"])
     info["loglevel"] = str(cfg.log_level())
     info["folders"] = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
-    info["configfn"] = config.get_filename()
+    info["configfn"] = clip_path(config.get_filename())
     info["warnings"] = sabnzbd.GUIHANDLER.content()
 
     # Calculate performance measures, if requested
@@ -1396,7 +1397,6 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         info["eta"] = T("unknown")
 
     info["refresh_rate"] = str(cfg.refresh_rate()) if cfg.refresh_rate() > 0 else ""
-    info["interface_settings"] = cfg.interface_settings()
     info["scripts"] = list_scripts()
     info["categories"] = list_cats()
     info["rating_enable"] = bool(cfg.rating_enable())

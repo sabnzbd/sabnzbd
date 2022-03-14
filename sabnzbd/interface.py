@@ -1017,7 +1017,6 @@ class ConfigGeneral:
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf["configfn"] = config.get_filename()
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
         web_list = []
