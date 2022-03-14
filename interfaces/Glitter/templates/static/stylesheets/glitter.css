@@ -1370,6 +1370,12 @@ tr.queue-item>td:first-child>a {
     padding-top: 3px;
 }
 
+#modal-options .col-dot-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 #modal-options #options-status .glyphicon:not(.glyphicon-comment) {
     margin-right: 5px;
     margin-left: 3px;

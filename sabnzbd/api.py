@@ -49,7 +49,7 @@ from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.internetspeed import internetspeed
 from sabnzbd.utils.pathbrowser import folders_at_path
-from sabnzbd.utils.getperformance import getcpu, getpystone
+from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.misc import (
     loadavg,
     to_units,
@@ -1302,7 +1302,6 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
 
     # Dashboard: Speed of System
-    info["cpumodel"] = getcpu()
     info["pystone"] = sabnzbd.PYSTONE_SCORE
 
     # Dashboard: Speed of Download directory:

@@ -65,7 +65,6 @@ function ViewModel() {
     self.statusInfo.delayed_decoder = ko.observable();
     self.statusInfo.delayed_assembler = ko.observable();
     self.statusInfo.pystone = ko.observable();
-    self.statusInfo.cpumodel = ko.observable();
     self.statusInfo.downloaddir = ko.observable();
     self.statusInfo.downloaddirspeed = ko.observable();
     self.statusInfo.completedir = ko.observable();
@@ -740,7 +739,6 @@ function ViewModel() {
             // Update the full set if the data is available
             if("dnslookup" in data.status) {
                 self.statusInfo.pystone(data.status.pystone)
-                self.statusInfo.cpumodel(data.status.cpumodel)
                 self.statusInfo.downloaddir(data.status.downloaddir)
                 self.statusInfo.downloaddirspeed(data.status.downloaddirspeed)
                 self.statusInfo.completedir(data.status.completedir)
