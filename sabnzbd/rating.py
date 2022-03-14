@@ -116,6 +116,15 @@ class Rating(Thread):
         except:
             logging.info("Corrupt %s file, discarding", RATING_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
+
+        # TODO: Decide on supporting it longer
+        if cfg.rating_enable():
+            sabnzbd.misc.helpful_warning(
+                "We are considering removing 'Indexer Integration' in a future release of SABnzbd. "
+                "If you still use it (you have it enabled), please let us know on our forums or at: "
+                "https://github.com/sabnzbd/sabnzbd/discussions/2118"
+            )
+
         super().__init__()
 
     def stop(self):
