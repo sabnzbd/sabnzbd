@@ -546,7 +546,11 @@ class Downloader(Thread):
                     sabnzbd.Assembler.queue.qsize(),
                 )
                 logged = True
+
+            # Pause and update the stats
             time.sleep(0.01)
+            decoder_full = sabnzbd.Decoder.queue_full()
+            assembler_full = sabnzbd.Assembler.queue_full()
 
     def run(self):
         # First check IPv6 connectivity
