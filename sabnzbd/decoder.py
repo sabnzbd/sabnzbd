@@ -48,7 +48,7 @@ try:
     # Verify version to at least match minor version
     if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
         raise ImportError
-except ImportError:
+except:
     SABYENC_ENABLED = False
 
 
