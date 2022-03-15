@@ -1107,27 +1107,27 @@ msgstr ""
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
-msgstr "Prowl viestin lähetys epäonnistui"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushover (%s): %s"
-msgstr "Virheellinen vastaus Pushoverilta (%s): %s"
+msgstr ""
 
 #. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
-msgstr "Pushover viestin lähetys epäonnistui"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Virheellinen vastaus Pushbulletilta (%s): %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushbullet message"
-msgstr "Pushbullet viestin lähetys epäonnistui"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1972,12 +1972,12 @@ msgstr "Ei käytössä"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Very Low"
-msgstr "Erittäin vähäinen"
+msgstr ""
 
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Moderate"
-msgstr "Kohtalainen"
+msgstr ""
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -1992,7 +1992,7 @@ msgstr "Korkea"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Emergency"
-msgstr "Hälytys"
+msgstr ""
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -4280,72 +4280,72 @@ msgstr "IlmoitusOSD"
 #. Header for Prowl notification section
 #: sabnzbd/skintext.py
 msgid "Prowl"
-msgstr "Prowl"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Enable Prowl notifications"
-msgstr "Prowl ilmoitukset käytössä"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Requires a Prowl account"
-msgstr "Vaatii Prowl-tilin"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "API key for Prowl"
-msgstr "Prowl API avain"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Personal API key for Prowl (required)"
-msgstr "Prowlin henkilökohtainen API avain (pakollinen)"
+msgstr ""
 
 #. Header for Pushover notification section
 #: sabnzbd/skintext.py
 msgid "Pushover"
-msgstr "Pushover"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushover notifications"
-msgstr "Pushover ilmoitukset käytössä"
+msgstr ""
 
 #. Pushoversettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushover account"
-msgstr "Vaatii Pushover tilin"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application Token"
-msgstr "Ohjelman token"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application token (required)"
-msgstr "Ohjelman token (pakollinen)"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key"
-msgstr "Käyttäjän avain"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key (required)"
-msgstr "Käyttäjän avain (pakollinen)"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s)"
-msgstr "Laitteet"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s) to which message should be sent"
-msgstr "Laitteet joihin viesti lähetetään"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4368,37 +4368,37 @@ msgstr ""
 #. Header for Pushbullet notification section
 #: sabnzbd/skintext.py
 msgid "Pushbullet"
-msgstr "Pushbullet"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushbullet notifications"
-msgstr "Pushbullet ilmoitukset käytössä"
+msgstr ""
 
 #. Pushbulletsettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushbullet account"
-msgstr "Vaatii Pushbullet tilin"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Personal API key"
-msgstr "Henkilökohtainen API avain"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Your personal Pushbullet API key (required)"
-msgstr "Henkilökohtainen Pushbullet API avain (pakollinen)"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device"
-msgstr "Laite"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
-msgstr "Laite johon viesti lähetetään"
+msgstr ""
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py

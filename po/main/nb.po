@@ -1104,27 +1104,27 @@ msgstr ""
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
-msgstr "Klarte ikke å sende Prowl melding"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushover (%s): %s"
-msgstr "Ukorrekt svar fra Pushover (%s): %s"
+msgstr ""
 
 #. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
-msgstr "Klarte ikke å sende pushover-melding"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Ukorrekt svar fra Pushbullet (%s): %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushbullet message"
-msgstr "Klarte ikke å sende pushbullet-melding"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1969,12 +1969,12 @@ msgstr "Av"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Very Low"
-msgstr "Veldig lav"
+msgstr ""
 
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Moderate"
-msgstr "Moderer"
+msgstr ""
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -1989,7 +1989,7 @@ msgstr "Høy"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Emergency"
-msgstr "Nødssituasjon"
+msgstr ""
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -4257,72 +4257,72 @@ msgstr "NotifyOSD"
 #. Header for Prowl notification section
 #: sabnzbd/skintext.py
 msgid "Prowl"
-msgstr "Prowl"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Enable Prowl notifications"
-msgstr "Aktiver Prowl-varslinger"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Requires a Prowl account"
-msgstr "Krever en Prowl-konto"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "API key for Prowl"
-msgstr "API-nøkkel for Prowl"
+msgstr ""
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Personal API key for Prowl (required)"
-msgstr "Personlig API-nøkkel for Prowl (påkrevd)"
+msgstr ""
 
 #. Header for Pushover notification section
 #: sabnzbd/skintext.py
 msgid "Pushover"
-msgstr "Pushover"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushover notifications"
-msgstr "Aktiver Pushover-varslinger"
+msgstr ""
 
 #. Pushoversettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushover account"
-msgstr "Krever en Pushover-konto"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application Token"
-msgstr "Program-token"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application token (required)"
-msgstr "Program-token (påkrevd)"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key"
-msgstr "Brukernøkkel"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key (required)"
-msgstr "Brukernøkkel (påkrevd)"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s)"
-msgstr "Enhet(er)"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s) to which message should be sent"
-msgstr "Enhet(er) som meldingen skal sendes til"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4345,37 +4345,37 @@ msgstr ""
 #. Header for Pushbullet notification section
 #: sabnzbd/skintext.py
 msgid "Pushbullet"
-msgstr "Pushbullet"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushbullet notifications"
-msgstr "Aktiver Pushbullet-varslinger"
+msgstr ""
 
 #. Pushbulletsettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushbullet account"
-msgstr "Krever en Pushbullet-konto"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Personal API key"
-msgstr "Personlig API-nøkkel"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Your personal Pushbullet API key (required)"
-msgstr "Din personlige Pushbullet API-nøkkel (påkrevd)"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device"
-msgstr "Enhet"
+msgstr ""
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
-msgstr "Enheten meldingen skal sendes til"
+msgstr ""
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py

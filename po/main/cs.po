@@ -1111,27 +1111,27 @@ msgstr "Nepodařilo se odeslat macOS oznámení"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
-msgstr "Nepodařilo se odeslat Prowl zprávu"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushover (%s): %s"
-msgstr "Nesprávná odpověd z Pushover (%s): %s"
+msgstr ""
 
 #. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
-msgstr "Nezdařilo se odeslat pushover zprávu"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr "Nesprávná odpověd z Pushbullet (%s): %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushbullet message"
-msgstr "Nezdařilo se odeslat pushbullet zprávu"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1948,7 +1948,7 @@ msgstr "Vypnuto"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Very Low"
-msgstr "Velmi nízká"
+msgstr ""
 
 #. Prowl priority
 #: sabnzbd/skintext.py
@@ -4243,7 +4243,7 @@ msgstr ""
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s)"
-msgstr "Zařízení"
+msgstr ""
 
 #. Pushover settings
 #: sabnzbd/skintext.py
