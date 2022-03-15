@@ -1151,6 +1151,10 @@ class NzbObject(TryList):
                 new_nzf = block_list.pop()
                 if self.add_parfile(new_nzf):
                     added_blocks += new_nzf.blocks
+                else:
+                    avail_blocks -= new_nzf.blocks
+                    if avail_blocks < needed_blocks:
+                        return 0
 
             logging.info("Added %s blocks to %s", added_blocks, self.final_name)
             return added_blocks
