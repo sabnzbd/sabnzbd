@@ -1831,7 +1831,7 @@ msgstr "Uitpakken"
 #. PP phase "deobfuscate"
 #: sabnzbd/skintext.py
 msgid "Deobfuscate"
-msgstr ""
+msgstr "Bestandsnaam verbeteren"
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
@@ -2799,15 +2799,15 @@ msgstr "CPU-model"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
-msgstr ""
+msgstr "Downloadsnelheid beperkt door"
 
 #: sabnzbd/skintext.py
 msgid "CPU"
-msgstr ""
+msgstr "Processor"
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
-msgstr ""
+msgstr "Hardeschijf"
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -3131,11 +3131,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Download backup"
-msgstr ""
+msgstr "Backup downloaden"
 
 #: sabnzbd/skintext.py
 msgid "Save or restore a backup of the configuration file and databases."
-msgstr ""
+msgstr "Backup van de configuratie en de database opslaan of herstellen"
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -5059,7 +5059,7 @@ msgstr "Bevestig verwijderen uit geschiedenis"
 
 #: sabnzbd/skintext.py
 msgid "Keyboard shortcuts"
-msgstr ""
+msgstr "Sneltoetsen"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
@@ -5217,7 +5217,7 @@ msgstr "Wizard starten"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"
-msgstr ""
+msgstr "Backup herstellen"
 
 #: sabnzbd/skintext.py
 msgid ""
