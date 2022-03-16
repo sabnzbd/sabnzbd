@@ -3,13 +3,13 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
+# Safihre <safihre@sabnzbd.org>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.6.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1091,27 +1091,27 @@ msgstr ""
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
-msgstr ""
+msgstr "无法发送 Prowl 消息"
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushover (%s): %s"
-msgstr ""
+msgstr "Pushover 响应异常 (%s): %s"
 
 #. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
-msgstr ""
+msgstr "无法发送 pushover 信息"
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr ""
+msgstr "Pushbullet 响应异常 (%s): %s"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushbullet message"
-msgstr ""
+msgstr "无法发送 pushbullet 信息"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1956,12 +1956,12 @@ msgstr "关"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Very Low"
-msgstr ""
+msgstr "非常低"
 
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Moderate"
-msgstr ""
+msgstr "适中"
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -1976,7 +1976,7 @@ msgstr "高"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Emergency"
-msgstr ""
+msgstr "紧急"
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -4192,72 +4192,72 @@ msgstr "屏显通知"
 #. Header for Prowl notification section
 #: sabnzbd/skintext.py
 msgid "Prowl"
-msgstr ""
+msgstr "Prowl"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Enable Prowl notifications"
-msgstr ""
+msgstr "启用 Prowl 通知"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Requires a Prowl account"
-msgstr ""
+msgstr "需要 Prowl 账号"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "API key for Prowl"
-msgstr ""
+msgstr "Prowl 的 API 密钥"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Personal API key for Prowl (required)"
-msgstr ""
+msgstr "Prowl 的个人 API 密钥 (必填)"
 
 #. Header for Pushover notification section
 #: sabnzbd/skintext.py
 msgid "Pushover"
-msgstr ""
+msgstr "Pushover"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushover notifications"
-msgstr ""
+msgstr "启用 Pushover 通知"
 
 #. Pushoversettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushover account"
-msgstr ""
+msgstr "需要 Pushover 账号"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application Token"
-msgstr ""
+msgstr "应用程序 token"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application token (required)"
-msgstr ""
+msgstr "应用程序令牌 (必填)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key"
-msgstr ""
+msgstr "用户 key"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key (required)"
-msgstr ""
+msgstr "用户密钥 (必填)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s)"
-msgstr ""
+msgstr "设备"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s) to which message should be sent"
-msgstr ""
+msgstr "信息发送的目标设备"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4280,37 +4280,37 @@ msgstr ""
 #. Header for Pushbullet notification section
 #: sabnzbd/skintext.py
 msgid "Pushbullet"
-msgstr ""
+msgstr "Pushbullet"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushbullet notifications"
-msgstr ""
+msgstr "启用 Pushbullet 通知"
 
 #. Pushbulletsettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushbullet account"
-msgstr ""
+msgstr "需要 Pushbullet 账号"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Personal API key"
-msgstr ""
+msgstr "个人 API key"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Your personal Pushbullet API key (required)"
-msgstr ""
+msgstr "您自己的 Pushbullet API key (必填)"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device"
-msgstr ""
+msgstr "设备"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
-msgstr ""
+msgstr "信息发送的目标设备"
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py

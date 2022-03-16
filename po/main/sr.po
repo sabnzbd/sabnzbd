@@ -3,13 +3,13 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
+# Safihre <safihre@sabnzbd.org>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.6.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Serbian (https://www.transifex.com/sabnzbd/teams/111101/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1100,27 +1100,27 @@ msgstr ""
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
-msgstr ""
+msgstr "Неуспешно слање Prowl поруке"
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushover (%s): %s"
-msgstr ""
+msgstr "Neodgovarajući odgovor od strane Pushover (%s): %s"
 
 #. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
-msgstr ""
+msgstr "Neuspešno slanje Pushover poruke"
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushbullet (%s): %s"
-msgstr ""
+msgstr "Pogrešan odgovor  Pushbullet-a (%s): %s"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushbullet message"
-msgstr ""
+msgstr "Neuspešno slanje Pushbullet poruke"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1965,12 +1965,12 @@ msgstr "Искључено"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Very Low"
-msgstr ""
+msgstr "Врло ниско"
 
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Moderate"
-msgstr ""
+msgstr "Умерено"
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -1985,7 +1985,7 @@ msgstr "Висок"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Emergency"
-msgstr ""
+msgstr "Хитно"
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
@@ -4243,72 +4243,72 @@ msgstr "NotifyOSD"
 #. Header for Prowl notification section
 #: sabnzbd/skintext.py
 msgid "Prowl"
-msgstr ""
+msgstr "Prowl"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Enable Prowl notifications"
-msgstr ""
+msgstr "Омогући Prowl нотификације"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Requires a Prowl account"
-msgstr ""
+msgstr "Потребан Prowl налог"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "API key for Prowl"
-msgstr ""
+msgstr "API кључ за Prowl"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Personal API key for Prowl (required)"
-msgstr ""
+msgstr "Лични API кључ за Prowl (потребно)"
 
 #. Header for Pushover notification section
 #: sabnzbd/skintext.py
 msgid "Pushover"
-msgstr ""
+msgstr "Pushover"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushover notifications"
-msgstr ""
+msgstr "Omogući Pushover notifikacije"
 
 #. Pushoversettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushover account"
-msgstr ""
+msgstr "Zahteva Pushover nalog"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application Token"
-msgstr ""
+msgstr "Token aplikacije"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application token (required)"
-msgstr ""
+msgstr "Token aplikacije (obavezan)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key"
-msgstr ""
+msgstr "Korisnički ključ"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key (required)"
-msgstr ""
+msgstr "Korisnički ključ (obavezan)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s)"
-msgstr ""
+msgstr "Uređaj(i)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Device(s) to which message should be sent"
-msgstr ""
+msgstr "Uređaj(i) na koje bi poruke trebale biti poslate"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4331,37 +4331,37 @@ msgstr ""
 #. Header for Pushbullet notification section
 #: sabnzbd/skintext.py
 msgid "Pushbullet"
-msgstr ""
+msgstr "Pushbullet"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Enable Pushbullet notifications"
-msgstr ""
+msgstr "Omogući Pushbullet notifikacije"
 
 #. Pushbulletsettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushbullet account"
-msgstr ""
+msgstr "Zahteva Pushbullet nalog"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Personal API key"
-msgstr ""
+msgstr "Lični API ključ"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Your personal Pushbullet API key (required)"
-msgstr ""
+msgstr "Vaš lični Pushbullet API ključ (obavezan)"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device"
-msgstr ""
+msgstr "Уређај"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
-msgstr ""
+msgstr "Uređaj na koji bi poruka trebala biti poslata"
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
