@@ -21,9 +21,8 @@ sabnzbd.utils.servertests - Debugging server connections. Currently only NNTP se
 
 import socket
 import sys
-import select
 
-from sabnzbd.newswrapper import NewsWrapper
+from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 from sabnzbd.downloader import Server, clues_login, clues_too_many, nntp_to_msg
 from sabnzbd.config import get_servers
 from sabnzbd.misc import int_conv
@@ -102,12 +101,12 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         else:
             return False, T("Timed out")
 
-    except socket.error as e:
+    except socket.error as err:
         # Trying SSL on non-SSL port?
-        if "unknown protocol" in str(e).lower() or "wrong version number" in str(e).lower():
+        if "unknown protocol" in str(err).lower() or "wrong version number" in str(err).lower():
             return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
 
-        return False, str(e)
+        return False, str(err)
 
     except TypeError:
         return False, T("Invalid server address.")
@@ -116,8 +115,12 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         # No data was received in recv_chunk() call
         return False, T("Server quit during login sequence.")
 
-    except:
-        return False, str(sys.exc_info()[1])
+    except NNTPPermanentError:
+        # Handled by the code below
+        pass
+
+    except Exception as err:
+        return False, str(err)
 
     if not username or not password:
         nw.nntp.sock.sendall(b"ARTICLE <test@home>\r\n")
@@ -130,7 +133,8 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
     if nw.status_code == 480:
         return_status = (False, T("Server requires username and password."))
-    elif nw.status_code == 100 or str(nw.status_code).startswith(("2", "4")):
+    elif nw.status_code < 300 or nw.status_code in (411, 423, 430):
+        # If no username/password set and we requested fake-article, it will return 430 Not Found
         return_status = (True, T("Connection Successful!"))
     elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
         return_status = (False, T("Authentication failed, check username/password."))
