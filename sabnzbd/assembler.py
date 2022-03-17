@@ -191,9 +191,13 @@ class Assembler(Thread):
                             else:
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
-                            logging.info("Traceback: ", exc_info=True)
                             if sabnzbd.WIN32:
-                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32))
+                                logging.info(
+                                    "Winerror: %s - %s",
+                                    err.winerror,
+                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32),
+                                )
+                            logging.info("Traceback: ", exc_info=True)
                             # Pause without saving
                             sabnzbd.Downloader.pause()
                         else:
@@ -215,7 +219,8 @@ class Assembler(Thread):
         if not nzf.md5:
             nzf.md5 = hashlib.md5()
 
-        with open(nzf.filepath, "ab") as fout:
+        # We write large article-sized chunks, so we can safely skip the buffering of Python
+        with open(nzf.filepath, "ab", buffering=0) as fout:
             for article in nzf.decodetable:
                 # Break if deleted during writing
                 if nzf.nzo.status is Status.DELETED:
