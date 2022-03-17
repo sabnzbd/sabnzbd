@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2022
 # Safihre <safihre@sabnzbd.org>, 2022
+# Fred L <88com88@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.6.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2022\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1156,7 +1156,7 @@ msgstr "Échec de l'envoi de la notification macOS"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
-msgstr "Echec d'envoi du message Prowl"
+msgstr "Échec d'envoi du message Prowl"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -2036,7 +2036,7 @@ msgstr "Désactivé"
 #. Prowl priority
 #: sabnzbd/skintext.py
 msgid "Very Low"
-msgstr "Très basse"
+msgstr "Très bas"
 
 #. Prowl priority
 #: sabnzbd/skintext.py
@@ -4475,12 +4475,12 @@ msgstr "Jeton (token) d'application (obligatoire)"
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key"
-msgstr "Clé de l'utilisateur"
+msgstr "Clé utilisateur"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key (required)"
-msgstr "Clé de l'utilisateur (obligatoire)"
+msgstr "Clé utilisateur (obligatoire)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4508,8 +4508,7 @@ msgstr "Expiration d'urgence"
 
 #: sabnzbd/skintext.py
 msgid "How many seconds your notification will continue to be retried"
-msgstr ""
-"Tenter à nouveau votre notification pendant combien de temps (en secondes)"
+msgstr "Réessayer la notification pendant combien de secondes"
 
 #. Header for Pushbullet notification section
 #: sabnzbd/skintext.py
@@ -4534,7 +4533,7 @@ msgstr "Clé API personnelle"
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Your personal Pushbullet API key (required)"
-msgstr "Votre clé API Pushbullet personnelle (obligatoire )"
+msgstr "Votre clé API Pushbullet personnelle (obligatoire)"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
