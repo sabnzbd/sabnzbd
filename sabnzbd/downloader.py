@@ -24,7 +24,6 @@ import select
 import logging
 from math import ceil
 from threading import Thread, RLock
-from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
@@ -33,7 +32,7 @@ from typing import List, Dict, Optional, Union
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
-from sabnzbd.newswrapper import NewsWrapper
+from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo, helpful_warning
@@ -798,11 +797,9 @@ class Downloader(Thread):
                             # Handle login problems
                             block = False
                             penalty = 0
-                            msg = error.response
-                            ecode = int_conv(msg[:3])
-                            display_msg = " [%s]" % msg
-                            logging.debug("Server login problem: %s, %s", ecode, msg)
-                            if ecode in (502, 400, 481, 482) and clues_too_many(msg):
+                            display_msg = " [%s]" % error.msg
+                            logging.debug("Server login problem: %s", error.msg)
+                            if error.code in (502, 400, 481, 482) and clues_too_many(error.msg):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
@@ -814,7 +811,7 @@ class Downloader(Thread):
                                     self.__reset_nw(nw, send_quit=True)
                                     self.plan_server(server, _PENALTY_TOOMANY)
                                     server.threads -= 1
-                            elif ecode in (502, 481, 482) and clues_too_many_ip(msg):
+                            elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                                 # Account sharing?
                                 if server.active:
                                     errormsg = T("Probable account sharing") + display_msg
@@ -824,7 +821,9 @@ class Downloader(Thread):
                                         logging.warning(T("Probable account sharing") + name)
                                 penalty = _PENALTY_SHARE
                                 block = True
-                            elif ecode in (452, 481, 482, 381) or (ecode in (500, 502) and clues_login(msg)):
+                            elif error.code in (452, 481, 482, 381) or (
+                                error.code in (500, 502) and clues_login(error.msg)
+                            ):
                                 # Cannot login, block this server
                                 if server.active:
                                     errormsg = T("Failed login for server %s") % display_msg
@@ -833,19 +832,19 @@ class Downloader(Thread):
                                         logging.error(T("Failed login for server %s"), server.host)
                                 penalty = _PENALTY_PERM
                                 block = True
-                            elif ecode in (502, 482):
+                            elif error.code in (502, 482):
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    errormsg = T("Cannot connect to server %s [%s]") % ("", display_msg)
+                                    errormsg = T("Cannot connect to server %s [%s]") % ("", error.msg)
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
-                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, msg)
-                                if clues_pay(msg):
+                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
+                                if clues_pay(error.msg):
                                     penalty = _PENALTY_PERM
                                 else:
                                     penalty = _PENALTY_502
                                 block = True
-                            elif ecode == 400:
+                            elif error.code == 400:
                                 # Temp connection problem?
                                 if server.active:
                                     logging.debug("Unspecified error 400 from server %s", server.host)
@@ -857,7 +856,7 @@ class Downloader(Thread):
                                     errormsg = T("Cannot connect to server %s [%s]") % ("", display_msg)
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
-                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, msg)
+                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
                                 penalty = _PENALTY_UNKNOWN
                                 block = True
                             if block or (penalty and server.optional):

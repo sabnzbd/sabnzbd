@@ -22,7 +22,6 @@ sabnzbd.newswrapper
 import errno
 import socket
 from threading import Thread
-from nntplib import NNTPPermanentError
 import time
 import logging
 import ssl
@@ -36,6 +35,16 @@ from sabnzbd.misc import nntp_to_msg, is_ipv4_addr, is_ipv6_addr, get_server_add
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
+
+
+class NNTPPermanentError(Exception):
+    def __init__(self, msg: str, code: int):
+        super().__init__()
+        self.msg = msg
+        self.code = code
+
+    def __str__(self) -> str:
+        return self.msg
 
 
 class NewsWrapper:
@@ -115,7 +124,7 @@ class NewsWrapper:
             self.pass_ok = False
 
         if code in (400, 500, 502):
-            raise NNTPPermanentError(nntp_to_msg(self.data))
+            raise NNTPPermanentError(nntp_to_msg(self.data), code)
         elif not self.user_sent:
             command = utob("authinfo user %s\r\n" % self.server.username)
             self.nntp.sock.sendall(command)
@@ -139,7 +148,7 @@ class NewsWrapper:
         elif self.user_ok and not self.pass_ok:
             if code != 281:
                 # Assume that login failed (code 481 or other)
-                raise NNTPPermanentError(nntp_to_msg(self.data))
+                raise NNTPPermanentError(nntp_to_msg(self.data), code)
             else:
                 self.connected = True
 
