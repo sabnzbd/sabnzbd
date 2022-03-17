@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.5.3 Release Candidate 1
+Release Notes - SABnzbd 3.5.3
 =========================================================
 
 ## Bugfix since 3.5.0
