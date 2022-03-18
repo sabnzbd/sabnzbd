@@ -35,7 +35,7 @@ from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo, helpful_warning
+from sabnzbd.misc import from_units, nntp_to_msg, get_server_addrinfo, helpful_warning
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
