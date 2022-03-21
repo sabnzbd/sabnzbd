@@ -4,7 +4,7 @@ pyinstaller==4.10
 pyinstaller-hooks-contrib==2022.2
 altgraph==0.17.2
 wrapt==1.14.0
-setuptools==60.9.3
+setuptools==60.10.0
 pkginfo==1.8.2
 PyGithub==1.55
 charset-normalizer==2.0.12
