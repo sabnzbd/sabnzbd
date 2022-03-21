@@ -1,0 +1,4 @@
+schedule: every week
+update: all
+label_prs: dependencies
+branch_prefix: pyup/
