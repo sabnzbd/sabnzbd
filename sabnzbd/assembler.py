@@ -59,6 +59,9 @@ class Assembler(Thread):
     def queue_full(self):
         return self.queue.qsize() >= MAX_ASSEMBLER_QUEUE
 
+    def partial_nzf_in_queue(self, nzf: NzbFile):
+        return (nzf.nzo, nzf, False) in self.queue.queue
+
     def run(self):
         while 1:
             # Set NzbObject and NzbFile objects to None so references
