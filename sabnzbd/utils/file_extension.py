@@ -10,6 +10,7 @@ import os
 import sys
 from typing import List
 from sabnzbd.filesystem import get_ext, RAR_RE
+import sabnzbd.cfg as cfg
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
 POPULAR_EXT = (
@@ -254,7 +255,8 @@ DOWNLOAD_EXT = (
 )
 
 # Combine to one tuple, with unique entries:
-ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
+ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT)) + tuple(cfg.user_defined_well_known_extensions())
+
 # Prepend a dot to each extension, because we work with a leading dot in extensions
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
 

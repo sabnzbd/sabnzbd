@@ -415,6 +415,7 @@ max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
 socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
+user_defined_well_known_extensions = OptionList("misc", "user_defined_well_known_extensions", ["abc", "ppp", "xxx"])
 
 
 ##############################################################################
