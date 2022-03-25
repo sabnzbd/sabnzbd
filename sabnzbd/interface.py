@@ -950,6 +950,7 @@ SPECIAL_LIST_LIST = (
 )
 
 
+
 class ConfigSpecial:
     def __init__(self, root):
         self.__root = root
