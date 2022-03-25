@@ -418,7 +418,6 @@ socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 user_defined_well_known_extensions = OptionList("misc", "user_defined_well_known_extensions", ["abc", "ppp", "xxx"])
 
 
-
 ##############################################################################
 # Config - Notifications
 ##############################################################################
