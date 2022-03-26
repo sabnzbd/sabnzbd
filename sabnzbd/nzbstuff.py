@@ -1907,6 +1907,9 @@ class NzbObject(TryList):
         """Builds a dictionary containing the stage name (key) and a message
         If unique is present, it will only have a single line message
         """
+        # Make sure all messages are strings
+        msg = str(msg)
+
         # Add name of the set
         if setname:
             msg = "[%s] %s" % (setname, msg)
