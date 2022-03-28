@@ -4,6 +4,7 @@ requests
 pkginfo
 pytest
 pyfakefs
+werkzeug<2.1.0 # breaks httpbin in newer versions
 pytest-httpbin
 pytest-httpserver
 flaky
