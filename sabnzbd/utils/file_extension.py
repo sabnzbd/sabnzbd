@@ -255,17 +255,20 @@ DOWNLOAD_EXT = (
 )
 
 # Combine to one tuple, with unique entries:
-ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT)) + tuple(cfg.user_defined_well_known_extensions())
-
-
+ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT)) # + tuple(cfg.user_defined_well_known_extensions())
 # Prepend a dot to each extension, because we work with a leading dot in extensions
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
+
+def all_extensions() -> tuple:
+    """ returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
+    user_defined_ext = tuple(["." + i for i in cfg.user_defined_well_known_extensions()])
+    return ALL_EXT + user_defined_ext
 
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
     file_extension = get_ext(file_path)
-    return file_extension in ALL_EXT or RAR_RE.match(file_extension)
+    return file_extension in all_extensions() or RAR_RE.match(file_extension)
 
 
 def all_possible_extensions(file_path: str) -> List[str]:
@@ -296,7 +299,7 @@ def what_is_most_likely_extension(file_path: str) -> str:
 
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension by puremagic is also likely IRL
-        if possible_extension in ALL_EXT:
+        if possible_extension in all_extensions():
             # Yes, looks likely
             return possible_extension
 
