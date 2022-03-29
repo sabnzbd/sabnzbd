@@ -38,7 +38,7 @@ class Test_File_Extension:
 
     # user defined ext_rename_skip
     @set_config({"ext_rename_skip": "xxx, yyy, zzz"})
-    def test_has_user_defined_extension_real(self):
+    def test_ext_rename_skip(self):
         assert file_extension.has_popular_extension("blabla/blabla.yyy")
 
     def test_what_is_most_likely_extension(self):
