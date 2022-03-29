@@ -255,12 +255,13 @@ DOWNLOAD_EXT = (
 )
 
 # Combine to one tuple, with unique entries:
-ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT)) # + tuple(cfg.user_defined_well_known_extensions())
+ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))  # + tuple(cfg.user_defined_well_known_extensions())
 # Prepend a dot to each extension, because we work with a leading dot in extensions
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
+
 def all_extensions() -> tuple:
-    """ returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
+    """returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
     user_defined_ext = tuple(["." + i for i in cfg.user_defined_well_known_extensions()])
     return ALL_EXT + user_defined_ext
 
