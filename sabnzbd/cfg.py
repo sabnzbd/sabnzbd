@@ -87,6 +87,12 @@ def all_lowercase(value):
         return None, [item.lower() for item in value]
     return None, value.lower()
 
+def lower_case_extensions_without_dot(value):
+    """ generate lower case extension(s), without dot"""
+    if isinstance(value, list):
+        # If list, for each item
+        return None, [item.lower().split(".")[-1] for item in value]
+    return None, value.lower().split(".")[-1]
 
 def validate_no_unc(root, value, default):
     """Check if path isn't a UNC path"""
@@ -415,7 +421,7 @@ max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
 socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
-ext_rename_skip = OptionList("misc", "ext_rename_skip", [])
+ext_rename_skip = OptionList("misc", "ext_rename_skip", validation=lower_case_extensions_without_dot)
 
 
 ##############################################################################
