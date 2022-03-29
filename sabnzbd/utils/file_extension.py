@@ -256,7 +256,7 @@ DOWNLOAD_EXT = (
 
 # Combine to one tuple, with unique entries:
 ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
-# Prepend a dot to each extension, because we work with a leading dot in extensions
+# ... and prepend a dot to each extension, because we work with a leading dot in extensions
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
 
