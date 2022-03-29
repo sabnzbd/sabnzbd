@@ -946,7 +946,7 @@ SPECIAL_LIST_LIST = (
     "quick_check_ext_ignore",
     "host_whitelist",
     "local_ranges",
-    "user_defined_well_known_extensions",
+    "ext_rename_skip",
 )
 
 

@@ -36,12 +36,11 @@ class Test_File_Extension:
         assert not file_extension.has_popular_extension("98ads098f098fa.a0ds98f098asdf")
         assert not file_extension.has_popular_extension("blabla/blabla.yyy")
 
-    def test_has_user_defined_extension_default(self):
-        assert file_extension.has_popular_extension("blabla/blabla.myext")
-
-    @set_config({"user_defined_well_known_extensions": "xxx, yyy, zzz"})
+    # user defined ext_rename_skip
+    @set_config({"ext_rename_skip": "xxx, yyy, zzz"})
     def test_has_user_defined_extension_real(self):
         assert file_extension.has_popular_extension("blabla/blabla.yyy")
+
 
     def test_what_is_most_likely_extension(self):
         # These are real-content files, where the contents determine the extension

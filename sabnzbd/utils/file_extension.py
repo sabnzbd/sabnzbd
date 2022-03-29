@@ -8,7 +8,7 @@ Note: extension always contains a leading dot
 import puremagic
 import os
 import sys
-from typing import List
+from typing import List, Tuple
 from sabnzbd.filesystem import get_ext, RAR_RE
 import sabnzbd.cfg as cfg
 
@@ -260,9 +260,9 @@ ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
 
-def all_extensions() -> tuple:
+def all_extensions() -> Tuple[List[str]]:
     """returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
-    user_defined_extensions = tuple(["." + i for i in cfg.user_defined_well_known_extensions()])
+    user_defined_extensions = tuple(["." + i for i in cfg.ext_rename_skip()])
     return ALL_EXT + user_defined_extensions
 
 
@@ -298,9 +298,10 @@ def what_is_most_likely_extension(file_path: str) -> str:
         # not txt (and thus not nzb)
         pass
 
+    all_exts = all_extensions()
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension by puremagic is also likely IRL
-        if possible_extension in all_extensions():
+        if possible_extension in all_exts:
             # Yes, looks likely
             return possible_extension
 
