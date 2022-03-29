@@ -87,12 +87,14 @@ def all_lowercase(value):
         return None, [item.lower() for item in value]
     return None, value.lower()
 
+
 def lower_case_extensions_without_dot(value):
-    """ generate lower case extension(s), without dot"""
+    """generate lower case extension(s), without dot"""
     if isinstance(value, list):
         # If list, for each item
         return None, [item.lower().split(".")[-1] for item in value]
     return None, value.lower().split(".")[-1]
+
 
 def validate_no_unc(root, value, default):
     """Check if path isn't a UNC path"""
