@@ -1016,7 +1016,7 @@ class NzbObject(TryList):
         self.reset_try_list()
 
     @synchronized(NZO_LOCK)
-    def postpone_pars(self, nzf: NzbFile, parset: str):
+    def postpone_pars(self, parset: str):
         """Move all vol-par files matching 'parset' to the extrapars table"""
         # Create new extrapars if it didn't already exist
         # For example if created when the first par2 file was missing
@@ -1061,16 +1061,16 @@ class NzbObject(TryList):
         set_id, pack = sabnzbd.par2file.parse_par2_file(filepath, nzf.nzo.md5of16k)
 
         # If we couldn't parse it, we ignore it
-        if pack:
+        if set_id and pack:
             if pack not in self.md5packs.values():
                 logging.debug("Got md5pack for set %s", nzf.setname)
                 # Verify that we are not over-writing existing set with the same name, but different values
                 if setname in self.md5packs:
-                    logging.debug("Found duplicate md5pack-setname: %s, using set ID", setname)
+                    logging.debug("Found duplicate md5pack-setname: %s, using set ID: %s", setname, set_id)
                     setname = set_id
                 self.md5packs[setname] = pack
                 # See if we need to postpone some pars
-                self.postpone_pars(nzf, setname)
+                self.postpone_pars(setname)
             else:
                 # Need to add this to the set, first need setname
                 for setname in self.md5packs:
@@ -1109,7 +1109,7 @@ class NzbObject(TryList):
         if setname and self.repair:
             # Maybe it was the first one
             if setname not in self.extrapars:
-                self.postpone_pars(nzf, setname)
+                self.postpone_pars(setname)
             # Get the next one
             for new_nzf in self.extrapars[setname]:
                 if self.add_parfile(new_nzf):
