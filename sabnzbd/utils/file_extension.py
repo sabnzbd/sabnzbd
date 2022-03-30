@@ -260,7 +260,7 @@ ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
 
-def all_extensions() -> Tuple[List[str]]:
+def all_extensions() -> Tuple[str, ...]:
     """returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
     user_defined_extensions = tuple(["." + i for i in cfg.ext_rename_skip()])
     return ALL_EXT + user_defined_extensions
