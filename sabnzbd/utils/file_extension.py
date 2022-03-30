@@ -8,8 +8,9 @@ Note: extension always contains a leading dot
 import puremagic
 import os
 import sys
-from typing import List
+from typing import List, Tuple
 from sabnzbd.filesystem import get_ext, RAR_RE
+import sabnzbd.cfg as cfg
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
 POPULAR_EXT = (
@@ -255,14 +256,20 @@ DOWNLOAD_EXT = (
 
 # Combine to one tuple, with unique entries:
 ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
-# Prepend a dot to each extension, because we work with a leading dot in extensions
+# ... and prepend a dot to each extension, because we work with a leading dot in extensions
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
+
+
+def all_extensions() -> Tuple[str, ...]:
+    """returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
+    user_defined_extensions = tuple(["." + i for i in cfg.ext_rename_skip()])
+    return ALL_EXT + user_defined_extensions
 
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
     file_extension = get_ext(file_path)
-    return file_extension in ALL_EXT or RAR_RE.match(file_extension)
+    return file_extension in all_extensions() or RAR_RE.match(file_extension)
 
 
 def all_possible_extensions(file_path: str) -> List[str]:
@@ -291,9 +298,10 @@ def what_is_most_likely_extension(file_path: str) -> str:
         # not txt (and thus not nzb)
         pass
 
+    all_exts = all_extensions()
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension by puremagic is also likely IRL
-        if possible_extension in ALL_EXT:
+        if possible_extension in all_exts:
             # Yes, looks likely
             return possible_extension
 
