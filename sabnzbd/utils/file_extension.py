@@ -262,7 +262,7 @@ ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
 def all_extensions() -> Tuple[str, ...]:
     """returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
-    user_defined_extensions = tuple(["." + i for i in cfg.ext_rename_skip()])
+    user_defined_extensions = tuple(["." + i for i in cfg.ext_rename_ignore()])
     return ALL_EXT + user_defined_extensions
 
 

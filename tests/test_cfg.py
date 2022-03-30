@@ -91,3 +91,9 @@ class TestValidators:
         assert cfg.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
         assert cfg.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
         assert cfg.validate_single_tag(["alt.group"]) == (None, ["alt.group"])
+
+    def test_lower_case_ext(self):
+        assert cfg.lower_case_ext("") == (None, "")
+        assert cfg.lower_case_ext(".Bla") == (None, "bla")
+        assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
+        assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])

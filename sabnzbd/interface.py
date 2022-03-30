@@ -814,6 +814,7 @@ SWITCH_LIST = (
     "unwanted_extensions",
     "action_on_unwanted_extensions",
     "unwanted_extensions_mode",
+    "cleanup_list",
     "sanitize_safe",
     "rating_enable",
     "rating_api_key",
@@ -848,10 +849,10 @@ class ConfigSwitches:
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
         conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
-        conf["cleanup_list"] = cfg.cleanup_list.get_string()
 
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config("misc", kw)()
+        conf["cleanup_list"] = cfg.cleanup_list.get_string()
         conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
 
         conf["scripts"] = list_scripts() or ["None"]
@@ -864,18 +865,9 @@ class ConfigSwitches:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSwitches(self, **kwargs):
         for kw in SWITCH_LIST:
-            item = config.get_config("misc", kw)
-            value = kwargs.get(kw)
-            if kw == "unwanted_extensions" and value:
-                value = value.lower().replace(".", "")
-            msg = item.set(value)
+            msg = config.get_config("misc", kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(msg, kwargs.get("ajax"))
-
-        cleanup_list = kwargs.get("cleanup_list")
-        if cleanup_list and sabnzbd.WIN32:
-            cleanup_list = cleanup_list.lower()
-        cfg.cleanup_list.set(cleanup_list)
 
         config.save_config()
         if kwargs.get("ajax"):
@@ -946,7 +938,7 @@ SPECIAL_LIST_LIST = (
     "quick_check_ext_ignore",
     "host_whitelist",
     "local_ranges",
-    "ext_rename_skip",
+    "ext_rename_ignore",
 )
 
 

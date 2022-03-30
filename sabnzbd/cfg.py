@@ -88,12 +88,11 @@ def all_lowercase(value):
     return None, value.lower()
 
 
-def lower_case_extensions_without_dot(value):
-    """generate lower case extension(s), without dot"""
+def lower_case_ext(value):
+    """Generate lower case extension(s), without dot"""
     if isinstance(value, list):
-        # If list, for each item
-        return None, [item.lower().split(".")[-1] for item in value]
-    return None, value.lower().split(".")[-1]
+        return None, [item.lower().strip(" .") for item in value]
+    return None, value.lower().strip(" .")
 
 
 def validate_no_unc(root, value, default):
@@ -302,8 +301,8 @@ safe_postproc = OptionBool("misc", "safe_postproc", True)
 pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
 enable_all_par = OptionBool("misc", "enable_all_par", False)
 sanitize_safe = OptionBool("misc", "sanitize_safe", False)
-cleanup_list = OptionList("misc", "cleanup_list")
-unwanted_extensions = OptionList("misc", "unwanted_extensions")
+cleanup_list = OptionList("misc", "cleanup_list", validation=lower_case_ext)
+unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower_case_ext)
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
@@ -423,7 +422,7 @@ max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
 socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
-ext_rename_skip = OptionList("misc", "ext_rename_skip", validation=lower_case_extensions_without_dot)
+ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 
 
 ##############################################################################

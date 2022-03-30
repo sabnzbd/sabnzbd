@@ -681,17 +681,16 @@ def get_macos_memory():
     return float(system_output.split()[1])
 
 
-def on_cleanup_list(filename, skip_nzb=False):
+def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
     """Return True if a filename matches the clean-up list"""
-    lst = cfg.cleanup_list()
-    if lst:
+    cleanup_list = cfg.cleanup_list()
+    if cleanup_list:
         name, ext = os.path.splitext(filename)
         ext = ext.strip().lower()
         name = name.strip()
-        for k in lst:
-            item = k.strip().strip(".").lower()
-            item = "." + item
-            if (item == ext or (ext == "" and item == name)) and not (skip_nzb and item == ".nzb"):
+        for cleanup_ext in cleanup_list:
+            cleanup_ext = "." + cleanup_ext
+            if (cleanup_ext == ext or (ext == "" and cleanup_ext == name)) and not (skip_nzb and cleanup_ext == ".nzb"):
                 return True
     return False
 
