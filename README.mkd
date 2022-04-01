@@ -1,5 +1,13 @@
-Release Notes - SABnzbd 3.6.0 Beta 1
+Release Notes - SABnzbd 3.6.0 Beta 2
 =========================================================
+
+## Changes and bugfixes since 3.6.0 Beta 1
+- Updates to `sabyenc3` to support more compiler setups.
+- Optimization to the writing of partially downloaded data.
+- Added `ext_rename_ignore` to add custom extensions that should
+  be ignored during the `Deobfuscate` step.
+- Prevent crash in API `history` call during post-processing.
+- Ignore `.par2` files that could not be parsed.
 
 ## Changes since 3.5.3
 - Significantly increased performance by using the yEnc-decoding
