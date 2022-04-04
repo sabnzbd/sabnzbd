@@ -1,7 +1,7 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 sabyenc3==5.1.6
-cheetah3==3.2.6.post1
+cheetah3==3.2.6.post2
 cryptography==36.0.2
 cffi==1.15
 pycparser==2.21
