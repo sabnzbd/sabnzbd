@@ -5,8 +5,13 @@ on:
     branches:
     - develop
 
+permissions:
+  contents: read
+
 jobs:
   translations:
+    permissions:
+      contents: write  # for stefanzweifel/git-auto-commit-action to push code in repo
     runs-on: ubuntu-latest
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
