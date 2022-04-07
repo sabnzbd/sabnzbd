@@ -83,7 +83,6 @@ _MSG_NO_PATH = "file does not exist"
 _MSG_OUTPUT_FORMAT = "Format not supported"
 _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
-_MSG_BAD_SERVER_PARMS = "Incorrect server settings"
 
 
 def api_handler(kwargs: Dict[str, Any]):

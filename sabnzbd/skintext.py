@@ -886,7 +886,6 @@ SKIN_TEXT = {
     "Glitter-duplicate": TT("DUPLICATE"),
     "Glitter-unwanted": TT("UNWANTED"),
     "Glitter-tooLarge": TT("TOO LARGE"),
-    "Glitter-filtered": TT("FILTERED"),
     "Glitter-waitSec": TT("WAIT %s sec"),
     "Glitter-error": TT("ERROR:"),
     "Glitter-fetch": TT("Fetch"),

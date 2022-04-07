@@ -475,9 +475,6 @@ class Downloader(Thread):
                 return False
         return True
 
-    def nzo_servers(self, nzo):
-        return list(filter(nzo.server_in_try_list, self.servers))
-
     def maybe_block_server(self, server: Server):
         # Was it resolving problem?
         if server.info is False:
