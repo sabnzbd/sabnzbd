@@ -248,20 +248,6 @@ msgstr "De ongewenste extensie zit in RAR-bestand %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Afgebroken, ongewenste extensie ontdekt"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "Download '%s' gepauzeerd vanwege rating (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "Download '%s' afgebroken vanwege rating (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Afgebroken, ratingfilter komt overeen (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -290,30 +276,6 @@ msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
 "Download \"%s\" is waarschijnlijk versleuteld, omdat \"password\" in de naam"
 " \"%s\" voor komt."
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "audio"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "van wachtwoord voorzien"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "negatief beoordeeld"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "trefwoorden"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -573,7 +535,7 @@ msgstr "Verzenden van e-mail is mislukt"
 msgid "Failed to close mail connection"
 msgstr "Beëindigen e-mailverbinding mislukt"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Versturen kan niet, vereiste gegevens ontbreken"
 
@@ -1281,10 +1243,6 @@ msgid "UNWANTED"
 msgstr "ONGEWENST"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "GEFILTERD"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "WACHT %s sec"
 
@@ -1685,27 +1643,6 @@ msgstr "Fout bij het afsluiten van het systeem"
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
 msgstr "DBus foutmelding %s "
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Indexer id (%s) niet gevonden in het bestand met beoordelingen"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Server adres"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API-sleutel"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr ""
-"Deze sleutel is voor je identificatie door de indexer. Kijk in je profiel op"
-" de website van de  indexer."
 
 #. Error message
 #: sabnzbd/rss.py
@@ -3211,6 +3148,10 @@ msgstr ""
 " verbeteringen kun je hier terecht:"
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API-sleutel"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 "Met deze sleutel heeft een extern programma volledige toegang tot SABnzbd."
@@ -3892,63 +3833,6 @@ msgid ""
 msgstr ""
 "Als tijdens het downloaden duidelijk wordt dat te veel data ontbreekt, breek"
 " dan de download af"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr "Sta integratie met index websites toe"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-"Indexers kunnen beoordelingen meesturen wanneer een download wordt "
-"toegevoegd en SABnzbd kan de indexer informeren wanneer een download niet "
-"slaagt."
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Filtering aan"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Verwerk downloads volgens de filter regels"
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Afbreken indien"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Anders pauzeren indien"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Video rating"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Audio rating"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Bevestigd"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Meer duimen omlaag dan omhoog"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Titel trefwoorden"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Door komma's gescheiden lijst"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4908,6 +4792,10 @@ msgstr "Wanneer SABnzbd opnieuw is gestart, gaat dit venster vanzelf weg!"
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "WAARSCHUWING:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "GEFILTERD"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

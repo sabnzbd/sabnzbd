@@ -234,20 +234,6 @@ msgstr "Oönskad filändelse i RAR-fil %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Avbruten, oönskad filändelse detekterad"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Avbrutet, betyget matchade (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -272,30 +258,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "ljud"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "lösenordskyddad"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "nedröstad"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "nyckelord"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -544,7 +506,7 @@ msgstr "Det gick inte att skicka e-mail"
 msgid "Failed to close mail connection"
 msgstr "Det gick inte att stänga e-mail anslutning"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Kunde inte skicka, saknar nödvändig data"
 
@@ -1242,10 +1204,6 @@ msgid "UNWANTED"
 msgstr "OÖNSKAD"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTRERAD"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "VÄNTA %s SEKUNDER"
 
@@ -1642,25 +1600,6 @@ msgstr "Fel uppstod då systemet skulle stängas"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Index id (%s) inte hittad för betygsfil"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Serveradress"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API-nyckel"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -3139,6 +3078,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API-nyckel"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "Denna nyckel ger tredjepartsprogram full tillgång till SABnzbd."
 
@@ -3788,60 +3731,6 @@ msgid ""
 "the job"
 msgstr ""
 "Under nerladdning och det märks att för mycket data saknas, avbryt jobbet"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Aktivera Filtrering"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Action nedladdningar enligt filtreringsregler."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Avbryt Om"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Annars Pausa Om"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Videobetyg"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Audiobetyg"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Bekräftad"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Fler tummar ner än upp"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Titelns nyckelord"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Kommaseparerad lista"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4779,6 +4668,10 @@ msgstr "Om SABnzbd startar om kommer denna skärm att försvinna automatiskt!"
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "VARNING:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FILTRERAD"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

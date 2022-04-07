@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
-"Plural-Forms: nplurals=3; plural=(n==0 || n==1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. Notification - Status page, table column header, actual message
 #: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
@@ -256,20 +256,6 @@ msgstr "L'extension indésirable est dans le fichier rar %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Interrompu, extension indésirable détectée"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "Tâche \"%s\" mise en pause à cause du classement (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "Tâche \"%s\" annulée à cause du classement (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Tâche annulée, le filtre de classement a été vérifié (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -298,30 +284,6 @@ msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
 "La tâche \"%s\" est probablement chiffrée : \"password\" dans le nom de "
 "fichier \"%s\""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "vidéo"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "audio"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "protégé par mot de passe"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "rejeté"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "mots-clés"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -581,7 +543,7 @@ msgstr "Échec de l'envoi de l'e-mail"
 msgid "Failed to close mail connection"
 msgstr "Échec de la fermeture de la connexion à la messagerie"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Impossible d'envoyer, données requises manquantes"
 
@@ -1294,10 +1256,6 @@ msgid "UNWANTED"
 msgstr "INDÉSIRABLE"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTRÉ"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "PATIENTER %s sec"
 
@@ -1705,27 +1663,6 @@ msgstr "Erreur lors de l'arrêt du système"
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
 msgstr "Exception DBus reçue %s"
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "id de l'Indexer (%s) non trouvé pour le fichier des classements"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Adresse du serveur"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Clé API"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr ""
-"Cette clé fournit l'identité à l'indexeur. Vérifiez votre profil sur le site"
-" web de l'indexeur."
 
 #. Error message
 #: sabnzbd/rss.py
@@ -3237,6 +3174,10 @@ msgstr ""
 "traductions existantes ou ajoutez celles qui manquent ici :"
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Clé API"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 "Cette clé permettra aux programmes tiers d'avoir un accès complet à SABnzbd."
@@ -3939,63 +3880,6 @@ msgid ""
 msgstr ""
 "S'il apparait clairement pendant le téléchargement qu'il manque trop de "
 "données, annuler la tâche"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr "Activer l'intégration de l'indexeur"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-"Les indexeurs peuvent fournir des informations de notation lorsqu'une tâche "
-"est ajoutée, et SABnzbd peut signaler à l'indexeur si une tâche n'a pas pu "
-"être terminée."
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Activer le filtrage"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Activer les téléchargements selon les règles de filtrage."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Abandonner si"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Sinon, mettre en pause si"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Classement vidéo"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Classement audio"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Confirmé"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Plus de mauvais votes que de bons"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Mots-clés titre"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Liste séparée par des virgules"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4957,6 +4841,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "AVERTISSEMENT :"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FILTRÉ"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

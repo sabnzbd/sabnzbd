@@ -243,20 +243,6 @@ msgstr "Uønsket extension i rar fil %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Afbrudt, uønsket extension fundet"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "Pause job \"%s\" på grund af rating (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "Afbrudt job \"%s\" på grund af rating (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Afbrudt, rating filter matchede (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -281,30 +267,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "lyd"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "beskyttet med adgangskode"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "downvoted"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "nøgleord"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -554,7 +516,7 @@ msgstr "Det lykkedes ikke at sende e-mail"
 msgid "Failed to close mail connection"
 msgstr "Det lykkedes ikke at lukke e-mail tilslutning"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Kan ikke sende, mangler nødvendige data"
 
@@ -1252,10 +1214,6 @@ msgid "UNWANTED"
 msgstr "UØNSKET"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTERED"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "VENT %s sekunder"
 
@@ -1651,27 +1609,6 @@ msgstr "Fejl ved lukning af system"
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Indexer id (%s) ikke fundet for ratings fil"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Serveradresse"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API-nøgle"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr ""
-"Denne nøgle indeholder identitet indekseringen. Tjek din profil på "
-"indekseringens hjemmeside."
 
 #. Error message
 #: sabnzbd/rss.py
@@ -3154,6 +3091,10 @@ msgstr ""
 "tekster eller forbedrede eksisterende oversættelser her:"
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API-nøgle"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "Denne nøgle vil give 3. parts programmer fuld adgang til SABnzbd."
 
@@ -3811,60 +3752,6 @@ msgid ""
 msgstr ""
 "Når under download det bliver klart, at for meget data mangler, afbryd "
 "jobbet"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr "Aktiver indekseringen Integration"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Aktivere filtrering"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Håndter downloads efter filtrering regler."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Afbryd hvis"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Ellers pause hvis"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Video rating"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Lyd rating"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Bekræftet"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Flere thumbs ned end op"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Titel nøgleord"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Kommasepareret liste"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4808,6 +4695,10 @@ msgstr "I tilfælde af SABnzbd genstart vil denne skærm forsvinde automatisk!"
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "ADVARSEL:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FILTERED"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

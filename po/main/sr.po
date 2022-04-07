@@ -234,20 +234,6 @@ msgstr "Neželjena ekstenzija je u rar datoteci %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Prekinuto, detektovana neželjena ekstenzija"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Prekinuto, filter ocene se poklopio (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -272,30 +258,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "аудио"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "neželjeno"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "šifrovano"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "dole je glasao"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "кључне речи"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -544,7 +506,7 @@ msgstr "Neuspešno slanje e-mail poruke"
 msgid "Failed to close mail connection"
 msgstr "Неуспешно затварање везе е-поште"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Nemoguće poslati, nedostaju obavezni podaci"
 
@@ -1238,10 +1200,6 @@ msgid "UNWANTED"
 msgstr "NEŽELJENI"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTRIRANO"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "Чекање %s сек"
 
@@ -1636,25 +1594,6 @@ msgstr "Greška pri gašenju sistema"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Indekser id (%s) nije pronađen za datoteku ocenjivanja"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Адреса сервера"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API кључ"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -3130,6 +3069,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API кључ"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "Овај кључ допушта пун приступ SABnzbd-а другим програмима."
 
@@ -3776,60 +3719,6 @@ msgid ""
 msgstr ""
 "Када током преузимања постаје јасно да превише података недостаје, прекинути"
 " посао"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Omogući filtriranje"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Radnje pri preuzimanju prema pravilima filtriranja."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Obustavi ako"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Inače pauziraj ako"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Ocena videa"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Ocena zvuka"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Непожељна"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Potvrđeno"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Više negativnih nego pozitivnih"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Ključne reči naziva"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Lista razdvojena zarezom"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4767,6 +4656,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "ПАЖЊА:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FILTRIRANO"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

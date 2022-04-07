@@ -232,20 +232,6 @@ msgstr "rar 文件中出现不需要的扩展名 %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "已中止，侦测到不需要的扩展名"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "任务“%s”已暂停，由于评分过低 (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "任务“%s”已中止，由于评分过低 (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "已中止，评分筛选器已命中 (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -270,30 +256,6 @@ msgstr "任务 \"%s\" 可能受加密保护，RAR 文件中存在相同名称的
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr "任务 \"%s\" 可能受加密保护：文件名 \"%s\" 中有 \"password\" 字符"
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "视频"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "音频"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "垃圾"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "有密码"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "已减分"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "关键词"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -541,7 +503,7 @@ msgstr "无法发送 e-mail"
 msgid "Failed to close mail connection"
 msgstr "无法关闭邮件连接"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "无法发送，缺少必要的数据"
 
@@ -1229,10 +1191,6 @@ msgid "UNWANTED"
 msgstr "不需要"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "已过滤"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "*等待* %s 秒"
 
@@ -1628,25 +1586,6 @@ msgstr "关闭系统时出错"
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "评分文件的索引器 id (%s) 未找到"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "服务器地址"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API Key"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr "这个密钥用来向服务器表明身份。查看您在索引网站上的个人档案。"
 
 #. Error message
 #: sabnzbd/rss.py
@@ -3110,6 +3049,10 @@ msgid ""
 msgstr "帮助我们来本地化 SABnzbd ！<br/>您可以在这里来添加未被翻译的文字或者改进现有的翻译："
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API Key"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "该 key 将授予第三方程序 SABnzbd 的完整权限。"
 
@@ -3726,60 +3669,6 @@ msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
 msgstr "下载时若发现缺失数据过多，则中止对应任务"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr "启用索引集成"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "启用过滤"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "根据过滤规则对下载任务执行操作"
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "中止的条件"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "否则暂停的条件"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "视频评分"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "音频评分"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "垃圾"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "已确认"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "缩略图的减分比加分多"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "标题关键词"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "逗号分隔的列表"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4714,6 +4603,10 @@ msgstr "SABnzbd 重启后本画面将自动消失!"
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "警告:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "已过滤"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

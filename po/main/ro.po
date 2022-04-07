@@ -246,20 +246,6 @@ msgstr "Extensii fișier nedorite în fișierul rar %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Oprit, extensii nedorite detectate"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "Sarcina \"%s\" întreruptă datorită ratingului (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "Sarcina \"%s\" anulată datorită ratingului (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Abandonat, filtru de rating potrivit (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -286,30 +272,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr "Sarcina „%s” este probabil criptată: „parolă” în fișierul „%s”"
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "audio"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "parolat"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "vot negativ"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "cuvinte cheie"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -563,7 +525,7 @@ msgstr "Trimitere email nereuşiă"
 msgid "Failed to close mail connection"
 msgstr "Închidere conexiune mail nereuşită"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Nu pot trimite, informații necesare lipsă"
 
@@ -1270,10 +1232,6 @@ msgid "UNWANTED"
 msgstr "NEDORIT"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FLTRAT"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "AŞTEAPTĂ %s sec"
 
@@ -1676,25 +1634,6 @@ msgstr "Eroare la oprirea sistemului"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Id-ul indexului (%s) nu a fost găsit pentru fișierul de rating"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Adresă server"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Cheie API"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -3176,6 +3115,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Cheie API"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "Această cheie va oferi programelor terţe acces deplin la SABnzbd."
 
@@ -3828,60 +3771,6 @@ msgid ""
 msgstr ""
 "Atunci când e clar că o sarcină va eșua din cauza lipsei de date pe "
 "server(e), anulează sarcina"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Activează Filtrare"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Acțiune când se descarcă în baza de reguli de filtrare."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Renunță Dacă"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Altfel Întrerupe Dacă"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Rating Video"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Rating Audio"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Confirmat"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Mai multe voturi pozitive ca negative"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Cuvinte cheie din Titlu"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Listă separată prin virgulă"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4820,6 +4709,10 @@ msgstr "În cazul repornirii SABnzbd acest ecran va dispărea în mod automat!"
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "ATENŢIE:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FLTRAT"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

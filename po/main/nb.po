@@ -237,20 +237,6 @@ msgstr "Uønsket forlenging finnes i rar fil %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Avbryt, uønsket forlenging oppdaget"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Avbrøt, rangeringsfilter var lik (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -275,30 +261,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "lyd"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "søppel"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "passordbeskyttet"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "nedstemt"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "nøkkelord"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -546,7 +508,7 @@ msgstr "Kunne ikke sende e-post"
 msgid "Failed to close mail connection"
 msgstr "Kunne ikke stenge e-post-tilkobling"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Kan ikke sendes, mangler nødvendig data"
 
@@ -1242,10 +1204,6 @@ msgid "UNWANTED"
 msgstr "UØNSKET"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTRERT"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "VENT %s sek"
 
@@ -1640,25 +1598,6 @@ msgstr "Feil under avslutting av systemet"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Fant ikke indekser id (%s) for rangeringsfil."
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Tjeneradresse"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API-nøkkel"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -3140,6 +3079,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API-nøkkel"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "Denne nøkkelen vil gi tredjepartsprogrammer full tilgang til SABnzbd"
 
@@ -3789,60 +3732,6 @@ msgid ""
 "the job"
 msgstr ""
 "Avbryt jobben om det blir klart under nedlasting at for mye data mangler"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Aktiver filtrering"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Bruk nedlastinghandlinger ifølge filtreringsreglene."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Avbryt Hvis"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Ellers Pause Hvis"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Video-rangering"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Audio-rangering"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Søppelpost"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Bekreftet"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Flere tommeler ned enn opp"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Tittel-nøkkelord"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Kommaseparert liste"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4782,6 +4671,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "ADVARSEL:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FILTRERT"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

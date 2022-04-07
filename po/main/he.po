@@ -238,20 +238,6 @@ msgstr "סיומת בלתי רצויה בקובץ rar %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "בוטל, סיומת בלתי רצויה התגלתה"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "העבודה \"%s\" הושהתה בגלל דירוג (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "העבודה \"%s\" בוטלה בגלל דירוג (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "בוטל, מסנן דירוג היה תואם (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -276,30 +262,6 @@ msgstr "העבודה \"%s\" כנראה מוצפנת עקב RAR עם אותו ה�
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr "העבודה \"%s\" כנראה מוצפנת: \"סיסמה\" בשם הקובץ \"%s\""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "וידאו"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "שמע"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "זבל"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "מוגן בסיסמה"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "הוצבע נגד"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "מילות מפתח"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -550,7 +512,7 @@ msgstr "נכשל בשליחת דוא״ל"
 msgid "Failed to close mail connection"
 msgstr "נכשל בסגירת חיבור דוא״ל"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "לא ניתן לשלוח, נתונים דרושים חסרים"
 
@@ -1248,10 +1210,6 @@ msgid "UNWANTED"
 msgstr "בלתי רצוי"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "מסונן"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "המתן %s שניות"
 
@@ -1651,25 +1609,6 @@ msgstr "שגיאה בזמן כיבוי מערכת"
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
 msgstr "חריגת DBus התקבלה %s"
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "זהות מדדן (%s) לא נמצאה עבור קובץ דירוגים"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "כתובת שרת"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "מפתח API"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr "מפתח זה מספק זהות למדדן. בדוק את המתאר שלך באתר של המדדן."
 
 #. Error message
 #: sabnzbd/rss.py
@@ -3158,6 +3097,10 @@ msgstr ""
 "קיימים כאן:"
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "מפתח API"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "מפתח זה יתן לתוכניות צד שלישי גישה מלאה אל SABnzbd."
 
@@ -3809,62 +3752,6 @@ msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
 msgstr "כאשר במהלך הורדה מתבהר שיותר מדי נתונים חסרים, בטל את העבודה"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr "אפשר מיזוג מדדן"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-"מדדנים יכולים לספק מידע דירוג כאשר עבודה מתווספת ו־SABnzbd יכול לדווח למדדן "
-"במקרה שעבודה לא יכלה להישלם."
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "אפשר סינון"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "הורדה בהתאם לכללי הסינון."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "בטל אם"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "ולא השהה אם"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "דירוג וידאו"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "דירוג שמע"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "זבל"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "מאושר"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "יותר אגודלים למטה מאשר למעלה"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "מילות מפתח של כותרת"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "רשימה מופרדת בפסיקים"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4811,6 +4698,10 @@ msgstr "במקרה של הפעלה מחדש של SABnzbd המסך ייעלם ב�
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "אזהרה:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "מסונן"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

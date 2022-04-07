@@ -240,20 +240,6 @@ msgstr "Ei toivottu tiedostopääte on rar arkistossa %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Peruutettu, ei toivottu tiedostopääte havaittu"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Peruutettu, luokituksessa esiintyi suodatinosuma (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -278,30 +264,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "ääni"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "roskaposti"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "salasanasuojattu"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "epäsuosittu"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "avainsanat"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -550,7 +512,7 @@ msgstr "Sähköpostin lähetys epäonnistui"
 msgid "Failed to close mail connection"
 msgstr "Sähköpostiyhteyden sulkeminen epäonnistui"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Ei voida lähettää, vaaditut tiedot ovat puutteelliset"
 
@@ -1245,10 +1207,6 @@ msgid "UNWANTED"
 msgstr "EI TOIVOTTU"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "SUODATETTU"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "ODOTA %s sekuntia"
 
@@ -1643,25 +1601,6 @@ msgstr "Virhe sammutettaessa järjestelmää"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Indeksoijan id:tä (%s) ei löydetty arviointitiedostolle"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Palvelimen osoite"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API avain"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -3150,6 +3089,10 @@ msgstr ""
 "olemassaolevia käännöksiä täällä:"
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API avain"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 "Tämä avain antaa kolmannen osapuolen ohjelmille täyden pääsyn SABnzbd-"
@@ -3811,60 +3754,6 @@ msgid ""
 "the job"
 msgstr ""
 "Peruutetaan lataus, jos ladattaessa huomataan liikaa tiedostoja puuttuvan"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Suodatus päälle"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Latauksien toiminto suodatinsääntöjen mukaan."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Peruuta jos"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Muutoin keskeytä jos"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Videon suosio"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Äänen suosio"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spämmi"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Vahvistettu"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Enemmän alapeukkuja kuin yläpeukkuja"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Nimen avainsanat"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Pilkulla erotettu lista"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4810,6 +4699,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "VAROITUS:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "SUODATETTU"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

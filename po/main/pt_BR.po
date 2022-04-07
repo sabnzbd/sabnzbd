@@ -236,20 +236,6 @@ msgstr "A extensão indesejada está no arquivo rar %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Cancelado, extensão indesejada detectada"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Interrompido, filtro de pontuação encontrado (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -274,30 +260,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "vídeo"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "áudio"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "protegido por senha"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "votos negativos recebido"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "palavras chave"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -549,7 +511,7 @@ msgstr "Falha ao enviar o e-mail"
 msgid "Failed to close mail connection"
 msgstr "Falha ao fechar a conexão de e-mail"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Não foi possível enviar, faltam dados obrigatórios"
 
@@ -1244,10 +1206,6 @@ msgid "UNWANTED"
 msgstr "INDESEJADO"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTRADO"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "Espere %s segundo(s)"
 
@@ -1647,25 +1605,6 @@ msgstr "Erro ao desligar o sistema"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Indexador id (%s) não foi encontrador para avaliar arquivos"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Endereço do servidor"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Chave API"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -3149,6 +3088,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Chave API"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "Esta chave dará a programas de terceiros pleno acesso ao SABnzbd."
 
@@ -3801,60 +3744,6 @@ msgid ""
 msgstr ""
 "Quando durante o download ficar claro que muitos dados estão faltando, "
 "cancela a tarefa"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Habilitar filtros"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Ação faz o download de acordo com as regras de filtro"
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Interrompa se"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Ou então pause se"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Pontuação do vídeo"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Pontuação do áudio"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Confirmado"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Mais votos negativos do que positivos"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Palavras chave do título"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Lista separada por vírgulas"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4794,6 +4683,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "AVISO:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FILTRADO"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

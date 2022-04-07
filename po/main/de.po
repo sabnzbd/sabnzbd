@@ -259,20 +259,6 @@ msgstr "Unerwünschter Dateityp im RAR-Archiv %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Abgebrochen, unerwünschte Dateieindung gefunden"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "Aufgabe \"%s\" aufgrund der Bewertung (%s) pausiert."
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Abbruch, Bewertungsfilter stimmt überein (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -299,30 +285,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr "Aufgabe \"%s\" ist wahrscheinlich verschlüsselt: \"Passwort\" im Dateiname \"%s\""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "Video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "Audio"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "Spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "passwortgeschützt"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "als schlecht bewertet"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "Schlüsselwörter"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -582,7 +544,7 @@ msgstr "Senden des E-Mails fehlgeschlagen"
 msgid "Failed to close mail connection"
 msgstr "Schliessen der Mail-Verbindung fehlgeschlagen"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Absenden nicht möglich, benötigte Daten fehlen"
 
@@ -1300,10 +1262,6 @@ msgid "UNWANTED"
 msgstr "UNERWÜNSCHT"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "GEFILTERT"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "WARTE %s Sek"
 
@@ -1712,27 +1670,6 @@ msgstr "Fehler beim Herunterfahren des Systems"
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
 msgstr "DBus-Ausnahmefehler empfangen %s "
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Indexer ID (%s) für Bewertung nicht gefunden"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Server-Adresse"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API-Schlüssel"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr ""
-"Der Schlüssel liefert die Identität des Indexers. Prüfe dein Profil auf der "
-"indexer Webseite."
 
 #. Error message
 #: sabnzbd/rss.py
@@ -3240,6 +3177,10 @@ msgstr ""
 "Übersetzungen hinzufügen oder bestehende verbessern kannst du hier:"
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API-Schlüssel"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 "Dieser Schlüssel gibt Drittprogrammen uneingeschränkten Zugriff auf SABnzbd."
@@ -3942,63 +3883,6 @@ msgid ""
 msgstr ""
 "Job abbrechen falls während des Downloads klar wird, dass zuviele Daten "
 "fehlen"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr "Indexer Integration eingeschaltet"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-"Indexer können Rating Informationen liefern, wenn ein Job hinzugefügt wird "
-"und SABnzbd kann dem Indexer melden, wenn ein Job nicht abgeschlossen werden"
-" konnte."
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Filter aktivieren"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Action-Downloads nach Filterregeln."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Abbrechen wenn"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Andererseits pausieren wenn"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Videobewertung"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Audiobewertung"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Bestätigt"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Mehr Daumen-Hoch als -Runter"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Titel-Schlüsselwörter"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Durch Komma getrennte Liste"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4951,6 +4835,10 @@ msgstr "Wenn SABnzbd neustartet, wird diese Anzeige automatisch verschwinden!"
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr "WARNUNG:"
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "GEFILTERT"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"

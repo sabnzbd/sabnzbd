@@ -217,20 +217,6 @@ msgstr ""
 msgid "Aborted, unwanted extension detected"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr ""
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -254,30 +240,6 @@ msgstr ""
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "keywords"
 msgstr ""
 
 #. Warning message
@@ -521,7 +483,7 @@ msgstr ""
 msgid "Failed to close mail connection"
 msgstr ""
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr ""
 
@@ -1182,10 +1144,6 @@ msgid "UNWANTED"
 msgstr ""
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr ""
 
@@ -1545,23 +1503,6 @@ msgstr ""
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr ""
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr ""
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr ""
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "This key provides identity to indexer. Check your profile on the indexer's website."
 msgstr ""
 
 #. Error message
@@ -2989,6 +2930,10 @@ msgid "Help us translate SABnzbd in your language! <br/>Add untranslated texts o
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 
@@ -3551,58 +3496,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "When during download it becomes clear that too much data is missing, abort the job"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Indexers can supply rating information when a job is added and SABnzbd can report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4508,6 +4401,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "WARNING:"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
 msgstr ""
 
 #: sabnzbd/skintext.py

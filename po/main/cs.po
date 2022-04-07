@@ -243,20 +243,6 @@ msgstr "Neočekávaná přípona v rar souboru %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Přerušeno, nalezena neočekávaná připona"
 
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "Pozastavený úkol \"%s\" kvůli hodnocení (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "Zrušený úkol \"%s\" kvůli hodnocení (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Zrušeno, zachyceno hodnotícím filtrem (%s)"
-
 #. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
@@ -281,30 +267,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "audio"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "zaheslováno"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr ""
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "klíčová slova"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -556,7 +518,7 @@ msgstr "Nezdařilo se odeslat e-mail"
 msgid "Failed to close mail connection"
 msgstr "Nezdařilo se uzavřít spojení pro mail"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Nelze odeslat, chybějí požadovaná data"
 
@@ -1249,10 +1211,6 @@ msgid "UNWANTED"
 msgstr "NECHTĚNÝ"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTROVANÝ"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "ČEKÁNÍ %s s"
 
@@ -1619,25 +1577,6 @@ msgstr ""
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr ""
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Adresa serveru"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API klíč"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -3104,6 +3043,10 @@ msgstr ""
 "nebo vylepšete existující překlad:"
 
 #: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API klíč"
+
+#: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr ""
 
@@ -3718,60 +3661,6 @@ msgstr ""
 msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4701,6 +4590,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "WARNING:"
 msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "FILTERED"
+msgstr "FILTROVANÝ"
 
 #: sabnzbd/skintext.py
 msgid "Fetch"
