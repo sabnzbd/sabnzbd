@@ -431,7 +431,6 @@ def print_modules():
                 sabnzbd.decoder.SABYENC_VERSION,
                 sabnzbd.constants.SABYENC_VERSION_REQUIRED,
             )
-            logging.info("SABYenc file %s", sabnzbd.decoder.SABYENC_FILE)
         else:
             # No SABYenc module at all
             logging.error(

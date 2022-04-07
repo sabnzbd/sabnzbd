@@ -377,7 +377,8 @@ disable_key = OptionBool("misc", "disable_api_key", False, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
-num_simd_decoders = OptionNumber("misc", "num_simd_decoders", 1)
+decoders = OptionNumber("misc", "decoders")
+assemblers = OptionNumber("misc", "assemblers")
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])

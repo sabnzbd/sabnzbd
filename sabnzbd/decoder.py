@@ -37,14 +37,12 @@ from sabnzbd.misc import match_str
 # Check for correct SABYenc version
 SABYENC_VERSION = None
 SABYENC_SIMD = None
-SABYENC_FILE = None
 try:
     import sabyenc3
 
     SABYENC_ENABLED = True
     SABYENC_VERSION = sabyenc3.__version__
     SABYENC_SIMD = sabyenc3.simd
-    SABYENC_FILE = sabyenc3.__file__
     # Verify version to at least match minor version
     if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
         raise ImportError
@@ -70,18 +68,19 @@ class Decoder:
     """Implement thread-like coordinator for the decoders"""
 
     def __init__(self):
-        logging.debug("Initializing decoders")
+
         # Initialize queue and servers
         self.decoder_queue = queue.Queue()
 
-        # If no SIMD is available, use at least 2 decoders
-        num_decoders = cfg.num_simd_decoders()
-        if not SABYENC_SIMD:
-            num_decoders = max(2, num_decoders)
+        # If SIMD is available, we only need 1 decoder
+        decoders = cfg.decoders()
+        if not decoders:
+            decoders = 1 if SABYENC_SIMD else 2
 
         # Initialize decoders
+        logging.debug("Initializing %d decoder(s)", decoders)
         self.decoder_workers = []
-        for i in range(num_decoders):
+        for _ in range(decoders):
             self.decoder_workers.append(DecoderWorker(self.decoder_queue))
 
     def start(self):
@@ -124,7 +123,6 @@ class DecoderWorker(Thread):
     def __init__(self, decoder_queue):
         super().__init__()
         logging.debug("Initializing decoder %s", self.name)
-
         self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]]]] = decoder_queue
 
     def run(self):
@@ -134,7 +132,7 @@ class DecoderWorker(Thread):
             decoded_data = raw_data = article = nzo = None
             article, raw_data = self.decoder_queue.get()
             if not article:
-                logging.info("Shutting down decoder %s", self.name)
+                logging.debug("Shutting down decoder %s", self.name)
                 break
 
             nzo = article.nzf.nzo
