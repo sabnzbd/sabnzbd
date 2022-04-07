@@ -4701,10 +4701,6 @@ msgid "WARNING:"
 msgstr "VAROITUS:"
 
 #: sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "SUODATETTU"
-
-#: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Nouda"
 

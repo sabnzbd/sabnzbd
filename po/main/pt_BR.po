@@ -4685,10 +4685,6 @@ msgid "WARNING:"
 msgstr "AVISO:"
 
 #: sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTRADO"
-
-#: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Obter"
 

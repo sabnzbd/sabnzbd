@@ -4605,10 +4605,6 @@ msgid "WARNING:"
 msgstr "警告:"
 
 #: sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "已过滤"
-
-#: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "装取"
 

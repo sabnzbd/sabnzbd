@@ -4700,10 +4700,6 @@ msgid "WARNING:"
 msgstr "אזהרה:"
 
 #: sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "מסונן"
-
-#: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "משוך"
 

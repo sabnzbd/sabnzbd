@@ -4843,10 +4843,6 @@ msgid "WARNING:"
 msgstr "AVERTISSEMENT :"
 
 #: sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FILTRÉ"
-
-#: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Charger"
 
