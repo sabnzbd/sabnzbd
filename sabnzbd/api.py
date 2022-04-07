@@ -265,38 +265,6 @@ def _api_queue_default(value, kwargs):
     return report(keyword="queue", data=build_queue(start=start, limit=limit, search=search, nzo_ids=nzo_ids))
 
 
-def _api_queue_rating(value, kwargs):
-    """API: accepts value(=nzo_id), type, setting, detail"""
-    vote_map = {"up": sabnzbd.Rating.VOTE_UP, "down": sabnzbd.Rating.VOTE_DOWN}
-    flag_map = {
-        "spam": sabnzbd.Rating.FLAG_SPAM,
-        "encrypted": sabnzbd.Rating.FLAG_ENCRYPTED,
-        "expired": sabnzbd.Rating.FLAG_EXPIRED,
-        "other": sabnzbd.Rating.FLAG_OTHER,
-        "comment": sabnzbd.Rating.FLAG_COMMENT,
-    }
-    content_type = kwargs.get("type")
-    setting = kwargs.get("setting")
-    if value:
-        try:
-            video = audio = vote = flag = None
-            if content_type == "video" and setting != "-":
-                video = setting
-            if content_type == "audio" and setting != "-":
-                audio = setting
-            if content_type == "vote":
-                vote = vote_map[setting]
-            if content_type == "flag":
-                flag = flag_map[setting]
-            if cfg.rating_enable():
-                sabnzbd.Rating.update_user_rating(value, video, audio, vote, flag, kwargs.get("detail"))
-            return report()
-        except:
-            return report(_MSG_BAD_SERVER_PARMS)
-    else:
-        return report(_MSG_NO_VALUE)
-
-
 def _api_options(name, kwargs):
     return report(
         keyword="options",
@@ -674,7 +642,7 @@ LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
 LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
 LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
 LOG_INI_HIDE_RE = re.compile(
-    rb"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
+    rb"(email_pwd|email_account|email_to|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
     re.I,
 )
 LOG_HASH_RE = re.compile(rb"([a-fA-F\d]{25})", re.I)
@@ -1082,7 +1050,6 @@ _api_queue_table = {
     "resume": (_api_queue_resume, 2),
     "priority": (_api_queue_priority, 2),
     "sort": (_api_queue_sort, 2),
-    "rating": (_api_queue_rating, 2),
 }
 
 _api_status_table = {
@@ -1497,12 +1464,6 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         else:
             slot["avg_age"] = calc_age(average_date)
 
-        rating = sabnzbd.Rating.get_rating_by_nzo(nzo_id)
-        slot["has_rating"] = rating is not None
-        if rating:
-            slot["rating_avg_video"] = rating.avg_video
-            slot["rating_avg_audio"] = rating.avg_audio
-
         slotinfo.append(slot)
         n += 1
 
@@ -1784,9 +1745,6 @@ def build_history(
     # Un-reverse the queue
     items.reverse()
 
-    # Global check if rating is enabled
-    rating_enabled = cfg.rating_enable()
-
     for item in items:
         item["size"] = to_units(item["bytes"], "B")
 
@@ -1798,18 +1756,6 @@ def build_history(
         # Retry of failed URL-fetch
         if item["report"] == "future":
             item["retry"] = True
-
-        if rating_enabled:
-            rating = sabnzbd.Rating.get_rating_by_nzo(item["nzo_id"])
-            item["has_rating"] = rating is not None
-            if rating:
-                item["rating_avg_video"] = rating.avg_video
-                item["rating_avg_audio"] = rating.avg_audio
-                item["rating_avg_vote_up"] = rating.avg_vote_up
-                item["rating_avg_vote_down"] = rating.avg_vote_down
-                item["rating_user_video"] = rating.user_video
-                item["rating_user_audio"] = rating.user_audio
-                item["rating_user_vote"] = rating.user_vote
 
     total_items += postproc_queue_size
 

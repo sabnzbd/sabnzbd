@@ -180,14 +180,6 @@ tr.queue-item>td:first-child>a {
     min-width: 0px;
 }
 
-.history-table .history-ratings {
-    display: none;
-}
-
-.name-has-ratings .row-wrap-text {
-    max-width: calc(100% - 1px) !important;
-}
-
 .history-table .delete .dropdown-menu {
     width: 100%;
     left: 0;

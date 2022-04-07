@@ -42,22 +42,6 @@ import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.nzbstuff import NzbObject
 
-_RARTING_FIELDS = (
-    "x-rating-id",
-    "x-rating-url",
-    "x-rating-host",
-    "x-rating-video",
-    "x-rating-videocnt",
-    "x-rating-audio",
-    "x-rating-audiocnt",
-    "x-rating-voteup",
-    "x-rating-votedown",
-    "x-rating-spam",
-    "x-rating-confirmed-spam",
-    "x-rating-passworded",
-    "x-rating-confirmed-passworded",
-)
-
 
 class URLGrabber(Thread):
     def __init__(self):
@@ -186,10 +170,6 @@ class URLGrabber(Thread):
                             nzo_info["password"] = value
                         elif item == "retry-after":
                             wait = misc.int_conv(value)
-
-                        # Rating fields
-                        if item in _RARTING_FIELDS:
-                            nzo_info[item] = value
 
                         # Get filename from Content-Disposition header
                         if not filename and "filename" in value:

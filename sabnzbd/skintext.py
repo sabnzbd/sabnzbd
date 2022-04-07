@@ -603,24 +603,6 @@ SKIN_TEXT = {
     "explain-fail_hopeless_jobs": TT(
         "When during download it becomes clear that too much data is missing, abort the job"
     ),
-    "opt-rating_enable": TT("Enable Indexer Integration"),
-    "explain-rating_enable": TT(
-        "Indexers can supply rating information when a job is added and SABnzbd can report to the indexer if a job couldn't be completed."
-    ),
-    "opt-rating_api_key": TT("API Key"),
-    "explain-rating_api_key": TT("This key provides identity to indexer. Check your profile on the indexer's website."),
-    "opt-rating_filter_enable": TT("Enable Filtering"),
-    "explain-rating_filter_enable": TT("Action downloads according to filtering rules."),
-    "opt-rating_filter_abort_if": TT("Abort If"),
-    "opt-rating_filter_pause_if": TT("Else Pause If"),
-    "opt-rating_filter_video": TT("Video rating"),
-    "opt-rating_filter_audio": TT("Audio rating"),
-    "opt-rating_filter_passworded": TT("Passworded"),
-    "opt-rating_filter_spam": TT("Spam"),
-    "opt-rating_filter_confirmed": TT("Confirmed"),
-    "opt-rating_filter_downvoted": TT("More thumbs down than up"),
-    "opt-rating_filter_keywords": TT("Title keywords"),
-    "explain-rating_filter_keywords": TT("Comma separated list"),
     "opt-load_balancing": TT("Server IP address selection"),
     "no-load-balancing": TT("First IP address"),
     "load-balancing": TT("Randomly selected IP address"),

@@ -108,7 +108,6 @@ import sabnzbd.postproc
 import sabnzbd.downloader
 import sabnzbd.decoder
 import sabnzbd.assembler
-import sabnzbd.rating
 import sabnzbd.articlecache
 import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
@@ -123,7 +122,6 @@ import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
-Rating: sabnzbd.rating.Rating
 Assembler: sabnzbd.assembler.Assembler
 Decoder: sabnzbd.decoder.Decoder
 Downloader: sabnzbd.downloader.Downloader
@@ -311,7 +309,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
     sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
     sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
-    sabnzbd.Rating = sabnzbd.rating.Rating()
     sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
     sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
     sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
@@ -351,9 +348,6 @@ def start():
         logging.debug("Starting dirscanner")
         sabnzbd.DirScanner.start()
 
-        logging.debug("Starting rating")
-        sabnzbd.Rating.start()
-
         logging.debug("Starting urlgrabber")
         sabnzbd.URLGrabber.start()
 
@@ -386,13 +380,6 @@ def halt():
         sabnzbd.URLGrabber.stop()
         try:
             sabnzbd.URLGrabber.join()
-        except:
-            pass
-
-        logging.debug("Stopping rating")
-        sabnzbd.Rating.stop()
-        try:
-            sabnzbd.Rating.join()
         except:
             pass
 
@@ -480,7 +467,6 @@ def save_state():
     sabnzbd.ArticleCache.flush_articles()
     sabnzbd.NzbQueue.save()
     sabnzbd.BPSMeter.save()
-    sabnzbd.Rating.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
     sabnzbd.RSSReader.save()
@@ -520,9 +506,6 @@ def check_all_tasks():
     if not sabnzbd.URLGrabber.is_alive():
         logging.info("Restarting crashed urlgrabber")
         sabnzbd.URLGrabber.__init__()
-    if not sabnzbd.Rating.is_alive():
-        logging.info("Restarting crashed rating")
-        sabnzbd.Rating.__init__()
     if not sabnzbd.Scheduler.is_alive():
         logging.info("Restarting crashed scheduler")
         sabnzbd.Scheduler.restart()

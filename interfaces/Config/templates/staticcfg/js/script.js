@@ -408,7 +408,7 @@ $(document).ready(function () {
     $('input[type="checkbox"]').parents('label').addClass('config-hover')
 
     // Disable sections
-    var checkDisabled = '#rating_enable, #enable_tv_sorting, #enable_movie_sorting, #enable_date_sorting'
+    var checkDisabled = '#enable_tv_sorting, #enable_movie_sorting, #enable_date_sorting'
 
     $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')

@@ -1009,10 +1009,6 @@ tr.queue-item>td:first-child>a {
     font-weight: bold;
 }
 
-.history-table td.name.name-has-ratings .row-wrap-text {
-    max-width: calc(100% - 80px) ;
-}
-
 .history-failed-download:hover .retry-button .glyphicon:before,
 .retry-button:hover .glyphicon:before {
     content: " \e030 ";
@@ -1077,83 +1073,6 @@ tr.queue-item>td:first-child>a {
 .history-status-hidden {
     display: none;
 }
-
-.history-ratings {
-    display: inline-block;
-}
-
-.history-ratings.open a {
-    opacity: 1;
-}
-
-.history-ratings .name-icons {
-    float: none !important;
-}
-
-.history-ratings-menu {
-    width: 300px;
-    padding: 10px;
-    margin-top: 4px !important;
-}
-
-.history-ratings-menu .divider {
-    background-color: black;
-}
-
-.history-ratings-menu label {
-    margin-right: 12px;
-    font-weight: normal;
-}
-
-.history-ratings-basic input[type="radio"] {
-    display: none;
-}
-
-.history-ratings-basic input[type="radio"]+span {
-    opacity: 0.6;
-    cursor: pointer;
-    font-size: 1.3em;
-    font-weight: bold;
-    top: 3px;
-    margin-left: 3px;
-}
-
-.history-ratings-basic input[type="radio"]+span+span {
-    opacity: 0.3;
-}
-
-.history-ratings-basic input[type="radio"]:checked+span,
-.history-ratings-basic input[type="radio"]:checked+span+span {
-    opacity: 1;
-}
-
-.history-ratings-basic .history-ratings-spacer {
-    margin-left: 10px;
-}
-
-.history-ratings-basic select {
-    margin-left: 3px;
-    background-color: transparent;
-    border: 1px solid #ccc;
-}
-
-.history-ratings-basic select:disabled {
-    background-color: #F5F5F5;
-}
-
-.history-ratings-report label {
-    width: 100%;
-}
-
-.history-ratings-report .ratings-report-hidden {
-    display: none;
-}
-
-.history-ratings-report input[type="radio"]:checked+input,
-.history-ratings-report input[type="radio"]:checked+select {
-    display: block;
-}
-
 #history-options {
     margin-top: 0;
     margin-left: 10px;
@@ -1960,10 +1879,6 @@ input[name="nzbURL"] {
     #feedback-slider {
         display: none;
     }
-
-    .glyphicon-facetime-video {
-        top: 2px;
-    }
 }
 
 @media only screen and (min-device-width:768px) and (max-device-width:1024px) and (orientation:portrait) {
@@ -2042,7 +1957,6 @@ a:focus {
     text-decoration: none;
 }
 
-.glyphicon-volume-up,
 .glyphicon-trash {
     top: 2px;
 }
@@ -2109,15 +2023,6 @@ a:focus {
     border-bottom: 5px solid #ffffff;
     border-left: 5px solid transparent;
     content: '';
-}
-
-.history-ratings-menu:after {
-    right: inherit !important;
-    left: 23px;
-}
-.history-ratings-menu:before {
-    right: inherit !important;
-    left: 22px;
 }
 
 .open > .dropdown-menu {

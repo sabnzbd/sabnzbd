@@ -588,17 +588,6 @@ def process_job(nzo: NzbObject):
         # Force error for empty result
         all_ok = all_ok and not empty
 
-        # Update indexer with results
-        if cfg.rating_enable():
-            if nzo.encrypted > 0:
-                sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_ENCRYPTED)
-            if empty:
-                hosts = [s.host for s in sabnzbd.Downloader.nzo_servers(nzo)]
-                if not hosts:
-                    hosts = [None]
-                for host in hosts:
-                    sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_EXPIRED, host)
-
     except:
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
         logging.info("Traceback: ", exc_info=True)

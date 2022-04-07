@@ -572,7 +572,6 @@ NzbObjectSaver = (
     "servercount",
     "unwanted_ext",
     "renames",
-    "rating_filtered",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -695,7 +694,6 @@ class NzbObject(TryList):
         self.precheck = False
         self.incomplete = False
         self.unwanted_ext = 0
-        self.rating_filtered = 0
         self.reuse = reuse
         if self.status == Status.QUEUED and not reuse:
             self.precheck = cfg.pre_check()
@@ -951,7 +949,7 @@ class NzbObject(TryList):
         self.save_timeout = max(120, min(6.0 * self.bytes / GIGI, 300.0))
 
         # In case pre-queue script or duplicate check want to move
-        # to history we first need an nzo_id by entering the NzbQueue
+        # to history we first need a nzo_id by entering the NzbQueue
         if accept == 2:
             sabnzbd.NzbQueue.add(self, quiet=True)
             sabnzbd.NzbQueue.end_job(self)
@@ -1382,8 +1380,6 @@ class NzbObject(TryList):
             labels.append(T("INCOMPLETE"))
         if self.unwanted_ext:
             labels.append(T("UNWANTED"))
-        if self.rating_filtered:
-            labels.append(T("FILTERED"))
 
         # Waiting for URL fetching
         if isinstance(self.url_wait, float):
@@ -1434,9 +1430,6 @@ class NzbObject(TryList):
         if self.encrypted > 0:
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
-        if self.rating_filtered:
-            # If user resumes after filtered warning, no more auto-pauses
-            self.rating_filtered = 2
         # If user resumes after warning, reset duplicate/oversized/incomplete/unwanted indicators
         self.duplicate = False
         self.oversized = False
@@ -1782,40 +1775,6 @@ class NzbObject(TryList):
             self.renames.update(name_set)
         else:
             self.renames[name_set] = old_name
-
-    # Determine if rating information (including site identifier so rating can be updated)
-    # is present in metadata and if so store it
-    @synchronized(NZO_LOCK)
-    def update_rating(self):
-        if cfg.rating_enable():
-            try:
-
-                def _get_first_meta(rating_type):
-                    values = self.nzo_info.get("x-oznzb-rating-" + rating_type, None) or self.nzo_info.get(
-                        "x-rating-" + rating_type, None
-                    )
-                    return values[0] if values and isinstance(values, list) else values
-
-                rating_types = [
-                    "url",
-                    "host",
-                    "video",
-                    "videocnt",
-                    "audio",
-                    "audiocnt",
-                    "voteup",
-                    "votedown",
-                    "spam",
-                    "confirmed-spam",
-                    "passworded",
-                    "confirmed-passworded",
-                ]
-                fields = {}
-                for k in rating_types:
-                    fields[k] = _get_first_meta(k)
-                sabnzbd.Rating.add_rating(_get_first_meta("id"), self.nzo_id, fields)
-            except:
-                pass
 
     @property
     def admin_path(self):

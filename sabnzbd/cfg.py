@@ -309,33 +309,10 @@ new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
 history_retention = OptionStr("misc", "history_retention", "0")
 enable_meta = OptionBool("misc", "enable_meta", True)
 
-
 quota_size = OptionStr("misc", "quota_size")
 quota_day = OptionStr("misc", "quota_day")
 quota_resume = OptionBool("misc", "quota_resume", False)
 quota_period = OptionStr("misc", "quota_period", "m")
-
-rating_enable = OptionBool("misc", "rating_enable", False)
-rating_host = OptionStr("misc", "rating_host")
-rating_api_key = OptionStr("misc", "rating_api_key")
-rating_filter_enable = OptionBool("misc", "rating_filter_enable", False)
-rating_filter_abort_audio = OptionNumber("misc", "rating_filter_abort_audio", 0)
-rating_filter_abort_video = OptionNumber("misc", "rating_filter_abort_video", 0)
-rating_filter_abort_encrypted = OptionBool("misc", "rating_filter_abort_encrypted", False)
-rating_filter_abort_encrypted_confirm = OptionBool("misc", "rating_filter_abort_encrypted_confirm", False)
-rating_filter_abort_spam = OptionBool("misc", "rating_filter_abort_spam", False)
-rating_filter_abort_spam_confirm = OptionBool("misc", "rating_filter_abort_spam_confirm", False)
-rating_filter_abort_downvoted = OptionBool("misc", "rating_filter_abort_downvoted", False)
-rating_filter_abort_keywords = OptionStr("misc", "rating_filter_abort_keywords")
-rating_filter_pause_audio = OptionNumber("misc", "rating_filter_pause_audio", 0)
-rating_filter_pause_video = OptionNumber("misc", "rating_filter_pause_video", 0)
-rating_filter_pause_encrypted = OptionBool("misc", "rating_filter_pause_encrypted", False)
-rating_filter_pause_encrypted_confirm = OptionBool("misc", "rating_filter_pause_encrypted_confirm", False)
-rating_filter_pause_spam = OptionBool("misc", "rating_filter_pause_spam", False)
-rating_filter_pause_spam_confirm = OptionBool("misc", "rating_filter_pause_spam_confirm", False)
-rating_filter_pause_downvoted = OptionBool("misc", "rating_filter_pause_downvoted", False)
-rating_filter_pause_keywords = OptionStr("misc", "rating_filter_pause_keywords")
-
 
 ##############################################################################
 # Config - Sorting

@@ -816,25 +816,6 @@ SWITCH_LIST = (
     "unwanted_extensions_mode",
     "cleanup_list",
     "sanitize_safe",
-    "rating_enable",
-    "rating_api_key",
-    "rating_filter_enable",
-    "rating_filter_abort_audio",
-    "rating_filter_abort_video",
-    "rating_filter_abort_encrypted",
-    "rating_filter_abort_encrypted_confirm",
-    "rating_filter_abort_spam",
-    "rating_filter_abort_spam_confirm",
-    "rating_filter_abort_downvoted",
-    "rating_filter_abort_keywords",
-    "rating_filter_pause_audio",
-    "rating_filter_pause_video",
-    "rating_filter_pause_encrypted",
-    "rating_filter_pause_encrypted_confirm",
-    "rating_filter_pause_spam",
-    "rating_filter_pause_spam_confirm",
-    "rating_filter_pause_downvoted",
-    "rating_filter_pause_keywords",
 )
 
 
@@ -930,7 +911,6 @@ SPECIAL_VALUE_LIST = (
     "direct_unpack_threads",
     "ipv6_servers",
     "selftest_host",
-    "rating_host",
     "ssdp_broadcast_interval",
 )
 SPECIAL_LIST_LIST = (

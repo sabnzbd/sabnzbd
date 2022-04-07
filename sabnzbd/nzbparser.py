@@ -238,7 +238,6 @@ def process_nzb_archive_file(
                             nzo.nzo_id = nzo_id
                             nzo_id = None
                         nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
-                        nzo.update_rating()
 
         # Close the pointer to the compressed file
         zf.close()
@@ -346,7 +345,6 @@ def process_single_nzb(
             sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
             nzo.nzo_id = nzo_id
         nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
-        nzo.update_rating()
 
     try:
         if not keep:

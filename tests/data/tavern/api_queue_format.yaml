@@ -80,8 +80,6 @@ stages:
             timeleft: "0:00:00"
             eta: "unknown"
             avg_age: "!anystr"
-            has_rating: !anybool
-
 
 ---
 test_name: Check general queue format (text output)
@@ -201,7 +199,6 @@ stages:
             <timeleft>0:00:00</timeleft>
             <eta>unknown</eta>
             <avg_age>!anystr</avg_age>
-            <has_rating>!anybool</has_rating>
             </slot>
             </slots>
             </queue>
