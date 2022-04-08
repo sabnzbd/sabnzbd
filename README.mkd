@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 3.6.0 Beta 2
+Release Notes - SABnzbd 3.6.0 Beta 3
 =========================================================
+
+## Changes and bugfixes since 3.6.0 Beta 2
+- Removed Indexer Feedback Integration.
+- Removed included `Deobfuscate.py` as it is outdated.
+- In case SIMD is available, multiple files will be assembled
+  simultaneously. This further improves performance.
 
 ## Changes and bugfixes since 3.6.0 Beta 1
 - Updates to `sabyenc3` to support more compiler setups.
