@@ -85,7 +85,7 @@ def recover_par2_names(filelist: List[str]) -> List[str]:
     par2_files = [f for f in filelist if f.endswith(".par2")]
     # Found any par2 files we can use?
     if not par2_files:
-        logging.debug("No par2 files found to process, running renamer")
+        logging.debug("No additional par2 files found to process")
     else:
         # Run par2 from SABnzbd on them
         for par2_file in par2_files:

@@ -86,7 +86,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
     return setname, vol, block
 
 
-def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[str, bytes]]:
+def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[str, Tuple[bytes, bytes]]]:
     """Get the hash table and the first-16k hash table from a PAR2 file
     Return as dictionary, indexed on names or hashes for the first-16 table
     The input md5of16k is modified in place and thus not returned!
@@ -106,7 +106,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                 if header == PAR_PKT_ID:
                     name, filehash, hash16k, set_id, nr_files = parse_par2_packet(f)
                     if name:
-                        table[name] = filehash
+                        table[name] = (hash16k, filehash)
                         if hash16k not in md5of16k:
                             md5of16k[hash16k] = name
                         elif md5of16k[hash16k] != name:
