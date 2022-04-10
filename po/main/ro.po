@@ -206,6 +206,21 @@ msgstr "Implicit"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Compilarea unei căutări regex nereuşită: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disc plin! Pauză Forţată"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Eroare disc la crearea fişierului %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Eroare fatală în  Assembler"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -245,21 +260,6 @@ msgstr "Extensii fișier nedorite în fișierul rar %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Oprit, extensii nedorite detectate"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disc plin! Pauză Forţată"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Eroare disc la crearea fişierului %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Eroare fatală în  Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

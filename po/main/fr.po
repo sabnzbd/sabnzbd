@@ -214,6 +214,21 @@ msgstr "Par défaut"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Echec de la compilation de regex pour la recherche du terme : %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disque plein ! Pause forcée"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Erreur de disque lors de la création du fichier %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Erreur fatale dans l'assembleur"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -255,21 +270,6 @@ msgstr "L'extension indésirable est dans le fichier rar %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Interrompu, extension indésirable détectée"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disque plein ! Pause forcée"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Erreur de disque lors de la création du fichier %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Erreur fatale dans l'assembleur"
 
 #. Warning message
 #: sabnzbd/assembler.py

@@ -204,6 +204,21 @@ msgstr "Oletus"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Regex käännös epäonnistui hakutermille: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Levy täynnä! Pakotetaan keskeytys"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Levyvirhe luotaessa tiedostoa %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Vakava virhe kohteessa Assembler"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -239,21 +254,6 @@ msgstr "Ei toivottu tiedostopääte on rar arkistossa %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Peruutettu, ei toivottu tiedostopääte havaittu"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Levy täynnä! Pakotetaan keskeytys"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Levyvirhe luotaessa tiedostoa %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Vakava virhe kohteessa Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

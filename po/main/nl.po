@@ -208,6 +208,21 @@ msgstr "Standaard"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Schijf is vol; gedwongen pauze"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Schrijffout bij opslaan van bestand %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Onherstelbare fout in de Assembler"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -247,21 +262,6 @@ msgstr "De ongewenste extensie zit in RAR-bestand %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Afgebroken, ongewenste extensie ontdekt"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Schijf is vol; gedwongen pauze"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Schrijffout bij opslaan van bestand %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Onherstelbare fout in de Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

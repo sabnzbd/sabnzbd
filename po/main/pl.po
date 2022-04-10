@@ -196,6 +196,21 @@ msgstr "Domyślne"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Błąd kompilacji wyrażenia regularnego dla wyszukiwania: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Dysk pełny! Wstrzymuję pobieranie"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Błąd dysku podczas tworzenia pliku %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Błąd krytyczny w module składającym"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -231,21 +246,6 @@ msgstr "Niepożądane rozszerzenie w pliku RAR %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Przerwano, wykryto niepożądane rozszerzenie"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Dysk pełny! Wstrzymuję pobieranie"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Błąd dysku podczas tworzenia pliku %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Błąd krytyczny w module składającym"
 
 #. Warning message
 #: sabnzbd/assembler.py

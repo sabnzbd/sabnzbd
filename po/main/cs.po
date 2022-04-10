@@ -203,6 +203,21 @@ msgstr "Výchozí"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Nepodařilo se zkompilovat regex pro hledaný výraz: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Plný disk! Vynucené pozastavení"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Probém s vytvořením souboru %s na disku"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Neopravitelná chyba v Assembleru"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -242,21 +257,6 @@ msgstr "Neočekávaná přípona v rar souboru %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Přerušeno, nalezena neočekávaná připona"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Plný disk! Vynucené pozastavení"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Probém s vytvořením souboru %s na disku"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Neopravitelná chyba v Assembleru"
 
 #. Warning message
 #: sabnzbd/assembler.py

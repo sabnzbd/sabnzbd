@@ -201,6 +201,21 @@ msgstr "Standard"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Kunne ikke lage regex for søkestreng: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disken er full! Pauser..."
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Diskfeil under opprettelse av fil %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Kritisk feil i Assembler"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -236,21 +251,6 @@ msgstr "Uønsket forlenging finnes i rar fil %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Avbryt, uønsket forlenging oppdaget"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disken er full! Pauser..."
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Diskfeil under opprettelse av fil %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Kritisk feil i Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

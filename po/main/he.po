@@ -201,6 +201,21 @@ msgstr "ברירת מחדל"
 msgid "Failed to compile regex for search term: %s"
 msgstr "עבור מונח חיפוש regex נכשל בליקוט: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "דיסק מלא! מאלץ השהיה"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "שגיאת דיסק ביצירת קובץ %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "שגיאה חמורה ב־Assembler"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -237,21 +252,6 @@ msgstr "סיומת בלתי רצויה בקובץ rar %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "בוטל, סיומת בלתי רצויה התגלתה"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "דיסק מלא! מאלץ השהיה"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "שגיאת דיסק ביצירת קובץ %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "שגיאה חמורה ב־Assembler"
 
 #. Warning message
 #: sabnzbd/assembler.py

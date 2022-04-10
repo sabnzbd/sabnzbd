@@ -198,6 +198,21 @@ msgstr "Подразумевано"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Neuspešna kompilacija regularne ekspresije za termin pretrage: %s"
 
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disk je pun! Tera Pause"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "Greška na disku prilikom kreiranja datoteke %s"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Fatalna greška u Assembler-u"
+
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Too little diskspace forcing PAUSE"
@@ -233,21 +248,6 @@ msgstr "Neželjena ekstenzija je u rar datoteci %s"
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Prekinuto, detektovana neželjena ekstenzija"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk full! Forcing Pause"
-msgstr "Disk je pun! Tera Pause"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Disk error on creating file %s"
-msgstr "Greška na disku prilikom kreiranja datoteke %s"
-
-#. Error message
-#: sabnzbd/assembler.py
-msgid "Fatal error in Assembler"
-msgstr "Fatalna greška u Assembler-u"
 
 #. Warning message
 #: sabnzbd/assembler.py
