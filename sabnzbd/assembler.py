@@ -23,10 +23,9 @@ import os
 import queue
 import logging
 import re
-import time
+from threading import Thread
 import hashlib
 import ctypes
-from threading import Thread, RLock
 from typing import Tuple, Optional, List
 
 import sabnzbd
@@ -46,101 +45,31 @@ import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
 
 
-NZF_CHECK_LOCK = RLock()
-
-
-class Assembler:
-    """Implement thread-like coordinator for the assemblers"""
-
+class Assembler(Thread):
     def __init__(self):
-        # Initialize queue and servers
-        self.assembler_queue = queue.Queue()
-        self.active_nzfs: List[NzbFile] = []
-
-        # If SIMD is available, we can use 2 assemblers because the MD5 calculation
-        # actually causes us to not write data continuously but in 1-article-bursts.
-        assemblers = cfg.assemblers()
-        if not assemblers:
-            assemblers = 2 if sabnzbd.decoder.SABYENC_SIMD else 1
-
-        # Initialize assemblers
-        logging.debug("Initializing %d assembler(s)", assemblers)
-
-        # Initialize assemblers
-        self.assembler_workers = []
-        for _ in range(assemblers):
-            self.assembler_workers.append(AssemblerWorker(self))
-
-    def start(self):
-        for assembler_worker in self.assembler_workers:
-            assembler_worker.start()
-
-    def is_alive(self) -> bool:
-        # Check all workers
-        for assembler_worker in self.assembler_workers:
-            if not assembler_worker.is_alive():
-                return False
-        return True
+        super().__init__()
+        self.queue: queue.Queue[Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]] = queue.Queue()
 
     def stop(self):
-        # Put multiple to stop all assemblers
-        for _ in self.assembler_workers:
-            self.assembler_queue.put((None, None, None))
-
-    def join(self):
-        # Wait for all assemblers to finish
-        for assembler_worker in self.assembler_workers:
-            try:
-                assembler_worker.join()
-            except:
-                pass
+        self.queue.put((None, None, None))
 
     def process(self, nzo: NzbObject, nzf: Optional[NzbFile] = None, file_done: Optional[bool] = None):
-        self.assembler_queue.put((nzo, nzf, file_done))
-
-    def partial_nzf_in_queue(self, nzf: NzbFile):
-        """Check if the NZF is already in the queue"""
-        return (nzf.nzo, nzf, False) in self.assembler_queue.queue
-
-    def get_item(self) -> Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]:
-        """Get next item, making sure that only 1 assembler can work on each NZF"""
-        while 1:
-            nzo, nzf, file_done = self.assembler_queue.get()
-            if nzf:
-                with NZF_CHECK_LOCK:
-                    if nzf in self.active_nzfs:
-                        # Wait a bit to prevent infinite loops
-                        time.sleep(0.001)
-                        self.process(nzo, nzf, file_done)
-                        continue
-                    else:
-                        self.active_nzfs.append(nzf)
-            return nzo, nzf, file_done
-
-    def finished_item(self, nzf: NzbFile):
-        """Mark NZF finished, so any assembler can pick it ip"""
-        with NZF_CHECK_LOCK:
-            if nzf in self.active_nzfs:
-                self.active_nzfs.remove(nzf)
+        self.queue.put((nzo, nzf, file_done))
 
     def queue_full(self):
-        return self.assembler_queue.qsize() >= MAX_ASSEMBLER_QUEUE
+        return self.queue.qsize() >= MAX_ASSEMBLER_QUEUE
 
-
-class AssemblerWorker(Thread):
-    def __init__(self, assembler: Assembler):
-        super().__init__()
-        logging.debug("Initializing assembler %s", self.name)
-        self.assembler = assembler
+    def partial_nzf_in_queue(self, nzf: NzbFile):
+        return (nzf.nzo, nzf, False) in self.queue.queue
 
     def run(self):
         while 1:
             # Set NzbObject and NzbFile objects to None so references
             # from this thread do not keep the objects alive (see #1628)
             nzo = nzf = None
-            nzo, nzf, file_done = self.assembler.get_item()
+            nzo, nzf, file_done = self.queue.get()
             if not nzo:
-                logging.debug("Shutting down assembler %s", self.name)
+                logging.debug("Shutting down assembler")
                 break
 
             if nzf:
@@ -155,7 +84,6 @@ class AssemblerWorker(Thread):
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
-                        self.assembler.finished_item(nzf)
 
                         # Continue after partly written data
                         if not file_done:
@@ -177,7 +105,6 @@ class AssemblerWorker(Thread):
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
-                        self.assembler.finished_item(nzf)
                         if not nzo.pp_or_finished:
                             # 28 == disk full => pause downloader
                             if err.errno == 28:
