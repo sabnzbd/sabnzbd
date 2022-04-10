@@ -73,7 +73,7 @@ class Decoder:
         self.decoder_queue = queue.Queue()
 
         # If SIMD is available, we only need 1 decoder
-        decoders = cfg.decoders()
+        decoders = cfg.num_simd_decoders()
         if not decoders:
             decoders = 1 if SABYENC_SIMD else 2
 

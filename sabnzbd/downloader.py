@@ -539,7 +539,7 @@ class Downloader(Thread):
                 logging.debug(
                     "Delaying - Decoder queue: %s - Assembler queue: %s",
                     sabnzbd.Decoder.decoder_queue.qsize(),
-                    sabnzbd.Assembler.assembler_queue.qsize(),
+                    sabnzbd.Assembler.queue.qsize(),
                 )
                 logged = True
 
