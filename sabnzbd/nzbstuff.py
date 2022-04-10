@@ -664,7 +664,7 @@ class NzbObject(TryList):
         self.bad_articles: int = 0  # How many bad (non-recoverable) articles
 
         self.extrapars: Dict[str, List[NzbFile]] = {}  # Holds the extra parfile names for all sets
-        self.md5packs: Dict[str, Dict[str, bytes]] = {}  # Holds the md5pack for each set (name: hash)
+        self.md5packs: Dict[str, Dict[str, Tuple[bytes, bytes]]] = {}  # Holds the md5pack for each set (name: hash)
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
 
         self.files: List[NzbFile] = []  # List of all NZFs

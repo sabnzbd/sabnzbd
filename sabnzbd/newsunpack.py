@@ -44,6 +44,7 @@ from sabnzbd.misc import (
     run_command,
     build_and_run_command,
     format_time_left,
+    helpful_warning,
 )
 from sabnzbd.filesystem import (
     make_script_path,
@@ -1963,6 +1964,19 @@ def rar_sort(a: str, b: str) -> int:
 
 
 def quick_check_set(setname: str, nzo: NzbObject) -> bool:
+    old = quick_check_set_old(setname, nzo)
+    new = quick_check_set_new(setname, nzo)
+    if new != old:
+        helpful_warning(
+            "We are testing a new verification method and on the current job it produced unexpected results. "
+            "Reporting this NZB (%s) would help us: https://github.com/sabnzbd/sabnzbd/discussions/2145 "
+            "Disable this warning in Config - Specials - helpful_warnings",
+            nzo.final_name,
+        )
+    return old
+
+
+def quick_check_set_old(setname: str, nzo: NzbObject) -> bool:
     """Check all on-the-fly md5sums of a set"""
     md5pack = nzo.md5packs.get(setname)
     if md5pack is None:
@@ -1978,13 +1992,20 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     ignore_ext = cfg.quick_check_ext_ignore()
 
     for file in md5pack:
+        # TODO: Temporary!
+        if isinstance(md5pack[file], tuple):
+            md5value = md5pack[file][1]
+        else:
+            # Compatibility with existing queues
+            md5value = md5pack[file]
+
         found = False
         file_to_ignore = get_ext(file).replace(".", "") in ignore_ext
         for nzf in nzf_list:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
+                if (nzf.md5sum is not None) and nzf.md5sum == md5value:
                     logging.debug("Quick-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -1996,8 +2017,8 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     result = False
                 break
 
-            # Now lets do obfuscation check
-            if nzf.md5sum == md5pack[file]:
+            # Now let's do obfuscation check
+            if nzf.md5sum == md5value:
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
@@ -2029,6 +2050,91 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     # Save renames
     if renames:
         nzo.renamed_file(renames)
+
+    return result
+
+
+def quick_check_set_new(setname: str, nzo: NzbObject) -> bool:
+    """Verify based on number of missing articles and md5of16k"""
+    # Use extracted par2 sets as a guide
+    md5pack = nzo.md5packs.get(setname)
+    if md5pack is None:
+        return False
+
+    # We use bitwise assigment (&=) so False always wins in case of failure
+    # This way the renames always get saved!
+    result = True
+    nzf_list = nzo.finished_files
+    renames = {}
+
+    # Files to ignore
+    ignore_ext = cfg.quick_check_ext_ignore()
+
+    for file in md5pack:
+        # TODO: Temporary!
+        if isinstance(md5pack[file], tuple):
+            md5value = md5pack[file][0]
+        else:
+            # Compatibility with existing queues
+            md5value = md5pack[file]
+
+        found = False
+        file_to_ignore = get_ext(file).replace(".", "") in ignore_ext
+        for nzf in nzf_list:
+            # Do a simple filename based check
+            if file == nzf.filename:
+                found = True
+                if (nzf.md5sum is not None) and nzf.md5of16k == md5value:
+                    logging.debug("Quick-check of file %s OK", file)
+                    result &= True
+                elif file_to_ignore:
+                    # We don't care about these files
+                    logging.debug("Quick-check ignoring file %s", file)
+                    result &= True
+                else:
+                    logging.info("Quick-check of file %s failed!", file)
+                    result = False
+                break
+
+            # Now let's do obfuscation check
+            if nzf.md5of16k == md5value:
+                try:
+                    logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
+
+                    # Note: file can and is allowed to be in a subdirectory.
+                    # Subdirectories in par2 always contain "/", not "\"
+                    renamer(
+                        os.path.join(nzo.download_path, nzf.filename),
+                        os.path.join(nzo.download_path, file),
+                        create_local_directories=True,
+                    )
+                    renames[file] = nzf.filename
+                    nzf.filename = file
+                    result &= True
+                    found = True
+                    break
+                except IOError:
+                    # Renamed failed for some reason, probably already done
+                    break
+
+        if not found:
+            if file_to_ignore:
+                # We don't care about these files
+                logging.debug("Quick-check ignoring missing file %s", file)
+                continue
+
+            logging.info("Cannot Quick-check missing file %s!", file)
+            result = False
+
+    # Save renames
+    if renames:
+        nzo.renamed_file(renames)
+
+    # If there are missing articles, we always fail
+    # But only now, so that the renames are still performed
+    if result and nzo.bad_articles > 0:
+        logging.info("Failing Quick-check based on %d missing article(s)", nzo.bad_articles)
+        result = False
 
     return result
 
