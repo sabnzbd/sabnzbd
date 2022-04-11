@@ -36,19 +36,19 @@ jobs:
     - name: Build source distribution
       run: python builder/package.py source
     - name: Upload source distribution
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-src.tar.gz"
         name: Source distribution
     - name: Build Windows standalone binary and installer (64bit)
       run: python builder/package.py installer
     - name: Upload Windows standalone binary (64bit)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-win64-bin.zip"
         name: Windows Windows standalone binary (64bit)
     - name: Upload Windows installer (64bit)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-win-setup.exe"
         name: Windows installer
@@ -76,7 +76,7 @@ jobs:
     - name: Build Windows standalone binary (32bit and legacy)
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (32bit and legacy)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-win32-bin.zip"
         name: Windows Windows standalone binary (32bit and legacy)
@@ -157,7 +157,7 @@ jobs:
         python3 builder/package.py app
         python3 builder/make_dmg.py
     - name: Upload macOS binary
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
