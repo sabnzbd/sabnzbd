@@ -111,7 +111,7 @@
         });
 
         // Add autocomplete and file-browser
-        \$('.fileBrowserSmall').typeahead().fileBrowser();
+        \$('.fileBrowserSmall').typeahead({appendTo: 'body'}).fileBrowser();
 
         // Make categories sortable
         \$('.padTable').sortable({
