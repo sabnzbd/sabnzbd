@@ -18,11 +18,15 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
+
+
 import sabnzbd.filesystem as filesystem
 from sabnzbd.constants import DEF_INI_FILE
 from tests.testhelper import *
+from flaky import flaky
 
 
+@flaky
 class TestDownloadFlow(SABnzbdBaseTest):
     def is_server_configured(self):
         """Check if the wizard was already performed.
