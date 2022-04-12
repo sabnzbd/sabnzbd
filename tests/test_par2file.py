@@ -25,6 +25,7 @@ from tests.testhelper import *
 # TODO: Add testing for edge cases, such as non-unique md5of16k or broken par files
 
 
+@pytest.mark.skip(reason="Will update after new QC")
 class TestPar2Parsing:
     def test_parse_par2_file(self, caplog):
         # To capture the par2-creator, we need to capture the logging
