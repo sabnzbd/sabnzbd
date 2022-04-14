@@ -2,7 +2,6 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 sabyenc3==5.1.7
 cheetah3==3.2.6 # pyup: ignore
-cryptography==36.0.2
 cffi==1.15
 pycparser==2.21
 feedparser==6.0.8
@@ -28,6 +27,10 @@ puremagic==1.12
 guessit==3.4.3
 babelfish==0.6.0
 rebulk==3.1.0
+
+# Recent cryptography versions require Rust. If this is an issue, SABnzbd will
+# also work with older pre-Rust versions such as cryptography==3.3.2
+cryptography==36.0.2
 
 # Windows system integration
 pywin32==303; sys_platform == 'win32'
