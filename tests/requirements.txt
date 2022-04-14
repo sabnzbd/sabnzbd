@@ -12,3 +12,4 @@ xmltodict
 tavern
 tavalidate
 lxml>=4.5.0 # needed by tavalidate
+black
