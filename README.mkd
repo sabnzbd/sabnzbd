@@ -1,5 +1,9 @@
-Release Notes - SABnzbd 3.6.0 Beta 3
+Release Notes - SABnzbd 3.6.0 Beta 4
 =========================================================
+
+## Changes and bugfixes since 3.6.0 Beta 3
+- Reverted changes to file assembly.
+- Implemented new Quick-check method.
 
 ## Changes and bugfixes since 3.6.0 Beta 2
 - Removed Indexer Feedback Integration.
