@@ -21,6 +21,7 @@ tests.test_lang - Test stuff in sabnzbd/lang.py
 
 from sabnzbd.lang import *
 
+
 def test_is_rtl():
     # Test if a language is right-to-left
     assert not is_rtl("en")
