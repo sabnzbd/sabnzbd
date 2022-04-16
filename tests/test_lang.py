@@ -26,6 +26,6 @@ def test_is_rtl():
     assert not is_rtl("en")
     assert is_rtl("he")
 
+    # edge cases
     assert not is_rtl("blabla")
     assert not is_rtl(None)
-
