@@ -557,6 +557,10 @@ class Downloader(Thread):
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
 
+        # Warn if there are servers defined, but none are valid
+        if config.get_servers() and not self.servers:
+            logging.warning(T("There are no active servers!"))
+
         # Kick BPS-Meter to check quota
         BPSMeter = sabnzbd.BPSMeter
         BPSMeter.update()
