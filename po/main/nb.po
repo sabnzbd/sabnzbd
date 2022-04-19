@@ -432,6 +432,11 @@ msgstr "Kunne ikke finne servernavn"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s vil bli ignorert i løpet av %s minutter"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"

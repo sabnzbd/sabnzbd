@@ -436,6 +436,11 @@ msgstr "Palvelimen osoitetta ei voitu selvittää"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Palvelin %s ohitetaan %s minuutiksi"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"

@@ -449,6 +449,11 @@ msgstr "Numele de server nu se rezolvă la DNS"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Serverul %s va fi ignorat pentru %s minute"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"

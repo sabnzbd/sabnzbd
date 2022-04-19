@@ -460,6 +460,11 @@ msgstr "No se puede resolver el nombre de servidor"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "El servidor %s se ignorará por %s minutos"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"

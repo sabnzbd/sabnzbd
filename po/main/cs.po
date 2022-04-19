@@ -442,6 +442,11 @@ msgstr "Nebylo možné přeložit jméno serveru"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s bude ignorován po dobu %s minut"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"

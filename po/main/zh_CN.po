@@ -427,6 +427,11 @@ msgstr "服务器名无法解析"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "服务器 %s 将被忽略 %s 分钟"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
