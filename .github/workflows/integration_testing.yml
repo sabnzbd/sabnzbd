@@ -3,6 +3,27 @@ name: CI Tests
 on: [push, pull_request]
 
 jobs:
+  black:
+    name: Black Code Formatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Black Code Formatter
+        uses: lgeiger/black-action@master
+        with:
+          args: >
+            SABnzbd.py
+            sabnzbd
+            scripts
+            tools
+            builder
+            builder/SABnzbd.spec
+            tests
+            --line-length=120
+            --target-version=py37
+            --check
+            --diff
+
   test:
     name: Test ${{ matrix.name }} - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}

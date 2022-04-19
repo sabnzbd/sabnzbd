@@ -7,6 +7,7 @@ on:
 
 jobs:
   translations:
+    name: Update translatable texts
     runs-on: ubuntu-latest
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
