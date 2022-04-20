@@ -64,7 +64,7 @@ from sabnzbd.constants import (
     DEF_TIMEOUT,
     DEF_LOG_ERRFILE,
     DEF_MAIN_TMPL,
-    DEF_STDINTF,
+    DEF_STD_WEB_DIR,
     DEF_WORKDIR,
     DEF_INTERFACES,
     DEF_LANGUAGE,
@@ -74,7 +74,7 @@ from sabnzbd.constants import (
     MAX_WARNINGS,
     RSS_FILE_NAME,
     DEF_LOG_FILE,
-    DEF_STDCONFIG,
+    DEF_STD_CONFIG,
     DEF_LOG_CHERRY,
 )
 import sabnzbd.newsunpack
@@ -326,7 +326,7 @@ def identify_web_template(key, defweb, wdir):
 
     if not os.path.exists(full_main):
         helpful_warning(T("Cannot find web template: %s, trying standard template"), full_main)
-        full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
+        full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STD_WEB_DIR)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
             logging.exception("Cannot find standard template: %s", full_dir)
@@ -1249,8 +1249,8 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    sabnzbd.WEB_DIR = identify_web_template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
-    sabnzbd.WEB_DIR_CONFIG = identify_web_template(None, DEF_STDCONFIG, "")
+    sabnzbd.WEB_DIR = identify_web_template(sabnzbd.cfg.web_dir, DEF_STD_WEB_DIR, fix_webname(web_dir))
+    sabnzbd.WEB_DIR_CONFIG = identify_web_template(None, DEF_STD_CONFIG, "")
     sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, "wizard")
 
     sabnzbd.WEB_COLOR = check_template_scheme(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)

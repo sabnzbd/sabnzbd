@@ -37,13 +37,14 @@ from sabnzbd.config import (
 from sabnzbd.constants import (
     DEF_HOST,
     DEF_PORT,
-    DEF_STDINTF,
+    DEF_STD_WEB_DIR,
     DEF_ADMIN_DIR,
     DEF_DOWNLOAD_DIR,
     DEF_NZBBACK_DIR,
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
+    DEF_STD_WEB_COLOR,
 )
 
 
@@ -231,8 +232,8 @@ username = OptionStr("misc", "username")
 password = OptionPassword("misc", "password")
 bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
-web_dir = OptionStr("misc", "web_dir", DEF_STDINTF)
-web_color = OptionStr("misc", "web_color")
+web_dir = OptionStr("misc", "web_dir", DEF_STD_WEB_DIR)
+web_color = OptionStr("misc", "web_color", DEF_STD_WEB_COLOR)
 https_cert = OptionDir("misc", "https_cert", "server.cert", create=False)
 https_key = OptionDir("misc", "https_key", "server.key", create=False)
 https_chain = OptionDir("misc", "https_chain", create=False)

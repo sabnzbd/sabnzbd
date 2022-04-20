@@ -70,7 +70,7 @@ import sabnzbd.newsunpack
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.getperformance import getcpu
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
+from sabnzbd.constants import DEF_STD_CONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
@@ -522,9 +522,6 @@ class Wizard:
         """Accept language and show server page"""
         if kwargs.get("lang"):
             cfg.language.set(kwargs.get("lang"))
-
-        # Always setup Glitter
-        change_web_dir("Glitter - Auto")
 
         info = build_header(sabnzbd.WIZARD_DIR)
         info["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
@@ -994,7 +991,7 @@ class ConfigGeneral:
         web_list = []
         for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
             # Ignore the config
-            if not interface_dir.endswith(DEF_STDCONFIG):
+            if not interface_dir.endswith(DEF_STD_CONFIG):
                 # Check the available templates
                 for colorscheme in globber(
                     os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
