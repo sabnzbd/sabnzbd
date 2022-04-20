@@ -468,7 +468,7 @@ msgstr "Le serveur %s sera ignoré pendant %s minutes"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "There are no active servers!"
-msgstr ""
+msgstr "Il n'y a aucun serveur actif !"
 
 #. Error message
 #: sabnzbd/downloader.py
