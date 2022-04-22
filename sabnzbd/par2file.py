@@ -23,6 +23,7 @@ import logging
 import os
 import re
 import struct
+from dataclasses import dataclass
 from typing import Dict, Optional, Tuple, BinaryIO
 
 from sabnzbd.constants import MEBI
@@ -35,6 +36,15 @@ PAR_MAIN_ID = b"PAR 2.0\x00Main\x00\x00\x00\x00"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
 PAR_CREATOR_ID = b"PAR 2.0\x00Creator\x00"
 PAR_RECOVERY_ID = b"RecvSlic"
+
+
+@dataclass
+class FilePar2Info:
+    """Class for keeping track of par2 information of a file"""
+
+    hash16k: bytes
+    filehash: bytes
+    filesize: int
 
 
 def is_parfile(filename: str) -> bool:
@@ -86,7 +96,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
     return setname, vol, block
 
 
-def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[str, Tuple[bytes, bytes]]]:
+def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[str, FilePar2Info]]:
     """Get the hash table and the first-16k hash table from a PAR2 file
     Return as dictionary, indexed on names or hashes for the first-16 table
     The input md5of16k is modified in place and thus not returned!
@@ -104,9 +114,9 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
             header = f.read(8)
             while header:
                 if header == PAR_PKT_ID:
-                    name, filehash, hash16k, set_id, nr_files = parse_par2_packet(f)
+                    name, filehash, hash16k, filesize, set_id, nr_files = parse_par2_packet(f)
                     if name:
-                        table[name] = (hash16k, filehash)
+                        table[name] = FilePar2Info(hash16k, filehash, filesize)
                         if hash16k not in md5of16k:
                             md5of16k[hash16k] = name
                         elif md5of16k[hash16k] != name:
@@ -141,10 +151,10 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
 
 def parse_par2_packet(
     f: BinaryIO,
-) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[str], Optional[int]]:
+) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[int], Optional[str], Optional[int]]:
     """Look up and analyze a PAR2 packet"""
 
-    filename, filehash, hash16k, set_id, nr_files = nothing = None, None, None, None, None
+    filename, filehash, hash16k, filesize, set_id, nr_files = nothing = None, None, None, None, None, None
 
     # All packages start with a header before the body
     # 8	  : PAR2\x00PKT
@@ -186,6 +196,7 @@ def parse_par2_packet(
         # xx : Name (multiple of 4, padded with \0 if needed)
         filehash = data[48:64]
         hash16k = data[64:80]
+        filesize = int.from_bytes(data[80:88], byteorder="little", signed=False)
         filename = correct_unknown_encoding(data[88:].strip(b"\0"))
     elif par2_packet_type == PAR_CREATOR_ID:
         # From here until the end is the creator-text
@@ -199,4 +210,4 @@ def parse_par2_packet(
         # 4  : Number of files in the recovery set
         nr_files = struct.unpack("<I", data[40:44])[0]
 
-    return filename, filehash, hash16k, set_id, nr_files
+    return filename, filehash, hash16k, filesize, set_id, nr_files

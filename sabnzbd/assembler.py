@@ -233,7 +233,7 @@ class Assembler(Thread):
                     nzf.nzo.final_name,
                     unwanted_file,
                 )
-            logging.debug(T("Unwanted extension is in rar file %s"), nzf.filepath)
+            logging.debug(T("Unwanted extension is in rar file %s"), nzf.filename)
             if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                 logging.debug("Unwanted extension ... pausing")
                 nzo.unwanted_ext = 1

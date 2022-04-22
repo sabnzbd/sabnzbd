@@ -729,10 +729,11 @@ def parring(nzo: NzbObject):
     if nzo.extrapars:
         # Need to make a copy because it can change during iteration
         for setname in list(nzo.extrapars):
-            # We do not care about repairing
+            # We do not care about repairing samples
             if cfg.ignore_samples() and is_sample(setname.lower()):
                 logging.info("Skipping verification and repair of %s because it looks like a sample", setname)
                 continue
+
             # Skip sets that were already tried
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)

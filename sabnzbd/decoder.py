@@ -72,12 +72,8 @@ class Decoder:
         # Initialize queue and servers
         self.decoder_queue = queue.Queue()
 
-        # If SIMD is available, we only need 1 decoder
-        decoders = cfg.num_simd_decoders()
-        if not decoders:
-            decoders = 1 if SABYENC_SIMD else 2
-
         # Initialize decoders
+        decoders = cfg.num_simd_decoders()
         logging.debug("Initializing %d decoder(s)", decoders)
         self.decoder_workers = []
         for _ in range(decoders):
@@ -399,5 +395,6 @@ def search_new_server(article: Article) -> bool:
     if not article.search_new_server():
         # Increase bad articles if no new server was found
         article.nzf.nzo.increase_bad_articles_counter("bad_articles")
+        article.nzf.has_bad_articles = True
         return False
     return True

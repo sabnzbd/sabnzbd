@@ -80,6 +80,7 @@ from sabnzbd.filesystem import (
     has_unwanted_extension,
     create_all_dirs,
 )
+from sabnzbd.par2file import FilePar2Info
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -311,6 +312,7 @@ NzbFileSaver = (
     "vol",
     "blocks",
     "setname",
+    "has_bad_articles",
     "articles",
     "decodetable",
     "bytes",
@@ -347,6 +349,8 @@ class NzbFile(TryList):
         self.blocks: Optional[int] = None
         self.setname: Optional[str] = None
 
+        self.has_bad_articles: bool = False
+
         # Articles are removed from "articles" after being fetched
         self.articles: List[Article] = []
         self.decodetable: List[Article] = []
@@ -362,6 +366,7 @@ class NzbFile(TryList):
         self.md5 = None
         self.md5sum: Optional[bytes] = None
         self.md5of16k: Optional[bytes] = None
+
         self.valid: bool = bool(raw_article_db)
 
         if self.valid and self.nzf_id:
@@ -535,7 +540,7 @@ NzbObjectSaver = (
     "avg_date",
     "md5of16k",
     "extrapars",
-    "md5packs",
+    "par2packs",
     "files",
     "files_table",
     "finished_files",
@@ -664,7 +669,7 @@ class NzbObject(TryList):
         self.bad_articles: int = 0  # How many bad (non-recoverable) articles
 
         self.extrapars: Dict[str, List[NzbFile]] = {}  # Holds the extra parfile names for all sets
-        self.md5packs: Dict[str, Dict[str, Tuple[bytes, bytes]]] = {}  # Holds the md5pack for each set (name: hash)
+        self.par2packs: Dict[str, Dict[str, FilePar2Info]] = {}  # Holds the par2info for each file in each set
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
 
         self.files: List[NzbFile] = []  # List of all NZFs
@@ -1027,7 +1032,7 @@ class NzbObject(TryList):
             if xnzf.filename:
                 setname, vol, block = sabnzbd.par2file.analyse_par2(xnzf.filename)
                 # Don't postpone header-only-files, so we can extract all
-                # possible md5of16k and md5pack's even if the filenames are bad
+                # possible md5of16k and par2packs's even if the filenames are bad
                 # Usually they are all downloaded as first_articles
                 if setname and block and matcher(lparset, setname.lower()):
                     xnzf.set_par2(parset, vol, block)
@@ -1060,24 +1065,24 @@ class NzbObject(TryList):
 
         # If we couldn't parse it, we ignore it
         if set_id and pack:
-            if pack not in self.md5packs.values():
-                logging.debug("Got md5pack for set %s", nzf.setname)
+            if pack not in self.par2packs.values():
+                logging.debug("Got par2pack for set %s", nzf.setname)
                 # Verify that we are not over-writing existing set with the same name, but different values
-                if setname in self.md5packs:
-                    logging.debug("Found duplicate md5pack-setname: %s, using set ID: %s", setname, set_id)
+                if setname in self.par2packs:
+                    logging.debug("Found duplicate par2pack-setname: %s, using set ID: %s", setname, set_id)
                     setname = set_id
-                self.md5packs[setname] = pack
+                self.par2packs[setname] = pack
                 # See if we need to postpone some pars
                 self.postpone_pars(setname)
             else:
                 # Need to add this to the set, first need setname
-                for setname in self.md5packs:
-                    if self.md5packs[setname] == pack:
+                for setname in self.par2packs:
+                    if self.par2packs[setname] == pack:
                         break
 
                 # Change the properties
                 nzf.set_par2(setname, vol, block)
-                logging.debug("Got additional md5pack for set %s", nzf.setname)
+                logging.debug("Got additional par2pack for set %s", nzf.setname)
 
             # Make sure it exists, could be removed by newsunpack
             if setname not in self.extrapars:
@@ -1585,11 +1590,11 @@ class NzbObject(TryList):
         self.set_unpack_info("Source", self.url or self.filename, unique=True)
 
     @synchronized(NZO_LOCK)
-    def increase_bad_articles_counter(self, article_type: str):
+    def increase_bad_articles_counter(self, bad_article_type: str):
         """Record information about bad articles"""
-        if article_type not in self.nzo_info:
-            self.nzo_info[article_type] = 0
-        self.nzo_info[article_type] += 1
+        if bad_article_type not in self.nzo_info:
+            self.nzo_info[bad_article_type] = 0
+        self.nzo_info[bad_article_type] += 1
         self.bad_articles += 1
 
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
@@ -2043,6 +2048,8 @@ class NzbObject(TryList):
                     self.bytes_par2 += nzf.bytes
         if self.download_path is None:
             self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
+        if self.par2packs is None:
+            self.par2packs = {}
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)

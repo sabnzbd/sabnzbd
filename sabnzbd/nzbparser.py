@@ -420,6 +420,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 # Get segments
                 raw_article_db = {}
                 file_bytes = 0
+                bad_articles = False
                 if element.find("segments"):
                     for segment in element.find("segments").iter("segment"):
                         try:
@@ -440,6 +441,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                         article_id,
                                     )
                                     nzo.increase_bad_articles_counter("duplicate_articles")
+                                    bad_articles = True
                                 else:
                                     logging.info("Skipping duplicate article (%s)", article_id)
                             elif segment_size <= 0 or segment_size >= 2**23:
@@ -447,6 +449,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                 # We use this value later to allocate memory in cache and sabyenc
                                 logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
                                 nzo.increase_bad_articles_counter("bad_articles")
+                                bad_articles = True
                             else:
                                 raw_article_db[partnum] = (article_id, segment_size)
                                 file_bytes += segment_size
@@ -459,6 +462,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
                 # Create NZF
                 nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
+                nzf.has_bad_articles = bad_articles
 
                 # Check if we already have this exact NZF (see custom eq-checks)
                 if nzf in nzo.files:
