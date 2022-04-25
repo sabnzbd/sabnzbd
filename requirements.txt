@@ -36,7 +36,7 @@ cryptography==36.0.2
 pywin32==303; sys_platform == 'win32'
 
 # macOS system calls
-pyobjc==8.4.1; sys_platform == 'darwin'
+pyobjc==8.5; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
