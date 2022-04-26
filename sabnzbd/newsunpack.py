@@ -1994,11 +1994,7 @@ def quick_check_set_old(setname: str, nzo: NzbObject) -> bool:
     ignore_ext = cfg.quick_check_ext_ignore()
 
     for file in par2pack:
-        # TODO: Temporary!
-        if not isinstance(par2pack[file], FilePar2Info):
-            return False
         par2info = par2pack[file]
-
         found = False
         file_to_ignore = get_ext(file).replace(".", "") in ignore_ext
         for nzf in nzf_list:
@@ -2071,15 +2067,17 @@ def quick_check_set_new(setname: str, nzo: NzbObject) -> bool:
     ignore_ext = cfg.quick_check_ext_ignore()
 
     for file in par2pack:
-        # TODO: Temporary!
-        if not isinstance(par2pack[file], FilePar2Info):
-            return False
         par2info = par2pack[file]
         found = False
         file_to_ignore = get_ext(file).replace(".", "") in ignore_ext
         for nzf in nzf_list:
             # Match based on md5of16k
             if nzf.md5of16k == par2info.hash16k:
+                # Make sure it's unique
+                if par2info.has_duplicate:
+                    logging.info("Quick-check of file %s failed due to non-unique hash!", file)
+                    break
+
                 found = True
                 # Do a simple filename based check
                 if file == nzf.filename:

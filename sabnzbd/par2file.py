@@ -45,6 +45,7 @@ class FilePar2Info:
     hash16k: bytes
     filehash: bytes
     filesize: int
+    has_duplicate: bool = False
 
 
 def is_parfile(filename: str) -> bool:
@@ -121,8 +122,9 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                             md5of16k[hash16k] = name
                         elif md5of16k[hash16k] != name:
                             # Not unique and not already linked to this file
-                            # Remove to avoid false-renames
+                            # Mark and remove to avoid false-renames
                             duplicates16k.append(hash16k)
+                            table[name].has_duplicate = True
 
                     # Store the number of files for later
                     if nr_files:
