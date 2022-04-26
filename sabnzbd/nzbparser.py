@@ -163,7 +163,7 @@ def process_nzb_archive_file(
     """Analyse archive and create job(s).
     Accepts archive files with ONLY nzb/nfo/folder files in it.
     returns (status, nzo_ids)
-        status: -1==Error, 0==OK, 1==Ignore
+        status: -1==Error, 0==OK, 1==No files found
     """
     nzo_ids = []
     if catdir is None:
@@ -218,13 +218,17 @@ def process_nzb_archive_file(
                             nzbname=nzbname,
                             nzo_info=nzo_info,
                             reuse=reuse,
+                            nzo_id=nzo_id,
                             dup_check=dup_check,
                         )
                         if not nzo.password:
                             nzo.password = password
-                    except (TypeError, ValueError):
-                        # Duplicate or empty, ignore
+                    except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
+                        # Empty or fully rejected
                         pass
+                    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
+                        # Duplicate or unwanted extension that was failed to history
+                        nzo_ids.append(err.nzo_id)
                     except:
                         # Something else is wrong, show error
                         logging.error(T("Error while adding %s, removing"), name, exc_info=True)
@@ -232,11 +236,8 @@ def process_nzb_archive_file(
                         datap.close()
 
                     if nzo:
-                        if nzo_id:
-                            # Re-use existing nzo_id, when a "future" job gets it payload
-                            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
-                            nzo.nzo_id = nzo_id
-                            nzo_id = None
+                        # We can only use existing nzo_id once
+                        nzo_id = None
                         nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
 
         # Close the pointer to the compressed file
@@ -250,6 +251,9 @@ def process_nzb_archive_file(
             logging.info("Traceback: ", exc_info=True)
     else:
         zf.close()
+
+    # If all were rejected/empty/etc, update status
+    if not nzo_ids:
         status = 1
 
     return status, nzo_ids
@@ -299,7 +303,7 @@ def process_single_nzb(
     except OSError:
         logging.warning(T("Cannot read %s"), clip_path(path))
         logging.info("Traceback: ", exc_info=True)
-        return -2, nzo_ids
+        return -2, []
 
     if filename:
         filename, cat = name_to_cat(filename, catdir)
@@ -320,30 +324,26 @@ def process_single_nzb(
             nzbname=nzbname,
             nzo_info=nzo_info,
             reuse=reuse,
+            nzo_id=nzo_id,
             dup_check=dup_check,
         )
         if not nzo.password:
             nzo.password = password
-    except TypeError:
-        # Duplicate, ignore
-        if nzo_id:
-            sabnzbd.NzbQueue.remove(nzo_id)
+    except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
+        # Empty or fully rejected
+        return -1, []
+    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
+        # Duplicate or unwanted extension that was failed to history
+        nzo_ids.append(err.nzo_id)
         nzo = None
-    except ValueError:
-        # Empty
-        return 1, nzo_ids
     except:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
-        return -1, nzo_ids
+        return -1, []
     finally:
         nzb_fp.close()
 
     if nzo:
-        if nzo_id:
-            # Re-use existing nzo_id, when a "future" job gets it payload
-            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
-            nzo.nzo_id = nzo_id
         nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
 
     try:

@@ -521,6 +521,20 @@ class NzbFile(TryList):
 ##############################################################################
 # NzbObject
 ##############################################################################
+class NzbEmpty(Exception):
+    pass
+
+
+class NzbRejected(Exception):
+    pass
+
+
+class NzbRejectedToHistory(Exception):
+    def __init__(self, nzo_id: str):
+        self.nzo_id = nzo_id
+        super().__init__()
+
+
 NzbObjectSaver = (
     "filename",
     "work_name",
@@ -600,6 +614,7 @@ class NzbObject(TryList):
         status: str = Status.QUEUED,
         nzo_info: Optional[Dict[str, Any]] = None,
         reuse: Optional[str] = None,
+        nzo_id: Optional[str] = None,
         dup_check: bool = True,
     ):
         super().__init__()
@@ -733,6 +748,11 @@ class NzbObject(TryList):
             # It can also be a retry of a failed job with no extra NZB-file
             return
 
+        # Re-use existing nzo_id, when a "future" job gets it payload
+        if nzo_id:
+            self.nzo_id = nzo_id
+            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
+
         # To be updated later if it's a duplicate
         duplicate = series_duplicate = False
 
@@ -778,7 +798,7 @@ class NzbObject(TryList):
                     self.pause()
                 else:
                     self.purge_data()
-                    raise ValueError
+                    raise NzbEmpty
 
             # Check against identical checksum or series/season/episode if not repair
             # Have to check for duplicate before saving the backup, as it will
@@ -795,7 +815,7 @@ class NzbObject(TryList):
                 logging.warning(T("Empty NZB file %s") + " [%s]", filename, self.url)
             else:
                 logging.warning(T("Empty NZB file %s"), filename)
-            raise ValueError
+            raise NzbEmpty
 
         if cat is None:
             for metacat in self.meta.get("category", ()):
@@ -838,7 +858,7 @@ class NzbObject(TryList):
             accept = int_conv(accept)
             if accept < 1:
                 self.purge_data()
-                raise TypeError
+                raise NzbRejected
             if accept == 2:
                 self.fail_msg = T("Pre-queue script marked job as failed")
 
@@ -893,7 +913,7 @@ class NzbObject(TryList):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data()
-            raise TypeError
+            raise NzbRejected
 
         if duplicate and (
             (not series_duplicate and cfg.no_dupes() == 3) or (series_duplicate and cfg.no_series_dupes() == 3)
@@ -959,7 +979,7 @@ class NzbObject(TryList):
             sabnzbd.NzbQueue.add(self, quiet=True)
             sabnzbd.NzbQueue.end_job(self)
             # Raise error, so it's not added
-            raise TypeError
+            raise NzbRejectedToHistory(nzo_id=self.nzo_id)
 
     def update_download_stats(self, bps, serverid, bytes_received):
         if bps:

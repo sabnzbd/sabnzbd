@@ -538,9 +538,9 @@ class TestAddingNZBs:
         assert (len(json["warnings"]) == 0) is should_work
         if not should_work:
             for warning in range(0, len(json["warnings"])):
-                assert (("Empty NZB file" or "Failed to import") and broken_nzb_basename) in json["warnings"][warning][
-                    "text"
-                ]
+                warn_text = json["warnings"][warning]["text"]
+                assert "Empty NZB" in warn_text or "Failed to import" in warn_text or "Invalid NZB" in warn_text
+                assert broken_nzb_basename in warn_text
 
         os.remove(broken_nzb)
 

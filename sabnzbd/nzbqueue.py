@@ -328,6 +328,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def add(self, nzo: NzbObject, save: bool = True, quiet: bool = False) -> str:
+        # Can already be set for future jobs
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.filesystem.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
 
