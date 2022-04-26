@@ -38,7 +38,6 @@ from sabnzbd.filesystem import (
     get_filename,
     is_valid_script,
     get_ext,
-    setname_from_path,
     clip_path,
     remove_file,
     remove_data,
@@ -203,7 +202,7 @@ def process_nzb_archive_file(
                     logging.error(T("Cannot read %s"), name, exc_info=True)
                     zf.close()
                     return -1, []
-                name = setname_from_path(name)
+                name = get_filename(name)
                 if datap:
                     nzo = None
                     try:
