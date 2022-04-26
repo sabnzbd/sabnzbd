@@ -291,17 +291,12 @@ def _api_addfile(name, kwargs):
     if not name or isinstance(name, str):
         name = kwargs.get("nzbfile", None)
     if hasattr(name, "file") and hasattr(name, "filename") and name.filename:
-        cat = kwargs.get("cat")
-        xcat = kwargs.get("xcat")
-        if not cat and xcat:
-            # Indexer category, so do mapping
-            cat = cat_convert(xcat)
         # Add the NZB-file
         res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
             name,
             pp=kwargs.get("pp"),
             script=kwargs.get("script"),
-            cat=cat,
+            cat=kwargs.get("cat"),
             priority=kwargs.get("priority"),
             nzbname=kwargs.get("nzbname"),
             password=kwargs.get("password"),
@@ -340,27 +335,16 @@ def _api_addlocalfile(name, kwargs):
     """API: accepts name, pp, script, cat, priority, nzbname"""
     if name:
         if os.path.exists(name):
-            pp = kwargs.get("pp")
-            script = kwargs.get("script")
-            cat = kwargs.get("cat")
-            xcat = kwargs.get("xcat")
-            if not cat and xcat:
-                # Indexer category, so do mapping
-                cat = cat_convert(xcat)
-            priority = kwargs.get("priority")
-            nzbname = kwargs.get("nzbname")
-            password = kwargs.get("password")
-
             if get_ext(name) in VALID_ARCHIVES + VALID_NZB_FILES:
                 res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
                     name,
-                    pp=pp,
-                    script=script,
-                    cat=cat,
-                    priority=priority,
+                    pp=kwargs.get("pp"),
+                    script=kwargs.get("script"),
+                    cat=kwargs.get("cat"),
+                    priority=kwargs.get("priority"),
                     keep=True,
-                    nzbname=nzbname,
-                    password=password,
+                    nzbname=kwargs.get("nzbname"),
+                    password=kwargs.get("password"),
                 )
                 return report(keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
             else:
