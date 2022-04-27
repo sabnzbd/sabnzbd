@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0Beta4\n"
+"Project-Id-Version: SABnzbd-3.6.0Beta5\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Russian (https://www.transifex.com/sabnzbd/teams/111101/ru/)\n"
