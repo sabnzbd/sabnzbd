@@ -1,5 +1,14 @@
-Release Notes - SABnzbd 3.6.0 Beta 4
+Release Notes - SABnzbd 3.6.0 Beta 5
 =========================================================
+
+## Changes and bugfixes since 3.6.0 Beta 4
+- Improve new Quick-check method.
+- Remove undocumented `xcat` API-parameter.
+- Prevent traceback when status functions timeout.
+- API calls to add NZB's would not always return `nzo_ids`.
+- Correctly default to `Glitter - Auto` on new installs.
+- Show warning when there are no valid news servers active.
+- Prevent crash when there is an unknown `language` setting.
 
 ## Changes and bugfixes since 3.6.0 Beta 3
 - Reverted changes to file assembly.
