@@ -52,7 +52,6 @@ stages:
           noofslots_total: !anyint
           status: "Paused"
           timeleft: "0:00:00"
-          eta: "unknown"
           scripts: !anylist
           categories: !anylist
           noofslots: !anyint
@@ -78,7 +77,6 @@ stages:
             direct_unpack: !re_match "[0-9]+"
             status: "Paused"
             timeleft: "0:00:00"
-            eta: "unknown"
             avg_age: "!anystr"
 
 ---
@@ -108,7 +106,7 @@ stages:
           # Verify only a bunch of key response parameters with a regex using
           # positive looksaheads, so parameters match regardless of their order
           # of appearance in the text output
-          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
 
 
 ---
@@ -168,7 +166,6 @@ stages:
             <noofslots_total>!anyint</noofslots_total>
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
-            <eta>unknown</eta>
             <scripts>
             <script>!anystr</script>
             </scripts>
@@ -197,7 +194,6 @@ stages:
             <direct_unpack>!anyint</direct_unpack>
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
-            <eta>unknown</eta>
             <avg_age>!anystr</avg_age>
             </slot>
             </slots>

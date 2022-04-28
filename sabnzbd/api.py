@@ -1361,15 +1361,6 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         status = Status.IDLE
     info["status"] = status
     info["timeleft"] = calc_timeleft(qnfo.bytes_left, sabnzbd.BPSMeter.bps)
-
-    datestart = datetime.datetime.now()
-    try:
-        datefinish = datestart + datetime.timedelta(seconds=qnfo.bytes_left / sabnzbd.BPSMeter.bps)
-        # new eta format: 16:00 Fri 07 Feb
-        info["eta"] = datefinish.strftime(time_format("%H:%M %a %d %b"))
-    except:
-        info["eta"] = T("unknown")
-
     info["scripts"] = list_scripts()
     info["categories"] = list_cats()
     info["noofslots"] = qnfo.q_fullsize
@@ -1429,17 +1420,9 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
             or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
         ) and priority != FORCE_PRIORITY:
             slot["timeleft"] = "0:00:00"
-            slot["eta"] = "unknown"
         else:
             running_bytes += bytesleft
             slot["timeleft"] = calc_timeleft(running_bytes, sabnzbd.BPSMeter.bps)
-            try:
-                datestart = datestart + datetime.timedelta(seconds=bytesleft / sabnzbd.BPSMeter.bps)
-                # new eta format: 16:00 Fri 07 Feb
-                slot["eta"] = datestart.strftime(time_format("%H:%M %a %d %b"))
-            except:
-                datestart = datestart
-                slot["eta"] = "unknown"
 
         # Do not show age when it's not known
         if average_date.year < 2000:
