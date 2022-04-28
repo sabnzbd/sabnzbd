@@ -554,6 +554,7 @@ NzbObjectSaver = (
     "avg_date",
     "md5of16k",
     "extrapars",
+    "md5packs",
     "par2packs",
     "files",
     "files_table",
@@ -684,6 +685,7 @@ class NzbObject(TryList):
         self.bad_articles: int = 0  # How many bad (non-recoverable) articles
 
         self.extrapars: Dict[str, List[NzbFile]] = {}  # Holds the extra parfile names for all sets
+        self.md5packs = {}  # TODO: Remove in 4.0.0. Kept for backwards compatibility
         self.par2packs: Dict[str, Dict[str, FilePar2Info]] = {}  # Holds the par2info for each file in each set
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
 
