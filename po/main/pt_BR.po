@@ -181,10 +181,6 @@ msgstr "Notificação de teste"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Resolvendo endereço"
 
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "desconhecido"
-
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"

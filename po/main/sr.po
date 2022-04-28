@@ -179,10 +179,6 @@ msgstr "Probno obaveštenje"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Решавање адресе"
 
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "непознато"
-
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"

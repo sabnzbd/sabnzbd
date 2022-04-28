@@ -184,10 +184,6 @@ msgstr "Otestovat notifikace"
 msgid "&nbsp;Resolving address"
 msgstr "Překládám adresu"
 
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "neznámé"
-
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"

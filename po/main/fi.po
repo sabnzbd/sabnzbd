@@ -185,10 +185,6 @@ msgstr "Testaa ilmoitusta"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Selvitetään osoitetta"
 
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "tuntematon"
-
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"

@@ -179,10 +179,6 @@ msgstr "Testa notifikation"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Lösa adress"
 
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "okänd"
-
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
