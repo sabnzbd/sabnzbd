@@ -30,7 +30,6 @@ SKIN_TEXT = {
     "stage-script": TT("Script"),  #: PP phase "script"
     "stage-source": TT("Source"),  #: PP Source of the NZB (path or URL)
     "stage-servers": TT("Servers"),  #: PP Distribution over servers
-    "stage-fail": TT("Failure"),  #: PP Failure message
     "post-Completed": TT("Completed"),  #: PP status
     "post-Failed": TT("Failed"),  #: PP status
     "post-Queued": TT("Waiting"),  #: Queue and PP status
@@ -42,10 +41,7 @@ SKIN_TEXT = {
     "post-Fetching": TT("Fetching extra blocks..."),  #: PP status
     "post-QuickCheck": TT("Quick Check..."),  #: PP status
     "post-Verifying": TT("Verifying..."),  #: PP status
-    "post-Downloading": TT("Downloading"),  #: Pseudo-PP status, in reality used for Queue-status
-    "post-Propagating": TT("Propagation delay"),
     "post-Checking": TT("Checking"),  #: PP status
-    "sch-task": TT("Task"),  #:  #: Config->Scheduler
     "sch-disable_server": TT("disable server"),  #:  #: Config->Scheduler
     "sch-enable_server": TT("enable server"),  #:  #: Config->Scheduler
     "sch-speedlimit": TT("Speedlimit"),  #:  #: Config->Scheduler
@@ -78,9 +74,6 @@ SKIN_TEXT = {
     # General texts
     "default": TT("Default"),  #: Default value, used in dropdown menus
     "none": TT("None"),  #: No value, used in dropdown menus
-    "MB": TT("MB"),  #: Megabytes
-    "GB": TT("GB"),  #: Gigabytes
-    "B": TT("B"),  #: Bytes (used as postfix, as in "GB", "TB")
     "hour": TT("hour"),  #: One hour
     "hours": TT("hours"),  #: Multiple hours
     "minute": TT("min"),  #: One minute
@@ -92,18 +85,6 @@ SKIN_TEXT = {
     "week": TT("week"),
     "month": TT("Month"),
     "year": TT("Year"),
-    "January": TT("January"),
-    "February": TT("February"),
-    "March": TT("March"),
-    "April": TT("April"),
-    "May": TT("May"),
-    "June": TT("June"),
-    "July": TT("July"),
-    "August": TT("August"),
-    "September": TT("September"),
-    "October": TT("October"),
-    "November": TT("November"),
-    "December": TT("December"),
     "monday": TT("Monday"),
     "tuesday": TT("Tuesday"),
     "wednesday": TT("Wednesday"),
@@ -117,8 +98,6 @@ SKIN_TEXT = {
     "selectedDates": TT("Selected date range"),
     "today": TT("Today"),
     "total": TT("Total"),
-    "custom": TT("Custom"),
-    "speed": TT("Speed"),
     "on": TT("on"),
     "off": TT("off"),
     "parameters": TT("Parameters"),  #: Config: startup parameters of SABnzbd
@@ -128,25 +107,15 @@ SKIN_TEXT = {
     "source": TT("Source"),  #: Where to find the SABnzbd sourcecode
     "or": TT("or"),  #: Used in "IRC or IRC-Webaccess"
     "host": TT("Host"),
-    "comment": TT("Comment"),
-    "send": TT("Send"),
     "cancel": TT("Cancel"),
-    "other": TT("Other"),
-    "report": TT("Report"),
-    "video": TT("Video"),
-    "audio": TT("Audio"),
-    "notUsed": TT("Not used"),
-    "orLess": TT("or less"),
     "login": TT("Log in"),
     "logout": TT("Log out"),
     "rememberme": TT("Remember me"),
     # General template elements
-    "signOn": TT("The automatic usenet download tool"),  #: SABnzbd's theme line
     "button-save": TT("Save"),  #: "Save" button
     "button-saving": TT("Saving.."),
     "button-failed": TT("Failed"),
     "confirm": TT("Are you sure?"),  #: Used in confirmation popups
-    "delFiles": TT("Delete all downloaded files?"),  #: Used in confirmation popups
     # Header
     "menu-home": TT("Home"),  #: Main menu item
     "menu-queue": TT("Queue"),  #: Main menu item
@@ -173,29 +142,20 @@ SKIN_TEXT = {
     "cmenu-search": TT("Search"),  #: Main menu item
     # Footer
     "ft-download": TT("Download Dir"),  # Used in Footer
-    "ft-paused": TT("PAUSED"),  # Used in Footer
-    "ft-buffer@2": TT("Cached %s articles (%s)"),  # Used in Footer
     "ft-sysload": TT("Sysload"),  # Used in Footer
-    "ft-newRelease@1": TT("New release %s available at"),  # Used in Footer
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
-    "link-shutdown": TT("Shutdown"),  #: Shutdown SABnzbd
     "link-pause": TT("Pause"),  #: Pause downloading
     "link-resume": TT("Resume"),  #: Resume downloading
     "button-add": TT("Add"),  #: Add NZB to queue (button)
     "add": TT("Add"),  #: Add NZB to queue (header)
-    "addFile": TT("Add File"),  #: Add NZB file to queue (header
     "category": TT("Category"),  #: Job category
-    "pp": TT("Processing"),
     "script": TT("Script"),
     "priority": TT("Priority"),
     "pp-none": TT("Download"),  #: Post processing pick list
     "pp-repair": TT("+Repair"),  #: Post processing pick list
     "pp-unpack": TT("+Unpack"),  #: Post processing pick list
     "pp-delete": TT("+Delete"),  #: Post processing pick list
-    "pp-r": TT("R"),  #: Post processing pick list: abbreviation for "+Repair"
-    "pp-u": TT("U"),  #: Post processing pick list: abbreviation for "+Unpack"
-    "pp-d": TT("D"),  #: Post processing pick list: abbreviation for "+Delete"
     "pr-force": TT("Force"),  #: Priority pick list
     "pr-normal": TT("Normal"),  #: Priority pick list
     "pr-high": TT("High"),  #: Priority pick list
@@ -204,19 +164,13 @@ SKIN_TEXT = {
     "pr-stop": TT("Stop"),  #: Priority pick list
     "enterURL": TT("Enter URL"),  #: Add NZB Dialog
     # Queue page
-    "onQueueFinish": TT("On queue finish"),  #: Queue page selection menu
     "shutdownPc": TT("Shutdown PC"),  #: Queue page end-of-queue action
     "standbyPc": TT("Standby PC"),  #: Queue page end-of-queue action
     "hibernatePc": TT("Hibernate PC"),  #: Queue page end-of-queue action
     "shutdownSab": TT("Shutdown SABnzbd"),  #: Queue page end-of-queue action
-    "speedLimit": TT("Speed Limit"),  #: Queue page selection menu or entry box
     "pauseFor": TT("Pause for"),  #: Queue page button or entry box
     "mode": TT("Processing"),  #: Queue page table column header
-    "order": TT("Order"),  #: Queue page table column header
     "name": TT("Name"),  #: Queue page table column header
-    "eta": TT("ETA"),  #: Queue page table column header, "estimated time of arrival"
-    "age": TT("AGE"),  #: Queue page table column header, "age of the NZB"
-    "button-del": TT("Del"),  #: Queue page table, "Delete" button
     "button-retry": TT("Retry"),  #: Queue page button
     "eoq-actions": TT("Actions"),  #: Queue end-of-queue selection box
     "eoq-scripts": TT("Scripts"),  #: Queue page table, script selection menu
@@ -224,22 +178,18 @@ SKIN_TEXT = {
     "purgeQueueConf": TT("Delete all items from the queue?"),  #: Confirmation popup
     "purgeNZBs": TT("Purge NZBs"),  #: Queue page button
     "purgeNZBs-Files": TT("Purge NZBs & Delete Files"),  #: Queue page button
-    "retryQueue": TT("Retry all failed jobs"),  #: Retry all failed jobs dialog box
     "removeNZB": TT("Remove NZB"),  #: Queue page button
     "removeNZB-Files": TT("Remove NZB & Delete Files"),  #: Queue page button
-    "AofB": TT("of"),  #: Queue page, as in "4G *of* 10G"
     "missingArt": TT("Missing articles"),  #: Caption for missing articles in Queue
     "quota-left": TT("Quota left"),  #: Remaining quota (displayed in Queue)
     "manual": TT("manual"),  #: Manual reset of quota
     "link-resetQuota": TT("Reset Quota now"),
     # History page
     "purgeHist": TT("Purge History"),  #: History page button
-    "purgeHistConf": TT("Delete all completed items from History?"),  #: Confirmation popup
     "hideDetails": TT("Hide details"),  #: Button/link hiding History job details
     "showDetails": TT("Show details"),  #: Button/link showing History job details
     "showFailedHis": TT("Show Failed"),  #: Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!
     "showAllHis": TT("Show All"),  #: Button or link showing all History jobs
-    "completed": TT("Completed"),  #: History: job status
     "size": TT("Size"),  #: History table header
     "status": TT("Status"),  #: History table header
     "purgeFailed": TT("Purge Failed NZBs"),  #: Button to delete all failed jobs in History
@@ -250,12 +200,7 @@ SKIN_TEXT = {
     "purgePage": TT("Purge NZBs on the current page"),  #: Button to delete jobs on current page in History
     "opt-extra-NZB": TT("Optional Supplemental NZB"),  #: Button to add NZB to failed job in History
     "msg-path": TT("Path"),  #: Path as displayed in History details
-    "link-retryAll": TT("Retry all failed"),  #: Retry all failed jobs in History
-    "retryNZBs": TT("Retry All"),  #: Retry all button for Retry All Failed Jobs
-    "spam": TT("Virus/spam"),
-    "encrypted": TT("Passworded"),
-    "expired": TT("Out of retention"),
-    "otherProblem": TT("Other problem"),
+    "link-retryAll": TT("Retry all failed jobs"),  #: Retry all failed jobs in History
     # Connections page
     "link-forceDisc": TT("Force Disconnect"),  #: Status page button
     "explain-forceDisc": TT(
@@ -269,34 +214,24 @@ SKIN_TEXT = {
     "log-info": TT("+ Info"),  #: Status page logging selection value
     "log-debug": TT("+ Debug"),  #: Status page logging selection value
     "connections": TT("Connections"),  #: Status page tab header
-    "lastWarnings": TT("Latest Warnings"),  #: Status page, table header
-    "clearWarnings": TT("clear"),  #: Status page button
-    "server-blocked": TT("Unblock"),  #: Status page button
     "article-id": TT("Article identifier"),  #: Status page, article identifier
     "file-set": TT("File set"),  #: Status page, par-set that article belongs to
-    "warn-when": TT("When"),  #: Status page, table column header, when error occured
-    "warn-type": TT("Type"),  #: Status page, table column header, type of message
     "warning": TT("Warning"),  #: Status page, table column header, actual message
     "warnings": TT("Warnings"),  #: Footer: indicator of warnings
     "enabled": TT("Enabled"),  #: Status page, indicator that server is enabled
     # Dashboard
-    "dashboard-title": TT("Dashboard"),
     "dashboard-connectionError": TT("Connection failed!"),
     "dashboard-localIP4": TT("Local IPv4 address"),
     "dashboard-publicIP4": TT("Public IPv4 address"),
     "dashboard-IP6": TT("IPv6 address"),
     "dashboard-NameserverDNS": TT("Nameserver / DNS Lookup"),
-    "dashboard-cpuModel": TT("CPU Model"),
     "dashboard-delayed": TT("Download speed limited by"),
     "dashboard-delayed-cpu": TT("CPU"),
     "dashboard-delayed-disk": TT("Disk speed"),
     "dashboard-systemPerformance": TT("System Performance (Pystone)"),  #: Do not translate Pystone
     "dashboard-downloadDirSpeed": TT("Download folder speed"),
     "dashboard-completeDirSpeed": TT("Complete folder speed"),
-    "dashboard-writingSpeed": TT("Writing speed"),
-    "dashboard-speedTestFailed": TT("Could not write. Check that the directory is writable."),
     "dashboard-internetBandwidth": TT("Internet Bandwidth"),
-    "dashboard-clickToStart": TT("Click on Repeat test button below to determine"),
     "dashboard-repeatTest": TT("Repeat test"),
     "dashboard-testDownload": TT("Test download"),
     "dashboard-testDownload-explain": TT(
@@ -314,7 +249,6 @@ SKIN_TEXT = {
     "explain-orphans": TT(
         "There are orphaned jobs in the download folder.<br />You can choose to delete them (including files) or send them back to the queue."
     ),
-    "button-repair": TT("Repair"),
     "explain-Repair": TT(
         'The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'
     ),
@@ -350,7 +284,6 @@ SKIN_TEXT = {
     ),
     "security": TT("Security"),
     "opt-enable_https": TT("Enable HTTPS"),
-    "opt-notInstalled": TT("not installed"),
     "explain-enable_https": TT("Enable accessing the interface from a HTTPS address."),
     "explain-enable_https_warning": TT(
         "Modern web browsers and other clients will not accept self-signed certificates and will give a warning and/or won't connect at all."
@@ -417,7 +350,6 @@ SKIN_TEXT = {
     ),
     "userFolders": TT("User Folders"),
     "browse-folder": TT("Browse"),
-    "in": TT("In"),
     "opt-download_dir": TT("Temporary Download Folder"),
     "explain-download_dir": TT(
         "Location to store unprocessed downloads.<br /><i>Can only be changed when queue is empty.</i>"
@@ -582,7 +514,6 @@ SKIN_TEXT = {
     "swtag-pp": TT("Post processing"),
     "swtag-naming": TT("Naming"),
     "swtag-quota": TT("Quota"),
-    "swtag-indexing": TT("Indexing"),
     "opt-quota_size": TT("Size"),  #: Size of the download quota
     "explain-quota_size": TT("How much can be downloaded this month (K/M/G)"),
     "opt-quota_day": TT("Reset day"),  #: Reset day of the download quota
@@ -768,7 +699,6 @@ SKIN_TEXT = {
     "explain-relFolder": TT("Relative folders are based on"),
     "catFolderPath": TT("Folder/Path"),
     "catTags": TT("Indexer Categories / Groups"),
-    "button-delCat": TT("X"),  #: Small delete button
     # Config->Sorting
     "selectOneCat": TT("Select at least 1 category."),
     "seriesSorting": TT("Series Sorting"),
@@ -777,7 +707,6 @@ SKIN_TEXT = {
     "button-clear": TT("Clear"),
     "button-evalFeed": TT("Apply filters"),
     "presetSort": TT("Presets"),
-    "example": TT("Example"),
     "movieSort": TT("Movie Sorting"),
     "opt-movieSort": TT("Enable Movie Sorting"),
     "opt-movieExtra": TT("Keep loose downloads in extra folders"),
@@ -840,20 +769,9 @@ SKIN_TEXT = {
     "sptag-entries": TT("Values"),
     # NZO
     "nzoDetails": TT("Edit NZB Details"),  #: Job details page
-    "nzoName": TT("Name"),  #: Job details page
     "nzo-delete": TT("Delete"),  #: Job details page, delete button
-    "nzo-top": TT("Top"),  #: Job details page, move file to top
-    "nzo-up": TT("Up"),  #: Job details page, move file one place up
-    "nzo-down": TT("Down"),  #: Job details page, move file one place down
-    "nzo-bottom": TT("Bottom"),  #: Job details page, move file to bottom
-    "nzo-all": TT("All"),  #: Job details page, select all files
-    "nzo-none": TT("None"),  #: Job details page, select no files
-    "nzo-invert": TT("Invert"),  #: Job details page, invert file selection
     "nzo-filename": TT("Filename"),  #: Job details page, filename column header
-    "nzo-subject": TT("Subject"),  #: Job details page, subject column header
     "nzo-age": TT("Age"),  #: Job details page, file age column header
-    "nzo-selection": TT("Selection"),  #: Job details page, section header
-    "nzo-action": TT("Action"),  #: Job details page, section header
     # Glitter skin
     "Glitter-addNZB": TT("Add NZB"),
     "Glitter-pause5m": TT("Pause for 5 minutes"),
@@ -914,7 +832,6 @@ SKIN_TEXT = {
     "Glitter-chooseFile": TT("Browse"),
     "Glitter-addnzbFilename": TT("Optionally specify a filename"),
     "Glitter-submit": TT("Submit"),
-    "Glitter-openInfoURL": TT("Open Informational URL"),
     "Glitter-sendThanks": TT("Submitted. Thank you!"),
     "Glitter-noSelect": TT("Nothing selected!"),
     "Glitter-removeSelected": TT("Remove all selected files"),
@@ -991,8 +908,4 @@ This is free software, and you are welcome to redistribute it under certain cond
 It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 """
     ),
-    "wizard-ad-1": TT(
-        "In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended."
-    ),
-    "wizard-ad-2": TT("Don't have a usenet provider? We recommend trying %s."),
 }
