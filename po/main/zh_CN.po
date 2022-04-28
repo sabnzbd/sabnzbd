@@ -181,7 +181,7 @@ msgstr "&nbsp;正在解析地址"
 msgid "unknown"
 msgstr "未知"
 
-#. No value, used in dropdown menus - Job details page, select no files
+#. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "无"
@@ -373,7 +373,7 @@ msgstr ""
 msgid "Direct Unpack"
 msgstr ""
 
-#. PP status - History: job status
+#. PP status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "完成"
@@ -1543,12 +1543,12 @@ msgid "Trying RAR-based verification"
 msgstr "正在尝试基于 RAR 的验证"
 
 #: sabnzbd/postproc.py
-msgid "[%s] RAR-based verification failed: %s"
-msgstr "[%s] 基于 RAR 的验证失败: %s"
-
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "Passworded"
 msgstr "有密码"
+
+#: sabnzbd/postproc.py
+msgid "[%s] RAR-based verification failed: %s"
+msgstr "[%s] 基于 RAR 的验证失败: %s"
 
 #: sabnzbd/postproc.py
 msgid "RAR files verified successfully"
@@ -1664,7 +1664,7 @@ msgstr "暂停 3 小时"
 msgid "Pause for 6 hours"
 msgstr "暂停 6 小时"
 
-#. Shutdown SABnzbd - Config->Scheduling
+#. Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "关闭"
@@ -1733,11 +1733,6 @@ msgstr "来源"
 msgid "Servers"
 msgstr "服务器"
 
-#. PP Failure message
-#: sabnzbd/skintext.py
-msgid "Failure"
-msgstr "失败"
-
 #. PP status
 #: sabnzbd/skintext.py
 msgid "Failed"
@@ -1782,20 +1777,6 @@ msgstr "快速检查..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "正在验证..."
-
-#. Pseudo-PP status, in reality used for Queue-status
-#: sabnzbd/skintext.py
-msgid "Downloading"
-msgstr "正在下载"
-
-#: sabnzbd/skintext.py
-msgid "Propagation delay"
-msgstr "传播延迟"
-
-#. #: Config->Scheduler
-#: sabnzbd/skintext.py
-msgid "Task"
-msgstr "任务"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -1927,21 +1908,6 @@ msgstr "紧急"
 msgid "Low"
 msgstr "低"
 
-#. Megabytes
-#: sabnzbd/skintext.py
-msgid "MB"
-msgstr "MB"
-
-#. Gigabytes
-#: sabnzbd/skintext.py
-msgid "GB"
-msgstr "GB"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
-
 #. One hour
 #: sabnzbd/skintext.py
 msgid "hour"
@@ -1988,54 +1954,6 @@ msgid "Year"
 msgstr "年"
 
 #: sabnzbd/skintext.py
-msgid "January"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "February"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "March"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "April"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "May"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "June"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "July"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "August"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "September"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "October"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "November"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "December"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Day of month"
 msgstr "每月特定一天"
 
@@ -2058,14 +1976,6 @@ msgstr "今天"
 #: sabnzbd/skintext.py
 msgid "Total"
 msgstr "总计"
-
-#: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "自定义"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "速度"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -2096,40 +2006,8 @@ msgid "Host"
 msgstr "主机"
 
 #: sabnzbd/skintext.py
-msgid "Comment"
-msgstr "评论"
-
-#: sabnzbd/skintext.py
-msgid "Send"
-msgstr "发送"
-
-#: sabnzbd/skintext.py
 msgid "Cancel"
 msgstr "取消"
-
-#: sabnzbd/skintext.py
-msgid "Other"
-msgstr "其他"
-
-#: sabnzbd/skintext.py
-msgid "Report"
-msgstr "报告"
-
-#: sabnzbd/skintext.py
-msgid "Video"
-msgstr "视频"
-
-#: sabnzbd/skintext.py
-msgid "Audio"
-msgstr "音频"
-
-#: sabnzbd/skintext.py
-msgid "Not used"
-msgstr "未使用"
-
-#: sabnzbd/skintext.py
-msgid "or less"
-msgstr "或更少"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -2142,11 +2020,6 @@ msgstr "注销"
 #: sabnzbd/skintext.py
 msgid "Remember me"
 msgstr "记住我"
-
-#. SABnzbd's theme line
-#: sabnzbd/skintext.py
-msgid "The automatic usenet download tool"
-msgstr "usenet 自动下载工具"
 
 #. "Save" button
 #: sabnzbd/skintext.py
@@ -2161,11 +2034,6 @@ msgstr "正在保存.."
 #: sabnzbd/skintext.py
 msgid "Are you sure?"
 msgstr "是否确定?"
-
-#. Used in confirmation popups
-#: sabnzbd/skintext.py
-msgid "Delete all downloaded files?"
-msgstr "删除全部已下载文件?"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2267,20 +2135,8 @@ msgid "Download Dir"
 msgstr "下载目录"
 
 #: sabnzbd/skintext.py
-msgid "PAUSED"
-msgstr "*已暂停*"
-
-#: sabnzbd/skintext.py
-msgid "Cached %s articles (%s)"
-msgstr "已缓存 %s 篇文章 (%s)"
-
-#: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "系统负载"
-
-#: sabnzbd/skintext.py
-msgid "New release %s available at"
-msgstr "新版 %s 已发布，下载："
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -2291,20 +2147,10 @@ msgstr "是否确定要关闭 SABnzbd?"
 msgid "Add"
 msgstr "添加"
 
-#. Add NZB file to queue (header
-#: sabnzbd/skintext.py
-msgid "Add File"
-msgstr "添加文件"
-
 #. Job category
 #: sabnzbd/skintext.py
 msgid "Category"
 msgstr "分类"
-
-#. Queue page table column header
-#: sabnzbd/skintext.py
-msgid "Processing"
-msgstr "处理"
 
 #. Server priority
 #: sabnzbd/skintext.py
@@ -2326,21 +2172,6 @@ msgstr "+解压"
 msgid "+Delete"
 msgstr "+删除"
 
-#. Post processing pick list: abbreviation for "+Repair"
-#: sabnzbd/skintext.py
-msgid "R"
-msgstr "修"
-
-#. Post processing pick list: abbreviation for "+Unpack"
-#: sabnzbd/skintext.py
-msgid "U"
-msgstr "解"
-
-#. Post processing pick list: abbreviation for "+Delete"
-#: sabnzbd/skintext.py
-msgid "D"
-msgstr "删"
-
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Force"
@@ -2355,11 +2186,6 @@ msgstr "停止"
 #: sabnzbd/skintext.py
 msgid "Enter URL"
 msgstr "输入 URL"
-
-#. Queue page selection menu
-#: sabnzbd/skintext.py
-msgid "On queue finish"
-msgstr "队列完成时"
 
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
@@ -2381,35 +2207,15 @@ msgstr "电脑休眠"
 msgid "Shutdown SABnzbd"
 msgstr "关闭 SABnzbd"
 
-#. Queue page selection menu or entry box
+#. Queue page table column header
 #: sabnzbd/skintext.py
-msgid "Speed Limit"
-msgstr "限速"
+msgid "Processing"
+msgstr "处理"
 
-#. Queue page table column header - Config->RSS table column header
-#: sabnzbd/skintext.py
-msgid "Order"
-msgstr "序号"
-
-#. Queue page table column header - Job details page
+#. Queue page table column header
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "名称"
-
-#. Queue page table column header, "estimated time of arrival"
-#: sabnzbd/skintext.py
-msgid "ETA"
-msgstr "大约完成"
-
-#. Queue page table column header, "age of the NZB"
-#: sabnzbd/skintext.py
-msgid "AGE"
-msgstr "发布时间"
-
-#. Queue page table, "Delete" button
-#: sabnzbd/skintext.py
-msgid "Del"
-msgstr "删除"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2441,11 +2247,6 @@ msgstr "清空 NZB"
 msgid "Purge NZBs & Delete Files"
 msgstr "清空 NZB 并删除文件"
 
-#. Retry all failed jobs dialog box
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs"
-msgstr "重新尝试下载所有已失败任务"
-
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB"
@@ -2455,11 +2256,6 @@ msgstr "移除 NZB"
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
 msgstr "移除 NZB 并删除文件"
-
-#. Queue page, as in "4G *of* 10G"
-#: sabnzbd/skintext.py
-msgid "of"
-msgstr "/"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2479,11 +2275,6 @@ msgstr "手动"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "立即重置配额"
-
-#. Confirmation popup
-#: sabnzbd/skintext.py
-msgid "Delete all completed items from History?"
-msgstr "从“历史”中删除所有已完成项?"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2541,25 +2332,8 @@ msgstr "路径"
 
 #. Retry all failed jobs in History
 #: sabnzbd/skintext.py
-msgid "Retry all failed"
-msgstr "重试所有失败任务"
-
-#. Retry all button for Retry All Failed Jobs
-#: sabnzbd/skintext.py
-msgid "Retry All"
-msgstr "重试所有"
-
-#: sabnzbd/skintext.py
-msgid "Virus/spam"
-msgstr "病毒/垃圾"
-
-#: sabnzbd/skintext.py
-msgid "Out of retention"
-msgstr "超出保留期"
-
-#: sabnzbd/skintext.py
-msgid "Other problem"
-msgstr "其他问题"
+msgid "Retry all failed jobs"
+msgstr "重新尝试下载所有已失败任务"
 
 #. Status page button
 #: sabnzbd/skintext.py
@@ -2611,21 +2385,6 @@ msgstr "+ 调试"
 msgid "Connections"
 msgstr "连接"
 
-#. Status page, table header
-#: sabnzbd/skintext.py
-msgid "Latest Warnings"
-msgstr "最新警告信息"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "clear"
-msgstr "清除"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "Unblock"
-msgstr "解封"
-
 #. Status page, article identifier
 #: sabnzbd/skintext.py
 msgid "Article identifier"
@@ -2636,25 +2395,10 @@ msgstr "文章 id"
 msgid "File set"
 msgstr "文件集"
 
-#. Status page, table column header, when error occured
-#: sabnzbd/skintext.py
-msgid "When"
-msgstr "时间"
-
-#. Status page, table column header, type of message - Config->RSS table
-#. column header
-#: sabnzbd/skintext.py
-msgid "Type"
-msgstr "类型"
-
 #. Status page, indicator that server is enabled
 #: sabnzbd/skintext.py
 msgid "Enabled"
 msgstr "启用"
-
-#: sabnzbd/skintext.py
-msgid "Dashboard"
-msgstr "控制台"
 
 #: sabnzbd/skintext.py
 msgid "Connection failed!"
@@ -2675,10 +2419,6 @@ msgstr "IPv6 地址"
 #: sabnzbd/skintext.py
 msgid "Nameserver / DNS Lookup"
 msgstr "域名服务器 / DNS 查询"
-
-#: sabnzbd/skintext.py
-msgid "CPU Model"
-msgstr "CPU 型号"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
@@ -2706,20 +2446,8 @@ msgid "Complete folder speed"
 msgstr "完成文件夹写入速度"
 
 #: sabnzbd/skintext.py
-msgid "Writing speed"
-msgstr "写入速度"
-
-#: sabnzbd/skintext.py
-msgid "Could not write. Check that the directory is writable."
-msgstr "无法写入。请确保该目录有写入权限。"
-
-#: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Click on Repeat test button below to determine"
-msgstr "点击下面的“重复”按钮可开始测试"
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
@@ -2891,10 +2619,6 @@ msgstr "安全"
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
 msgstr "启用 HTTPS"
-
-#: sabnzbd/skintext.py
-msgid "not installed"
-msgstr "未安装"
 
 #: sabnzbd/skintext.py
 msgid "Enable accessing the interface from a HTTPS address."
@@ -3123,10 +2847,6 @@ msgstr "用户文件夹"
 #: sabnzbd/skintext.py
 msgid "Browse"
 msgstr "浏览"
-
-#: sabnzbd/skintext.py
-msgid "In"
-msgstr "位于"
 
 #: sabnzbd/skintext.py
 msgid "Temporary Download Folder"
@@ -3488,6 +3208,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Propagation delay"
+msgstr "传播延迟"
+
+#: sabnzbd/skintext.py
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority"
 " to Force will skip the delay."
@@ -3608,10 +3332,6 @@ msgstr "命名"
 #: sabnzbd/skintext.py
 msgid "Quota"
 msgstr "配额"
-
-#: sabnzbd/skintext.py
-msgid "Indexing"
-msgstr "正在索引"
 
 #: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
@@ -3860,7 +3580,7 @@ msgstr "添加定时任务"
 msgid "Frequency"
 msgstr "频率"
 
-#. Config->Scheduling - Job details page, section header
+#. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "动作"
@@ -3909,6 +3629,16 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Next scan at"
 msgstr ""
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Order"
+msgstr "序号"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Type"
+msgstr "类型"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4254,11 +3984,6 @@ msgstr "文件夹/路径"
 msgid "Indexer Categories / Groups"
 msgstr "索引 Categories / Groups"
 
-#. Small delete button
-#: sabnzbd/skintext.py
-msgid "X"
-msgstr "X"
-
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Select at least 1 category."
@@ -4288,10 +4013,6 @@ msgstr "应用过滤器"
 #: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "预设"
-
-#: sabnzbd/skintext.py
-msgid "Example"
-msgstr "示例"
 
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
@@ -4520,50 +4241,10 @@ msgstr "编辑 NZB 详情"
 msgid "Delete"
 msgstr "删除"
 
-#. Job details page, move file to top
-#: sabnzbd/skintext.py
-msgid "Top"
-msgstr "置顶"
-
-#. Job details page, move file one place up
-#: sabnzbd/skintext.py
-msgid "Up"
-msgstr "上移"
-
-#. Job details page, move file one place down
-#: sabnzbd/skintext.py
-msgid "Down"
-msgstr "下移"
-
-#. Job details page, move file to bottom
-#: sabnzbd/skintext.py
-msgid "Bottom"
-msgstr "置底"
-
-#. Job details page, select all files
-#: sabnzbd/skintext.py
-msgid "All"
-msgstr "全部"
-
-#. Job details page, invert file selection
-#: sabnzbd/skintext.py
-msgid "Invert"
-msgstr "反选"
-
 #. Job details page, filename column header
 #: sabnzbd/skintext.py
 msgid "Filename"
 msgstr "文件名"
-
-#. Job details page, subject column header
-#: sabnzbd/skintext.py
-msgid "Subject"
-msgstr "主题"
-
-#. Job details page, section header
-#: sabnzbd/skintext.py
-msgid "Selection"
-msgstr "选择"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -4588,6 +4269,10 @@ msgstr "全选"
 #: sabnzbd/skintext.py
 msgid "Restart SABnzbd"
 msgstr "重新启动  SABnzbd"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish"
+msgstr "队列完成时"
 
 #: sabnzbd/skintext.py
 msgid "Status and interface options"
@@ -4666,6 +4351,10 @@ msgid "Show active connections"
 msgstr "显示活动连接"
 
 #: sabnzbd/skintext.py
+msgid "Unblock"
+msgstr "解封"
+
+#: sabnzbd/skintext.py
 msgid "Orphaned jobs"
 msgstr "孤立任务"
 
@@ -4698,10 +4387,6 @@ msgid "Submit"
 msgstr "提交"
 
 #: sabnzbd/skintext.py
-msgid "Open Informational URL"
-msgstr "打开信息 URL"
-
-#: sabnzbd/skintext.py
 msgid "Submitted. Thank you!"
 msgstr "已提交。感谢!"
 
@@ -4716,6 +4401,14 @@ msgstr "移除已选文件"
 #: sabnzbd/skintext.py
 msgid "Hide/show completed files"
 msgstr "隐藏/显示已完成文件"
+
+#: sabnzbd/skintext.py
+msgid "Top"
+msgstr "置顶"
+
+#: sabnzbd/skintext.py
+msgid "Bottom"
+msgstr "置底"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
@@ -4736,6 +4429,10 @@ msgid "Glitter has some (new) features you might like!"
 msgstr "你可能会喜欢一些 Glitter 的(新)功能！"
 
 #: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "自定义"
+
+#: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "精简外观"
 
@@ -4746,6 +4443,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "标签化外观 <br/>(分别显示队列与历史记录)"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "速度"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"
@@ -4924,16 +4625,6 @@ msgstr ""
 "SABnzbd *不负任何担保责任*。\n"
 "这是一款自由软件，欢迎您在约定的条件下传播。\n"
 "本软件依 GNU GENERAL PUBLIC LICENSE 第 2 版或 (若您愿意) 任意较新版本授权。\n"
-
-#: sabnzbd/skintext.py
-msgid ""
-"In order to download from usenet you will require access to a provider. Your"
-" ISP may provide you with access, however a premium provider is recommended."
-msgstr "要从 usenet 下载您需要有一家提供商的访问权限。您的 ISP 可能会为您提供权限，但推荐您选用付费的高级提供商。"
-
-#: sabnzbd/skintext.py
-msgid "Don't have a usenet provider? We recommend trying %s."
-msgstr "还没有 usenet 提供商r? 我们推荐试试 %s。"
 
 #. Error message
 #: sabnzbd/sorting.py

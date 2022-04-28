@@ -186,7 +186,7 @@ msgstr "&nbsp;פותר כתובת"
 msgid "unknown"
 msgstr "בלתי ידוע"
 
-#. No value, used in dropdown menus - Job details page, select no files
+#. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "אין"
@@ -380,7 +380,7 @@ msgstr "אי־האפלה שינתה שם של %d קבצים"
 msgid "Direct Unpack"
 msgstr "פריקה ישירה"
 
-#. PP status - History: job status
+#. PP status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "הושלם"
@@ -1566,12 +1566,12 @@ msgid "Trying RAR-based verification"
 msgstr "מנסה וידוא מבוסס RAR"
 
 #: sabnzbd/postproc.py
-msgid "[%s] RAR-based verification failed: %s"
-msgstr "[%s] וידוא מבוסס RAR נכשל: %s"
-
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "Passworded"
 msgstr "מוגן בסיסמה"
+
+#: sabnzbd/postproc.py
+msgid "[%s] RAR-based verification failed: %s"
+msgstr "[%s] וידוא מבוסס RAR נכשל: %s"
 
 #: sabnzbd/postproc.py
 msgid "RAR files verified successfully"
@@ -1687,7 +1687,7 @@ msgstr "השהה למשך 3 שעות"
 msgid "Pause for 6 hours"
 msgstr "השהה למשך 6 שעות"
 
-#. Shutdown SABnzbd - Config->Scheduling
+#. Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "כבה"
@@ -1756,11 +1756,6 @@ msgstr "מקור"
 msgid "Servers"
 msgstr "שרתים"
 
-#. PP Failure message
-#: sabnzbd/skintext.py
-msgid "Failure"
-msgstr "כישלון"
-
 #. PP status
 #: sabnzbd/skintext.py
 msgid "Failed"
@@ -1805,20 +1800,6 @@ msgstr "בדוק זריז…"
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "מוודא…"
-
-#. Pseudo-PP status, in reality used for Queue-status
-#: sabnzbd/skintext.py
-msgid "Downloading"
-msgstr "מוריד"
-
-#: sabnzbd/skintext.py
-msgid "Propagation delay"
-msgstr "עיכוב רביה"
-
-#. #: Config->Scheduler
-#: sabnzbd/skintext.py
-msgid "Task"
-msgstr "מטלה"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -1950,21 +1931,6 @@ msgstr "חירום"
 msgid "Low"
 msgstr "נמוכה"
 
-#. Megabytes
-#: sabnzbd/skintext.py
-msgid "MB"
-msgstr "מ״ב"
-
-#. Gigabytes
-#: sabnzbd/skintext.py
-msgid "GB"
-msgstr "ג״ב"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/skintext.py
-msgid "B"
-msgstr "ב"
-
 #. One hour
 #: sabnzbd/skintext.py
 msgid "hour"
@@ -2011,54 +1977,6 @@ msgid "Year"
 msgstr "שנה"
 
 #: sabnzbd/skintext.py
-msgid "January"
-msgstr "ינואר"
-
-#: sabnzbd/skintext.py
-msgid "February"
-msgstr "פברואר"
-
-#: sabnzbd/skintext.py
-msgid "March"
-msgstr "מרץ"
-
-#: sabnzbd/skintext.py
-msgid "April"
-msgstr "אפריל"
-
-#: sabnzbd/skintext.py
-msgid "May"
-msgstr "מאי"
-
-#: sabnzbd/skintext.py
-msgid "June"
-msgstr "יוני"
-
-#: sabnzbd/skintext.py
-msgid "July"
-msgstr "יולי"
-
-#: sabnzbd/skintext.py
-msgid "August"
-msgstr "אוגוסט"
-
-#: sabnzbd/skintext.py
-msgid "September"
-msgstr "ספטמבר"
-
-#: sabnzbd/skintext.py
-msgid "October"
-msgstr "אוקטובר"
-
-#: sabnzbd/skintext.py
-msgid "November"
-msgstr "נובמבר"
-
-#: sabnzbd/skintext.py
-msgid "December"
-msgstr "דצמבר"
-
-#: sabnzbd/skintext.py
 msgid "Day of month"
 msgstr "יום בחודש"
 
@@ -2081,14 +1999,6 @@ msgstr "היום"
 #: sabnzbd/skintext.py
 msgid "Total"
 msgstr "סה״כ"
-
-#: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "מותאם אישית"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "מהירות"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -2119,40 +2029,8 @@ msgid "Host"
 msgstr "מארח"
 
 #: sabnzbd/skintext.py
-msgid "Comment"
-msgstr "הער"
-
-#: sabnzbd/skintext.py
-msgid "Send"
-msgstr "שלח"
-
-#: sabnzbd/skintext.py
 msgid "Cancel"
 msgstr "ביטול"
-
-#: sabnzbd/skintext.py
-msgid "Other"
-msgstr "אחר"
-
-#: sabnzbd/skintext.py
-msgid "Report"
-msgstr "דווח"
-
-#: sabnzbd/skintext.py
-msgid "Video"
-msgstr "וידאו"
-
-#: sabnzbd/skintext.py
-msgid "Audio"
-msgstr "שמע"
-
-#: sabnzbd/skintext.py
-msgid "Not used"
-msgstr "לא בשימוש"
-
-#: sabnzbd/skintext.py
-msgid "or less"
-msgstr "או פחות"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -2165,11 +2043,6 @@ msgstr "התנתק"
 #: sabnzbd/skintext.py
 msgid "Remember me"
 msgstr "זכור אותי"
-
-#. SABnzbd's theme line
-#: sabnzbd/skintext.py
-msgid "The automatic usenet download tool"
-msgstr "הכלי להורדה אוטומטית של Usenet"
 
 #. "Save" button
 #: sabnzbd/skintext.py
@@ -2184,11 +2057,6 @@ msgstr "שומר…"
 #: sabnzbd/skintext.py
 msgid "Are you sure?"
 msgstr "האם אתה בטוח?"
-
-#. Used in confirmation popups
-#: sabnzbd/skintext.py
-msgid "Delete all downloaded files?"
-msgstr "למחוק את כל הקבצים שהורדו?"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2290,20 +2158,8 @@ msgid "Download Dir"
 msgstr "תיקיית הורדות"
 
 #: sabnzbd/skintext.py
-msgid "PAUSED"
-msgstr "מושהה"
-
-#: sabnzbd/skintext.py
-msgid "Cached %s articles (%s)"
-msgstr "%s מאמרים הוטמנו (%s)"
-
-#: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "עומס מערכת"
-
-#: sabnzbd/skintext.py
-msgid "New release %s available at"
-msgstr "שחרור חדש %s זמין באתר"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -2314,20 +2170,10 @@ msgstr "האם אתה בטוח שאתה רוצה לכבות את SABnzbd?"
 msgid "Add"
 msgstr "הוסף"
 
-#. Add NZB file to queue (header
-#: sabnzbd/skintext.py
-msgid "Add File"
-msgstr "הוסף קובץ"
-
 #. Job category
 #: sabnzbd/skintext.py
 msgid "Category"
 msgstr "קטגוריה"
-
-#. Queue page table column header
-#: sabnzbd/skintext.py
-msgid "Processing"
-msgstr "מעבד"
 
 #. Server priority
 #: sabnzbd/skintext.py
@@ -2349,21 +2195,6 @@ msgstr "+פריקה"
 msgid "+Delete"
 msgstr "+מחיקה"
 
-#. Post processing pick list: abbreviation for "+Repair"
-#: sabnzbd/skintext.py
-msgid "R"
-msgstr "ת"
-
-#. Post processing pick list: abbreviation for "+Unpack"
-#: sabnzbd/skintext.py
-msgid "U"
-msgstr "פ"
-
-#. Post processing pick list: abbreviation for "+Delete"
-#: sabnzbd/skintext.py
-msgid "D"
-msgstr "מ"
-
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Force"
@@ -2378,11 +2209,6 @@ msgstr "עצירה"
 #: sabnzbd/skintext.py
 msgid "Enter URL"
 msgstr "הכנס כתובת"
-
-#. Queue page selection menu
-#: sabnzbd/skintext.py
-msgid "On queue finish"
-msgstr "בסיום תור"
 
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
@@ -2404,35 +2230,15 @@ msgstr "חרוף מחשב"
 msgid "Shutdown SABnzbd"
 msgstr "כבה את SABnzbd"
 
-#. Queue page selection menu or entry box
+#. Queue page table column header
 #: sabnzbd/skintext.py
-msgid "Speed Limit"
-msgstr "מגבלת מהירות"
+msgid "Processing"
+msgstr "מעבד"
 
-#. Queue page table column header - Config->RSS table column header
-#: sabnzbd/skintext.py
-msgid "Order"
-msgstr "סידור"
-
-#. Queue page table column header - Job details page
+#. Queue page table column header
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "שם"
-
-#. Queue page table column header, "estimated time of arrival"
-#: sabnzbd/skintext.py
-msgid "ETA"
-msgstr "זמן משוער"
-
-#. Queue page table column header, "age of the NZB"
-#: sabnzbd/skintext.py
-msgid "AGE"
-msgstr "גיל"
-
-#. Queue page table, "Delete" button
-#: sabnzbd/skintext.py
-msgid "Del"
-msgstr "מחק"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2464,11 +2270,6 @@ msgstr "טהר הורדות"
 msgid "Purge NZBs & Delete Files"
 msgstr "טהר הורדות ומחק קבצים"
 
-#. Retry all failed jobs dialog box
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs"
-msgstr "נסה שוב את כל העבודות הנכשלות"
-
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB"
@@ -2478,11 +2279,6 @@ msgstr "הסר NZB"
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
 msgstr "הסר NZB ומחק קבצים"
-
-#. Queue page, as in "4G *of* 10G"
-#: sabnzbd/skintext.py
-msgid "of"
-msgstr "מתוך"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2502,11 +2298,6 @@ msgstr "ידני"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "אפס מכסה כעת"
-
-#. Confirmation popup
-#: sabnzbd/skintext.py
-msgid "Delete all completed items from History?"
-msgstr "למחוק את כל הפריטים השלמים מההיסטוריה?"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2564,25 +2355,8 @@ msgstr "נתיב"
 
 #. Retry all failed jobs in History
 #: sabnzbd/skintext.py
-msgid "Retry all failed"
-msgstr "נסה שוב כל הנכשלים"
-
-#. Retry all button for Retry All Failed Jobs
-#: sabnzbd/skintext.py
-msgid "Retry All"
-msgstr "נסה שוב הכל"
-
-#: sabnzbd/skintext.py
-msgid "Virus/spam"
-msgstr "נגיף/זבל"
-
-#: sabnzbd/skintext.py
-msgid "Out of retention"
-msgstr "אין שימור"
-
-#: sabnzbd/skintext.py
-msgid "Other problem"
-msgstr "בעיה אחרת"
+msgid "Retry all failed jobs"
+msgstr "נסה שוב את כל העבודות הנכשלות"
 
 #. Status page button
 #: sabnzbd/skintext.py
@@ -2636,21 +2410,6 @@ msgstr "+ ניפוי תקלים"
 msgid "Connections"
 msgstr "חיבורים"
 
-#. Status page, table header
-#: sabnzbd/skintext.py
-msgid "Latest Warnings"
-msgstr "אזהרות אחרונות"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "clear"
-msgstr "נקה"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "Unblock"
-msgstr "בטל חסימה"
-
 #. Status page, article identifier
 #: sabnzbd/skintext.py
 msgid "Article identifier"
@@ -2661,25 +2420,10 @@ msgstr "מזהי מאמר"
 msgid "File set"
 msgstr "ערכת קבצים"
 
-#. Status page, table column header, when error occured
-#: sabnzbd/skintext.py
-msgid "When"
-msgstr "מתי"
-
-#. Status page, table column header, type of message - Config->RSS table
-#. column header
-#: sabnzbd/skintext.py
-msgid "Type"
-msgstr "סוג"
-
 #. Status page, indicator that server is enabled
 #: sabnzbd/skintext.py
 msgid "Enabled"
 msgstr "מאופשר"
-
-#: sabnzbd/skintext.py
-msgid "Dashboard"
-msgstr "לוח מחוונים"
 
 #: sabnzbd/skintext.py
 msgid "Connection failed!"
@@ -2700,10 +2444,6 @@ msgstr "כתובת IPv6"
 #: sabnzbd/skintext.py
 msgid "Nameserver / DNS Lookup"
 msgstr "שם שרת / חיפוש DNS"
-
-#: sabnzbd/skintext.py
-msgid "CPU Model"
-msgstr "דגם יע״ם"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
@@ -2731,20 +2471,8 @@ msgid "Complete folder speed"
 msgstr "מהירות תיקיית שלמים"
 
 #: sabnzbd/skintext.py
-msgid "Writing speed"
-msgstr "מהירות כתיבה"
-
-#: sabnzbd/skintext.py
-msgid "Could not write. Check that the directory is writable."
-msgstr "לא היה יכול לכתוב. בדוק שהספרייה ניתנת לכתיבה."
-
-#: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
 msgstr "רוחב־פס אינטרנט"
-
-#: sabnzbd/skintext.py
-msgid "Click on Repeat test button below to determine"
-msgstr "לחץ על הכפתור חזור על בחינה למטה כדי לקבוע"
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
@@ -2929,10 +2657,6 @@ msgstr "אבטחה"
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
 msgstr "אפשר HTTPS"
-
-#: sabnzbd/skintext.py
-msgid "not installed"
-msgstr "לא מותקן"
 
 #: sabnzbd/skintext.py
 msgid "Enable accessing the interface from a HTTPS address."
@@ -3173,10 +2897,6 @@ msgstr "תיקיות משתמש"
 #: sabnzbd/skintext.py
 msgid "Browse"
 msgstr "עיין"
-
-#: sabnzbd/skintext.py
-msgid "In"
-msgstr "ב"
 
 #: sabnzbd/skintext.py
 msgid "Temporary Download Folder"
@@ -3563,6 +3283,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "מיין עבודות בתור באופן אוטומטי כאשר עבודה חדשה מתווספת."
 
 #: sabnzbd/skintext.py
+msgid "Propagation delay"
+msgstr "עיכוב רביה"
+
+#: sabnzbd/skintext.py
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority"
 " to Force will skip the delay."
@@ -3689,10 +3413,6 @@ msgstr "מתן שמות"
 #: sabnzbd/skintext.py
 msgid "Quota"
 msgstr "מכסה"
-
-#: sabnzbd/skintext.py
-msgid "Indexing"
-msgstr "אחסון במדד"
 
 #: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
@@ -3949,7 +3669,7 @@ msgstr "הוסף תזמון"
 msgid "Frequency"
 msgstr "תדירות"
 
-#. Config->Scheduling - Job details page, section header
+#. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "פעולה"
@@ -3999,6 +3719,16 @@ msgstr "ערוך"
 #: sabnzbd/skintext.py
 msgid "Next scan at"
 msgstr "הסריקה הבאה במועד"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Order"
+msgstr "סידור"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Type"
+msgstr "סוג"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4348,11 +4078,6 @@ msgstr "תיקייה/נתיב"
 msgid "Indexer Categories / Groups"
 msgstr "קטגוריות / קבוצות של מדדן"
 
-#. Small delete button
-#: sabnzbd/skintext.py
-msgid "X"
-msgstr "X"
-
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Select at least 1 category."
@@ -4382,10 +4107,6 @@ msgstr "החל מסננים"
 #: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "קדם־קביעות"
-
-#: sabnzbd/skintext.py
-msgid "Example"
-msgstr "דוגמה"
 
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
@@ -4615,50 +4336,10 @@ msgstr "ערוך פרטי NZB"
 msgid "Delete"
 msgstr "מחק"
 
-#. Job details page, move file to top
-#: sabnzbd/skintext.py
-msgid "Top"
-msgstr "ראש"
-
-#. Job details page, move file one place up
-#: sabnzbd/skintext.py
-msgid "Up"
-msgstr "למעלה"
-
-#. Job details page, move file one place down
-#: sabnzbd/skintext.py
-msgid "Down"
-msgstr "למטה"
-
-#. Job details page, move file to bottom
-#: sabnzbd/skintext.py
-msgid "Bottom"
-msgstr "תחתית"
-
-#. Job details page, select all files
-#: sabnzbd/skintext.py
-msgid "All"
-msgstr "הכל"
-
-#. Job details page, invert file selection
-#: sabnzbd/skintext.py
-msgid "Invert"
-msgstr "הפוך"
-
 #. Job details page, filename column header
 #: sabnzbd/skintext.py
 msgid "Filename"
 msgstr "שם קובץ"
-
-#. Job details page, subject column header
-#: sabnzbd/skintext.py
-msgid "Subject"
-msgstr "נושא"
-
-#. Job details page, section header
-#: sabnzbd/skintext.py
-msgid "Selection"
-msgstr "בחירה"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -4683,6 +4364,10 @@ msgstr "סמן הכל"
 #: sabnzbd/skintext.py
 msgid "Restart SABnzbd"
 msgstr "הפעל מחדש את SABnzbd"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish"
+msgstr "בסיום תור"
 
 #: sabnzbd/skintext.py
 msgid "Status and interface options"
@@ -4761,6 +4446,10 @@ msgid "Show active connections"
 msgstr "הראה חיבורים פעילים"
 
 #: sabnzbd/skintext.py
+msgid "Unblock"
+msgstr "בטל חסימה"
+
+#: sabnzbd/skintext.py
 msgid "Orphaned jobs"
 msgstr "עבודות יתומות"
 
@@ -4793,10 +4482,6 @@ msgid "Submit"
 msgstr "הגש"
 
 #: sabnzbd/skintext.py
-msgid "Open Informational URL"
-msgstr "פתח כתובת של מידע"
-
-#: sabnzbd/skintext.py
 msgid "Submitted. Thank you!"
 msgstr "הוגש. תודה!"
 
@@ -4811,6 +4496,14 @@ msgstr "הסר את כל הקבצים הנבחרים"
 #: sabnzbd/skintext.py
 msgid "Hide/show completed files"
 msgstr "הסתר/הראה קבצים שלמים"
+
+#: sabnzbd/skintext.py
+msgid "Top"
+msgstr "ראש"
+
+#: sabnzbd/skintext.py
+msgid "Bottom"
+msgstr "תחתית"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
@@ -4833,6 +4526,10 @@ msgid "Glitter has some (new) features you might like!"
 msgstr "אל Glitter יש מספר מאפיינים (חדשים) שאתה עשוי לאהוב!"
 
 #: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "מותאם אישית"
+
+#: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "פריסה צפופה"
 
@@ -4843,6 +4540,10 @@ msgstr "השתמש תמיד ברוחב של מסך מלא"
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "פריסה בלשוניות<br/>(תור והיסטוריה נפרדים)"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "מהירות"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"
@@ -5025,18 +4726,6 @@ msgstr ""
 "SABnzbd מגיע ללא אחריות מוחלטת.\n"
 "זו תוכנה חינמית, ואתה מוזמן להפיצה מחדש תחת תנאים מסוימים.\n"
 "היא ברישיון תחת רישיון ציבורי כללי GNU גרסה 2 או (לבחירתך) כל גרסה שהיא מאוחרת יותר.\n"
-
-#: sabnzbd/skintext.py
-msgid ""
-"In order to download from usenet you will require access to a provider. Your"
-" ISP may provide you with access, however a premium provider is recommended."
-msgstr ""
-"על מנת להוריד מן Usenet תצטרך גישה אל ספק. ספק שירותי האינטרנט שלך עשוי לספק"
-" לך גישה, אולם מומלץ ספק פרימיום."
-
-#: sabnzbd/skintext.py
-msgid "Don't have a usenet provider? We recommend trying %s."
-msgstr "אין לך ספק Usenet? אנו ממליצים לנסות את %s."
 
 #. Error message
 #: sabnzbd/sorting.py

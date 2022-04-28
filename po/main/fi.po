@@ -189,7 +189,7 @@ msgstr "&nbsp;Selvitetään osoitetta"
 msgid "unknown"
 msgstr "tuntematon"
 
-#. No value, used in dropdown menus - Job details page, select no files
+#. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "Ei mitään"
@@ -381,7 +381,7 @@ msgstr ""
 msgid "Direct Unpack"
 msgstr ""
 
-#. PP status - History: job status
+#. PP status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "Valmistunut"
@@ -1559,12 +1559,12 @@ msgid "Trying RAR-based verification"
 msgstr "Yritetään RAR-pohjaista varmennusta"
 
 #: sabnzbd/postproc.py
-msgid "[%s] RAR-based verification failed: %s"
-msgstr "[%s] RAR-pohjainen varmennus epäonnistui: %s"
-
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "Passworded"
 msgstr "Salasanasuojattu"
+
+#: sabnzbd/postproc.py
+msgid "[%s] RAR-based verification failed: %s"
+msgstr "[%s] RAR-pohjainen varmennus epäonnistui: %s"
 
 #: sabnzbd/postproc.py
 msgid "RAR files verified successfully"
@@ -1680,7 +1680,7 @@ msgstr "Keskeytä 3:ksi tunniksi"
 msgid "Pause for 6 hours"
 msgstr "Keskeytä 6:ksi tunniksi"
 
-#. Shutdown SABnzbd - Config->Scheduling
+#. Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "Sammuta"
@@ -1749,11 +1749,6 @@ msgstr "Lähde"
 msgid "Servers"
 msgstr "Palvelimet"
 
-#. PP Failure message
-#: sabnzbd/skintext.py
-msgid "Failure"
-msgstr "Epäonnistui"
-
 #. PP status
 #: sabnzbd/skintext.py
 msgid "Failed"
@@ -1798,20 +1793,6 @@ msgstr "Pikatarkistus..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Varmennetaan..."
-
-#. Pseudo-PP status, in reality used for Queue-status
-#: sabnzbd/skintext.py
-msgid "Downloading"
-msgstr "Ladataan"
-
-#: sabnzbd/skintext.py
-msgid "Propagation delay"
-msgstr "Levitysviive"
-
-#. #: Config->Scheduler
-#: sabnzbd/skintext.py
-msgid "Task"
-msgstr "Tehtävä"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -1943,21 +1924,6 @@ msgstr "Hälytys"
 msgid "Low"
 msgstr "Matala"
 
-#. Megabytes
-#: sabnzbd/skintext.py
-msgid "MB"
-msgstr "Mt"
-
-#. Gigabytes
-#: sabnzbd/skintext.py
-msgid "GB"
-msgstr "Gt"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
-
 #. One hour
 #: sabnzbd/skintext.py
 msgid "hour"
@@ -2004,54 +1970,6 @@ msgid "Year"
 msgstr "Vuosi"
 
 #: sabnzbd/skintext.py
-msgid "January"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "February"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "March"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "April"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "May"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "June"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "July"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "August"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "September"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "October"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "November"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "December"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Day of month"
 msgstr "Kuukauden päivä"
 
@@ -2074,14 +1992,6 @@ msgstr "Tänään"
 #: sabnzbd/skintext.py
 msgid "Total"
 msgstr "Yhteensä"
-
-#: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "Mukautettu"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Nopeus"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -2112,40 +2022,8 @@ msgid "Host"
 msgstr "Isäntä"
 
 #: sabnzbd/skintext.py
-msgid "Comment"
-msgstr "Kommentti"
-
-#: sabnzbd/skintext.py
-msgid "Send"
-msgstr "Lähetä"
-
-#: sabnzbd/skintext.py
 msgid "Cancel"
 msgstr "Peruuta"
-
-#: sabnzbd/skintext.py
-msgid "Other"
-msgstr "Muu"
-
-#: sabnzbd/skintext.py
-msgid "Report"
-msgstr "Ilmoita"
-
-#: sabnzbd/skintext.py
-msgid "Video"
-msgstr "Video"
-
-#: sabnzbd/skintext.py
-msgid "Audio"
-msgstr "Ääni"
-
-#: sabnzbd/skintext.py
-msgid "Not used"
-msgstr "Ei käytössä"
-
-#: sabnzbd/skintext.py
-msgid "or less"
-msgstr "tai vähemmän"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -2158,11 +2036,6 @@ msgstr "Kirjaudu ulos"
 #: sabnzbd/skintext.py
 msgid "Remember me"
 msgstr "Muista minut"
-
-#. SABnzbd's theme line
-#: sabnzbd/skintext.py
-msgid "The automatic usenet download tool"
-msgstr "Automaattinen usenet lataustyökalu"
 
 #. "Save" button
 #: sabnzbd/skintext.py
@@ -2177,11 +2050,6 @@ msgstr "Tallennetaan..."
 #: sabnzbd/skintext.py
 msgid "Are you sure?"
 msgstr "Oletko varma?"
-
-#. Used in confirmation popups
-#: sabnzbd/skintext.py
-msgid "Delete all downloaded files?"
-msgstr "Poistetaanko kaikki ladatut tiedostot?"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2283,20 +2151,8 @@ msgid "Download Dir"
 msgstr "Lataukset-kansio"
 
 #: sabnzbd/skintext.py
-msgid "PAUSED"
-msgstr "KESKEYTETTY"
-
-#: sabnzbd/skintext.py
-msgid "Cached %s articles (%s)"
-msgstr "%s artikkelia välimuistitettu (%s)"
-
-#: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "Kuorma"
-
-#: sabnzbd/skintext.py
-msgid "New release %s available at"
-msgstr "Uusi versio %s saatavilla osoitteesta"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -2307,20 +2163,10 @@ msgstr "Oletko varma, että haluat sammuttaa SABnzbdn?"
 msgid "Add"
 msgstr "Lisää"
 
-#. Add NZB file to queue (header
-#: sabnzbd/skintext.py
-msgid "Add File"
-msgstr "Lisää tiedostosta"
-
 #. Job category
 #: sabnzbd/skintext.py
 msgid "Category"
 msgstr "Kategoria"
-
-#. Queue page table column header
-#: sabnzbd/skintext.py
-msgid "Processing"
-msgstr "Käsitellään"
 
 #. Server priority
 #: sabnzbd/skintext.py
@@ -2342,21 +2188,6 @@ msgstr "+Pura"
 msgid "+Delete"
 msgstr "+Poista"
 
-#. Post processing pick list: abbreviation for "+Repair"
-#: sabnzbd/skintext.py
-msgid "R"
-msgstr "R"
-
-#. Post processing pick list: abbreviation for "+Unpack"
-#: sabnzbd/skintext.py
-msgid "U"
-msgstr "U"
-
-#. Post processing pick list: abbreviation for "+Delete"
-#: sabnzbd/skintext.py
-msgid "D"
-msgstr "D"
-
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Force"
@@ -2371,11 +2202,6 @@ msgstr "Pysäytä"
 #: sabnzbd/skintext.py
 msgid "Enter URL"
 msgstr "Syötä osoite"
-
-#. Queue page selection menu
-#: sabnzbd/skintext.py
-msgid "On queue finish"
-msgstr "Kun jono on tyhjä"
 
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
@@ -2397,35 +2223,15 @@ msgstr "Horrostila"
 msgid "Shutdown SABnzbd"
 msgstr "Sammuta SABnzbd"
 
-#. Queue page selection menu or entry box
+#. Queue page table column header
 #: sabnzbd/skintext.py
-msgid "Speed Limit"
-msgstr "Nopeusrajoitus"
+msgid "Processing"
+msgstr "Käsitellään"
 
-#. Queue page table column header - Config->RSS table column header
-#: sabnzbd/skintext.py
-msgid "Order"
-msgstr "Järjestys"
-
-#. Queue page table column header - Job details page
+#. Queue page table column header
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "Nimi"
-
-#. Queue page table column header, "estimated time of arrival"
-#: sabnzbd/skintext.py
-msgid "ETA"
-msgstr "Aikaa jäljellä"
-
-#. Queue page table column header, "age of the NZB"
-#: sabnzbd/skintext.py
-msgid "AGE"
-msgstr "IKÄ"
-
-#. Queue page table, "Delete" button
-#: sabnzbd/skintext.py
-msgid "Del"
-msgstr "Poista"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2457,11 +2263,6 @@ msgstr "Puhdista NZBt"
 msgid "Purge NZBs & Delete Files"
 msgstr "Puhdista NZBt & poista tiedostot"
 
-#. Retry all failed jobs dialog box
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs"
-msgstr "Yritä uudelleen kaikki epäonnistuneet lataukset"
-
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB"
@@ -2471,11 +2272,6 @@ msgstr "Poista NZB"
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
 msgstr "Poista NZB ja tiedostot"
-
-#. Queue page, as in "4G *of* 10G"
-#: sabnzbd/skintext.py
-msgid "of"
-msgstr "/"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2495,11 +2291,6 @@ msgstr "käsikäyttöinen"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Resetoi latausrajoitus nyt"
-
-#. Confirmation popup
-#: sabnzbd/skintext.py
-msgid "Delete all completed items from History?"
-msgstr "Poistetaanko kaikki valmistuneet kohteet historiasta?"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2557,25 +2348,8 @@ msgstr "Polku"
 
 #. Retry all failed jobs in History
 #: sabnzbd/skintext.py
-msgid "Retry all failed"
-msgstr "Yritä uudelleen kaikki epäonnistuneet"
-
-#. Retry all button for Retry All Failed Jobs
-#: sabnzbd/skintext.py
-msgid "Retry All"
-msgstr "Yritä uudelleen kaikki"
-
-#: sabnzbd/skintext.py
-msgid "Virus/spam"
-msgstr "Virus/roskaposti"
-
-#: sabnzbd/skintext.py
-msgid "Out of retention"
-msgstr "Säilytyksen ulkopuolella"
-
-#: sabnzbd/skintext.py
-msgid "Other problem"
-msgstr "Muu ongelma"
+msgid "Retry all failed jobs"
+msgstr "Yritä uudelleen kaikki epäonnistuneet lataukset"
 
 #. Status page button
 #: sabnzbd/skintext.py
@@ -2627,21 +2401,6 @@ msgstr "+ Debug"
 msgid "Connections"
 msgstr "Yhteydet"
 
-#. Status page, table header
-#: sabnzbd/skintext.py
-msgid "Latest Warnings"
-msgstr "Viimeisimmät varoitukset"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "clear"
-msgstr "tyhjennä"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "Unblock"
-msgstr "Poista esto"
-
 #. Status page, article identifier
 #: sabnzbd/skintext.py
 msgid "Article identifier"
@@ -2652,25 +2411,10 @@ msgstr "Artikkelin tunniste"
 msgid "File set"
 msgstr "Tiedostojoukko"
 
-#. Status page, table column header, when error occured
-#: sabnzbd/skintext.py
-msgid "When"
-msgstr "Milloin"
-
-#. Status page, table column header, type of message - Config->RSS table
-#. column header
-#: sabnzbd/skintext.py
-msgid "Type"
-msgstr "Tyyppi"
-
 #. Status page, indicator that server is enabled
 #: sabnzbd/skintext.py
 msgid "Enabled"
 msgstr "Käytössä"
-
-#: sabnzbd/skintext.py
-msgid "Dashboard"
-msgstr "Hallintapaneeli"
 
 #: sabnzbd/skintext.py
 msgid "Connection failed!"
@@ -2691,10 +2435,6 @@ msgstr "IPv6 osoite"
 #: sabnzbd/skintext.py
 msgid "Nameserver / DNS Lookup"
 msgstr "Nimipalvelin / DNS-selvitys"
-
-#: sabnzbd/skintext.py
-msgid "CPU Model"
-msgstr "Prosessorin malli"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
@@ -2722,21 +2462,8 @@ msgid "Complete folder speed"
 msgstr "Valmistuneet-kansion nopeus"
 
 #: sabnzbd/skintext.py
-msgid "Writing speed"
-msgstr "Kirjoitusnopeus"
-
-#: sabnzbd/skintext.py
-msgid "Could not write. Check that the directory is writable."
-msgstr ""
-"Ei voitu kirjoittaa. Varmista, että sinulla on kirjoitusoikeus kansioon."
-
-#: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Click on Repeat test button below to determine"
-msgstr "Paina Toista testi -painiketta alapuolella määrittääksesi"
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
@@ -2919,10 +2646,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
 msgstr "HTTPS käytössä"
-
-#: sabnzbd/skintext.py
-msgid "not installed"
-msgstr "ei asennettu"
 
 #: sabnzbd/skintext.py
 msgid "Enable accessing the interface from a HTTPS address."
@@ -3170,10 +2893,6 @@ msgstr "Käyttäjähakemistot"
 #: sabnzbd/skintext.py
 msgid "Browse"
 msgstr "Selaa"
-
-#: sabnzbd/skintext.py
-msgid "In"
-msgstr "Kohteessa"
 
 #: sabnzbd/skintext.py
 msgid "Temporary Download Folder"
@@ -3564,6 +3283,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Propagation delay"
+msgstr "Levitysviive"
+
+#: sabnzbd/skintext.py
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority"
 " to Force will skip the delay."
@@ -3690,10 +3413,6 @@ msgstr "Nimeäminen"
 #: sabnzbd/skintext.py
 msgid "Quota"
 msgstr "Latausrajoitus"
-
-#: sabnzbd/skintext.py
-msgid "Indexing"
-msgstr "Indeksoidaan"
 
 #: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
@@ -3946,7 +3665,7 @@ msgstr "Lisää ajastus"
 msgid "Frequency"
 msgstr "Toisto"
 
-#. Config->Scheduling - Job details page, section header
+#. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "Toiminto"
@@ -3997,6 +3716,16 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Next scan at"
 msgstr ""
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Order"
+msgstr "Järjestys"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Type"
+msgstr "Tyyppi"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4346,11 +4075,6 @@ msgstr "Kansio/Polku"
 msgid "Indexer Categories / Groups"
 msgstr "Indeksoijan kategoriat / ryhmä"
 
-#. Small delete button
-#: sabnzbd/skintext.py
-msgid "X"
-msgstr "X"
-
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Select at least 1 category."
@@ -4380,10 +4104,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "Esiasetukset"
-
-#: sabnzbd/skintext.py
-msgid "Example"
-msgstr "Esimerkki"
 
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
@@ -4615,50 +4335,10 @@ msgstr "NZB tietojen muokkaus"
 msgid "Delete"
 msgstr "Poista"
 
-#. Job details page, move file to top
-#: sabnzbd/skintext.py
-msgid "Top"
-msgstr "Ylin"
-
-#. Job details page, move file one place up
-#: sabnzbd/skintext.py
-msgid "Up"
-msgstr "Ylös"
-
-#. Job details page, move file one place down
-#: sabnzbd/skintext.py
-msgid "Down"
-msgstr "Alas"
-
-#. Job details page, move file to bottom
-#: sabnzbd/skintext.py
-msgid "Bottom"
-msgstr "Alin"
-
-#. Job details page, select all files
-#: sabnzbd/skintext.py
-msgid "All"
-msgstr "Kaikki"
-
-#. Job details page, invert file selection
-#: sabnzbd/skintext.py
-msgid "Invert"
-msgstr "Käänteinen"
-
 #. Job details page, filename column header
 #: sabnzbd/skintext.py
 msgid "Filename"
 msgstr "Tiedostonimi"
-
-#. Job details page, subject column header
-#: sabnzbd/skintext.py
-msgid "Subject"
-msgstr "Otsikko"
-
-#. Job details page, section header
-#: sabnzbd/skintext.py
-msgid "Selection"
-msgstr "Valinta"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -4683,6 +4363,10 @@ msgstr "Valitse kaikki"
 #: sabnzbd/skintext.py
 msgid "Restart SABnzbd"
 msgstr "Uudelleenkäynnistä SABnzbd"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish"
+msgstr "Kun jono on tyhjä"
 
 #: sabnzbd/skintext.py
 msgid "Status and interface options"
@@ -4762,6 +4446,10 @@ msgid "Show active connections"
 msgstr "Näytä aktiiviset yhteydet"
 
 #: sabnzbd/skintext.py
+msgid "Unblock"
+msgstr "Poista esto"
+
+#: sabnzbd/skintext.py
 msgid "Orphaned jobs"
 msgstr "Orvot lataukset"
 
@@ -4794,10 +4482,6 @@ msgid "Submit"
 msgstr "Lähetä"
 
 #: sabnzbd/skintext.py
-msgid "Open Informational URL"
-msgstr "Avaa tietoja sisältävä osoite"
-
-#: sabnzbd/skintext.py
 msgid "Submitted. Thank you!"
 msgstr "Lähetetty. Kiitos!"
 
@@ -4812,6 +4496,14 @@ msgstr "Poista kaikki valitut tiedostot"
 #: sabnzbd/skintext.py
 msgid "Hide/show completed files"
 msgstr "Piilota/näytä valmistuneet tiedostot"
+
+#: sabnzbd/skintext.py
+msgid "Top"
+msgstr "Ylin"
+
+#: sabnzbd/skintext.py
+msgid "Bottom"
+msgstr "Alin"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
@@ -4835,6 +4527,10 @@ msgstr ""
 "Glitter-teemassa on muutamia (uusia) ominaisuuksia joista saatat pitää!"
 
 #: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Mukautettu"
+
+#: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "Tiivis käyttöliittymä"
 
@@ -4845,6 +4541,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "Välilehditetty käyttöliittymä <br/>(erillinen jono ja historia)"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Nopeus"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"
@@ -5026,18 +4726,6 @@ msgstr ""
 "SABnzbd ohjelmalla EI OLE MINKÄÄNLAISTA TAKUUTA.\n"
 "Tämä on ilmainen ohjelma ja olet vapaa levittämään sitä tiettyjen ehtojen ollessa voimassa.\n"
 "Se on lisensoitu GNU GENERAL PUBLIC LICENSE Versio 2 alaiseksi ja (oman valinnan mukaan) myös myöhempien versioiden.\n"
-
-#: sabnzbd/skintext.py
-msgid ""
-"In order to download from usenet you will require access to a provider. Your"
-" ISP may provide you with access, however a premium provider is recommended."
-msgstr ""
-"Jotta voit ladata usenetistä tarvitset tarjoajan. Palveluntarjoajasi saattaa"
-" tarjota sinulle sellaisen, mutta on suositeltavaa hankkia premium-tarjoaja."
-
-#: sabnzbd/skintext.py
-msgid "Don't have a usenet provider? We recommend trying %s."
-msgstr "Eikö sinulla ole usenet tarjoajaa? Suosittelemme kokeilemaan %s."
 
 #. Error message
 #: sabnzbd/sorting.py
