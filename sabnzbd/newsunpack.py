@@ -62,6 +62,7 @@ from sabnzbd.filesystem import (
     build_filelists,
     get_filename,
     SEVENMULTI_RE,
+    sanitize_filename,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.par2file import FilePar2Info
@@ -518,9 +519,39 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: Li
 
     logging.debug("Rar_sets: %s", rar_sets)
 
+
+
     for rar_set in rar_sets:
         # Run the RAR extractor
         rar_sets[rar_set].sort(key=functools.cmp_to_key(rar_sort))
+
+        #SJ2: Inspect what's inside the rar files (but only if sanitize_safe() is True)
+        REAL_RAR_COMMAND = "/usr/bin/rar" # rar, not unrar!
+        if sabnzbd.cfg.sanitize_safe():
+            for myrarfile in rar_sets[rar_set]:
+                logging.debug("SJ2: inspecting rar file %s", myrarfile)
+                # Run "unrar lb blabla.part5.rar" to see the files inside a specific rar file
+                command = [sabnzbd.newsunpack.RAR_COMMAND,  "lb", myrarfile]
+                p = build_and_run_command(command)
+                output = platform_btou(p.stdout.read())
+                ret = p.wait()
+                logging.debug("SJ2: contents of %s is \n%s", myrarfile, output)
+                for filename in output.splitlines():
+                    logging.debug("SJ2: filename is %s", filename)
+                    if filename != sanitize_filename(filename):
+                        logging.warning("SJ2: unsafe filename %s inside rar file %s", filename, myrarfile)
+                        # Rename that file, inside the rar file. Example
+                        # rar rn blabla.part5.rar "Offending \ File : Bla.xt"  "Offending + File + Bla.txt"
+                        sanitized_filename = sanitize_filename(filename)
+                        command = [REAL_RAR_COMMAND,  "rn", myrarfile, filename, sanitized_filename]
+                        logging.debug("SJ2: rename command is %s", command)
+                        p = build_and_run_command(command)
+                        output = platform_btou(p.stdout.read())
+                        ret = p.wait()
+                        logging.debug("SJ2: Result of rename inside rar:\n%s", output)
+
+
+
 
         rarpath = rar_sets[rar_set][0]
 
@@ -722,6 +753,16 @@ def rar_extract_core(
 
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
+
+    # TODO: remove the below
+    logging.debug("SJ: Files inside rar set:")
+    rf = rarfile.RarFile(rarfile_path)
+    for f in rf.infolist():
+        logging.debug("SJ:", f.filename)
+        if sabnzbd.cfg.sanitize_safe() and f.filename != sanitize_filename(f.filename):
+            logging.warning("SJ: unsafe filename %s inside rar", f.filename)
+
+
     p = build_and_run_command(command, flatten_command=True)
     sabnzbd.PostProcessor.external_process = p
 
