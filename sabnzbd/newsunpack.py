@@ -793,7 +793,7 @@ def rar_extract_core(
             if "must not exceed 260" in line2:
                 msg = "%s: %s" % (T("Unpacking failed, path is too long"), line[13:])
             elif "Invalid argument" in line2:
-                msg = "%s: %s" % (T("Unrar failed with 'Invalid argument'. Possibly disk writing problem"), line[13:])
+                msg = "%s: %s" % (T("Unpacking failed with 'Invalid argument'. Disk writing problem?"), line[13:])
             else:
                 msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line[13:])
             nzo.fail_msg = msg
