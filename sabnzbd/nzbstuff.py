@@ -46,7 +46,6 @@ from sabnzbd.constants import (
     RENAMES_FILE,
     MAX_BAD_ARTICLES,
     Status,
-    PNFO,
 )
 from sabnzbd.misc import (
     to_units,
@@ -1442,6 +1441,12 @@ class NzbObject(TryList):
             self.save_to_disk()
 
     @property
+    def direct_unpack_progress(self) -> Optional[str]:
+        """Report status of current Direct Unpack, if one is active"""
+        if self.direct_unpacker and self.direct_unpacker.active_instance:
+            return self.direct_unpacker.get_formatted_stats()
+
+    @property
     def pp_or_finished(self):
         """We don't want any more articles if we are post-processing or in the final state"""
         return self.pp_active or self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
@@ -1844,45 +1849,6 @@ class NzbObject(TryList):
             remove_all(self.download_path, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(self.download_path, "SABnzbd_article_*", keep_folder=True)
             sabnzbd.filesystem.save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
-
-    def gather_info(self, full=False):
-        queued_files = []
-        if full:
-            # extrapars can change during iteration
-            with NZO_LOCK:
-                for _set in self.extrapars:
-                    for nzf in self.extrapars[_set]:
-                        # Don't show files twice
-                        if not nzf.completed and nzf not in self.files:
-                            queued_files.append(nzf)
-
-        return PNFO(
-            self.repair,
-            self.unpack,
-            self.delete,
-            self.script,
-            self.nzo_id,
-            self.final_name,
-            self.labels,
-            self.password,
-            {},
-            "",
-            self.cat,
-            self.url,
-            self.remaining,
-            self.bytes,
-            self.avg_stamp,
-            self.avg_date,
-            self.finished_files if full else [],
-            self.files if full else [],
-            queued_files,
-            self.status,
-            self.priority,
-            self.bytes_missing,
-            self.direct_unpacker.get_formatted_stats()
-            if (self.direct_unpacker and self.direct_unpacker.active_instance)
-            else 0,
-        )
 
     def get_nzf_by_id(self, nzf_id: str) -> NzbFile:
         if nzf_id in self.files_table:

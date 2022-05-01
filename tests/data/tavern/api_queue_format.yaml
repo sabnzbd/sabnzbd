@@ -151,7 +151,7 @@ stages:
             <speedlimit>!anyint</speedlimit>
             <speedlimit_abs>!anystr</speedlimit_abs>
             <have_warnings>!anyint</have_warnings>
-            <finishaction>!anystr</finishaction>
+            <finishaction>!anything</finishaction>
             <quota>!anystr</quota>
             <have_quota>!anybool</have_quota>
             <left_quota>!anystr</left_quota>
@@ -191,7 +191,7 @@ stages:
             <sizeleft>!anystr</sizeleft>
             <percentage>!anyint</percentage>
             <mbmissing>!anyfloat</mbmissing>
-            <direct_unpack>!anyint</direct_unpack>
+            <direct_unpack>!anything</direct_unpack>
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
             <avg_age>!anystr</avg_age>

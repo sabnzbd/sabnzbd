@@ -23,7 +23,6 @@ import os
 import logging
 import re
 import gc
-import datetime
 import time
 import json
 import getpass
@@ -54,8 +53,6 @@ from sabnzbd.misc import (
     loadavg,
     to_units,
     int_conv,
-    time_format,
-    cat_convert,
     create_https_certificates,
     calc_age,
     opts_to_pp,
@@ -1341,17 +1338,27 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
 
 def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None):
-
     info = build_header(for_template=False)
-    qnfo = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
+    (
+        queue_bytes_total,
+        queue_bytes_left,
+        bytes_left_previous_page,
+        nzo_list,
+        nzos_matched,
+        queue_fullsize,
+    ) = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
 
     info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
     info["speed"] = to_units(sabnzbd.BPSMeter.bps)
-    info["mbleft"] = "%.2f" % (qnfo.bytes_left / MEBI)
-    info["mb"] = "%.2f" % (qnfo.bytes / MEBI)
-    info["sizeleft"] = to_units(qnfo.bytes_left, "B")
-    info["size"] = to_units(qnfo.bytes, "B")
-    info["noofslots_total"] = qnfo.q_fullsize
+    info["mbleft"] = "%.2f" % (queue_bytes_left / MEBI)
+    info["mb"] = "%.2f" % (queue_bytes_total / MEBI)
+    info["sizeleft"] = to_units(queue_bytes_left, "B")
+    info["size"] = to_units(queue_bytes_total, "B")
+    info["noofslots_total"] = queue_fullsize
+    info["noofslots"] = nzos_matched
+    info["start"] = start
+    info["limit"] = limit
+    info["finish"] = info["start"] + info["limit"]
 
     if sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc:
         status = Status.PAUSED
@@ -1360,47 +1367,37 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
     else:
         status = Status.IDLE
     info["status"] = status
-    info["timeleft"] = calc_timeleft(qnfo.bytes_left, sabnzbd.BPSMeter.bps)
+    info["timeleft"] = calc_timeleft(queue_bytes_left, sabnzbd.BPSMeter.bps)
     info["scripts"] = list_scripts()
     info["categories"] = list_cats()
-    info["noofslots"] = qnfo.q_fullsize
-    info["start"] = start
-    info["limit"] = limit
-    info["finish"] = info["start"] + info["limit"]
 
     n = start
-    running_bytes = qnfo.bytes_left_previous_page
+    running_bytes = bytes_left_previous_page
     slotinfo = []
-    for pnfo in qnfo.list:
-        nzo_id = pnfo.nzo_id
-        bytesleft = pnfo.bytes_left
-        bytes_total = pnfo.bytes
-        average_date = pnfo.avg_date
-        is_propagating = (pnfo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
-        status = pnfo.status
-        priority = pnfo.priority
-        mbleft = bytesleft / MEBI
-        mb = bytes_total / MEBI
+    for nzo in nzo_list:
+        mbleft = nzo.remaining / MEBI
+        mb = nzo.bytes / MEBI
+        is_propagating = (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
 
         slot = {}
         slot["index"] = n
-        slot["nzo_id"] = str(nzo_id)
-        slot["unpackopts"] = str(opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
-        slot["priority"] = INTERFACE_PRIORITIES.get(priority, NORMAL_PRIORITY)
-        slot["script"] = pnfo.script if pnfo.script else "None"
-        slot["filename"] = pnfo.filename
-        slot["labels"] = pnfo.labels
-        slot["password"] = pnfo.password if pnfo.password else ""
-        slot["cat"] = pnfo.category if pnfo.category else "None"
+        slot["nzo_id"] = str(nzo.nzo_id)
+        slot["unpackopts"] = str(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete))
+        slot["priority"] = INTERFACE_PRIORITIES.get(nzo.priority, NORMAL_PRIORITY)
+        slot["script"] = nzo.script if nzo.script else "None"
+        slot["filename"] = nzo.final_name
+        slot["labels"] = nzo.labels
+        slot["password"] = nzo.password if nzo.password else ""
+        slot["cat"] = nzo.cat if nzo.cat else "None"
         slot["mbleft"] = "%.2f" % mbleft
         slot["mb"] = "%.2f" % mb
-        slot["size"] = to_units(bytes_total, "B")
-        slot["sizeleft"] = to_units(bytesleft, "B")
+        slot["size"] = to_units(nzo.bytes, "B")
+        slot["sizeleft"] = to_units(nzo.remaining, "B")
         slot["percentage"] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else "0"
-        slot["mbmissing"] = "%.2f" % (pnfo.bytes_missing / MEBI)
-        slot["direct_unpack"] = pnfo.direct_unpack
+        slot["mbmissing"] = "%.2f" % (nzo.bytes_missing / MEBI)
+        slot["direct_unpack"] = nzo.direct_unpack_progress
 
-        if not sabnzbd.Downloader.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
+        if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
                 slot["status"] = Status.PROP
             elif status == Status.CHECKING:
@@ -1409,26 +1406,26 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
                 slot["status"] = Status.DOWNLOADING
         else:
             # Ensure compatibility of API status
-            if status == Status.DELETED or priority == FORCE_PRIORITY:
-                status = Status.DOWNLOADING
-            slot["status"] = "%s" % status
+            if nzo.status == Status.DELETED or nzo.priority == FORCE_PRIORITY:
+                nzo.status = Status.DOWNLOADING
+            slot["status"] = nzo.status
 
         if (
             sabnzbd.Downloader.paused
             or sabnzbd.Downloader.paused_for_postproc
             or is_propagating
-            or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
-        ) and priority != FORCE_PRIORITY:
+            or nzo.status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
+        ) and nzo.priority != FORCE_PRIORITY:
             slot["timeleft"] = "0:00:00"
         else:
-            running_bytes += bytesleft
+            running_bytes += nzo.remaining
             slot["timeleft"] = calc_timeleft(running_bytes, sabnzbd.BPSMeter.bps)
 
         # Do not show age when it's not known
-        if average_date.year < 2000:
+        if nzo.avg_date.year < 2000:
             slot["avg_age"] = "-"
         else:
-            slot["avg_age"] = calc_age(average_date)
+            slot["avg_age"] = calc_age(nzo.avg_date)
 
         slotinfo.append(slot)
         n += 1
@@ -1455,9 +1452,7 @@ def build_file_list(nzo_id: str):
     jobs = []
     nzo = sabnzbd.sabnzbd.NzbQueue.get_nzo(nzo_id)
     if nzo:
-        pnfo = nzo.gather_info(full=True)
-
-        for nzf in pnfo.finished_files:
+        for nzf in nzo.finished_files:
             jobs.append(
                 {
                     "filename": nzf.filename,
@@ -1470,7 +1465,7 @@ def build_file_list(nzo_id: str):
                 }
             )
 
-        for nzf in pnfo.active_files:
+        for nzf in nzo.files:
             jobs.append(
                 {
                     "filename": nzf.filename,
@@ -1483,19 +1478,22 @@ def build_file_list(nzo_id: str):
                 }
             )
 
-        for nzf in pnfo.queued_files:
-            jobs.append(
-                {
-                    "filename": nzf.filename,
-                    "set": nzf.setname,
-                    "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
-                    "mb": "%.2f" % (nzf.bytes / MEBI),
-                    "bytes": "%.2f" % nzf.bytes,
-                    "age": calc_age(nzf.date),
-                    "nzf_id": nzf.nzf_id,
-                    "status": "queued",
-                }
-            )
+        # extrapars can change during iteration
+        for parset in nzo.extrapars.keys():
+            extrapar_set = nzo.extrapars.get(parset, [])
+            for nzf in extrapar_set[:]:
+                jobs.append(
+                    {
+                        "filename": nzf.filename,
+                        "set": nzf.setname,
+                        "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
+                        "mb": "%.2f" % (nzf.bytes / MEBI),
+                        "bytes": "%.2f" % nzf.bytes,
+                        "age": calc_age(nzf.date),
+                        "nzf_id": nzf.nzf_id,
+                        "status": "queued",
+                    }
+                )
 
     return jobs
 

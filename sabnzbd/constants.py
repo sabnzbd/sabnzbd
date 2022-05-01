@@ -25,15 +25,6 @@ POSTPROC_QUEUE_VERSION = 2
 
 REC_RAR_VERSION = 550
 
-PNFO = namedtuple(
-    "PNFO",
-    "repair unpack delete script nzo_id filename labels password unpackstrht "
-    "msgid category url bytes_left bytes avg_stamp avg_date finished_files "
-    "active_files queued_files status priority bytes_missing direct_unpack",
-)
-
-QNFO = namedtuple("QNFO", "bytes bytes_left bytes_left_previous_page list q_size_list q_fullsize")
-
 ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 
 # Leave some space for "_UNPACK_" which we append during post-proc

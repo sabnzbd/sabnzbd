@@ -245,31 +245,31 @@ class SABnzbdDelegate(NSObject):
 
     def queueUpdate(self):
         try:
-            qnfo = sabnzbd.NzbQueue.queue_info(start=0, limit=10)
+            queue_bytes_total, queue_bytes_left, _, nzo_list, _, queue_fullsize = sabnzbd.NzbQueue.queue_info(limit=10)
             bytesleftprogess = 0
             self.info = ""
             self.menu_queue = NSMenu.alloc().init()
 
-            if qnfo.list:
+            if nzo_list:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                     T("Queue First 10 Items"), "", ""
                 )
                 self.menu_queue.addItem_(menu_queue_item)
                 self.menu_queue.addItem_(NSMenuItem.separatorItem())
 
-                for pnfo in qnfo.list:
-                    bytesleft = pnfo.bytes_left / MEBI
-                    bytesleftprogess += pnfo.bytes_left
-                    bytes_total = pnfo.bytes / MEBI
+                for nzo in nzo_list:
+                    bytesleft = nzo.remaining / MEBI
+                    bytesleftprogess += nzo.remaining
+                    bytes_total = nzo.bytes / MEBI
                     timeleft = sabnzbd.api.calc_timeleft(bytesleftprogess, sabnzbd.BPSMeter.bps)
-                    job = "%s\t(%d/%d MB) %s" % (pnfo.filename, bytesleft, bytes_total, timeleft)
+                    job = "%s\t(%d/%d MB) %s" % (nzo.filename, bytesleft, bytes_total, timeleft)
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, "", "")
                     self.menu_queue.addItem_(menu_queue_item)
 
                 self.info = "%d nzb(s)\t(%d / %d MB)" % (
-                    qnfo.q_size_list,
-                    (qnfo.bytes_left / MEBI),
-                    (qnfo.bytes / MEBI),
+                    queue_fullsize,
+                    (queue_bytes_left / MEBI),
+                    (queue_bytes_total / MEBI),
                 )
             else:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T("Empty"), "", "")
