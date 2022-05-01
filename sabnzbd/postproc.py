@@ -236,13 +236,12 @@ class PostProcessor(Thread):
                 if not sabnzbd.utils.checkdir.directory_is_writable_special_chars(dir):
                     # not writable with special chars in filename
                     helpful_warning(
-                        T(friendly_name)
-                        + T(" %s ") % dir
-                        + T("is not writable with special character filenames. This can cause problems.")
+                        T("%s %s is not writeable with special character filenames. This can cause problems.")
+                        % (friendly_name, dir)
                     )
             else:
                 # that is bad; not writable at all
-                helpful_warning(T("Completed Download Folder %s is not writable. This blocks downloads") % dir)
+                helpful_warning(T("%s %s is not writable at all. This blocks downloads.") % (friendly_name, dir))
 
         check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path(), T("Temporary Download Folder"))
         check_directory_writing_capability(sabnzbd.cfg.complete_dir.get_path(), T("Completed Download Folder"))
