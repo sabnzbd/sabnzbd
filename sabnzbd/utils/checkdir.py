@@ -105,6 +105,11 @@ def isFAT(check_dir):
 
 def directory_is_writable(mydir, myfilename):
     filename = os.path.join(mydir, myfilename)
+    if os.path.exists(filename):
+        try:
+            os.remove(filename)
+        except:
+            return False
     try:
         with open(filename, "w") as f:
             f.write("Some random content")
