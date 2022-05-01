@@ -230,21 +230,17 @@ class PostProcessor(Thread):
         else:
             logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
 
-        def check_directory_writing_capability(dir, friendly_name):
+        def check_directory_writing_capability(dir):
             if sabnzbd.utils.checkdir.directory_is_writable_basic(dir):
-                # OK, it's is writable. Let's test with special characters
                 if not sabnzbd.utils.checkdir.directory_is_writable_special_chars(dir):
-                    # not writable with special chars in filename
                     helpful_warning(
-                        T("%s %s is not writeable with special character filenames. This can cause problems.")
-                        % (friendly_name, dir)
+                        T("%s is not writeable with special character filenames. This can cause problems.") % dir
                     )
             else:
-                # that is bad; not writable at all
-                helpful_warning(T("%s %s is not writable at all. This blocks downloads.") % (friendly_name, dir))
+                helpful_warning(T("%s is not writable at all. This blocks downloads.") % dir)
 
-        check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path(), T("Temporary Download Folder"))
-        check_directory_writing_capability(sabnzbd.cfg.complete_dir.get_path(), T("Completed Download Folder"))
+        check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path())
+        check_directory_writing_capability(sabnzbd.cfg.complete_dir.get_path())
 
         # Start looping
         check_eoq = False
