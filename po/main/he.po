@@ -435,7 +435,7 @@ msgstr "השרת %s ייתקל בהתעלמות למשך %s דקות"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "There are no active servers!"
-msgstr ""
+msgstr "אין שרתים פעילים!"
 
 #. Error message
 #: sabnzbd/downloader.py
