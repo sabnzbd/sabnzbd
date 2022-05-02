@@ -674,11 +674,11 @@ def rar_extract_core(
         rename = "-or"  # Auto renaming
 
     if sabnzbd.WIN32:
-        # For Unrar to support long-path, we need to circumvent Python's list2cmdline
+        # On Windows, UnRar uses a custom argument parser
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         # The -scf forces the output to be UTF8
         command = [
-            "%s" % RAR_COMMAND,
+            RAR_COMMAND,
             action,
             "-idp",
             "-scf",
@@ -694,26 +694,26 @@ def rar_extract_core(
         # Use only oldest options, specifically no "-or" or "-scf"
         # Luckily platform_btou has a fallback for non-UTF-8
         command = [
-            "%s" % RAR_COMMAND,
+            RAR_COMMAND,
             action,
             "-idp",
             overwrite,
             password_command,
-            "%s" % rarfile_path,
+            rarfile_path,
             "%s/" % extraction_path,
         ]
     else:
         # Don't use "-ai" (not needed for non-Windows)
         # The -scf forces the output to be UTF8
         command = [
-            "%s" % RAR_COMMAND,
+            RAR_COMMAND,
             action,
             "-idp",
             "-scf",
             overwrite,
             rename,
             password_command,
-            "%s" % rarfile_path,
+            rarfile_path,
             "%s/" % extraction_path,
         ]
 
@@ -722,7 +722,7 @@ def rar_extract_core(
 
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
-    p = build_and_run_command(command, flatten_command=True)
+    p = build_and_run_command(command, windows_unrar_command=True)
     sabnzbd.PostProcessor.external_process = p
 
     proc = p.stdout

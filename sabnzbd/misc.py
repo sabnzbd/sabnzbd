@@ -1090,18 +1090,21 @@ def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclu
         raise ValueError("Expected dict or str, got %s" % type(input_dict_or_list))
 
 
-def list2cmdline(lst: List[str]) -> str:
-    """convert list to a cmd.exe-compatible command string"""
+def list2cmdline_unrar(lst: List[str]) -> str:
+    """convert list to a unrar.exe-compatible command string
+    Unrar uses "" instead of \" to escape the double quote"""
     nlst = []
     for arg in lst:
         if not arg:
             nlst.append('""')
         else:
+            if isinstance(arg, str):
+                arg = arg.replace('"', '""')
             nlst.append('"%s"' % arg)
     return " ".join(nlst)
 
 
-def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
+def build_and_run_command(command: List[str], windows_unrar_command: bool = False, **kwargs):
     """Builds and then runs command with nessecary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
@@ -1137,8 +1140,8 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
         # For Windows we always need to add python interpreter
         if command[0].endswith(".py"):
             command.insert(0, "python.exe")
-        if flatten_command:
-            command = list2cmdline(command)
+        if windows_unrar_command:
+            command = list2cmdline_unrar(command)
         # On some Windows platforms we need to suppress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW

@@ -2896,6 +2896,10 @@ def custom_popen(cmd):
     creationflags = 0
     if sys.platform == "win32":
         creationflags = 0x08000000  # CREATE_NO_WINDOW
+        # We need to patch the special UnRar escaping of double qoutes on Windows
+        from sabnzbd.misc import list2cmdline_unrar
+
+        cmd = list2cmdline_unrar(cmd)
 
     # run command
     try:
