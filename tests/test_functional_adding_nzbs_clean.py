@@ -18,7 +18,7 @@
 """
 tests.test_functional_adding_nzbs_clean - Tests for settings interaction when adding NZBs (clean SABnzbd instance)
 """
-
+import time
 from zipfile import ZipFile
 import tests.test_functional_adding_nzbs as test_functional_adding_nzbs
 from tests.testhelper import *
@@ -64,6 +64,7 @@ class TestAddingNZBsClean:
             job = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
             assert job["status"]
             assert job["nzo_ids"]
+            time.sleep(1)
             assert not get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]["slots"]
             assert get_api_result(mode="history", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["history"]["slots"]
 
@@ -76,6 +77,7 @@ class TestAddingNZBsClean:
             job = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
             assert job["status"]
             assert job["nzo_ids"]
+            time.sleep(1)
             assert not get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]["slots"]
             assert get_api_result(mode="history", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["history"]["slots"]
 
