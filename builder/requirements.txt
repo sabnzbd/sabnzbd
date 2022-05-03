@@ -3,7 +3,7 @@
 pyinstaller==5.0.1
 pyinstaller-hooks-contrib==2022.4
 altgraph==0.17.2
-wrapt==1.14.0
+wrapt==1.14.1
 setuptools==62.1.0
 pkginfo==1.8.2
 PyGithub==1.55

@@ -30,10 +30,10 @@ rebulk==3.1.0
 
 # Recent cryptography versions require Rust. If this is an issue, SABnzbd will
 # also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==36.0.2
+cryptography==37.0.1
 
 # Windows system integration
-pywin32==303; sys_platform == 'win32'
+pywin32==304; sys_platform == 'win32'
 
 # macOS system calls
 pyobjc==8.5; sys_platform == 'darwin'
