@@ -2078,7 +2078,7 @@ msgstr ""
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Support the project, Donate!"
-msgstr ""
+msgstr "Подржите пројекат, дајте добровољан прилог!"
 
 #. Main menu item
 #: sabnzbd/skintext.py

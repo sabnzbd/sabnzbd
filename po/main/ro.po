@@ -2118,7 +2118,7 @@ msgstr "Probleme"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Support the project, Donate!"
-msgstr ""
+msgstr "Susţine proiectul, Donează!"
 
 #. Main menu item
 #: sabnzbd/skintext.py

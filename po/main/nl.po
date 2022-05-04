@@ -458,7 +458,7 @@ msgstr "Server %s wordt gedurende %s minuten genegeerd"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "There are no active servers!"
-msgstr ""
+msgstr "Er zijn geen actieve servers!"
 
 #. Error message
 #: sabnzbd/downloader.py

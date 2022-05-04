@@ -2082,7 +2082,7 @@ msgstr ""
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Support the project, Donate!"
-msgstr ""
+msgstr "Støtt prosjektet, donèr!"
 
 #. Main menu item
 #: sabnzbd/skintext.py
