@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 3.6.0 Beta 5
+Release Notes - SABnzbd 3.6.0 Beta 6
 =========================================================
+
+## Changes and bugfixes since 3.6.0 Beta 5
+- Upgrade from Beta 4 to Beta 5 could freeze the queue.
+- Removed `eta`-fields from `queue` API-call.
+- `None` values in XML API-output are left empty.
+- Windows: If job password contained a double quote it
+  would not be picked up by UnRar and unpack would fail.
 
 ## Changes and bugfixes since 3.6.0 Beta 4
 - Improve new Quick-check method.
