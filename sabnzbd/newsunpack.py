@@ -1220,8 +1220,12 @@ def par2cmdline_verify(
     nzo.status = Status.VERIFYING
     start = time.time()
 
-    options = cfg.par_option().strip()
-    command = [str(PAR2_COMMAND), "r", options, parfile]
+    # Build command and add extra options
+    command = [str(PAR2_COMMAND), "r", parfile]
+    options = cfg.par_option().strip().split()
+    if options:
+        for option in options:
+            command.insert(2, option)
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
@@ -1533,6 +1537,14 @@ def multipar_verify(
     # But not really required due to prospective-par2
     # Force output of utf-8 by adding -uo
     command = [str(MULTIPAR_COMMAND), "r", "-uo", "-vs2", "-vd%s" % nzo.admin_path, parfile]
+
+    # Only add user-options if supplied
+    options = cfg.par_option().strip().split()
+    if options:
+        for option in options:
+            # We wrongly instructed users to use /x parameter style instead of -x
+            option = option.replace("/", "-", 1)
+            command.insert(2, option)
 
     # Support bizarre naming conventions by scanning all files
     if len(nzo.extrapars) == 1 or len(globber(parfolder, setname + "*")) < 2:
