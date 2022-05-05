@@ -18,7 +18,7 @@
 """
 tests.test_functional_adding_nzbs_clean - Tests for settings interaction when adding NZBs (clean SABnzbd instance)
 """
-import time
+
 from zipfile import ZipFile
 import tests.test_functional_adding_nzbs as test_functional_adding_nzbs
 from tests.testhelper import *
