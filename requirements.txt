@@ -14,7 +14,7 @@ jaraco.collections==3.5.1
 jaraco.text==3.7.0
 jaraco.classes==3.2.1
 jaraco.context==4.1.1
-more-itertools==8.12.0
+more-itertools==8.13.0
 zc.lockfile==2.0
 python-dateutil==2.8.2
 tempora==5.0.1
