@@ -63,6 +63,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     get_filename,
+    check_directory_writing_capability,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import Sorter
@@ -230,17 +231,16 @@ class PostProcessor(Thread):
         else:
             logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
 
-        def check_directory_writing_capability(dir):
-            if sabnzbd.utils.checkdir.directory_is_writable_basic(dir):
-                if not sabnzbd.utils.checkdir.directory_is_writable_special_chars(dir):
-                    helpful_warning(
-                        T("%s is not writeable with special character filenames. This can cause problems.") % dir
-                    )
-            else:
-                helpful_warning(T("%s is not writable at all. This blocks downloads.") % dir)
+        # check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path())
+        # check_directory_writing_capability(sabnzbd.cfg.complete_dir.get_path())
 
-        check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path())
-        check_directory_writing_capability(sabnzbd.cfg.complete_dir.get_path())
+        error, message = check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path())
+        if error:
+            helpful_warning(message)
+
+        error, message = check_directory_writing_capability(sabnzbd.cfg.complete_dir.get_path())
+        if error:
+            helpful_warning(message)
 
         # Start looping
         check_eoq = False
