@@ -24,11 +24,20 @@ import logging
 import re
 import gc
 import time
-import json
 import getpass
 import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any
+
+# For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
+# compile due to Rust dependency. Since the output is the same, we support all modules.
+try:
+    import orjson as json
+except ImportError:
+    try:
+        import ujson as json
+    except ImportError:
+        import json
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -1085,6 +1094,7 @@ def report(error: Optional[str] = None, keyword: str = "value", data: Any = None
                 info = data
             else:
                 info = {keyword: data}
+
         response = utob(json.dumps(info))
 
     elif output == "xml":

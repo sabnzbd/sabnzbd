@@ -10,6 +10,9 @@ PyGithub==1.55
 charset-normalizer==2.0.12
 certifi
 
+# orjson does not support 32bit Windows, exclude it based on Python-version
+orjson==3.6.8; python_version > '3.8'
+
 # For the macOS build
 dmgbuild==1.5.2; sys_platform == 'darwin'
 mac-alias==2.2.0; sys_platform == 'darwin'

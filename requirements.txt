@@ -28,9 +28,13 @@ guessit==3.4.3
 babelfish==0.6.0
 rebulk==3.1.0
 
-# Recent cryptography versions require Rust. If this is an issue, SABnzbd will
-# also work with older pre-Rust versions such as cryptography==3.3.2
+# Recent cryptography versions require Rust. If you run into issues compiling this
+# SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
 cryptography==37.0.2
+
+# We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
+# Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
+ujson==5.2.0
 
 # Windows system integration
 pywin32==304; sys_platform == 'win32'

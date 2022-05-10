@@ -1208,6 +1208,9 @@ def main():
             sabnzbd.ORG_UMASK,
         )
 
+    # Log JSON module in case of problems
+    logging.debug("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
+
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
