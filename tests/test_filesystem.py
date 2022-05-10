@@ -1163,5 +1163,5 @@ class TestDirectoryWriting:
         # let's test on the tempdir provided by the OS on which test is being run:
         # on Windows, only basic writing testing will be done, and should succeed
         # on non-Windows, assuming tempdir is not on FAT, full test should succeed
-        error, message = check_directory_writing_capability(tempfile.gettempdir())
+        error, message = filesystem.check_directory_writing_capability(tempfile.gettempdir())
         assert not error
