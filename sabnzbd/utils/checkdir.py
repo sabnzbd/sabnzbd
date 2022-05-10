@@ -7,7 +7,6 @@ Functions to check if the path filesystem uses FAT
 import sys
 import os
 
-
 debug = False
 
 
