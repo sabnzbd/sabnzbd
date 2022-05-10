@@ -231,9 +231,6 @@ class PostProcessor(Thread):
         else:
             logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
 
-        # check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path())
-        # check_directory_writing_capability(sabnzbd.cfg.complete_dir.get_path())
-
         error, message = check_directory_writing_capability(sabnzbd.cfg.download_dir.get_path())
         if error:
             helpful_warning(message)
