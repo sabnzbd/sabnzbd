@@ -1492,18 +1492,20 @@ def build_file_list(nzo_id: str):
         for parset in nzo.extrapars.keys():
             extrapar_set = nzo.extrapars.get(parset, [])
             for nzf in extrapar_set[:]:
-                jobs.append(
-                    {
-                        "filename": nzf.filename,
-                        "set": nzf.setname,
-                        "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
-                        "mb": "%.2f" % (nzf.bytes / MEBI),
-                        "bytes": "%.2f" % nzf.bytes,
-                        "age": calc_age(nzf.date),
-                        "nzf_id": nzf.nzf_id,
-                        "status": "queued",
-                    }
-                )
+                # Prevent listing files twice
+                if nzf not in nzo.files and nzf not in nzo.finished_files:
+                    jobs.append(
+                        {
+                            "filename": nzf.filename,
+                            "set": nzf.setname,
+                            "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
+                            "mb": "%.2f" % (nzf.bytes / MEBI),
+                            "bytes": "%.2f" % nzf.bytes,
+                            "age": calc_age(nzf.date),
+                            "nzf_id": nzf.nzf_id,
+                            "status": "queued",
+                        }
+                    )
 
     return jobs
 
