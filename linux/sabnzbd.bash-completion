@@ -1,0 +1,62 @@
+# bash completion for sabnzbd
+
+_sabnzbd()
+{
+    local cur prev words cword split
+    # list all options here
+    local all_options="-f --config-file --pidfile -t --templates --pid -l --logging -w --weblogging -d --daemon -h
+                       --help -v --version -c --clean -p --pause --repair --repair-all --no-login --log-all --console
+                       --disable-file-log --new -b --browser --ipv6_hosting --inet_exposure --https -s --server"
+    _init_completion -s || return
+
+    # handle options that take arguments
+    case $prev in
+        # 0..1
+        --browser|--ipv6_hosting|-!(-*)[b])
+            COMPREPLY=( $(compgen -W '{0..1}' -- "$cur") )
+            return
+            ;;
+        # -1..2
+        --logging|-!(-*)[l])
+            COMPREPLY=( $(compgen -W '{-1..2}' -- "$cur") )
+            return
+            ;;
+        # 0..5
+        --inet_exposure)
+            COMPREPLY=( $(compgen -W '{0..5}' -- "$cur") )
+            return
+            ;;
+        # directory path
+        --templates|--pid|-!(-*)[t])
+            compopt +o nospace
+            _filedir -d
+            return
+            ;;
+        # file path
+        --config-file|--pidfile|-!(-*)[f])
+            compopt +o nospace
+            _filedir
+            return
+            ;;
+        # port number
+        --https)
+            COMPREPLY=( $(compgen -W '{0..65535}' -- "$cur") )
+            return
+            ;;
+        # host:port
+        --server|-!(-*)[s])
+            # suggest possible formats
+            COMPREPLY=( $(compgen -W 'hostname :port hostname:port ipv4 ipv4:port [ipv6] [ipv6]:port' -- "$cur") )
+            ;;
+    esac
+
+    $split && return
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $(compgen -W "$all_options" -- "$cur") )
+    else
+        _filedir '@(nzb|nzb.gz|nzb.bz2|zip|rar|7z)'
+    fi
+
+} &&
+complete -F _sabnzbd SABnzbd.py sabnzbd sabnzbdplus
