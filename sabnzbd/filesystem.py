@@ -1269,7 +1269,7 @@ def directory_is_writable(dir: str) -> bool:
         if not sabnzbd.WIN32 and not sabnzbd.cfg.sanitize_safe():
             if not directory_is_writable_with_file(dir, "sab_test \\ bla :: , bla.txt"):
                 sabnzbd.misc.helpful_warning(
-                    T("%s is not writeable with special character filenames. This can cause problems.") % dir
+                    T("%s is not writable with special character filenames. This can cause problems.") % dir
                 )
                 return False
     else:
