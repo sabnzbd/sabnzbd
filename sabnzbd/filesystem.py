@@ -1276,4 +1276,4 @@ def directory_is_writable(dir: str) -> bool:
         sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads.") % dir)
         return False
     # no problems detected, no directory is writable:
-    return Return
+    return True
