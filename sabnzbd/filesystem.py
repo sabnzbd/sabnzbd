@@ -1263,7 +1263,7 @@ def directory_is_writable_with_file(mydir, myfilename):
         return False
 
 
-def directory_is_writable(dir):
+def directory_is_writable(dir: str) -> bool:
     """Checks if dir is writable at all, and writable with special chars. Returns True if all OK, otherwise False"""
     if directory_is_writable_with_file(dir, "sab_test.txt"):
         if not sabnzbd.WIN32 and not sabnzbd.cfg.sanitize_safe():
