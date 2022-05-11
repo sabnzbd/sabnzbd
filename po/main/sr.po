@@ -596,6 +596,18 @@ msgstr "Snimanje %s neuspešno"
 msgid "Loading %s failed"
 msgstr "Učitavanje %s neuspešno"
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr ""

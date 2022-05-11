@@ -636,6 +636,18 @@ msgstr "Fehler beim Speichern von %s"
 msgid "Loading %s failed"
 msgstr "Fehler beim Laden von %s"
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "Abgelehnte Verbindung von:"

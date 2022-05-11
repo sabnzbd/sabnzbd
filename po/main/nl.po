@@ -625,6 +625,18 @@ msgstr "Opslaan van %s lukt niet"
 msgid "Loading %s failed"
 msgstr "Inlezen van %s mislukt"
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "Verbinding geweigerd van: "

@@ -627,6 +627,18 @@ msgstr "Guardar de %s no se pudo completar."
 msgid "Loading %s failed"
 msgstr "Cargar de %s no se pudo completar."
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr ""

@@ -602,6 +602,18 @@ msgstr "Kohteen %s tallentaminen epäonnistui"
 msgid "Loading %s failed"
 msgstr "Kohteen %s lataaminen epäonnistui"
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr ""
