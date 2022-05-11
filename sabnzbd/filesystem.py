@@ -45,6 +45,7 @@ from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IG
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
 
+
 # For Windows: determine executable extensions
 if os.name == "nt":
     PATHEXT = os.environ.get("PATHEXT", "").lower().split(";")
@@ -1244,3 +1245,35 @@ def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
         logging.info("Skipping existing file %s", full_nzb_path)
 
     return full_nzb_path
+
+
+def directory_is_writable_with_file(mydir, myfilename):
+    filename = os.path.join(mydir, myfilename)
+    if os.path.exists(filename):
+        try:
+            os.remove(filename)
+        except:
+            return False
+    try:
+        with open(filename, "w") as f:
+            f.write("Some random content")
+        os.remove(filename)
+        return True
+    except:
+        return False
+
+
+def directory_is_writable(dir: str) -> bool:
+    """Checks if dir is writable at all, and (on non-Windows), writable with special chars. Returns True if all OK, otherwise False"""
+    if directory_is_writable_with_file(dir, "sab_test.txt"):
+        if not sabnzbd.WIN32 and not sabnzbd.cfg.sanitize_safe():
+            if not directory_is_writable_with_file(dir, "sab_test \\ bla :: , bla.txt"):
+                sabnzbd.misc.helpful_warning(
+                    T("%s is not writable with special character filenames. This can cause problems.") % dir
+                )
+                return False
+    else:
+        sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads.") % dir)
+        return False
+    # no problems detected, directory is writable:
+    return True
