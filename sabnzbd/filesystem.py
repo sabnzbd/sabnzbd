@@ -1263,7 +1263,7 @@ def directory_is_writable(mydir, myfilename):
         return False
 
 
-def check_directory_writing_capability(dir):
+def check_directory_writing_capability(dir: str) -> bool:
     """Checks if dir is writable at all, and writable with special chars. Returns Error, Message"""
     SOME_WRITING_ERROR = True
     if directory_is_writable(dir, "sab_test.txt"):
