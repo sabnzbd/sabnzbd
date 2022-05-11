@@ -1247,7 +1247,7 @@ def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
     return full_nzb_path
 
 
-def directory_is_writable(mydir, myfilename):
+def directory_is_writable_with_file(mydir, myfilename):
     filename = os.path.join(mydir, myfilename)
     if os.path.exists(filename):
         try:
@@ -1263,17 +1263,17 @@ def directory_is_writable(mydir, myfilename):
         return False
 
 
-def check_directory_writing_capability(dir):
-    """Checks if dir is writable at all, and writable with special chars. Returns Error, Message"""
-    SOME_WRITING_ERROR = True
-    if directory_is_writable(dir, "sab_test.txt"):
+def directory_is_writable(dir):
+    """Checks if dir is writable at all, and writable with special chars. Returns True if all OK, otherwise False"""
+    if directory_is_writable_with_file(dir, "sab_test.txt"):
         if not sabnzbd.WIN32 and not sabnzbd.cfg.sanitize_safe():
-            if not directory_is_writable(dir, "sab_test \\ bla :: , bla.txt"):
-                return (
-                    SOME_WRITING_ERROR,
-                    T("%s is not writeable with special character filenames. This can cause problems.") % dir,
+            if not directory_is_writable_with_file(dir, "sab_test \\ bla :: , bla.txt"):
+                sabnzbd.misc.helpful_warning(
+                    T("%s is not writeable with special character filenames. This can cause problems.") % dir
                 )
+                return False
     else:
-        return SOME_WRITING_ERROR, T("%s is not writable at all. This blocks downloads.") % dir
-    # no problems detected
-    return not SOME_WRITING_ERROR, None
+        sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads.") % dir)
+        return False
+    # no problems detected, no directory is writable:
+    return Return
