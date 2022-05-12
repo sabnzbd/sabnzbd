@@ -382,7 +382,6 @@ def create_real_path(
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
-            logging.info("%s directory: %s does not exist, try to create it", name, my_dir)
             if not create_all_dirs(my_dir, apply_permissions):
                 msg = T("Cannot create directory %s") % clip_path(my_dir)
                 logging.error(msg)
@@ -1203,7 +1202,7 @@ def check_incomplete_vs_complete():
 def wait_for_download_folder():
     """Wait for download folder to become available"""
     while not sabnzbd.cfg.download_dir.test_path():
-        logging.debug('Waiting for "incomplete" folder')
+        logging.debug("Waiting for incomplete folder")
         time.sleep(2.0)
 
 

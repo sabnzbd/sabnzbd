@@ -242,15 +242,12 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Optionally wait for "incomplete" to become online
     if cfg.wait_for_dfolder():
         filesystem.wait_for_download_folder()
-    else:
-        cfg.download_dir.set(cfg.download_dir(), create=True)
-    cfg.download_dir.set_create(True)
 
-    # If dirscan_dir cannot be created, set a proper value anyway.
-    # Maybe it's a network path that's temporarily missing.
-    path = cfg.dirscan_dir.get_path()
-    if not os.path.exists(path):
-        filesystem.create_real_path(cfg.dirscan_dir.keyword, "", path, False)
+    # Set the folders to be created, then the check_incomplete_vs_complete
+    # check will create them by calling get_path on them
+    cfg.download_dir.set_create(True)
+    cfg.complete_dir.set_create(True)
+    filesystem.check_incomplete_vs_complete()
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
@@ -274,8 +271,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.language.callback(cfg.guard_language)
     cfg.enable_https_verification.callback(cfg.guard_https_ver)
     cfg.guard_https_ver()
-
-    filesystem.check_incomplete_vs_complete()
 
     # Set language files
     lang.set_locale_info("SABnzbd", DIR_LANGUAGE)
