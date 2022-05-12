@@ -639,11 +639,13 @@ msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
+"Le fichier %s n'est pas inscriptible à cause des caractères spéciaux dans le"
+" nom. Cela peut causer des problèmes."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "%s is not writable at all. This blocks downloads."
-msgstr ""
+msgstr "%s n'est pas du tout inscriptible. Les téléchargements sont bloqués."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
