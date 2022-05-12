@@ -47,6 +47,7 @@ _sabnzbd()
         --server|-!(-*)[s])
             # suggest possible formats
             COMPREPLY=( $(compgen -W 'hostname :port hostname:port ipv4 ipv4:port [ipv6] [ipv6]:port' -- "$cur") )
+            return
             ;;
     esac
 
