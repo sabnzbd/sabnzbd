@@ -1,62 +1,48 @@
-Release Notes - SABnzbd 3.6.0 Beta 6
+Release Notes - SABnzbd 3.6.0 Release Candidate 1
 =========================================================
-
-## Changes and bugfixes since 3.6.0 Beta 5
-- Upgrade from Beta 4 to Beta 5 could freeze the queue.
-- Removed `eta`-fields from `queue` API-call.
-- `None` values in XML API-output are left empty.
-- Windows: If job password contained a double quote it
-  would not be picked up by UnRar and unpack would fail.
-
-## Changes and bugfixes since 3.6.0 Beta 4
-- Improve new Quick-check method.
-- Remove undocumented `xcat` API-parameter.
-- Prevent traceback when status functions timeout.
-- API calls to add NZB's would not always return `nzo_ids`.
-- Correctly default to `Glitter - Auto` on new installs.
-- Show warning when there are no valid news servers active.
-- Prevent crash when there is an unknown `language` setting.
-
-## Changes and bugfixes since 3.6.0 Beta 3
-- Reverted changes to file assembly.
-- Implemented new Quick-check method.
-
-## Changes and bugfixes since 3.6.0 Beta 2
-- Removed Indexer Feedback Integration.
-- Removed included `Deobfuscate.py` as it is outdated.
-- In case SIMD is available, multiple files will be assembled
-  simultaneously. This further improves performance.
-
-## Changes and bugfixes since 3.6.0 Beta 1
-- Updates to `sabyenc3` to support more compiler setups.
-- Optimization to the writing of partially downloaded data.
-- Added `ext_rename_ignore` to add custom extensions that should
-  be ignored during the `Deobfuscate` step.
-- Prevent crash in API `history` call during post-processing.
-- Ignore `.par2` files that could not be parsed.
 
 ## Changes since 3.5.3
 - Significantly increased performance by using the yEnc-decoding
   library of @animetosho. Usenet articles are now decoded using
   specialized CPU instructions (SIMD) on x86 and ARM systems.
-- Create and restore backup of configuration and database.
+- Create and restore a backup of configuration and database.
 - Show source of lower download speed (CPU or disk).
 - Added keyboard shortcuts (Pause, Add, Status, Config).
-- Results of `Deobfuscate` step listed in History.
-- Disable `api_warnings` to prevent showing `Access Denied`
+- Result of the `Deobfuscate` step is listed in History details.
+- Disabling `api_warnings` prevents showing `Access Denied`
   information to the external client.
-- Jobs with `Force` priority always skip duplicate check.
-- Removed several status items from the `queue` API-call.
+- Jobs with `Force` priority will always skip the duplicate check.
+- Added `ext_rename_ignore` to add custom extensions that should
+  be ignored during the `Deobfuscate` step.
+- Removed Indexer Feedback Integration.
+- Removed included `Deobfuscate.py` as it is outdated.
+- Show a warning when there are no valid news servers active.
+- Show a warning if the filesystem does not support special characters.
+- Allow multiple parameters to be passed to par2cmdline/Multipar
 - Linux: Added AppStream metadata, desktop shortcut and MimeInfo.
+- Linux: Added support for bash completion.
 - macOS: Application and included tools fully native on M1 systems.
 - macOS/Windows: Updated UnRar to 6.10 and 7-Zip to 21.07.
 - Windows: Updated MultiPar to v1.3.2.3.
+
+# API changes since 3.5.3
+- Removed several (status) fields from the `queue` API call.
+- `None` values in XML API-output are left empty.
+- Adding NZB's would not always return `nzo_ids`.
+- Removed undocumented `xcat` parameter.
 
 # Bugfixes since 3.5.3
 - Extended timeout when measuring system performance.
 - Interface settings were sometimes reset on page reload.
 - Par2 sets with duplicate names could skip verification and repair.
+- Ignore `.par2` files that could not be parsed.
+- Correctly default to `Glitter - Auto` on new installs.
+- Prevent traceback when status functions timeout.
 - Prevent crash if not enough repair blocks are available.
+- Prevent crash when there is an unknown `language` setting.
+- Prevent crash in API `history` call during post-processing.
+- Windows: If a job password contained a double quote it
+  would not be picked up by UnRar and unpack would fail.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x
