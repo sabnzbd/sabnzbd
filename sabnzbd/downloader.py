@@ -529,23 +529,28 @@ class Downloader(Thread):
         sabnzbd.Decoder.process(article, raw_data)
 
         # See if we need to delay because the queues are full
-        logged = False
+        logged_counter = 0
         decoder_full = sabnzbd.Decoder.queue_full()
         assembler_full = sabnzbd.Assembler.queue_full()
         while not self.shutdown and (decoder_full or assembler_full):
-            if not logged:
-                # Only log once, to not waste any CPU-cycles
+            # Only log/update once every second, to not waste any CPU-cycles
+            if not logged_counter % 10:
+                # Make sure the BPS-meter is updated
+                sabnzbd.BPSMeter.update()
+
+                # Update who is delaying us
                 sabnzbd.BPSMeter.delayed_decoder += int(decoder_full)
                 sabnzbd.BPSMeter.delayed_assembler += int(assembler_full)
                 logging.debug(
-                    "Delaying - Decoder queue: %s - Assembler queue: %s",
+                    "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
+                    logged_counter / 10,
                     sabnzbd.Decoder.decoder_queue.qsize(),
                     sabnzbd.Assembler.queue.qsize(),
                 )
-                logged = True
 
-            # Pause and update the stats
-            time.sleep(0.01)
+            # Wait and update the queue sizes
+            time.sleep(0.1)
+            logged_counter += 1
             decoder_full = sabnzbd.Decoder.queue_full()
             assembler_full = sabnzbd.Assembler.queue_full()
 
