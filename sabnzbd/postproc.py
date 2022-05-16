@@ -668,11 +668,18 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     """
     one_folder = False
     marker_file = None
-    # Determine class directory
+
+    # Determine category directory
     catdir = config.get_category(nzo.cat).dir()
+    if not catdir:
+        # If none defined, check Default category directory
+        catdir = config.get_category().dir()
+
+    # Check if it should have a directory
     if catdir.endswith("*"):
         catdir = catdir.strip("*")
         one_folder = True
+
     complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
     complete_dir = long_path(complete_dir)
 
