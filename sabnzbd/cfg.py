@@ -213,6 +213,7 @@ configlock = OptionBool("misc", "config_lock", False)
 ##############################################################################
 # One time trackers
 ##############################################################################
+fixed_ports = OptionBool("misc", "fixed_ports", False)
 sched_converted = OptionBool("misc", "sched_converted", False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
 direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)
@@ -242,7 +243,7 @@ enable_https = OptionBool("misc", "enable_https", False)
 inet_exposure = OptionNumber("misc", "inet_exposure", 0, protect=True)
 api_key = OptionStr("misc", "api_key", create_api_key())
 nzb_key = OptionStr("misc", "nzb_key", create_api_key())
-
+socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 
 ##############################################################################
 # Config - Folders
@@ -273,7 +274,6 @@ max_art_tries = OptionNumber("misc", "max_art_tries", 3, minval=2)
 load_balancing = OptionNumber("misc", "load_balancing", 2)
 top_only = OptionBool("misc", "top_only", False)
 sfv_check = OptionBool("misc", "sfv_check", True)
-quick_check_ext_ignore = OptionList("misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"], validation=lower_case_ext)
 script_can_fail = OptionBool("misc", "script_can_fail", False)
 enable_recursive = OptionBool("misc", "enable_recursive", True)
 flat_unpack = OptionBool("misc", "flat_unpack", False)
@@ -330,13 +330,11 @@ enable_date_sorting = OptionBool("misc", "enable_date_sorting", False)
 date_sort_string = OptionStr("misc", "date_sort_string")
 date_categories = OptionList("misc", "date_categories", ["tv"])
 
-
 ##############################################################################
 # Config - Scheduling and RSS
 ##############################################################################
 schedules = OptionList("misc", "schedlines")
 rss_rate = OptionNumber("misc", "rss_rate", 60, minval=15, maxval=24 * 60)
-
 
 ##############################################################################
 # Config - Specials
@@ -370,7 +368,6 @@ win_menu = OptionBool("misc", "win_menu", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
 enable_broadcast = OptionBool("misc", "enable_broadcast", True)
 ipv6_hosting = OptionBool("misc", "ipv6_hosting", False)
-fixed_ports = OptionBool("misc", "fixed_ports", False)
 api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
 disable_key = OptionBool("misc", "disable_api_key", False, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
@@ -379,6 +376,7 @@ allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
+quick_check_ext_ignore = OptionList("misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"], validation=lower_case_ext)
 req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, minval=100, maxval=200)
 selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
@@ -398,7 +396,6 @@ max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
 num_simd_decoders = OptionNumber("misc", "num_simd_decoders", 2, minval=1)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
-socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 
 
