@@ -4122,10 +4122,6 @@ msgid "Enable Movie Sorting"
 msgstr "Aktivere filmsortering"
 
 #: sabnzbd/skintext.py
-msgid "Keep loose downloads in extra folders"
-msgstr "Behold løse download i ekstra mapper"
-
-#: sabnzbd/skintext.py
 msgid "Affected Categories"
 msgstr "Påvirkede Kategorier"
 

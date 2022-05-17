@@ -4082,10 +4082,6 @@ msgid "Enable Movie Sorting"
 msgstr "Упали сортирање филма"
 
 #: sabnzbd/skintext.py
-msgid "Keep loose downloads in extra folders"
-msgstr "Задржи изгубљена преузимања у фасциклама"
-
-#: sabnzbd/skintext.py
 msgid "Affected Categories"
 msgstr "Погођене категорије"
 

@@ -4021,10 +4021,6 @@ msgid "Enable Movie Sorting"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep loose downloads in extra folders"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Affected Categories"
 msgstr ""
 

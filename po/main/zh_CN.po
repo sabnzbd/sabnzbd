@@ -4032,10 +4032,6 @@ msgid "Enable Movie Sorting"
 msgstr "启用电影排序"
 
 #: sabnzbd/skintext.py
-msgid "Keep loose downloads in extra folders"
-msgstr "将下载内容保留在额外文件夹"
-
-#: sabnzbd/skintext.py
 msgid "Affected Categories"
 msgstr "影响分类"
 
