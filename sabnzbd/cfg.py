@@ -324,7 +324,6 @@ tv_categories = OptionList("misc", "tv_categories", ["tv"])
 enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False)
 movie_sort_string = OptionStr("misc", "movie_sort_string")
 movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False)
-movie_extra_folder = OptionBool("misc", "movie_extra_folder", False)
 movie_categories = OptionList("misc", "movie_categories", ["movies"])
 
 enable_date_sorting = OptionBool("misc", "enable_date_sorting", False)

@@ -1848,7 +1848,6 @@ SORT_LIST = (
     "enable_movie_sorting",
     "movie_sort_string",
     "movie_sort_extra",
-    "movie_extra_folder",
     "enable_date_sorting",
     "date_sort_string",
     "movie_categories",

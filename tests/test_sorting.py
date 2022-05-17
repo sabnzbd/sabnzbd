@@ -503,7 +503,6 @@ class TestSortingSorters:
                 "movie_categories": sort_cats,
                 "enable_movie_sorting": enable_sorting,
                 "movie_sort_extra": " CD%1",
-                "movie_extra_folder": 0,
                 "movie_rename_limit": "100M",
             }
         )
@@ -564,7 +563,6 @@ class TestSortingSorters:
                 "movie_categories": "*",
                 "enable_movie_sorting": 1,
                 "movie_sort_extra": " CD%1",
-                "movie_extra_folder": 0,
                 "movie_rename_limit": size_limit,
                 "date_sort_string": sort_string,  # Date
                 "date_categories": "*",

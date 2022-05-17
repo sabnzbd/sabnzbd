@@ -709,7 +709,6 @@ SKIN_TEXT = {
     "presetSort": TT("Presets"),
     "movieSort": TT("Movie Sorting"),
     "opt-movieSort": TT("Enable Movie Sorting"),
-    "opt-movieExtra": TT("Keep loose downloads in extra folders"),
     "affectedCat": TT("Affected Categories"),
     "sort-meaning": TT("Meaning"),
     "sort-pattern": TT("Pattern"),
