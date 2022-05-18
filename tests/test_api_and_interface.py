@@ -190,8 +190,8 @@ class TestSecuredExpose:
         if inet_exposure >= 3:
             assert "misc" in self.main_page.api(mode="get_config", apikey=sabnzbd.cfg.api_key())
             # Sub-function
-            assert api._MSG_NO_VALUE in self.main_page.api(
-                mode="config", name="set_colorscheme", apikey=sabnzbd.cfg.api_key()
+            assert "The hostname is not set" in self.main_page.api(
+                mode="config", name="test_server", apikey=sabnzbd.cfg.api_key()
             )
 
         # Level 4: full interface
@@ -209,11 +209,11 @@ class TestSecuredExpose:
         if inet_exposure <= 2:
             assert interface._MSG_ACCESS_DENIED in self.main_page.api(mode="get_config", apikey=sabnzbd.cfg.api_key())
             assert interface._MSG_ACCESS_DENIED in self.main_page.api(
-                mode="config", name="set_colorscheme", apikey=sabnzbd.cfg.api_key()
+                mode="config", name="set_nzbkey", apikey=sabnzbd.cfg.api_key()
             )
         # Level 1: nzb
         if inet_exposure <= 1:
-            assert interface._MSG_ACCESS_DENIED in self.main_page.api(mode="rescan", apikey=sabnzbd.cfg.api_key())
+            assert interface._MSG_ACCESS_DENIED in self.main_page.api(mode="get_scripts", apikey=sabnzbd.cfg.api_key())
             assert interface._MSG_ACCESS_DENIED in self.main_page.api(
                 mode="queue", name="resume", apikey=sabnzbd.cfg.api_key()
             )

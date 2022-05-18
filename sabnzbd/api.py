@@ -270,22 +270,6 @@ def _api_queue_default(value, kwargs):
     return report(keyword="queue", data=build_queue(start=start, limit=limit, search=search, nzo_ids=nzo_ids))
 
 
-def _api_options(name, kwargs):
-    return report(
-        keyword="options",
-        data={
-            "sabyenc": sabnzbd.decoder.SABYENC_ENABLED,
-            "par2": sabnzbd.newsunpack.PAR2_COMMAND,
-            "multipar": sabnzbd.newsunpack.MULTIPAR_COMMAND,
-            "rar": sabnzbd.newsunpack.RAR_COMMAND,
-            "zip": sabnzbd.newsunpack.ZIP_COMMAND,
-            "7zip": sabnzbd.newsunpack.SEVENZIP_COMMAND,
-            "nice": sabnzbd.newsunpack.NICE_COMMAND,
-            "ionice": sabnzbd.newsunpack.IONICE_COMMAND,
-        },
-    )
-
-
 def _api_translate(name, kwargs):
     """API: accepts value(=acronym)"""
     return report(keyword="value", data=T(kwargs.get("value", "")))
@@ -720,18 +704,6 @@ def _api_disconnect(name, kwargs):
     return report()
 
 
-def _api_osx_icon(name, kwargs):
-    """API: accepts value"""
-    value = kwargs.get("value", "1").strip()
-    cfg.osx_menu.set(value != "0")
-    return report()
-
-
-def _api_rescan(name, kwargs):
-    sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=True)
-    return report()
-
-
 def _api_eval_sort(name, kwargs):
     """API: evaluate sorting expression"""
     name = kwargs.get("name", "")
@@ -887,19 +859,6 @@ def _api_config_speedlimit(kwargs):
     return report()
 
 
-def _api_config_get_speedlimit(kwargs):
-    return report(keyword="speedlimit", data=sabnzbd.Downloader.get_limit())
-
-
-def _api_config_set_colorscheme(kwargs):
-    value = kwargs.get("value")
-    if value:
-        cfg.web_color.set(value)
-        return report()
-    else:
-        return report(_MSG_NO_VALUE)
-
-
 def _api_config_set_pause(kwargs):
     """API: accepts value(=pause interval)"""
     value = kwargs.get("value")
@@ -978,7 +937,6 @@ _api_table = {
     "set_config_default": (_api_set_config_default, 3),
     "del_config": (_api_del_config, 3),
     "queue": (_api_queue, 2),
-    "options": (_api_options, 2),
     "translate": (_api_translate, 2),
     "addfile": (_api_addfile, 1),
     "retry": (_api_retry, 2),
@@ -994,7 +952,6 @@ _api_table = {
     "get_files": (_api_get_files, 2),
     "move_nzf_bulk": (_api_move_nzf_bulk, 2),
     "addurl": (_api_addurl, 1),
-    "addid": (_api_addurl, 1),
     "pause": (_api_pause, 2),
     "resume": (_api_resume, 2),
     "shutdown": (_api_shutdown, 3),
@@ -1008,9 +965,7 @@ _api_table = {
     "restart": (_api_restart, 3),
     "restart_repair": (_api_restart_repair, 3),
     "disconnect": (_api_disconnect, 2),
-    "osx_icon": (_api_osx_icon, 3),
     "gc_stats": (_api_gc_stats, 3),
-    "rescan": (_api_rescan, 2),
     "eval_sort": (_api_eval_sort, 3),
     "watched_now": (_api_watched_now, 2),
     "resume_pp": (_api_resume_pp, 2),
@@ -1051,10 +1006,7 @@ _api_status_table = {
 
 _api_config_table = {
     "speedlimit": (_api_config_speedlimit, 2),
-    "set_speedlimit": (_api_config_speedlimit, 2),
-    "get_speedlimit": (_api_config_get_speedlimit, 2),
     "set_pause": (_api_config_set_pause, 2),
-    "set_colorscheme": (_api_config_set_colorscheme, 3),
     "set_apikey": (_api_config_set_apikey, 3),
     "set_nzbkey": (_api_config_set_nzbkey, 3),
     "regenerate_certs": (_api_config_regenerate_certs, 3),
