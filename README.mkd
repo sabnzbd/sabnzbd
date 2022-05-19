@@ -7,8 +7,9 @@ Release Notes - SABnzbd 3.6.0 Release Candidate 1
   specialized CPU instructions (SIMD) on x86 and ARM systems.
 - Create and restore a backup of configuration and database.
 - Show source of lower download speed (CPU or disk).
-- Added keyboard shortcuts (Pause, Add, Status, Config).
+- Added keyboard shortcuts (`P`ause, `A`dd, `S`tatus, `C`onfig).
 - Result of the `Deobfuscate` step is listed in History details.
+- `Path` of `Default` category will be used if category doesn't have one.
 - Disabling `api_warnings` prevents showing `Access Denied`
   information to the external client.
 - Jobs with `Force` priority will always skip the duplicate check.
@@ -27,6 +28,8 @@ Release Notes - SABnzbd 3.6.0 Release Candidate 1
 
 # API changes since 3.5.3
 - Removed several (status) fields from the `queue` API call.
+- Remove unused and undocumented API calls: `addid`, `options`, `rescan`
+  `osx_icon`, `set_speedlimit`, `get_speedlimit`, `set_colorscheme`.
 - `None` values in XML API-output are left empty.
 - Adding NZB's would not always return `nzo_ids`.
 - Removed undocumented `xcat` parameter.
@@ -37,10 +40,12 @@ Release Notes - SABnzbd 3.6.0 Release Candidate 1
 - Par2 sets with duplicate names could skip verification and repair.
 - Ignore `.par2` files that could not be parsed.
 - Correctly default to `Glitter - Auto` on new installs.
+- Download speed was not updated when stalled due to disk performance.
 - Prevent traceback when status functions timeout.
 - Prevent crash if not enough repair blocks are available.
 - Prevent crash when there is an unknown `language` setting.
 - Prevent crash in API `history` call during post-processing.
+- Source release had Windows line-endings.
 - Windows: If a job password contained a double quote it
   would not be picked up by UnRar and unpack would fail.
 
