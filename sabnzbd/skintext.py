@@ -862,6 +862,7 @@ SKIN_TEXT = {
     "Glitter-logText": TT(
         "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
     ),
+    "Glitter-sortCompleted": TT("Sort by Completed <small>Most&rarr;Least</small>"),
     "Glitter-sortAgeAsc": TT("Sort by Age <small>Oldest&rarr;Newest</small>"),
     "Glitter-sortAgeDesc": TT("Sort by Age <small>Newest&rarr;Oldest</small>"),
     "Glitter-sortNameAsc": TT("Sort by Name <small>A&rarr;Z</small>"),
