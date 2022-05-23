@@ -466,7 +466,7 @@ def _api_history(name, kwargs):
     last_history_update = int_conv(kwargs.get("last_history_update", 0))
     search = kwargs.get("search")
     failed_only = int_conv(kwargs.get("failed_only"))
-    categories = kwargs.get("category")
+    categories = kwargs.get("cat") or kwargs.get("category")
     nzo_ids = kwargs.get("nzo_ids")
 
     # Do we need to send anything?
@@ -1600,7 +1600,7 @@ def build_history(
     failed_only: int = 0,
     categories: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
-):
+) -> Tuple[Dict[str, Any], int]:
     """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
