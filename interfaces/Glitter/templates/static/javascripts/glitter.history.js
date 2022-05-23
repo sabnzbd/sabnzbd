@@ -139,7 +139,7 @@ function HistoryListModel(parent) {
         form.reset()
     }
 
-    // Searching in history (rate-limited in decleration)
+    // Searching in history (rate-limited in declaration)
     self.searchTerm.subscribe(function() {
         // Make sure we refresh
         self.lastUpdate = 0

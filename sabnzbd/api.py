@@ -258,16 +258,28 @@ def _api_queue_sort(value, kwargs):
 
 
 def _api_queue_default(value, kwargs):
-    """API: accepts sort, dir, start, limit"""
+    """API: accepts sort, dir, start, limit and search terms"""
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
     search = kwargs.get("search")
+    categories = kwargs.get("cat") or kwargs.get("category")
+    priorities = kwargs.get("priority")
     nzo_ids = kwargs.get("nzo_ids")
 
+    if categories and not isinstance(categories, list):
+        categories = categories.split(",")
+    if priorities and not isinstance(priorities, list):
+        # Make sure it's an integer
+        priorities = [int_conv(prio) for prio in priorities.split(",")]
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
 
-    return report(keyword="queue", data=build_queue(start=start, limit=limit, search=search, nzo_ids=nzo_ids))
+    return report(
+        keyword="queue",
+        data=build_queue(
+            start=start, limit=limit, search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids
+        ),
+    )
 
 
 def _api_translate(name, kwargs):
@@ -474,7 +486,7 @@ def _api_history(name, kwargs):
         return report(keyword="history", data=False)
 
     if categories and not isinstance(categories, list):
-        categories = [categories]
+        categories = categories.split(",")
 
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
@@ -1299,7 +1311,14 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     return info
 
 
-def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None):
+def build_queue(
+    start: int = 0,
+    limit: int = 0,
+    search: Optional[str] = None,
+    categories: Optional[List[str]] = None,
+    priorities: Optional[List[str]] = None,
+    nzo_ids: Optional[List[str]] = None,
+):
     info = build_header(for_template=False)
     (
         queue_bytes_total,
@@ -1308,7 +1327,9 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         nzo_list,
         queue_fullsize,
         nzos_matched,
-    ) = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
+    ) = sabnzbd.NzbQueue.queue_info(
+        search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids, start=start, limit=limit
+    )
 
     info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
     info["speed"] = to_units(sabnzbd.BPSMeter.bps)

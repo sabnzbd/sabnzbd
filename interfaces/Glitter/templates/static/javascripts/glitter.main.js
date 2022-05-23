@@ -334,12 +334,15 @@ function ViewModel() {
 
         // Do requests for full information
         // Catch the fail to display message
-        var queueApi = callAPI({
+        var api_call = {
             mode: "queue",
-            search: self.queue.searchTerm(),
             start: self.queue.pagination.currentStart(),
             limit: parseInt(self.queue.paginationLimit())
-        })
+        }
+        if(self.queue.searchTerm()) {
+            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority"])
+        }
+        var queueApi = callAPI(api_call)
         .done(self.updateQueue)
         .fail(function(response) {
             // Catch the failure of authorization error
@@ -357,15 +360,20 @@ function ViewModel() {
             self.history.lastUpdate = 0
         }
 
-        // History
-        callAPI({
+        // Build history request and parse search
+        var history_call = {
             mode: "history",
-            search: self.history.searchTerm(),
             failed_only: self.history.showFailed()*1,
             start: self.history.pagination.currentStart(),
             limit: parseInt(self.history.paginationLimit()),
             last_history_update: self.history.lastUpdate
-        }).done(self.updateHistory);
+        }
+        if(self.history.searchTerm()) {
+            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category"])
+        }
+
+        // History
+        callAPI(history_call).done(self.updateHistory);
 
         // We are now done with any loading
         // But we wait a few ms so Knockout has time to update
@@ -377,6 +385,25 @@ function ViewModel() {
         // Return for .then() functionality
         return queueApi;
     };
+
+    function parseSearchQuery(api_request, search, keywords) {
+        var parsed_query = search_query_parse(search, { keywords: keywords })
+        api_request["search"] = parsed_query.text
+        for (const keyword of keywords) {
+            if(Array.isArray(parsed_query[keyword])) {
+                api_request[keyword] = parsed_query[keyword].join(",")
+            } else {
+                api_request[keyword] = parsed_query[keyword]
+            }
+            // Special case for priority, dirty replace of string by numeric value
+            if(keyword == "priority" && api_request["priority"]) {
+                for (const prio_name in self.queue.priorityName) {
+                    api_request["priority"] = api_request["priority"].replace(prio_name, self.queue.priorityName[prio_name])
+
+                }
+            }
+        }
+    }
 
     // Set pause action on click of toggle
     self.pauseToggle = function() {

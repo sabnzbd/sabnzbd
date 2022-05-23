@@ -813,7 +813,13 @@ class NzbQueue:
         return n
 
     def queue_info(
-        self, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None, start: int = 0, limit: int = 0
+        self,
+        search: Optional[str] = None,
+        categories: Optional[List[str]] = None,
+        priorities: Optional[List[str]] = None,
+        nzo_ids: Optional[List[str]] = None,
+        start: int = 0,
+        limit: int = 0,
     ) -> Tuple[int, int, int, List[NzbObject], int, int]:
         """Return list of queued jobs,
         optionally filtered by 'search' and 'nzo_ids', and limited by start and limit.
@@ -838,11 +844,19 @@ class NzbQueue:
                 if nzos_matched < start:
                     bytes_left_previous_page += b_left
 
-            if (not search) or search in nzo.final_name.lower():
-                if (not nzo_ids) or nzo.nzo_id in nzo_ids:
-                    if (not limit) or (start <= nzos_matched < start + limit):
-                        nzo_list.append(nzo)
-                    nzos_matched += 1
+            # Conditions split up for readability
+            if search and search not in nzo.final_name.lower():
+                continue
+            if categories and nzo.cat not in categories:
+                continue
+            if priorities and nzo.priority not in priorities:
+                continue
+            if nzo_ids and nzo.nzo_id not in nzo_ids:
+                continue
+
+            if not limit or start <= nzos_matched < start + limit:
+                nzo_list.append(nzo)
+            nzos_matched += 1
 
         if not search and not nzo_ids:
             nzos_matched = len(self.__nzo_list)
