@@ -147,6 +147,9 @@ msgid ""
 "default value. Could you let us know why you made this change at: "
 "https://github.com/sabnzbd/sabnzbd/discussions"
 msgstr ""
+"אנחנו מתכננים להסיר את ההגדרה '%s', אשר שינית מערך ברירת המחדל. אתה יכול "
+"ליידע אותנו למה עשית את השינוי הזה בכתובת: "
+"https://github.com/sabnzbd/sabnzbd/discussions"
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -615,12 +618,12 @@ msgstr "טעינת %s נכשלה"
 msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
-msgstr ""
+msgstr "%s אינו בר־כתיבה עם שמות קבצים עם תו מיוחד. זה יכול לגרום לבעיות."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "%s is not writable at all. This blocks downloads."
-msgstr ""
+msgstr "%s אינו בר־כתיבה בכלל. זה חוסם הורדות."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
