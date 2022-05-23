@@ -1306,8 +1306,8 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         queue_bytes_left,
         bytes_left_previous_page,
         nzo_list,
-        nzos_matched,
         queue_fullsize,
+        nzos_matched,
     ) = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
 
     info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
