@@ -1262,17 +1262,16 @@ def directory_is_writable_with_file(mydir, myfilename):
         return False
 
 
-def directory_is_writable(dir: str) -> bool:
-    """Checks if dir is writable at all, and (on non-Windows), writable with special chars. Returns True if all OK, otherwise False"""
-    if directory_is_writable_with_file(dir, "sab_test.txt"):
-        if not sabnzbd.WIN32 and not sabnzbd.cfg.sanitize_safe():
-            if not directory_is_writable_with_file(dir, "sab_test \\ bla :: , bla.txt"):
-                sabnzbd.misc.helpful_warning(
-                    T("%s is not writable with special character filenames. This can cause problems.") % dir
-                )
-                return False
+def directory_is_writable(test_dir: str) -> bool:
+    """Checks if dir is writable at all, and (on non-Windows), writable with special chars.
+    Returns True if all OK, otherwise False"""
+    if directory_is_writable_with_file(test_dir, "sab_test.txt"):
+        if not sabnzbd.WIN32 and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
+            sabnzbd.misc.helpful_warning(
+                T("%s is not writable with special character filenames. This can cause problems."), test_dir
+            )
+            return False
     else:
-        sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads.") % dir)
+        sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads."), test_dir)
         return False
-    # no problems detected, directory is writable:
     return True
