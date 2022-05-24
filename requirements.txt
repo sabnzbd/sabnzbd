@@ -1,10 +1,10 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-sabyenc3==5.3.0
+sabyenc3==5.4.1
 cheetah3==3.2.6 # pyup: ignore
 cffi==1.15
 pycparser==2.21
-feedparser==6.0.8
+feedparser==6.0.10
 configobj==5.0.6
 cheroot==8.6.0
 six==1.16.0
@@ -34,7 +34,7 @@ cryptography==37.0.2
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.2.0
+ujson==5.3.0
 
 # Windows system integration
 pywin32==304; sys_platform == 'win32'
