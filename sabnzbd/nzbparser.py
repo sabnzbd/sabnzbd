@@ -162,7 +162,7 @@ def process_nzb_archive_file(
     """Analyse archive and create job(s).
     Accepts archive files with ONLY nzb/nfo/folder files in it.
     returns (status, nzo_ids)
-        status: -1==Error, 0==OK, 1==No files found
+        status: -2==Error/retry, -1==Error, 0==OK, 1==No files found
     """
     nzo_ids = []
     if catdir is None:
@@ -177,10 +177,11 @@ def process_nzb_archive_file(
         elif sabnzbd.newsunpack.is_sevenfile(path):
             zf = sabnzbd.newsunpack.SevenZip(path)
         else:
-            raise TypeError("File %s is not a supported archive!" % filename)
+            logging.info("File %s is not a supported archive!", filename)
+            return -1, []
     except:
         logging.info(T("Cannot read %s"), path, exc_info=True)
-        return -1, []
+        return -2, []
 
     status = 1
     names = zf.namelist()
@@ -278,9 +279,8 @@ def process_single_nzb(
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
     returns (status, nzo_ids)
-        status: -1==Error, 0==OK
+        status: -2==Error/retry, -1==Error, 0==OK
     """
-    nzo_ids = []
     if catdir is None:
         catdir = cat
 
@@ -306,11 +306,15 @@ def process_single_nzb(
 
     if filename:
         filename, cat = name_to_cat(filename, catdir)
-        # The name is used as the name of the folder, so sanitize it using folder specific santization
+        # The name is used as the name of the folder, so sanitize it using folder specific sanitization
         if not nzbname:
             # Prevent embedded password from being damaged by sanitize and trimming
             nzbname = get_filename(filename)
 
+    # Parse the data
+    result = 0
+    nzo = None
+    nzo_ids = []
     try:
         nzo = nzbstuff.NzbObject(
             filename,
@@ -330,15 +334,15 @@ def process_single_nzb(
             nzo.password = password
     except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
         # Empty or fully rejected
-        return -1, []
+        result = -1
+        pass
     except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
         # Duplicate or unwanted extension that was failed to history
         nzo_ids.append(err.nzo_id)
-        nzo = None
     except:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
-        return -1, []
+        result = -1
     finally:
         nzb_fp.close()
 
@@ -353,7 +357,7 @@ def process_single_nzb(
         logging.error(T("Error removing %s"), clip_path(path))
         logging.info("Traceback: ", exc_info=True)
 
-    return 0, nzo_ids
+    return result, nzo_ids
 
 
 def nzbfile_parser(full_nzb_path: str, nzo):
