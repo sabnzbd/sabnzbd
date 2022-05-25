@@ -604,6 +604,12 @@ class NzbQueue:
         else:
             logging.debug("Sort: %s not recognized", field)
 
+    def update_sort_order(self):
+        """Resorts the queue if it is useful for the selected sort method"""
+        auto_sort = cfg.auto_sort()
+        if auto_sort and auto_sort.split()[0] == "completed":
+            sabnzbd.NzbQueue.sort_by_completed()
+
     @NzbQueueLocker
     def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
         """Sets the priority on the nzo and places it in the queue at the appropriate position"""

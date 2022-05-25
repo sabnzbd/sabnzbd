@@ -1571,9 +1571,6 @@ def main():
             if not sabnzbd.check_all_tasks():
                 autorestarted = True
                 sabnzbd.TRIGGER_RESTART = True
-            # Sort by completed status
-            if sabnzbd.cfg.auto_sort() and sabnzbd.cfg.auto_sort().split()[0] == "completed":
-                sabnzbd.NzbQueue.sort_by_completed()
 
         # 3 sec polling tasks
         # Check for auto-restart request
