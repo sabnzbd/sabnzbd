@@ -3369,6 +3369,10 @@ msgstr ""
 "wordt toegevoegd"
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "Verspreidingswachttijd"
 
@@ -4686,6 +4690,10 @@ msgid ""
 msgstr ""
 "Alle gebruikersnamen, wachtwoorden en API-sleutels worden automatisch "
 "verwijderd uit het logbestand en de bijgevoegde kopie van je instellingen."
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

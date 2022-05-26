@@ -3413,6 +3413,10 @@ msgstr ""
 "Warteschlange automatisch sortieren wenn ein neuer Job hinzugefügt wird."
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "Ausbreitungsverzögerung"
 
@@ -4729,6 +4733,10 @@ msgid ""
 msgstr ""
 "Alle Benutzernamen, Passwörter und API-Schlüssel werden automatisch aus dem "
 "Log und der darin enthaltenen Kopie deiner Einstellungen entfernt."
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

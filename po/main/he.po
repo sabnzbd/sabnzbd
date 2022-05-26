@@ -3302,6 +3302,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "מיין עבודות בתור באופן אוטומטי כאשר עבודה חדשה מתווספת."
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "עיכוב רביה"
 
@@ -4595,6 +4599,10 @@ msgid ""
 msgstr ""
 "כל שמות המשתמש, הסיסמאות ומפתחות API מוסרים באופן אוטומטי מהיומן ומהעותק "
 "הכלול של ההגדרות שלך."
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
