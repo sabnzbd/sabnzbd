@@ -226,6 +226,10 @@ function QueueListModel(parent) {
         // What action?
         var sort, dir;
         switch($(event.currentTarget).data('action')) {
+            case 'sortCompletedDesc':
+                sort = 'completed';
+                dir = 'desc';
+                break;
             case 'sortAgeAsc':
                 sort = 'avg_age';
                 dir = 'desc';

@@ -470,6 +470,7 @@ SKIN_TEXT = {
     "explain-auto_disconnect": TT("Disconnect from Usenet server(s) when queue is empty or paused."),
     "opt-auto_sort": TT("Automatically sort queue"),
     "explain-auto_sort": TT("Automatically sort jobs in the queue when a new job is added."),
+    "explain-auto_sort_completed": TT("The queue will resort every 30 seconds if % downloaded is selected."),
     "opt-direct_unpack": TT("Direct Unpack"),
     "explain-direct_unpack": TT(
         "Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair."
@@ -862,6 +863,7 @@ SKIN_TEXT = {
     "Glitter-logText": TT(
         "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
     ),
+    "Glitter-sortCompleted": TT("Sort by % downloaded <small>Most&rarr;Least</small>"),
     "Glitter-sortAgeAsc": TT("Sort by Age <small>Oldest&rarr;Newest</small>"),
     "Glitter-sortAgeDesc": TT("Sort by Age <small>Newest&rarr;Oldest</small>"),
     "Glitter-sortNameAsc": TT("Sort by Name <small>A&rarr;Z</small>"),

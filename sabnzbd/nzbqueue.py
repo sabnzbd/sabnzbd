@@ -580,8 +580,13 @@ class NzbQueue:
         logging.info("Sorting by size... (reversed: %s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
 
+    @NzbQueueLocker
+    def sort_by_completed(self, reverse: bool = True):
+        logging.debug("Sorting by completed...")
+        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_completed_cmp, reverse)
+
     def sort_queue(self, field: str, direction: Optional[str] = None):
-        """Sort queue by field: "name", "size" or "avg_age"
+        """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
         Direction is specified as "desc" or "asc"
         """
         if safe_lower(direction) == "desc":
@@ -594,8 +599,16 @@ class NzbQueue:
             self.sort_by_size(reverse)
         elif field.lower() == "avg_age":
             self.sort_by_avg_age(not reverse)
+        elif field.lower() == "completed":
+            self.sort_by_completed(reverse)
         else:
             logging.debug("Sort: %s not recognized", field)
+
+    def update_sort_order(self):
+        """Resorts the queue if it is useful for the selected sort method"""
+        auto_sort = cfg.auto_sort()
+        if auto_sort and auto_sort.split()[0] == "completed":
+            sabnzbd.NzbQueue.sort_by_completed()
 
     @NzbQueueLocker
     def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
@@ -951,6 +964,13 @@ def _nzo_name_cmp(nzo1, nzo2):
 
 def _nzo_size_cmp(nzo1, nzo2):
     return cmp(nzo1.bytes, nzo2.bytes)
+
+
+def _nzo_completed_cmp(nzo1, nzo2):
+    # nzo order reversed because we have to use remaining instead of downloaded for the calculation to work
+    if not nzo1.remaining or not nzo2.remaining:
+        return 0
+    return cmp(nzo2.remaining / nzo2.bytes, nzo1.remaining / nzo1.bytes)
 
 
 def sort_queue_function(nzo_list: List[NzbObject], method, reverse: bool) -> List[NzbObject]:
