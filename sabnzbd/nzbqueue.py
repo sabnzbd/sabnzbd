@@ -968,8 +968,6 @@ def _nzo_size_cmp(nzo1, nzo2):
 
 def _nzo_completed_cmp(nzo1, nzo2):
     # nzo order reversed because we have to use remaining instead of downloaded for the calculation to work
-    if not nzo1.remaining or not nzo2.remaining:
-        return 0
     return cmp(nzo2.remaining / nzo2.bytes, nzo1.remaining / nzo1.bytes)
 
 
