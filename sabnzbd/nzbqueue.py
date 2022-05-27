@@ -22,14 +22,12 @@ sabnzbd.nzbqueue - nzb queue
 import os
 import logging
 import time
-import datetime
-import functools
 import cherrypy._cpreqbody
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject, Article
-from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe_lower
+from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
@@ -566,49 +564,42 @@ class NzbQueue:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def sort_by_avg_age(self, reverse: bool = False):
-        logging.info("Sorting by average date... (reversed: %s)", reverse)
-        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
-
-    @NzbQueueLocker
-    def sort_by_name(self, reverse: bool = False):
-        logging.info("Sorting by name... (reversed: %s)", reverse)
-        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
-
-    @NzbQueueLocker
-    def sort_by_size(self, reverse: bool = False):
-        logging.info("Sorting by size... (reversed: %s)", reverse)
-        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
-
-    @NzbQueueLocker
-    def sort_by_completed(self, reverse: bool = True):
-        logging.debug("Sorting by completed...")
-        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_completed_cmp, reverse)
-
     def sort_queue(self, field: str, direction: Optional[str] = None):
         """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
         Direction is specified as "desc" or "asc"
         """
+        field = field.lower()
+        reverse = False
         if safe_lower(direction) == "desc":
             reverse = True
-        else:
-            reverse = False
-        if field.lower() == "name":
-            self.sort_by_name(reverse)
-        elif field.lower() == "size" or field.lower() == "bytes":
-            self.sort_by_size(reverse)
-        elif field.lower() == "avg_age":
-            self.sort_by_avg_age(not reverse)
-        elif field.lower() == "completed":
-            self.sort_by_completed(reverse)
+
+        if field == "name":
+            logging.info("Sorting by name (reversed: %s)", reverse)
+            sort_function = lambda nzo: nzo.final_name.lower()
+        elif field == "size" or field == "bytes":
+            logging.info("Sorting by size (reversed: %s)", reverse)
+            sort_function = lambda nzo: nzo.bytes
+        elif field == "avg_age":
+            reverse = not reverse
+            logging.info("Sorting by average date... (reversed: %s)", reverse)
+            sort_function = lambda nzo: nzo.avg_date
+        elif field == "completed":
+            logging.debug("Sorting by percentage downloaded...")
+            reverse = True
+            sort_function = lambda nzo: nzo.remaining / nzo.bytes
         else:
             logging.debug("Sort: %s not recognized", field)
+            return
+
+        # Apply sort by requested order, then restore priority ordering
+        self.__nzo_list.sort(key=sort_function, reverse=reverse)
+        self.__nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
 
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
         auto_sort = cfg.auto_sort()
-        if auto_sort and auto_sort.split()[0] == "completed":
-            sabnzbd.NzbQueue.sort_by_completed()
+        if auto_sort and auto_sort.startswith("completed"):
+            self.sort_queue("completed")
 
     @NzbQueueLocker
     def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
@@ -941,37 +932,3 @@ class NzbQueue:
 
     def __repr__(self):
         return "<NzbQueue>"
-
-
-def _nzo_date_cmp(nzo1: NzbObject, nzo2: NzbObject):
-    avg_date1 = nzo1.avg_date
-    avg_date2 = nzo2.avg_date
-
-    if avg_date1 is None and avg_date2 is None:
-        return 0
-
-    if avg_date1 is None:
-        avg_date1 = datetime.datetime.now()
-    elif avg_date2 is None:
-        avg_date2 = datetime.datetime.now()
-
-    return cmp(avg_date1, avg_date2)
-
-
-def _nzo_name_cmp(nzo1, nzo2):
-    return cmp(nzo1.final_name.lower(), nzo2.final_name.lower())
-
-
-def _nzo_size_cmp(nzo1, nzo2):
-    return cmp(nzo1.bytes, nzo2.bytes)
-
-
-def _nzo_completed_cmp(nzo1, nzo2):
-    # nzo order reversed because we have to use remaining instead of downloaded for the calculation to work
-    return cmp(nzo2.remaining / nzo2.bytes, nzo1.remaining / nzo1.bytes)
-
-
-def sort_queue_function(nzo_list: List[NzbObject], method, reverse: bool) -> List[NzbObject]:
-    nzo_list.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
-    return nzo_list
