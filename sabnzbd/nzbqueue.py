@@ -972,27 +972,6 @@ def _nzo_completed_cmp(nzo1, nzo2):
 
 
 def sort_queue_function(nzo_list: List[NzbObject], method, reverse: bool) -> List[NzbObject]:
-    ultra_high_priority = [nzo for nzo in nzo_list if nzo.priority == REPAIR_PRIORITY]
-    super_high_priority = [nzo for nzo in nzo_list if nzo.priority == FORCE_PRIORITY]
-    high_priority = [nzo for nzo in nzo_list if nzo.priority == HIGH_PRIORITY]
-    normal_priority = [nzo for nzo in nzo_list if nzo.priority == NORMAL_PRIORITY]
-    low_priority = [nzo for nzo in nzo_list if nzo.priority == LOW_PRIORITY]
-
-    ultra_high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    super_high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    normal_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    low_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-
-    new_list = ultra_high_priority
-    new_list.extend(super_high_priority)
-    new_list.extend(high_priority)
-    new_list.extend(normal_priority)
-    new_list.extend(low_priority)
-
-    # Make sure any left-over jobs enter the new list
-    for item in nzo_list:
-        if item not in new_list:
-            new_list.append(item)
-
-    return new_list
+    nzo_list.sort(key=functools.cmp_to_key(method), reverse=reverse)
+    nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
+    return nzo_list
