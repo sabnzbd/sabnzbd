@@ -297,7 +297,7 @@ class NzbQueue:
                 nzo.set_pp(pp)
                 self.set_priority(nzo_id, prio)
                 # Abort any ongoing unpacking if the category changed
-                nzo.abort_direct_unpacker()
+                nzo.abort_direct_unpacker(True)
                 result += 1
         return result
 
@@ -306,7 +306,7 @@ class NzbQueue:
             nzo = self.__nzo_table[nzo_id]
             logging.info("Renaming %s to %s", nzo.final_name, name)
             # Abort any ongoing unpacking if the name changed (dirs change)
-            nzo.abort_direct_unpacker()
+            nzo.abort_direct_unpacker(True)
             if not nzo.futuretype:
                 nzo.set_final_name_and_scan_password(name, password)
             else:
@@ -435,7 +435,7 @@ class NzbQueue:
                 nzf = nzo.get_nzf_by_id(nzf_id)
                 if nzf:
                     removed.append(nzf_id)
-                    nzo.abort_direct_unpacker()
+                    nzo.abort_direct_unpacker(True)
                     post_done = nzo.remove_nzf(nzf)
                     if post_done:
                         if nzo.finished_files:

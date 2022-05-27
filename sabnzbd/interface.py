@@ -860,6 +860,7 @@ SPECIAL_BOOL_LIST = (
     "preserve_paused_state",
     "no_penalties",
     "fast_fail",
+    "direct_unpack_restart",
     "overwrite_files",
     "enable_par_cleanup",
     "process_unpacked_par2",

@@ -1521,10 +1521,12 @@ class NzbObject(TryList):
             sabnzbd.directunpacker.DirectUnpacker(self)
         self.direct_unpacker.add(nzf)
 
-    def abort_direct_unpacker(self):
+    def abort_direct_unpacker(self, restart: bool = False):
         """Abort any running DirectUnpackers"""
         if self.direct_unpacker:
             self.direct_unpacker.abort()
+            if cfg.direct_unpack_restart() and restart:
+                self.direct_unpacker = None
 
     def check_availability_ratio(self):
         """Determine if we are still meeting the required ratio"""
