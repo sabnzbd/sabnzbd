@@ -583,9 +583,8 @@ class NzbQueue:
             reverse = not reverse
             logging.info("Sorting by average date... (reversed: %s)", reverse)
             sort_function = lambda nzo: nzo.avg_date
-        elif field == "completed":
+        elif field == "remaining":
             logging.debug("Sorting by percentage downloaded...")
-            reverse = True
             sort_function = lambda nzo: nzo.remaining / nzo.bytes
         else:
             logging.debug("Sort: %s not recognized", field)
@@ -598,8 +597,8 @@ class NzbQueue:
     def update_sort_order(self):
         """Resorts the queue if it is useful for the selected sort method"""
         auto_sort = cfg.auto_sort()
-        if auto_sort and auto_sort.startswith("completed"):
-            self.sort_queue("completed")
+        if auto_sort and auto_sort.startswith("remaining"):
+            self.sort_queue("remaining")
 
     @NzbQueueLocker
     def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
