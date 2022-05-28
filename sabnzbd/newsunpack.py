@@ -1981,13 +1981,8 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     old = quick_check_set_old(setname, nzo)
 
     if new != old:
-        helpful_warning(
-            "We are testing a new verification method and on the current job it produced unexpected results. It would "
-            "help us if you could share this NZB (%s) and the Info/Debug-logging at: bugs@sabnzbd.org or at "
-            "https://github.com/sabnzbd/sabnzbd/discussions/2160 "
-            "Disable this warning in Config - Specials - helpful_warnings",
-            nzo.final_name,
-        )
+        # Disabled for 3.6 release
+        pass
     return old
 
 
