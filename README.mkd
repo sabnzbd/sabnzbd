@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 3.6.0 Release Candidate 1
+Release Notes - SABnzbd 3.6.0 Release Candidate 3
 =========================================================
+
+## Bugfixes since 3.6.0 Release Candidate 2
+- Queue pagination was not shown.
+- `.nzb` files were not removed when rejected by pre-queue script.
+- Updated `sabyenc3` to include latest fixes.
+- Linux: Always perform disk write check.
 
 ## Changes since 3.5.3
 - Significantly increased performance by using the yEnc-decoding
