@@ -39,7 +39,7 @@ function QueueListModel(parent) {
     self.multiEditItems = ko.observableArray([]);
     self.categoriesList = ko.observableArray([]);
     self.scriptsList = ko.observableArray([]);
-    self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
+    self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(20).extend({ persist: 'queuePaginationLimit' });
     self.pagination = new paginationModel(self);
 
@@ -194,11 +194,13 @@ function QueueListModel(parent) {
 
     // Searching in queue (rate-limited in decleration)
     self.searchTerm.subscribe(function() {
-        // Refresh now
-        self.parent.refresh();
         // Go back to page 1
         if(self.pagination.currentPage() != 1) {
+            // This forces a refresh
             self.pagination.moveToPage(1);
+        } else {
+            // Refresh now
+            self.parent.refresh();
         }
     })
 
@@ -208,7 +210,6 @@ function QueueListModel(parent) {
         if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
             self.isLoading(true)
             self.searchTerm('');
-            self.parent.refresh()
         }
         // Was it click and the field is empty? Then we focus on the field
         if(event.type == 'mousedown' && self.searchTerm() == '') {
