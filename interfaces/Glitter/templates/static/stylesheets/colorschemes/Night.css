@@ -94,7 +94,8 @@ legend,
 .nav-tabs>li.active>a,
 .nav-tabs>li.active>a:focus,
 .nav-tabs>li.active>a:hover,
-.nav-tabs>li>a:hover {
+.nav-tabs>li>a:hover,
+.nav-tabs>li>a:focus {
     background-color: #ddd;
     color: #555 !important;
     box-shadow: 0px -1px 1px 1px rgba(0,0,0,0.15);

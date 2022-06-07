@@ -63,6 +63,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     get_filename,
+    directory_is_writable,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import Sorter
@@ -229,6 +230,9 @@ class PostProcessor(Thread):
             )
         else:
             logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
+
+        directory_is_writable(sabnzbd.cfg.download_dir.get_path())
+        directory_is_writable(sabnzbd.cfg.complete_dir.get_path())
 
         # Start looping
         check_eoq = False
@@ -523,7 +527,7 @@ def process_job(nzo: NzbObject):
                 if cfg.deobfuscate_final_filenames():
                     # Deobfuscate the filenames
                     logging.info("Running deobfuscate")
-                    deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
+                    deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
 
                 # Run the user script
                 script_path = make_script_path(script)
@@ -587,17 +591,6 @@ def process_job(nzo: NzbObject):
 
         # Force error for empty result
         all_ok = all_ok and not empty
-
-        # Update indexer with results
-        if cfg.rating_enable():
-            if nzo.encrypted > 0:
-                sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_ENCRYPTED)
-            if empty:
-                hosts = [s.host for s in sabnzbd.Downloader.nzo_servers(nzo)]
-                if not hosts:
-                    hosts = [None]
-                for host in hosts:
-                    sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_EXPIRED, host)
 
     except:
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
@@ -675,11 +668,18 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     """
     one_folder = False
     marker_file = None
-    # Determine class directory
+
+    # Determine category directory
     catdir = config.get_category(nzo.cat).dir()
+    if not catdir:
+        # If none defined, check Default category directory
+        catdir = config.get_category().dir()
+
+    # Check if it should have a directory
     if catdir.endswith("*"):
         catdir = catdir.strip("*")
         one_folder = True
+
     complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
     complete_dir = long_path(complete_dir)
 
@@ -740,10 +740,11 @@ def parring(nzo: NzbObject):
     if nzo.extrapars:
         # Need to make a copy because it can change during iteration
         for setname in list(nzo.extrapars):
-            # We do not care about repairing
+            # We do not care about repairing samples
             if cfg.ignore_samples() and is_sample(setname.lower()):
                 logging.info("Skipping verification and repair of %s because it looks like a sample", setname)
                 continue
+
             # Skip sets that were already tried
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)

@@ -93,7 +93,11 @@ def list_languages():
 
 
 def is_rtl(lang):
-    return LanguageTable.get(lang, "en")[3]
+    """returns True if given lang is a right-to-left language. Default: False."""
+    try:
+        return LanguageTable.get(lang, "en")[3]
+    except:
+        return False
 
 
 # English name, native name, code page, right-to-left

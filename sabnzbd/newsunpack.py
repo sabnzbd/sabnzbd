@@ -44,6 +44,7 @@ from sabnzbd.misc import (
     run_command,
     build_and_run_command,
     format_time_left,
+    helpful_warning,
 )
 from sabnzbd.filesystem import (
     make_script_path,
@@ -63,6 +64,7 @@ from sabnzbd.filesystem import (
     SEVENMULTI_RE,
 )
 from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.par2file import FilePar2Info
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
@@ -102,10 +104,17 @@ def find_programs(curdir: str):
         else:
             return None
 
-    if sabnzbd.DARWIN:
-        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
-        sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
-        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7za")
+    if sabnzbd.MACOS:
+        if sabnzbd.MACOSARM64:
+            # M1 (ARM64) versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/arm64/par2")
+            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/arm64/unrar")
+        else:
+            # Regular x64 versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
+            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
+        # The 7zip binary is universal2
+        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7zz")
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
@@ -116,6 +125,7 @@ def find_programs(curdir: str):
             # 32 bit versions
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
+        # We just use the 32 bit version
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -138,7 +148,7 @@ def find_programs(curdir: str):
         if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
             sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7z")
 
-    if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+    if not (sabnzbd.WIN32 or sabnzbd.MACOS):
         # Run check on rar version
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < sabnzbd.constants.REC_RAR_VERSION
@@ -664,11 +674,11 @@ def rar_extract_core(
         rename = "-or"  # Auto renaming
 
     if sabnzbd.WIN32:
-        # For Unrar to support long-path, we need to circumvent Python's list2cmdline
+        # On Windows, UnRar uses a custom argument parser
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         # The -scf forces the output to be UTF8
         command = [
-            "%s" % RAR_COMMAND,
+            RAR_COMMAND,
             action,
             "-idp",
             "-scf",
@@ -684,26 +694,26 @@ def rar_extract_core(
         # Use only oldest options, specifically no "-or" or "-scf"
         # Luckily platform_btou has a fallback for non-UTF-8
         command = [
-            "%s" % RAR_COMMAND,
+            RAR_COMMAND,
             action,
             "-idp",
             overwrite,
             password_command,
-            "%s" % rarfile_path,
+            rarfile_path,
             "%s/" % extraction_path,
         ]
     else:
         # Don't use "-ai" (not needed for non-Windows)
         # The -scf forces the output to be UTF8
         command = [
-            "%s" % RAR_COMMAND,
+            RAR_COMMAND,
             action,
             "-idp",
             "-scf",
             overwrite,
             rename,
             password_command,
-            "%s" % rarfile_path,
+            rarfile_path,
             "%s/" % extraction_path,
         ]
 
@@ -712,7 +722,7 @@ def rar_extract_core(
 
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
-    p = build_and_run_command(command, flatten_command=True)
+    p = build_and_run_command(command, windows_unrar_command=True)
     sabnzbd.PostProcessor.external_process = p
 
     proc = p.stdout
@@ -849,7 +859,6 @@ def rar_extract_core(
     rarfiles = rar_volumelist(rarfile_path, password, rarfiles)
 
     logging.debug("UNRAR output %s", "\n".join(lines))
-    nzo.fail_msg = ""
     msg = T("Unpacked %s files/folders in %s") % (len(extracted), format_time_string(time.time() - start))
     nzo.set_unpack_info("Unpack", msg, setname)
     logging.info(msg)
@@ -1028,7 +1037,7 @@ def seven_extract_core(
         method = "e"  # Unpack without folders
     else:
         method = "x"  # Unpack with folders
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    if sabnzbd.WIN32 or sabnzbd.MACOS:
         case = "-ssc-"  # Case insensitive
     else:
         case = "-ssc"  # Case sensitive
@@ -1075,7 +1084,6 @@ def seven_extract_core(
         nzo.fail_msg = msg
         nzo.status = Status.FAILED
     else:
-        nzo.fail_msg = ""
         msg = T("Unpacked %s files/folders in %s") % (len(new_files), format_time_string(time.time() - start))
         nzo.set_unpack_info("Unpack", msg, seven_set)
         logging.info(msg)
@@ -1212,8 +1220,12 @@ def par2cmdline_verify(
     nzo.status = Status.VERIFYING
     start = time.time()
 
-    options = cfg.par_option().strip()
-    command = [str(PAR2_COMMAND), "r", options, parfile]
+    # Build command and add extra options
+    command = [str(PAR2_COMMAND), "r", parfile]
+    options = cfg.par_option().strip().split()
+    if options:
+        for option in options:
+            command.insert(2, option)
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
@@ -1224,7 +1236,7 @@ def par2cmdline_verify(
         # Normal case, everything is named after set
         wildcard = setname + "*"
 
-    if sabnzbd.DARWIN:
+    if sabnzbd.MACOS:
         command.append(os.path.join(parfolder, wildcard))
     else:
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
@@ -1234,7 +1246,7 @@ def par2cmdline_verify(
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
     # Only if we're not doing multicore
-    if not sabnzbd.DARWIN:
+    if not sabnzbd.MACOS:
         par2text = run_command([command[0], "-h"])
         if "No data skipping" in par2text:
             logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
@@ -1525,6 +1537,14 @@ def multipar_verify(
     # But not really required due to prospective-par2
     # Force output of utf-8 by adding -uo
     command = [str(MULTIPAR_COMMAND), "r", "-uo", "-vs2", "-vd%s" % nzo.admin_path, parfile]
+
+    # Only add user-options if supplied
+    options = cfg.par_option().strip().split()
+    if options:
+        for option in options:
+            # We wrongly instructed users to use /x parameter style instead of -x
+            option = option.replace("/", "-", 1)
+            command.insert(2, option)
 
     # Support bizarre naming conventions by scanning all files
     if len(nzo.extrapars) == 1 or len(globber(parfolder, setname + "*")) < 2:
@@ -1899,7 +1919,7 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
             # Catch key errors
             pass
 
-    if sabnzbd.DARWIN:
+    if sabnzbd.MACOS:
         if "PYTHONPATH" in env:
             del env["PYTHONPATH"]
         if "PYTHONHOME" in env:
@@ -1957,9 +1977,19 @@ def rar_sort(a: str, b: str) -> int:
 
 
 def quick_check_set(setname: str, nzo: NzbObject) -> bool:
+    new = quick_check_set_new(setname, nzo)
+    old = quick_check_set_old(setname, nzo)
+
+    if new != old:
+        # Disabled for 3.6 release
+        pass
+    return old
+
+
+def quick_check_set_old(setname: str, nzo: NzbObject) -> bool:
     """Check all on-the-fly md5sums of a set"""
-    md5pack = nzo.md5packs.get(setname)
-    if md5pack is None:
+    par2pack = nzo.par2packs.get(setname)
+    if par2pack is None:
         return False
 
     # We use bitwise assigment (&=) so False always wins in case of failure
@@ -1971,14 +2001,15 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     # Files to ignore
     ignore_ext = cfg.quick_check_ext_ignore()
 
-    for file in md5pack:
+    for file in par2pack:
+        par2info = par2pack[file]
         found = False
         file_to_ignore = get_ext(file).replace(".", "") in ignore_ext
         for nzf in nzf_list:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
+                if (nzf.md5sum is not None) and nzf.md5sum == par2info.filehash:
                     logging.debug("Quick-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -1990,8 +2021,8 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     result = False
                 break
 
-            # Now lets do obfuscation check
-            if nzf.md5sum == md5pack[file]:
+            # Now let's do obfuscation check
+            if nzf.md5sum == par2info.filehash:
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
@@ -2018,6 +2049,84 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 continue
 
             logging.info("Cannot Quick-check missing file %s!", file)
+            result = False
+
+    # Save renames
+    if renames:
+        nzo.renamed_file(renames)
+
+    return result
+
+
+def quick_check_set_new(setname: str, nzo: NzbObject) -> bool:
+    """Verify based on number of missing articles and md5of16k"""
+    # Use extracted par2 sets as a guide
+    par2pack = nzo.par2packs.get(setname)
+    if par2pack is None:
+        return False
+
+    # We use bitwise assigment (&=) so False always wins in case of failure
+    # This way the renames always get saved!
+    result = True
+    nzf_list = nzo.finished_files
+    renames = {}
+
+    # Files to ignore
+    ignore_ext = cfg.quick_check_ext_ignore()
+
+    for file in par2pack:
+        par2info = par2pack[file]
+        found = False
+        file_to_ignore = get_ext(file).replace(".", "") in ignore_ext
+        for nzf in nzf_list:
+            # Match based on md5of16k
+            if nzf.md5of16k == par2info.hash16k:
+                # Make sure it's unique
+                if par2info.has_duplicate:
+                    logging.info("Quick-check of file %s failed due to non-unique hash!", file)
+                    break
+
+                found = True
+                # Do a simple filename based check
+                if file == nzf.filename:
+                    logging.debug("Quick-check of file %s OK", file)
+                    result &= True
+                else:
+                    # Obfuscated, rename
+                    logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
+                    try:
+                        # Note: file can and is allowed to be in a subdirectory.
+                        # Subdirectories in par2 always contain "/", not "\"
+                        new_path = renamer(
+                            nzf.filepath, os.path.join(nzo.download_path, file), create_local_directories=True
+                        )
+                        renames[file] = nzf.filename
+                        nzf.filepath = new_path
+                        nzf.filename = get_filename(new_path)
+                        result &= True
+                        found = True
+                    except IOError:
+                        # Renamed failed for some reason, probably already done
+                        pass
+
+                # Additional verification based on bad articles and expected file size
+                if file_to_ignore:
+                    logging.debug("Quick-check skipping additional checks for file %s", file)
+                elif nzf.has_bad_articles:
+                    logging.info("Quick-check of file %s failed due to bad article(s)!", file)
+                    result = False
+                elif os.path.getsize(nzf.filepath) != par2info.filesize:
+                    logging.info("Quick-check of file %s failed due to incorrect file size!", file)
+                    result = False
+                break
+
+        if not found:
+            if file_to_ignore:
+                # We don't care about these files
+                logging.debug("Quick-check ignoring missing file %s", file)
+                continue
+
+            logging.info("Quick-check could not find a match for file %s!", file)
             result = False
 
     # Save renames

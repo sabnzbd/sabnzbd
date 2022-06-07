@@ -398,11 +398,11 @@ class DirectUnpacker(threading.Thread):
         # Generate command
         rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
-            # For Unrar to support long-path, we need to circumvent Python's list2cmdline
+            # On Windows, UnRar uses a custom argument parser
             # See: https://github.com/sabnzbd/sabnzbd/issues/1043
             # The -scf forces the output to be UTF8
             command = [
-                "%s" % sabnzbd.newsunpack.RAR_COMMAND,
+                sabnzbd.newsunpack.RAR_COMMAND,
                 action,
                 "-vp",
                 "-idp",
@@ -417,14 +417,14 @@ class DirectUnpacker(threading.Thread):
             # Don't use "-ai" (not needed for non-Windows)
             # The -scf forces the output to be UTF8
             command = [
-                "%s" % sabnzbd.newsunpack.RAR_COMMAND,
+                sabnzbd.newsunpack.RAR_COMMAND,
                 action,
                 "-vp",
                 "-idp",
                 "-scf",
                 "-o+",
                 password_command,
-                "%s" % rarfile_path,
+                rarfile_path,
                 "%s/" % extraction_path,
             ]
 
@@ -435,7 +435,7 @@ class DirectUnpacker(threading.Thread):
         self.cur_volume = 1
 
         # Need to disable buffer to have direct feedback
-        self.active_instance = build_and_run_command(command, flatten_command=True, bufsize=0)
+        self.active_instance = build_and_run_command(command, windows_unrar_command=True, bufsize=0)
 
         # Add to runners
         ACTIVE_UNPACKERS.append(self)
@@ -506,7 +506,7 @@ class DirectUnpacker(threading.Thread):
             # Reset settings
             self.reset_active()
 
-    def get_formatted_stats(self, include_time_left: bool = False):
+    def get_formatted_stats(self, include_time_left: bool = False) -> str:
         """Get percentage or number of rar's done"""
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
@@ -517,7 +517,7 @@ class DirectUnpacker(threading.Thread):
                         (self.cur_volume / self.total_volumes[self.cur_setname]) * 100, time_used=self.unpack_time
                     )
                 return formatted_stats
-        return self.cur_volume
+        return str(self.cur_volume)
 
 
 def analyze_rar_filename(filename):

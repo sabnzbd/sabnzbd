@@ -25,13 +25,15 @@ import re
 import shutil
 import threading
 import uuid
+import io
+import zipfile
 from typing import List, Dict, Any, Callable, Optional, Union, Tuple
 from urllib.parse import urlparse
 
 import configobj
 
 import sabnzbd
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, CONFIG_BACKUP_FILES, DEF_INI_FILE
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
@@ -39,13 +41,11 @@ CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
 
 
-CFG: configobj.ConfigObj  # Holds INI structure
+CFG_OBJ: configobj.ConfigObj  # Holds INI structure
 # during re-write this variable is global
 # to allow direct access to INI structure
 
-database = {}  # Holds the option dictionary
-
-modified = False  # Signals a change in option dictionary
+CFG_MODIFIED = False  # Signals a change in option dictionary
 # Should be reset after saving to settings file
 
 RE_PARAMFINDER = re.compile(r"""(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)""")
@@ -56,14 +56,13 @@ class Option:
 
     def __init__(self, section: str, keyword: str, default_val: Any = None, add: bool = True, protect: bool = False):
         """Basic option
-        `section`     : single section or comma-separated list of sections
-                        a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
-        `keyword`     : keyword in the (last) section
+        `section`     : single section for this option
+        `keyword`     : keyword in the section
         `default_val` : value returned when no value has been set
         `callback`    : procedure to call when value is successfully changed
         `protect`     : Do not allow setting via the API (specifically set_dict)
         """
-        self.__sections = section.split(",")
+        self.__section = section
         self.__keyword: str = keyword
         self.__default_val: Any = default_val
         self.__value: Any = None
@@ -72,13 +71,7 @@ class Option:
 
         # Add myself to the config dictionary
         if add:
-            global database
-            anchor = database
-            for section in self.__sections:
-                if section not in anchor:
-                    anchor[section] = {}
-                anchor = anchor[section]
-            anchor[keyword] = self
+            add_to_database(section, keyword, self)
 
     def get(self) -> Any:
         """Retrieve value field"""
@@ -104,24 +97,29 @@ class Option:
 
     def set(self, value: Any):
         """Set new value, no validation"""
-        global modified
+        global CFG_MODIFIED
         if value is not None:
             if isinstance(value, list) or isinstance(value, dict) or value != self.__value:
                 self.__value = value
-                modified = True
+                CFG_MODIFIED = True
                 if self.__callback:
                     self.__callback()
 
+    @property
+    def section(self) -> Any:
+        return self.__section
+
+    @property
+    def keyword(self) -> Any:
+        return self.__keyword
+
+    @property
     def default(self) -> Any:
         return self.__default_val
 
     def callback(self, callback: Callable):
         """Set callback function"""
         self.__callback = callback
-
-    def ident(self):
-        """Return section-list and keyword"""
-        return self.__sections, self.__keyword
 
 
 class OptionNumber(Option):
@@ -153,7 +151,7 @@ class OptionNumber(Option):
                 else:
                     value = float(value)
             except ValueError:
-                value = super().default()
+                value = super().default
             if self.__validation:
                 _, val = self.__validation(value)
                 super().set(val)
@@ -221,7 +219,7 @@ class OptionDir(Option):
             path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
                 _, path, _ = create_real_path(
-                    self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable
+                    self.keyword, self.__root, value, self.__apply_permissions, self.__writable
                 )
         return path
 
@@ -251,11 +249,11 @@ class OptionDir(Option):
         if value is not None and (value != self.get() or create):
             value = value.strip()
             if self.__validation:
-                error, value = self.__validation(self.__root, value, super().default())
+                error, value = self.__validation(self.__root, value, super().default)
             if not error:
                 if value and (self.__create or create):
                     res, path, error = create_real_path(
-                        self.ident()[1], self.__root, value, self.__apply_permissions, self.__writable
+                        self.keyword, self.__root, value, self.__apply_permissions, self.__writable
                     )
             if not error:
                 super().set(value)
@@ -308,7 +306,7 @@ class OptionList(Option):
 
     def default_string(self) -> str:
         """Return the default list as a comma-separated string"""
-        return ", ".join(self.default())
+        return ", ".join(self.default)
 
     def __call__(self) -> List[str]:
         """get() replacement"""
@@ -366,7 +364,7 @@ class OptionPassword(Option):
 
     def get(self) -> Optional[str]:
         """Return decoded password"""
-        return decode_password(super().get(), self.ident())
+        return decode_password(super().get(), self.keyword)
 
     def get_stars(self) -> Optional[str]:
         """Return non-descript asterisk string"""
@@ -377,9 +375,9 @@ class OptionPassword(Option):
     def get_dict(self, safe: bool = False) -> Dict[str, str]:
         """Return value a dictionary"""
         if safe:
-            return {self.ident()[1]: self.get_stars()}
+            return {self.keyword: self.get_stars()}
         else:
-            return {self.ident()[1]: self.get()}
+            return {self.keyword: self.get()}
 
     def set(self, pw: str):
         """Set password, encode it"""
@@ -396,7 +394,7 @@ class ConfigServer:
 
     def __init__(self, name, values):
 
-        self.__name = name
+        self.__name = clean_section_name(name)
         name = "servers," + self.__name
 
         self.displayname = OptionStr(name, "displayname", add=False)
@@ -499,16 +497,13 @@ class ConfigServer:
         """Give server new display name"""
         self.displayname.set(name)
 
-    def ident(self) -> Tuple[str, str]:
-        return "servers", self.__name
-
 
 class ConfigCat:
     """Class defining a single category"""
 
     def __init__(self, name: str, values: Dict[str, Any]):
-        self.__name = name
-        name = "categories," + name
+        self.__name = clean_section_name(name)
+        name = "categories," + self.__name
 
         self.order = OptionNumber(name, "order", 0, 0, 100, add=False)
         self.pp = OptionStr(name, "pp", add=False)
@@ -610,8 +605,8 @@ class ConfigRSS:
     """Class defining a single Feed definition"""
 
     def __init__(self, name, values):
-        self.__name = name
-        name = "rss," + name
+        self.__name = clean_section_name(name)
+        name = "rss," + self.__name
 
         self.uri = OptionList(name, "uri", add=False)
         self.cat = OptionStr(name, "cat", add=False)
@@ -661,31 +656,42 @@ class ConfigRSS:
         self.__name = new_name
         add_to_database("rss", self.__name, self)
 
-    def ident(self) -> Tuple[str, str]:
-        return "rss", self.__name
+
+# Add typing to the options database-dict
+AllConfigTypes = Union[
+    Option,
+    OptionStr,
+    OptionPassword,
+    OptionNumber,
+    OptionBool,
+    OptionList,
+    OptionDir,
+    ConfigCat,
+    ConfigRSS,
+    ConfigServer,
+]
+CFG_DATABASE: Dict[str, Dict[str, AllConfigTypes]] = {}
 
 
 @synchronized(CONFIG_LOCK)
-def add_to_database(section, keyword, obj):
+def add_to_database(section: str, keyword: str, obj: AllConfigTypes):
     """add object as section/keyword to INI database"""
-    global database
-    if section not in database:
-        database[section] = {}
-    database[section][keyword] = obj
+    global CFG_DATABASE
+    if section not in CFG_DATABASE:
+        CFG_DATABASE[section] = {}
+    CFG_DATABASE[section][keyword] = obj
 
 
 @synchronized(CONFIG_LOCK)
 def delete_from_database(section, keyword):
     """Remove section/keyword from INI database"""
-    global database, CFG, modified
-    del database[section][keyword]
-    if section == "servers" and "[" in keyword:
-        keyword = keyword.replace("[", "{").replace("]", "}")
+    global CFG_DATABASE, CFG_OBJ, CFG_MODIFIED
+    del CFG_DATABASE[section][keyword]
     try:
-        del CFG[section][keyword]
+        del CFG_OBJ[section][keyword]
     except KeyError:
         pass
-    modified = True
+    CFG_MODIFIED = True
 
 
 def get_dconfig(section, keyword, nested=False):
@@ -694,13 +700,13 @@ def get_dconfig(section, keyword, nested=False):
     """
     data = {}
     if not section:
-        for section in database.keys():
+        for section in CFG_DATABASE.keys():
             res, conf = get_dconfig(section, None, True)
             data.update(conf)
 
     elif not keyword:
         try:
-            sect = database[section]
+            sect = CFG_DATABASE[section]
         except KeyError:
             return False, {}
         if section in ("servers", "categories", "rss"):
@@ -716,7 +722,7 @@ def get_dconfig(section, keyword, nested=False):
 
     else:
         try:
-            item = database[section][keyword]
+            item = CFG_DATABASE[section][keyword]
         except KeyError:
             return False, {}
         data = item.get_dict(safe=True)
@@ -729,10 +735,10 @@ def get_dconfig(section, keyword, nested=False):
     return True, data
 
 
-def get_config(section, keyword):
+def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
     """Return a config object, based on 'section', 'keyword'"""
     try:
-        return database[section][keyword]
+        return CFG_DATABASE[section][keyword]
     except KeyError:
         logging.debug("Missing configuration item %s,%s", section, keyword)
         return None
@@ -741,7 +747,7 @@ def get_config(section, keyword):
 def set_config(kwargs):
     """Set a config item, using values in dictionary"""
     try:
-        item = database[kwargs.get("section")][kwargs.get("keyword")]
+        item = CFG_DATABASE[kwargs.get("section")][kwargs.get("keyword")]
     except KeyError:
         return False
     item.set_dict(kwargs)
@@ -751,7 +757,7 @@ def set_config(kwargs):
 def delete(section: str, keyword: str):
     """Delete specific config item"""
     try:
-        database[section][keyword].delete()
+        CFG_DATABASE[section][keyword].delete()
     except KeyError:
         return
 
@@ -774,7 +780,7 @@ def _read_config(path, try_backup=False):
     """Read the complete INI file and check its version number
     if OK, pass values to config-database
     """
-    global CFG, database, modified
+    global CFG_OBJ, CFG_DATABASE, CFG_MODIFIED
 
     if try_backup or not os.path.exists(path):
         # Not found, try backup
@@ -798,7 +804,7 @@ def _read_config(path, try_backup=False):
 
     try:
         # Let configobj open the file
-        CFG = configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
+        CFG_OBJ = configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
     except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
         if try_backup:
             # No luck!
@@ -808,86 +814,72 @@ def _read_config(path, try_backup=False):
             return _read_config(path, True)
 
     try:
-        version = sabnzbd.misc.int_conv(CFG["__version__"])
+        version = sabnzbd.misc.int_conv(CFG_OBJ["__version__"])
         if version > int(CONFIG_VERSION):
             return False, "Incorrect version number %s in %s" % (version, path)
     except (KeyError, ValueError):
         pass
 
-    CFG.filename = path
-    CFG.encoding = "utf-8"
-    CFG["__encoding__"] = "utf-8"
-    CFG["__version__"] = str(CONFIG_VERSION)
+    CFG_OBJ.filename = path
+    CFG_OBJ.encoding = "utf-8"
+    CFG_OBJ["__encoding__"] = "utf-8"
+    CFG_OBJ["__version__"] = str(CONFIG_VERSION)
 
     # Use CFG data to set values for all static options
-    for section in database:
+    for section in CFG_DATABASE:
         if section not in ("servers", "categories", "rss"):
-            for option in database[section]:
-                sec, kw = database[section][option].ident()
-                sec = sec[-1]
+            for option in CFG_DATABASE[section]:
+                config_option = CFG_DATABASE[section][option]
                 try:
-                    database[section][option].set(CFG[sec][kw])
+                    config_option.set(CFG_OBJ[config_option.section][config_option.keyword])
                 except KeyError:
                     pass
 
     # Define the special settings
-    if "categories" in CFG:
-        for cat in CFG["categories"]:
-            ConfigCat(cat, CFG["categories"][cat])
-    if "rss" in CFG:
-        for rss_feed in CFG["rss"]:
-            ConfigRSS(rss_feed, CFG["rss"][rss_feed])
-    if "servers" in CFG:
-        for server in CFG["servers"]:
-            ConfigServer(server.replace("{", "[").replace("}", "]"), CFG["servers"][server])
+    if "categories" in CFG_OBJ:
+        for cat in CFG_OBJ["categories"]:
+            ConfigCat(cat, CFG_OBJ["categories"][cat])
+    if "rss" in CFG_OBJ:
+        for rss_feed in CFG_OBJ["rss"]:
+            ConfigRSS(rss_feed, CFG_OBJ["rss"][rss_feed])
+    if "servers" in CFG_OBJ:
+        for server in CFG_OBJ["servers"]:
+            ConfigServer(server, CFG_OBJ["servers"][server])
 
-    modified = False
+    CFG_MODIFIED = False
     return True, ""
 
 
 @synchronized(SAVE_CONFIG_LOCK)
 def save_config(force=False):
     """Update Setup file with current option values"""
-    global CFG, database, modified
+    global CFG_OBJ, CFG_DATABASE, CFG_MODIFIED
 
-    if not (modified or force):
+    if not (CFG_MODIFIED or force):
         return True
 
     if sabnzbd.cfg.configlock():
         logging.warning(T("Configuration locked, cannot save settings"))
         return False
 
-    for section in database:
+    for section in CFG_DATABASE:
         if section in ("servers", "categories", "rss"):
-            try:
-                CFG[section]
-            except KeyError:
-                CFG[section] = {}
-            for subsec in database[section]:
-                if section == "servers":
-                    subsec_mod = subsec.replace("[", "{").replace("]", "}")
-                else:
-                    subsec_mod = subsec
-                try:
-                    CFG[section][subsec_mod]
-                except KeyError:
-                    CFG[section][subsec_mod] = {}
-                items = database[section][subsec].get_dict()
-                CFG[section][subsec_mod] = items
+            if section not in CFG_OBJ:
+                CFG_OBJ[section] = {}
+
+            for subsection in CFG_DATABASE[section]:
+                if subsection not in CFG_OBJ[section]:
+                    CFG_OBJ[section][subsection] = {}
+                CFG_OBJ[section][subsection] = CFG_DATABASE[section][subsection].get_dict()
         else:
-            for option in database[section]:
-                sec, kw = database[section][option].ident()
-                sec = sec[-1]
-                try:
-                    CFG[sec]
-                except KeyError:
-                    CFG[sec] = {}
-                value = database[section][option]()
-                # bool is a subclass of int, check first
-                CFG[sec][kw] = value
+            for option in CFG_DATABASE[section]:
+                config_option = CFG_DATABASE[section][option]
+                if config_option.section not in CFG_OBJ:
+                    CFG_OBJ[config_option.section] = {}
+                CFG_OBJ[config_option.section][config_option.keyword] = CFG_DATABASE[section][option]()
 
     res = False
-    filename = CFG.filename
+    filename = CFG_OBJ.filename
     bakname = filename + ".bak"
 
     # Check if file is writable
@@ -908,9 +900,9 @@ def save_config(force=False):
     # Write new config file
     try:
         logging.info("Writing settings to INI file %s", filename)
-        CFG.write()
+        CFG_OBJ.write()
         shutil.copymode(bakname, filename)
-        modified = False
+        CFG_MODIFIED = False
         res = True
     except:
         logging.error(T("Cannot write to INI file %s"), filename)
@@ -925,10 +917,67 @@ def save_config(force=False):
     return res
 
 
-def get_servers() -> Dict[str, ConfigServer]:
-    global database
+def create_config_backup():
+    """Put config data in a zip file"""
+    adminpath = sabnzbd.cfg.admin_dir.get_path()
+    logging.debug("Backing up %s + %s", adminpath, CFG_OBJ.filename)
+    with io.BytesIO() as zip_buffer:
+        with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
+            for filename in CONFIG_BACKUP_FILES:
+                full_path = os.path.join(adminpath, filename)
+                if os.path.isfile(full_path):
+                    with open(full_path, "rb") as data:
+                        zip_ref.writestr(filename, data.read())
+            with open(CFG_OBJ.filename, "rb") as data:
+                zip_ref.writestr(DEF_INI_FILE, data.read())
+        return zip_buffer.getvalue()
+
+
+def validate_config_backup(config_backup_data: bytes) -> bool:
+    """Check that the zip file contains a sabnzbd.ini"""
     try:
-        return database["servers"]
+        with io.BytesIO(config_backup_data) as backup_ref:
+            with zipfile.ZipFile(backup_ref, "r") as zip_ref:
+                # Will throw KeyError if not present
+                zip_ref.getinfo(DEF_INI_FILE)
+                return True
+    except:
+        return False
+
+
+def restore_config_backup(config_backup_data: bytes) -> bool:
+    """Restore configuration files from zip file"""
+    try:
+        with io.BytesIO(config_backup_data) as backup_ref:
+            with zipfile.ZipFile(backup_ref, "r") as zip_ref:
+                # Write config file first and read it
+                logging.debug("Writing backup of config-file to %s", CFG_OBJ.filename)
+                with open(CFG_OBJ.filename, "wb") as destination_ref:
+                    destination_ref.write(zip_ref.read(DEF_INI_FILE))
+                logging.debug("Loading settings from backup config-file")
+                read_config(CFG_OBJ.filename)
+
+                # Write the rest of the admin files that we want to recover
+                adminpath = sabnzbd.cfg.admin_dir.get_path()
+                for filename in CONFIG_BACKUP_FILES:
+                    try:
+                        zip_ref.getinfo(filename)
+                        destination_file = os.path.join(adminpath, filename)
+                        logging.debug("Writing backup of %s to %s", filename, destination_file)
+                        with open(destination_file, "wb") as destination_ref:
+                            destination_ref.write(zip_ref.read(filename))
+                    except KeyError:
+                        # File not in archive
+                        pass
+    except:
+        logging.warning(T("Could not restore backup"))
+        logging.info("Traceback: ", exc_info=True)
+
+
+def get_servers() -> Dict[str, ConfigServer]:
+    global CFG_DATABASE
+    try:
+        return CFG_DATABASE["servers"]
     except KeyError:
         return {}
 
@@ -937,10 +986,10 @@ def get_categories() -> Dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
     """
-    global database
-    if "categories" not in database:
-        database["categories"] = {}
-    cats = database["categories"]
+    global CFG_DATABASE
+    if "categories" not in CFG_DATABASE:
+        CFG_DATABASE["categories"] = {}
+    cats = CFG_DATABASE["categories"]
 
     # Add Default categories
     if "*" not in cats:
@@ -985,11 +1034,11 @@ def get_ordered_categories() -> List[Dict]:
 
 
 def get_rss() -> Dict[str, ConfigRSS]:
-    global database
+    global CFG_DATABASE
     try:
         # We have to remove non-separator commas by detecting if they are valid URL's
-        for feed_key in database["rss"]:
-            feed = database["rss"][feed_key]
+        for feed_key in CFG_DATABASE["rss"]:
+            feed = CFG_DATABASE["rss"][feed_key]
             # Only modify if we have to, to prevent repeated config-saving
             have_new_uri = False
             # Create a new corrected list
@@ -1006,14 +1055,24 @@ def get_rss() -> Dict[str, ConfigRSS]:
             if have_new_uri:
                 feed.uri.set(new_feed_uris)
 
-        return database["rss"]
+        return CFG_DATABASE["rss"]
     except KeyError:
         return {}
 
 
 def get_filename():
-    global CFG
-    return CFG.filename
+    global CFG_OBJ
+    return CFG_OBJ.filename
+
+
+def clean_section_name(section: str) -> str:
+    """Make a section name suitable to be used in the INI,
+    since it can't have starting "[" or a trailing "]".
+    Unfortuantly, ConfigObj doesn't do this for us."""
+    new_section_name = section.strip("[]")
+    if not new_section_name:
+        raise ValueError("Invalid section name %s, nothing left after cleaning" % section)
+    return new_section_name
 
 
 __PW_PREFIX = "!!!encoded!!!"
@@ -1034,7 +1093,7 @@ def encode_password(pw):
     return pw
 
 
-def decode_password(pw, name):
+def decode_password(pw: str, name: str) -> str:
     """Decode hexadecimal encoded password
     but only decode when prefixed
     """

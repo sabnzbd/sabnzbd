@@ -42,7 +42,6 @@ stages:
           left_quota: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
           cache_art: !re_search "[0-9]*"
           cache_size: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
-          cache_max: !re_search "[0-9]*"
           kbpersec: !re_match "[0-9.]*"
           speed: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
           mbleft: !re_match "[0-9.]*"
@@ -52,12 +51,8 @@ stages:
           noofslots_total: 0
           status: "Idle"
           timeleft: "0:00:00"
-          eta: "unknown"
-          refresh_rate: !re_match "[0-9]*"
-          interface_settings: !re_match ".*"
           scripts: !anylist
           categories: !anylist
-          rating_enable: !anybool
           noofslots: 0
           start: 0
           limit: 0
@@ -91,7 +86,7 @@ stages:
           # Verify only a bunch of key response parameters with a regex using
           # positive looksaheads, so parameters match regardless of their order
           # of appearance in the text output
-          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total': 0)(?=.*'status': 'Idle')(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots': 0)(?=.*'slots': \\[\\]).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total': 0)(?=.*'status': 'Idle')(?=.*'timeleft': '0:00:00')(?=.*'noofslots': 0)(?=.*'slots': \\[\\]).*}}$"
 
 
 ---
@@ -134,13 +129,12 @@ stages:
             <speedlimit>!anyint</speedlimit>
             <speedlimit_abs>!anystr</speedlimit_abs>
             <have_warnings>!anyint</have_warnings>
-            <finishaction>None</finishaction>
+            <finishaction>!anything</finishaction>
             <quota>!anystr</quota>
             <have_quota>!anybool</have_quota>
             <left_quota>!anystr</left_quota>
             <cache_art>0</cache_art>
             <cache_size>0 B</cache_size>
-            <cache_max>!anyint</cache_max>
             <kbpersec>!anyfloat</kbpersec>
             <speed>0 </speed>
             <mbleft>0.00</mbleft>
@@ -150,12 +144,8 @@ stages:
             <noofslots_total>0</noofslots_total>
             <status>Idle</status>
             <timeleft>0:00:00</timeleft>
-            <eta>unknown</eta>
-            <refresh_rate>!anything</refresh_rate>
-            <interface_settings>!anything</interface_settings>
             <scripts>!anystr</scripts>
             <categories>!anystr</categories>
-            <rating_enable>!anybool</rating_enable>
             <noofslots>0</noofslots>
             <start>0</start>
             <limit>0</limit>

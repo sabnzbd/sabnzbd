@@ -218,7 +218,7 @@ class Scheduler:
             sabnzbd.downloader.check_server_expiration, "check_server_expiration", DAILY_RANGE, None, (0, 0)
         )
 
-        logging.info("Setting scheduler for server quota check")
+        logging.info("Setting schedule for server quota check")
         self.scheduler.add_interval_task(
             sabnzbd.downloader.check_server_quota,
             "check_server_quota",

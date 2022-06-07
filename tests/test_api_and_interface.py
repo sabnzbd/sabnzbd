@@ -190,8 +190,8 @@ class TestSecuredExpose:
         if inet_exposure >= 3:
             assert "misc" in self.main_page.api(mode="get_config", apikey=sabnzbd.cfg.api_key())
             # Sub-function
-            assert api._MSG_NO_VALUE in self.main_page.api(
-                mode="config", name="set_colorscheme", apikey=sabnzbd.cfg.api_key()
+            assert "The hostname is not set" in self.main_page.api(
+                mode="config", name="test_server", apikey=sabnzbd.cfg.api_key()
             )
 
         # Level 4: full interface
@@ -209,11 +209,11 @@ class TestSecuredExpose:
         if inet_exposure <= 2:
             assert interface._MSG_ACCESS_DENIED in self.main_page.api(mode="get_config", apikey=sabnzbd.cfg.api_key())
             assert interface._MSG_ACCESS_DENIED in self.main_page.api(
-                mode="config", name="set_colorscheme", apikey=sabnzbd.cfg.api_key()
+                mode="config", name="set_nzbkey", apikey=sabnzbd.cfg.api_key()
             )
         # Level 1: nzb
         if inet_exposure <= 1:
-            assert interface._MSG_ACCESS_DENIED in self.main_page.api(mode="rescan", apikey=sabnzbd.cfg.api_key())
+            assert interface._MSG_ACCESS_DENIED in self.main_page.api(mode="get_scripts", apikey=sabnzbd.cfg.api_key())
             assert interface._MSG_ACCESS_DENIED in self.main_page.api(
                 mode="queue", name="resume", apikey=sabnzbd.cfg.api_key()
             )
@@ -237,7 +237,7 @@ class TestSecuredExpose:
             self.check_inet_blocks(inet_exposure=inet_exposure)
 
         # Reset it
-        sabnzbd.cfg.inet_exposure.set(sabnzbd.cfg.inet_exposure.default())
+        sabnzbd.cfg.inet_exposure.set(sabnzbd.cfg.inet_exposure.default)
 
     @set_config({"inet_exposure": 5, "username": "foo", "password": "bar"})
     def test_inet_exposure_login_for_external(self):
@@ -248,3 +248,13 @@ class TestSecuredExpose:
         # Remote user: redirect to login
         set_remote_host_or_ip(hostname="100.100.100.100", remote_ip="11.11.11.11")
         self.check_full_access(redirect_match=r".*login.*")
+
+    @set_config({"api_warnings": False})
+    def test_no_text_warnings(self):
+        assert self.main_page.index() is None
+        assert cherrypy.response.status == 403
+        assert self.main_page.api(mode="queue") is None
+        assert cherrypy.response.status == 403
+        set_remote_host_or_ip(hostname="not_me")
+        assert self.main_page.api() is None
+        assert cherrypy.response.status == 403

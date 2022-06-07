@@ -43,7 +43,6 @@ stages:
           left_quota: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
           cache_art: !re_search "[0-9]*"
           cache_size: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
-          cache_max: !re_search "[0-9]*"
           kbpersec: !re_match "[0-9.]*"
           speed: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
           mbleft: !re_match "[0-9.]*"
@@ -53,12 +52,8 @@ stages:
           noofslots_total: !anyint
           status: "Paused"
           timeleft: "0:00:00"
-          eta: "unknown"
-          refresh_rate: !re_match "[0-9]*"
-          interface_settings: !re_match ".*"
           scripts: !anylist
           categories: !anylist
-          rating_enable: !anybool
           noofslots: !anyint
           start: !anyint
           limit: !anyint
@@ -82,10 +77,7 @@ stages:
             direct_unpack: !re_match "[0-9]+"
             status: "Paused"
             timeleft: "0:00:00"
-            eta: "unknown"
             avg_age: "!anystr"
-            has_rating: !anybool
-
 
 ---
 test_name: Check general queue format (text output)
@@ -114,7 +106,7 @@ stages:
           # Verify only a bunch of key response parameters with a regex using
           # positive looksaheads, so parameters match regardless of their order
           # of appearance in the text output
-          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
 
 
 ---
@@ -159,13 +151,12 @@ stages:
             <speedlimit>!anyint</speedlimit>
             <speedlimit_abs>!anystr</speedlimit_abs>
             <have_warnings>!anyint</have_warnings>
-            <finishaction>!anystr</finishaction>
+            <finishaction>!anything</finishaction>
             <quota>!anystr</quota>
             <have_quota>!anybool</have_quota>
             <left_quota>!anystr</left_quota>
             <cache_art>!anyint</cache_art>
             <cache_size>!anystr</cache_size>
-            <cache_max>!anyint</cache_max>
             <kbpersec>!anyfloat</kbpersec>
             <speed>!anystr</speed>
             <mbleft>!anyfloat</mbleft>
@@ -175,14 +166,10 @@ stages:
             <noofslots_total>!anyint</noofslots_total>
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
-            <eta>unknown</eta>
-            <refresh_rate>!anything</refresh_rate>
-            <interface_settings>!anything</interface_settings>
             <scripts>
             <script>!anystr</script>
             </scripts>
             <categories>!anything</categories>
-            <rating_enable>!anybool</rating_enable>
             <noofslots>!anyint</noofslots>
             <start>!anyint</start>
             <limit>!anyint</limit>
@@ -204,12 +191,10 @@ stages:
             <sizeleft>!anystr</sizeleft>
             <percentage>!anyint</percentage>
             <mbmissing>!anyfloat</mbmissing>
-            <direct_unpack>!anyint</direct_unpack>
+            <direct_unpack>!anything</direct_unpack>
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
-            <eta>unknown</eta>
             <avg_age>!anystr</avg_age>
-            <has_rating>!anybool</has_rating>
             </slot>
             </slots>
             </queue>

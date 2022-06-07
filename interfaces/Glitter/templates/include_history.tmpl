@@ -41,102 +41,11 @@
                         </span>
                     </div>
                 </td>
-                <td class="name" data-bind="css: { 'name-has-ratings' : historyStatus.has_rating }">
+                <td class="name">
                     <div class="row-wrap-text">
                         <a class="retry-buttontext" href="#" data-bind="visible: (failed() && canRetry()), click: retry">$T('button-retry')</a>
                         <span data-bind="text: historyStatus.name, attr: { 'title': historyStatus.name() }"></span>
                     </div>
-
-                    <!-- ko if: historyStatus.has_rating -->
-                    <div class="dropdown history-ratings">
-                        <a href="#" class="name-icons hover-button" data-toggle="dropdown" onclick="keepOpen(this)">
-                            <span class="glyphicon glyphicon-thumbs-up"></span> <span data-bind="text: historyStatus.rating_avg_vote_up"></span>
-                            <span class="glyphicon glyphicon-thumbs-down"></span> <span data-bind="text: historyStatus.rating_avg_vote_down"></span>
-                        </a>
-                        <ul class="dropdown-menu history-ratings-menu">
-                            <li>
-                                <form class="history-ratings-basic">
-                                    <label>
-                                        <input type="radio" value="up" data-bind="attr: { 'name': 'ratings-status-'+nzo_id, 'checked': historyStatus.rating_user_vote() == 1 }, event: { change: setUserVote }" />
-                                        <span class="glyphicon glyphicon-thumbs-up"></span>
-                                        <span data-bind="text: historyStatus.rating_avg_vote_up"></span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" value="down" data-bind="attr: { 'name': 'ratings-status-'+nzo_id, 'checked': historyStatus.rating_user_vote() == 2 }, event: { change: setUserVote }" />
-                                        <span class="glyphicon glyphicon-thumbs-down"></span>
-                                        <span data-bind="text: historyStatus.rating_avg_vote_down"></span>
-                                    </label>
-                                    <label>
-                                        <span class="glyphicon glyphicon-facetime-video"></span>
-                                        <select name="ratings-video" data-bind="value: historyStatus.rating_user_video, event: { change: setUserRating }, disable: historyStatus.rating_user_video">
-                                            <option value="">&nbsp;</option>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5</option>
-                                            <option value="6">6</option>
-                                            <option value="7">7</option>
-                                            <option value="8">8</option>
-                                            <option value="9">9</option>
-                                            <option value="10">10</option>
-                                        </select>
-                                    </label>
-                                    <label>
-                                        <span class="glyphicon glyphicon-volume-up"></span>
-                                        <select name="ratings-audio" data-bind="value: historyStatus.rating_user_audio, event: { change: setUserRating }, disable: historyStatus.rating_user_audio">
-                                            <option value="">&nbsp;</option>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5</option>
-                                            <option value="6">6</option>
-                                            <option value="7">7</option>
-                                            <option value="8">8</option>
-                                            <option value="9">9</option>
-                                            <option value="10">10</option>
-                                        </select>
-                                    </label>
-                                    <!-- ko if: historyStatus.url_info -->
-                                    <a href="#" target="_blank" data-bind="attr: { 'href':historyStatus.url_info }" title="$T('Glitter-openInfoURL')"><span class="glyphicon glyphicon-globe"></span></a>
-                                    <!-- /ko -->
-                                </form>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <form class="history-ratings-report" data-bind="submit: setUserReport">
-                                    <strong>$T('report')</strong>
-                                    <br />
-                                    <label>
-                                        <input type="radio" name="rating_flag" value="spam" /> $T('spam')
-                                    </label>
-                                    <br />
-                                    <label>
-                                        <input type="radio" name="rating_flag" value="encrypted" /> $T('encrypted')
-                                    </label>
-                                    <br />
-                                    <label>
-                                        <input type="radio" name="rating_flag" value="expired" /> $T('expired')
-                                        <select name="ratings-report-expired-server" class="ratings-report-hidden form-control" data-bind="options: \$parent.servers, optionsText: 'host', optionsValue: 'host', optionsCaption: '$T('nzo-all')'"></select>
-                                    </label>
-                                    <br />
-                                    <label>
-                                        <input type="radio" name="rating_flag" value="other" /> $T('otherProblem')
-                                        <input type="text" class="form-control ratings-report-hidden" name="ratings-report-other" />
-                                    </label>
-                                    <br />
-                                    <label>
-                                        <input type="radio" name="rating_flag" value="comment" /> $T('comment')
-                                        <input type="text" class="form-control ratings-report-hidden" name="ratings-report-comment" />
-                                    </label>
-                                    <br />
-                                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('send')</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- /ko -->
                 </td>
                 <td class="status row-wrap-text" data-bind="text: statusText()" onclick="showDetails(this)"></td>
                 <!-- ko foreach: parent.parent.extraHistoryColumns -->

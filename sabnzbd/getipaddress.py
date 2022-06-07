@@ -25,25 +25,29 @@ import functools
 import urllib.request
 import urllib.error
 import socks
+import logging
+import time
+from typing import Callable
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
 
 
-def timeout(max_timeout):
+def timeout(max_timeout: float):
     """Timeout decorator, parameter in seconds."""
 
-    def timeout_decorator(item):
+    def timeout_decorator(item: Callable) -> Callable:
         """Wrap the original function."""
 
         @functools.wraps(item)
         def func_wrapper(*args, **kwargs):
             """Closure for function."""
-            with multiprocessing.pool.ThreadPool(processes=1) as pool:
-                async_result = pool.apply_async(item, args, kwargs)
-                # raises a TimeoutError if execution exceeds max_timeout
-                return async_result.get(max_timeout)
+            # Raises a TimeoutError if execution exceeds max_timeout
+            try:
+                return sabnzbd.THREAD_POOL.submit(item, *args, **kwargs).result(max_timeout)
+            except TimeoutError:
+                return None
 
         return func_wrapper
 
@@ -72,6 +76,18 @@ def active_socks5_proxy():
     return None
 
 
+def dnslookup():
+    """Perform a basic DNS lookup"""
+    start = time.time()
+    try:
+        addresslookup(sabnzbd.cfg.selftest_host())
+        result = True
+    except:
+        result = False
+    logging.debug("DNS Lookup = %s (in %.2f seconds)", result, time.time() - start)
+    return result
+
+
 def localipv4():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
@@ -80,6 +96,8 @@ def localipv4():
             ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
+
+    logging.debug("Local IPv4 address = %s", ipv4)
     return ipv4
 
 
@@ -88,6 +106,7 @@ def publicipv4():
     public ipv4 needs special attention, meaning forcing
     IPv4 connections, and not allowing IPv6 connections
     """
+    start = time.time()
     public_ipv4 = None
     try:
         ipv4_found = False
@@ -96,6 +115,7 @@ def publicipv4():
     except (ValueError, socket.error, multiprocessing.context.TimeoutError):
         # something very bad: no urllib2, no resolving of selftest_host, no network at all
         # Or strange DSM problem: https://github.com/sabnzbd/sabnzbd/issues/2008
+        logging.debug("Failed to detect public IPv4 address")
         return public_ipv4
 
     # we got one or more IPv4 address(es), so let's connect to them
@@ -124,6 +144,8 @@ def publicipv4():
 
     if not ipv4_found:
         public_ipv4 = None
+
+    logging.debug("Public IPv4 address = %s (in %.2f seconds)", public_ipv4, time.time() - start)
     return public_ipv4
 
 
@@ -135,4 +157,6 @@ def ipv6():
             ipv6_address = s_ipv6.getsockname()[0]
     except:
         ipv6_address = None
+
+    logging.debug("IPv6 address = %s", ipv6_address)
     return ipv6_address

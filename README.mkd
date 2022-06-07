@@ -1,49 +1,53 @@
-Release Notes - SABnzbd 3.5.3
+Release Notes - SABnzbd 3.6.0
 =========================================================
 
-## Bugfix since 3.5.0
-- Prevent disk errors due to Direct Unpack being too aggressive.
-- URL's waiting to fetch get stuck indefinitely upon restart.
+## Changes since 3.5.3
+- Significantly increased performance by using the yEnc-decoding
+  library of @animetosho. Usenet articles are now decoded using
+  specialized CPU instructions (SIMD) on x86 and ARM systems.
+- Create and restore a backup of configuration and database.
+- Show source of lower download speed (CPU or disk).
+- Added keyboard shortcuts (`P`ause, `A`dd, `S`tatus, `C`onfig).
+- Result of the `Deobfuscate` step is listed in History details.
+- `Path` of `Default` category will be used if category doesn't have one.
+- Disabling `api_warnings` prevents showing `Access Denied`
+  information to the external client.
+- Jobs with `Force` priority will always skip the duplicate check.
+- Added `ext_rename_ignore` to add custom extensions that should
+  be ignored during the `Deobfuscate` step.
+- Removed Indexer Feedback Integration.
+- Removed included `Deobfuscate.py` as it is outdated.
+- Show a warning when there are no valid news servers active.
+- Show a warning if the filesystem does not support special characters.
+- Allow multiple parameters to be passed to par2cmdline/Multipar.
+- Linux: Added AppStream metadata, desktop shortcut and MimeInfo.
+- Linux: Added support for bash completion.
+- macOS: Application and included tools fully native on M1 systems.
+- macOS/Windows: Updated UnRar to 6.10 and 7-Zip to 21.07.
+- Windows: Updated MultiPar to v1.3.2.3.
 
-## Changes and bugfixes since 3.5.0
-- Prevent permissions errors on systems that do not support them.
-- Small changes in file assembly and Direct Unpack processing.
-- Changes to the transition from download to active post-processing.
-- Malformed NZB files could result in a crash.
-- Prevent crash in Direct Unpack for obfuscated posts.
-- RSS feeds with HTML-characters in the name resulted in crashes.
-- macOS: failed to start on older macOS versions.
+# API changes since 3.5.3
+- Removed several (status) fields from the `queue` API call.
+- Remove unused and undocumented API calls: `addid`, `options`, `rescan`,
+  `osx_icon`, `set_speedlimit`, `get_speedlimit`, `set_colorscheme`.
+- Removed undocumented `xcat` parameter.
+- `None` values in XML API-output are left empty.
+- Adding NZB's would not always return `nzo_ids`.
+- Prevent crash in `history` call during post-processing.
 
-## Changes since 3.4.2
-- Removed Python 3.6 support.
-- SOCKS5 proxy support for all outgoing connections.
-- Restored support for UUencoded jobs.
-- `Required` server option: in case of connection failures, the queue
-  will be paused for a few minutes instead of skipping the server.
-- Added Special option to preserve paused state after a restart.
-- Show an estimated time-left indicator for repair and unpacking.
-- Require TLS version 1.2 or higher for SSL news server connections.
-- Setting custom ciphers forces the maximum TLS version to 1.2.
-- Reduced memory usage during and after parsing `.nzb` files.
-- Handle multiple passwords stored in NZB-file.
-- macOS/Linux: `Permissions` are only applied if any are set.
-- macOS/Windows: updated to Python 3.10.2.
-- macOS: run native on M1 systems. However, included tools
-  (`par2`, `unrar` and `7za`) still require Rosetta emulation.
-- Snap: updated to `core20` base and restore 7zip support.
-
-## Bugfixes since 3.4.2
-- Global interface settings would not always be applied correctly.
-- Email notification setting was not shown correctly.
-- Improvements and fixes for `Defobfuscate final filenames`.
-- `Post-Process Only Verified Jobs` would not always work as intended.
-- Correctly detect too little disk space when unpacking 7zip's.
-- Improvements to handling of repair by MultiPar and par2cmdline.
-- HTML characters in configuration fields were shown incorrectly.
-- On Retry the number of downloaded bytes could exceed the total bytes.
-- `unrar` logging of Direct Unpack was not logged if it was aborted.
-- Windows: `portable.cmd` was not included in the release.
-- Windows: print low-level Windows error on `IOError`.
+# Bugfixes since 3.5.3
+- Extended timeout when measuring system performance.
+- Interface settings were sometimes reset on page reload.
+- Par2 sets with duplicate names could skip verification and repair.
+- Ignore `.par2` files that could not be parsed.
+- Correctly default to `Glitter - Auto` on new installs.
+- Download speed was not updated when stalled due to disk performance.
+- Prevent traceback when status functions timeout.
+- Prevent crash if not enough repair blocks are available.
+- Prevent crash when there is an unknown `language` setting.
+- Source release had Windows line-endings.
+- Windows: If a job password contained a double quote it
+  would not be picked up by UnRar and unpack would fail.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x

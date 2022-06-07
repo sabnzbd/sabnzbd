@@ -38,6 +38,7 @@ def create_small_file(filename):
         myfile.truncate(1024)
 
 
+@pytest.mark.usefixtures("clean_cache_dir")
 class TestDeobfuscateFinalResult:
     def test_is_probably_obfuscated(self):
         # Test the base function test_is_probably_obfuscated(), which gives a boolean as RC
@@ -80,11 +81,18 @@ class TestDeobfuscateFinalResult:
         assert not is_probably_obfuscated("Lorem Ipsum.avi")
         assert not is_probably_obfuscated("Lorem Ipsum")  # no ext
 
+    @staticmethod
+    def deobfuscate_wrapper(filelist, jobname):
+        """Wrapper to avoid the need for NZO"""
+        nzo = mock.Mock()
+        nzo.set_unpack_info = mock.Mock()
+        deobfuscate(nzo, filelist, jobname)
+
     def test_deobfuscate_filelist_lite(self):
         # ligthweight test of deobfuscating: with just one file
 
         # Create directory (with a random directory name)
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
         # Create a big enough file with a non-useful, obfuscated filename
@@ -97,7 +105,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
 
         # Check original files:
         assert not os.path.isfile(output_file1)  # original filename should not be there anymore
@@ -112,7 +120,7 @@ class TestDeobfuscateFinalResult:
         # ... but only the files that are in the filelist
 
         # Create directory (with a random directory name)
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
         # Create a big enough file with a non-useful filename
@@ -139,7 +147,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
 
         # Check original files:
         assert not os.path.isfile(output_file1)  # original filename should not be there anymore
@@ -158,7 +166,7 @@ class TestDeobfuscateFinalResult:
         # test of deobfuscating with sub directories
 
         # Create directory with subdirs
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
         subdirname = os.path.join(dirname, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(subdirname)
@@ -175,7 +183,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
 
         # Check original files:
         assert not os.path.isfile(output_file1)  # original filename should not be there anymore
@@ -190,7 +198,7 @@ class TestDeobfuscateFinalResult:
         # test of typical DVD directory structure ... no deobfuscating should happen
 
         # Create a working directory, with a VIDEO_TS subdirectory
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
         subdirname = os.path.join(dirname, "VIDEO_TS")
         os.mkdir(subdirname)
@@ -203,7 +211,7 @@ class TestDeobfuscateFinalResult:
         myfilelist = [output_file1]
         # and now unleash deobfuscate() on that filelist, with a useful jobname:
         jobname = "My DVD 2021"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
 
         # ... but because inside "VIDEO_TS" directory, the file should not be touched / renamed:
         assert os.path.isfile(output_file1)  # should stil be there
@@ -216,7 +224,7 @@ class TestDeobfuscateFinalResult:
         # test that the small accompanying files (with same basename) are renamed accordingly to the big ISO
 
         # Create directory (with a random directory name)
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
         # Create a big enough file with a non-useful filename
@@ -244,7 +252,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
 
         # Check original files:
         assert not os.path.isfile(isofile)  # original iso not be there anymore
@@ -265,7 +273,7 @@ class TestDeobfuscateFinalResult:
         # test that there is no renaming on the collection ... as that's useless on a collection
 
         # Create directory (with a random directory name)
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
         # Create big enough files with a non-useful filenames, all with same extension
@@ -295,7 +303,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
 
         # Check original files:
         # the collection with same extension should still be there:
@@ -318,14 +326,14 @@ class TestDeobfuscateFinalResult:
         # non existing file
         myfilelist = ["/bla/bla/notthere.bin"]
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
 
         # Create directory with a directory name that could be renamed, but should not
-        dirname = os.path.join(SAB_DATA_DIR, "333c1c9e2bdfb5114044bf25152b7eaa.bin")
+        dirname = os.path.join(SAB_CACHE_DIR, "333c1c9e2bdfb5114044bf25152b7eaa.bin")
         os.mkdir(dirname)
         myfilelist = [dirname]
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        self.deobfuscate_wrapper(myfilelist, jobname)
         assert os.path.exists(dirname)
         shutil.rmtree(dirname)
 
@@ -354,7 +362,7 @@ class TestDeobfuscateFinalResult:
 
     def test_deobfuscate_par2_plus_deobfuscate(self):
         # test for first par2 based renaming, then deobfuscate obfuscated names
-        work_dir = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        work_dir = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(work_dir)
 
         source_zip_file = os.path.join(SAB_DATA_DIR, "deobfuscate_par2_based", "20mb_with_par2_package.zip")
@@ -373,7 +381,7 @@ class TestDeobfuscateFinalResult:
         list_of_files = recover_par2_names(list_of_files)
         assert os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should exist
 
-        deobfuscate_list(list_of_files, "My Great Download")
+        self.deobfuscate_wrapper(list_of_files, "My Great Download")
         assert os.path.isfile(os.path.join(work_dir, "My Great Download.bin"))  # the twentymb.bin should be renamed
         assert not os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should now be gone
 

@@ -23,13 +23,21 @@ import os
 import logging
 import re
 import gc
-import datetime
 import time
-import json
 import getpass
 import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any
+
+# For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
+# compile due to Rust dependency. Since the output is the same, we support all modules.
+try:
+    import orjson as json
+except ImportError:
+    try:
+        import ujson as json
+    except ImportError:
+        import json
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -49,13 +57,11 @@ from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.internetspeed import internetspeed
 from sabnzbd.utils.pathbrowser import folders_at_path
-from sabnzbd.utils.getperformance import getcpu, getpystone
+from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.misc import (
     loadavg,
     to_units,
     int_conv,
-    time_format,
-    cat_convert,
     create_https_certificates,
     calc_age,
     opts_to_pp,
@@ -64,7 +70,7 @@ from sabnzbd.misc import (
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup, active_socks5_proxy
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 from sabnzbd.lang import is_rtl
 import sabnzbd.emailer
@@ -83,7 +89,6 @@ _MSG_NO_PATH = "file does not exist"
 _MSG_OUTPUT_FORMAT = "Format not supported"
 _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
-_MSG_BAD_SERVER_PARMS = "Incorrect server settings"
 
 
 def api_handler(kwargs: Dict[str, Any]):
@@ -135,7 +140,7 @@ def _api_set_config_default(name, kwargs):
     for keyword in keywords:
         item = config.get_config("misc", keyword)
         if item:
-            item.set(item.default())
+            item.set(item.default)
     config.save_config()
     return report()
 
@@ -265,54 +270,6 @@ def _api_queue_default(value, kwargs):
     return report(keyword="queue", data=build_queue(start=start, limit=limit, search=search, nzo_ids=nzo_ids))
 
 
-def _api_queue_rating(value, kwargs):
-    """API: accepts value(=nzo_id), type, setting, detail"""
-    vote_map = {"up": sabnzbd.Rating.VOTE_UP, "down": sabnzbd.Rating.VOTE_DOWN}
-    flag_map = {
-        "spam": sabnzbd.Rating.FLAG_SPAM,
-        "encrypted": sabnzbd.Rating.FLAG_ENCRYPTED,
-        "expired": sabnzbd.Rating.FLAG_EXPIRED,
-        "other": sabnzbd.Rating.FLAG_OTHER,
-        "comment": sabnzbd.Rating.FLAG_COMMENT,
-    }
-    content_type = kwargs.get("type")
-    setting = kwargs.get("setting")
-    if value:
-        try:
-            video = audio = vote = flag = None
-            if content_type == "video" and setting != "-":
-                video = setting
-            if content_type == "audio" and setting != "-":
-                audio = setting
-            if content_type == "vote":
-                vote = vote_map[setting]
-            if content_type == "flag":
-                flag = flag_map[setting]
-            if cfg.rating_enable():
-                sabnzbd.Rating.update_user_rating(value, video, audio, vote, flag, kwargs.get("detail"))
-            return report()
-        except:
-            return report(_MSG_BAD_SERVER_PARMS)
-    else:
-        return report(_MSG_NO_VALUE)
-
-
-def _api_options(name, kwargs):
-    return report(
-        keyword="options",
-        data={
-            "sabyenc": sabnzbd.decoder.SABYENC_ENABLED,
-            "par2": sabnzbd.newsunpack.PAR2_COMMAND,
-            "multipar": sabnzbd.newsunpack.MULTIPAR_COMMAND,
-            "rar": sabnzbd.newsunpack.RAR_COMMAND,
-            "zip": sabnzbd.newsunpack.ZIP_COMMAND,
-            "7zip": sabnzbd.newsunpack.SEVENZIP_COMMAND,
-            "nice": sabnzbd.newsunpack.NICE_COMMAND,
-            "ionice": sabnzbd.newsunpack.IONICE_COMMAND,
-        },
-    )
-
-
 def _api_translate(name, kwargs):
     """API: accepts value(=acronym)"""
     return report(keyword="value", data=T(kwargs.get("value", "")))
@@ -324,17 +281,12 @@ def _api_addfile(name, kwargs):
     if not name or isinstance(name, str):
         name = kwargs.get("nzbfile", None)
     if hasattr(name, "file") and hasattr(name, "filename") and name.filename:
-        cat = kwargs.get("cat")
-        xcat = kwargs.get("xcat")
-        if not cat and xcat:
-            # Indexer category, so do mapping
-            cat = cat_convert(xcat)
         # Add the NZB-file
         res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
             name,
             pp=kwargs.get("pp"),
             script=kwargs.get("script"),
-            cat=cat,
+            cat=kwargs.get("cat"),
             priority=kwargs.get("priority"),
             nzbname=kwargs.get("nzbname"),
             password=kwargs.get("password"),
@@ -373,27 +325,16 @@ def _api_addlocalfile(name, kwargs):
     """API: accepts name, pp, script, cat, priority, nzbname"""
     if name:
         if os.path.exists(name):
-            pp = kwargs.get("pp")
-            script = kwargs.get("script")
-            cat = kwargs.get("cat")
-            xcat = kwargs.get("xcat")
-            if not cat and xcat:
-                # Indexer category, so do mapping
-                cat = cat_convert(xcat)
-            priority = kwargs.get("priority")
-            nzbname = kwargs.get("nzbname")
-            password = kwargs.get("password")
-
             if get_ext(name) in VALID_ARCHIVES + VALID_NZB_FILES:
                 res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
                     name,
-                    pp=pp,
-                    script=script,
-                    cat=cat,
-                    priority=priority,
+                    pp=kwargs.get("pp"),
+                    script=kwargs.get("script"),
+                    cat=kwargs.get("cat"),
+                    priority=kwargs.get("priority"),
                     keep=True,
-                    nzbname=nzbname,
-                    password=password,
+                    nzbname=kwargs.get("nzbname"),
+                    password=kwargs.get("password"),
                 )
                 return report(keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
             else:
@@ -525,7 +466,7 @@ def _api_history(name, kwargs):
     last_history_update = int_conv(kwargs.get("last_history_update", 0))
     search = kwargs.get("search")
     failed_only = int_conv(kwargs.get("failed_only"))
-    categories = kwargs.get("category")
+    categories = kwargs.get("cat") or kwargs.get("category")
     nzo_ids = kwargs.get("nzo_ids")
 
     # Do we need to send anything?
@@ -674,7 +615,7 @@ LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
 LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
 LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
 LOG_INI_HIDE_RE = re.compile(
-    rb"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
+    rb"(email_pwd|email_account|email_to|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
     re.I,
 )
 LOG_HASH_RE = re.compile(rb"([a-fA-F\d]{25})", re.I)
@@ -760,18 +701,6 @@ def _api_restart_repair(name, kwargs):
 
 def _api_disconnect(name, kwargs):
     sabnzbd.Downloader.disconnect()
-    return report()
-
-
-def _api_osx_icon(name, kwargs):
-    """API: accepts value"""
-    value = kwargs.get("value", "1").strip()
-    cfg.osx_menu.set(value != "0")
-    return report()
-
-
-def _api_rescan(name, kwargs):
-    sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=True)
     return report()
 
 
@@ -930,19 +859,6 @@ def _api_config_speedlimit(kwargs):
     return report()
 
 
-def _api_config_get_speedlimit(kwargs):
-    return report(keyword="speedlimit", data=sabnzbd.Downloader.get_limit())
-
-
-def _api_config_set_colorscheme(kwargs):
-    value = kwargs.get("value")
-    if value:
-        cfg.web_color.set(value)
-        return report()
-    else:
-        return report(_MSG_NO_VALUE)
-
-
 def _api_config_set_pause(kwargs):
     """API: accepts value(=pause interval)"""
     value = kwargs.get("value")
@@ -966,8 +882,8 @@ def _api_config_regenerate_certs(kwargs):
     # Make sure we only over-write default locations
     result = False
     if (
-        sabnzbd.cfg.https_cert() is sabnzbd.cfg.https_cert.default()
-        and sabnzbd.cfg.https_key() is sabnzbd.cfg.https_key.default()
+        sabnzbd.cfg.https_cert() is sabnzbd.cfg.https_cert.default
+        and sabnzbd.cfg.https_key() is sabnzbd.cfg.https_key.default
     ):
         https_cert = sabnzbd.cfg.https_cert.get_path()
         https_key = sabnzbd.cfg.https_key.get_path()
@@ -1021,7 +937,6 @@ _api_table = {
     "set_config_default": (_api_set_config_default, 3),
     "del_config": (_api_del_config, 3),
     "queue": (_api_queue, 2),
-    "options": (_api_options, 2),
     "translate": (_api_translate, 2),
     "addfile": (_api_addfile, 1),
     "retry": (_api_retry, 2),
@@ -1037,7 +952,6 @@ _api_table = {
     "get_files": (_api_get_files, 2),
     "move_nzf_bulk": (_api_move_nzf_bulk, 2),
     "addurl": (_api_addurl, 1),
-    "addid": (_api_addurl, 1),
     "pause": (_api_pause, 2),
     "resume": (_api_resume, 2),
     "shutdown": (_api_shutdown, 3),
@@ -1051,9 +965,7 @@ _api_table = {
     "restart": (_api_restart, 3),
     "restart_repair": (_api_restart_repair, 3),
     "disconnect": (_api_disconnect, 2),
-    "osx_icon": (_api_osx_icon, 3),
     "gc_stats": (_api_gc_stats, 3),
-    "rescan": (_api_rescan, 2),
     "eval_sort": (_api_eval_sort, 3),
     "watched_now": (_api_watched_now, 2),
     "resume_pp": (_api_resume_pp, 2),
@@ -1082,7 +994,6 @@ _api_queue_table = {
     "resume": (_api_queue_resume, 2),
     "priority": (_api_queue_priority, 2),
     "sort": (_api_queue_sort, 2),
-    "rating": (_api_queue_rating, 2),
 }
 
 _api_status_table = {
@@ -1095,10 +1006,7 @@ _api_status_table = {
 
 _api_config_table = {
     "speedlimit": (_api_config_speedlimit, 2),
-    "set_speedlimit": (_api_config_speedlimit, 2),
-    "get_speedlimit": (_api_config_get_speedlimit, 2),
     "set_pause": (_api_config_set_pause, 2),
-    "set_colorscheme": (_api_config_set_colorscheme, 3),
     "set_apikey": (_api_config_set_apikey, 3),
     "set_nzbkey": (_api_config_set_nzbkey, 3),
     "regenerate_certs": (_api_config_regenerate_certs, 3),
@@ -1138,6 +1046,7 @@ def report(error: Optional[str] = None, keyword: str = "value", data: Any = None
                 info = data
             else:
                 info = {keyword: data}
+
         response = utob(json.dumps(info))
 
     elif output == "xml":
@@ -1299,15 +1208,19 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     # build up header full of basic information
     info = build_header(trans_functions=False)
 
-    info["logfile"] = sabnzbd.LOGFILE
-    info["weblogfile"] = sabnzbd.WEBLOGFILE
+    info["logfile"] = clip_path(sabnzbd.LOGFILE)
+    info["weblogfile"] = clip_path(sabnzbd.WEBLOGFILE)
+    info["webdir"] = clip_path(info["webdir"])
     info["loglevel"] = str(cfg.log_level())
     info["folders"] = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
-    info["configfn"] = config.get_filename()
+    info["configfn"] = clip_path(config.get_filename())
     info["warnings"] = sabnzbd.GUIHANDLER.content()
 
     # Calculate performance measures, if requested
     if int_conv(calculate_performance):
+        # Perform the internetspeed measure in separate thread
+        internetspeed_future = sabnzbd.THREAD_POOL.submit(internetspeed)
+
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
@@ -1316,10 +1229,13 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed_future.result(), 1)
+
+    # How often did we delay?
+    info["delayed_decoder"] = sabnzbd.BPSMeter.delayed_decoder
+    info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
 
     # Dashboard: Speed of System
-    info["cpumodel"] = getcpu()
     info["pystone"] = sabnzbd.PYSTONE_SCORE
 
     # Dashboard: Speed of Download directory:
@@ -1339,12 +1255,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         info["localipv4"] = localipv4()
         info["publicipv4"] = publicipv4()
         info["ipv6"] = ipv6()
-        # Dashboard: DNS-check
-        try:
-            addresslookup(cfg.selftest_host())
-            info["dnslookup"] = "OK"
-        except:
-            info["dnslookup"] = None
+        info["dnslookup"] = dnslookup()
 
     info["servers"] = []
     # Servers-list could be modified during iteration, so we need a copy
@@ -1389,17 +1300,27 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
 
 def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None):
-
     info = build_header(for_template=False)
-    qnfo = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
+    (
+        queue_bytes_total,
+        queue_bytes_left,
+        bytes_left_previous_page,
+        nzo_list,
+        queue_fullsize,
+        nzos_matched,
+    ) = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
 
     info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
     info["speed"] = to_units(sabnzbd.BPSMeter.bps)
-    info["mbleft"] = "%.2f" % (qnfo.bytes_left / MEBI)
-    info["mb"] = "%.2f" % (qnfo.bytes / MEBI)
-    info["sizeleft"] = to_units(qnfo.bytes_left, "B")
-    info["size"] = to_units(qnfo.bytes, "B")
-    info["noofslots_total"] = qnfo.q_fullsize
+    info["mbleft"] = "%.2f" % (queue_bytes_left / MEBI)
+    info["mb"] = "%.2f" % (queue_bytes_total / MEBI)
+    info["sizeleft"] = to_units(queue_bytes_left, "B")
+    info["size"] = to_units(queue_bytes_total, "B")
+    info["noofslots_total"] = queue_fullsize
+    info["noofslots"] = nzos_matched
+    info["start"] = start
+    info["limit"] = limit
+    info["finish"] = info["start"] + info["limit"]
 
     if sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc:
         status = Status.PAUSED
@@ -1408,59 +1329,37 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
     else:
         status = Status.IDLE
     info["status"] = status
-    info["timeleft"] = calc_timeleft(qnfo.bytes_left, sabnzbd.BPSMeter.bps)
-
-    datestart = datetime.datetime.now()
-    try:
-        datefinish = datestart + datetime.timedelta(seconds=qnfo.bytes_left / sabnzbd.BPSMeter.bps)
-        # new eta format: 16:00 Fri 07 Feb
-        info["eta"] = datefinish.strftime(time_format("%H:%M %a %d %b"))
-    except:
-        info["eta"] = T("unknown")
-
-    info["refresh_rate"] = str(cfg.refresh_rate()) if cfg.refresh_rate() > 0 else ""
-    info["interface_settings"] = cfg.interface_settings()
+    info["timeleft"] = calc_timeleft(queue_bytes_left, sabnzbd.BPSMeter.bps)
     info["scripts"] = list_scripts()
     info["categories"] = list_cats()
-    info["rating_enable"] = bool(cfg.rating_enable())
-    info["noofslots"] = qnfo.q_fullsize
-    info["start"] = start
-    info["limit"] = limit
-    info["finish"] = info["start"] + info["limit"]
 
     n = start
-    running_bytes = qnfo.bytes_left_previous_page
+    running_bytes = bytes_left_previous_page
     slotinfo = []
-    for pnfo in qnfo.list:
-        nzo_id = pnfo.nzo_id
-        bytesleft = pnfo.bytes_left
-        bytes_total = pnfo.bytes
-        average_date = pnfo.avg_date
-        is_propagating = (pnfo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
-        status = pnfo.status
-        priority = pnfo.priority
-        mbleft = bytesleft / MEBI
-        mb = bytes_total / MEBI
+    for nzo in nzo_list:
+        mbleft = nzo.remaining / MEBI
+        mb = nzo.bytes / MEBI
+        is_propagating = (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
 
         slot = {}
         slot["index"] = n
-        slot["nzo_id"] = str(nzo_id)
-        slot["unpackopts"] = str(opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
-        slot["priority"] = INTERFACE_PRIORITIES.get(priority, NORMAL_PRIORITY)
-        slot["script"] = pnfo.script if pnfo.script else "None"
-        slot["filename"] = pnfo.filename
-        slot["labels"] = pnfo.labels
-        slot["password"] = pnfo.password if pnfo.password else ""
-        slot["cat"] = pnfo.category if pnfo.category else "None"
+        slot["nzo_id"] = str(nzo.nzo_id)
+        slot["unpackopts"] = str(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete))
+        slot["priority"] = INTERFACE_PRIORITIES.get(nzo.priority, NORMAL_PRIORITY)
+        slot["script"] = nzo.script if nzo.script else "None"
+        slot["filename"] = nzo.final_name
+        slot["labels"] = nzo.labels
+        slot["password"] = nzo.password if nzo.password else ""
+        slot["cat"] = nzo.cat if nzo.cat else "None"
         slot["mbleft"] = "%.2f" % mbleft
         slot["mb"] = "%.2f" % mb
-        slot["size"] = to_units(bytes_total, "B")
-        slot["sizeleft"] = to_units(bytesleft, "B")
+        slot["size"] = to_units(nzo.bytes, "B")
+        slot["sizeleft"] = to_units(nzo.remaining, "B")
         slot["percentage"] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else "0"
-        slot["mbmissing"] = "%.2f" % (pnfo.bytes_missing / MEBI)
-        slot["direct_unpack"] = pnfo.direct_unpack
+        slot["mbmissing"] = "%.2f" % (nzo.bytes_missing / MEBI)
+        slot["direct_unpack"] = nzo.direct_unpack_progress
 
-        if not sabnzbd.Downloader.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
+        if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
                 slot["status"] = Status.PROP
             elif status == Status.CHECKING:
@@ -1469,40 +1368,26 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
                 slot["status"] = Status.DOWNLOADING
         else:
             # Ensure compatibility of API status
-            if status == Status.DELETED or priority == FORCE_PRIORITY:
-                status = Status.DOWNLOADING
-            slot["status"] = "%s" % status
+            if nzo.status == Status.DELETED or nzo.priority == FORCE_PRIORITY:
+                nzo.status = Status.DOWNLOADING
+            slot["status"] = nzo.status
 
         if (
             sabnzbd.Downloader.paused
             or sabnzbd.Downloader.paused_for_postproc
             or is_propagating
-            or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
-        ) and priority != FORCE_PRIORITY:
+            or nzo.status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
+        ) and nzo.priority != FORCE_PRIORITY:
             slot["timeleft"] = "0:00:00"
-            slot["eta"] = "unknown"
         else:
-            running_bytes += bytesleft
+            running_bytes += nzo.remaining
             slot["timeleft"] = calc_timeleft(running_bytes, sabnzbd.BPSMeter.bps)
-            try:
-                datestart = datestart + datetime.timedelta(seconds=bytesleft / sabnzbd.BPSMeter.bps)
-                # new eta format: 16:00 Fri 07 Feb
-                slot["eta"] = datestart.strftime(time_format("%H:%M %a %d %b"))
-            except:
-                datestart = datestart
-                slot["eta"] = "unknown"
 
         # Do not show age when it's not known
-        if average_date.year < 2000:
+        if nzo.avg_date.year < 2000:
             slot["avg_age"] = "-"
         else:
-            slot["avg_age"] = calc_age(average_date)
-
-        rating = sabnzbd.Rating.get_rating_by_nzo(nzo_id)
-        slot["has_rating"] = rating is not None
-        if rating:
-            slot["rating_avg_video"] = rating.avg_video
-            slot["rating_avg_audio"] = rating.avg_audio
+            slot["avg_age"] = calc_age(nzo.avg_date)
 
         slotinfo.append(slot)
         n += 1
@@ -1529,9 +1414,7 @@ def build_file_list(nzo_id: str):
     jobs = []
     nzo = sabnzbd.sabnzbd.NzbQueue.get_nzo(nzo_id)
     if nzo:
-        pnfo = nzo.gather_info(full=True)
-
-        for nzf in pnfo.finished_files:
+        for nzf in nzo.finished_files:
             jobs.append(
                 {
                     "filename": nzf.filename,
@@ -1544,7 +1427,7 @@ def build_file_list(nzo_id: str):
                 }
             )
 
-        for nzf in pnfo.active_files:
+        for nzf in nzo.files:
             jobs.append(
                 {
                     "filename": nzf.filename,
@@ -1557,19 +1440,24 @@ def build_file_list(nzo_id: str):
                 }
             )
 
-        for nzf in pnfo.queued_files:
-            jobs.append(
-                {
-                    "filename": nzf.filename,
-                    "set": nzf.setname,
-                    "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
-                    "mb": "%.2f" % (nzf.bytes / MEBI),
-                    "bytes": "%.2f" % nzf.bytes,
-                    "age": calc_age(nzf.date),
-                    "nzf_id": nzf.nzf_id,
-                    "status": "queued",
-                }
-            )
+        # extrapars can change during iteration
+        for parset in nzo.extrapars.keys():
+            extrapar_set = nzo.extrapars.get(parset, [])
+            for nzf in extrapar_set[:]:
+                # Prevent listing files twice
+                if nzf not in nzo.files and nzf not in nzo.finished_files:
+                    jobs.append(
+                        {
+                            "filename": nzf.filename,
+                            "set": nzf.setname,
+                            "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
+                            "mb": "%.2f" % (nzf.bytes / MEBI),
+                            "bytes": "%.2f" % nzf.bytes,
+                            "age": calc_age(nzf.date),
+                            "nzf_id": nzf.nzf_id,
+                            "status": "queued",
+                        }
+                    )
 
     return jobs
 
@@ -1667,10 +1555,10 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
         header["webdir"] = webdir or sabnzbd.WEB_DIR
         header["url_base"] = cfg.url_base()
 
-        header["nt"] = sabnzbd.WIN32
-        header["darwin"] = sabnzbd.DARWIN
+        header["windows"] = sabnzbd.WIN32
+        header["macos"] = sabnzbd.MACOS
 
-        header["power_options"] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
+        header["power_options"] = sabnzbd.WIN32 or sabnzbd.MACOS or sabnzbd.LINUX_POWER
         header["pp_pause_event"] = sabnzbd.Scheduler.pp_pause_event
 
         header["apikey"] = cfg.api_key()
@@ -1701,7 +1589,6 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     anfo = sabnzbd.ArticleCache.cache_info()
     header["cache_art"] = str(anfo.article_sum)
     header["cache_size"] = to_units(anfo.cache_size, "B")
-    header["cache_max"] = str(anfo.cache_limit)
 
     return header
 
@@ -1713,7 +1600,7 @@ def build_history(
     failed_only: int = 0,
     categories: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
-):
+) -> Tuple[Dict[str, Any], int]:
     """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
@@ -1786,9 +1673,6 @@ def build_history(
     # Un-reverse the queue
     items.reverse()
 
-    # Global check if rating is enabled
-    rating_enabled = cfg.rating_enable()
-
     for item in items:
         item["size"] = to_units(item["bytes"], "B")
 
@@ -1800,18 +1684,6 @@ def build_history(
         # Retry of failed URL-fetch
         if item["report"] == "future":
             item["retry"] = True
-
-        if rating_enabled:
-            rating = sabnzbd.Rating.get_rating_by_nzo(item["nzo_id"])
-            item["has_rating"] = rating is not None
-            if rating:
-                item["rating_avg_video"] = rating.avg_video
-                item["rating_avg_audio"] = rating.avg_audio
-                item["rating_avg_vote_up"] = rating.avg_vote_up
-                item["rating_avg_vote_down"] = rating.avg_vote_down
-                item["rating_user_video"] = rating.user_video
-                item["rating_user_audio"] = rating.user_audio
-                item["rating_user_vote"] = rating.user_vote
 
     total_items += postproc_queue_size
 

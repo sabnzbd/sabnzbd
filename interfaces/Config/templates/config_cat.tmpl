@@ -1,5 +1,5 @@
 <!--#set global $pane="Categories"#-->
-<!--#set global $help_uri="configuration/3.5/categories"#-->
+<!--#set global $help_uri="configuration/3.6/categories"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 <div class="colmask">
     <div class="section">
@@ -111,7 +111,7 @@
         });
 
         // Add autocomplete and file-browser
-        \$('.fileBrowserSmall').typeahead().fileBrowser();
+        \$('.fileBrowserSmall').typeahead({appendTo: 'body'}).fileBrowser();
 
         // Make categories sortable
         \$('.padTable').sortable({

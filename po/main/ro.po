@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
 # Eduard Baniceru <war4peace@gmail.com>, 2021
+# Safihre <safihre@sabnzbd.org>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-develop\n"
+"Project-Id-Version: SABnzbd-3.6.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Eduard Baniceru <war4peace@gmail.com>, 2021\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Romanian (https://www.transifex.com/sabnzbd/teams/111101/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -145,6 +145,14 @@ msgstr "Închidere SABnzbd terminată"
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Semnal %s  prins, salvez şi ies..."
 
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"We are planning to remove the '%s' setting, which you have changed from the "
+"default value. Could you let us know why you made this change at: "
+"https://github.com/sabnzbd/sabnzbd/discussions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
@@ -187,11 +195,7 @@ msgstr "Notificări Test"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Reolvare adresă"
 
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "necunoscut"
-
-#. No value, used in dropdown menus - Job details page, select no files
+#. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "Niciunul"
@@ -205,11 +209,6 @@ msgstr "Implicit"
 #: sabnzbd/api.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "Compilarea unei căutări regex nereuşită: %s"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Too little diskspace forcing PAUSE"
-msgstr "Prea puţin spaţiu disc forţez PAUZĂ"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -225,6 +224,11 @@ msgstr "Eroare disc la crearea fişierului %s"
 #: sabnzbd/assembler.py
 msgid "Fatal error in Assembler"
 msgstr "Eroare fatală în  Assembler"
+
+#. Warning message
+#: sabnzbd/assembler.py
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Prea puţin spaţiu disc forţez PAUZĂ"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -263,20 +267,6 @@ msgstr "Oprit, extensii nedorite detectate"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "Sarcina \"%s\" întreruptă datorită ratingului (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
-msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "Sarcina \"%s\" anulată datorită ratingului (%s)"
-
-#: sabnzbd/assembler.py
-msgid "Aborted, rating filter matched (%s)"
-msgstr "Abandonat, filtru de rating potrivit (%s)"
-
-#. Warning message
-#: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
 msgstr ""
 "Sarcina „%s” este probabil criptată din cauza unui RAR cu același nume în "
@@ -286,30 +276,6 @@ msgstr ""
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr "Sarcina „%s” este probabil criptată: „parolă” în fișierul „%s”"
-
-#: sabnzbd/assembler.py
-msgid "video"
-msgstr "video"
-
-#: sabnzbd/assembler.py
-msgid "audio"
-msgstr "audio"
-
-#: sabnzbd/assembler.py
-msgid "spam"
-msgstr "spam"
-
-#: sabnzbd/assembler.py
-msgid "passworded"
-msgstr "parolat"
-
-#: sabnzbd/assembler.py
-msgid "downvoted"
-msgstr "vot negativ"
-
-#: sabnzbd/assembler.py
-msgid "keywords"
-msgstr "cuvinte cheie"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -366,6 +332,11 @@ msgstr "Nu pot scrie în fişierul INI %s"
 msgid "Cannot create backup file for %s"
 msgstr "Nu pot crea copie de rezervă pentru %s"
 
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr ""
+
 #. Error message
 #: sabnzbd/config.py
 msgid "Incorrectly encoded password %s"
@@ -407,11 +378,23 @@ msgstr "Eroare decodare: lipsă memorie"
 msgid "Unknown Error while decoding %s"
 msgstr "Eroare Necunoscută în timpul decodării %s"
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate skipped due to DVD/Bluray directories"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate corrected the extension of %d file(s)"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr "Dezarhivare directă"
 
-#. PP status - History: job status
+#. PP status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "Finalizat"
@@ -469,6 +452,11 @@ msgstr "Numele de server nu se rezolvă la DNS"
 #: sabnzbd/downloader.py
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Serverul %s va fi ignorat pentru %s minute"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -546,7 +534,7 @@ msgstr "Trimitere email nereuşiă"
 msgid "Failed to close mail connection"
 msgstr "Închidere conexiune mail nereuşită"
 
-#: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
 msgid "Cannot send, missing required data"
 msgstr "Nu pot trimite, informații necesare lipsă"
 
@@ -635,6 +623,18 @@ msgstr "Salvarea %s nereuşită"
 msgid "Loading %s failed"
 msgstr "Încărcarea %s nereuşită"
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr ""
@@ -692,6 +692,10 @@ msgid ""
 msgstr ""
 "Directorul de descărcări finalizate nu poate fi același, sau un subdirector "
 "al directorului de descărcări temporare"
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -1249,10 +1253,6 @@ msgid "UNWANTED"
 msgstr "NEDORIT"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "FILTERED"
-msgstr "FLTRAT"
-
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
 msgstr "AŞTEAPTĂ %s sec"
 
@@ -1608,12 +1608,12 @@ msgid "Trying RAR-based verification"
 msgstr "Încerc verificare RAR"
 
 #: sabnzbd/postproc.py
-msgid "[%s] RAR-based verification failed: %s"
-msgstr "[%s] verificarea RAR a eșuat: %s"
-
-#: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "Passworded"
 msgstr "Parolat"
+
+#: sabnzbd/postproc.py
+msgid "[%s] RAR-based verification failed: %s"
+msgstr "[%s] verificarea RAR a eșuat: %s"
 
 #: sabnzbd/postproc.py
 msgid "RAR files verified successfully"
@@ -1655,25 +1655,6 @@ msgstr "Eroare la oprirea sistemului"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/rating.py
-msgid "Indexer id (%s) not found for ratings file"
-msgstr "Id-ul indexului (%s) nu a fost găsit pentru fișierul de rating"
-
-#: sabnzbd/rating.py
-msgid "Server address"
-msgstr "Adresă server"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Cheie API"
-
-#: sabnzbd/rating.py, sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
 msgstr ""
 
 #. Error message
@@ -1748,7 +1729,7 @@ msgstr "Pauză timp de 3 ore"
 msgid "Pause for 6 hours"
 msgstr "Pauză timp de 6 ore"
 
-#. Shutdown SABnzbd - Config->Scheduling
+#. Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "Închidere"
@@ -1797,6 +1778,11 @@ msgstr "Uneşte fişierele"
 msgid "Unpack"
 msgstr "Dezarhivează"
 
+#. PP phase "deobfuscate"
+#: sabnzbd/skintext.py
+msgid "Deobfuscate"
+msgstr ""
+
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Script"
@@ -1811,11 +1797,6 @@ msgstr "Sursă"
 #: sabnzbd/skintext.py
 msgid "Servers"
 msgstr "Servere"
-
-#. PP Failure message
-#: sabnzbd/skintext.py
-msgid "Failure"
-msgstr "Nereuşit"
 
 #. PP status
 #: sabnzbd/skintext.py
@@ -1861,20 +1842,6 @@ msgstr "Verificare Rapidă..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Verificare..."
-
-#. Pseudo-PP status, in reality used for Queue-status
-#: sabnzbd/skintext.py
-msgid "Downloading"
-msgstr "Descărcare"
-
-#: sabnzbd/skintext.py
-msgid "Propagation delay"
-msgstr "Întârziere de propagare"
-
-#. #: Config->Scheduler
-#: sabnzbd/skintext.py
-msgid "Task"
-msgstr "Sarcină"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2006,21 +1973,6 @@ msgstr "Urgență"
 msgid "Low"
 msgstr "Scăzută"
 
-#. Megabytes
-#: sabnzbd/skintext.py
-msgid "MB"
-msgstr "MB"
-
-#. Gigabytes
-#: sabnzbd/skintext.py
-msgid "GB"
-msgstr "GB"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
-
 #. One hour
 #: sabnzbd/skintext.py
 msgid "hour"
@@ -2067,54 +2019,6 @@ msgid "Year"
 msgstr "An"
 
 #: sabnzbd/skintext.py
-msgid "January"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "February"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "March"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "April"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "May"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "June"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "July"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "August"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "September"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "October"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "November"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "December"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Day of month"
 msgstr "Zi din lună"
 
@@ -2137,14 +2041,6 @@ msgstr "Azi"
 #: sabnzbd/skintext.py
 msgid "Total"
 msgstr "Total"
-
-#: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "Personalizat"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Viteză"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -2175,40 +2071,8 @@ msgid "Host"
 msgstr "Gazdă"
 
 #: sabnzbd/skintext.py
-msgid "Comment"
-msgstr "Comentariu"
-
-#: sabnzbd/skintext.py
-msgid "Send"
-msgstr "Trimite"
-
-#: sabnzbd/skintext.py
 msgid "Cancel"
 msgstr "Anulează"
-
-#: sabnzbd/skintext.py
-msgid "Other"
-msgstr "Altele"
-
-#: sabnzbd/skintext.py
-msgid "Report"
-msgstr "Raportează"
-
-#: sabnzbd/skintext.py
-msgid "Video"
-msgstr "Video"
-
-#: sabnzbd/skintext.py
-msgid "Audio"
-msgstr "Audio"
-
-#: sabnzbd/skintext.py
-msgid "Not used"
-msgstr "Neutilizat"
-
-#: sabnzbd/skintext.py
-msgid "or less"
-msgstr "sau mai puțin"
 
 #: sabnzbd/skintext.py
 msgid "Log in"
@@ -2221,11 +2085,6 @@ msgstr "Deconectare"
 #: sabnzbd/skintext.py
 msgid "Remember me"
 msgstr "Ține-mă minte"
-
-#. SABnzbd's theme line
-#: sabnzbd/skintext.py
-msgid "The automatic usenet download tool"
-msgstr "Instrumentul de descărcare automată usenet"
 
 #. "Save" button
 #: sabnzbd/skintext.py
@@ -2240,11 +2099,6 @@ msgstr "Salvăm.."
 #: sabnzbd/skintext.py
 msgid "Are you sure?"
 msgstr "Sunteţi sigur?"
-
-#. Used in confirmation popups
-#: sabnzbd/skintext.py
-msgid "Delete all downloaded files?"
-msgstr "Ştergeţi toate fişierele descărcate?"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2284,7 +2138,7 @@ msgstr "Probleme"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Support the project, Donate!"
-msgstr ""
+msgstr "Susţine proiectul, Donează!"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2346,20 +2200,8 @@ msgid "Download Dir"
 msgstr "Dosar Descărcare"
 
 #: sabnzbd/skintext.py
-msgid "PAUSED"
-msgstr "ÎNTRERUPT"
-
-#: sabnzbd/skintext.py
-msgid "Cached %s articles (%s)"
-msgstr "Articole %s în cache (%s)"
-
-#: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "Încărcare sistem"
-
-#: sabnzbd/skintext.py
-msgid "New release %s available at"
-msgstr "Versiune nouă %s disponibilă la"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -2370,20 +2212,10 @@ msgstr "Sunteţi sigur că doriţi să inchideţi SABnzbd?"
 msgid "Add"
 msgstr "Adaugă"
 
-#. Add NZB file to queue (header
-#: sabnzbd/skintext.py
-msgid "Add File"
-msgstr "Adaugă fişier"
-
 #. Job category
 #: sabnzbd/skintext.py
 msgid "Category"
 msgstr "Categorie"
-
-#. Queue page table column header
-#: sabnzbd/skintext.py
-msgid "Processing"
-msgstr "În curs de procesare"
 
 #. Server priority
 #: sabnzbd/skintext.py
@@ -2405,21 +2237,6 @@ msgstr "+Dezarhivare"
 msgid "+Delete"
 msgstr "+Ştergere"
 
-#. Post processing pick list: abbreviation for "+Repair"
-#: sabnzbd/skintext.py
-msgid "R"
-msgstr "R"
-
-#. Post processing pick list: abbreviation for "+Unpack"
-#: sabnzbd/skintext.py
-msgid "U"
-msgstr "U"
-
-#. Post processing pick list: abbreviation for "+Delete"
-#: sabnzbd/skintext.py
-msgid "D"
-msgstr "D"
-
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Force"
@@ -2434,11 +2251,6 @@ msgstr "Stop"
 #: sabnzbd/skintext.py
 msgid "Enter URL"
 msgstr "Introdu URL"
-
-#. Queue page selection menu
-#: sabnzbd/skintext.py
-msgid "On queue finish"
-msgstr "La terminarea coadei de descărcare"
 
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
@@ -2460,35 +2272,15 @@ msgstr "Hibernare PC"
 msgid "Shutdown SABnzbd"
 msgstr "Închide SABnzbd"
 
-#. Queue page selection menu or entry box
+#. Queue page table column header
 #: sabnzbd/skintext.py
-msgid "Speed Limit"
-msgstr "Limită de Viteză"
+msgid "Processing"
+msgstr "În curs de procesare"
 
-#. Queue page table column header - Config->RSS table column header
-#: sabnzbd/skintext.py
-msgid "Order"
-msgstr "Ordine"
-
-#. Queue page table column header - Job details page
+#. Queue page table column header
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "Nume"
-
-#. Queue page table column header, "estimated time of arrival"
-#: sabnzbd/skintext.py
-msgid "ETA"
-msgstr "Timp Estimat"
-
-#. Queue page table column header, "age of the NZB"
-#: sabnzbd/skintext.py
-msgid "AGE"
-msgstr "Vârstă"
-
-#. Queue page table, "Delete" button
-#: sabnzbd/skintext.py
-msgid "Del"
-msgstr "Şterge"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2520,11 +2312,6 @@ msgstr "Şterge NZB-uri"
 msgid "Purge NZBs & Delete Files"
 msgstr "Şterge NZB-uri & Fişiere Şterse"
 
-#. Retry all failed jobs dialog box
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs"
-msgstr "Reîncearcă toate sarcinile eșuate"
-
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB"
@@ -2534,11 +2321,6 @@ msgstr "Şterge NZB"
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
 msgstr "Şterge NZB & Fişiere Şterse"
-
-#. Queue page, as in "4G *of* 10G"
-#: sabnzbd/skintext.py
-msgid "of"
-msgstr "din"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2558,11 +2340,6 @@ msgstr "manual"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Resetează Cota acum"
-
-#. Confirmation popup
-#: sabnzbd/skintext.py
-msgid "Delete all completed items from History?"
-msgstr "Ştergeţi toate obiectele complete din Istoric?"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2620,25 +2397,8 @@ msgstr "Cale"
 
 #. Retry all failed jobs in History
 #: sabnzbd/skintext.py
-msgid "Retry all failed"
-msgstr "Reîncearcă toate eșuate"
-
-#. Retry all button for Retry All Failed Jobs
-#: sabnzbd/skintext.py
-msgid "Retry All"
-msgstr "Reîncearcă toate"
-
-#: sabnzbd/skintext.py
-msgid "Virus/spam"
-msgstr "Virus/spam"
-
-#: sabnzbd/skintext.py
-msgid "Out of retention"
-msgstr "Dincolo de retenție"
-
-#: sabnzbd/skintext.py
-msgid "Other problem"
-msgstr "Altă problemă"
+msgid "Retry all failed jobs"
+msgstr "Reîncearcă toate sarcinile eșuate"
 
 #. Status page button
 #: sabnzbd/skintext.py
@@ -2690,21 +2450,6 @@ msgstr "+ Depanare"
 msgid "Connections"
 msgstr "Conexiuni"
 
-#. Status page, table header
-#: sabnzbd/skintext.py
-msgid "Latest Warnings"
-msgstr "Ultimele Avertizări"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "clear"
-msgstr "Şterge"
-
-#. Status page button
-#: sabnzbd/skintext.py
-msgid "Unblock"
-msgstr "Deblochează"
-
 #. Status page, article identifier
 #: sabnzbd/skintext.py
 msgid "Article identifier"
@@ -2715,25 +2460,10 @@ msgstr "Identificator Articol"
 msgid "File set"
 msgstr "Set fişiere"
 
-#. Status page, table column header, when error occured
-#: sabnzbd/skintext.py
-msgid "When"
-msgstr "Când"
-
-#. Status page, table column header, type of message - Config->RSS table
-#. column header
-#: sabnzbd/skintext.py
-msgid "Type"
-msgstr "Tip"
-
 #. Status page, indicator that server is enabled
 #: sabnzbd/skintext.py
 msgid "Enabled"
 msgstr "Activat"
-
-#: sabnzbd/skintext.py
-msgid "Dashboard"
-msgstr "Panou de Control"
 
 #: sabnzbd/skintext.py
 msgid "Connection failed!"
@@ -2756,8 +2486,16 @@ msgid "Nameserver / DNS Lookup"
 msgstr "Server de nume/Căutare DNS"
 
 #: sabnzbd/skintext.py
-msgid "CPU Model"
-msgstr "Model CPU"
+msgid "Download speed limited by"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "CPU"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Disk speed"
+msgstr ""
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -2773,20 +2511,8 @@ msgid "Complete folder speed"
 msgstr "Vitează completă director"
 
 #: sabnzbd/skintext.py
-msgid "Writing speed"
-msgstr "Viteză de scriere"
-
-#: sabnzbd/skintext.py
-msgid "Could not write. Check that the directory is writable."
-msgstr "Nu am putut scrie. Verifică dacă director poate fi modificat."
-
-#: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Click on Repeat test button below to determine"
-msgstr "Click pe butonul de Repetare test pentru a determina"
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
@@ -2971,10 +2697,6 @@ msgid "Enable HTTPS"
 msgstr "Activează HTTPS"
 
 #: sabnzbd/skintext.py
-msgid "not installed"
-msgstr "neinstalat"
-
-#: sabnzbd/skintext.py
 msgid "Enable accessing the interface from a HTTPS address."
 msgstr "Permite acesarea interfeţei de la o adresă HTTPS."
 
@@ -3062,6 +2784,14 @@ msgstr ""
 "octeţi, opţional urmaţi de K,M,G. De exemplu : \"64M\" sau\"128M\"</i>"
 
 #: sabnzbd/skintext.py
+msgid "Download backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Save or restore a backup of the configuration file and databases."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Cleanup List"
 msgstr "Listă Curăţenie"
 
@@ -3128,6 +2858,10 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Cheie API"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3198,10 +2932,6 @@ msgstr "Dosare Utilizator"
 #: sabnzbd/skintext.py
 msgid "Browse"
 msgstr "Răsfoire"
-
-#: sabnzbd/skintext.py
-msgid "In"
-msgstr "În"
 
 #: sabnzbd/skintext.py
 msgid "Temporary Download Folder"
@@ -3586,6 +3316,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Propagation delay"
+msgstr "Întârziere de propagare"
+
+#: sabnzbd/skintext.py
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority"
 " to Force will skip the delay."
@@ -3712,10 +3446,6 @@ msgid "Quota"
 msgstr "Cotă"
 
 #: sabnzbd/skintext.py
-msgid "Indexing"
-msgstr "Indexare"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Cât de mult poate fi descărcat în acestă lună (K/M/G)"
 
@@ -3782,60 +3512,6 @@ msgid ""
 msgstr ""
 "Atunci când e clar că o sarcină va eșua din cauza lipsei de date pe "
 "server(e), anulează sarcina"
-
-#: sabnzbd/skintext.py
-msgid "Enable Indexer Integration"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Filtering"
-msgstr "Activează Filtrare"
-
-#: sabnzbd/skintext.py
-msgid "Action downloads according to filtering rules."
-msgstr "Acțiune când se descarcă în baza de reguli de filtrare."
-
-#: sabnzbd/skintext.py
-msgid "Abort If"
-msgstr "Renunță Dacă"
-
-#: sabnzbd/skintext.py
-msgid "Else Pause If"
-msgstr "Altfel Întrerupe Dacă"
-
-#: sabnzbd/skintext.py
-msgid "Video rating"
-msgstr "Rating Video"
-
-#: sabnzbd/skintext.py
-msgid "Audio rating"
-msgstr "Rating Audio"
-
-#: sabnzbd/skintext.py
-msgid "Spam"
-msgstr "Spam"
-
-#: sabnzbd/skintext.py
-msgid "Confirmed"
-msgstr "Confirmat"
-
-#: sabnzbd/skintext.py
-msgid "More thumbs down than up"
-msgstr "Mai multe voturi pozitive ca negative"
-
-#: sabnzbd/skintext.py
-msgid "Title keywords"
-msgstr "Cuvinte cheie din Titlu"
-
-#: sabnzbd/skintext.py
-msgid "Comma separated list"
-msgstr "Listă separată prin virgulă"
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
@@ -4023,7 +3699,7 @@ msgstr "Adaugă Planificare"
 msgid "Frequency"
 msgstr "Frecvenţă"
 
-#. Config->Scheduling - Job details page, section header
+#. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "Acțiune"
@@ -4074,6 +3750,16 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Next scan at"
 msgstr ""
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Order"
+msgstr "Ordine"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Type"
+msgstr "Tip"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4418,11 +4104,6 @@ msgstr "Dosar/Cale"
 msgid "Indexer Categories / Groups"
 msgstr ""
 
-#. Small delete button
-#: sabnzbd/skintext.py
-msgid "X"
-msgstr "X"
-
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Select at least 1 category."
@@ -4453,10 +4134,6 @@ msgstr ""
 msgid "Presets"
 msgstr "Presetări"
 
-#: sabnzbd/skintext.py
-msgid "Example"
-msgstr "Exemplu"
-
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
@@ -4465,10 +4142,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Enable Movie Sorting"
 msgstr "Activează Sortare Filme"
-
-#: sabnzbd/skintext.py
-msgid "Keep loose downloads in extra folders"
-msgstr "Păstrează descărcările suplimentare în dosare extra"
 
 #: sabnzbd/skintext.py
 msgid "Affected Categories"
@@ -4686,50 +4359,10 @@ msgstr "Editează Detalii NZB"
 msgid "Delete"
 msgstr "Şterge"
 
-#. Job details page, move file to top
-#: sabnzbd/skintext.py
-msgid "Top"
-msgstr "Vârf"
-
-#. Job details page, move file one place up
-#: sabnzbd/skintext.py
-msgid "Up"
-msgstr "Sus"
-
-#. Job details page, move file one place down
-#: sabnzbd/skintext.py
-msgid "Down"
-msgstr "Jos"
-
-#. Job details page, move file to bottom
-#: sabnzbd/skintext.py
-msgid "Bottom"
-msgstr "Coadă"
-
-#. Job details page, select all files
-#: sabnzbd/skintext.py
-msgid "All"
-msgstr "Toate"
-
-#. Job details page, invert file selection
-#: sabnzbd/skintext.py
-msgid "Invert"
-msgstr "Inversează"
-
 #. Job details page, filename column header
 #: sabnzbd/skintext.py
 msgid "Filename"
 msgstr "Nume de fișier"
-
-#. Job details page, subject column header
-#: sabnzbd/skintext.py
-msgid "Subject"
-msgstr "Subiect"
-
-#. Job details page, section header
-#: sabnzbd/skintext.py
-msgid "Selection"
-msgstr "Selecţie"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
@@ -4754,6 +4387,10 @@ msgstr "Selectează tot"
 #: sabnzbd/skintext.py
 msgid "Restart SABnzbd"
 msgstr "Repornește SABnzbd"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish"
+msgstr "La terminarea coadei de descărcare"
 
 #: sabnzbd/skintext.py
 msgid "Status and interface options"
@@ -4832,6 +4469,10 @@ msgid "Show active connections"
 msgstr "Arată conexiuni active"
 
 #: sabnzbd/skintext.py
+msgid "Unblock"
+msgstr "Deblochează"
+
+#: sabnzbd/skintext.py
 msgid "Orphaned jobs"
 msgstr "Sarcini orfane"
 
@@ -4864,10 +4505,6 @@ msgid "Submit"
 msgstr "Trimite"
 
 #: sabnzbd/skintext.py
-msgid "Open Informational URL"
-msgstr "Dechide URL Informaţii"
-
-#: sabnzbd/skintext.py
 msgid "Submitted. Thank you!"
 msgstr "Trimis. Vă mulțumim!"
 
@@ -4882,6 +4519,14 @@ msgstr "Elimină toate fișierele selectate"
 #: sabnzbd/skintext.py
 msgid "Hide/show completed files"
 msgstr "Ascunde/arată fișierele finalizate"
+
+#: sabnzbd/skintext.py
+msgid "Top"
+msgstr "Vârf"
+
+#: sabnzbd/skintext.py
+msgid "Bottom"
+msgstr "Coadă"
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
@@ -4904,6 +4549,10 @@ msgid "Glitter has some (new) features you might like!"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Personalizat"
+
+#: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "Aspect compact"
 
@@ -4916,12 +4565,20 @@ msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "Interfață tabelară <br/>(coadă și istoric separate)"
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Viteză"
+
+#: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"
 msgstr "Confirmă Ştergere Coadă"
 
 #: sabnzbd/skintext.py
 msgid "Confirm History Deletions"
 msgstr "Confirmă Ştergere Istoric"
+
+#: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
@@ -5077,6 +4734,10 @@ msgid "Start Wizard"
 msgstr "Porneşte Vrăjitor"
 
 #: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
 "\n"
 "SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
@@ -5087,18 +4748,6 @@ msgstr ""
 "SABnzbd vine cu ABSOLUT NICI O GARANŢIE.\n"
 "Acesta este software gratis, şi sunteţi binevenit să-l redistribuiţi în anumite condiţii.\n"
 "Este licenţiat sub GNU General Public License versiunea 2 sau (la opţiunea dumneavoastră) orice versiune ulterioară.\n"
-
-#: sabnzbd/skintext.py
-msgid ""
-"In order to download from usenet you will require access to a provider. Your"
-" ISP may provide you with access, however a premium provider is recommended."
-msgstr ""
-"Pentru a descărca de pe usenet veţi avea nevoie de un furnizor.  ISP-ul dvs."
-" vă poate oferi acces, totuşi un furnizor premium e recomandat."
-
-#: sabnzbd/skintext.py
-msgid "Don't have a usenet provider? We recommend trying %s."
-msgstr "Nu aveţi un furnizor usenet? Vă recomandăm să încercaţi %s."
 
 #. Error message
 #: sabnzbd/sorting.py

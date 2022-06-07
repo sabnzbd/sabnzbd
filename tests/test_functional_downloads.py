@@ -18,16 +18,21 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
+
+
 import sabnzbd.filesystem as filesystem
+from sabnzbd.constants import DEF_INI_FILE
 from tests.testhelper import *
+from flaky import flaky
 
 
+@flaky
 class TestDownloadFlow(SABnzbdBaseTest):
     def is_server_configured(self):
         """Check if the wizard was already performed.
         If not: run the wizard!
         """
-        with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
+        with open(os.path.join(SAB_CACHE_DIR, DEF_INI_FILE), "r") as config_file:
             if f"[[{SAB_NEWSSERVER_HOST}]]" not in config_file.read():
                 self.start_wizard()
 
@@ -35,7 +40,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
         # Language-selection
         self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
         self.selenium_wrapper(self.driver.find_element_by_id, "en").click()
-        self.selenium_wrapper(self.driver.find_element_by_css_selector, ".btn.btn-default").click()
+        self.selenium_wrapper(self.driver.find_element_by_css_selector, "button.btn.btn-default").click()
 
         # Fill server-info
         self.no_page_crash()

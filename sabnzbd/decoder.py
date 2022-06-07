@@ -36,15 +36,17 @@ from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version
 SABYENC_VERSION = None
+SABYENC_SIMD = None
 try:
     import sabyenc3
 
     SABYENC_ENABLED = True
     SABYENC_VERSION = sabyenc3.__version__
+    SABYENC_SIMD = sabyenc3.simd
     # Verify version to at least match minor version
     if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
         raise ImportError
-except ImportError:
+except:
     SABYENC_ENABLED = False
 
 
@@ -66,13 +68,15 @@ class Decoder:
     """Implement thread-like coordinator for the decoders"""
 
     def __init__(self):
-        logging.debug("Initializing decoders")
+
         # Initialize queue and servers
         self.decoder_queue = queue.Queue()
 
         # Initialize decoders
+        decoders = cfg.num_simd_decoders()
+        logging.debug("Initializing %d decoder(s)", decoders)
         self.decoder_workers = []
-        for i in range(cfg.num_decoders()):
+        for _ in range(decoders):
             self.decoder_workers.append(DecoderWorker(self.decoder_queue))
 
     def start(self):
@@ -110,12 +114,11 @@ class Decoder:
 
 
 class DecoderWorker(Thread):
-    """The actuall workhorse that handles decoding!"""
+    """The actual workhorse that handles decoding!"""
 
     def __init__(self, decoder_queue):
         super().__init__()
         logging.debug("Initializing decoder %s", self.name)
-
         self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]]]] = decoder_queue
 
     def run(self):
@@ -125,7 +128,7 @@ class DecoderWorker(Thread):
             decoded_data = raw_data = article = nzo = None
             article, raw_data = self.decoder_queue.get()
             if not article:
-                logging.info("Shutting down decoder %s", self.name)
+                logging.debug("Shutting down decoder %s", self.name)
                 break
 
             nzo = article.nzf.nzo
@@ -237,7 +240,7 @@ class DecoderWorker(Thread):
 
 def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
     # Let SABYenc do all the heavy lifting
-    decoded_data, yenc_filename, crc, crc_expected, crc_correct = sabyenc3.decode_usenet_chunks(raw_data, article.bytes)
+    decoded_data, yenc_filename, crc_correct = sabyenc3.decode_usenet_chunks(raw_data)
 
     # Mark as decoded
     article.decoded = True
@@ -392,5 +395,6 @@ def search_new_server(article: Article) -> bool:
     if not article.search_new_server():
         # Increase bad articles if no new server was found
         article.nzf.nzo.increase_bad_articles_counter("bad_articles")
+        article.nzf.has_bad_articles = True
         return False
     return True

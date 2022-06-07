@@ -1,5 +1,5 @@
 <!--#set global $pane="Sorting"#-->
-<!--#set global $help_uri="configuration/3.5/sorting"#-->
+<!--#set global $help_uri="configuration/3.6/sorting"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -243,10 +243,6 @@
                         <input type="checkbox" name="enable_movie_sorting" id="enable_movie_sorting" value="1" <!--#if int($enable_movie_sorting)> 0 then 'checked="checked"' else ""#--> />
                     </div>
                     <div class="field-pair">
-                        <label class="config wide" for="movie_extra_folder">$T('opt-movieExtra')</label>
-                        <input type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if int($movie_extra_folder)> 0 then 'checked="checked"' else ""#--> />
-                    </div>
-                    <div class="field-pair">
                         <label class="config" for="moviefoldername">$T('sortString')</label>
                         <input type="text" name="movie_sort_string" id="moviefoldername" value="$movie_sort_string" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                     </div>
@@ -257,9 +253,9 @@
                     <div class="field-pair">
                         <label class="config">$T('presetSort')</label>
                         <div class="presets float-left">
-                            <input type="button" class="btn btn-default" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="$T('button-inFolders')" />
-                            <input type="button" class="btn btn-default" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')" />
-                            <input type="button" class="btn btn-default" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('decade')" />
+                            <input type="button" class="btn btn-default" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');" value="$T('button-inFolders')" />
+                            <input type="button" class="btn btn-default" onclick="movieSet('%title (%y).%ext',' CD%1');" value="$T('button-noFolders')" />
+                            <input type="button" class="btn btn-default" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');" value="$T('decade')" />
                             <input type="button" class="btn btn-default" onclick="movieSet('%dn.%ext')" value="$T('button-FileLikeFolder')" />
                         </div>
                     </div>
@@ -640,10 +636,6 @@
       \$('#moviefoldername').val(val);
       \$('#movieextra').val(val2);
       new_previewmovie();
-  }
-
-  function movieExtraFolder(value) {
-      \$('#movie_extra_folder').attr("checked", value);
   }
 
   function dateSet(val) {

@@ -34,6 +34,12 @@ class Test_File_Extension:
         assert not file_extension.has_popular_extension("test/testing")
         assert not file_extension.has_popular_extension("test/testing.rar01")
         assert not file_extension.has_popular_extension("98ads098f098fa.a0ds98f098asdf")
+        assert not file_extension.has_popular_extension("blabla/blabla.yyy")
+
+    # user defined ext_rename_ignore
+    @set_config({"ext_rename_ignore": "xxx, yyy, zzz"})
+    def test_ext_rename_ignore(self):
+        assert file_extension.has_popular_extension("blabla/blabla.yyy")
 
     def test_what_is_most_likely_extension(self):
         # These are real-content files, where the contents determine the extension

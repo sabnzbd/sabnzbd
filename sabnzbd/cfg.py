@@ -37,13 +37,14 @@ from sabnzbd.config import (
 from sabnzbd.constants import (
     DEF_HOST,
     DEF_PORT,
-    DEF_STDINTF,
+    DEF_STD_WEB_DIR,
     DEF_ADMIN_DIR,
     DEF_DOWNLOAD_DIR,
     DEF_NZBBACK_DIR,
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
+    DEF_STD_WEB_COLOR,
 )
 
 
@@ -86,6 +87,13 @@ def all_lowercase(value):
         # If list, for each item
         return None, [item.lower() for item in value]
     return None, value.lower()
+
+
+def lower_case_ext(value):
+    """Generate lower case extension(s), without dot"""
+    if isinstance(value, list):
+        return None, [item.lower().strip(" .") for item in value]
+    return None, value.lower().strip(" .")
 
 
 def validate_no_unc(root, value, default):
@@ -191,13 +199,13 @@ def validate_notempty(root, value, default):
 pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
-bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, 0, 100)
+bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, minval=0, maxval=100)
 refresh_rate = OptionNumber("misc", "refresh_rate", 0)
 interface_settings = OptionStr("misc", "interface_settings")
-log_level = OptionNumber("logging", "log_level", 1, -1, 2)
+log_level = OptionNumber("logging", "log_level", 1, minval=-1, maxval=2)
 log_size = OptionNumber("logging", "max_log_size", 5242880)
-log_backups = OptionNumber("logging", "log_backups", 5, 1, 1024)
-queue_limit = OptionNumber("misc", "queue_limit", 20, 0)
+log_backups = OptionNumber("logging", "log_backups", 5, minval=1, maxval=1024)
+queue_limit = OptionNumber("misc", "queue_limit", 20, minval=0)
 
 configlock = OptionBool("misc", "config_lock", False)
 
@@ -205,6 +213,7 @@ configlock = OptionBool("misc", "config_lock", False)
 ##############################################################################
 # One time trackers
 ##############################################################################
+fixed_ports = OptionBool("misc", "fixed_ports", False)
 sched_converted = OptionBool("misc", "sched_converted", False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
 direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)
@@ -224,8 +233,8 @@ username = OptionStr("misc", "username")
 password = OptionPassword("misc", "password")
 bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
-web_dir = OptionStr("misc", "web_dir", DEF_STDINTF)
-web_color = OptionStr("misc", "web_color")
+web_dir = OptionStr("misc", "web_dir", DEF_STD_WEB_DIR)
+web_color = OptionStr("misc", "web_color", DEF_STD_WEB_COLOR)
 https_cert = OptionDir("misc", "https_cert", "server.cert", create=False)
 https_key = OptionDir("misc", "https_key", "server.key", create=False)
 https_chain = OptionDir("misc", "https_chain", create=False)
@@ -234,7 +243,7 @@ enable_https = OptionBool("misc", "enable_https", False)
 inet_exposure = OptionNumber("misc", "inet_exposure", 0, protect=True)
 api_key = OptionStr("misc", "api_key", create_api_key())
 nzb_key = OptionStr("misc", "nzb_key", create_api_key())
-
+socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 
 ##############################################################################
 # Config - Folders
@@ -249,11 +258,11 @@ complete_dir = OptionDir(
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
-script_dir = OptionDir("misc", "script_dir", create=True, writable=False)
+script_dir = OptionDir("misc", "script_dir", writable=False)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
-dirscan_dir = OptionDir("misc", "dirscan_dir", create=False)
-dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, 0, 3600)
+dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
+dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
 password_file = OptionDir("misc", "password_file", "", create=False)
 log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_notempty)
 
@@ -261,11 +270,10 @@ log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_notempty)
 ##############################################################################
 # Config - Switches
 ##############################################################################
-max_art_tries = OptionNumber("misc", "max_art_tries", 3, 2)
+max_art_tries = OptionNumber("misc", "max_art_tries", 3, minval=2)
 load_balancing = OptionNumber("misc", "load_balancing", 2)
 top_only = OptionBool("misc", "top_only", False)
 sfv_check = OptionBool("misc", "sfv_check", True)
-quick_check_ext_ignore = OptionList("misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"])
 script_can_fail = OptionBool("misc", "script_can_fail", False)
 enable_recursive = OptionBool("misc", "enable_recursive", True)
 flat_unpack = OptionBool("misc", "flat_unpack", False)
@@ -285,7 +293,6 @@ ignore_samples = OptionBool("misc", "ignore_samples", False)
 deobfuscate_final_filenames = OptionBool("misc", "deobfuscate_final_filenames", False)
 auto_sort = OptionStr("misc", "auto_sort")
 direct_unpack = OptionBool("misc", "direct_unpack", False)
-direct_unpack_threads = OptionNumber("misc", "direct_unpack_threads", 3, 1)
 propagation_delay = OptionNumber("misc", "propagation_delay", 0)
 folder_rename = OptionBool("misc", "folder_rename", True)
 replace_spaces = OptionBool("misc", "replace_spaces", False)
@@ -294,41 +301,18 @@ safe_postproc = OptionBool("misc", "safe_postproc", True)
 pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
 enable_all_par = OptionBool("misc", "enable_all_par", False)
 sanitize_safe = OptionBool("misc", "sanitize_safe", False)
-cleanup_list = OptionList("misc", "cleanup_list")
-unwanted_extensions = OptionList("misc", "unwanted_extensions")
+cleanup_list = OptionList("misc", "cleanup_list", validation=lower_case_ext)
+unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower_case_ext)
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
 history_retention = OptionStr("misc", "history_retention", "0")
 enable_meta = OptionBool("misc", "enable_meta", True)
 
-
 quota_size = OptionStr("misc", "quota_size")
 quota_day = OptionStr("misc", "quota_day")
 quota_resume = OptionBool("misc", "quota_resume", False)
 quota_period = OptionStr("misc", "quota_period", "m")
-
-rating_enable = OptionBool("misc", "rating_enable", False)
-rating_host = OptionStr("misc", "rating_host")
-rating_api_key = OptionStr("misc", "rating_api_key")
-rating_filter_enable = OptionBool("misc", "rating_filter_enable", False)
-rating_filter_abort_audio = OptionNumber("misc", "rating_filter_abort_audio", 0)
-rating_filter_abort_video = OptionNumber("misc", "rating_filter_abort_video", 0)
-rating_filter_abort_encrypted = OptionBool("misc", "rating_filter_abort_encrypted", False)
-rating_filter_abort_encrypted_confirm = OptionBool("misc", "rating_filter_abort_encrypted_confirm", False)
-rating_filter_abort_spam = OptionBool("misc", "rating_filter_abort_spam", False)
-rating_filter_abort_spam_confirm = OptionBool("misc", "rating_filter_abort_spam_confirm", False)
-rating_filter_abort_downvoted = OptionBool("misc", "rating_filter_abort_downvoted", False)
-rating_filter_abort_keywords = OptionStr("misc", "rating_filter_abort_keywords")
-rating_filter_pause_audio = OptionNumber("misc", "rating_filter_pause_audio", 0)
-rating_filter_pause_video = OptionNumber("misc", "rating_filter_pause_video", 0)
-rating_filter_pause_encrypted = OptionBool("misc", "rating_filter_pause_encrypted", False)
-rating_filter_pause_encrypted_confirm = OptionBool("misc", "rating_filter_pause_encrypted_confirm", False)
-rating_filter_pause_spam = OptionBool("misc", "rating_filter_pause_spam", False)
-rating_filter_pause_spam_confirm = OptionBool("misc", "rating_filter_pause_spam_confirm", False)
-rating_filter_pause_downvoted = OptionBool("misc", "rating_filter_pause_downvoted", False)
-rating_filter_pause_keywords = OptionStr("misc", "rating_filter_pause_keywords")
-
 
 ##############################################################################
 # Config - Sorting
@@ -340,20 +324,17 @@ tv_categories = OptionList("misc", "tv_categories", ["tv"])
 enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False)
 movie_sort_string = OptionStr("misc", "movie_sort_string")
 movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False)
-movie_extra_folder = OptionBool("misc", "movie_extra_folder", False)
 movie_categories = OptionList("misc", "movie_categories", ["movies"])
 
 enable_date_sorting = OptionBool("misc", "enable_date_sorting", False)
 date_sort_string = OptionStr("misc", "date_sort_string")
 date_categories = OptionList("misc", "date_categories", ["tv"])
 
-
 ##############################################################################
 # Config - Scheduling and RSS
 ##############################################################################
 schedules = OptionList("misc", "schedlines")
-rss_rate = OptionNumber("misc", "rss_rate", 60, 15, 24 * 60)
-
+rss_rate = OptionNumber("misc", "rss_rate", 60, minval=15, maxval=24 * 60)
 
 ##############################################################################
 # Config - Specials
@@ -387,34 +368,35 @@ win_menu = OptionBool("misc", "win_menu", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
 enable_broadcast = OptionBool("misc", "enable_broadcast", True)
 ipv6_hosting = OptionBool("misc", "ipv6_hosting", False)
-fixed_ports = OptionBool("misc", "fixed_ports", False)
 api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
 disable_key = OptionBool("misc", "disable_api_key", False, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
-num_decoders = OptionNumber("misc", "num_decoders", 3)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
-req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, 100, 200)
+quick_check_ext_ignore = OptionList("misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"], validation=lower_case_ext)
+req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, minval=100, maxval=200)
 selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
 episode_rename_limit = OptionStr("misc", "episode_rename_limit", "20M")
 size_limit = OptionStr("misc", "size_limit", "0")
-show_sysload = OptionNumber("misc", "show_sysload", 2, 0, 2)
-history_limit = OptionNumber("misc", "history_limit", 10, 0)
-wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, 1, 60)
-max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, 20, 65000)
+show_sysload = OptionNumber("misc", "show_sysload", 2, minval=0, maxval=2)
+direct_unpack_threads = OptionNumber("misc", "direct_unpack_threads", 3, minval=1)
+history_limit = OptionNumber("misc", "history_limit", 10, minval=0)
+wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, minval=1, maxval=60)
+max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000)
 marker_file = OptionStr("misc", "nomedia_marker")
-ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, 0, 2)
+ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, minval=0, maxval=2)
 url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
-max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
-downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
-ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
-socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
+max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
+downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
+num_simd_decoders = OptionNumber("misc", "num_simd_decoders", 2, minval=1)
+ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
+ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 
 
 ##############################################################################
@@ -428,12 +410,12 @@ email_account = OptionStr("misc", "email_account")
 email_pwd = OptionPassword("misc", "email_pwd")
 email_endjob = OptionNumber("misc", "email_endjob", 0, 0, 2)
 email_full = OptionBool("misc", "email_full", False)
-email_dir = OptionDir("misc", "email_dir", create=True)
+email_dir = OptionDir("misc", "email_dir")
 email_rss = OptionBool("misc", "email_rss", False)
 email_cats = OptionList("misc", "email_cats", ["*"])
 
 # [ncenter]
-ncenter_enable = OptionBool("ncenter", "ncenter_enable", sabnzbd.DARWIN)
+ncenter_enable = OptionBool("ncenter", "ncenter_enable", sabnzbd.MACOS)
 ncenter_cats = OptionList("ncenter", "ncenter_cats", ["*"])
 ncenter_prio_startup = OptionBool("ncenter", "ncenter_prio_startup", True)
 ncenter_prio_download = OptionBool("ncenter", "ncenter_prio_download", False)
@@ -465,7 +447,7 @@ acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", True)
 acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
-ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.DARWIN)
+ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.MACOS)
 ntfosd_cats = OptionList("ntfosd", "ntfosd_cats", ["*"])
 ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", True)
 ntfosd_prio_download = OptionBool("ntfosd", "ntfosd_prio_download", False)

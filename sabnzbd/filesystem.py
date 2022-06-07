@@ -45,6 +45,7 @@ from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IG
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
 
+
 # For Windows: determine executable extensions
 if os.name == "nt":
     PATHEXT = os.environ.get("PATHEXT", "").lower().split(";")
@@ -197,7 +198,7 @@ def sanitize_filename(name: str) -> str:
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
 
-    if ":" in name and sabnzbd.DARWIN:
+    if ":" in name and sabnzbd.MACOS:
         # Compensate for the foolish way par2 on macOS handles a colon character
         name = name[name.rfind(":") + 1 :]
 
@@ -381,7 +382,6 @@ def create_real_path(
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
-            logging.info("%s directory: %s does not exist, try to create it", name, my_dir)
             if not create_all_dirs(my_dir, apply_permissions):
                 msg = T("Cannot create directory %s") % clip_path(my_dir)
                 logging.error(msg)
@@ -403,7 +403,7 @@ def same_file(a: str, b: str) -> int:
     return 1 if A and B are actually the same path
     return 2 if B is a subfolder of A
     """
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    if sabnzbd.WIN32 or sabnzbd.MACOS:
         a = clip_path(a.lower())
         b = clip_path(b.lower())
 
@@ -431,7 +431,7 @@ def check_mount(path: str) -> bool:
     """Return False if volume isn't mounted on Linux or macOS
     Retry 6 times with an interval of 1 sec.
     """
-    if sabnzbd.DARWIN:
+    if sabnzbd.MACOS:
         m = re.search(r"^(/Volumes/[^/]+)", path, re.I)
     elif sabnzbd.WIN32:
         m = re.search(r"^([a-z]:\\)", path, re.I)
@@ -533,7 +533,7 @@ def fix_unix_encoding(folder: str):
     This happens for example when files are created
     on Windows but unpacked/repaired on linux
     """
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+    if not sabnzbd.WIN32 and not sabnzbd.MACOS:
         for root, dirs, files in os.walk(folder):
             for name in files:
                 new_name = correct_unknown_encoding(name)
@@ -1021,7 +1021,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
             return disk_size / GIGI, available / GIGI
         except:
             return 0.0, 0.0
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         # MacOS diskfree ... via c-lib call statfs()
         disk_size, available = disk_free_macos_clib_statfs64(dir_to_check)
         return disk_size / GIGI, available / GIGI
@@ -1202,7 +1202,7 @@ def check_incomplete_vs_complete():
 def wait_for_download_folder():
     """Wait for download folder to become available"""
     while not sabnzbd.cfg.download_dir.test_path():
-        logging.debug('Waiting for "incomplete" folder')
+        logging.debug("Waiting for incomplete folder")
         time.sleep(2.0)
 
 
@@ -1244,3 +1244,34 @@ def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
         logging.info("Skipping existing file %s", full_nzb_path)
 
     return full_nzb_path
+
+
+def directory_is_writable_with_file(mydir, myfilename):
+    filename = os.path.join(mydir, myfilename)
+    if os.path.exists(filename):
+        try:
+            os.remove(filename)
+        except:
+            return False
+    try:
+        with open(filename, "w") as f:
+            f.write("Some random content")
+        os.remove(filename)
+        return True
+    except:
+        return False
+
+
+def directory_is_writable(test_dir: str) -> bool:
+    """Checks if dir is writable at all, and (on non-Windows), writable with special chars.
+    Returns True if all OK, otherwise False"""
+    if directory_is_writable_with_file(test_dir, "sab_test.txt"):
+        if not sabnzbd.WIN32 and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
+            sabnzbd.misc.helpful_warning(
+                T("%s is not writable with special character filenames. This can cause problems."), test_dir
+            )
+            return False
+    else:
+        sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads."), test_dir)
+        return False
+    return True

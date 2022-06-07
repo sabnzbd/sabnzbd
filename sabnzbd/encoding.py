@@ -77,6 +77,8 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
             return str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)["encoding"])
 
 
-def xml_name(p):
-    """Prepare name for use in HTML/XML contect"""
-    return escape(str(p))
+def xml_name(input_value) -> str:
+    """Prepare name for use in HTML/XML context"""
+    if input_value is not None:
+        return escape(str(input_value))
+    return ""

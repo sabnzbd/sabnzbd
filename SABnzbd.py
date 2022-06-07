@@ -64,7 +64,7 @@ from sabnzbd.constants import (
     DEF_TIMEOUT,
     DEF_LOG_ERRFILE,
     DEF_MAIN_TMPL,
-    DEF_STDINTF,
+    DEF_STD_WEB_DIR,
     DEF_WORKDIR,
     DEF_INTERFACES,
     DEF_LANGUAGE,
@@ -74,7 +74,7 @@ from sabnzbd.constants import (
     MAX_WARNINGS,
     RSS_FILE_NAME,
     DEF_LOG_FILE,
-    DEF_STDCONFIG,
+    DEF_STD_CONFIG,
     DEF_LOG_CHERRY,
 )
 import sabnzbd.newsunpack
@@ -100,7 +100,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup
 from sabnzbd.utils.getperformance import getpystone, getcpu
 import sabnzbd.utils.ssdp as ssdp
 
@@ -326,7 +326,7 @@ def identify_web_template(key, defweb, wdir):
 
     if not os.path.exists(full_main):
         helpful_warning(T("Cannot find web template: %s, trying standard template"), full_main)
-        full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
+        full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STD_WEB_DIR)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
             logging.exception("Cannot find standard template: %s", full_dir)
@@ -397,7 +397,7 @@ def get_user_profile_paths():
         sabnzbd.DIR_HOME = long_path(sabnzbd.DIR_HOME)
         return
 
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         home = os.environ.get("HOME")
         if home:
             sabnzbd.DIR_LCLDATA = "%s/Library/Application Support/SABnzbd" % home
@@ -421,6 +421,7 @@ def print_modules():
     if sabnzbd.decoder.SABYENC_ENABLED:
         # Yes, we have SABYenc, and it's the correct version, so it's enabled
         logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
+        logging.info("SABYenc module is using SIMD set: %s", sabnzbd.decoder.SABYENC_SIMD)
     else:
         # Something wrong with SABYenc, so let's determine and print what:
         if sabnzbd.decoder.SABYENC_VERSION:
@@ -458,7 +459,7 @@ def print_modules():
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
             helpful_warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
-        elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+        elif not (sabnzbd.WIN32 or sabnzbd.MACOS):
             logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
         logging.error(T("unrar binary... NOT found"))
@@ -468,7 +469,7 @@ def print_modules():
     # If available, we prefer 7zip over unzip
     if sabnzbd.newsunpack.SEVENZIP_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+        if not (sabnzbd.WIN32 or sabnzbd.MACOS):
             logging.info("7za binary version %s", sabnzbd.newsunpack.SEVENZIP_VERSION)
     else:
         logging.info(T("7za binary... NOT found!"))
@@ -616,7 +617,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = cherryhost
 
         # Some systems don't like brackets in numerical ipv6
-        if sabnzbd.DARWIN:
+        if sabnzbd.MACOS:
             cherryhost = cherryhost.strip("[]")
         else:
             try:
@@ -631,7 +632,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
-    if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+    if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.MACOS:
         # On the Ubuntu family, localhost leads to problems for CherryPy
         ips = ip_extract()
         if "127.0.0.1" in ips and "::1" in ips:
@@ -640,7 +641,7 @@ def get_webhost(cherryhost, cherryport, https_port):
                 browserhost = "127.0.0.1"
 
     # This is to please Chrome on macOS
-    if cherryhost == "localhost" and sabnzbd.DARWIN:
+    if cherryhost == "localhost" and sabnzbd.MACOS:
         cherryhost = "127.0.0.1"
         browserhost = "localhost"
 
@@ -1192,7 +1193,7 @@ def main():
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
+    if not sabnzbd.WIN32 and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
         helpful_warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
@@ -1206,6 +1207,9 @@ def main():
             T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
             sabnzbd.ORG_UMASK,
         )
+
+    # Log JSON module in case of problems
+    logging.debug("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
 
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
@@ -1230,13 +1234,14 @@ def main():
         logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
 
         # List networking
-        logging.debug("Local IPv4 address = %s", localipv4())
-        logging.debug("Public IPv4 address = %s", publicipv4())
-        logging.debug("IPv6 address = %s", ipv6())
+        localipv4()
+        publicipv4()
+        ipv6()
+        dnslookup()
 
-        # Measure and log system performance measured by pystone and - if possible - CPU model
-        logging.debug("CPU Pystone available performance = %s", getpystone())
-        logging.debug("CPU model = %s", getcpu())
+        # Measure basic system performance measured by pystone and - if possible - CPU model
+        getpystone()
+        getcpu()
 
     logging.info("Using INI file %s", inifile)
 
@@ -1247,8 +1252,8 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    sabnzbd.WEB_DIR = identify_web_template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
-    sabnzbd.WEB_DIR_CONFIG = identify_web_template(None, DEF_STDCONFIG, "")
+    sabnzbd.WEB_DIR = identify_web_template(sabnzbd.cfg.web_dir, DEF_STD_WEB_DIR, fix_webname(web_dir))
+    sabnzbd.WEB_DIR_CONFIG = identify_web_template(None, DEF_STD_CONFIG, "")
     sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, "wizard")
 
     sabnzbd.WEB_COLOR = check_template_scheme(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
@@ -1582,9 +1587,13 @@ def main():
             sys.argv = sabnzbd.RESTART_ARGS
             os.chdir(org_dir)
 
+            # Restore backup
+            if sabnzbd.RESTORE_DATA:
+                config.restore_config_backup(sabnzbd.RESTORE_DATA)
+
             # Binaries require special restart
             if hasattr(sys, "frozen"):
-                if sabnzbd.DARWIN:
+                if sabnzbd.MACOS:
                     # On macOS restart of app instead of embedded python
                     my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
                     my_args = " ".join(sys.argv[1:])
@@ -1609,7 +1618,7 @@ def main():
     sys.stdout.flush()
     sabnzbd.pid_file()
 
-    if hasattr(sys, "frozen") and sabnzbd.DARWIN:
+    if hasattr(sys, "frozen") and sabnzbd.MACOS:
         try:
             AppHelper.stopEventLoop()
         except:
@@ -1747,7 +1756,7 @@ if __name__ == "__main__":
         if not handle_windows_service():
             main()
 
-    elif sabnzbd.DARWIN and sabnzbd.FOUNDATION:
+    elif sabnzbd.MACOS and sabnzbd.FOUNDATION:
         # macOS binary runner
         from threading import Thread
         from PyObjCTools import AppHelper

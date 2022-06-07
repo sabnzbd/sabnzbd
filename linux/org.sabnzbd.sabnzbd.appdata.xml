@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2022 The SABnzbd-Team <team@sabnzbd.org> -->
+<component type="desktop-application">
+  <id>org.sabnzbd.sabnzbd</id>
+  <metadata_license>MIT</metadata_license>
+  <name>SABnzbd</name>
+  <summary>Free and easy binary newsreader</summary>
+  <description>
+    <p>
+      SABnzbd is a free and Open Source web-based binary newsreader,
+      with support for the popular nzb file format. It greatly simplifies
+      the process of downloading from Usenet, thanks to a friendly
+      web-based user interface and advanced built-in post-processing
+      options including the ability to automatically verify, repair,
+      extract and clean up downloaded posts. It runs anywhere, comes in
+      over a dozen languages, and integrates with a host of tools, apps
+      and services that help automate the download process.
+    </p>
+  </description>
+  <categories>
+    <category>Network</category>
+    <category>FileTransfer</category>
+  </categories>
+  <url type="homepage">https://sabnzbd.org</url>
+  <url type="bugtracker">https://github.com/sabnzbd/sabnzbd/issues</url>
+  <url type="translate">https://sabnzbd.org/wiki/translate</url>
+  <url type="donation">https://sabnzbd.org/donate</url>
+  <url type="help">https://sabnzbd.org/wiki/</url>
+  <url type="faq">https://sabnzbd.org/wiki/faq</url>
+  <url type="contact">https://forums.sabnzbd.org</url>
+  <launchable type="desktop-id">sabnzbd.desktop</launchable>
+  <provides>
+    <mediatype>application/x-nzb</mediatype>
+    <mediatype>application/x-compressed-nzb</mediatype>
+  </provides>
+  <project_license>GPL-2.0-or-later</project_license>
+  <developer_name>The SABnzbd-team</developer_name>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://sabnzbd.org/images/landing/screenshots/interface.png</image>
+      <caption>Web interface</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://sabnzbd.org/images/landing/screenshots/night-mode.png</image>
+      <caption>Night mode</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://sabnzbd.org/images/landing/screenshots/config.png</image>
+      <caption>Easy configuration</caption>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1"/>
+</component>

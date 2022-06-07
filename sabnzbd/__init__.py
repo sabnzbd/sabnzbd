@@ -21,8 +21,10 @@ import datetime
 import ctypes.util
 import time
 import socket
+
 import cherrypy
 import platform
+import concurrent.futures
 import sys
 from threading import Lock, Condition
 
@@ -30,7 +32,7 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WIN32 = DARWIN = FOUNDATION = WIN64 = DOCKER = False
+WIN32 = WIN64 = MACOS = MACOSARM64 = FOUNDATION = DOCKER = False
 KERNEL32 = LIBC = MACOSLIBC = None
 
 if os.name == "nt":
@@ -64,7 +66,8 @@ elif os.name == "posix":
 
     # Parse macOS version numbers
     if platform.system().lower() == "darwin":
-        DARWIN = True
+        MACOS = True
+        MACOSARM64 = platform.uname().machine == "arm64"
         MACOSLIBC = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the MacOS C library
         try:
             import Foundation
@@ -105,7 +108,6 @@ import sabnzbd.postproc
 import sabnzbd.downloader
 import sabnzbd.decoder
 import sabnzbd.assembler
-import sabnzbd.rating
 import sabnzbd.articlecache
 import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
@@ -120,7 +122,6 @@ import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
-Rating: sabnzbd.rating.Rating
 Assembler: sabnzbd.assembler.Assembler
 Decoder: sabnzbd.decoder.Decoder
 Downloader: sabnzbd.downloader.Downloader
@@ -175,9 +176,13 @@ WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
 EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = 1
+RESTORE_DATA = None
 
 # Condition used to handle the main loop in SABnzbd.py
 SABSTOP_CONDITION = Condition(Lock())
+
+# General threadpool
+THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
@@ -237,15 +242,12 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Optionally wait for "incomplete" to become online
     if cfg.wait_for_dfolder():
         filesystem.wait_for_download_folder()
-    else:
-        cfg.download_dir.set(cfg.download_dir(), create=True)
-    cfg.download_dir.set_create(True)
 
-    # If dirscan_dir cannot be created, set a proper value anyway.
-    # Maybe it's a network path that's temporarily missing.
-    path = cfg.dirscan_dir.get_path()
-    if not os.path.exists(path):
-        filesystem.create_real_path(cfg.dirscan_dir.ident(), "", path, False)
+    # Set the folders to be created, then the check_incomplete_vs_complete
+    # check will create them by calling get_path on them
+    cfg.download_dir.set_create(True)
+    cfg.complete_dir.set_create(True)
+    filesystem.check_incomplete_vs_complete()
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
@@ -269,8 +271,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.language.callback(cfg.guard_language)
     cfg.enable_https_verification.callback(cfg.guard_https_ver)
     cfg.guard_https_ver()
-
-    filesystem.check_incomplete_vs_complete()
 
     # Set language files
     lang.set_locale_info("SABnzbd", DIR_LANGUAGE)
@@ -304,7 +304,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
     sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
     sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
-    sabnzbd.Rating = sabnzbd.rating.Rating()
     sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
     sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
     sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
@@ -317,6 +316,27 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     if not cfg.cache_limit():
         cfg.cache_limit.set(misc.get_cache_limit())
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
+
+    # Values we want to remove
+    deprecated_options = [
+        cfg.ampm,
+        cfg.enable_meta,
+        cfg.replace_illegal,
+        cfg.html_login,
+        cfg.osx_speed,
+        cfg.allow_incomplete_nzb,
+        cfg.disable_key,
+        cfg.show_sysload,
+    ]
+    for deprecated_option in deprecated_options:
+        if deprecated_option() != deprecated_option.default:
+            sabnzbd.misc.helpful_warning(
+                T(
+                    "We are planning to remove the '%s' setting, which you have changed from the default value. "
+                    "Could you let us know why you made this change at: https://github.com/sabnzbd/sabnzbd/discussions"
+                ),
+                deprecated_option.keyword,
+            )
 
     logging.info("All processes started")
     sabnzbd.RESTART_REQ = False
@@ -344,9 +364,6 @@ def start():
         logging.debug("Starting dirscanner")
         sabnzbd.DirScanner.start()
 
-        logging.debug("Starting rating")
-        sabnzbd.Rating.start()
-
         logging.debug("Starting urlgrabber")
         sabnzbd.URLGrabber.start()
 
@@ -370,6 +387,8 @@ def halt():
 
         sabnzbd.directunpacker.abort_all()
 
+        sabnzbd.THREAD_POOL.shutdown(wait=False)
+
         logging.debug("Stopping RSSReader")
         sabnzbd.RSSReader.stop()
 
@@ -377,13 +396,6 @@ def halt():
         sabnzbd.URLGrabber.stop()
         try:
             sabnzbd.URLGrabber.join()
-        except:
-            pass
-
-        logging.debug("Stopping rating")
-        sabnzbd.Rating.stop()
-        try:
-            sabnzbd.Rating.join()
         except:
             pass
 
@@ -471,7 +483,6 @@ def save_state():
     sabnzbd.ArticleCache.flush_articles()
     sabnzbd.NzbQueue.save()
     sabnzbd.BPSMeter.save()
-    sabnzbd.Rating.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
     sabnzbd.RSSReader.save()
@@ -511,9 +522,6 @@ def check_all_tasks():
     if not sabnzbd.URLGrabber.is_alive():
         logging.info("Restarting crashed urlgrabber")
         sabnzbd.URLGrabber.__init__()
-    if not sabnzbd.Rating.is_alive():
-        logging.info("Restarting crashed rating")
-        sabnzbd.Rating.__init__()
     if not sabnzbd.Scheduler.is_alive():
         logging.info("Restarting crashed scheduler")
         sabnzbd.Scheduler.restart()

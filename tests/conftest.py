@@ -27,6 +27,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from warnings import warn
 
+from sabnzbd.constants import DEF_INI_FILE
 from tests.testhelper import *
 
 
@@ -66,11 +67,11 @@ def run_sabnzbd(clean_cache_dir):
         except requests.ConnectionError:
             sabnzbd_process.kill()
             sabnzbd_process.communicate(timeout=10)
-        except Exception:
-            warn("Failed to shutdown the sabnzbd process")
+        except Exception as err:
+            warn("Failed to shutdown the sabnzbd process: %s" % err)
 
     # Copy basic config file with API key
-    shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
+    shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, DEF_INI_FILE))
 
     # Check if we have language files
     locale_dir = os.path.join(SAB_BASE_DIR, "..", "locale")
@@ -138,9 +139,7 @@ def run_sabnews_and_selenium(request):
 
     # Start the driver and pass it on to all the classes
     driver = webdriver.Chrome(options=driver_options)
-    for item in request.node.items:
-        parent_class = item.getparent(pytest.Class)
-        parent_class.obj.driver = driver
+    SABnzbdBaseTest.driver = driver
 
     # Start SABNews
     sabnews_process = subprocess.Popen([sys.executable, os.path.join(SAB_BASE_DIR, "sabnews.py")])
@@ -152,16 +151,16 @@ def run_sabnews_and_selenium(request):
     try:
         sabnews_process.kill()
         sabnews_process.communicate(timeout=10)
-    except:
-        warn("Failed to shutdown the sabnews process")
+    except Exception as err:
+        warn("Failed to shutdown the sabnews process: %s" % err)
 
     # Shutdown Selenium/Chrome
     try:
         driver.close()
         driver.quit()
-    except:
+    except Exception as err:
         # If something else fails, this can cause very non-informative long tracebacks
-        warn("Failed to shutdown the selenium/chromedriver process")
+        warn("Failed to shutdown the selenium/chromedriver process: %s" % err)
 
 
 @pytest.fixture(scope="class")

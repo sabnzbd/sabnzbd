@@ -17,6 +17,7 @@ apps:
     environment:
       PATH: $SNAP/usr/lib/p7zip:$PATH
       LC_CTYPE: C.UTF-8
+      SNAPCRAFT_PRELOAD_REDIRECT_ONLY_SHM: 1
     command: bin/sabnzbd-wrapper
     daemon: simple
     plugs: [network, home, network-bind, removable-media]
@@ -35,8 +36,24 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt
       cp -R $SNAPCRAFT_PART_BUILD $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      echo "python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
+      echo "\$SNAP/usr/bin/snapcraft-preload python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
       chmod +x $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
+      ln -sf ../usr/lib/libsnapcraft-preload.so $SNAPCRAFT_PART_INSTALL/lib/libsnapcraft-preload.so
     prime: [-usr/bin/7z,-usr/bin/7za,-usr/bin/7zr]
     organize:
       usr/bin/unrar-nonfree: usr/bin/unrar
+  snapcraft-preload:
+    source: https://github.com/sergiusens/snapcraft-preload.git
+    plugin: cmake
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr -DLIBPATH=/lib
+    stage-packages:
+      - to amd64:
+        - lib32stdc++6
+    build-packages:
+      - to arm64:
+        - g++-multilib-arm-linux-gnueabihf
+        - gcc-multilib-arm-linux-gnueabihf
+      - else:
+        - gcc-multilib
+        - g++-multilib

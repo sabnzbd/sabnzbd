@@ -1,18 +1,21 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-pyinstaller==4.8
-pyinstaller-hooks-contrib==2022.0
+pyinstaller==5.1
+pyinstaller-hooks-contrib==2022.5
 altgraph==0.17.2
-wrapt==1.13.3
-setuptools==60.6.0
+wrapt==1.14.1
+setuptools==62.3.2
 pkginfo==1.8.2
 PyGithub==1.55
-charset-normalizer==2.0.11
+charset-normalizer==2.0.12
 certifi
+
+# orjson does not support 32bit Windows, exclude it based on Python-version
+orjson==3.6.8; python_version > '3.8'
 
 # For the macOS build
 dmgbuild==1.5.2; sys_platform == 'darwin'
 mac-alias==2.2.0; sys_platform == 'darwin'
-macholib==1.15.2; sys_platform == 'darwin'
+macholib==1.16; sys_platform == 'darwin'
 ds-store==1.3.0; sys_platform == 'darwin'
 PyNaCl==1.5.0; sys_platform == 'darwin'

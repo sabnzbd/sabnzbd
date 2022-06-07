@@ -61,7 +61,7 @@ if sabnzbd.WIN32:
     except ImportError:
         pass
 
-if sabnzbd.DARWIN:
+if sabnzbd.MACOS:
     from sabnzbd.utils import sleepless
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
@@ -621,9 +621,9 @@ def get_cache_limit():
         if sabnzbd.WIN32:
             # Windows
             mem_bytes = get_windows_memory()
-        elif sabnzbd.DARWIN:
+        elif sabnzbd.MACOS:
             # macOS
-            mem_bytes = get_darwin_memory()
+            mem_bytes = get_macos_memory()
         else:
             # Linux
             mem_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
@@ -642,7 +642,7 @@ def get_cache_limit():
         pass
 
     # Always at least minimum on Windows/macOS
-    if sabnzbd.WIN32 and sabnzbd.DARWIN:
+    if sabnzbd.WIN32 and sabnzbd.MACOS:
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
@@ -675,23 +675,22 @@ def get_windows_memory():
     return stat.ullTotalPhys
 
 
-def get_darwin_memory():
+def get_macos_memory():
     """Use system-call to extract total memory on macOS"""
     system_output = run_command(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
 
 
-def on_cleanup_list(filename, skip_nzb=False):
+def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
     """Return True if a filename matches the clean-up list"""
-    lst = cfg.cleanup_list()
-    if lst:
+    cleanup_list = cfg.cleanup_list()
+    if cleanup_list:
         name, ext = os.path.splitext(filename)
         ext = ext.strip().lower()
         name = name.strip()
-        for k in lst:
-            item = k.strip().strip(".").lower()
-            item = "." + item
-            if (item == ext or (ext == "" and item == name)) and not (skip_nzb and item == ".nzb"):
+        for cleanup_ext in cleanup_list:
+            cleanup_ext = "." + cleanup_ext
+            if (cleanup_ext == ext or (ext == "" and cleanup_ext == name)) and not (skip_nzb and cleanup_ext == ".nzb"):
                 return True
     return False
 
@@ -721,7 +720,7 @@ _HAVE_STATM = _PAGE_SIZE and memory_usage()
 def loadavg():
     """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+    if not sabnzbd.WIN32 and not sabnzbd.MACOS:
         opt = cfg.show_sysload()
         if opt:
             try:
@@ -1091,18 +1090,21 @@ def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclu
         raise ValueError("Expected dict or str, got %s" % type(input_dict_or_list))
 
 
-def list2cmdline(lst: List[str]) -> str:
-    """convert list to a cmd.exe-compatible command string"""
+def list2cmdline_unrar(lst: List[str]) -> str:
+    """convert list to a unrar.exe-compatible command string
+    Unrar uses "" instead of \" to escape the double quote"""
     nlst = []
     for arg in lst:
         if not arg:
             nlst.append('""')
         else:
+            if isinstance(arg, str):
+                arg = arg.replace('"', '""')
             nlst.append('"%s"' % arg)
     return " ".join(nlst)
 
 
-def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
+def build_and_run_command(command: List[str], windows_unrar_command: bool = False, **kwargs):
     """Builds and then runs command with nessecary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
@@ -1138,8 +1140,8 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
         # For Windows we always need to add python interpreter
         if command[0].endswith(".py"):
             command.insert(0, "python.exe")
-        if flatten_command:
-            command = list2cmdline(command)
+        if windows_unrar_command:
+            command = list2cmdline_unrar(command)
         # On some Windows platforms we need to suppress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
@@ -1297,7 +1299,7 @@ def system_shutdown():
 
     if sabnzbd.WIN32:
         sabnzbd.powersup.win_shutdown()
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_shutdown()
     else:
         sabnzbd.powersup.linux_shutdown()
@@ -1308,7 +1310,7 @@ def system_hibernate():
     logging.info("Performing system hybernation")
     if sabnzbd.WIN32:
         sabnzbd.powersup.win_hibernate()
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_hibernate()
     else:
         sabnzbd.powersup.linux_hibernate()
@@ -1319,7 +1321,7 @@ def system_standby():
     logging.info("Performing system standby")
     if sabnzbd.WIN32:
         sabnzbd.powersup.win_standby()
-    elif sabnzbd.DARWIN:
+    elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_standby()
     else:
         sabnzbd.powersup.linux_standby()

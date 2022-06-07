@@ -24,7 +24,6 @@ import select
 import logging
 from math import ceil
 from threading import Thread, RLock
-from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
@@ -33,10 +32,10 @@ from typing import List, Dict, Optional, Union
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
-from sabnzbd.newswrapper import NewsWrapper
+from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo, helpful_warning
+from sabnzbd.misc import from_units, nntp_to_msg, get_server_addrinfo, helpful_warning
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
@@ -476,9 +475,6 @@ class Downloader(Thread):
                 return False
         return True
 
-    def nzo_servers(self, nzo):
-        return list(filter(nzo.server_in_try_list, self.servers))
-
     def maybe_block_server(self, server: Server):
         # Was it resolving problem?
         if server.info is False:
@@ -526,23 +522,37 @@ class Downloader(Thread):
             if not article.search_new_server():
                 sabnzbd.NzbQueue.register_article(article, success=False)
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
+                article.nzf.has_bad_articles = True
             return
 
         # Send to decoder-queue
         sabnzbd.Decoder.process(article, raw_data)
 
         # See if we need to delay because the queues are full
-        logged = False
-        while not self.shutdown and (sabnzbd.Decoder.queue_full() or sabnzbd.Assembler.queue_full()):
-            if not logged:
-                # Only log once, to not waste any CPU-cycles
+        logged_counter = 0
+        decoder_full = sabnzbd.Decoder.queue_full()
+        assembler_full = sabnzbd.Assembler.queue_full()
+        while not self.shutdown and (decoder_full or assembler_full):
+            # Only log/update once every second, to not waste any CPU-cycles
+            if not logged_counter % 10:
+                # Make sure the BPS-meter is updated
+                sabnzbd.BPSMeter.update()
+
+                # Update who is delaying us
+                sabnzbd.BPSMeter.delayed_decoder += int(decoder_full)
+                sabnzbd.BPSMeter.delayed_assembler += int(assembler_full)
                 logging.debug(
-                    "Delaying - Decoder queue: %s - Assembler queue: %s",
+                    "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
+                    logged_counter / 10,
                     sabnzbd.Decoder.decoder_queue.qsize(),
                     sabnzbd.Assembler.queue.qsize(),
                 )
-                logged = True
-            time.sleep(0.01)
+
+            # Wait and update the queue sizes
+            time.sleep(0.1)
+            logged_counter += 1
+            decoder_full = sabnzbd.Decoder.queue_full()
+            assembler_full = sabnzbd.Assembler.queue_full()
 
     def run(self):
         # First check IPv6 connectivity
@@ -552,6 +562,10 @@ class Downloader(Thread):
         # Then we check SSL certificate checking
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
+
+        # Warn if there are servers defined, but none are valid
+        if config.get_servers() and not self.servers:
+            logging.warning(T("There are no active servers!"))
 
         # Kick BPS-Meter to check quota
         BPSMeter = sabnzbd.BPSMeter
@@ -790,11 +804,9 @@ class Downloader(Thread):
                             # Handle login problems
                             block = False
                             penalty = 0
-                            msg = error.response
-                            ecode = int_conv(msg[:3])
-                            display_msg = " [%s]" % msg
-                            logging.debug("Server login problem: %s, %s", ecode, msg)
-                            if ecode in (502, 400, 481, 482) and clues_too_many(msg):
+                            display_msg = " [%s]" % error.msg
+                            logging.debug("Server login problem: %s", error.msg)
+                            if error.code in (502, 400, 481, 482) and clues_too_many(error.msg):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
@@ -806,7 +818,7 @@ class Downloader(Thread):
                                     self.__reset_nw(nw, send_quit=True)
                                     self.plan_server(server, _PENALTY_TOOMANY)
                                     server.threads -= 1
-                            elif ecode in (502, 481, 482) and clues_too_many_ip(msg):
+                            elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                                 # Account sharing?
                                 if server.active:
                                     errormsg = T("Probable account sharing") + display_msg
@@ -816,7 +828,9 @@ class Downloader(Thread):
                                         logging.warning(T("Probable account sharing") + name)
                                 penalty = _PENALTY_SHARE
                                 block = True
-                            elif ecode in (452, 481, 482, 381) or (ecode == 502 and clues_login(msg)):
+                            elif error.code in (452, 481, 482, 381) or (
+                                error.code in (500, 502) and clues_login(error.msg)
+                            ):
                                 # Cannot login, block this server
                                 if server.active:
                                     errormsg = T("Failed login for server %s") % display_msg
@@ -825,19 +839,19 @@ class Downloader(Thread):
                                         logging.error(T("Failed login for server %s"), server.host)
                                 penalty = _PENALTY_PERM
                                 block = True
-                            elif ecode in (502, 482):
+                            elif error.code in (502, 482):
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    errormsg = T("Cannot connect to server %s [%s]") % ("", display_msg)
+                                    errormsg = T("Cannot connect to server %s [%s]") % ("", error.msg)
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
-                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, msg)
-                                if clues_pay(msg):
+                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
+                                if clues_pay(error.msg):
                                     penalty = _PENALTY_PERM
                                 else:
                                     penalty = _PENALTY_502
                                 block = True
-                            elif ecode == 400:
+                            elif error.code == 400:
                                 # Temp connection problem?
                                 if server.active:
                                     logging.debug("Unspecified error 400 from server %s", server.host)
@@ -849,7 +863,7 @@ class Downloader(Thread):
                                     errormsg = T("Cannot connect to server %s [%s]") % ("", display_msg)
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
-                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, msg)
+                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
                                 penalty = _PENALTY_UNKNOWN
                                 block = True
                             if block or (penalty and server.optional):

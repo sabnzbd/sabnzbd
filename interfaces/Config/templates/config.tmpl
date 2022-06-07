@@ -1,5 +1,5 @@
 <!--#set global $pane="Config"#-->
-<!--#set global $help_uri="configuration/3.5/configure"#-->
+<!--#set global $help_uri="configuration/3.6/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#from sabnzbd.encoding import CODEPAGE#-->
@@ -41,7 +41,7 @@
                     </td>
                 </tr>
                 <!--#end if#-->
-                <!--#if not $nt and not $darwin#-->
+                <!--#if not $windows and not $macos#-->
                 <tr>
                     <th scope="row">$T('opt-multicore-par2')</th>
                     <td>

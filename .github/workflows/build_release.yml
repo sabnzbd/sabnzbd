@@ -9,45 +9,58 @@ jobs:
   build_windows:
     name: Build Windows binary
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python 3.10 (64bit)
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
         architecture: "x64"
+    - name: Cache Python virtualenv (64bit)
+      uses: syphar/restore-virtualenv@v1.2
+      id: cache-virtualenv-64bit
+      with:
+        custom_virtualenv_dir: "venv64"
+        custom_cache_key_element: "release"
+        requirement_files: |
+          **/requirements.txt
+          PKG-INFO
     - name: Install Python dependencies (64bit)
+      if: steps.cache-virtualenv-64bit.outputs.cache-hit != 'true'
       run: |
         python --version
         pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
-    - name: Build source distribution
-      run: python builder/package.py source
-    - name: Upload source distribution
-      uses: actions/upload-artifact@v2
-      with:
-        path: "*-src.tar.gz"
-        name: Source distribution
     - name: Build Windows standalone binary and installer (64bit)
       run: python builder/package.py installer
     - name: Upload Windows standalone binary (64bit)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-win64-bin.zip"
         name: Windows Windows standalone binary (64bit)
     - name: Upload Windows installer (64bit)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-win-setup.exe"
         name: Windows installer
     - name: Set up Python 3.8 (32bit and legacy)
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.8"
         architecture: "x86"
+    - name: Cache Python virtualenv (32bit and legacy)
+      uses: syphar/restore-virtualenv@v1.2
+      id: cache-virtualenv-32bit
+      with:
+        custom_virtualenv_dir: "venv32"
+        custom_cache_key_element: "release"
+        requirement_files: |
+          **/requirements.txt
+          PKG-INFO
     - name: Install Python dependencies (32bit and legacy)
+      if: steps.cache-virtualenv-32bit.outputs.cache-hit != 'true'
       run: |
         python --version
         pip install --upgrade pip wheel
@@ -56,7 +69,7 @@ jobs:
     - name: Build Windows standalone binary (32bit and legacy)
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (32bit and legacy)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-win32-bin.zip"
         name: Windows Windows standalone binary (32bit and legacy)
@@ -67,7 +80,7 @@ jobs:
   build_macos:
     name: Build macOS binary
     runs-on: macos-11
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
       NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
@@ -75,15 +88,15 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.10.2"
+      PYTHON_VERSION: "3.10.4"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
       CFLAGS: -arch arm64 -arch x86_64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Cache Python download
       id: cache-python-download
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/python.pkg
         key: macOS-Python-${{ env.PYTHON_VERSION }}
@@ -91,7 +104,18 @@ jobs:
       if: steps.cache-python-download.outputs.cache-hit != 'true'
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
-      run: sudo installer -pkg ~/python.pkg -target /
+      run: |
+        sudo installer -pkg ~/python.pkg -target /
+        unlink /usr/local/bin/python
+        ln -s /usr/local/bin/python3 /usr/local/bin/python
+    - name: Cache Python virtualenv
+      uses: syphar/restore-virtualenv@v1.2
+      id: cache-virtualenv
+      with:
+        custom_cache_key_element: "release"
+        requirement_files: |
+          **/requirements.txt
+          PKG-INFO
     - name: Install Python dependencies
       # We have to manually install a few packages:
       # 1.  cffi will pick up the single-arch libffi from Homebrew, while Apple provides universal2-version
@@ -101,13 +125,14 @@ jobs:
       #     https://github.com/pyca/cryptography/issues/5918
       # 3.  We need to build the PyInstaller bootloader from sources:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
+      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
         
         brew uninstall libffi --ignore-dependencies
         ARCHFLAGS="-arch x86_64 -arch arm64" pip3 install --upgrade cffi --no-binary cffi
-        pip3 install --upgrade -r requirements.txt --no-binary sabyenc3
+        pip3 install --upgrade -r requirements.txt
         
         pip3 uninstall cryptography -y
         pip3 download -r builder/osx/requirements.txt --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
@@ -120,12 +145,20 @@ jobs:
       with:
         p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
         p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+    - name: Build source distribution
+      # Run this on macOS so the line endings are correct by default
+      run: python builder/package.py source
+    - name: Upload source distribution
+      uses: actions/upload-artifact@v3
+      with:
+        path: "*-src.tar.gz"
+        name: Source distribution
     - name: Build macOS binary
       run: |
         python3 builder/package.py app
         python3 builder/make_dmg.py
     - name: Upload macOS binary
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
@@ -140,9 +173,9 @@ jobs:
     env:
       SNAP_TOKEN: ${{ secrets.SNAP_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: "3.x"
       - name: Release latest available Snap

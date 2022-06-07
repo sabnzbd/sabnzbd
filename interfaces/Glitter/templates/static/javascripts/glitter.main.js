@@ -18,6 +18,7 @@ function ViewModel() {
     self.displayFullWidth = ko.observable(false).extend({ persist: 'displayFullWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
     self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
+    self.keyboardShortcuts = ko.observable(true).extend({ persist: 'keyboardShortcuts' });
     self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
     self.extraHistoryColumns = ko.observableArray([]).extend({ persist: 'extraHistoryColumns' });
     self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
@@ -43,6 +44,7 @@ function ViewModel() {
     self.systemLoad = ko.observable();
     self.cacheSize = ko.observable();
     self.cacheArticles = ko.observable();
+    self.loglevel = ko.observable();
     self.nrWarnings = ko.observable(0);
     self.allWarnings = ko.observableArray([]);
     self.allMessages = ko.observableArray([]);
@@ -60,9 +62,9 @@ function ViewModel() {
     self.statusInfo.publicipv4 = ko.observable();
     self.statusInfo.ipv6 = ko.observable();
     self.statusInfo.dnslookup = ko.observable();
+    self.statusInfo.delayed_decoder = ko.observable();
+    self.statusInfo.delayed_assembler = ko.observable();
     self.statusInfo.pystone = ko.observable();
-    self.statusInfo.cpumodel = ko.observable();
-    self.statusInfo.loglevel = ko.observable();
     self.statusInfo.downloaddir = ko.observable();
     self.statusInfo.downloaddirspeed = ko.observable();
     self.statusInfo.completedir = ko.observable();
@@ -723,20 +725,20 @@ function ViewModel() {
             self.hasPerformanceInfo(false)
         }
 
-        // Load the custom status info
+        // Load the custom status info, allowing for longer timeouts
         callAPI({
             mode: 'status',
+            skip_dashboard: (!statusFullRefresh)*1,
             calculate_performance: statusPerformance*1,
-            skip_dashboard: (!statusFullRefresh)*1
-        }).then(function(data) {
+        }, 30000).then(function(data) {
             // Update basic
-            self.statusInfo.loglevel(data.status.loglevel)
             self.statusInfo.folders(data.status.folders)
+            self.statusInfo.delayed_decoder(data.status.delayed_decoder)
+            self.statusInfo.delayed_assembler(data.status.delayed_assembler)
 
-            // Update the full set
-            if(statusFullRefresh) {
+            // Update the full set if the data is available
+            if("dnslookup" in data.status) {
                 self.statusInfo.pystone(data.status.pystone)
-                self.statusInfo.cpumodel(data.status.cpumodel)
                 self.statusInfo.downloaddir(data.status.downloaddir)
                 self.statusInfo.downloaddirspeed(data.status.downloaddirspeed)
                 self.statusInfo.completedir(data.status.completedir)
@@ -747,25 +749,10 @@ function ViewModel() {
                 self.statusInfo.localipv4(data.status.localipv4)
                 self.statusInfo.publicipv4(data.status.publicipv4)
                 self.statusInfo.ipv6(data.status.ipv6 || glitterTranslate.noneText)
-                // Loaded disk info
-                self.hasPerformanceInfo(true)
             }
 
             // Update the servers
             if(self.statusInfo.servers().length != data.status.servers.length) {
-                // Only now we can subscribe to the log-level-changes! (only at start)
-                if(self.statusInfo.servers().length == 0) {
-                    self.statusInfo.loglevel.subscribe(function(newValue) {
-                        // Update log-level
-                        callAPI({
-                            mode: "set_config",
-                            section: "logging",
-                            keyword: "log_level",
-                            value: newValue
-                        });
-                    })
-                }
-
                 // Empty them, in case of update
                 self.statusInfo.servers([])
 
@@ -808,6 +795,7 @@ function ViewModel() {
 
             // Stop it spin
             self.hasStatusInfo(true)
+            self.hasPerformanceInfo(true)
         });
     }
 
@@ -1050,18 +1038,24 @@ function ViewModel() {
         }
     }
 
+    self.globalInterfaceSettings = [
+        'dateFormat',
+        'extraQueueColumns',
+        'extraHistoryColumns',
+        'displayCompact',
+        'displayFullWidth',
+        'displayTabbed',
+        'confirmDeleteQueue',
+        'confirmDeleteHistory',
+        'keyboardShortcuts'
+    ]
+
     // Save the rest in config if global-settings
     var saveInterfaceSettings = function(newValue) {
-        var interfaceSettings = {
-            "dateFormat": self.dateFormat,
-            "extraQueueColumns": self.extraQueueColumns,
-            "extraHistoryColumns": self.extraHistoryColumns,
-            "displayCompact": self.displayCompact,
-            "displayFullWidth": self.displayFullWidth,
-            "displayTabbed": self.displayTabbed,
-            "confirmDeleteQueue": self.confirmDeleteQueue,
-            "confirmDeleteHistory": self.confirmDeleteHistory
-        };
+        var interfaceSettings = {}
+        for (const setting of self.globalInterfaceSettings) {
+            interfaceSettings[setting] = self[setting]
+        }
         callAPI({
             mode: "set_config",
             section: "misc",
@@ -1080,45 +1074,45 @@ function ViewModel() {
             if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
             self.refreshRate(response.config.misc.refresh_rate.toString());
 
-            // Set history limit
+            // Set history and queue limit
             self.history.paginationLimit(response.config.misc.history_limit.toString())
-
-            // Set queue limit
             self.queue.paginationLimit(response.config.misc.queue_limit.toString())
 
             // Import the rest of the settings
             if(response.config.misc.interface_settings) {
                 var interfaceSettings = JSON.parse(response.config.misc.interface_settings);
-                self.dateFormat(interfaceSettings['dateFormat']);
-                self.extraQueueColumns(interfaceSettings['extraQueueColumns']);
-                self.extraHistoryColumns(interfaceSettings['extraHistoryColumns']);
-                self.displayCompact(interfaceSettings['displayCompact']);
-                self.displayFullWidth(interfaceSettings['displayFullWidth']);
-                self.displayTabbed(interfaceSettings['displayTabbed']);
-                self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
-                self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
+                for (const setting of self.globalInterfaceSettings){
+                    if(setting in interfaceSettings) {
+                        self[setting](interfaceSettings[setting]);
+                    }
+                }
             }
-
             // Only subscribe now to prevent collisions between localStorage and config settings updates
-            self.dateFormat.subscribe(saveInterfaceSettings);
-            self.extraQueueColumns.subscribe(saveInterfaceSettings);
-            self.extraHistoryColumns.subscribe(saveInterfaceSettings);
-            self.displayCompact.subscribe(saveInterfaceSettings);
-            self.displayFullWidth.subscribe(saveInterfaceSettings);
-            self.displayTabbed.subscribe(saveInterfaceSettings);
-            self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
-            self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
+            for (const setting of self.globalInterfaceSettings) {
+                self[setting].subscribe(saveInterfaceSettings);
+            }
         }
 
         // Set bandwidth limit
         if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
         self.bandwithLimit(response.config.misc.bandwidth_max);
 
-        // Save servers (for reporting functionality of OZnzb)
+        // Save servers (for reporting functionality)
         self.servers = response.config.servers;
 
         // Already set if we are using a proxy
         if(response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)
+
+        // Set logging and only then subscribe to changes
+        self.loglevel(response.config.logging.log_level);
+        self.loglevel.subscribe(function(newValue) {
+            callAPI({
+                mode: "set_config",
+                section: "logging",
+                keyword: "log_level",
+                value: newValue
+            });
+        })
 
         // Update message
         if(newRelease) {
@@ -1205,6 +1199,31 @@ function ViewModel() {
             css: 'warning',
             clear: function() { self.clearMessages('LocalStorageMsg')}
         });
+    }
+
+    document.onkeydown = function(e) {
+        if(self.keyboardShortcuts()) {
+            // Ignore if the user used a combination
+            if(e.altKey || e.metaKey || e.ctrlKey) return;
+
+            // Do not act if the user is typing something
+            if($("input:focus, textarea:focus").length === 0) {
+                if (e.code === 'KeyP') {
+                    self.pauseToggle();
+                }
+                if (e.code === 'KeyA') {
+                    $('#modal-add-nzb').modal('show');
+                }
+                if (e.code === 'KeyC') {
+                    window.location.href = './config/';
+                }
+                if (e.code === 'KeyS') {
+                    self.loadStatusInfo(true, true)
+                    $('#modal-options').modal('show');
+                }
+            }
+
+        }
     }
 
     /***

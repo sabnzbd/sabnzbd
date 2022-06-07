@@ -1,5 +1,5 @@
 <!--#set global $pane="Folders"#-->
-<!--#set global $help_uri="configuration/3.5/folders"#-->
+<!--#set global $help_uri="configuration/3.6/folders"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -47,7 +47,7 @@
                     <input type="checkbox" name="fulldisk_autoresume" id="fulldisk_autoresume" value="1" <!--#if int($fulldisk_autoresume) > 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-fulldisk_autoresume')</span>
                 </div>
-                <!--#if not $nt#-->
+                <!--#if not $windows#-->
                 <div class="field-pair advanced-settings">
                     <label class="config" for="permissions">$T('opt-permissions')</label>
                     <input type="text" name="permissions" id="permissions" value="$permissions" class="smaller_input" />

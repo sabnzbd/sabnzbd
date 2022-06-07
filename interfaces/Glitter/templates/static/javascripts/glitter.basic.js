@@ -24,7 +24,7 @@ if(isMobile) {
 }
 
 // Basic API-call
-function callAPI(data) {
+function callAPI(data, timeout = 10000) {
     // Fill basis var's
     data.output = "json";
     data.apikey = apiKey;
@@ -33,24 +33,7 @@ function callAPI(data) {
         type: "GET",
         cache: false,
         data: data,
-        timeout: 10000 // Wait a little longer on mobile connections
-    });
-
-    return $.when(ajaxQuery);
-}
-
-// Special API call
-function callSpecialAPI(url, data) {
-    // Did we get input?
-    if(data == undefined) data = {};
-    // Fill basis var's
-    data.output = "json";
-    data.apikey = apiKey;
-    var ajaxQuery = $.ajax({
-        url: url,
-        type: "GET",
-        cache: false,
-        data: data
+        timeout: timeout
     });
 
     return $.when(ajaxQuery);

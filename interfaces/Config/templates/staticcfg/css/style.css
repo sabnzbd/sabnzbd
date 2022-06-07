@@ -139,6 +139,9 @@ label.wide,
     font-size: 12px;
     font-style: italic;
 }
+.desc .btn {
+    font-style: normal;
+}
 .desc.narrow {
     margin: 0 0 0 200px!important;
 }
@@ -723,41 +726,6 @@ ul.tabs li.active a {
 
 .checkbox-days label {
     padding: 2px 20px;
-}
-.rating-filter  {
-    float:  left;
-}
-.rating-filter p  {
-    margin:  0 0 10px 0;
-}
-.rating-filter select  {
-    vertical-align: middle;
-}
-.rating-filter input  {
-    vertical-align: middle;
-     margin-top: -1px;
-}
-.rating-filter label  {
-    display: inline-block;
-     padding-left: 0px;
-     width: 100px;
-}
-.rating-filter input[type="checkbox"]  {
-    display: inline;
-}
-.rating-filter input[type="checkbox"] + label  {
-    padding-left: 20px;
-    padding-top: 5px;
-     width: auto;
-}
-.rating-filter p > span:first-child  {
-    float: left;
-     width: 130px;
-}
-.rating-filter .desc  {
-    display: block;
-     margin: 0px;
-     padding-left: 103px;
 }
 
 /** EDITS 2015 **/

@@ -38,7 +38,6 @@ from sabnzbd.filesystem import (
     get_filename,
     is_valid_script,
     get_ext,
-    setname_from_path,
     clip_path,
     remove_file,
     remove_data,
@@ -163,7 +162,7 @@ def process_nzb_archive_file(
     """Analyse archive and create job(s).
     Accepts archive files with ONLY nzb/nfo/folder files in it.
     returns (status, nzo_ids)
-        status: -1==Error, 0==OK, 1==Ignore
+        status: -2==Error/retry, -1==Error, 0==OK, 1==No files found
     """
     nzo_ids = []
     if catdir is None:
@@ -178,10 +177,11 @@ def process_nzb_archive_file(
         elif sabnzbd.newsunpack.is_sevenfile(path):
             zf = sabnzbd.newsunpack.SevenZip(path)
         else:
-            raise TypeError("File %s is not a supported archive!" % filename)
+            logging.info("File %s is not a supported archive!", filename)
+            return -1, []
     except:
         logging.info(T("Cannot read %s"), path, exc_info=True)
-        return -1, []
+        return -2, []
 
     status = 1
     names = zf.namelist()
@@ -203,7 +203,7 @@ def process_nzb_archive_file(
                     logging.error(T("Cannot read %s"), name, exc_info=True)
                     zf.close()
                     return -1, []
-                name = setname_from_path(name)
+                name = get_filename(name)
                 if datap:
                     nzo = None
                     try:
@@ -218,13 +218,17 @@ def process_nzb_archive_file(
                             nzbname=nzbname,
                             nzo_info=nzo_info,
                             reuse=reuse,
+                            nzo_id=nzo_id,
                             dup_check=dup_check,
                         )
                         if not nzo.password:
                             nzo.password = password
-                    except (TypeError, ValueError):
-                        # Duplicate or empty, ignore
+                    except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
+                        # Empty or fully rejected
                         pass
+                    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
+                        # Duplicate or unwanted extension that was failed to history
+                        nzo_ids.append(err.nzo_id)
                     except:
                         # Something else is wrong, show error
                         logging.error(T("Error while adding %s, removing"), name, exc_info=True)
@@ -232,13 +236,9 @@ def process_nzb_archive_file(
                         datap.close()
 
                     if nzo:
-                        if nzo_id:
-                            # Re-use existing nzo_id, when a "future" job gets it payload
-                            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
-                            nzo.nzo_id = nzo_id
-                            nzo_id = None
+                        # We can only use existing nzo_id once
+                        nzo_id = None
                         nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
-                        nzo.update_rating()
 
         # Close the pointer to the compressed file
         zf.close()
@@ -251,6 +251,9 @@ def process_nzb_archive_file(
             logging.info("Traceback: ", exc_info=True)
     else:
         zf.close()
+
+    # If all were rejected/empty/etc, update status
+    if not nzo_ids:
         status = 1
 
     return status, nzo_ids
@@ -276,9 +279,8 @@ def process_single_nzb(
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
     returns (status, nzo_ids)
-        status: -1==Error, 0==OK
+        status: -2==Error/retry, -1==Error, 0==OK
     """
-    nzo_ids = []
     if catdir is None:
         catdir = cat
 
@@ -300,15 +302,19 @@ def process_single_nzb(
     except OSError:
         logging.warning(T("Cannot read %s"), clip_path(path))
         logging.info("Traceback: ", exc_info=True)
-        return -2, nzo_ids
+        return -2, []
 
     if filename:
         filename, cat = name_to_cat(filename, catdir)
-        # The name is used as the name of the folder, so sanitize it using folder specific santization
+        # The name is used as the name of the folder, so sanitize it using folder specific sanitization
         if not nzbname:
             # Prevent embedded password from being damaged by sanitize and trimming
             nzbname = get_filename(filename)
 
+    # Parse the data
+    result = 0
+    nzo = None
+    nzo_ids = []
     try:
         nzo = nzbstuff.NzbObject(
             filename,
@@ -321,32 +327,27 @@ def process_single_nzb(
             nzbname=nzbname,
             nzo_info=nzo_info,
             reuse=reuse,
+            nzo_id=nzo_id,
             dup_check=dup_check,
         )
         if not nzo.password:
             nzo.password = password
-    except TypeError:
-        # Duplicate, ignore
-        if nzo_id:
-            sabnzbd.NzbQueue.remove(nzo_id)
-        nzo = None
-    except ValueError:
-        # Empty
-        return 1, nzo_ids
+    except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
+        # Empty or fully rejected
+        result = -1
+        pass
+    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
+        # Duplicate or unwanted extension that was failed to history
+        nzo_ids.append(err.nzo_id)
     except:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
-        return -1, nzo_ids
+        result = -1
     finally:
         nzb_fp.close()
 
     if nzo:
-        if nzo_id:
-            # Re-use existing nzo_id, when a "future" job gets it payload
-            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
-            nzo.nzo_id = nzo_id
         nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
-        nzo.update_rating()
 
     try:
         if not keep:
@@ -356,7 +357,7 @@ def process_single_nzb(
         logging.error(T("Error removing %s"), clip_path(path))
         logging.info("Traceback: ", exc_info=True)
 
-    return 0, nzo_ids
+    return result, nzo_ids
 
 
 def nzbfile_parser(full_nzb_path: str, nzo):
@@ -422,6 +423,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 # Get segments
                 raw_article_db = {}
                 file_bytes = 0
+                bad_articles = False
                 if element.find("segments"):
                     for segment in element.find("segments").iter("segment"):
                         try:
@@ -442,6 +444,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                         article_id,
                                     )
                                     nzo.increase_bad_articles_counter("duplicate_articles")
+                                    bad_articles = True
                                 else:
                                     logging.info("Skipping duplicate article (%s)", article_id)
                             elif segment_size <= 0 or segment_size >= 2**23:
@@ -449,6 +452,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                 # We use this value later to allocate memory in cache and sabyenc
                                 logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
                                 nzo.increase_bad_articles_counter("bad_articles")
+                                bad_articles = True
                             else:
                                 raw_article_db[partnum] = (article_id, segment_size)
                                 file_bytes += segment_size
@@ -461,6 +465,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
                 # Create NZF
                 nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
+                nzf.has_bad_articles = bad_articles
 
                 # Check if we already have this exact NZF (see custom eq-checks)
                 if nzf in nzo.files:

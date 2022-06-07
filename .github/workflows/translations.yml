@@ -7,11 +7,12 @@ on:
 
 jobs:
   translations:
+    name: Update translatable texts
     runs-on: ubuntu-latest
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Generate translatable texts
         run: |
           python3 tools/extract_pot.py
@@ -30,7 +31,7 @@ jobs:
         run: |
           python3 tools/make_mo.py
       - name: Push translatable and translated texts back to repo
-        uses: stefanzweifel/git-auto-commit-action@v4.5.1
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
         if: env.TX_TOKEN
         with:
           commit_message: Update translatable texts

@@ -101,7 +101,7 @@ class TestPar2Repair:
         nzo.admin_path = test_dir_admin
         nzo.fail_msg = ""
         nzo.extrapars = {"test": []}
-        nzo.md5packs = {"test": None}
+        nzo.par2packs = {"test": None}
 
         for file in glob.glob(test_dir + "/*.par2"):
             # Simple NZF mock for the filename

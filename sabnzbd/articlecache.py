@@ -48,7 +48,7 @@ class ArticleCache:
         # On 32 bit we only allow the user to set 1GB
         # For 64 bit we allow up to 4GB, in case somebody wants that
         self.__cache_upper_limit = GIGI
-        if sabnzbd.DARWIN or sabnzbd.WIN64 or (struct.calcsize("P") * 8) == 64:
+        if sabnzbd.MACOS or sabnzbd.WIN64 or (struct.calcsize("P") * 8) == 64:
             self.__cache_upper_limit = 4 * GIGI
 
     def cache_info(self):

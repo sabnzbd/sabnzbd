@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.assembler - threaded assembly/decoding of files
+sabnzbd.assembler - threaded assembly of files
 """
 
 import os
@@ -59,6 +59,9 @@ class Assembler(Thread):
     def queue_full(self):
         return self.queue.qsize() >= MAX_ASSEMBLER_QUEUE
 
+    def partial_nzf_in_queue(self, nzf: NzbFile):
+        return (nzf.nzo, nzf, False) in self.queue.queue
+
     def run(self):
         while 1:
             # Set NzbObject and NzbFile objects to None so references
@@ -66,40 +69,13 @@ class Assembler(Thread):
             nzo = nzf = None
             nzo, nzf, file_done = self.queue.get()
             if not nzo:
-                logging.info("Shutting down")
+                logging.debug("Shutting down assembler")
                 break
 
             if nzf:
                 # Check if enough disk space is free after each file is done
-                # If not enough space left, pause downloader and send email
                 if file_done and not sabnzbd.Downloader.paused:
-                    freespace = diskspace(force=True)
-                    full_dir = None
-                    required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
-                    if freespace["download_dir"][1] < required_space:
-                        full_dir = "download_dir"
-
-                    # Enough space in download_dir, check complete_dir
-                    complete_free = cfg.complete_free.get_float()
-                    if complete_free > 0 and not full_dir:
-                        required_space = 0
-                        if cfg.direct_unpack():
-                            required_space = (complete_free + nzo.bytes_downloaded) / GIGI
-                        else:
-                            # Continue downloading until 95% complete before checking
-                            if nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
-                                required_space = (complete_free + nzo.bytes) / GIGI
-
-                        if required_space and freespace["complete_dir"][1] < required_space:
-                            full_dir = "complete_dir"
-
-                    if full_dir:
-                        logging.warning(T("Too little diskspace forcing PAUSE"))
-                        # Pause downloader, but don't save, since the disk is almost full!
-                        sabnzbd.Downloader.pause()
-                        if cfg.fulldisk_autoresume():
-                            sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
-                        sabnzbd.emailer.diskfull_mail()
+                    self.diskspace_check(nzo, nzf)
 
                 # Prepare filepath
                 filepath = nzf.prepare_filepath()
@@ -107,7 +83,7 @@ class Assembler(Thread):
                 if filepath:
                     try:
                         logging.debug("Decoding part of %s", filepath)
-                        self.assemble(nzf, file_done)
+                        self.assemble(nzo, nzf, file_done)
 
                         # Continue after partly written data
                         if not file_done:
@@ -119,68 +95,13 @@ class Assembler(Thread):
 
                         # Do rar-related processing
                         if rarfile.is_rarfile(filepath):
-                            # Encryption and unwanted extension detection
-                            rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
-                            if rar_encrypted:
-                                if cfg.pause_on_pwrar() == 1:
-                                    logging.warning(
-                                        T(
-                                            'Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                                        ),
-                                        nzo.final_name,
-                                    )
-                                    nzo.pause()
-                                else:
-                                    logging.warning(
-                                        T(
-                                            'Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                                        ),
-                                        nzo.final_name,
-                                    )
-                                    nzo.fail_msg = T("Aborted, encryption detected")
-                                    sabnzbd.NzbQueue.end_job(nzo)
-
-                            if unwanted_file:
-                                # Don't repeat the warning after a user override of an unwanted extension pause
-                                if nzo.unwanted_ext == 0:
-                                    logging.warning(
-                                        T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
-                                        nzo.final_name,
-                                        unwanted_file,
-                                    )
-                                logging.debug(T("Unwanted extension is in rar file %s"), filepath)
-                                if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
-                                    logging.debug("Unwanted extension ... pausing")
-                                    nzo.unwanted_ext = 1
-                                    nzo.pause()
-                                if cfg.action_on_unwanted_extensions() == 2:
-                                    logging.debug("Unwanted extension ... aborting")
-                                    nzo.fail_msg = T("Aborted, unwanted extension detected")
-                                    sabnzbd.NzbQueue.end_job(nzo)
-
-                            # Add to direct unpack
+                            # Check for encrypted files, unwanted extensions and add to direct unpack
+                            self.check_encrypted_and_unwanted(nzo, nzf)
                             nzo.add_to_direct_unpacker(nzf)
 
                         elif par2file.is_parfile(filepath):
                             # Parse par2 files, cloaked or not
                             nzo.handle_par2(nzf, filepath)
-
-                        filter_output, reason = nzo_filtered_by_rating(nzo)
-                        if filter_output == 1:
-                            logging.warning(
-                                T('Paused job "%s" because of rating (%s)'),
-                                nzo.final_name,
-                                reason,
-                            )
-                            nzo.pause()
-                        elif filter_output == 2:
-                            logging.warning(
-                                T('Aborted job "%s" because of rating (%s)'),
-                                nzo.final_name,
-                                reason,
-                            )
-                            nzo.fail_msg = T("Aborted, rating filter matched (%s)") % reason
-                            sabnzbd.NzbQueue.end_job(nzo)
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
@@ -210,7 +131,38 @@ class Assembler(Thread):
                 sabnzbd.PostProcessor.process(nzo)
 
     @staticmethod
-    def assemble(nzf: NzbFile, file_done: bool):
+    def diskspace_check(nzo: NzbObject, nzf: NzbFile):
+        """Check diskspace requirements. If not enough space left, pause downloader and send email"""
+        freespace = diskspace(force=True)
+        full_dir = None
+        required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
+        if freespace["download_dir"][1] < required_space:
+            full_dir = "download_dir"
+
+        # Enough space in download_dir, check complete_dir
+        complete_free = cfg.complete_free.get_float()
+        if complete_free > 0 and not full_dir:
+            required_space = 0
+            if cfg.direct_unpack():
+                required_space = (complete_free + nzo.bytes_downloaded) / GIGI
+            else:
+                # Continue downloading until 95% complete before checking
+                if nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
+                    required_space = (complete_free + nzo.bytes) / GIGI
+
+            if required_space and freespace["complete_dir"][1] < required_space:
+                full_dir = "complete_dir"
+
+        if full_dir:
+            logging.warning(T("Too little diskspace forcing PAUSE"))
+            # Pause downloader, but don't save, since the disk is almost full!
+            sabnzbd.Downloader.pause()
+            if cfg.fulldisk_autoresume():
+                sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
+            sabnzbd.emailer.diskfull_mail()
+
+    @staticmethod
+    def assemble(nzo: NzbObject, nzf: NzbFile, file_done: bool):
         """Assemble a NZF from its table of articles
         1) Partial write: write what we have
         2) Nothing written before: write all
@@ -223,7 +175,7 @@ class Assembler(Thread):
         with open(nzf.filepath, "ab", buffering=0) as fout:
             for article in nzf.decodetable:
                 # Break if deleted during writing
-                if nzf.nzo.status is Status.DELETED:
+                if nzo.status is Status.DELETED:
                     break
 
                 # Skip already written articles
@@ -253,6 +205,43 @@ class Assembler(Thread):
         if file_done:
             set_permissions(nzf.filepath)
             nzf.md5sum = nzf.md5.digest()
+
+    @staticmethod
+    def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
+        """Encryption and unwanted extension detection"""
+        rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, nzf.filepath)
+        if rar_encrypted:
+            if cfg.pause_on_pwrar() == 1:
+                logging.warning(
+                    T('Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'),
+                    nzo.final_name,
+                )
+                nzo.pause()
+            else:
+                logging.warning(
+                    T('Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'),
+                    nzo.final_name,
+                )
+                nzo.fail_msg = T("Aborted, encryption detected")
+                sabnzbd.NzbQueue.end_job(nzo)
+
+        if unwanted_file:
+            # Don't repeat the warning after a user override of an unwanted extension pause
+            if nzo.unwanted_ext == 0:
+                logging.warning(
+                    T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
+                    nzf.nzo.final_name,
+                    unwanted_file,
+                )
+            logging.debug(T("Unwanted extension is in rar file %s"), nzf.filename)
+            if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
+                logging.debug("Unwanted extension ... pausing")
+                nzo.unwanted_ext = 1
+                nzo.pause()
+            if cfg.action_on_unwanted_extensions() == 2:
+                logging.debug("Unwanted extension ... aborting")
+                nzo.fail_msg = T("Aborted, unwanted extension detected")
+                sabnzbd.NzbQueue.end_job(nzo)
 
 
 RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)
@@ -386,51 +375,3 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
             logging.debug("Traceback: ", exc_info=True)
 
     return encrypted, unwanted
-
-
-def nzo_filtered_by_rating(nzo: NzbObject) -> Tuple[int, str]:
-    if cfg.rating_enable() and cfg.rating_filter_enable() and (nzo.rating_filtered < 2):
-        rating = sabnzbd.Rating.get_rating_by_nzo(nzo.nzo_id)
-        if rating is not None:
-            nzo.rating_filtered = 1
-            reason = rating_filtered(rating, nzo.filename.lower(), True)
-            if reason is not None:
-                return 2, reason
-            reason = rating_filtered(rating, nzo.filename.lower(), False)
-            if reason is not None:
-                return 1, reason
-    return 0, ""
-
-
-def rating_filtered(rating, filename, abort):
-    def check_keyword(keyword):
-        clean_keyword = keyword.strip().lower()
-        return (len(clean_keyword) > 0) and (clean_keyword in filename)
-
-    audio = cfg.rating_filter_abort_audio() if abort else cfg.rating_filter_pause_audio()
-    video = cfg.rating_filter_abort_video() if abort else cfg.rating_filter_pause_video()
-    spam = cfg.rating_filter_abort_spam() if abort else cfg.rating_filter_pause_spam()
-    spam_confirm = cfg.rating_filter_abort_spam_confirm() if abort else cfg.rating_filter_pause_spam_confirm()
-    encrypted = cfg.rating_filter_abort_encrypted() if abort else cfg.rating_filter_pause_encrypted()
-    encrypted_confirm = (
-        cfg.rating_filter_abort_encrypted_confirm() if abort else cfg.rating_filter_pause_encrypted_confirm()
-    )
-    downvoted = cfg.rating_filter_abort_downvoted() if abort else cfg.rating_filter_pause_downvoted()
-    keywords = cfg.rating_filter_abort_keywords() if abort else cfg.rating_filter_pause_keywords()
-    if (video > 0) and (rating.avg_video > 0) and (rating.avg_video <= video):
-        return T("video")
-    if (audio > 0) and (rating.avg_audio > 0) and (rating.avg_audio <= audio):
-        return T("audio")
-    if (spam and ((rating.avg_spam_cnt > 0) or rating.avg_encrypted_confirm)) or (
-        spam_confirm and rating.avg_spam_confirm
-    ):
-        return T("spam")
-    if (encrypted and ((rating.avg_encrypted_cnt > 0) or rating.avg_encrypted_confirm)) or (
-        encrypted_confirm and rating.avg_encrypted_confirm
-    ):
-        return T("passworded")
-    if downvoted and (rating.avg_vote_up < rating.avg_vote_down):
-        return T("downvoted")
-    if any(check_keyword(k) for k in keywords.split(",")):
-        return T("keywords")
-    return None

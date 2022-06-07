@@ -3,6 +3,27 @@ name: CI Tests
 on: [push, pull_request]
 
 jobs:
+  black:
+    name: Black Code Formatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Black Code Formatter
+        uses: lgeiger/black-action@master
+        with:
+          args: >
+            SABnzbd.py
+            sabnzbd
+            scripts
+            tools
+            builder
+            builder/SABnzbd.spec
+            tests
+            --line-length=120
+            --target-version=py37
+            --check
+            --diff
+
   test:
     name: Test ${{ matrix.name }} - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
@@ -13,7 +34,6 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10"]
         os: [ubuntu-20.04]
         include:
-          # TODO: Update to 3.10 when all packages are available, currently lxml is missing
           - name: macOS
             os: macos-latest
             python-version: "3.10"
@@ -22,21 +42,27 @@ jobs:
             python-version: "3.10"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install system dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar p7zip-full par2
+    - name: Cache Python virtualenv
+      uses: syphar/restore-virtualenv@v1.2
+      id: cache-virtualenv
+      with:
+        custom_cache_key_element: "ci"
+        requirement_files: |
+          **/requirements.txt
+          PKG-INFO
     - name: Install Python dependencies
+      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python --version
-        pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
       run: pytest -s
-
-

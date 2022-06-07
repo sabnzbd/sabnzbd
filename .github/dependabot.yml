@@ -1,14 +1,6 @@
 version: 2
 updates:
-- package-ecosystem: "pip"
+- package-ecosystem: "github-actions"
   directory: "/"
-  schedule:
-    interval: "weekly"
-- package-ecosystem: "pip"
-  directory: "/builder"
-  schedule:
-    interval: "weekly"
-- package-ecosystem: "pip"
-  directory: "/builder/osx"
   schedule:
     interval: "weekly"

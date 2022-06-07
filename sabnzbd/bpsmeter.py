@@ -108,6 +108,8 @@ class BPSMeter:
         "timeline_total",
         "article_stats_tried",
         "article_stats_failed",
+        "delayed_decoder",
+        "delayed_assembler",
         "day_label",
         "end_of_day",
         "end_of_week",
@@ -144,6 +146,9 @@ class BPSMeter:
 
         self.article_stats_tried: Dict[str, Dict[str, int]] = {}
         self.article_stats_failed: Dict[str, Dict[str, int]] = {}
+
+        self.delayed_decoder: int = 0
+        self.delayed_assembler: int = 0
 
         self.day_label: str = time.strftime("%Y-%m-%d")
         self.end_of_day: float = tomorrow(t)  # Time that current day will end
@@ -281,6 +286,10 @@ class BPSMeter:
             self.day_label = time.strftime("%Y-%m-%d")
             self.end_of_day = tomorrow(t) - 1.0
             self.day_total = {}
+
+            # Reset delayed counters so they don't go too high
+            self.delayed_decoder = 0
+            self.delayed_assembler = 0
 
             # Check end of week and end of month
             if t > self.end_of_week:

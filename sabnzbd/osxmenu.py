@@ -112,6 +112,7 @@ class SABnzbdDelegate(NSObject):
         self.menu.addItem_(self.state_menu_item)
 
         # Queue Item
+        self.menu_queue = None
         self.queue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
             T("Queue"), "openBrowserAction:", ""
         )
@@ -127,6 +128,7 @@ class SABnzbdDelegate(NSObject):
         self.menu.addItem_(self.purgequeue_menu_item)
 
         # History Item
+        self.menu_history = None
         self.history_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
             T("History"), "openBrowserAction:", ""
         )
@@ -245,31 +247,33 @@ class SABnzbdDelegate(NSObject):
 
     def queueUpdate(self):
         try:
-            qnfo = sabnzbd.NzbQueue.queue_info(start=0, limit=10)
+            queue_bytes_total, queue_bytes_left, _, nzo_list, _, queue_fullsize = sabnzbd.NzbQueue.queue_info(limit=10)
             bytesleftprogess = 0
             self.info = ""
-            self.menu_queue = NSMenu.alloc().init()
 
-            if qnfo.list:
+            if not self.menu_queue:
+                self.menu_queue = NSMenu.alloc().init()
+            self.menu_queue.removeAllItems()
+
+            if nzo_list:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                     T("Queue First 10 Items"), "", ""
                 )
                 self.menu_queue.addItem_(menu_queue_item)
                 self.menu_queue.addItem_(NSMenuItem.separatorItem())
 
-                for pnfo in qnfo.list:
-                    bytesleft = pnfo.bytes_left / MEBI
-                    bytesleftprogess += pnfo.bytes_left
-                    bytes_total = pnfo.bytes / MEBI
+                for nzo in nzo_list:
+                    bytesleft = nzo.remaining / MEBI
+                    bytesleftprogess += nzo.remaining
+                    bytes_total = nzo.bytes / MEBI
                     timeleft = sabnzbd.api.calc_timeleft(bytesleftprogess, sabnzbd.BPSMeter.bps)
-                    job = "%s\t(%d/%d MB) %s" % (pnfo.filename, bytesleft, bytes_total, timeleft)
-                    menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, "", "")
-                    self.menu_queue.addItem_(menu_queue_item)
+                    job = "%s\t(%d/%d MB) %s" % (nzo.filename, bytesleft, bytes_total, timeleft)
+                    self.menu_queue.addItem_(NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, "", ""))
 
                 self.info = "%d nzb(s)\t(%d / %d MB)" % (
-                    qnfo.q_size_list,
-                    (qnfo.bytes_left / MEBI),
-                    (qnfo.bytes / MEBI),
+                    queue_fullsize,
+                    (queue_bytes_left / MEBI),
+                    (queue_bytes_total / MEBI),
                 )
             else:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T("Empty"), "", "")
@@ -285,11 +289,10 @@ class SABnzbdDelegate(NSObject):
                 self.history_db = sabnzbd.database.HistoryDB()
             items = self.history_db.fetch_history(limit=10)[0]
 
-            self.menu_history = NSMenu.alloc().init()
-            self.failedAttributes = {
-                NSForegroundColorAttributeName: NSColor.redColor(),
-                NSFontAttributeName: NSFont.menuFontOfSize_(14.0),
-            }
+            if not self.menu_history:
+                self.menu_history = NSMenu.alloc().init()
+            self.menu_history.removeAllItems()
+
             menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 T("History Last 10 Items"), "", ""
             )
@@ -308,7 +311,11 @@ class SABnzbdDelegate(NSObject):
                         )
                     if history["status"] != Status.COMPLETED:
                         jobfailed = NSAttributedString.alloc().initWithString_attributes_(
-                            history["name"], self.failedAttributes
+                            history["name"],
+                            {
+                                NSForegroundColorAttributeName: NSColor.redColor(),
+                                NSFontAttributeName: NSFont.menuFontOfSize_(14.0),
+                            },
                         )
                         menu_history_item.setAttributedTitle_(jobfailed)
                     menu_history_item.setRepresentedObject_("%s" % history["storage"])

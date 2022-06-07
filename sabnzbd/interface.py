@@ -68,8 +68,9 @@ import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
 from sabnzbd.utils.servertests import test_nntp_server_dict
+from sabnzbd.utils.getperformance import getcpu
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
+from sabnzbd.constants import DEF_STD_CONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
@@ -144,12 +145,16 @@ def secured_expose(
         # Check if config is locked
         if check_configlock and cfg.configlock():
             cherrypy.response.status = 403
-            return _MSG_ACCESS_DENIED_CONFIG_LOCK
+            if cfg.api_warnings():
+                return _MSG_ACCESS_DENIED_CONFIG_LOCK
+            return
 
         # Check if external access and if it's allowed
         if not check_access(access_type=access_type, warn_user=True):
             cherrypy.response.status = 403
-            return _MSG_ACCESS_DENIED
+            if cfg.api_warnings():
+                return _MSG_ACCESS_DENIED
+            return
 
         # Verify login status, only for non-key pages
         if check_for_login and not check_api_key and not check_login():
@@ -158,14 +163,18 @@ def secured_expose(
         # Verify host used for the visit
         if not check_hostname():
             cherrypy.response.status = 403
-            return _MSG_ACCESS_DENIED_HOSTNAME
+            if cfg.api_warnings():
+                return _MSG_ACCESS_DENIED_HOSTNAME
+            return
 
         # Some pages need correct API key
         if check_api_key:
             msg = check_apikey(kwargs)
             if msg:
                 cherrypy.response.status = 403
-                return msg
+                if cfg.api_warnings():
+                    return msg
+                return
 
         # All good, cool!
         return wrap_func(*args, **kwargs)
@@ -426,6 +435,9 @@ class MainPage:
             info["have_rss_defined"] = bool(config.get_rss())
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
 
+            info["cpumodel"] = getcpu()
+            info["cpusimd"] = sabnzbd.decoder.SABYENC_SIMD
+
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
                 cfg.username()
@@ -511,9 +523,6 @@ class Wizard:
         if kwargs.get("lang"):
             cfg.language.set(kwargs.get("lang"))
 
-        # Always setup Glitter
-        change_web_dir("Glitter - Auto")
-
         info = build_header(sabnzbd.WIZARD_DIR)
         info["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
@@ -573,14 +582,16 @@ def get_access_info():
     # Access_url is used to provide the user a link to SABnzbd depending on the host
     cherryhost = cfg.cherryhost()
     host = socket.gethostname().lower()
+    logging.info("hostname is", host)
     socks = [host]
+
+    try:
+        addresses = socket.getaddrinfo(host, None)
+    except:
+        addresses = []
 
     if cherryhost == "0.0.0.0":
         # Grab a list of all ips for the hostname
-        try:
-            addresses = socket.getaddrinfo(host, None)
-        except:
-            addresses = []
         for addr in addresses:
             address = addr[4][0]
             # Filter out ipv6 addresses (should not be allowed)
@@ -589,7 +600,6 @@ def get_access_info():
         socks.insert(0, "localhost")
     elif cherryhost == "::":
         # Grab a list of all ips for the hostname
-        addresses = socket.getaddrinfo(host, None)
         for addr in addresses:
             address = addr[4][0]
             # Only ipv6 addresses will work
@@ -690,6 +700,12 @@ class ConfigPage:
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
             search_list=conf,
         )
+
+    @secured_expose(check_configlock=True, check_api_key=True)
+    def backup(self, **kwargs):
+        cherrypy.response.headers["Content-Type"] = "application/zip"
+        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
+        return config.create_config_backup()
 
 
 ##############################################################################
@@ -795,26 +811,8 @@ SWITCH_LIST = (
     "unwanted_extensions",
     "action_on_unwanted_extensions",
     "unwanted_extensions_mode",
+    "cleanup_list",
     "sanitize_safe",
-    "rating_enable",
-    "rating_api_key",
-    "rating_filter_enable",
-    "rating_filter_abort_audio",
-    "rating_filter_abort_video",
-    "rating_filter_abort_encrypted",
-    "rating_filter_abort_encrypted_confirm",
-    "rating_filter_abort_spam",
-    "rating_filter_abort_spam_confirm",
-    "rating_filter_abort_downvoted",
-    "rating_filter_abort_keywords",
-    "rating_filter_pause_audio",
-    "rating_filter_pause_video",
-    "rating_filter_pause_encrypted",
-    "rating_filter_pause_encrypted_confirm",
-    "rating_filter_pause_spam",
-    "rating_filter_pause_spam_confirm",
-    "rating_filter_pause_downvoted",
-    "rating_filter_pause_keywords",
 )
 
 
@@ -829,10 +827,10 @@ class ConfigSwitches:
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
         conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
-        conf["cleanup_list"] = cfg.cleanup_list.get_string()
 
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config("misc", kw)()
+        conf["cleanup_list"] = cfg.cleanup_list.get_string()
         conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
 
         conf["scripts"] = list_scripts() or ["None"]
@@ -845,18 +843,9 @@ class ConfigSwitches:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSwitches(self, **kwargs):
         for kw in SWITCH_LIST:
-            item = config.get_config("misc", kw)
-            value = kwargs.get(kw)
-            if kw == "unwanted_extensions" and value:
-                value = value.lower().replace(".", "")
-            msg = item.set(value)
+            msg = config.get_config("misc", kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(msg, kwargs.get("ajax"))
-
-        cleanup_list = kwargs.get("cleanup_list")
-        if cleanup_list and sabnzbd.WIN32:
-            cleanup_list = cleanup_list.lower()
-        cfg.cleanup_list.set(cleanup_list)
 
         config.save_config()
         if kwargs.get("ajax"):
@@ -915,11 +904,10 @@ SPECIAL_VALUE_LIST = (
     "max_foldername_length",
     "show_sysload",
     "url_base",
-    "num_decoders",
+    "num_simd_decoders",
     "direct_unpack_threads",
     "ipv6_servers",
     "selftest_host",
-    "rating_host",
     "ssdp_broadcast_interval",
 )
 SPECIAL_LIST_LIST = (
@@ -927,6 +915,7 @@ SPECIAL_LIST_LIST = (
     "quick_check_ext_ignore",
     "host_whitelist",
     "local_ranges",
+    "ext_rename_ignore",
 )
 
 
@@ -938,10 +927,10 @@ class ConfigSpecial:
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         conf["switches"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default()) for kw in SPECIAL_BOOL_LIST
+            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
         ]
         conf["entries"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default()) for kw in SPECIAL_VALUE_LIST
+            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_VALUE_LIST
         ]
         conf["entries"].extend(
             [
@@ -973,7 +962,6 @@ GENERAL_LIST = (
     "host",
     "port",
     "username",
-    "refresh_rate",
     "language",
     "cache_limit",
     "inet_exposure",
@@ -998,13 +986,12 @@ class ConfigGeneral:
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf["configfn"] = config.get_filename()
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
         web_list = []
         for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
             # Ignore the config
-            if not interface_dir.endswith(DEF_STDCONFIG):
+            if not interface_dir.endswith(DEF_STD_CONFIG):
                 # Check the available templates
                 for colorscheme in globber(
                     os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
@@ -1065,6 +1052,22 @@ class ConfigGeneral:
             return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
         else:
             raise Raiser(self.__root)
+
+    @secured_expose(check_api_key=True, check_configlock=True)
+    def uploadConfig(self, **kwargs):
+        """Restore a config backup"""
+        config_backup_file = kwargs.get("config_backup_file")
+
+        # Only accept the backup file if it can be opened as a zip archive and only contains a config file
+        try:
+            config_backup_data = config_backup_file.file.read()
+            config_backup_file.file.close()
+            if config.validate_config_backup(config_backup_data):
+                sabnzbd.RESTORE_DATA = config_backup_data
+                return sabnzbd.api.report(data={"success": True, "restart_req": True})
+        except:
+            pass
+        return sabnzbd.api.report(error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):
@@ -1819,10 +1822,10 @@ class ConfigCats:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save(self, **kwargs):
         name = kwargs.get("name", "*")
+        newname = kwargs.get("newname", "")
         if name == "*":
             newname = name
-        else:
-            newname = re.sub('"', "", kwargs.get("newname", ""))
+
         if newname:
             # Check if this cat-dir is not sub-folder of incomplete
             if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):
@@ -1845,7 +1848,6 @@ SORT_LIST = (
     "enable_movie_sorting",
     "movie_sort_string",
     "movie_sort_extra",
-    "movie_extra_folder",
     "enable_date_sorting",
     "date_sort_string",
     "movie_categories",
@@ -2153,7 +2155,7 @@ class ConfigNotify:
         conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
         conf["categories"] = list_cats(False)
         conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
-        conf["have_ncenter"] = sabnzbd.DARWIN and sabnzbd.FOUNDATION
+        conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION
         conf["scripts"] = list_scripts(default=False, none=True)
 
         for section in NOTIFY_OPTIONS:

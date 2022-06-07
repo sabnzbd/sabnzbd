@@ -280,11 +280,12 @@ class TestMisc:
             (["", "cmd1", "5"], '"" "cmd1" "5"'),  # sending blank string
             (["cmd1", None, "cmd3", "tail -f"], '"cmd1" "" "cmd3" "tail -f"'),  # sending None in command
             (["cmd1", 0, "ps ux"], '"cmd1" "" "ps ux"'),  # sending 0
+            (['pass"word', "command"], '"pass""word" "command"'),  # special escaping of unrar
         ],
     )
-    def test_list_to_cmd(self, test_input, expected_output):
+    def test_list2cmdline_unrar(self, test_input, expected_output):
         """Test to convert list to a cmd.exe-compatible command string"""
-        res = misc.list2cmdline(test_input)
+        res = misc.list2cmdline_unrar(test_input)
         # Make sure the output is cmd.exe-compatible
         assert res == expected_output
 
@@ -577,8 +578,8 @@ class TestBuildAndRunCommand:
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\"])
         assert mock_subproc_popen.call_args[0][0] == ["UnRar.exe", "\\\\?\\C:\\path\\"]
-        misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\"], flatten_command=True)
-        assert mock_subproc_popen.call_args[0][0] == '"UnRar.exe" "\\\\?\\C:\\path\\"'
+        misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\", "pass'\"word"], windows_unrar_command=True)
+        assert mock_subproc_popen.call_args[0][0] == '"UnRar.exe" "\\\\?\\C:\\path\\" "pass\'""word"'
 
     @mock.patch("sabnzbd.misc.userxbit")
     @mock.patch("subprocess.Popen")
@@ -608,6 +609,11 @@ class TestBuildAndRunCommand:
             "input 1",
         ]
         os.remove(temp_file_path)
+
+        # Make sure Windows UnRar patching stays on Windows
+        test_cmd = ["unrar", "/home/", "pass'\"word"]
+        misc.build_and_run_command(test_cmd, windows_unrar_command=True)
+        assert mock_subproc_popen.call_args[0][0] == test_cmd
 
         # Have to fake these for it to work
         newsunpack.IONICE_COMMAND = "ionice"

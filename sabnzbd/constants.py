@@ -25,15 +25,6 @@ POSTPROC_QUEUE_VERSION = 2
 
 REC_RAR_VERSION = 550
 
-PNFO = namedtuple(
-    "PNFO",
-    "repair unpack delete script nzo_id filename labels password unpackstrht "
-    "msgid category url bytes_left bytes avg_stamp avg_date finished_files "
-    "active_files queued_files status priority bytes_missing direct_unpack",
-)
-
-QNFO = namedtuple("QNFO", "bytes bytes_left bytes_left_previous_page list q_size_list q_fullsize")
-
 ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 
 # Leave some space for "_UNPACK_" which we append during post-proc
@@ -52,7 +43,6 @@ QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME = "postproc%s.sab" % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME = "rss_data.sab"
 SCAN_FILE_NAME = "watched_data2.sab"
-RATING_FILE_NAME = "Rating.sab"
 FUTURE_Q_FOLDER = "future"
 JOB_ADMIN = "__ADMIN__"
 VERIFIED_FILE = "__verified__"
@@ -60,10 +50,16 @@ RENAMES_FILE = "__renames__"
 ATTRIB_FILE = "SABnzbd_attrib"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABYENC_VERSION_REQUIRED = "4.0.0"
+SABYENC_VERSION_REQUIRED = "5.4.2"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
+
+CONFIG_BACKUP_FILES = [
+    BYTES_FILE_NAME,
+    RSS_FILE_NAME,
+    DB_HISTORY_NAME,
+]
 
 DEF_DOWNLOAD_DIR = os.path.normpath("Downloads/incomplete")
 DEF_COMPLETE_DIR = os.path.normpath("Downloads/complete")
@@ -72,8 +68,9 @@ DEF_NZBBACK_DIR = ""
 DEF_LANGUAGE = "locale"
 DEF_INTERFACES = "interfaces"
 DEF_EMAIL_TMPL = "email"
-DEF_STDCONFIG = "Config"
-DEF_STDINTF = "Glitter"
+DEF_STD_CONFIG = "Config"
+DEF_STD_WEB_DIR = "Glitter"
+DEF_STD_WEB_COLOR = "Auto"
 DEF_MAIN_TMPL = os.path.normpath("templates/main.tmpl")
 DEF_INI_FILE = "sabnzbd.ini"
 DEF_HOST = "127.0.0.1"
@@ -113,7 +110,16 @@ INTERFACE_PRIORITIES = {
     LOW_PRIORITY: "Low",
 }
 
-STAGES = {"Source": 0, "Download": 1, "Servers": 2, "Repair": 3, "Filejoin": 4, "Unpack": 5, "Script": 6}
+STAGES = {
+    "Source": 0,
+    "Download": 1,
+    "Servers": 2,
+    "Repair": 3,
+    "Filejoin": 4,
+    "Unpack": 5,
+    "Deobfuscate": 6,
+    "Script": 7,
+}
 
 VALID_ARCHIVES = (".zip", ".rar", ".7z")
 VALID_NZB_FILES = (".nzb", ".gz", ".bz2")

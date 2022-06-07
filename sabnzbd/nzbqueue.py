@@ -49,7 +49,6 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
     Status,
     IGNORED_FILES_AND_FOLDERS,
-    QNFO,
     DIRECT_WRITE_TRIGGER,
 )
 
@@ -328,6 +327,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def add(self, nzo: NzbObject, save: bool = True, quiet: bool = False) -> str:
+        # Can already be set for future jobs
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.filesystem.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
 
@@ -747,7 +747,12 @@ class NzbQueue:
         articles_left, file_done, post_done = nzo.remove_article(article, success)
 
         # Write data if file is done or at trigger time
-        if file_done or (articles_left and (articles_left % DIRECT_WRITE_TRIGGER) == 0):
+        # Skip if the file is already queued, since all available articles will then be written
+        if file_done or (
+            articles_left
+            and (articles_left % DIRECT_WRITE_TRIGGER) == 0
+            and not sabnzbd.Assembler.partial_nzf_in_queue(nzf)
+        ):
             if not nzo.precheck:
                 # Only start decoding if we have a filename and type
                 # The type is only set if sabyenc could decode the article
@@ -806,7 +811,7 @@ class NzbQueue:
 
     def queue_info(
         self, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None, start: int = 0, limit: int = 0
-    ) -> QNFO:
+    ) -> Tuple[int, int, int, List[NzbObject], int, int]:
         """Return list of queued jobs,
         optionally filtered by 'search' and 'nzo_ids', and limited by start and limit.
         Not locked for performance, only reads the queue
@@ -817,8 +822,8 @@ class NzbQueue:
         bytes_total = 0
         bytes_left_previous_page = 0
         q_size = 0
-        pnfo_list = []
-        n = 0
+        nzo_list = []
+        nzos_matched = 0
 
         for nzo in self.__nzo_list:
             if nzo.status not in (Status.PAUSED, Status.CHECKING) or nzo.priority == FORCE_PRIORITY:
@@ -827,18 +832,18 @@ class NzbQueue:
                 bytes_left += b_left
                 q_size += 1
                 # We need the number of bytes before the current page
-                if n < start:
+                if nzos_matched < start:
                     bytes_left_previous_page += b_left
 
             if (not search) or search in nzo.final_name.lower():
                 if (not nzo_ids) or nzo.nzo_id in nzo_ids:
-                    if (not limit) or (start <= n < start + limit):
-                        pnfo_list.append(nzo.gather_info())
-                    n += 1
+                    if (not limit) or (start <= nzos_matched < start + limit):
+                        nzo_list.append(nzo)
+                    nzos_matched += 1
 
         if not search and not nzo_ids:
-            n = len(self.__nzo_list)
-        return QNFO(bytes_total, bytes_left, bytes_left_previous_page, pnfo_list, q_size, n)
+            nzos_matched = len(self.__nzo_list)
+        return bytes_total, bytes_left, bytes_left_previous_page, nzo_list, q_size, nzos_matched
 
     def remaining(self) -> int:
         """Return bytes left in the queue by non-paused items

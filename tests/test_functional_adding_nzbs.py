@@ -19,12 +19,11 @@
 tests.test_functional_adding_nzbs - Tests for settings interaction when adding NZBs
 """
 
-import os
 import shutil
 import stat
 import sys
-from random import choice, randint, sample
-from string import ascii_lowercase, digits
+from random import sample
+from zipfile import ZipFile
 
 from sabnzbd.constants import (
     DUP_PRIORITY,
@@ -153,6 +152,18 @@ def pause_and_clear():
 
 @pytest.mark.usefixtures("run_sabnzbd", "pause_and_clear")
 class TestAddingNZBs:
+    def _api_set_config(self, keyword, value):
+        """Shorthand for the API-call to change the config settings"""
+        json = get_api_result(
+            mode="set_config",
+            extra_arguments={
+                "section": "misc",
+                "keyword": keyword,
+                "value": value,
+            },
+        )
+        assert value == json["config"]["misc"][keyword]
+
     def _setup_script_dir(self):
         VAR.SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts" + SCRIPT_RANDOM)
         try:
@@ -160,15 +171,7 @@ class TestAddingNZBs:
         except Exception:
             pytest.fail("Cannot create script_dir %s" % VAR.SCRIPT_DIR)
 
-        json = get_api_result(
-            mode="set_config",
-            extra_arguments={
-                "section": "misc",
-                "keyword": "script_dir",
-                "value": VAR.SCRIPT_DIR,
-            },
-        )
-        assert VAR.SCRIPT_DIR in json["config"]["misc"]["script_dir"]
+        self._api_set_config("script_dir", VAR.SCRIPT_DIR)
 
     def _customize_pre_queue_script(self, priority, category):
         """Add a script that accepts the job and sets priority & category"""
@@ -192,15 +195,7 @@ class TestAddingNZBs:
 
         if not VAR.PRE_QUEUE_SETUP_DONE:
             # Set as pre-queue script
-            json = get_api_result(
-                mode="set_config",
-                extra_arguments={
-                    "section": "misc",
-                    "keyword": "pre_script",
-                    "value": script_name,
-                },
-            )
-            assert script_name in json["config"]["misc"]["pre_script"]
+            self._api_set_config("pre_script", script_name)
             VAR.PRE_QUEUE_SETUP_DONE = True
 
     def _configure_cat(self, priority, tag):
@@ -239,10 +234,7 @@ class TestAddingNZBs:
         job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(8).hex())
         try:
             os.mkdir(job_dir)
-            job_file = "%s.%s" % (
-                "".join(choice(ascii_lowercase + digits) for i in range(randint(6, 18))),
-                "".join(sample(ascii_lowercase, 3)),
-            )
+            job_file = "%s.bin" % random_name()
             with open(os.path.join(job_dir, job_file), "wb") as f:
                 f.write(os.urandom(randint(MIN_FILESIZE, MAX_FILESIZE)))
         except Exception:
@@ -538,9 +530,9 @@ class TestAddingNZBs:
         assert (len(json["warnings"]) == 0) is should_work
         if not should_work:
             for warning in range(0, len(json["warnings"])):
-                assert (("Empty NZB file" or "Failed to import") and broken_nzb_basename) in json["warnings"][warning][
-                    "text"
-                ]
+                warn_text = json["warnings"][warning]["text"]
+                assert "Empty NZB" in warn_text or "Failed to import" in warn_text or "Invalid NZB" in warn_text
+                assert broken_nzb_basename in warn_text
 
         os.remove(broken_nzb)
 
@@ -550,10 +542,7 @@ class TestAddingNZBs:
     def test_adding_nzbs_size_limit(self, prio_meta_cat, prio_def_cat, prio_add):
         """Verify state and priority of a job exceeding the size_limit"""
         # Set size limit
-        json = get_api_result(
-            mode="set_config", extra_arguments={"section": "misc", "keyword": "size_limit", "value": MIN_FILESIZE - 1}
-        )
-        assert int(json["config"]["misc"]["size_limit"]) < MIN_FILESIZE
+        self._api_set_config("size_limit", str(MIN_FILESIZE - 1))
 
         job = self._prep_priority_tester(prio_def_cat, prio_add, None, None, None, prio_meta_cat)
 
@@ -563,53 +552,15 @@ class TestAddingNZBs:
         assert "TOO LARGE" in job["labels"]
 
         # Unset size limit
-        json = get_api_result(
-            mode="set_config", extra_arguments={"section": "misc", "keyword": "size_limit", "value": ""}
-        )
+        self._api_set_config("size_limit", "")
 
-    @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
-    @pytest.mark.parametrize("prio_add", PRIO_OPTS_ADD)
-    @pytest.mark.parametrize("prio_add_cat", sample(PRIO_OPTS_ADD_CAT, 1))
-    @pytest.mark.parametrize("prio_preq", sample(PRIO_OPTS_PREQ, 1))
-    @pytest.mark.parametrize("prio_preq_cat", sample(PRIO_OPTS_PREQ_CAT, 2))
-    def test_adding_nzbs_duplicate_pausing(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat):
+    def _add_backup_directory(self):
         # Set an nzb backup directory
-        try:
-            backup_dir = os.path.join(SAB_CACHE_DIR, "nzb_backup_dir" + os.urandom(4).hex())
-            assert (
-                get_api_result(
-                    mode="set_config",
-                    extra_arguments={"section": "misc", "keyword": "nzb_backup_dir", "value": backup_dir},
-                )["config"]["misc"]["nzb_backup_dir"]
-                == backup_dir
-            )
-        except Exception:
-            pytest.fail("Cannot create nzb_backup_dir %s" % backup_dir)
+        backup_dir = os.path.join(SAB_CACHE_DIR, "nzb_backup_dir" + os.urandom(4).hex())
+        self._api_set_config("nzb_backup_dir", backup_dir)
+        return backup_dir
 
-        # Add the job a first time
-        job = self._prep_priority_tester(None, None, None, None, None, None)
-        assert job["status"] == "Queued"
-
-        # Setup duplicate handling to 2 (Pause)
-        assert (
-            get_api_result(mode="set_config", extra_arguments={"section": "misc", "keyword": "no_dupes", "value": 2})[
-                "config"
-            ]["misc"]["no_dupes"]
-            == 2
-        )
-
-        expected_prio, _ = self._expected_results(
-            [prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None]
-        )
-
-        job = self._prep_priority_tester(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None)
-
-        # Verify job is paused and correctly labeled, and given the right (fallback) priority
-        assert "DUPLICATE" in job["labels"]
-        assert job["priority"] == ALL_PRIOS.get(expected_prio)
-        # Priority Force overrules the duplicate pause
-        assert job["status"] == "Paused" if expected_prio != FORCE_PRIORITY else "Downloading"
-
+    def _clear_and_reset_backup_directory(self, backup_dir):
         # Reset duplicate handling (0), nzb_backup_dir ("")
         get_api_result(mode="set_config_default", extra_arguments={"keyword": ["no_dupes", "nzb_backup_dir"]})
 
@@ -622,3 +573,36 @@ class TestAddingNZBs:
                 time.sleep(1)
         else:
             pytest.fail("Failed to erase nzb_backup_dir %s" % backup_dir)
+
+    @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
+    @pytest.mark.parametrize("prio_add", PRIO_OPTS_ADD)
+    @pytest.mark.parametrize("prio_add_cat", sample(PRIO_OPTS_ADD_CAT, 1))
+    @pytest.mark.parametrize("prio_preq", sample(PRIO_OPTS_PREQ, 1))
+    @pytest.mark.parametrize("prio_preq_cat", sample(PRIO_OPTS_PREQ_CAT, 2))
+    def test_adding_nzbs_duplicate_pausing(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat):
+        # Set an nzb backup directory
+        backup_dir = self._add_backup_directory()
+
+        # Add the job a first time
+        job = self._prep_priority_tester(None, None, None, None, None, None)
+        assert job["status"] == "Queued"
+
+        # Setup duplicate handling to 2 (Pause)
+        self._api_set_config("no_dupes", 2)
+
+        expected_prio, _ = self._expected_results(
+            [prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None]
+        )
+
+        job = self._prep_priority_tester(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None)
+
+        # Verify job is paused and correctly labeled, and given the right (fallback) priority
+        assert job["priority"] == ALL_PRIOS.get(expected_prio)
+        if expected_prio == FORCE_PRIORITY:
+            assert "DUPLICATE" not in job["labels"]
+            assert job["status"] == "Downloading"
+        else:
+            assert "DUPLICATE" in job["labels"]
+            assert job["status"] == "Paused"
+
+        self._clear_and_reset_backup_directory(backup_dir)
