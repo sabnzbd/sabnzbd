@@ -1,11 +1,5 @@
-Release Notes - SABnzbd 3.6.0 Release Candidate 3
+Release Notes - SABnzbd 3.6.0
 =========================================================
-
-## Bugfixes since 3.6.0 Release Candidate 2
-- Queue pagination was not shown.
-- `.nzb` files were not removed when rejected by pre-queue script.
-- Updated `sabyenc3` to include latest fixes.
-- Linux: Always perform disk write check.
 
 ## Changes since 3.5.3
 - Significantly increased performance by using the yEnc-decoding
@@ -25,7 +19,7 @@ Release Notes - SABnzbd 3.6.0 Release Candidate 3
 - Removed included `Deobfuscate.py` as it is outdated.
 - Show a warning when there are no valid news servers active.
 - Show a warning if the filesystem does not support special characters.
-- Allow multiple parameters to be passed to par2cmdline/Multipar
+- Allow multiple parameters to be passed to par2cmdline/Multipar.
 - Linux: Added AppStream metadata, desktop shortcut and MimeInfo.
 - Linux: Added support for bash completion.
 - macOS: Application and included tools fully native on M1 systems.
@@ -34,11 +28,12 @@ Release Notes - SABnzbd 3.6.0 Release Candidate 3
 
 # API changes since 3.5.3
 - Removed several (status) fields from the `queue` API call.
-- Remove unused and undocumented API calls: `addid`, `options`, `rescan`
+- Remove unused and undocumented API calls: `addid`, `options`, `rescan`,
   `osx_icon`, `set_speedlimit`, `get_speedlimit`, `set_colorscheme`.
+- Removed undocumented `xcat` parameter.
 - `None` values in XML API-output are left empty.
 - Adding NZB's would not always return `nzo_ids`.
-- Removed undocumented `xcat` parameter.
+- Prevent crash in `history` call during post-processing.
 
 # Bugfixes since 3.5.3
 - Extended timeout when measuring system performance.
@@ -50,7 +45,6 @@ Release Notes - SABnzbd 3.6.0 Release Candidate 3
 - Prevent traceback when status functions timeout.
 - Prevent crash if not enough repair blocks are available.
 - Prevent crash when there is an unknown `language` setting.
-- Prevent crash in API `history` call during post-processing.
 - Source release had Windows line-endings.
 - Windows: If a job password contained a double quote it
   would not be picked up by UnRar and unpack would fail.
