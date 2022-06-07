@@ -6,4 +6,4 @@
 # You MUST use double quotes (so " and not ')
 
 __version__ = "3.6.0"
-__baseline__ = "unknown"
+__baseline__ = "6c859760e72316e5a3d221dd47ead9874de37c69"
