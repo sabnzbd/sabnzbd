@@ -137,7 +137,7 @@ def publicipv4():
             break
         except (socket.error, urllib.error.URLError):
             # the connect OR the inet_aton raised an exception, so:
-            public_ipv4 = None # reset
+            public_ipv4 = None  # reset
             # continue the for loop to try next server IPv4 address
             pass
 
