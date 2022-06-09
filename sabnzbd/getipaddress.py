@@ -111,7 +111,7 @@ def publicipv4():
     try:
         # look up IPv4 addresses of selftest_host
         lookup_result_iv4 = addresslookup4(sabnzbd.cfg.selftest_host())
-    except:
+    except Exception:
         # something very bad: no name resolving of selftest_host
         logging.debug("Failed to detect public IPv4 address: looking up %s failed", sabnzbd.cfg.selftest_host())
         return None
