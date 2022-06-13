@@ -11,7 +11,7 @@ charset-normalizer==2.0.12
 certifi
 
 # orjson does not support 32bit Windows, exclude it based on Python-version
-orjson==3.7.1; python_version > '3.8'
+orjson==3.7.2; python_version > '3.8'
 
 # For the macOS build
 dmgbuild==1.5.2; sys_platform == 'darwin'
