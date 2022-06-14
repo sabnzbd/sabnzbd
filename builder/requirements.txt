@@ -1,17 +1,17 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 pyinstaller==5.1
-pyinstaller-hooks-contrib==2022.6
+pyinstaller-hooks-contrib==2022.7
 altgraph==0.17.2
 wrapt==1.14.1
-setuptools==62.3.2
-pkginfo==1.8.2
+setuptools==62.4.0
+pkginfo==1.8.3
 PyGithub==1.55
 charset-normalizer==2.0.12
 certifi
 
 # orjson does not support 32bit Windows, exclude it based on Python-version
-orjson==3.7.1; python_version > '3.8'
+orjson==3.7.2; python_version > '3.8'
 
 # For the macOS build
 dmgbuild==1.5.2; sys_platform == 'darwin'
