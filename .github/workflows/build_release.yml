@@ -91,7 +91,8 @@ jobs:
       PYTHON_VERSION: "3.10.4"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
-      CFLAGS: -arch arm64 -arch x86_64
+      CFLAGS: -arch x86_64 -arch arm64
+      ARCHFLAGS: -arch x86_64 -arch arm64
     steps:
     - uses: actions/checkout@v3
     - name: Cache Python download
@@ -131,8 +132,7 @@ jobs:
         pip3 install --upgrade pip wheel
         
         brew uninstall libffi --ignore-dependencies
-        ARCHFLAGS="-arch x86_64 -arch arm64" pip3 install --upgrade cffi --no-binary cffi
-        pip3 install --upgrade -r requirements.txt
+        pip3 install --upgrade -r requirements.txt --no-binary cffi
         
         pip3 uninstall cryptography -y
         pip3 download -r builder/osx/requirements.txt --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
