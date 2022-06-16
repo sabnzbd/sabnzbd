@@ -2115,9 +2115,17 @@ def quick_check_set_new(setname: str, nzo: NzbObject) -> bool:
                 elif nzf.has_bad_articles:
                     logging.info("Quick-check of file %s failed due to bad article(s)!", file)
                     result = False
-                elif os.path.getsize(nzf.filepath) != par2info.filesize:
-                    logging.info("Quick-check of file %s failed due to incorrect file size!", file)
-                    result = False
+                else:
+                    try:
+                        if os.path.getsize(nzf.filepath) != par2info.filesize:
+                            logging.info("Quick-check of file %s failed due to incorrect file size!", file)
+                            result = False
+                    except IOError:
+                        # Size check failed for some reason, could be already renamed
+                        logging.info("Quick-check of file %s failed because filesize could not be determined!", file)
+                        result = False
+                        pass
+
                 break
 
         if not found:
