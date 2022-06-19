@@ -3303,7 +3303,7 @@ msgstr "מיין עבודות בתור באופן אוטומטי כאשר עבו
 
 #: sabnzbd/skintext.py
 msgid "The queue will resort every 30 seconds if % downloaded is selected."
-msgstr ""
+msgstr "התור ימוין כל 30 שניות אם האפשרות % ירד נבחרה."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -4602,7 +4602,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
-msgstr ""
+msgstr "מיין לפי % ירד <small>הכי הרבה&rarr;הכי מעט</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
