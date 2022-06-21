@@ -323,7 +323,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         cfg.enable_meta,
         cfg.replace_illegal,
         cfg.html_login,
-        cfg.osx_speed,
         cfg.allow_incomplete_nzb,
         cfg.disable_key,
         cfg.show_sysload,

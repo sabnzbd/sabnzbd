@@ -1260,7 +1260,7 @@ def main():
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
 
     # Handle the several tray icons
-    if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
+    if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WIN32:
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):

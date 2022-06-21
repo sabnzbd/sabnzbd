@@ -55,7 +55,7 @@ class SABnzbdDelegate(NSObject):
 
     def awakeFromNib(self):
         # Do we want the menu
-        if sabnzbd.cfg.osx_menu():
+        if sabnzbd.cfg.tray_icon():
             # Status Bar initialize
             self.buildMenu()
 
@@ -363,16 +363,7 @@ class SABnzbdDelegate(NSObject):
                 if "M" in speed and len(speed) > 5:
                     speed = speed.replace(" ", "")
                 time_left = (bpsnow > 10 and time_left) or "------"
-
-                statusbarText = "\n\n%s\n%sB/s\n" % (time_left, speed)
-
-                if sabnzbd.SABSTOP:
-                    statusbarText = "..."
-
-                if not sabnzbd.cfg.osx_speed():
-                    statusbarText = ""
-
-                self.setMenuTitle_(statusbarText)
+                self.setMenuTitle_("\n\n%s\n%sB/s\n" % (time_left, speed))
             else:
                 self.state = T("Idle")
                 self.setMenuTitle_("")
