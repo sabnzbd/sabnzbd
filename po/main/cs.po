@@ -1211,27 +1211,27 @@ msgstr "Zrušeno, nelze dokončit"
 msgid "Error importing %s"
 msgstr "Chyba při importu %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLIKÁT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "ŠIFROVANÉ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "PŘÍLIŠ VELKÝ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "NEKOMPLETNÍ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "NECHTĚNÝ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "ČEKÁNÍ %s s"
 
@@ -4387,14 +4387,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Submit"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
 msgstr ""
 
 #: sabnzbd/skintext.py

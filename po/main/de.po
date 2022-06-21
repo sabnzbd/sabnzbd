@@ -1262,27 +1262,27 @@ msgstr "Abgebrochen, kann nicht fertiggestellt werden"
 msgid "Error importing %s"
 msgstr "Fehler beim Importieren von %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLIKAT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "VERSCHLÜSSELT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "ZU GROSS"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "UNVOLLSTÄNDIG"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "UNERWÜNSCHT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "WARTE %s Sek"
 
@@ -4633,14 +4633,6 @@ msgstr "Wahlweise einen Dateinamen angeben:"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "Senden"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Versendet. Danke!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Nichts ausgewählt!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

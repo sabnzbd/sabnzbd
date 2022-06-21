@@ -1204,27 +1204,27 @@ msgstr "Avbrutet, kan inte slutföras"
 msgid "Error importing %s"
 msgstr "Det gick inte att importera %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUBLETT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "KRYPTERAT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "FÖR STOR"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "INKOMPLETT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "OÖNSKAD"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "VÄNTA %s SEKUNDER"
 
@@ -4466,14 +4466,6 @@ msgstr "Alternativt ange ett filnamn"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "Skicka"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Skickat. Tack!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Inget markerat!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

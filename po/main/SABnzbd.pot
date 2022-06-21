@@ -1139,27 +1139,27 @@ msgstr ""
 msgid "Error importing %s"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr ""
 
@@ -4195,14 +4195,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Submit"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
 msgstr ""
 
 #: sabnzbd/skintext.py

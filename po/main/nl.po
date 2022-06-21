@@ -1243,27 +1243,27 @@ msgstr "Afgebroken, kan niet voltooid worden"
 msgid "Error importing %s"
 msgstr "Fout bij importeren van %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUBBEL"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "VERSLEUTELD"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "TE GROOT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "ONVOLLEDIG"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "ONGEWENST"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "WACHT %s sec"
 
@@ -4590,14 +4590,6 @@ msgstr "Geef eventueel een andere naam"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "Verstuur"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Ingediend. Bedankt!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Niets geselecteerd!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

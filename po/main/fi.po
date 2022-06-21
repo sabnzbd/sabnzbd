@@ -1207,27 +1207,27 @@ msgstr "Peruutettu, ei voi valmistua"
 msgid "Error importing %s"
 msgstr "Virhe tuotaessa %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "KAKSOISKAPPALE"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "SALATTU"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "LIIAN SUURI"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "KESKENERÄINEN"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "EI TOIVOTTU"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "ODOTA %s sekuntia"
 
@@ -4496,14 +4496,6 @@ msgstr "Vaihtoehtoisesti anna tiedostonimi"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "Lähetä"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Lähetetty. Kiitos!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Ei mitään valittuna!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

@@ -1191,27 +1191,27 @@ msgstr "已中止，无法完成"
 msgid "Error importing %s"
 msgstr "导入 %s 出错"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "*重复*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "*加密*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "*太大*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "*不完整*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "不需要"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "*等待* %s 秒"
 
@@ -4401,14 +4401,6 @@ msgstr "可以选择指定文件名"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "提交"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "已提交。感谢!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "未选择任何内容!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

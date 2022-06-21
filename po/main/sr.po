@@ -1200,27 +1200,27 @@ msgstr "Поништено, не може да се заврши"
 msgid "Error importing %s"
 msgstr "Грешка увоза %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "ДУПЛИКАТ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "ШИФРИРАНО"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "ПРЕВЕЛИКО"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "НЕПОТПУНО"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "NEŽELJENI"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "Чекање %s сек"
 
@@ -4454,14 +4454,6 @@ msgstr "Опционо специфирати име"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "Пошаљи"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Poslato. Hvala!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Mišta nije odabrano!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

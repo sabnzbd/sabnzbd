@@ -1232,27 +1232,27 @@ msgstr "Anulat nu poate fi finalizat"
 msgid "Error importing %s"
 msgstr "Eroare importare %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLICAT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "ENCRIPTAT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "PREA MARE"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "INCOMPLET"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "NEDORIT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "AŞTEAPTĂ %s sec"
 
@@ -4507,14 +4507,6 @@ msgstr "Opţional specifică un nume de fişier"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "Trimite"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Trimis. Vă mulțumim!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Nimic selectat!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

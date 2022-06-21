@@ -1213,27 +1213,27 @@ msgstr "בוטל, לא יכול להיות שלם"
 msgid "Error importing %s"
 msgstr "שגיאה ביבוא %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "כפול"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "מוצפן"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "גדול מדי"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "בלתי שלם"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "בלתי רצוי"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "המתן %s שניות"
 
@@ -4499,14 +4499,6 @@ msgstr "ציין באופן רשותי שם קובץ"
 #: sabnzbd/skintext.py
 msgid "Submit"
 msgstr "הגש"
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "הוגש. תודה!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "שום דבר לא נבחר!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"

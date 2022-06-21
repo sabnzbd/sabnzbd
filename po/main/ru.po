@@ -1206,27 +1206,27 @@ msgstr ""
 msgid "Error importing %s"
 msgstr "Ошибка импорта %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "ПОВТОР"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "ЗАШИФРОВАН"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "СЛИШКОМ БОЛЬШОЙ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "НЕПОЛНЫЙ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "ОЖИДАНИЕ %s с"
 
@@ -4474,14 +4474,6 @@ msgstr "Имя файла (необязательно)"
 
 #: sabnzbd/skintext.py
 msgid "Submit"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
 msgstr ""
 
 #: sabnzbd/skintext.py
