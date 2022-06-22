@@ -566,7 +566,6 @@ NzbObjectSaver = (
     "nzo_id",
     "futuretype",
     "removed_from_queue",
-    "parsed",
     "action_line",
     "unpack_info",
     "fail_msg",
@@ -709,7 +708,6 @@ class NzbObject(TryList):
         self.futuretype = futuretype
         self.removed_from_queue = False
         self.to_be_removed = False
-        self.parsed = False
         self.duplicate = False
         self.oversized = False
         self.precheck = False

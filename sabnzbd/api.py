@@ -1096,9 +1096,6 @@ class XmlOutputFactory:
         In Three tiered lists hard-coded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
     """
 
-    def __init__(self):
-        self.__text = ""
-
     def _tuple(self, keyw, lst):
         text = []
         for item in lst:

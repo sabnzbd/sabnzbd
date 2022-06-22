@@ -36,7 +36,6 @@ GIGI = float(2**30)
 MEBI = float(2**20)
 KIBI = float(2**10)
 
-BYTES_FILE_NAME_OLD = "totals9.sab"
 BYTES_FILE_NAME = "totals10.sab"
 QUEUE_FILE_TMPL = "queue%s.sab"
 QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION

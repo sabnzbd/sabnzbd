@@ -737,14 +737,6 @@ def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict], job
     return ep_name.replace("_", " "), ep_name.replace(" - ", "-").replace(" ", "."), ep_name.replace(" ", "_")
 
 
-def has_subdirectory(path: str) -> bool:
-    """Return True if any directory is found inside the tree at 'path'"""
-    for _root, dirs, _files in os.walk(path):
-        if dirs:
-            return True
-    return False
-
-
 def to_lowercase(path: str) -> str:
     """Lowercases any characters enclosed in {}"""
     RE_LOWERCASE = re.compile(r"{([^{]*)}")

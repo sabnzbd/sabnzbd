@@ -1271,7 +1271,7 @@ def main():
                 from gi.repository import Gtk
                 import sabnzbd.sabtraylinux
 
-                sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
+                sabnzbd.sabtraylinux.StatusIcon()
             except:
                 logging.info("python3-gi not found, no SysTray.")
 

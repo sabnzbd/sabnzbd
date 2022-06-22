@@ -92,8 +92,6 @@ class SABnzbdDelegate(NSObject):
         # Variables
         self.state = "Idle"
         self.speed = 0
-        self.version_notify = 1
-        self.status_removed = 0
 
         # Menu construction
         self.menu = NSMenu.alloc().init()

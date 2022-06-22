@@ -199,32 +199,6 @@ class TestSortingFunctions:
     def test_to_lowercase(self, path, result):
         assert sorting.to_lowercase(path) == result
 
-    def test_has_subdirectory(self):
-        with pyfakefs.fake_filesystem_unittest.Patcher() as ffs:
-            pyfakefs.fake_filesystem_unittest.set_uid(0)
-            # Prep the fake filesystem
-            for test_dir in ["/another/test/dir", "/some/TEST/DIR"]:
-                ffs.fs.create_dir(test_dir, perm_bits=755)
-                # Sanity check
-                assert os.path.exists(test_dir) is True
-
-            assert sorting.has_subdirectory("/") is True
-            assert sorting.has_subdirectory("/some") is True
-            assert sorting.has_subdirectory("/another/test/") is True
-            # No subdirs
-            assert sorting.has_subdirectory("/another/test/dir") is False
-            assert sorting.has_subdirectory("/some/TEST/DIR/") is False
-            # Nonexistent dir
-            assert sorting.has_subdirectory("/some/TEST/NoSuchDir") is False
-            assert sorting.has_subdirectory("/some/TEST/NoSuchDir/") is False
-            # Relative path
-            assert sorting.has_subdirectory("some/TEST/NoSuchDir") is False
-            assert sorting.has_subdirectory("some/TEST/NoSuchDir/") is False
-            assert sorting.has_subdirectory("TEST") is False
-            assert sorting.has_subdirectory("TEST/") is False
-            # Empty input
-            assert sorting.has_subdirectory("") is False
-
     @pytest.mark.parametrize(
         "path, result",
         [
