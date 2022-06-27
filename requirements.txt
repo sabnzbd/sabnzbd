@@ -21,7 +21,7 @@ tempora==5.0.1
 pytz==2022.1
 sgmllib3k==1.0.0
 portend==3.1.0
-chardet==4.0.0
+chardet==5.0.0
 PySocks==1.7.1
 puremagic==1.14
 guessit==3.4.3
