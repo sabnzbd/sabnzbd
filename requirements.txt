@@ -2,7 +2,7 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 sabyenc3==5.4.3
 cheetah3==3.2.6 # pyup: ignore
-cffi==1.15
+cffi==1.15.1
 pycparser==2.21
 feedparser==6.0.10
 configobj==5.0.6
