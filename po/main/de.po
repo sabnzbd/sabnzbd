@@ -3806,7 +3806,7 @@ msgstr "Verfügbarkeit der Artikel"
 
 #: sabnzbd/skintext.py
 msgid "%f% available of %d requested articles"
-msgstr "%f vorhanden von %d angefragten Artikeln"
+msgstr "%f% vorhanden von %d angefragten Artikeln"
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py
