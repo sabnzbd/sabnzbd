@@ -8,7 +8,7 @@ feedparser==6.0.10
 configobj==5.0.6
 cheroot==8.6.0
 six==1.16.0
-cherrypy==18.6.1
+cherrypy==18.7.0
 jaraco.functools==3.5.0
 jaraco.collections==3.5.1
 jaraco.text==3.8.0
@@ -30,7 +30,7 @@ rebulk==3.1.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==37.0.3
+cryptography==37.0.4
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
