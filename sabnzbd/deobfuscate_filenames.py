@@ -233,7 +233,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
     logging.debug("Trying to see if there are qualifying files to be deobfuscated")
     nr_files_renamed = 0
 
-    # We start with he biggest file ... probably the most important file
+    # We pick the biggest file ... probably the most important file
     filelist = sorted(filelist, key=os.path.getsize, reverse=True)
     if filelist:
         biggest_file = filelist[0]
@@ -255,6 +255,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), get_ext(biggest_file)))
         logging.info("Deobfuscate renaming %s to %s", biggest_file, new_name)
         renamer(biggest_file, new_name)
+        nr_files_renamed += 1
         # find other files with the same basename in filelist, and rename them in the same way:
         basedirfile, _ = os.path.splitext(biggest_file)  # something like "/home/this/myiso"
         for otherfile in filelist:
