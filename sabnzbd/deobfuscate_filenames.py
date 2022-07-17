@@ -231,14 +231,19 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         filelist = newlist
 
     logging.debug("Trying to see if there are qualifying files to be deobfuscated")
-    # We start with he biggest file ... probably the most important file
-    filelist = sorted(filelist, key=os.path.getsize, reverse=True)
     nr_files_renamed = 0
 
-    biggest_file = filelist[0]
+    # We start with he biggest file ... probably the most important file
+    filelist = sorted(filelist, key=os.path.getsize, reverse=True)
+    if filelist:
+        biggest_file = filelist[0]
+    else:
+        biggest_file = None
+
     logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
     if (
-        big_small(filelist)
+        biggest_file
+        and big_small(filelist)
         and get_ext(biggest_file) not in EXCLUDED_FILE_EXTS
         and is_probably_obfuscated(biggest_file)
         and os.path.isfile(biggest_file)
@@ -262,7 +267,9 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
                 renamer(otherfile, new_name)
                 nr_files_renamed += 1
     else:
-        logging.debug("%s excluded from deobfuscation based on size, extension or non-obfuscated", biggest_file)
+        logging.debug(
+            "%s excluded from deobfuscation based on relative size, extension or non-obfuscated", biggest_file
+        )
 
     if nr_files_renamed:
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d file(s)") % nr_files_renamed)
