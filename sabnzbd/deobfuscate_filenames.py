@@ -168,8 +168,9 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
-def big_small(filelist):
+def first_file_is_much_bigger(filelist):
     # returns True if first file is much bigger than second file
+    # Note: input parameter filelist must ordered on size!
     try:
         factor = os.path.getsize(filelist[0]) / os.path.getsize(filelist[1])
         if factor > 3:
@@ -243,7 +244,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
     logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
     if (
         biggest_file
-        and big_small(filelist)
+        and first_file_is_much_bigger(filelist)
         and get_ext(biggest_file) not in EXCLUDED_FILE_EXTS
         and is_probably_obfuscated(biggest_file)
         and os.path.isfile(biggest_file)
