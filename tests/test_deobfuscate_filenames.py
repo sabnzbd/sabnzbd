@@ -236,10 +236,10 @@ class TestDeobfuscateFinalResult:
         create_small_file(srtfile)
         assert os.path.isfile(srtfile)
 
-        # and a dut.srt file
-        dutsrtfile = os.path.join(dirname, "myiso.dut.srt")
-        create_small_file(dutsrtfile)
-        assert os.path.isfile(dutsrtfile)
+        # and a sample file
+        samplefile = os.path.join(dirname, "myiso-sample.iso")
+        create_small_file(samplefile)
+        assert os.path.isfile(samplefile)
 
         # and a non-related file
         txtfile = os.path.join(dirname, "something.txt")
@@ -247,7 +247,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(txtfile)
 
         # create the filelist, with just the above files
-        myfilelist = [isofile, srtfile, dutsrtfile, txtfile]
+        myfilelist = [isofile, srtfile, samplefile, txtfile]
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
@@ -256,13 +256,13 @@ class TestDeobfuscateFinalResult:
         # Check original files:
         assert not os.path.isfile(isofile)  # original iso not be there anymore
         assert not os.path.isfile(srtfile)  # ... and accompanying file neither
-        assert not os.path.isfile(dutsrtfile)  # ... and this one neither
+        assert not os.path.isfile(samplefile)  # ... and this one neither
         assert os.path.isfile(txtfile)  # should still be there: not accompanying, and too small to rename
 
         # Check the renaming
         assert os.path.isfile(os.path.join(dirname, jobname + ".iso"))  # ... should be renamed to the jobname
         assert os.path.isfile(os.path.join(dirname, jobname + ".srt"))  # ... should be renamed to the jobname
-        assert os.path.isfile(os.path.join(dirname, jobname + ".dut.srt"))  # ... should be renamed to the jobname
+        assert os.path.isfile(os.path.join(dirname, jobname + "-sample.iso"))  # ... should be renamed to the jobname
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
@@ -368,6 +368,7 @@ class TestDeobfuscateFinalResult:
         # first par2 based renaming aaaaaaaaaaa to twentymb.bin,
         # then deobfuscate twentymb.bin to the job name (with same extension)
         list_of_files = recover_par2_names(list_of_files)
+        print(list_of_files)
         assert os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should exist
 
         self.deobfuscate_wrapper(list_of_files, "My Great Download")
