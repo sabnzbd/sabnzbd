@@ -295,8 +295,6 @@ class TestDeobfuscateFinalResult:
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
 
-
-
     def test_deobfuscate_collection_with_same_size(self):
         # input: a collection of a few files with about the same size
         # test that there is no renaming
