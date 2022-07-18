@@ -95,7 +95,7 @@ class TestDeobfuscateFinalResult:
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        # Create a big enough file with a non-useful, obfuscated filename
+        # Create a big file with a non-useful, obfuscated filename
         output_file1 = os.path.join(dirname, "111c1c9e2bdfb5114044bf25152b7eab.bin")
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
@@ -161,6 +161,33 @@ class TestDeobfuscateFinalResult:
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
 
+    def test_deobfuscate_one_small_file(self):
+        #  Test of deobfuscating: with just one small file
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        # Create a small file with a non-useful, obfuscated filename
+        output_file1 = os.path.join(dirname, "blabla.txt")
+        create_small_file(output_file1)
+        assert os.path.isfile(output_file1)
+
+        # create the filelist, with just the above file
+        myfilelist = [output_file1]
+
+        # and now unleash the magic on that filelist, with a more useful jobname:
+        jobname = "My Important Download 2020"
+        self.deobfuscate_wrapper(myfilelist, jobname)
+
+        # Check original files:
+        assert not os.path.isfile(output_file1)  # original filename should not be there anymore
+        # Check the renaming
+        assert os.path.isfile(os.path.join(dirname, jobname + ".txt"))  # ... it should be renamed to the jobname
+
+        # Done. Remove (non-empty) directory
+        shutil.rmtree(dirname)
+
     def test_deobfuscate_filelist_subdir(self):
         # test of deobfuscating with sub directories
 
@@ -201,7 +228,7 @@ class TestDeobfuscateFinalResult:
         os.mkdir(dirname)
         subdirname = os.path.join(dirname, "VIDEO_TS")
         os.mkdir(subdirname)
-        # Create a big enough file with a non-useful, obfuscated filename (which normally should get renamed)
+        # Create a big file with a non-useful, obfuscated filename (which normally should get renamed)
         output_file1 = os.path.join(subdirname, "111c1c9e2bdfb5114044bf25152b7eab.bin")
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
@@ -267,7 +294,7 @@ class TestDeobfuscateFinalResult:
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
 
-    def test_deobfuscate_collection_with_same_extension(self):
+    def test_deobfuscate_collection_with_same_size(self):
         # input: a collection of a few files with about the same size
         # test that there is no renaming
 
