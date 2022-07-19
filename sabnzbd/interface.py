@@ -20,6 +20,7 @@ sabnzbd.interface - webinterface
 """
 
 import os
+import threading
 import time
 import datetime
 import cherrypy
@@ -33,8 +34,19 @@ import functools
 import copy
 from random import randint
 from xml.sax.saxutils import escape
+
+import uvicorn
+from starlette.applications import Starlette
+from starlette.requests import Request
+from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse
+from starlette.middleware import Middleware
+from starlette.middleware.gzip import GZipMiddleware
+from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
+from starlette.responses import JSONResponse
 from Cheetah.Template import Template
-from typing import Optional, Callable, Union, Any, Dict
+
+from typing import Optional, Callable, Union, Any, Dict, List
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -103,91 +115,37 @@ _MSG_APIKEY_REQUIRED = "API Key Required"
 _MSG_APIKEY_INCORRECT = "API Key Incorrect"
 
 
+INTERFACE_ROUTES: List[Union[Route, Mount]] = []
+
+
 def secured_expose(
     wrap_func: Optional[Callable] = None,
+    route: Optional[str] = None,
     check_configlock: bool = False,
     check_for_login: bool = True,
     check_api_key: bool = False,
     access_type: int = 4,
 ) -> Union[Callable, str]:
-    """Wrapper for both cherrypy.expose and login/access check"""
+    """Wrapper login/access check"""
     if not wrap_func:
         return functools.partial(
             secured_expose,
+            route=route,
             check_configlock=check_configlock,
             check_for_login=check_for_login,
             check_api_key=check_api_key,
             access_type=access_type,
         )
 
-    # Expose to cherrypy
-    wrap_func.exposed = True
+    # Add as route
+    # TODO: Remove IF!
+    if route:
+        INTERFACE_ROUTES.append(Route(route, endpoint=wrap_func, methods=["GET", "POST"]))
 
     @functools.wraps(wrap_func)
-    def internal_wrap(*args, **kwargs):
-        # Label for logging in this and other functions, handling X-Forwarded-For
-        # The cherrypy.request object allows adding custom attributes
-        if cherrypy.request.headers.get("X-Forwarded-For"):
-            cherrypy.request.remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
-                cherrypy.request.remote.ip,
-                cherrypy.request.headers.get("X-Forwarded-For"),
-                cherrypy.request.headers.get("User-Agent"),
-            )
-        else:
-            cherrypy.request.remote_label = "%s [%s]" % (
-                cherrypy.request.remote.ip,
-                cherrypy.request.headers.get("User-Agent"),
-            )
-
-        # Log all requests
-        if cfg.api_logging():
-            logging.debug(
-                "Request %s %s from %s %s",
-                cherrypy.request.method,
-                cherrypy.request.path_info,
-                cherrypy.request.remote_label,
-                kwargs,
-            )
-
-        # Add X-Frame-Headers headers to page-requests
-        if cfg.x_frame_options():
-            cherrypy.response.headers["X-Frame-Options"] = "SameOrigin"
-
-        # Check if config is locked
-        if check_configlock and cfg.configlock():
-            cherrypy.response.status = 403
-            if cfg.api_warnings():
-                return _MSG_ACCESS_DENIED_CONFIG_LOCK
-            return
-
-        # Check if external access and if it's allowed
-        if not check_access(access_type=access_type, warn_user=True):
-            cherrypy.response.status = 403
-            if cfg.api_warnings():
-                return _MSG_ACCESS_DENIED
-            return
-
-        # Verify login status, only for non-key pages
-        if check_for_login and not check_api_key and not check_login():
-            raise Raiser("/login/")
-
-        # Verify host used for the visit
-        if not check_hostname():
-            cherrypy.response.status = 403
-            if cfg.api_warnings():
-                return _MSG_ACCESS_DENIED_HOSTNAME
-            return
-
-        # Some pages need correct API key
-        if check_api_key:
-            if msg := check_apikey(kwargs):
-                cherrypy.response.status = 403
-                if cfg.api_warnings():
-                    return msg
-                return
-
+    async def internal_wrap(*args, **kwargs):
         # All good, cool!
-        return wrap_func(*args, **kwargs)
+        return await wrap_func(*args, **kwargs)
 
     return internal_wrap
 
@@ -378,7 +336,9 @@ def template_filtered_response(file: str, search_list: Dict[str, Any]):
     search_list_copy = copy.deepcopy(search_list)
     # 'filters' is excluded because the RSS-filters are listed twice
     recursive_html_escape(search_list_copy, exclude_items=("webdir", "filters"))
-    return Template(file=file, searchList=[search_list_copy], compilerSettings=CHEETAH_DIRECTIVES).respond()
+    return HTMLResponse(
+        Template(file=file, searchList=[search_list_copy], compilerSettings=CHEETAH_DIRECTIVES).respond()
+    )
 
 
 def log_warning_and_ip(txt):
@@ -411,62 +371,54 @@ def rssRaiser(root, kwargs):
 
 
 ##############################################################################
-# Page definitions
+# Page definitions - Main
 ##############################################################################
 class MainPage:
     def __init__(self):
-        self.__root = "/"
+        pass
 
-        # Add all sub-pages
-        self.login = LoginPage()
-        self.config = ConfigPage("/config/")
-        self.wizard = Wizard("/wizard/")
 
-    @secured_expose
-    def index(self, **kwargs):
-        # Redirect to wizard if no servers are set
-        if kwargs.get("skip_wizard") or config.get_servers():
-            info = build_header()
+@secured_expose(route="/")
+async def main_index(request: Request):
+    # Redirect to wizard if no servers are set
+    if request.query_params.get("skip_wizard") or config.get_servers():
+        info = build_header()
 
-            info["have_rss_defined"] = bool(config.get_rss())
-            info["have_watched_dir"] = bool(cfg.dirscan_dir())
+        info["have_rss_defined"] = bool(config.get_rss())
+        info["have_watched_dir"] = bool(cfg.dirscan_dir())
 
             info["cpumodel"] = get_cpu_name()
             info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
             info["docker"] = "Docker" if sabnzbd.DOCKER else ""
 
-            # Have logout only with HTML and if inet=5, only when we are external
-            info["have_logout"] = (
-                cfg.username()
-                and cfg.password()
-                and (
-                    cfg.html_login()
-                    and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6)))
-                )
+        # Have logout only with HTML and if inet=5, only when we are external
+        info["have_logout"] = (
+            cfg.username()
+            and cfg.password()
+            and (
+                cfg.html_login()
+                and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6)))
             )
+        )
 
-            bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
-            info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
+        bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
+        info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
 
-            return template_filtered_response(file=os.path.join(sabnzbd.WEB_DIR, "main.tmpl"), search_list=info)
-        else:
-            # Redirect to the setup wizard
-            raise cherrypy.HTTPRedirect("%s/wizard/" % cfg.url_base())
+        return template_filtered_response(file=os.path.join(sabnzbd.WEB_DIR, "main.tmpl"), search_list=info)
+    else:
+        # Redirect to the setup wizard
+        return RedirectResponse(url="%s/wizard/" % cfg.url_base())
 
-    @secured_expose(check_api_key=True)
-    def shutdown(self, **kwargs):
-        # Check for PID
-        pid_in = kwargs.get("pid")
-        if pid_in and int(pid_in) != os.getpid():
-            return "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
 
-        sabnzbd.shutdown_program()
-        return T("SABnzbd shutdown finished")
+@secured_expose(route="/shutdown", check_api_key=True)
+async def shutdown(request: Request):
+    # Check for PID
+    pid_in = request.query_params.get("pid")
+    if pid_in and int(pid_in) != os.getpid():
+        return "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
 
-    @secured_expose(check_api_key=True, access_type=1)
-    def api(self, **kwargs):
-        """Redirect to API-handler, we check the access_type in the API-handler"""
-        return api_handler(kwargs)
+    sabnzbd.shutdown_program()
+    return T("SABnzbd shutdown finished")
 
     @secured_expose
     def scriptlog(self, **kwargs):
@@ -478,100 +430,122 @@ class MainPage:
         else:
             raise Raiser(self.__root)
 
-    @secured_expose
-    def robots_txt(self, **kwargs):
-        """Keep web crawlers out"""
-        cherrypy.response.headers["Content-Type"] = "text/plain"
-        return "User-agent: *\nDisallow: /\n"
+@secured_expose(route="/api", check_api_key=True, access_type=1)
+async def api(request: Request):
+    """Redirect to API-handler, we check the access_type in the API-handler"""
+    return JSONResponse(api_handler(request.query_params))
 
-    @secured_expose
-    def description_xml(self, **kwargs):
-        """Provide the description.xml which was broadcast via SSDP"""
-        if is_lan_addr(cherrypy.request.remote.ip):
-            cherrypy.response.headers["Content-Type"] = "application/xml"
-            return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
-        else:
-            return None
+
+@secured_expose(route="/scriptlog")
+async def scriptlog(request: Request):
+    """Needed for all skins, URL is fixed due to postproc"""
+    # No session key check, due to fixed URLs
+    name = request.query_params.get("name")
+    if name:
+        history_db = sabnzbd.get_db_connection()
+        return ShowString(history_db.get_name(name), history_db.get_script_log(name))
+    else:
+        raise Raiser(self.__root)
+
+
+@secured_expose
+async def robots_txt(request: Request):
+    """Keep web crawlers out"""
+    return PlainTextResponse("User-agent: *\nDisallow: /\n")
+
+
+@secured_expose
+async def description_xml(request: Request):
+    """Provide the description.xml which was broadcast via SSDP"""
+    if is_lan_addr(cherrypy.request.remote.ip):
+        cherrypy.response.headers["Content-Type"] = "application/xml"
+        return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
+    else:
+        return None
 
 
 ##############################################################################
-class Wizard:
-    def __init__(self, root):
-        self.__root = root
+# Page definitions - Wizard
+##############################################################################
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        """Show the language selection page"""
-        if sabnzbd.WIN32:
-            from sabnzbd.utils.apireg import get_install_lng
 
-            cfg.language.set(get_install_lng())
-            logging.debug('Installer language code "%s"', cfg.language())
+@secured_expose(route="/wizard", check_configlock=True)
+async def wizard_index(request: Request):
+    """Show the language selection page"""
+    if sabnzbd.WIN32:
+        from sabnzbd.utils.apireg import get_install_lng
 
-        info = build_header(sabnzbd.WIZARD_DIR)
-        info["languages"] = list_languages()
+        cfg.language.set(get_install_lng())
+        logging.debug('Installer language code "%s"', cfg.language())
 
-        return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "index.html"), search_list=info)
+    info = build_header(sabnzbd.WIZARD_DIR)
+    info["languages"] = list_languages()
 
-    @secured_expose(check_configlock=True)
-    def one(self, **kwargs):
-        """Accept language and show server page"""
-        if kwargs.get("lang"):
-            cfg.language.set(kwargs.get("lang"))
+    return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "index.html"), search_list=info)
 
-        info = build_header(sabnzbd.WIZARD_DIR)
 
-        # Just in case, add server
-        servers = config.get_servers()
-        if not servers:
-            info["server"] = ""
-            info["host"] = ""
-            info["port"] = ""
-            info["username"] = ""
-            info["password"] = ""
-            info["connections"] = ""
-            info["ssl"] = 1
-            info["ssl_verify"] = 2
-        else:
-            # Sort servers to get the first enabled one
-            server_names = sorted(
-                servers,
-                key=lambda svr: "%d%02d%s"
-                % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
-            )
-            for server in server_names:
-                # If there are multiple servers, just use the first enabled one
-                s = servers[server]
-                info["server"] = server
-                info["host"] = s.host()
-                info["port"] = s.port()
-                info["username"] = s.username()
-                info["password"] = s.password.get_stars()
-                info["connections"] = s.connections()
-                info["ssl"] = s.ssl()
-                info["ssl_verify"] = s.ssl_verify()
-                if s.enable():
-                    break
-        return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)
+@secured_expose(route="/wizard/one", check_configlock=True)
+async def one(request: Request):
+    """Accept language and show server page"""
+    if request.query_params.get("lang"):
+        cfg.language.set(request.query_params.get("lang"))
 
-    @secured_expose(check_configlock=True)
-    def two(self, **kwargs):
-        """Accept server and show the final page for restart"""
-        # Save server details
-        if kwargs:
-            kwargs["enable"] = 1
-            handle_server(kwargs)
+    info = build_header(sabnzbd.WIZARD_DIR)
+    info["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
-        config.save_config()
+    # Just in case, add server
+    servers = config.get_servers()
+    if not servers:
+        info["server"] = ""
+        info["host"] = ""
+        info["port"] = ""
+        info["username"] = ""
+        info["password"] = ""
+        info["connections"] = ""
+        info["ssl"] = 1
+        info["ssl_verify"] = 2
+    else:
+        # Sort servers to get the first enabled one
+        server_names = sorted(
+            servers,
+            key=lambda svr: "%d%02d%s"
+            % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
+        )
+        for server in server_names:
+            # If there are multiple servers, just use the first enabled one
+            s = servers[server]
+            info["server"] = server
+            info["host"] = s.host()
+            info["port"] = s.port()
+            info["username"] = s.username()
+            info["password"] = s.password.get_stars()
+            info["connections"] = s.connections()
+            info["ssl"] = s.ssl()
+            info["ssl_verify"] = s.ssl_verify()
+            if s.enable():
+                break
+    return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)
 
-        # Show Restart screen
-        info = build_header(sabnzbd.WIZARD_DIR)
 
-        info["access_url"], info["urls"] = get_access_info()
-        info["download_dir"] = cfg.download_dir.get_clipped_path()
-        info["complete_dir"] = cfg.complete_dir.get_clipped_path()
+@secured_expose(route="/wizard/two", check_configlock=True)
+async def two(request: Request):
+    """Accept server and show the final page for restart"""
+    # Save server details
+    if request.query_params:
+        server_info = dict(request.query_params)
+        server_info["enable"] = 1
+        handle_server(server_info)
 
-        return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "two.html"), search_list=info)
+    config.save_config()
+
+    # Show Restart screen
+    info = build_header(sabnzbd.WIZARD_DIR)
+
+    info["access_url"], info["urls"] = get_access_info()
+    info["download_dir"] = cfg.download_dir.get_clipped_path()
+    info["complete_dir"] = cfg.complete_dir.get_clipped_path()
+
+    return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "two.html"), search_list=info)
 
 
 def get_access_info():
@@ -627,9 +601,13 @@ def get_access_info():
 
 
 ##############################################################################
+# Page definitions - Login
+##############################################################################
+
+
 class LoginPage:
     @secured_expose(check_for_login=False)
-    def index(self, **kwargs):
+    def index(request: Request):
         # Base output var
         info = build_header(sabnzbd.WEB_DIR_CONFIG)
         info["error"] = ""
@@ -664,36 +642,33 @@ class LoginPage:
 
 
 ##############################################################################
-class ConfigPage:
-    def __init__(self, root):
-        self.__root = root
-        self.folders = ConfigFolders("/config/folders/")
-        self.notify = ConfigNotify("/config/notify/")
-        self.general = ConfigGeneral("/config/general/")
-        self.rss = ConfigRss("/config/rss/")
-        self.scheduling = ConfigScheduling("/config/scheduling/")
-        self.server = ConfigServer("/config/server/")
-        self.switches = ConfigSwitches("/config/switches/")
-        self.categories = ConfigCats("/config/categories/")
-        self.sorting = ConfigSorting("/config/sorting/")
-        self.special = ConfigSpecial("/config/special/")
-
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["configfn"] = clip_path(config.get_filename())
-        conf["cmdline"] = sabnzbd.CMDLINE
-        conf["build"] = sabnzbd.__baseline__[:7]
-        conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
-        conf["ssl_version"] = ssl.OPENSSL_VERSION
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
-            search_list=conf,
-        )
+# Page definitions - Config - General
+##############################################################################
 
 
+@secured_expose(route="/config", check_configlock=True)
+async def config_general_index(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    conf["configfn"] = clip_path(config.get_filename())
+    conf["cmdline"] = sabnzbd.CMDLINE
+    conf["build"] = sabnzbd.__baseline__[:7]
+
+    conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
+    conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
+    conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
+    conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
+
+    conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
+    conf["ssl_version"] = ssl.OPENSSL_VERSION
+
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
+        search_list=conf,
+    )
+
+
+##############################################################################
+# Page definitions - Config - Folders
 ##############################################################################
 LIST_DIRPAGE = (
     "download_dir",
@@ -715,35 +690,45 @@ LIST_DIRPAGE = (
 LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
 
 
-class ConfigFolders:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/folders", check_configlock=True)
+async def index_config_folders(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    conf["file_exts"] = ", ".join(VALID_NZB_FILES + VALID_ARCHIVES)
 
-        conf["file_exts"] = ", ".join(VALID_NZB_FILES + VALID_ARCHIVES)
+    for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
+        conf[kw] = config.get_config("misc", kw)()
 
-        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-            conf[kw] = config.get_config("misc", kw)()
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_folders.tmpl"),
+        search_list=conf,
+    )
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_folders.tmpl"),
-            search_list=conf,
+
+@secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True)
+async def config_folder_save(request: Request):
+    for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
+        value = request.query_params.get(kw)
+        if value is not None or kw in LIST_BOOL_DIRPAGE:
+            if kw in ("complete_dir", "dirscan_dir", "backup_dir"):
+                msg = config.get_config("misc", kw).set(value, create=True)
+            else:
+                msg = config.get_config("misc", kw).set(value)
+            if msg:
+                # return sabnzbd.api.report('json', error=msg)
+                return badParameterResponse(msg, request.query_params.get("ajax"))
+
+    if not sabnzbd.filesystem.check_incomplete_vs_complete():
+        return badParameterResponse(
+            T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
+            request.query_params.get("ajax"),
         )
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveDirectories(self, **kwargs):
-        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
-                return badParameterResponse(msg, kwargs.get("ajax"))
-
-        config.save_config()
-        if kwargs.get("ajax"):
-            return sabnzbd.api.report()
-        else:
-            raise Raiser(self.__root)
+    config.save_config()
+    test = await request.form()
+    if request.query_params.get("ajax"):
+        return sabnzbd.api.report()
+    else:
+        raise Raiser(self.__root)
 
 
 ##############################################################################
@@ -798,7 +783,7 @@ class ConfigSwitches:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
@@ -816,7 +801,7 @@ class ConfigSwitches:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSwitches(self, **kwargs):
+    def saveSwitches(request: Request):
         for kw in SWITCH_LIST:
             if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg, kwargs.get("ajax"))
@@ -897,7 +882,7 @@ class ConfigSpecial:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         conf["switches"] = [
             (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
@@ -918,7 +903,7 @@ class ConfigSpecial:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSpecial(self, **kwargs):
+    def saveSpecial(request: Request):
         for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
             if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg)
@@ -954,7 +939,7 @@ class ConfigGeneral:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         web_list = []
@@ -987,7 +972,7 @@ class ConfigGeneral:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveGeneral(self, **kwargs):
+    def saveGeneral(request: Request):
         # Handle general options
         for kw in GENERAL_LIST:
             if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
@@ -1009,7 +994,7 @@ class ConfigGeneral:
             raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def uploadConfig(self, **kwargs):
+    def uploadConfig(request: Request):
         """Restore a config backup"""
         config_backup_file = kwargs.get("config_backup_file")
 
@@ -1042,7 +1027,7 @@ class ConfigServer:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         new = []
         servers = config.get_servers()
@@ -1077,29 +1062,34 @@ class ConfigServer:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def addServer(self, **kwargs):
+    def addServer(request: Request):
         return handle_server(kwargs, self.__root, True)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveServer(self, **kwargs):
+    def saveServer(request: Request):
         return handle_server(kwargs, self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def delServer(self, **kwargs):
+    def testServer(request: Request):
+        _, msg = test_nntp_server_dict(kwargs)
+        return msg
+
+    @secured_expose(check_api_key=True, check_configlock=True)
+    def delServer(request: Request):
         kwargs["section"] = "servers"
         kwargs["keyword"] = kwargs.get("server")
         del_from_section(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def clrServer(self, **kwargs):
+    def clrServer(request: Request):
         server = kwargs.get("server")
         if server:
             sabnzbd.BPSMeter.clear_server(server)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def toggleServer(self, **kwargs):
+    def toggleServer(request: Request):
         server = kwargs.get("server")
         if server:
             svr = config.get_config("servers", server)
@@ -1195,7 +1185,7 @@ class ConfigRss:
         self.__last_msg = ""  # Last error message from RSS reader
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf["scripts"] = list_scripts(default=True)
@@ -1270,7 +1260,7 @@ class ConfigRss:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def save_rss_rate(self, **kwargs):
+    def save_rss_rate(request: Request):
         """Save changed RSS automatic readout rate"""
         cfg.rss_rate.set(kwargs.get("rss_rate"))
         config.save_config()
@@ -1278,7 +1268,7 @@ class ConfigRss:
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def upd_rss_feed(self, **kwargs):
+    def upd_rss_feed(request: Request):
         """Update Feed level attributes,
         legacy version: ignores 'enable' parameter
         """
@@ -1299,7 +1289,7 @@ class ConfigRss:
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def save_rss_feed(self, **kwargs):
+    def save_rss_feed(request: Request):
         """Update Feed level attributes"""
         feed_name = kwargs.get("feed")
         try:
@@ -1324,7 +1314,7 @@ class ConfigRss:
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def toggle_rss_feed(self, **kwargs):
+    def toggle_rss_feed(request: Request):
         """Toggle automatic read-out flag of Feed"""
         try:
             item = config.get_rss()[kwargs.get("feed")]
@@ -1339,7 +1329,7 @@ class ConfigRss:
             raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def add_rss_feed(self, **kwargs):
+    def add_rss_feed(request: Request):
         """Add one new RSS feed definition"""
         feed = Strip(kwargs.get("feed")).strip("[]")
         uri = Strip(kwargs.get("uri"))
@@ -1368,11 +1358,11 @@ class ConfigRss:
             raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def upd_rss_filter(self, **kwargs):
+    def upd_rss_filter(request: Request):
         """Wrapper, so we can call from api.py"""
         self.internal_upd_rss_filter(**kwargs)
 
-    def internal_upd_rss_filter(self, **kwargs):
+    def internal_upd_rss_filter(request: Request):
         """Save updated filter definition"""
         try:
             feed_cfg = config.get_rss()[kwargs.get("feed")]
@@ -1414,11 +1404,11 @@ class ConfigRss:
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def del_rss_filter(self, **kwargs):
+    def del_rss_filter(request: Request):
         """Wrapper, so we can call from api.py"""
         self.internal_del_rss_filter(**kwargs)
 
-    def internal_del_rss_filter(self, **kwargs):
+    def internal_del_rss_filter(request: Request):
         """Remove one RSS filter"""
         try:
             feed_cfg = config.get_rss()[kwargs.get("feed")]
@@ -1476,7 +1466,7 @@ class ConfigRss:
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def download(self, **kwargs):
+    def download(request: Request):
         """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
@@ -1557,7 +1547,7 @@ class ConfigScheduling:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         def get_days():
             days = {
                 "*": T("Daily"),
@@ -1651,7 +1641,7 @@ class ConfigScheduling:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def addSchedule(self, **kwargs):
+    def addSchedule(request: Request):
         servers = config.get_servers()
         minute = kwargs.get("minute")
         hour = kwargs.get("hour")
@@ -1698,7 +1688,7 @@ class ConfigScheduling:
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def delSchedule(self, **kwargs):
+    def delSchedule(request: Request):
         schedules = cfg.schedules()
         line = kwargs.get("line")
         if line and line in schedules:
@@ -1709,7 +1699,7 @@ class ConfigScheduling:
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def toggleSchedule(self, **kwargs):
+    def toggleSchedule(request: Request):
         schedules = cfg.schedules()
         line = kwargs.get("line")
         if line:
@@ -1732,7 +1722,7 @@ class ConfigCats:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf["scripts"] = list_scripts(default=True)
@@ -1760,14 +1750,14 @@ class ConfigCats:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def delete(self, **kwargs):
+    def delete(request: Request):
         kwargs["section"] = "categories"
         kwargs["keyword"] = kwargs.get("name")
         del_from_section(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def save(self, **kwargs):
+    def save(request: Request):
         name = kwargs.get("name", "*")
         newname = kwargs.get("newname", "")
         if name == "*":
@@ -1793,7 +1783,7 @@ class ConfigSorting:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         sorters = config.get_ordered_sorters()
@@ -1822,14 +1812,14 @@ class ConfigSorting:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def delete(self, **kwargs):
+    def delete(request: Request):
         kwargs["section"] = "sorters"
         kwargs["keyword"] = kwargs.get("name")
         del_from_section(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def save_sorter(self, **kwargs):
+    def save_sorter(request: Request):
         name = kwargs.get("name", "*")
         newname = kwargs.get("newname", "")
         newname = config.clean_section_name(newname)
@@ -1846,7 +1836,7 @@ class ConfigSorting:
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def toggle_sorter(self, **kwargs):
+    def toggle_sorter(request: Request):
         """Toggle is_active flag of a sorter"""
         try:
             sorter = config.get_sorters()[kwargs.get("sorter")]
@@ -2148,7 +2138,7 @@ class ConfigNotify:
         self.__root = root
 
     @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
+    def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
         conf["categories"] = list_cats(False)
@@ -2169,7 +2159,7 @@ class ConfigNotify:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveNotify(self, **kwargs):
+    def saveNotify(request: Request):
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
                 if msg := config.get_config(section, option).set(kwargs.get(option)):
@@ -2179,3 +2169,49 @@ class ConfigNotify:
             return sabnzbd.api.report()
         else:
             raise Raiser(self.__root)
+
+
+##############################################################################
+# New
+##############################################################################
+
+
+class ThreadedServer(uvicorn.Server):
+    def __init__(self, *args, **kwargs):
+        self.thread = None
+        super().__init__(*args, **kwargs)
+
+    def install_signal_handlers(self):
+        pass
+
+    def run_in_thread(self):
+        self.thread = threading.Thread(target=self.run)
+        self.thread.start()
+
+        while not self.started:
+            time.sleep(1e-3)
+
+    def stop(self):
+        self.should_exit = True
+        self.thread.join()
+
+
+WEB_SERVER: Optional[ThreadedServer] = None
+
+
+INTERFACE_ROUTES.extend(
+    [
+        Mount("/static", app=StaticFiles(directory="interfaces/Glitter/templates/static"), name="static"),
+        Mount("/staticcfg", app=StaticFiles(directory="interfaces/Config/templates/staticcfg"), name="staticcfg"),
+    ]
+)
+
+routes = [
+    Mount("/sabnzbd", routes=INTERFACE_ROUTES),
+    Mount("/", routes=INTERFACE_ROUTES),
+]
+
+
+middleware = [Middleware(GZipMiddleware)]
+
+app = Starlette(middleware=middleware, routes=routes)

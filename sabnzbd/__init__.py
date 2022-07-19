@@ -415,7 +415,7 @@ def shutdown_program():
     if not sabnzbd.SABSTOP:
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
-        cherrypy.engine.exit()
+        sabnzbd.interface.WEB_SERVER.stop()
         sabnzbd.SABSTOP = True
         notify_shutdown_loop()
 
