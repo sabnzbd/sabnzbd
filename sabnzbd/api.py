@@ -32,6 +32,8 @@ from typing import Tuple, Optional, List, Dict, Any, Union
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
+
+
 try:
     import orjson as json
 except ImportError:
@@ -39,6 +41,7 @@ except ImportError:
         import ujson as json
     except ImportError:
         import json
+
 
 import sabnzbd
 from sabnzbd.constants import (
