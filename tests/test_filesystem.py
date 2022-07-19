@@ -27,6 +27,7 @@ from pathlib import Path
 import tempfile
 
 import pyfakefs.fake_filesystem_unittest as ffs
+from pyfakefs.fake_filesystem import OSType
 
 import sabnzbd.cfg
 import sabnzbd.filesystem as filesystem
@@ -256,8 +257,7 @@ class TestFileFolderNameSanitizer:
 class TestSanitizeFiles(ffs.TestCase):
     def setUp(self):
         self.setUpPyfakefs()
-        self.fs.path_separator = "\\"
-        self.fs.is_windows_fs = True
+        self.fs.os = OSType.WINDOWS
         # Disable randomisation of directory listings
         self.fs.shuffle_listdir_results = False
 
@@ -445,9 +445,7 @@ class TestCheckMountMacOS(ffs.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.fs.is_macos = True
-        self.fs.is_case_sensitive = False
-        self.fs.path_separator = "/"
+        self.fs.os = OSType.MACOS
         self.fs.create_dir(self.test_dir, perm_bits=755)
         # Verify the fake filesystem does its thing
         assert os.path.exists(self.test_dir) is True
@@ -489,9 +487,7 @@ class TestCheckMountWin(ffs.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.fs.is_windows_fs = True
-        self.fs.is_case_sensitive = False
-        self.fs.path_separator = "\\"
+        self.fs.os = OSType.WINDOWS
         self.fs.create_dir(self.test_dir)
         # Sanity check the fake filesystem
         assert os.path.exists(self.test_dir) is True
@@ -616,9 +612,7 @@ class TestListdirFullWin(ffs.TestCase):
     # Basic fake filesystem setup stanza
     def setUp(self):
         self.setUpPyfakefs()
-        self.fs.is_windows_fs = True
-        self.fs.path_separator = "\\"
-        self.fs.is_case_sensitive = False
+        self.fs.os = OSType.WINDOWS
 
     def test_nonexistent_dir(self):
         assert filesystem.listdir_full(r"F:\foo\bar") == []
@@ -757,9 +751,7 @@ class TestGetUniqueDirFilenameWin(ffs.TestCase):
     # Basic fake filesystem setup stanza
     def setUp(self):
         self.setUpPyfakefs()
-        self.fs.is_windows_fs = True
-        self.fs.path_separator = "\\"
-        self.fs.is_case_sensitive = False
+        self.fs.os = OSType.WINDOWS
 
     # Reduce the waiting time when the function calls check_mount()
     @set_config({"wait_ext_drive": 1})
@@ -811,9 +803,7 @@ class TestCreateAllDirsWin(ffs.TestCase):
     # Basic fake filesystem setup stanza
     def setUp(self):
         self.setUpPyfakefs()
-        self.fs.is_windows_fs = True
-        self.fs.path_separator = "\\"
-        self.fs.is_case_sensitive = False
+        self.fs.os = OSType.WINDOWS
 
     @set_platform("win32")
     def test_create_all_dirs(self):
