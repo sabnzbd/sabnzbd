@@ -758,7 +758,6 @@ SWITCH_LIST = (
     "par_option",
     "top_only",
     "direct_unpack",
-    "enable_meta",
     "win_process_prio",
     "auto_sort",
     "propagation_delay",

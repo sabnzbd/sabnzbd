@@ -684,10 +684,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     complete_dir = long_path(complete_dir)
 
     # TV/Movie/Date Renaming code part 1 - detect and construct paths
-    if cfg.enable_meta():
-        file_sorter = Sorter(nzo, nzo.cat)
-    else:
-        file_sorter = Sorter(None, nzo.cat)
+    file_sorter = Sorter(nzo, nzo.cat)
     complete_dir = file_sorter.detect(nzo.final_name, complete_dir)
     if file_sorter.sorter_active:
         one_folder = False

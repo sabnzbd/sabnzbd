@@ -307,7 +307,6 @@ action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensi
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
 history_retention = OptionStr("misc", "history_retention", "0")
-enable_meta = OptionBool("misc", "enable_meta", True)
 
 quota_size = OptionStr("misc", "quota_size")
 quota_day = OptionStr("misc", "quota_day")
