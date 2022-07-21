@@ -50,22 +50,6 @@ class TestApiInternals:
     def test_auth(self):
         assert api.api_handler({"mode": "auth"}).strip() == "apikey"
 
-    @set_config({"disable_key": True, "username": "foo", "password": "bar"})
-    def test_auth_apikey_disabled(self):
-        assert api.api_handler({"mode": "auth"}).strip() == "login"
-
-    @set_config({"disable_key": True})
-    def test_auth_unavailable(self):
-        assert api.api_handler({"mode": "auth"}).strip() == "None"
-
-    @set_config({"disable_key": True, "username": "foo", "password": ""})
-    def test_auth_unavailable_username_set(self):
-        assert api.api_handler({"mode": "auth"}).strip() == "None"
-
-    @set_config({"disable_key": True, "username": "", "password": "bar"})
-    def test_auth_unavailable_password_set(self):
-        assert api.api_handler({"mode": "auth"}).strip() == "None"
-
 
 def set_remote_host_or_ip(hostname: str = "localhost", remote_ip: str = "127.0.0.1"):
     """Change CherryPy's "Host" and "remote.ip"-values"""
@@ -101,21 +85,6 @@ class TestSecuredExpose:
         assert sabnzbd.__version__ in self.main_page.api(mode="version")
         # Blocked when you do something wrong
         assert interface._MSG_APIKEY_INCORRECT in self.main_page.api(mode="queue", apikey="wrong")
-
-    @set_config({"disable_key": True})
-    def test_api_disabled_key(self):
-        set_remote_host_or_ip()
-        assert api._MSG_NOT_IMPLEMENTED in self.main_page.api()
-
-    @set_config({"disable_key": True, "username": "foo", "password": "bar"})
-    def test_api_disabled_key_with_auth(self):
-        set_remote_host_or_ip()
-        assert interface._MSG_MISSING_AUTH in self.main_page.api()
-        assert interface._MSG_MISSING_AUTH in self.main_page.api(ma_username="foo")
-        assert interface._MSG_MISSING_AUTH in self.main_page.api(ma_password="bar")
-        assert interface._MSG_MISSING_AUTH in self.main_page.api(ma_username="wrong")
-        assert interface._MSG_MISSING_AUTH in self.main_page.api(ma_password="wrong")
-        assert api._MSG_NOT_IMPLEMENTED in self.main_page.api(ma_username="foo", ma_password="bar")
 
     def test_api_nzb_key(self):
         set_remote_host_or_ip()

@@ -344,35 +344,19 @@ def check_apikey(kwargs):
         return None
 
     # First check API-key, if OK that's sufficient
-    if not cfg.disable_key():
-        key = kwargs.get("apikey")
-        if not key:
-            log_warning_and_ip(
-                T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
-            )
-            return _MSG_APIKEY_REQUIRED
-        elif req_access == 1 and key == cfg.nzb_key():
-            return None
-        elif key == cfg.api_key():
-            return None
-        else:
-            log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
-            return _MSG_APIKEY_INCORRECT
-
-    # No active API-key, check web credentials instead
-    if cfg.username() and cfg.password():
-        if check_login() or (
-            kwargs.get("ma_username") == cfg.username() and kwargs.get("ma_password") == cfg.password()
-        ):
-            pass
-        else:
-            log_warning_and_ip(
-                T(
-                    "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
-                )
-            )
-            return _MSG_MISSING_AUTH
-    return None
+    key = kwargs.get("apikey")
+    if not key:
+        log_warning_and_ip(
+            T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
+        )
+        return _MSG_APIKEY_REQUIRED
+    elif req_access == 1 and key == cfg.nzb_key():
+        return None
+    elif key == cfg.api_key():
+        return None
+    else:
+        log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
+        return _MSG_APIKEY_INCORRECT
 
 
 def template_filtered_response(file: str, search_list: Dict[str, Any]):
