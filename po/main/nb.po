@@ -651,14 +651,6 @@ msgstr ""
 "API-nøkkel er feil, bruk API-nøkkel fra Konfigurasjon->Generelt i ditt "
 "tredjepartsprogram:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Autentisering mangler, angi brukernavn/passord fra Konfigurasjon->Generelt i"
-" ditt tredjepartsprogram:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
@@ -3214,16 +3206,6 @@ msgstr "Når den feiler, prøv alternativ NZB-fil"
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "Noen servere vil gi en alternativ NZB når en nedlasting mislykkes."
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

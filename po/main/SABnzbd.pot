@@ -603,10 +603,6 @@ msgstr ""
 msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
 msgstr ""
 
-#: sabnzbd/interface.py
-msgid "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
-msgstr ""
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr ""
@@ -3002,14 +2998,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "When sorting, use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name."
 msgstr ""
 
 #: sabnzbd/skintext.py

@@ -647,14 +647,6 @@ msgid ""
 msgstr ""
 "API кључ је погрешан, унети у спољни програм API кључ из Подешавања->Опште:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Недостаје аутентификација, унети у спољни програм име/лозинку из "
-"Подешавања->Опште:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Аутентификација погрешна, проверити име/лозинку."
@@ -3205,16 +3197,6 @@ msgstr "U slučaju neuspeha, pokušaj sa alternativnim NZB-om"
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "Neki serveri nude alternativni NZB pri neuspešnom preuzimanju"
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

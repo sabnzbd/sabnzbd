@@ -678,14 +678,6 @@ msgstr ""
 "API-sleutel incorrect; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
 "in bij het externe programma:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Autenticatie ontbreekt; vul gebruikersnaam en wachtwoord van 'Configuratie' "
-"=> 'Algemeen' in bij het externe programma:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
@@ -3299,19 +3291,6 @@ msgstr "Bij mislukte download: probeer alternatieve NZB"
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Sommige indexers hebben een alternatieve NZB wanneer een download mislukt"
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr "Gebruik indexer informatie"
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-"Maak tijdens het sorteren gebruik van informatie van de indexer zoals titel,"
-" seizoen, aflevering, enz. Anders wordt alle informatie uit de naam van de "
-"download gehaald."
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

@@ -656,14 +656,6 @@ msgid ""
 "program:"
 msgstr "מפתח API שגוי, השתמש במפתח ה־API מתצורה->כללי בתוכנית הצד השלישי שלך:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"אימות חסר, אנא הכנס שם משתמש/סיסמה מתוך תצורה->כללי לתוך תוכנית הצד השלישי "
-"שלך:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
@@ -3236,18 +3228,6 @@ msgstr "בכישלון, נסה NZB חלופי"
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "מספר שרתים מספקים קובץ NZB חלופי כאשר הורדה נכשלת."
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr "השתמש בתגים ממדדן"
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-"בעת מיון, השתמש בתגים ממדדן עבור כותרת, עונה, פרק וכדומה. אחרת כל מתן השמות "
-"נגזר משם קובץ NZB."
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

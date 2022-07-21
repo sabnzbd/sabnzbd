@@ -650,14 +650,6 @@ msgstr ""
 "Klucz API jest nieprawidłowy, użyj klucza API z sekcji Konfiguracja->Ogólne "
 "w zewnętrznym programie:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Brak danych uwierzytelniających, wprowadź nazwę użytkownika/hasło z sekcji "
-"Konfiguracja->Ogólne do zewnętrznego programu:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
@@ -3223,16 +3215,6 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Niektóre serwery udostępniają alternatywne NZB, kiedy pobieranie kończy się "
 "niepowodzeniem"
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

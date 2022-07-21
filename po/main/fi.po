@@ -655,14 +655,6 @@ msgstr ""
 "API avain virheellinen, käytä Asetukset->Yleiset löytyvää api avainta "
 "käyttämääsi kolmannen osapuolen ohjelmaan:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Authentikointi puuttuu, ole hyvä ja syötä käyttäjänimi/salasana "
-"Asetukset->Yleiset kolmannen osapuolen ohjelmaasi:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
@@ -3233,16 +3225,6 @@ msgstr "Epäonnistuessa, kokeile vaihtoehtoista NZB:tä"
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Jotkin palvelimet tarjoavat vaihtoehtoisen NZB:n kun lataus epäonnistuu."
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

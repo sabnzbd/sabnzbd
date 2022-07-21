@@ -668,14 +668,6 @@ msgstr ""
 "Cheie API incorectă, Folosiţi cheia api din Configurare->General în "
 "programul dumneavoastră terţ:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Autentificare lipsă, vă rugăm să introduceţi numele de utilizator/parola de "
-"la Configurare->General în programul dumneavoastră terţ:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
@@ -3251,16 +3243,6 @@ msgstr "La eroare, încearcă NZB alternativ"
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "Unele server oferă o alternativă dacă un NZB eșuează."
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

@@ -689,14 +689,6 @@ msgstr ""
 "API-Schlüssel ungültig. Bitte API-Schlüssel aus Einstellungen->Allgemein in "
 "die externe Anwendung eingeben:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Authentifizierung fehlt. Bitte Benutzernamen und Passwort aus "
-"Einstellungen->Allgemein in die externe Anwendung eingeben:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr ""
@@ -3343,18 +3335,6 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Manche Server stellen ein alternatives NZB zur Verfügung, falls ein Download"
 " fehlschlägt."
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr "Übernehme Markierungen vom Indexer"
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-"Beim Sortieren, verwende Tags aus Indexer für Titel, Saison, Episode, usw. "
-"Andernfalls wird alle Namensgebung aus dem NZB-Namen abgeleitet."
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"

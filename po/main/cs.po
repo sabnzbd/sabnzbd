@@ -651,14 +651,6 @@ msgstr ""
 "Nesprávný API klíč, použijte api klíč z Nastavení->Obecné ve vašem programu "
 "třetí strany:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Chybějící přihlašovací údaje, prosím zadejte jméno/heslo z Nastavení->Obecné"
-" do vašeho programu třetí strany:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Přihlášené selhalo, zkontrolujte jméno a heslo."
@@ -3154,16 +3146,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
 msgstr ""
 
 #: sabnzbd/skintext.py

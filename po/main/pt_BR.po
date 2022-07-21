@@ -654,14 +654,6 @@ msgstr ""
 "Chave de API incorreta. Use a chave de API de Configuração->Geral em seu "
 "programa de terceiros:"
 
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Autenticação faltando. Por favor insira usuário/senha de Configuração->Geral"
-" em seu programa de terceiros:"
-
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Falha de autenticação, verifique usuário / senha."
@@ -3224,16 +3216,6 @@ msgstr "Em caso de falha, tente um NZB alternativo"
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Alguns servidores fornecem um NZB alternativo quando um download falha."
-
-#: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
