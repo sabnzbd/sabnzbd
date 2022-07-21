@@ -867,7 +867,6 @@ SPECIAL_BOOL_LIST = (
     "enable_broadcast",
     "warn_dupl_jobs",
     "backup_for_duplicates",
-    "disable_api_key",
     "api_logging",
     "x_frame_options",
     "allow_old_ssl_tls",
