@@ -320,7 +320,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Values we want to remove
     deprecated_options = [
         cfg.ampm,
-        cfg.replace_illegal,
         cfg.html_login,
         cfg.allow_incomplete_nzb,
         cfg.show_sysload,

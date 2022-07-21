@@ -340,7 +340,6 @@ rss_rate = OptionNumber("misc", "rss_rate", 60, minval=15, maxval=24 * 60)
 ##############################################################################
 # Bool switches
 ampm = OptionBool("misc", "ampm", False)
-replace_illegal = OptionBool("misc", "replace_illegal", True)
 start_paused = OptionBool("misc", "start_paused", False)
 preserve_paused_state = OptionBool("misc", "preserve_paused_state", False)
 enable_par_cleanup = OptionBool("misc", "enable_par_cleanup", True)

@@ -259,13 +259,11 @@ def sanitize_foldername(name: str) -> str:
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
 
-    repl = sabnzbd.cfg.replace_illegal()
     lst = []
     for ch in name.strip():
         if ch in illegal:
-            if repl:
-                ch = legal[illegal.find(ch)]
-                lst.append(ch)
+            ch = legal[illegal.find(ch)]
+            lst.append(ch)
         else:
             lst.append(ch)
     name = "".join(lst)

@@ -866,7 +866,6 @@ SPECIAL_BOOL_LIST = (
     "wait_for_dfolder",
     "enable_broadcast",
     "warn_dupl_jobs",
-    "replace_illegal",
     "backup_for_duplicates",
     "disable_api_key",
     "api_logging",
