@@ -286,7 +286,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         logging.debug("%s excluded from deobfuscation because of excluded extension", biggest_file)
         return
     if not is_probably_obfuscated(biggest_file):
-        logging.debug("%s excluded from deobfuscation based because filename does not look obfuscated", biggest_file)
+        logging.debug("%s excluded from deobfuscation because filename does not look obfuscated", biggest_file)
         return
 
     # if we get here, the biggest_file is relatively big, has no excluded extension, and is obfuscated
