@@ -183,9 +183,42 @@ def first_file_is_much_bigger(filelist):
 
 
 def deobfuscate(nzo, filelist: List[str], usefulname: str):
-    """For files in filelist:
-    # 1. if no meaningful extension, add it
-    # 2. pick biggest file (and its lookalikes), and deobfuscate (if needed), to usefulname"""
+    """
+    For files in filelist:
+    1. if a file has no meaningful extension, add it (for example ".txt" or ".png")
+    2. pick biggest file (and its lookalikes), and deobfuscate (if needed), to usefulname
+
+    Typical cases for step 2:
+
+    Case 1:
+
+    bla.iso (1000MB, so much bigger than next biggest file)
+    bla-sample.iso (100MB)
+    bla.txt (1MB)
+    something.txt (1MB)
+
+    Because "bla" (of biggest file bla.iso) looks meaningless / obfuscated, we rename these files to
+
+    Nice_Name_1234.iso
+    Nice_Name_1234-sample.iso
+    Nice_Name_1234.txt
+    something.txt (no renaming)
+
+    Case 2:
+
+    one.bin (10MB)
+    two.bin (12MB)
+    three.bin (8MB)
+
+    No renaming, because the biggest file (12MB) is not much bigger than the second biggest file (10MB)
+
+    Case 3:
+
+    Great_File_1969.iso (1000MB)
+
+    No renaming because the filename looks OK already (not obfuscated)
+
+    """
 
     # Can't be imported directly due to circular import
     nzo: sabnzbd.nzbstuff.NzbObject
@@ -230,41 +263,6 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate corrected the extension of %d file(s)") % nr_ext_renamed)
         filelist = newlist
 
-    """
-    Deobfuscation: we want to rename meaningless / obfuscated filenames. 
-    We do that only with the biggest file, plus including accompanying files with the same base filename
-    Typical cases:
-    
-    Case 1:
-    
-    bla.iso (1000MB, so much bigger than next biggest file)
-    bla-sample.iso (100MB)
-    bla.txt (1MB)
-    something.txt (1MB)
-    
-    Because "bla" looks meaningless / obfuscated, we rename these files to
-    
-    Nice_Name_1234.iso
-    Nice_Name_1234-sample.iso
-    Nice_Name_1234.txt
-    something.txt (no renaming)
-    
-    Case 2:
-    
-    one.bin (10MB)
-    two.bin (12MB)
-    three.bin (8MB)
-    
-    No renaming, because the biggest file (12MB) is not much bigger than the second biggest file (10MB)
-    
-    Case 3:
-    
-    Great_File_1969.iso (1000MB)
-    
-    No renaming because the filename looks OK already (not obfuscated)
-    
-    """
-
     logging.debug("Trying to see if there are qualifying files to be deobfuscated")
     nr_files_renamed = 0
 
@@ -275,8 +273,9 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         biggest_file = filelist[0]
     else:
         biggest_file = None
-    if not (biggest_file and os.path.isfile(biggest_file)):
-        # no file found
+    if not biggest_file or not os.path.isfile(biggest_file):
+        # no file found, which is weird
+        logging.error("No file given, or not found (%s)", biggest_file)
         return
     logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
     if not first_file_is_much_bigger(filelist):
