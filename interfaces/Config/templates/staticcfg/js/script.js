@@ -63,14 +63,14 @@
         this.currentBrowserPath = null;
         this.currentRequest = null;
         this.fileBrowserDialog = $('#filebrowser_modal .modal-body');
-        this.fileBrowserTitle = this.element.data('title') || $('label[for="'+this.element.attr('id')+'"]').text() || '';
+        this.fileBrowserTitle = this.element.data('title') || $('label[for="' + this.element.attr('id') + '"]').text() || '';
 
         // Start
         this.init()
     };
 
     // Adding button
-    FileBrowser.prototype.init = function () {
+    FileBrowser.prototype.init = function() {
         // Self-reference
         var self = this;
 
@@ -79,7 +79,7 @@
 
         // Add button
         this.element.addClass('fileBrowserField').after(
-            $('<button class="btn btn-default fileBrowser" type="button"><span class="glyphicon glyphicon-folder-open"></span> '+buttonText+'</button>').click(function () {
+            $('<button class="btn btn-default fileBrowser" type="button"><span class="glyphicon glyphicon-folder-open"></span> ' + buttonText + '</button>').click(function() {
                 self.openBrowser();
             })
         )
@@ -92,30 +92,30 @@
 
         // set up the browser and launch the dialog
         // textbox (not saved) path > textbox (saved) path > none
-        this.initialDir = this.element.val() || this.element.data('initialdir') ||  '';
+        this.initialDir = this.element.val() || this.element.data('initialdir') || '';
 
         // If there's no seperator, it must be a relative path
-        if(this.initialDir.split(folderSeperator).length < 2 && this.element.data('initialdir')) {
+        if (this.initialDir.split(folderSeperator).length < 2 && this.element.data('initialdir')) {
             this.initialDir = this.element.data('initialdir') + folderSeperator + this.element.val();
         }
 
         // Browse
-        this.browse(this.initialDir , folderBrowseUrl);
+        this.browse(this.initialDir, folderBrowseUrl);
 
         // Choose path and close modal
         $('#filebrowser_modal_accept').click(function() {
             // Is it a relative path?
-            if(self.currentBrowserPath.indexOf(self.element.data('initialdir')) === 0) {
+            if (self.currentBrowserPath.indexOf(self.element.data('initialdir')) === 0) {
                 // Remove start
-                self.currentBrowserPath = self.currentBrowserPath.replace(self.element.data('initialdir')+folderSeperator, '');
+                self.currentBrowserPath = self.currentBrowserPath.replace(self.element.data('initialdir') + folderSeperator, '');
                 // If it's identical to the initial dir the replacement won't work
-                if(self.currentBrowserPath == self.element.data('initialdir')) {
+                if (self.currentBrowserPath == self.element.data('initialdir')) {
                     self.currentBrowserPath = '';
                 }
             }
 
             // Changed?
-            if(self.element.val() != self.currentBrowserPath) {
+            if (self.element.val() != self.currentBrowserPath) {
                 self.element.val(self.currentBrowserPath);
                 formHasChanged = true;
             }
@@ -128,7 +128,7 @@
         // Show hidden folders
         $('#show_hidden_folders').off('change')
         $('#show_hidden_folders').on('change', function() {
-            self.browse(self.currentBrowserPath , folderBrowseUrl);
+            self.browse(self.currentBrowserPath, folderBrowseUrl);
         })
 
         // Use custom title instead of default and open modal
@@ -149,24 +149,25 @@
 
         // Get current folders
         this.currentBrowserPath = path;
-        this.currentRequest = $.getJSON(endpoint + extraHidden, { name: path }, function (data) {
+        this.currentRequest = $.getJSON(endpoint + extraHidden, { name: path }, function(data) {
             // Clean
             self.fileBrowserDialog.empty();
 
             // Make list
             var list = $('<div class="list-group">').appendTo(self.fileBrowserDialog);
-            $.each(data.paths, function (i, entry) {
+            $.each(data.paths, function(i, entry) {
                 // Title for first one
-                if(i == 0) {
+                if (i == 0) {
                     self.fileBrowserDialog.prepend($('<h4>').text(entry.current_path))
                     return
                 }
                 // Regular link
-                link = $('<a class="list-group-item" href="javascript:void(0)" />').click(function () {
-                    self.browse(entry.path, endpoint); }
+                link = $('<a class="list-group-item" href="javascript:void(0)" />').click(function() {
+                    self.browse(entry.path, endpoint);
+                }
                 ).text(entry.name);
                 // Back image
-                if(entry.name == '..') {
+                if (entry.name == '..') {
                     $('<span class="glyphicon glyphicon-arrow-left"></span> ').prependTo(link);
                 } else {
                     $('<span class="glyphicon glyphicon-folder-open"></span> ').prependTo(link);
@@ -179,8 +180,8 @@
     }
 
     // Make sure we have unique instances
-    $.fn.fileBrowser = function () {
-        return this.each(function () {
+    $.fn.fileBrowser = function() {
+        return this.each(function() {
             if (!$.data(this, 'plugin_FileBrowser')) {
                 $.data(this, 'plugin_FileBrowser', new FileBrowser(this));
             }
@@ -196,13 +197,13 @@ $.fn.extractFormDataTo = function(target) {
     var inputs = $("input[type != 'submit'][type != 'button']", this);
 
     // could use .serializeArray() but that omits unchecked items
-    inputs.each(function (i,elem) {
+    inputs.each(function(i, elem) {
         target[elem.name] = elem.value;
     });
 
     var selects = $("select", this);
 
-    selects.each(function (i,elem) {
+    selects.each(function(i, elem) {
         target[elem.name] = elem.value;
     });
 
@@ -215,16 +216,16 @@ $.fn.extractFormDataTo = function(target) {
  * (c) 2015 SABnzbd Team, Inc. All rights reserved.
  */
 function config_success() {
-    $('.saveButton[disabled=disabled]').each(function () {
-        $(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-ok"></span> '+configTranslate.saveChanges);
+    $('.saveButton[disabled=disabled]').each(function() {
+        $(this).removeAttr("disabled").html('<span class="glyphicon glyphicon-ok"></span> ' + configTranslate.saveChanges);
     });
     // Let us leave!
     formWasSubmitted = true;
     formHasChanged = false;
 }
 function config_failure() {
-    $('.saveButton[disabled=disabled]').each(function () {
-        $(this).removeAttr("disabled").addClass('btn-danger').html('<span class="glyphicon glyphicon-remove"></span> '+configTranslate.failed);
+    $('.saveButton[disabled=disabled]').each(function() {
+        $(this).removeAttr("disabled").addClass('btn-danger').html('<span class="glyphicon glyphicon-remove"></span> ' + configTranslate.failed);
     });
     // Can't go yet..
     formWasSubmitted = false;
@@ -235,15 +236,15 @@ function do_restart() {
 
     // What template
     var switchedHTTPS = ($('#enable_https').is(':checked') == ($('#enable_https').data('original') === undefined))
-    var portsUnchanged  = ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))
+    var portsUnchanged = ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))
 
     // Are we on settings page or did nothing change?
-    if(!$('body').hasClass('General') || (!switchedHTTPS && portsUnchanged)) {
+    if (!$('body').hasClass('General') || (!switchedHTTPS && portsUnchanged)) {
         // Same as before
         var urlTotal = window.location.origin + urlBase
     } else {
         // Protocol and port depend on http(s) setting
-        if($('#enable_https').is(':checked') && (window.location.protocol == 'https:' || !$('#https_port').val())) {
+        if ($('#enable_https').is(':checked') && (window.location.protocol == 'https:' || !$('#https_port').val())) {
             // Https on and we visited this page from HTTPS
             var urlProtocol = 'https:';
             var urlPort = $('#https_port').val() ? $('#https_port').val() : $('#port').val();
@@ -261,26 +262,28 @@ function do_restart() {
     $('.main-restarting .restarting-url').text(urlTotal)
 
     // Initiate restart
-    $.ajax({ url: '../../api?mode=restart&apikey=' + sabSession,
+    $.ajax({
+        url: '../../api?mode=restart&apikey=' + sabSession,
         complete: function() {
             // Keep counter of failures
             var loopCounter = 0;
 
             // Now we try until we can connect
             setInterval(function() {
-                loopCounter = loopCounter+1;
+                loopCounter = loopCounter + 1;
                 // We skip the first one so we give it time to shutdown
-                if(loopCounter < 2) {
+                if (loopCounter < 2) {
                     return
                 }
-                $.ajax({ url: urlTotal,
+                $.ajax({
+                    url: urlTotal,
                     success: function() {
                         // Back to base
                         location.href = urlTotal;
                     },
                     error: function(status, text) {
                         // Too many failures and we give up
-                        if(loopCounter >= 10) {
+                        if (loopCounter >= 10) {
                             // If the port has changed 'Access-Control-Allow-Origin' header will not allow
                             // us to check if the server is back up. So after 10 failures (20 sec) we redirect
                             // anyway in the hopes it works anyway..
@@ -292,11 +295,11 @@ function do_restart() {
 
             // Exception if we go from HTTPS to HTTP
             // (this is not allowed by browsers and all of the above will be ignored)
-            if(window.location.protocol != urlProtocol) {
+            if (window.location.protocol != urlProtocol) {
                 // Saftey redirect after 20 sec
                 setTimeout(function() {
                     location.href = urlTotal;
-                }, 20*1000)
+                }, 20 * 1000)
             }
         }
     });
@@ -318,12 +321,12 @@ function addRowColor() {
     })
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
     /**
         Restart function
     **/
-    $('.sabnzbd_restart').click(function () {
-        $('.sabnzbd_restart').each(function () {
+    $('.sabnzbd_restart').click(function() {
+        $('.sabnzbd_restart').each(function() {
             $(this).attr("disabled", "disabled");
         });
         if (confirm(configTranslate.explainRestart.replace(/\<br(\s*\/|)\>/g, '\n'))) {
@@ -332,7 +335,7 @@ $(document).ready(function () {
             formWasSubmitted = true;
             do_restart();
         }
-        $('.sabnzbd_restart').each(function () {
+        $('.sabnzbd_restart').each(function() {
             $(this).removeAttr("disabled");
         });
         return false;
@@ -345,20 +348,20 @@ $(document).ready(function () {
         datatype: 'json',
         // But first remove Obfuscation!
         beforeSerialize: removeObfuscation,
-        beforeSubmit: function (arr, form, options) {
+        beforeSubmit: function(arr, form, options) {
             // Only in the current form
-            form.find('.saveButton').each(function () {
+            form.find('.saveButton').each(function() {
                 $(this).attr("disabled", "disabled").removeClass('btn-danger').html('<span class="glyphicon glyphicon-transfer"></span> ' + configTranslate.saving);
             });
         },
-        success: function (json) {
+        success: function(json) {
             if (json.error) {
-               $('#config_err_msg').text(json.error);
-               alert(json.error)
-               config_failure()
-            } else if(json.value && json.value.restart_req) {
+                $('#config_err_msg').text(json.error);
+                alert(json.error)
+                config_failure()
+            } else if (json.value && json.value.restart_req) {
                 // Trigger restart question
-                if(confirm(configTranslate.needRestart + "\n" + configTranslate.buttonRestart + " SABnzbd?")) {
+                if (confirm(configTranslate.needRestart + "\n" + configTranslate.buttonRestart + " SABnzbd?")) {
                     // No more questions
                     do_restart();
                 } else {
@@ -366,11 +369,11 @@ $(document).ready(function () {
                     setTimeout(config_success, 1000);
                 }
             } else {
-               $('#config_err_msg').text(" ");
-               setTimeout(config_success, 1000);
+                $('#config_err_msg').text(" ");
+                setTimeout(config_success, 1000);
             }
         },
-        error: function () {
+        error: function() {
             config_failure()
         },
         timeout: 3000
@@ -379,16 +382,16 @@ $(document).ready(function () {
     /**
         Form changes tracking
     **/
-    $(document).on("submit", "form", function(event){
+    $(document).on("submit", "form", function(event) {
         // Let us leave!
         formWasSubmitted = true;
         formHasChanged = false;
     });
-    $('#content').on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function (e) {
+    $('#content').on('change', 'form input[type!="submit"][type!="button"], form select, form textarea', function(e) {
         formHasChanged = true;
         formWasSubmitted = false;
     });
-    window.onbeforeunload = function (e) {
+    window.onbeforeunload = function(e) {
         if (formHasChanged && !formWasSubmitted) {
             var message = configTranslate.confirmLeave, e = e || window.event;
             if (e) {
@@ -413,18 +416,18 @@ $(document).ready(function () {
     $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
     }).each(function() {
-        if(!$(this).is(':checked')) {
+        if (!$(this).is(':checked')) {
             $(this).parent().nextAll().addClass('disabled')
         }
     })
 
     // Advanced or not?
-    $('.advanced-button').on('change', function(event){
+    $('.advanced-button').on('change', function(event) {
         localStorage.setItem('advanced-settings', !$('.advanced-settings').is(':visible'))
         $('.advanced-settings').toggle()
         addRowColor()
     })
-    if(localStorage.getItem('advanced-settings') == 'true') {
+    if (localStorage.getItem('advanced-settings') == 'true') {
         $('.advanced-settings').show()
         $('#advanced-settings-button').prop('checked', true)
         addRowColor()
@@ -437,7 +440,7 @@ $(document).ready(function () {
 */
 // Make :contains() case-insensitive
 $.expr[":"].contains = $.expr.createPseudo(function(arg) {
-    return function( elem ) {
+    return function(elem) {
         return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
     };
 });
@@ -452,7 +455,7 @@ $(document).ready(function() {
         // Focus so easy typing
         $('#search-box').focus()
         // Load things to search if we haven't yet
-        if(!pagesContainer[0]) {
+        if (!pagesContainer[0]) {
             $.each(arrPages, function(index, page) {
                 $.get(rootURL + 'config/' + page + '/', function(data) {
                     pagesContainer[index] = $(data).find('label')
@@ -463,22 +466,22 @@ $(document).ready(function() {
 
     // For the scrolling
     // *only* if we have anchor on the url
-    if(window.location.hash) {
+    if (window.location.hash) {
         // Sometimes the ID is non-existing
         try {
             // Could be an Advanced setting
-            if(!$(window.location.hash).is(':visible')) {
+            if (!$(window.location.hash).is(':visible')) {
                 // Show advanced settings, but don't save in localStorage
                 $('.advanced-settings').toggle()
             }
             // smooth scroll to the anchor id
             $('html, body').animate({
-                scrollTop: $(window.location.hash).offset().top -100 + 'px'
+                scrollTop: $(window.location.hash).offset().top - 100 + 'px'
             }, 750, 'swing');
             setTimeout(function() {
                 $(window.location.hash).focus()
             }, 750)
-        } catch(err) {}
+        } catch (err) { }
     }
 })
 
@@ -500,13 +503,13 @@ function doConfigSearch(value) {
         // Find some results!
         $.each(pagesContainer, function(page_index, results) {
             // Get the matches
-            var subResults = results.filter(':contains("'+searchTerm+'")')
-            if(subResults.length > 0) {
+            var subResults = results.filter(':contains("' + searchTerm + '")')
+            if (subResults.length > 0) {
                 // Add the section
                 searchOutput.append('<li class="divider"></li>')
-                searchOutput.append('<li class="dropdown-header">'+configTranslate.searchPages[page_index]+'</li>')
+                searchOutput.append('<li class="dropdown-header">' + configTranslate.searchPages[page_index] + '</li>')
                 $.each(subResults, function(index, result) {
-                    searchOutput.append('<li><a href="'+rootURL + 'config/' + arrPages[page_index] +  '/#' + $(result).attr('for') +'">'+$(result).text()+'</a></li>')
+                    searchOutput.append('<li><a href="' + rootURL + 'config/' + arrPages[page_index] + '/#' + $(result).attr('for') + '">' + $(result).text() + '</a></li>')
                 })
             }
         })
