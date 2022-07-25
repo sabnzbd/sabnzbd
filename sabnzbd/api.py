@@ -1362,7 +1362,7 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
                 slot["status"] = Status.PROP
-            elif status == Status.CHECKING:
+            elif nzo.status == Status.CHECKING:
                 slot["status"] = Status.CHECKING
             else:
                 slot["status"] = Status.DOWNLOADING
