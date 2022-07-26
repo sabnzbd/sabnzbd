@@ -62,6 +62,7 @@ jobs:
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python --version
+        pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
         pip install --upgrade -r tests/requirements.txt
