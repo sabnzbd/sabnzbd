@@ -112,9 +112,7 @@ class TestValidators:
         assert cfg.validate_host("::1") == (None, "::1")
         assert cfg.validate_host("::") == (None, "::")
         assert cfg.validate_host("www.example.com")[1]
-        assert cfg.validate_host(socket.gethostname())[
-            1
-        ]  # TBD: does this work on Windows?
+        assert cfg.validate_host(socket.gethostname())[1]
 
         assert cfg.validate_host("0.0.0.0.") == (None, None)  # Trailing dot
         assert cfg.validate_host("kajkdjflkjasd") == (None, None)  # does not resolve
