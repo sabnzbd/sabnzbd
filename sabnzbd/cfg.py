@@ -151,6 +151,7 @@ def validate_server(value):
 
 def validate_host(value):
     """Check if host is valid: an IP address, or a name/FQDN that resolves"""
+    default_ip = "127.0.0.1"
     # easy: plain IPv4 or IPv6 address:
     try:
         ipaddress.ip_address(value)
@@ -162,7 +163,7 @@ def validate_host(value):
     # As socket.getaddrinfo("100", ...) allows that, we have to pre-check
     try:
         int(value)
-        return None, None
+        return None, default_ip
     except:
         pass
 
@@ -180,7 +181,7 @@ def validate_host(value):
         # all good
         return None, value
     except:
-        return None, None
+        return None, default_ip
 
 
 def validate_script(value):
