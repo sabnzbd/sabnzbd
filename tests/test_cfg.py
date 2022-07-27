@@ -19,6 +19,7 @@
 tests.test_cfg - Testing functions in cfg.py
 """
 import sabnzbd.cfg as cfg
+import socket
 
 
 class TestValidators:
@@ -88,8 +89,14 @@ class TestValidators:
 
     def test_validate_single_tag(self):
         assert cfg.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
-        assert cfg.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
-        assert cfg.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
+        assert cfg.validate_single_tag(["TV", ">", "HD", "Plus"]) == (
+            None,
+            ["TV", ">", "HD", "Plus"],
+        )
+        assert cfg.validate_single_tag(["alt.bin", "alt.tv"]) == (
+            None,
+            ["alt.bin", "alt.tv"],
+        )
         assert cfg.validate_single_tag(["alt.group"]) == (None, ["alt.group"])
 
     def test_lower_case_ext(self):
@@ -97,3 +104,18 @@ class TestValidators:
         assert cfg.lower_case_ext(".Bla") == (None, "bla")
         assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
+
+    def test_validate_host(self):
+        assert cfg.validate_host("127.0.0.1") == (None, "127.0.0.1")
+        assert cfg.validate_host("0.0.0.0") == (None, "0.0.0.0")
+        assert cfg.validate_host("1.1.1.1") == (None, "1.1.1.1")
+        assert cfg.validate_host("::1") == (None, "::1")
+        assert cfg.validate_host("::") == (None, "::")
+        assert cfg.validate_host("www.example.com")[1]
+        assert cfg.validate_host(socket.gethostname())[
+            1
+        ]  # TBD: does this work on Windows?
+
+        assert cfg.validate_host("0.0.0.0.") == (None, None)  # Trailing dot
+        assert cfg.validate_host("kajkdjflkjasd") == (None, None)  # does not resolve
+        assert cfg.validate_host("100") == (None, None)  # just a number

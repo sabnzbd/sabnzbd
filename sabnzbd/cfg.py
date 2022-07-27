@@ -22,6 +22,8 @@ sabnzbd.cfg - Configuration Parameters
 import logging
 import re
 import argparse
+import socket
+import ipaddress
 from typing import List, Tuple
 
 import sabnzbd
@@ -147,9 +149,45 @@ def validate_server(value):
         return None, value
 
 
+def validate_host(value):
+    """Check if host is valid: an IP address, or a name/FQDN that resolves"""
+    # easy: plain IPv4 or IPv6 address:
+    try:
+        ipaddress.ip_address(value)
+        return None, value
+    except:
+        pass
+
+    # we don't want a plain number
+    # As socket.getaddrinfo("100", ...) allows that, we have to pre-check
+    try:
+        int(value)
+        return None, None
+    except:
+        pass
+
+    # not a plain IPv4 nor IPv6 address, so let's check if it's a name that resolves to IPv4
+    try:
+        socket.getaddrinfo(value, None, socket.AF_INET)
+        # all good
+        return None, value
+    except:
+        pass
+
+    # ... and if not: does it resolve to IPv6?
+    try:
+        socket.getaddrinfo(value, None, socket.AF_INET6)
+        # all good
+        return None, value
+    except:
+        return None, None
+
+
 def validate_script(value):
     """Check if value is a valid script"""
-    if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
+    if not sabnzbd.__INITIALIZED__ or (
+        value and sabnzbd.filesystem.is_valid_script(value)
+    ):
         return None, value
     elif (value and value == "None") or not value:
         return None, "None"
@@ -172,14 +210,19 @@ def validate_permissions(value: str):
     # Check if we at least have user-permissions
     if oct_value < int("700", 8):
         sabnzbd.misc.helpful_warning(
-            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."), value
+            T(
+                "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
+            ),
+            value,
         )
     return None, value
 
 
 def validate_safedir(root, value, default):
     """Allow only when queues are empty and no UNC"""
-    if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
+    if not sabnzbd.__INITIALIZED__ or (
+        sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()
+    ):
         return validate_no_unc(root, value, default)
     else:
         return T("Error: Queue not empty, cannot change folder."), None
@@ -226,7 +269,7 @@ version_check = OptionNumber("misc", "check_new_rel", 1)
 autobrowser = OptionBool("misc", "auto_browser", True)
 language = OptionStr("misc", "language", "en")
 enable_https_verification = OptionBool("misc", "enable_https_verification", True)
-cherryhost = OptionStr("misc", "host", DEF_HOST)
+cherryhost = OptionStr("misc", "host", DEF_HOST, validation=validate_host)
 cherryport = OptionStr("misc", "port", DEF_PORT)
 https_port = OptionStr("misc", "https_port")
 username = OptionStr("misc", "username")
@@ -250,11 +293,21 @@ socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 ##############################################################################
 permissions = OptionStr("misc", "permissions", validation=validate_permissions)
 download_dir = OptionDir(
-    "misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, apply_permissions=True, validation=validate_safedir
+    "misc",
+    "download_dir",
+    DEF_DOWNLOAD_DIR,
+    create=False,
+    apply_permissions=True,
+    validation=validate_safedir,
 )
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
-    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_permissions=True, validation=validate_notempty
+    "misc",
+    "complete_dir",
+    DEF_COMPLETE_DIR,
+    create=False,
+    apply_permissions=True,
+    validation=validate_notempty,
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
@@ -262,7 +315,9 @@ script_dir = OptionDir("misc", "script_dir", writable=False)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
-dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
+dirscan_speed = OptionNumber(
+    "misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600
+)
 password_file = OptionDir("misc", "password_file", "", create=False)
 log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_notempty)
 
@@ -302,7 +357,9 @@ pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
 enable_all_par = OptionBool("misc", "enable_all_par", False)
 sanitize_safe = OptionBool("misc", "sanitize_safe", False)
 cleanup_list = OptionList("misc", "cleanup_list", validation=lower_case_ext)
-unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower_case_ext)
+unwanted_extensions = OptionList(
+    "misc", "unwanted_extensions", validation=lower_case_ext
+)
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
@@ -370,9 +427,15 @@ x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 
 # Text values
-rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
-quick_check_ext_ignore = OptionList("misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"], validation=lower_case_ext)
-req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, minval=100, maxval=200)
+rss_odd_titles = OptionList(
+    "misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"]
+)
+quick_check_ext_ignore = OptionList(
+    "misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"], validation=lower_case_ext
+)
+req_completion_rate = OptionNumber(
+    "misc", "req_completion_rate", 100.2, minval=100, maxval=200
+)
 selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
 episode_rename_limit = OptionStr("misc", "episode_rename_limit", "20M")
@@ -381,16 +444,22 @@ show_sysload = OptionNumber("misc", "show_sysload", 2, minval=0, maxval=2)
 direct_unpack_threads = OptionNumber("misc", "direct_unpack_threads", 3, minval=1)
 history_limit = OptionNumber("misc", "history_limit", 10, minval=0)
 wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, minval=1, maxval=60)
-max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000)
+max_foldername_length = OptionNumber(
+    "misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000
+)
 marker_file = OptionStr("misc", "nomedia_marker")
 ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, minval=0, maxval=2)
-url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)
+url_base = OptionStr(
+    "misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash
+)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
 num_simd_decoders = OptionNumber("misc", "num_simd_decoders", 2, minval=1)
-ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
+ssdp_broadcast_interval = OptionNumber(
+    "misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600
+)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 
 
@@ -442,7 +511,9 @@ acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", True)
 acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
-ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.MACOS)
+ntfosd_enable = OptionBool(
+    "ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.MACOS
+)
 ntfosd_cats = OptionList("ntfosd", "ntfosd_cats", ["*"])
 ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", True)
 ntfosd_prio_download = OptionBool("ntfosd", "ntfosd_prio_download", False)
@@ -502,7 +573,9 @@ pushbullet_apikey = OptionStr("pushbullet", "pushbullet_apikey")
 pushbullet_device = OptionStr("pushbullet", "pushbullet_device")
 pushbullet_prio_startup = OptionBool("pushbullet", "pushbullet_prio_startup", False)
 pushbullet_prio_download = OptionBool("pushbullet", "pushbullet_prio_download", False)
-pushbullet_prio_pause_resume = OptionBool("pushbullet", "pushbullet_prio_pause_resume", False)
+pushbullet_prio_pause_resume = OptionBool(
+    "pushbullet", "pushbullet_prio_pause_resume", False
+)
 pushbullet_prio_pp = OptionBool("pushbullet", "pushbullet_prio_pp", False)
 pushbullet_prio_complete = OptionBool("pushbullet", "pushbullet_prio_complete", True)
 pushbullet_prio_failed = OptionBool("pushbullet", "pushbullet_prio_failed", True)
@@ -510,7 +583,9 @@ pushbullet_prio_disk_full = OptionBool("pushbullet", "pushbullet_prio_disk_full"
 pushbullet_prio_new_login = OptionBool("pushbullet", "pushbullet_prio_new_login", False)
 pushbullet_prio_warning = OptionBool("pushbullet", "pushbullet_prio_warning", False)
 pushbullet_prio_error = OptionBool("pushbullet", "pushbullet_prio_error", False)
-pushbullet_prio_queue_done = OptionBool("pushbullet", "pushbullet_prio_queue_done", False)
+pushbullet_prio_queue_done = OptionBool(
+    "pushbullet", "pushbullet_prio_queue_done", False
+)
 pushbullet_prio_other = OptionBool("pushbullet", "pushbullet_prio_other", True)
 
 # [nscript]
