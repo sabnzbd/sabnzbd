@@ -19,6 +19,7 @@
 tests.test_cfg - Testing functions in cfg.py
 """
 import sabnzbd.cfg as cfg
+import socket
 
 
 class TestValidators:
@@ -97,3 +98,16 @@ class TestValidators:
         assert cfg.lower_case_ext(".Bla") == (None, "bla")
         assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
+
+    def test_validate_host(self):
+        assert cfg.validate_host("127.0.0.1") == (None, "127.0.0.1")
+        assert cfg.validate_host("0.0.0.0") == (None, "0.0.0.0")
+        assert cfg.validate_host("1.1.1.1") == (None, "1.1.1.1")
+        assert cfg.validate_host("::1") == (None, "::1")
+        assert cfg.validate_host("::") == (None, "::")
+        assert cfg.validate_host("www.example.com")[1]
+        assert cfg.validate_host(socket.gethostname())[1] # TBD: does this work on Windows?
+
+        assert cfg.validate_host("0.0.0.0.") == (None, None) # Trailing dot
+        assert cfg.validate_host("kajkdjflkjasd") == (None, None) # does not resolve
+        assert cfg.validate_host("100") == (None, None) # just a number
