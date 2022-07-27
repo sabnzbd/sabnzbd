@@ -112,8 +112,8 @@ class TestValidators:
         assert cfg.validate_host("::1") == (None, "::1")
         assert cfg.validate_host("::") == (None, "::")
         assert cfg.validate_host("www.example.com")[1]
-        assert cfg.validate_host(socket.gethostname())[1]
+        assert cfg.validate_host(socket.gethostname())[1]  # resolves to something
 
-        assert cfg.validate_host("0.0.0.0.") == (None, None)  # Trailing dot
-        assert cfg.validate_host("kajkdjflkjasd") == (None, None)  # does not resolve
-        assert cfg.validate_host("100") == (None, None)  # just a number
+        assert cfg.validate_host("0.0.0.0.") != (None, "0.0.0.0.")  # Trailing dot
+        assert cfg.validate_host("kajkdjflkjasd") != (None, "kajkdjflkjasd")  # does not resolve
+        assert cfg.validate_host("100") != (None, "100")  # just a number
