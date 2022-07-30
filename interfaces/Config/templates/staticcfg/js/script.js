@@ -382,6 +382,11 @@ $(document).ready(function() {
     /**
         Form changes tracking
     **/
+    // wipe pw if host is changed
+    $('form input[name="host"]').on('change paste', function(e) {
+        // due to obfuscation used, have to just look for field by data element from parent
+        $(this).closest("fieldset").find("input[data-hide='password']").val('');
+    });
     $(document).on("submit", "form", function(event) {
         // Let us leave!
         formWasSubmitted = true;
