@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 3.6.0
+Release Notes - SABnzbd 3.6.1 Release Candidate 1
 =========================================================
+
+## Bugfixes since 3.6.0
+- Downloads in `Checking` status were not displayed correctly.
+- Prevent showing crash on Status window during shutdown.
+- Prevent scheduler crash if removed event is canceled.
+- macOS/Windows: Updated dependencies and Python versions.
 
 ## Changes since 3.5.3
 - Significantly increased performance by using the yEnc-decoding
