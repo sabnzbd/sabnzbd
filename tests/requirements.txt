@@ -1,5 +1,5 @@
 # Testing requirements
-selenium
+selenium<4.3.0 # needs code changes for 4.3.0
 requests
 pkginfo
 pytest
