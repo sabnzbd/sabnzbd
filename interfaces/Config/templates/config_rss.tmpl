@@ -481,18 +481,22 @@
                     <thead>
                         <tr>
                             <th class="default-sort">$T('rss-added')</th>
+                            <th>$T('rss-filter')</th>
                             <th>$T('size')</th>
                             <th width="60%">$T('sort-title')</th>
                             <th>$T('category')</th>
+                            <th>$T('nzo-age')</th>
                             <th>$T('source')</th>
                         </tr>
                     </thead>
                     <!--#for $job in $downloaded#-->
                         <tr class="infoTableSeperator">
                             <td data-sort-value="$job['time_downloaded_ms']">$job['time_downloaded']</td>
+                            <td>$job['rule'] $job['skip']</td>
                             <td data-sort-value="$job['size']">$job['size_units']</td>
                             <td>$job['title']</td>
                             <td>$job['cat']</td>
+                            <td data-sort-value="$job['age_ms']">$job['age']</td>
                             <td data-sort-value="$job['baselink']" title="$job['baselink']">
                                 <!--#if not $job['infourl']#-->
                                 <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
