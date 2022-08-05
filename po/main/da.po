@@ -142,14 +142,6 @@ msgstr "SABnzbd lukning udført"
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s modtaget, gemmer og lukker..."
 
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
-
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"

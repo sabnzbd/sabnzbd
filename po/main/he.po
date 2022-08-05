@@ -140,17 +140,6 @@ msgstr "כיבוי SABnzbd הסתיים"
 msgid "Signal %s caught, saving and exiting..."
 msgstr "אות %s נתפס, שומר ויוצא…"
 
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
-"אנחנו מתכננים להסיר את ההגדרה '%s', אשר שינית מערך ברירת המחדל. אתה יכול "
-"ליידע אותנו למה עשית את השינוי הזה בכתובת: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"

@@ -153,17 +153,6 @@ msgstr "Arrêt de SABnzbd terminé"
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s intercepté, enregistrement et fermeture en cours..."
 
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
-"Nous envisageons de supprimer le paramètre '%s' que vous avez modifié par "
-"rapport à la valeur par défaut. Pourriez-vous nous dire pourquoi vous avez "
-"fait ce changement à : https://github.com/sabnzbd/sabnzbd/discussions"
-
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
