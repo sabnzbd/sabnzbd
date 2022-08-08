@@ -765,6 +765,7 @@ SWITCH_LIST = (
     "flat_unpack",
     "safe_postproc",
     "no_dupes",
+    "replace_underscores",
     "replace_spaces",
     "replace_dots",
     "ignore_samples",
