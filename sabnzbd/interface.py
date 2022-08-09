@@ -688,7 +688,10 @@ class ConfigPage:
     @secured_expose(check_configlock=True, check_api_key=True)
     def backup(self, **kwargs):
         cherrypy.response.headers["Content-Type"] = "application/zip"
-        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
+        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd_backup_%s_%s.zip"' % (
+            sabnzbd.__version__,
+            time.strftime("%Y.%m.%d_%H.%M.%S"),
+        )
         return config.create_config_backup()
 
 
