@@ -72,7 +72,7 @@ RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
-HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
+HAVE_AMPM = bool(time.strftime("%p"))
 
 
 def helpful_warning(*args, **kwargs):

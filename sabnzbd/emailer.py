@@ -236,7 +236,7 @@ def endjob(
     parm["script_ret"] = script_ret
     parm["cat"] = cat
     parm["size"] = "%sB" % to_units(bytes_downloaded)
-    parm["end_time"] = time.strftime(time_format("%Y-%m-%d %H:%M:%S"), time.localtime(time.time()))
+    parm["end_time"] = time.strftime(time_format("%Y-%m-%d %H:%M:%S"))
 
     return send_with_template("email", parm, test)
 
