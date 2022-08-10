@@ -289,6 +289,11 @@
                         <span class="desc">$T('explain-replace_spaces')</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="replace_underscores">$T('opt-replace_underscores')</label>
+                        <input type="checkbox" name="replace_underscores" id="replace_underscores" value="1" <!--#if int($replace_underscores) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-replace_underscores')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="replace_dots">$T('opt-replace_dots')</label>
                         <input type="checkbox" name="replace_dots" id="replace_dots" value="1" <!--#if int($replace_dots) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-replace_dots')</span>

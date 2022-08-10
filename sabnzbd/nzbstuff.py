@@ -759,6 +759,9 @@ class NzbObject(TryList):
         if cfg.replace_spaces():
             logging.info("Replacing spaces with underscores in %s", self.final_name)
             self.final_name = self.final_name.replace(" ", "_")
+        if cfg.replace_underscores():
+            logging.info("Replacing underscores with dots in %s", self.final_name)
+            self.final_name = self.final_name.replace("_", ".")
         if cfg.replace_dots():
             logging.info("Replacing dots with spaces in %s", self.final_name)
             self.final_name = self.final_name.replace(".", " ")

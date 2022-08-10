@@ -480,6 +480,8 @@ SKIN_TEXT = {
     "also-test": TT("Also test releases"),  #: Pick list for weekly test for new releases
     "opt-replace_spaces": TT("Replace Spaces in Foldername"),
     "explain-replace_spaces": TT("Replace spaces with underscores in folder names."),
+    "opt-replace_underscores": TT("Replace underscores in folder name"),
+    "explain-replace_underscores": TT("Replace underscores with dots in folder names."),
     "opt-replace_dots": TT("Replace dots in Foldername"),
     "explain-replace_dots": TT("Replace dots with spaces in folder names."),
     "opt-sanitize_safe": TT("Make Windows compatible"),
