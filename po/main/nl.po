@@ -3377,6 +3377,14 @@ msgid "Replace spaces with underscores in folder names."
 msgstr "Vervang spaties door onderliggende streepjes in namen van mappen."
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "Vervang punten in mapnamen"
 

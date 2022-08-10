@@ -3235,6 +3235,14 @@ msgid "Replace spaces with underscores in folder names."
 msgstr "将文件夹名称中的空格替换成下划线。"
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "替换文件夹名称中的点号"
 

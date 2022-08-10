@@ -3308,6 +3308,14 @@ msgid "Replace spaces with underscores in folder names."
 msgstr "החלף רווחים בקווים תחתונים בשמות תיקיות."
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "החלף נקודות בשמות תיקיות"
 

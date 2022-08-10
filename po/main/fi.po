@@ -3310,6 +3310,14 @@ msgid "Replace spaces with underscores in folder names."
 msgstr "Korvaa välilyönnit alaviivoilla kansionimissä."
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "Korvaa pisteet kansionimessä"
 

@@ -3278,6 +3278,14 @@ msgid "Replace spaces with underscores in folder names."
 msgstr "Размени <b>размаке</b> са <b>_</b> у имену фасцикле."
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "Размени тачке у имену фасцикле"
 

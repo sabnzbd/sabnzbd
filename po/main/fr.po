@@ -3425,6 +3425,14 @@ msgstr ""
 "Remplace les espaces par des underscores ( _ ) dans les noms de dossiers."
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "Remplacer les points dans les noms de dossier"
 

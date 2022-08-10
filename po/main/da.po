@@ -3307,6 +3307,14 @@ msgid "Replace spaces with underscores in folder names."
 msgstr "Erstat mellemrum med understreg i mappenavn."
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "Erstat punktummer i mappenavn"
 

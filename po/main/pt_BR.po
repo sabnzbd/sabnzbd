@@ -3299,6 +3299,14 @@ msgid "Replace spaces with underscores in folder names."
 msgstr "Substituir espaços por sublinhado no nome das pastas."
 
 #: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
 msgstr "Substituir pontos no nome da pasta"
 
