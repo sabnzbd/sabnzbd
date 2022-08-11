@@ -155,11 +155,15 @@ def validate_host(value):
     # easy: plain IPv4 or IPv6 address:
     try:
         ipaddress.ip_address(value)
-        logging.debug("Valid host name")
+        # valid host, so return it
         return None, value
     except:
         pass
 
+    # not valid host, so say it, and return None
+    return T("Invalid server address."), None
+
+    """
     # we don't want a plain number
     # As socket.getaddrinfo("100", ...) allows that, we have to pre-check
     try:
@@ -180,19 +184,6 @@ def validate_host(value):
 
     # ... and if not: does it resolve to IPv6 ... ?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     try:
         socket.getaddrinfo(value, None, socket.AF_INET6)
         # all good
@@ -201,6 +192,7 @@ def validate_host(value):
     except:
         logging.debug("No valid host name")
         return None, default_ip
+    """
 
 
 def validate_script(value):
