@@ -156,10 +156,17 @@ def validate_host(value):
     try:
         ipaddress.ip_address(value)
         # valid host, so return it
-        logging.debug("SJ: valid host")
+        logging.debug("SJ: valid host. Good.")
         return None, value
     except:
         pass
+
+
+
+
+
+
+
 
     # not valid host, so say it, and return None
     logging.debug("SJ: invalid host input")
