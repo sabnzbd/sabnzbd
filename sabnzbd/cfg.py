@@ -155,6 +155,7 @@ def validate_host(value):
     # easy: plain IPv4 or IPv6 address:
     try:
         ipaddress.ip_address(value)
+        logging.debug("Valid host name")
         return None, value
     except:
         pass
@@ -163,6 +164,7 @@ def validate_host(value):
     # As socket.getaddrinfo("100", ...) allows that, we have to pre-check
     try:
         int(value)
+        logging.debug("No valid host name")
         return None, default_ip
     except:
         pass
@@ -171,16 +173,20 @@ def validate_host(value):
     try:
         socket.getaddrinfo(value, None, socket.AF_INET)
         # all good
+        logging.debug("Valid host name")
         return None, value
     except:
         pass
 
-    # ... and if not: does it resolve to IPv6?
+    # ... and if not: does it resolve to IPv6 ... ?
+
     try:
         socket.getaddrinfo(value, None, socket.AF_INET6)
         # all good
+        logging.debug("Valid host name")
         return None, value
     except:
+        logging.debug("No valid host name")
         return None, default_ip
 
 
