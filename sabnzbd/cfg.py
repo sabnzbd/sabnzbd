@@ -180,6 +180,19 @@ def validate_host(value):
 
     # ... and if not: does it resolve to IPv6 ... ?
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     try:
         socket.getaddrinfo(value, None, socket.AF_INET6)
         # all good
