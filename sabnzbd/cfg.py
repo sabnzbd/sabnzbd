@@ -161,13 +161,6 @@ def validate_host(value):
     except:
         pass
 
-
-
-
-
-
-
-
     # not valid host, so say it, and return None
     logging.debug("SJ: invalid host input")
     return T("Invalid server address."), None
