@@ -22,6 +22,8 @@ sabnzbd.cfg - Configuration Parameters
 import logging
 import re
 import argparse
+import socket
+import ipaddress
 from typing import List, Tuple
 
 import sabnzbd
@@ -147,6 +149,48 @@ def validate_server(value):
         return None, value
 
 
+def validate_host(value):
+    """Check if host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
+
+    # easy: value is a plain IPv4 or IPv6 address:
+    try:
+        ipaddress.ip_address(value)
+        # valid host, so return it
+        return None, value
+    except:
+        pass
+
+    # we don't want a plain number. As socket.getaddrinfo("100", ...) allows that, we have to pre-check
+    try:
+        int(value)
+        # plain int as input, which is not allowed
+        return T("Invalid server address."), None
+    except:
+        pass
+
+    # not a plain IPv4 nor IPv6 address, so let's check if it's a name that resolves to IPv4
+    try:
+        socket.getaddrinfo(value, None, socket.AF_INET)
+        # all good
+        logging.debug("Valid host name")
+        return None, value
+    except:
+        pass
+
+    # ... and if not: does it resolve to IPv6 ... ?
+    try:
+        socket.getaddrinfo(value, None, socket.AF_INET6)
+        # all good
+        logging.debug("Valid host name")
+        return None, value
+    except:
+        logging.debug("No valid host name")
+        pass
+
+    # if we get here, it is not valid host, so return None
+    return T("Invalid server address."), None
+
+
 def validate_script(value):
     """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
@@ -226,7 +270,7 @@ version_check = OptionNumber("misc", "check_new_rel", 1)
 autobrowser = OptionBool("misc", "auto_browser", True)
 language = OptionStr("misc", "language", "en")
 enable_https_verification = OptionBool("misc", "enable_https_verification", True)
-cherryhost = OptionStr("misc", "host", DEF_HOST)
+cherryhost = OptionStr("misc", "host", DEF_HOST, validation=validate_host)
 cherryport = OptionStr("misc", "port", DEF_PORT)
 https_port = OptionStr("misc", "https_port")
 username = OptionStr("misc", "username")
