@@ -1,10 +1,11 @@
-Release Notes - SABnzbd 3.6.1 Release Candidate 1
+Release Notes - SABnzbd 3.6.1 Release Candidate 2
 =========================================================
 
 ## Bugfixes since 3.6.0
 - Downloads in `Checking` status were not displayed correctly.
 - Prevent showing crash on Status window during shutdown.
 - Prevent scheduler crash if removed event is canceled.
+- Updated UnRar to 6.11 (Windows) and 6.12 (macOS).
 - macOS/Windows: Updated dependencies and Python versions.
 
 ## Changes since 3.5.3
