@@ -1009,7 +1009,7 @@ class ConfigGeneral:
             value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
-                return badParameterResponse(msg)
+                return badParameterResponse(msg, ajax=kwargs.get("ajax"))
 
         # Handle special options
         cfg.password.set(kwargs.get("password"))
