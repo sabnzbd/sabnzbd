@@ -150,28 +150,21 @@ def validate_server(value):
 
 
 def validate_host(value):
-    """Check if host is valid: an IP address, or a name/FQDN that resolves"""
-    default_ip = "127.0.0.1"
-    # easy: plain IPv4 or IPv6 address:
+    """Check if host is valid: an IP address, or a name/FQDN that resolves to an IPv4/IPv6 address"""
+
+    # easy: value is a plain IPv4 or IPv6 address:
     try:
         ipaddress.ip_address(value)
         # valid host, so return it
-        logging.debug("SJ: valid host. Good.")
         return None, value
     except:
         pass
 
-    # not valid host, so say it, and return None
-    logging.debug("SJ: invalid host input")
-    return T("Invalid server address."), None
-
-    """
-    # we don't want a plain number
-    # As socket.getaddrinfo("100", ...) allows that, we have to pre-check
+    # we don't want a plain number. As socket.getaddrinfo("100", ...) allows that, we have to pre-check
     try:
         int(value)
-        logging.debug("No valid host name")
-        return None, default_ip
+        # plain int as input, which is not allowed
+        return T("Invalid server address."), None
     except:
         pass
 
@@ -185,7 +178,6 @@ def validate_host(value):
         pass
 
     # ... and if not: does it resolve to IPv6 ... ?
-
     try:
         socket.getaddrinfo(value, None, socket.AF_INET6)
         # all good
@@ -193,8 +185,11 @@ def validate_host(value):
         return None, value
     except:
         logging.debug("No valid host name")
-        return None, default_ip
-    """
+        pass
+
+    # if we get here, it is not valid host, so return None
+    logging.debug("SJ: invalid host input")
+    return T("Invalid server address."), None
 
 
 def validate_script(value):
@@ -222,8 +217,7 @@ def validate_permissions(value: str):
     # Check if we at least have user-permissions
     if oct_value < int("700", 8):
         sabnzbd.misc.helpful_warning(
-            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."),
-            value,
+            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."), value
         )
     return None, value
 
@@ -301,21 +295,11 @@ socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 ##############################################################################
 permissions = OptionStr("misc", "permissions", validation=validate_permissions)
 download_dir = OptionDir(
-    "misc",
-    "download_dir",
-    DEF_DOWNLOAD_DIR,
-    create=False,
-    apply_permissions=True,
-    validation=validate_safedir,
+    "misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, apply_permissions=True, validation=validate_safedir
 )
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
-    "misc",
-    "complete_dir",
-    DEF_COMPLETE_DIR,
-    create=False,
-    apply_permissions=True,
-    validation=validate_notempty,
+    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_permissions=True, validation=validate_notempty
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
