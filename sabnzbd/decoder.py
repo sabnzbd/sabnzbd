@@ -216,7 +216,7 @@ class DecoderWorker(Thread):
                 elif not article_success:
                     # If not pre-check, this must be a bad article
                     if not nzo.precheck:
-                        logging.info("Badly formed yEnc article in %s", art_id, exc_info=True)
+                        logging.info("Badly formed yEnc article %s", art_id)
 
                     # Continue to the next one if we found new server
                     if search_new_server(article):
