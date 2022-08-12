@@ -276,6 +276,10 @@ msgstr "%s är inte en godkänd e-mail adress"
 msgid "Server address required"
 msgstr "Kräver serveradress"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ogiltig serveradress"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
@@ -4757,10 +4761,6 @@ msgstr "Timeout"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ogiltig serveradress"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

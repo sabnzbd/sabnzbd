@@ -302,6 +302,10 @@ msgstr "%s n'est pas une adresse email valide"
 msgid "Server address required"
 msgstr "Adresse du serveur requise"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Adresse du serveur erronée"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s n'est pas un script valide"
@@ -4938,10 +4942,6 @@ msgid ""
 msgstr ""
 "Protocole SSL inconnu: essayez de désactiver SSL ou de vous connecter sur un"
 " autre port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Adresse du serveur erronée"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

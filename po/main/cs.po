@@ -285,6 +285,10 @@ msgstr "%s není validní emailová adresa"
 msgid "Server address required"
 msgstr "Adresa serveru je vyžadována"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr ""
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s neni validní skript"
@@ -4669,10 +4673,6 @@ msgstr ""
 #: sabnzbd/utils/servertests.py
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
 msgstr ""
 
 #: sabnzbd/utils/servertests.py

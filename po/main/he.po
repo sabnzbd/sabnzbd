@@ -280,6 +280,10 @@ msgstr "%s אינה כתובת דוא״ל תקפה"
 msgid "Server address required"
 msgstr "כתובת שרת דרושה"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "כתובת שרת בלתי תקפה."
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s הוא לא תסריט תקף"
@@ -4786,10 +4790,6 @@ msgstr "אזל הזמן"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr "פרוטוקול SSL בלתי ידוע: נסה להשבית SSL או להתחבר על פתחה שונה."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "כתובת שרת בלתי תקפה."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

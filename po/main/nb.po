@@ -279,6 +279,10 @@ msgstr "%s er ikke en godkjent e-post-adresse"
 msgid "Server address required"
 msgstr "Krever server-adresse"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ugyldig server-adresse."
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
@@ -4759,10 +4763,6 @@ msgid ""
 msgstr ""
 "Ukjent SSL-protokoll: Prøv å deaktivere SSL eller koble til på en annen "
 "port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ugyldig server-adresse."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

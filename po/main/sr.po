@@ -276,6 +276,10 @@ msgstr "%s nije ispravna email adresa"
 msgid "Server address required"
 msgstr "Потребна је адреса сервера"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Погрешна адреса сервера."
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
@@ -4743,10 +4747,6 @@ msgstr "Време је истекло"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Погрешна адреса сервера."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

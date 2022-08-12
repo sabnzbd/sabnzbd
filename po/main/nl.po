@@ -294,6 +294,10 @@ msgstr "%s is geen geldig e-mailadres"
 msgid "Server address required"
 msgstr "Serveradres verplicht"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ongeldige servernaam"
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr "%s is geen geldig script."
@@ -4882,10 +4886,6 @@ msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 "Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ongeldige servernaam"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

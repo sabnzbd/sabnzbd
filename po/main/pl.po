@@ -274,6 +274,10 @@ msgstr "%s nie jest prawidłowym adresem email"
 msgid "Server address required"
 msgstr "Wymagane jest podanie adresu serwera"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Nieprawidłowy adres serwera."
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
@@ -4769,10 +4773,6 @@ msgstr "Upłynął limit czasu odpowiedzi."
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Nieprawidłowy adres serwera."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

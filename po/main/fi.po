@@ -282,6 +282,10 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
 
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Virheellinen palvelimen osoite."
+
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
 msgstr ""
@@ -4789,10 +4793,6 @@ msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 "Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Virheellinen palvelimen osoite."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."
