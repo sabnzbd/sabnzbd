@@ -150,7 +150,7 @@ def validate_server(value):
 
 
 def validate_host(value):
-    """Check if host is valid: an IP address, or a name/FQDN that resolves to an IPv4/IPv6 address"""
+    """Check if host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
 
     # easy: value is a plain IPv4 or IPv6 address:
     try:
@@ -188,7 +188,6 @@ def validate_host(value):
         pass
 
     # if we get here, it is not valid host, so return None
-    logging.debug("SJ: invalid host input")
     return T("Invalid server address."), None
 
 
