@@ -925,12 +925,16 @@ def rar_renamer(nzo: NzbObject) -> int:
             fully_encrypted = rarfile.RarFile(file_to_check, single_file_check=True).filelist() == []
             if fully_encrypted:
                 logging.warning(
-                    "Download %s contains fully encrypted rar-file %s. SABnzbd cannot deobfuscate those rar-files",
+                    "Download %s contains a fully encrypted & obfuscated rar-file %s. SABnzbd cannot deobfuscate those rar-files",
                     nzo.final_name,
                     file_to_check,
                 )
                 # bail out
+
+                nzo.fail_msg = "Fully encrypted & Obfuscated rar-file(s)"
+                logging.debug("SJ nzo.fail_msg is %s", nzo.fail_msg)
                 # continue
+                break
                 return renamed_files
 
         # The function will check if it's a RAR-file
