@@ -39,15 +39,12 @@ class TestEncoding:
         assert new == "aaa🚀zzz"
 
         garbled = "aaa"
-        for i in u'你好🚀🤔'.encode('utf-8'):
+        for i in "你好🚀🤔".encode("utf-8"):
             garbled += chr(i)
         garbled += "zzz"
         assert garbled != "aaa你好🚀🤔zzz"
         new = enc.hardcore_correct_unknown_encoding(garbled)
         assert new == "aaa你好🚀🤔zzz"
-
-
-
 
         garbled = "aaa" + chr(0xF0) + chr(0x9F) + "zzz"  # two bytes ... not UTF8
         new = enc.hardcore_correct_unknown_encoding(garbled)
