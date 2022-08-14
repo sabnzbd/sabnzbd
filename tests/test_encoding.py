@@ -28,3 +28,27 @@ class TestEncoding:
         assert "frènch_german_demö" == enc.correct_unknown_encoding(b"fr\xe8nch_german_dem\xf6")
         # Windows encoding in string that's already UTF8
         assert "demotöwers" == enc.correct_unknown_encoding("demot\udcf6wers")
+
+    def test_hardcore_correct_unknown_encoding(self):
+        garbled = "aaazzz"  # correct UTF8
+        new = enc.hardcore_correct_unknown_encoding(garbled)
+        assert new == "aaazzz"
+
+        garbled = "aaa" + chr(0xF0) + chr(0x9F) + chr(0x9A) + chr(0x80) + "zzz"  # correct UTF8
+        new = enc.hardcore_correct_unknown_encoding(garbled)
+        assert new == "aaa🚀zzz"
+
+        garbled = "aaa"
+        for i in u'你好🚀🤔'.encode('utf-8'):
+            garbled += chr(i)
+        garbled += "zzz"
+        assert garbled != "aaa你好🚀🤔zzz"
+        new = enc.hardcore_correct_unknown_encoding(garbled)
+        assert new == "aaa你好🚀🤔zzz"
+
+
+
+
+        garbled = "aaa" + chr(0xF0) + chr(0x9F) + "zzz"  # two bytes ... not UTF8
+        new = enc.hardcore_correct_unknown_encoding(garbled)
+        assert new == garbled  # check nothing changed
