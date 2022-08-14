@@ -804,9 +804,10 @@ def get_all_passwords(nzo) -> List[str]:
         logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords.append(nzo.password.strip())
 
+    # Note that we get a reference to the list, so adding to it updates the original list!
     meta_passwords = nzo.meta.get("password", [])
     pw = nzo.nzo_info.get("password")
-    if pw:
+    if pw and pw not in meta_passwords:
         meta_passwords.append(pw)
 
     if meta_passwords:
