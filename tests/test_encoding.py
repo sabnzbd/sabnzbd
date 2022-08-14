@@ -34,18 +34,21 @@ class TestEncoding:
         new = enc.hardcore_correct_unknown_encoding(garbled)
         assert new == "aaazzz"
 
-        garbled = "aaa" + chr(0xF0) + chr(0x9F) + chr(0x9A) + chr(0x80) + "zzz"  # correct UTF8
+        # typical use code: ugly chars in a string:
+        garbled = "aaa" + chr(0xF0) + chr(0x9F) + chr(0x9A) + chr(0x80) + "zzz"  # "correct" 4-byte UTF8 for rocket
         new = enc.hardcore_correct_unknown_encoding(garbled)
         assert new == "aaa🚀zzz"
 
-        garbled = "aaa"
-        for i in "你好🚀🤔".encode("utf-8"):
+        nice_utf8_string = u"aaa你好🚀🤔zzz"
+        # now break it
+        garbled = ""
+        for i in nice_utf8_string.encode("utf-8"):
             garbled += chr(i)
-        garbled += "zzz"
-        assert garbled != "aaa你好🚀🤔zzz"
+        assert garbled != nice_utf8_string
         new = enc.hardcore_correct_unknown_encoding(garbled)
-        assert new == "aaa你好🚀🤔zzz"
+        assert new == nice_utf8_string
 
+        # this is not UTF8, so string cannot be repaired, so stay the same
         garbled = "aaa" + chr(0xF0) + chr(0x9F) + "zzz"  # two bytes ... not UTF8
         new = enc.hardcore_correct_unknown_encoding(garbled)
         assert new == garbled  # check nothing changed
