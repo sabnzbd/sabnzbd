@@ -39,7 +39,7 @@ class TestEncoding:
         new = enc.hardcore_correct_unknown_encoding(garbled)
         assert new == "aaa🚀zzz"
 
-        nice_utf8_string = u"aaa你好🚀🤔zzz"
+        nice_utf8_string = "aaa你好🚀🤔zzz"
         # now break it
         garbled = ""
         for i in nice_utf8_string.encode("utf-8"):
