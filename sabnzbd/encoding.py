@@ -78,18 +78,11 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
 
 
 def correct_cherrypy_encoding(somestring: str) -> str:
-    """convert somestring to valid string"""
-    """
-    # convert string to bytes
-    mybytestring = b""  # empty bytestring
-    for i in somestring:
-        mybytestring = mybytestring + bytes([ord(i)])
-    """
-    # and then try to convert those bytes as UTF-8 to string
+    """convert somestring with seperate, individual chars (1-255) to valid string (with UTF8 encoding)"""
     try:
-        # correctedstring = str(mybytestring, "utf-8")
         correctedstring = somestring.encode("raw_unicode_escape").decode("utf8")
     except:
+        # not possible to convert to UTF8, so don't change anything:
         correctedstring = somestring
     return correctedstring
 

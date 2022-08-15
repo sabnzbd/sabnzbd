@@ -30,31 +30,31 @@ class TestEncoding:
         assert "demotöwers" == enc.correct_unknown_encoding("demot\udcf6wers")
 
     def test_correct_cherrypy_encoding(self):
-        garbled = "aaazzz"  # correct UTF8
-        new = enc.correct_cherrypy_encoding(garbled)
-        assert new == "aaazzz"
+        raw_input = "aaazzz"  # correct UTF8
+        corrected_output = enc.correct_cherrypy_encoding(raw_input)
+        assert corrected_output == "aaazzz"
 
-        # typical use code: ugly chars in a string: 4-byte unicode
-        garbled = "aaa" + chr(0xF0) + chr(0x9F) + chr(0x9A) + chr(0x80) + "zzz"  # "correct" 4-byte UTF8 for "rocket"
-        new = enc.correct_cherrypy_encoding(garbled)
-        assert new == "aaa🚀zzz"
+        # typical use code: raw chars in a string: 4-byte UTF8
+        raw_input = "aaa" + chr(0xF0) + chr(0x9F) + chr(0x9A) + chr(0x80) + "zzz"  # "correct" 4-byte UTF8 for "rocket"
+        corrected_output = enc.correct_cherrypy_encoding(raw_input)
+        assert corrected_output == "aaa🚀zzz"
 
-        # typical use code: ugly chars in a string: 2-byte unicode
-        # α is "ce b1"
-        garbled = "aaa" + chr(0xCE) + chr(0xB1) + "zzz"  # "correct" 4-byte UTF8 for "rocket"
-        new = enc.correct_cherrypy_encoding(garbled)
-        assert new == "aaaαzzz"
+        # typical use code: raw chars in a string: 2-byte UTF8
+        # Ω (capital omega) in UTF8: 0xCE 0xA9
+        raw_input = "aaa" + chr(0xCE) + chr(0xA9) + "zzz"  # Ω (capital omega)
+        corrected_output = enc.correct_cherrypy_encoding(raw_input)
+        assert corrected_output == "aaaΩzzz"
 
-        nice_utf8_string = "aaa你好🚀🤔zzzαβγ"  # mix of 1byte, 2byte and 4byte
+        nice_utf8_string = "aaa你好🚀🤔zzzαβγ"  # correct UTF8
         # now break it
-        garbled = ""
+        raw_input = ""
         for i in nice_utf8_string.encode("utf-8"):
-            garbled += chr(i)
-        assert garbled != nice_utf8_string
-        new = enc.correct_cherrypy_encoding(garbled)
-        assert new == nice_utf8_string
+            raw_input += chr(i)
+        assert raw_input != nice_utf8_string
+        corrected_output = enc.correct_cherrypy_encoding(raw_input)
+        assert corrected_output == nice_utf8_string
 
         # this is not UTF8, so string cannot be repaired, so stay the same
-        garbled = "aaa" + chr(0xF0) + chr(0x9F) + "zzz"  # two bytes ... not UTF8
-        new = enc.correct_cherrypy_encoding(garbled)
-        assert new == garbled  # check nothing changed
+        raw_input = "aaa" + chr(0xF0) + chr(0x9F) + "zzz"  # two bytes ... not valid UTF8
+        corrected_output = enc.correct_cherrypy_encoding(raw_input)
+        assert corrected_output == raw_input  # check nothing changed
