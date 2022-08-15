@@ -77,16 +77,18 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
             return str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)["encoding"])
 
 
-def hardcore_correct_unknown_encoding(somestring):
+def correct_cherrypy_encoding(somestring: str) -> str:
     """convert somestring to valid string"""
-    # ugly convert of string to bytes (there must be a more pythonic way to do this)
+    """
+    # convert string to bytes
     mybytestring = b""  # empty bytestring
     for i in somestring:
         mybytestring = mybytestring + bytes([ord(i)])
+    """
     # and then try to convert those bytes as UTF-8 to string
-    # TBD: Windows. CP1252, and unicode
     try:
-        correctedstring = str(mybytestring, "utf-8")
+        # correctedstring = str(mybytestring, "utf-8")
+        correctedstring = somestring.encode("raw_unicode_escape").decode("utf8")
     except:
         correctedstring = somestring
     return correctedstring
