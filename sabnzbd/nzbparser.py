@@ -33,7 +33,7 @@ from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
 from sabnzbd import nzbstuff
-from sabnzbd.encoding import utob, correct_unknown_encoding
+from sabnzbd.encoding import utob, correct_unknown_encoding, correct_cherrypy_encoding
 from sabnzbd.filesystem import (
     get_filename,
     is_valid_script,
@@ -85,7 +85,7 @@ def add_nzbfile(
     else:
         # File from file-upload object
         # CherryPy mangles unicode-filenames: https://github.com/cherrypy/cherrypy/issues/1766
-        filename = correct_unknown_encoding(nzbfile.filename)
+        filename = correct_cherrypy_encoding(nzbfile.filename)
         logging.info("Attempting to add %s", filename)
         keep_default = False
         try:
