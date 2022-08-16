@@ -910,16 +910,8 @@ def rar_renamer(nzo: NzbObject) -> int:
         if not (os.path.isfile(file_to_check)):
             continue
 
-        """
-        if not rarfile.is_rarfile(file_to_check):
-            logging.debug(("SJ: % is not a rar file!", file_to_check))
-        fully_encrypted = rarfile.RarFile(file_to_check, single_file_check=True).filelist() == []
-        logging.debug("SJ: value of fully_encrypted %s", fully_encrypted)
-        if fully_encrypted:
-            logging.debug("SJ: rar file %s is fully encrypted!", file_to_check)
-        """
-
         if rarfile.is_rarfile(file_to_check):
+            # if a rar file is fully encrypted, rarfile.RarFile() will return no contents:
             fully_encrypted = rarfile.RarFile(file_to_check, single_file_check=True).filelist() == []
             if fully_encrypted:
                 logging.info(
@@ -928,14 +920,10 @@ def rar_renamer(nzo: NzbObject) -> int:
                     file_to_check,
                 )
                 # bail out
-                # nzo.fail_msg = "Fully encrypted & Obfuscated rar-file(s)"
-                # continue
-                # break
                 return renamed_files
 
         # The function will check if it's a RAR-file
         # We do a sanity-check for the returned number
-
         rar_vol, new_extension = rarvolinfo.get_rar_extension(file_to_check)
         if 0 < rar_vol < 1000:
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
