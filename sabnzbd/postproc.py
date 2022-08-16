@@ -915,7 +915,7 @@ def rar_renamer(nzo: NzbObject) -> int:
             if not rarfile.RarFile(file_to_check, single_file_check=True).filelist():
             if fully_encrypted:
                 logging.info(
-                    "Download %s contains a fully encrypted & obfuscated rar-file %s. SABnzbd cannot deobfuscate those rar-files",
+                    "Download %s contains a fully encrypted & obfuscated rar-file: %s.",
                     nzo.final_name,
                     file_to_check,
                 )
