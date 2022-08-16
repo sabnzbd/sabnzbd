@@ -89,3 +89,10 @@ class TestPostProc:
         expected_filename_matches = {"*.rar": 0, "*-*-*-*-*": 8}
         # 0 files should have been renamed
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 0
+
+        # fully encrypted rar-set, and obfuscated rar names
+        sourcedir = os.path.join(SAB_DATA_DIR, "fully_encrypted_and_obfuscated_rars")
+        # SABnzbd cannot do anything with this, so we expect no renaming
+        expected_filename_matches = {"*.rar": 0, "*-*-*-*-*": 6}
+        # 0 files should have been renamed
+        assert deobfuscate_dir(sourcedir, expected_filename_matches) == 0
