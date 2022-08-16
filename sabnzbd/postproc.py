@@ -928,9 +928,9 @@ def rar_renamer(nzo: NzbObject) -> int:
                     file_to_check,
                 )
                 # bail out
-                #nzo.fail_msg = "Fully encrypted & Obfuscated rar-file(s)"
+                # nzo.fail_msg = "Fully encrypted & Obfuscated rar-file(s)"
                 # continue
-                #break
+                # break
                 return renamed_files
 
         # The function will check if it's a RAR-file
