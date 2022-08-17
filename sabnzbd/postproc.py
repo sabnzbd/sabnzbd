@@ -905,9 +905,22 @@ def rar_renamer(nzo: NzbObject) -> int:
     workdir_files = os.listdir(nzo.download_path)
     for file_to_check in workdir_files:
         file_to_check = os.path.join(nzo.download_path, file_to_check)
+
         # We only want files:
         if not (os.path.isfile(file_to_check)):
             continue
+
+        if rarfile.is_rarfile(file_to_check):
+            # if a rar file is fully encrypted, rarfile.RarFile() will return an empty list:
+            if not rarfile.RarFile(file_to_check, single_file_check=True).filelist():
+                logging.info(
+                    "Download %s contains a fully encrypted & obfuscated rar-file: %s.",
+                    nzo.final_name,
+                    file_to_check,
+                )
+                # bail out
+                return renamed_files
+
         # The function will check if it's a RAR-file
         # We do a sanity-check for the returned number
         rar_vol, new_extension = rarvolinfo.get_rar_extension(file_to_check)
