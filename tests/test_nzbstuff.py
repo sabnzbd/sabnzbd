@@ -1,12 +1,9 @@
 """
 tests.test_nzbstuff - Testing functions in nzbstuff.py
 """
-import io
-
 import sabnzbd.nzbstuff as nzbstuff
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY
-from sabnzbd.encoding import utob
 from sabnzbd.filesystem import globber
 
 from tests.testhelper import *

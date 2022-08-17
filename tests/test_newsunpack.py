@@ -24,7 +24,6 @@ import os.path
 import shutil
 from unittest.mock import call
 
-from sabnzbd.filesystem import build_filelists
 from tests.testhelper import *
 
 import sabnzbd
