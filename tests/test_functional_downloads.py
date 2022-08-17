@@ -39,36 +39,38 @@ class TestDownloadFlow(SABnzbdBaseTest):
     def start_wizard(self):
         # Language-selection
         self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
-        self.selenium_wrapper(self.driver.find_element_by_id, "en").click()
-        self.selenium_wrapper(self.driver.find_element_by_css_selector, "button.btn.btn-default").click()
+        self.selenium_wrapper(self.driver, "find_element", By.ID, "en").click()
+        self.selenium_wrapper(self.driver, "find_element", By.CSS_SELECTOR, "button.btn.btn-default").click()
 
         # Fill server-info
         self.no_page_crash()
-        host_inp = self.selenium_wrapper(self.driver.find_element_by_name, "host")
+        host_inp = self.selenium_wrapper(self.driver, "find_element", By.NAME, "host")
         host_inp.clear()
         host_inp.send_keys(SAB_NEWSSERVER_HOST)
 
         # This will fail if the translations failed to compile!
-        self.selenium_wrapper(self.driver.find_element_by_partial_link_text, "Advanced Settings").click()
+        self.selenium_wrapper(self.driver, "find_element", By.PARTIAL_LINK_TEXT, "Advanced Settings").click()
 
         # Change port
-        port_inp = self.selenium_wrapper(self.driver.find_element_by_name, "port")
+        port_inp = self.selenium_wrapper(self.driver, "find_element", By.NAME, "port")
         port_inp.clear()
         port_inp.send_keys(SAB_NEWSSERVER_PORT)
 
         # Test server-check
-        self.selenium_wrapper(self.driver.find_element_by_id, "serverTest").click()
+        self.selenium_wrapper(self.driver, "find_element", By.ID, "serverTest").click()
         self.wait_for_ajax()
-        assert "Connection Successful" in self.selenium_wrapper(self.driver.find_element_by_id, "serverResponse").text
+        assert (
+            "Connection Successful" in self.selenium_wrapper(self.driver, "find_element", By.ID, "serverResponse").text
+        )
 
         # Final page done
-        self.selenium_wrapper(self.driver.find_element_by_id, "next-button").click()
+        self.selenium_wrapper(self.driver, "find_element", By.ID, "next-button").click()
         self.no_page_crash()
-        check_result = self.selenium_wrapper(self.driver.find_element_by_class_name, "quoteBlock").text
+        check_result = self.selenium_wrapper(self.driver, "find_element", By.CLASS_NAME, "quoteBlock").text
         assert "http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT) in check_result
 
         # Go to SAB!
-        self.selenium_wrapper(self.driver.find_element_by_css_selector, ".btn.btn-success").click()
+        self.selenium_wrapper(self.driver, "find_element", By.CSS_SELECTOR, ".btn.btn-success").click()
         self.no_page_crash()
 
     def download_nzb(self, nzb_dir, file_output):
@@ -93,9 +95,12 @@ class TestDownloadFlow(SABnzbdBaseTest):
         for _ in range(20):
             try:
                 # Locate status of our job
-                status_text = self.driver.find_element_by_xpath(
-                    '//div[@id="history-tab"]//tr[td/div/span[contains(text(), "%s")]]/td[contains(@class, "status")]'
-                    % test_job_name
+                status_text = self.driver.find_element(
+                    By.XPATH,
+                    (
+                        '//div[@id="history-tab"]//tr[td/div/span[contains(text(), "%s")]]/td[contains(@class, "status")]'
+                        % test_job_name
+                    ),
                 ).text
                 # Always sleep to give it some time
                 time.sleep(1)
