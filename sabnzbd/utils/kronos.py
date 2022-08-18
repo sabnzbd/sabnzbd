@@ -249,7 +249,11 @@ class Scheduler:
 
     def cancel(self, task):
         """Cancel given scheduled task."""
-        self.sched.cancel(task.event)
+        try:
+            self.sched.cancel(task.event)
+        except ValueError:
+            # Ignore if the task was already removed from the queue
+            pass
 
     def _getqueuetoptime(self):
         try:

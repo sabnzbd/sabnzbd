@@ -44,9 +44,10 @@ def timeout(max_timeout: float):
         def func_wrapper(*args, **kwargs):
             """Closure for function."""
             # Raises a TimeoutError if execution exceeds max_timeout
+            # Raises a RuntimeError is SABnzbd is already shutting down when called
             try:
                 return sabnzbd.THREAD_POOL.submit(item, *args, **kwargs).result(max_timeout)
-            except TimeoutError:
+            except (TimeoutError, RuntimeError):
                 return None
 
         return func_wrapper

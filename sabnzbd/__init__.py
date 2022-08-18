@@ -317,27 +317,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         cfg.cache_limit.set(misc.get_cache_limit())
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
-    # Values we want to remove
-    deprecated_options = [
-        cfg.ampm,
-        cfg.enable_meta,
-        cfg.replace_illegal,
-        cfg.html_login,
-        cfg.osx_speed,
-        cfg.allow_incomplete_nzb,
-        cfg.disable_key,
-        cfg.show_sysload,
-    ]
-    for deprecated_option in deprecated_options:
-        if deprecated_option() != deprecated_option.default:
-            sabnzbd.misc.helpful_warning(
-                T(
-                    "We are planning to remove the '%s' setting, which you have changed from the default value. "
-                    "Could you let us know why you made this change at: https://github.com/sabnzbd/sabnzbd/discussions"
-                ),
-                deprecated_option.keyword,
-            )
-
     logging.info("All processes started")
     sabnzbd.RESTART_REQ = False
     sabnzbd.__INITIALIZED__ = True

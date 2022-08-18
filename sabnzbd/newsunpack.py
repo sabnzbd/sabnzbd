@@ -44,7 +44,6 @@ from sabnzbd.misc import (
     run_command,
     build_and_run_command,
     format_time_left,
-    helpful_warning,
 )
 from sabnzbd.filesystem import (
     make_script_path,
@@ -64,7 +63,6 @@ from sabnzbd.filesystem import (
     SEVENMULTI_RE,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.par2file import FilePar2Info
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
@@ -1977,16 +1975,6 @@ def rar_sort(a: str, b: str) -> int:
 
 
 def quick_check_set(setname: str, nzo: NzbObject) -> bool:
-    new = quick_check_set_new(setname, nzo)
-    old = quick_check_set_old(setname, nzo)
-
-    if new != old:
-        # Disabled for 3.6 release
-        pass
-    return old
-
-
-def quick_check_set_old(setname: str, nzo: NzbObject) -> bool:
     """Check all on-the-fly md5sums of a set"""
     par2pack = nzo.par2packs.get(setname)
     if par2pack is None:
@@ -2049,84 +2037,6 @@ def quick_check_set_old(setname: str, nzo: NzbObject) -> bool:
                 continue
 
             logging.info("Cannot Quick-check missing file %s!", file)
-            result = False
-
-    # Save renames
-    if renames:
-        nzo.renamed_file(renames)
-
-    return result
-
-
-def quick_check_set_new(setname: str, nzo: NzbObject) -> bool:
-    """Verify based on number of missing articles and md5of16k"""
-    # Use extracted par2 sets as a guide
-    par2pack = nzo.par2packs.get(setname)
-    if par2pack is None:
-        return False
-
-    # We use bitwise assigment (&=) so False always wins in case of failure
-    # This way the renames always get saved!
-    result = True
-    nzf_list = nzo.finished_files
-    renames = {}
-
-    # Files to ignore
-    ignore_ext = cfg.quick_check_ext_ignore()
-
-    for file in par2pack:
-        par2info = par2pack[file]
-        found = False
-        file_to_ignore = get_ext(file).replace(".", "") in ignore_ext
-        for nzf in nzf_list:
-            # Match based on md5of16k
-            if nzf.md5of16k == par2info.hash16k:
-                # Make sure it's unique
-                if par2info.has_duplicate:
-                    logging.info("Quick-check of file %s failed due to non-unique hash!", file)
-                    break
-
-                found = True
-                # Do a simple filename based check
-                if file == nzf.filename:
-                    logging.debug("Quick-check of file %s OK", file)
-                    result &= True
-                else:
-                    # Obfuscated, rename
-                    logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
-                    try:
-                        # Note: file can and is allowed to be in a subdirectory.
-                        # Subdirectories in par2 always contain "/", not "\"
-                        new_path = renamer(
-                            nzf.filepath, os.path.join(nzo.download_path, file), create_local_directories=True
-                        )
-                        renames[file] = nzf.filename
-                        nzf.filepath = new_path
-                        nzf.filename = get_filename(new_path)
-                        result &= True
-                        found = True
-                    except IOError:
-                        # Renamed failed for some reason, probably already done
-                        pass
-
-                # Additional verification based on bad articles and expected file size
-                if file_to_ignore:
-                    logging.debug("Quick-check skipping additional checks for file %s", file)
-                elif nzf.has_bad_articles:
-                    logging.info("Quick-check of file %s failed due to bad article(s)!", file)
-                    result = False
-                elif os.path.getsize(nzf.filepath) != par2info.filesize:
-                    logging.info("Quick-check of file %s failed due to incorrect file size!", file)
-                    result = False
-                break
-
-        if not found:
-            if file_to_ignore:
-                # We don't care about these files
-                logging.debug("Quick-check ignoring missing file %s", file)
-                continue
-
-            logging.info("Quick-check could not find a match for file %s!", file)
             result = False
 
     # Save renames

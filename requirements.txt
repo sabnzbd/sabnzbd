@@ -1,27 +1,27 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-sabyenc3==5.4.2
+sabyenc3==5.4.3
 cheetah3==3.2.6 # pyup: ignore
-cffi==1.15
+cffi==1.15.1
 pycparser==2.21
 feedparser==6.0.10
 configobj==5.0.6
 cheroot==8.6.0
 six==1.16.0
-cherrypy==18.6.1
-jaraco.functools==3.5.0
-jaraco.collections==3.5.1
-jaraco.text==3.7.0
-jaraco.classes==3.2.1
-jaraco.context==4.1.1
+cherrypy==18.8.0
+jaraco.functools==3.5.1
+jaraco.collections==3.5.2
+jaraco.text==3.8.1
+jaraco.classes==3.2.2
+jaraco.context==4.1.2
 more-itertools==8.13.0
 zc.lockfile==2.0
 python-dateutil==2.8.2
-tempora==5.0.1
+tempora==5.0.2
 pytz==2022.1
 sgmllib3k==1.0.0
 portend==3.1.0
-chardet==4.0.0
+chardet==5.0.0
 PySocks==1.7.1
 puremagic==1.14
 guessit==3.4.3
@@ -30,11 +30,11 @@ rebulk==3.1.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==37.0.2
+cryptography==37.0.4
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.3.0
+ujson==5.4.0
 
 # Windows system integration
 pywin32==304; sys_platform == 'win32'
