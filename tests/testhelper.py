@@ -256,14 +256,11 @@ class SABnzbdBaseTest:
             pass
 
     @staticmethod
-    def selenium_wrapper(self, *args):
+    def selenium_wrapper(func, *args):
         """Wrapper with retries for more stable Selenium"""
         for _ in range(3):
             try:
-                if args[0] == "find_elements":
-                    return self.find_elements(args[1], args[2])
-                elif args[0] == "find_element":
-                    return self.find_element(args[1], args[2])
+                return func(*args)
             except WebDriverException as e:
                 # Try again in 2 seconds!
                 time.sleep(2)
