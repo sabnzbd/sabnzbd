@@ -786,8 +786,7 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
         if nzb_fp:
-            # Use work_name as it is already sanitized
-            full_nzb_path = sabnzbd.filesystem.save_compressed(admin_dir, self.work_name, nzb_fp)
+            full_nzb_path = sabnzbd.filesystem.save_compressed(admin_dir, filename, nzb_fp)
             try:
                 sabnzbd.nzbparser.nzbfile_parser(full_nzb_path, self)
             except Exception as err:
