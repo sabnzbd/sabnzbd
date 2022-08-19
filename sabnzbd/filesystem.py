@@ -1220,6 +1220,8 @@ def backup_nzb(nzb_path: str):
 
 def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
     """Save compressed NZB file in folder, return path to saved nzb file"""
+    # Make sure it's a clean filename
+    filename = sanitize_filename(filename)
     if filename.endswith(".nzb"):
         filename += ".gz"
     else:
