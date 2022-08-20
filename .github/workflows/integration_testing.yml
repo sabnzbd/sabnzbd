@@ -64,7 +64,6 @@ jobs:
         python --version
         pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
-        pip install --upgrade -r builder/requirements.txt
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
       run: pytest -s
