@@ -1568,6 +1568,7 @@ _SCHED_ACTIONS = (
     "resume_post",
     "scan_folder",
     "rss_scan",
+    "create_backup",
     "remove_failed",
     "remove_completed",
     "pause_all_low",

@@ -137,6 +137,8 @@ class Scheduler:
             elif action_name == "rss_scan":
                 action = sabnzbd.RSSReader.run
                 rss_planned = True
+            elif action_name == "create_backup":
+                action = sabnzbd.config.create_config_backup
             elif action_name == "remove_failed":
                 action = sabnzbd.api.history_remove_failed
             elif action_name == "remove_completed":

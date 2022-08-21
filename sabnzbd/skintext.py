@@ -599,6 +599,7 @@ SKIN_TEXT = {
     "sch-pause": TT("Pause"),  #:Config->Scheduling
     "sch-shutdown": TT("Shutdown"),  #:Config->Scheduling
     "sch-restart": TT("Restart"),  #:Config->Scheduling
+    "sch-create_backup": TT("Create backup"),  #:Config->Scheduling
     # Config->RSS
     "explain-RSS": TT(
         'The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'
