@@ -2597,12 +2597,13 @@ msgstr ""
 msgid "Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
 msgstr ""
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid "Create a backup of the configuration file and databases in the Complete Download Folder."
 msgstr ""
 
 #: sabnzbd/skintext.py

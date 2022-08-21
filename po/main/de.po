@@ -2829,12 +2829,15 @@ msgstr ""
 "Festplatte zu reduzieren.<br /><i>In Bytes, gefolgt von einem optionalen K, "
 "M oder G. Zum Beispiel: \"64M\" oder \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Complete "
+"Download Folder."
 msgstr ""
 
 #: sabnzbd/skintext.py

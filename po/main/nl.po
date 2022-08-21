@@ -2799,13 +2799,16 @@ msgstr ""
 "Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik).<br "
 "/><i>In bytes, in K,M,G notatie. Bijvoorbeeld: \"64M\" of \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
-msgstr "Backup downloaden"
+msgid "Create backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
-msgstr "Backup van de configuratie en de database opslaan of herstellen"
+msgid ""
+"Create a backup of the configuration file and databases in the Complete "
+"Download Folder."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"

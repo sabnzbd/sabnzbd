@@ -2745,12 +2745,15 @@ msgstr ""
 "Cache artikler i hukommelsen for at reducere diskadgang.<br /><i>I bytes, "
 "efterfulgt af K,M,G. For eksempel: \"64M\" eller \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Complete "
+"Download Folder."
 msgstr ""
 
 #: sabnzbd/skintext.py

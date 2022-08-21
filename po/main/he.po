@@ -2749,13 +2749,16 @@ msgstr ""
 "הטמן מאמרים בזיכרון כדי להפחית גישת דיסק.<br /><i>בבתים, יכול לבוא עם K,M,G."
 " לדוגמה: \"64M\" או \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
-msgstr "הורד גיבוי"
+msgid "Create backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
-msgstr "שמור או שחזר גיבוי של קובץ התצורה ומסדי נתונים."
+msgid ""
+"Create a backup of the configuration file and databases in the Complete "
+"Download Folder."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"

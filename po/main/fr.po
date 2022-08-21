@@ -2824,15 +2824,16 @@ msgstr ""
 "Mettre les articles en cache pour réduire les accès disque.<br /><i>En "
 "Octets, peut être suivi de K,M,G. Par exemple : \"64M\" ou \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
-msgstr "Télécharger la sauvegarde"
+msgid "Create backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Complete "
+"Download Folder."
 msgstr ""
-"Sauvegarder ou restaurer une sauvegarde du fichier de configuration et des "
-"bases de données."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
