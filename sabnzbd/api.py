@@ -906,6 +906,11 @@ def _api_config_test_server(kwargs):
     return report(data={"result": result, "message": msg})
 
 
+def _api_config_create_backup(kwargs):
+    backup_file = config.create_config_backup()
+    return report(data={"result": bool(backup_file), "message": backup_file})
+
+
 def _api_config_undefined(kwargs):
     return report(_MSG_NOT_IMPLEMENTED)
 
@@ -1019,6 +1024,7 @@ _api_config_table = {
     "set_nzbkey": (_api_config_set_nzbkey, 3),
     "regenerate_certs": (_api_config_regenerate_certs, 3),
     "test_server": (_api_config_test_server, 3),
+    "create_backup": (_api_config_create_backup, 3),
 }
 
 

@@ -685,15 +685,6 @@ class ConfigPage:
             search_list=conf,
         )
 
-    @secured_expose(check_configlock=True, check_api_key=True)
-    def backup(self, **kwargs):
-        cherrypy.response.headers["Content-Type"] = "application/zip"
-        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd_backup_%s_%s.zip"' % (
-            sabnzbd.__version__,
-            time.strftime("%Y.%m.%d_%H.%M.%S"),
-        )
-        return config.create_config_backup()
-
 
 ##############################################################################
 LIST_DIRPAGE = (
@@ -995,6 +986,8 @@ class ConfigGeneral:
         conf["bandwidth_perc"] = cfg.bandwidth_perc()
         conf["nzb_key"] = cfg.nzb_key()
         conf["caller_url"] = cherrypy.request.base + cfg.url_base()
+
+        conf["backup_dir"] = cfg.complete_dir.get_clipped_path()
 
         return template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),

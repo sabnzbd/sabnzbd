@@ -235,14 +235,17 @@
             </div><!-- /col2 -->
             <div class="col1">
                 <fieldset>
+                    <div class="field-pair advanced-settings">
+                        <h5 class="darkred nomargin">$T('opt-complete_dir'): <span class="path">$backup_dir</span></h5>
+                    </div>
                     <div class="field-pair">
-                        <label class="config" for="download_backup">$T('download-backup')</label>
-                        <span class="desc"><a class="btn btn-default" href="../backup/?apikey=$apikey" target="_blank" id="download_backup"><span class="glyphicon glyphicon-download-alt"></span> $T('download-backup')</a></span>
+                        <label class="config" for="create_backup">$T('create-backup')</label>
+                        <span class="desc"><button class="btn btn-default createBackup" type="button" id="create_backup"><span class="glyphicon glyphicon glyphicon-import"></span> $T('create-backup')</button></span>
+                        <span class="desc">$T('explain-create_backup')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="config_backup_file">$T('restore-backup')</label>
                         <input type="file" accept=".zip" name="config_backup_file" id="config_backup_file" />
-                        <span class="desc">$T('explain-admin_backup')</span>
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-open"></span> $T('restore-backup')</button>
@@ -399,6 +402,20 @@
         }
     })
 
+    \$('#create_backup').click(function () {
+        $.ajax({
+          type: "POST",
+          url: "../../api",
+          data: {mode:'config', name:'create_backup', output:'json', apikey: \$('#apikey').val()},
+          success: function(data) {
+              if(data.value.result) {
+                  alert("$T('backup'):\n" + data.value.message)
+              } else {
+                  alert("$T('button-failed')")
+              }
+          }
+        });
+    });
 });
 </script>
 

@@ -24,6 +24,7 @@ import os
 import re
 import shutil
 import threading
+import time
 import uuid
 import io
 import zipfile
@@ -918,19 +919,26 @@ def save_config(force=False):
 
 
 def create_config_backup():
-    """Put config data in a zip file"""
-    adminpath = sabnzbd.cfg.admin_dir.get_path()
-    logging.debug("Backing up %s + %s", adminpath, CFG_OBJ.filename)
-    with io.BytesIO() as zip_buffer:
-        with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
-            for filename in CONFIG_BACKUP_FILES:
-                full_path = os.path.join(adminpath, filename)
-                if os.path.isfile(full_path):
-                    with open(full_path, "rb") as data:
-                        zip_ref.writestr(filename, data.read())
-            with open(CFG_OBJ.filename, "rb") as data:
-                zip_ref.writestr(DEF_INI_FILE, data.read())
-        return zip_buffer.getvalue()
+    """Put config data in a zip file, returns path on success"""
+    admin_path = sabnzbd.cfg.admin_dir.get_path()
+    output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
+    complete_path = os.path.join(sabnzbd.cfg.complete_dir.get_path(), output_filename)
+    logging.debug("Backing up %s + %s in %s", admin_path, CFG_OBJ.filename, complete_path)
+
+    try:
+        with open(complete_path, "wb") as zip_buffer:
+            with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
+                for filename in CONFIG_BACKUP_FILES:
+                    full_path = os.path.join(admin_path, filename)
+                    if os.path.isfile(full_path):
+                        with open(full_path, "rb") as data:
+                            zip_ref.writestr(filename, data.read())
+                with open(CFG_OBJ.filename, "rb") as data:
+                    zip_ref.writestr(DEF_INI_FILE, data.read())
+        return clip_path(complete_path)
+    except:
+        logging.info("Failed to create backup: ", exc_info=True)
+        return False
 
 
 def validate_config_backup(config_backup_data: bytes) -> bool:
