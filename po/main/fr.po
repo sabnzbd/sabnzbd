@@ -1532,7 +1532,7 @@ msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
 msgstr ""
-"Le système de fichiers du dossier de téléchargements terminés %s est au "
+"Le système de fichiers du dossier des téléchargements terminés %s est au "
 "format FAT, limitant la taille maximale d'un fichier à 4 Go"
 
 #: sabnzbd/postproc.py
@@ -2827,13 +2827,15 @@ msgstr ""
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Create backup"
-msgstr ""
+msgstr "Créer une sauvegarde"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Create a backup of the configuration file and databases in the Complete "
 "Download Folder."
 msgstr ""
+"Créez une sauvegarde du fichier de configuration et des bases de données "
+"dans le dossier des téléchargements terminés."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -3014,7 +3016,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Completed Download Folder"
-msgstr "Dossier de téléchargements terminés"
+msgstr "Dossier des téléchargements terminés"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3046,7 +3048,7 @@ msgid ""
 "/>Checked every few minutes."
 msgstr ""
 "Le téléchargement reprendra automatiquement si l'espace libre minimum est à "
-"nouveau disponible.<br />S'applique aux dossiers de téléchargements "
+"nouveau disponible.<br />S'applique aux dossiers des téléchargements "
 "temporaires et terminés.<br />Vérifié toutes les quelques minutes."
 
 #: sabnzbd/skintext.py
