@@ -918,7 +918,7 @@ def save_config(force=False):
     return res
 
 
-def create_config_backup():
+def create_config_backup() -> Union[str, bool]:
     """Put config data in a zip file, returns path on success"""
     admin_path = sabnzbd.cfg.admin_dir.get_path()
     output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
@@ -953,7 +953,7 @@ def validate_config_backup(config_backup_data: bytes) -> bool:
         return False
 
 
-def restore_config_backup(config_backup_data: bytes) -> bool:
+def restore_config_backup(config_backup_data: bytes):
     """Restore configuration files from zip file"""
     try:
         with io.BytesIO(config_backup_data) as backup_ref:
