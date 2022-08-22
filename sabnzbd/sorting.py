@@ -601,6 +601,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         # "allowed_countries": [],
         # "allowed_languages": [],
         "excludes": EXCLUDED_GUESSIT_PROPERTIES,
+        "date_year_first": True,  # Make sure also short-dates are detected as YY-MM-DD
     }
     if sort_type:
         # Hint the type if known

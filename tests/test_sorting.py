@@ -22,6 +22,7 @@ import os
 import pyfakefs
 import shutil
 import sys
+import datetime
 from random import choice
 
 from sabnzbd import sorting
@@ -67,6 +68,7 @@ class TestSortingFunctions:
                 },
             ),
             ("Test Movie 720p HDTV AAC x265 MYgroup-Sample", {"release_group": "MYgroup", "other": "Sample"}),
+            ("Test Date Detection 22.07.14", {"date": datetime.date(2022, 7, 14)}),
             (None, None),  # Jobname missing
             ("", None),
         ],
