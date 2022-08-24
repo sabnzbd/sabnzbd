@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "schedule": [
+    "before 3am on Monday"
+  ],
+  "ignorePaths": ["tests/**", ".github/workflows/**"],
+  "pip_requirements": {
+    "fileMatch": ["requirements.txt", "builder/requirements.txt", "builder/osx/requirements.txt"]
+  },
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["*"],
+      "groupName": "all dependencies",
+      "groupSlug": "all",
+      "automerge": true
+    }
+  ],
+  "automergeStrategy": "squash",
+  "platformAutomerge": true
+}
