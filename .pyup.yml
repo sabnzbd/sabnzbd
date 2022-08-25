@@ -1,6 +1,0 @@
-branch: develop
-schedule: every week
-update: all
-pin: False
-label_prs: dependencies
-branch_prefix: pyup/
