@@ -18,6 +18,9 @@
          "builder/osx/requirements.txt"
       ]
    },
+   "ignoreDeps":[
+      "jaraco.text"
+   ],
    "packageRules":[
       {
          "matchPackagePatterns":[

@@ -1,7 +1,7 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 sabyenc3==5.4.3
-cheetah3==3.2.6 # pyup: ignore
+cheetah3==3.2.6
 cffi==1.15.1
 pycparser==2.21
 feedparser==6.0.10
@@ -11,7 +11,7 @@ six==1.16.0
 cherrypy==18.8.0
 jaraco.functools==3.5.1
 jaraco.collections==3.5.2
-jaraco.text==3.9.1
+jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.2.2
 jaraco.context==4.1.2
 more-itertools==8.14.0
