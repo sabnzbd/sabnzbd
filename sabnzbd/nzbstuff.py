@@ -841,6 +841,10 @@ class NzbObject(TryList):
         self.set_priority(priority)
         self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
 
+        # Show first meta-password (if any), when there's no explicit password
+        if not self.password and self.meta.get("password"):
+            self.password = self.meta.get("password", [None])[0]
+
         # Run user pre-queue script if set and valid
         if not reuse and make_script_path(cfg.pre_script()):
             # Call the script
@@ -967,10 +971,6 @@ class NzbObject(TryList):
             if not self.nzo_info.get(kw):
                 self.nzo_info[kw] = self.meta[kw][0]
         logging.debug("NZB nzo-info = %s", self.nzo_info)
-
-        # Show first meta-password (if any), when there's no explicit password
-        if not self.password and self.meta.get("password"):
-            self.password = self.meta.get("password", [None])[0]
 
         # Set nzo save-delay to minimum 120 seconds
         self.save_timeout = max(120, min(6.0 * self.bytes / GIGI, 300.0))
