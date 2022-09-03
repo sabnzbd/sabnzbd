@@ -218,7 +218,6 @@ DOWNLOAD_EXT = (
     "mp3",
     "mp4",
     "mpls",
-    "mx",
     "nfo",
     "nib",
     "nzb",
@@ -227,7 +226,6 @@ DOWNLOAD_EXT = (
     "part",
     "pdf",
     "pem",
-    "php",
     "plist",
     "png",
     "py",
@@ -249,7 +247,6 @@ DOWNLOAD_EXT = (
     "txt",
     "url",
     "vob",
-    "website",
     "wmv",
     "xpi",
 )
