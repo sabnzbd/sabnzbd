@@ -118,13 +118,11 @@ jobs:
           **/requirements.txt
           PKG-INFO
     - name: Install Python dependencies
-      # We have to manually install a few packages:
-      # 1.  cffi will pick up the single-arch libffi from Homebrew, while Apple provides universal2-version
-      #     of libffi with XCode. So we forcefully have to remove the Homebrew one.
-      # 2.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
+      # We have to manually take a few steps:
+      # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
       #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
       #     https://github.com/pyca/cryptography/issues/5918
-      # 3.  We need to build the PyInstaller bootloader from sources:
+      # 2.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
