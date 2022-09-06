@@ -129,7 +129,6 @@ jobs:
         python3 --version
         pip3 install --upgrade pip wheel
         
-        brew uninstall libffi --ignore-dependencies
         pip3 install --upgrade -r requirements.txt --no-binary cffi
         
         pip3 uninstall cryptography -y
