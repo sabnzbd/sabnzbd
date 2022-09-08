@@ -13,6 +13,8 @@ jobs:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       - name: Generate translatable texts
         run: |
           python3 tools/extract_pot.py
