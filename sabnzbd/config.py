@@ -922,7 +922,13 @@ def create_config_backup() -> Union[str, bool]:
     """Put config data in a zip file, returns path on success"""
     admin_path = sabnzbd.cfg.admin_dir.get_path()
     output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
-    complete_path = os.path.join(sabnzbd.cfg.complete_dir.get_path(), output_filename)
+
+    # Check if there is a backup folder set, use complete otherwise
+    if sabnzbd.cfg.backup_dir():
+        backup_dir = sabnzbd.cfg.backup_dir.get_path()
+    else:
+        backup_dir = sabnzbd.cfg.complete_dir.get_path()
+    complete_path = os.path.join(backup_dir, output_filename)
     logging.debug("Backing up %s + %s in %s", admin_path, CFG_OBJ.filename, complete_path)
 
     try:

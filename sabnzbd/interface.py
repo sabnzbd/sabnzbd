@@ -700,6 +700,7 @@ LIST_DIRPAGE = (
     "email_dir",
     "permissions",
     "log_dir",
+    "backup_dir",
     "password_file",
 )
 
@@ -727,7 +728,7 @@ class ConfigFolders:
         for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
             value = kwargs.get(kw)
             if value is not None or kw in LIST_BOOL_DIRPAGE:
-                if kw in ("complete_dir", "dirscan_dir"):
+                if kw in ("complete_dir", "dirscan_dir", "backup_dir"):
                     msg = config.get_config("misc", kw).set(value, create=True)
                 else:
                     msg = config.get_config("misc", kw).set(value)
@@ -986,8 +987,6 @@ class ConfigGeneral:
         conf["bandwidth_perc"] = cfg.bandwidth_perc()
         conf["nzb_key"] = cfg.nzb_key()
         conf["caller_url"] = cherrypy.request.base + cfg.url_base()
-
-        conf["backup_dir"] = cfg.complete_dir.get_clipped_path()
 
         return template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),

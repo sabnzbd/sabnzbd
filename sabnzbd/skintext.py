@@ -309,7 +309,9 @@ SKIN_TEXT = {
     ),
     "create-backup": TT("Create backup"),
     "explain-create_backup": TT(
-        "Create a backup of the configuration file and databases in the Complete Download Folder."
+        "Create a backup of the configuration file and databases in the Backup Folder.<br>"
+        "If the Backup Folder is not set, the backup will be created in the Completed Download Folder.<br>"
+        "Recurring backups can be configured on the Scheduling page."
     ),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
@@ -390,6 +392,11 @@ SKIN_TEXT = {
     "opt-admin_dir": TT("Administrative Folder"),
     "explain-admin_dir1": TT(
         "Location for queue admin and history database.<br /><i>Can only be changed when queue is empty.</i>"
+    ),
+    "opt-backup_dir": TT("Backup Folder"),
+    "explain-backup_dir": TT(
+        "Location where the backups of the configuration file and databases are stored.<br />"
+        "If left empty, the backup will be created in the Completed Download Folder."
     ),
     "explain-admin_dir2": TT("<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"),
     "opt-log_dir": TT("Log Folder"),
