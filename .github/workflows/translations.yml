@@ -38,3 +38,4 @@ jobs:
           commit_user_name: SABnzbd Automation
           commit_user_email: bugs@sabnzbd.org
           commit_author: SABnzbd Automation <bugs@sabnzbd.org>
+          push_options: --force
