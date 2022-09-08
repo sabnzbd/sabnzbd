@@ -2752,8 +2752,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Create a backup of the configuration file and databases in the Complete "
-"Download Folder."
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3029,6 +3031,17 @@ msgid ""
 msgstr ""
 "Placering for kø administrativ og historik database.<br /><i>Kan kun ændres,"
 " når køen er tom.</i>"
+
+#: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
