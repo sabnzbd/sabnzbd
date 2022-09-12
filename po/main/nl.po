@@ -635,11 +635,15 @@ msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
+"Het is niet mogelijk bestanden met speciale tekens op te slaan in %s. Dit "
+"geeft mogelijk problemen bij het verwerken van downloads."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
+"Het is niet mogelijk bestanden te schrijven in %s. Hierdoor kan er niet "
+"gedownload worden."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -2802,7 +2806,7 @@ msgstr ""
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Create backup"
-msgstr ""
+msgstr "Maak backup"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2811,6 +2815,10 @@ msgid ""
 "the Completed Download Folder.<br>Recurring backups can be configured on the"
 " Scheduling page."
 msgstr ""
+"Maak een backup van de configuratie en de database in de Backup Map.<br>Als "
+"er geen Backup Map is ingesteld wordt de backup aangemaakt in de Map voor "
+"verwerkte downloads.<br>Automatische backups kunnen worden ingesteld via de "
+"Taakplanner."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -3089,7 +3097,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Backup Folder"
-msgstr ""
+msgstr "Backup map"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3097,6 +3105,9 @@ msgid ""
 "stored.<br />If left empty, the backup will be created in the Completed "
 "Download Folder."
 msgstr ""
+"Map waar de backups van de configuratie en databases worden opgeslagen.<br "
+"/>Als deze map niet is ingesteld worden de backups aangemaakt in de Map voor"
+" verwerkte downloads."
 
 #: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
@@ -3362,6 +3373,8 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "The queue will resort every 30 seconds if % downloaded is selected."
 msgstr ""
+"De wachtrij wordt elke 30 seconden opnieuw gesorteerd als de optie % "
+"gedownload is gekozen."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -3398,11 +3411,11 @@ msgstr "Vervang spaties door onderliggende streepjes in namen van mappen."
 
 #: sabnzbd/skintext.py
 msgid "Replace underscores in folder name"
-msgstr ""
+msgstr "Vervang onderstrepingstekens in mapnamen"
 
 #: sabnzbd/skintext.py
 msgid "Replace underscores with dots in folder names."
-msgstr ""
+msgstr "Vervang onderstrepingstekens door punten in mapnamen."
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4684,7 +4697,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
-msgstr ""
+msgstr "Sorteer Op % Gedownload <small>Meest&rarr;Minst</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
