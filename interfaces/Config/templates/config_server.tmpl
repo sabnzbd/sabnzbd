@@ -283,7 +283,8 @@
 
                             <p title="$T('readwiki')">
                                 <b>$T('srv-article-availability'):</b><br/>
-                                $T('selectedDates'): <span id="server-article-value-${cur}"></span>
+                                $T('selectedDates'): <span id="server-article-value-${cur}"></span><br/>
+                                <a href="https://sabnzbd.org/not-complete" id="server-article-not-complete-${cur}" target="_blank">https://sabnzbd.org/not-complete</a>
                             </p>
                             <!--#if $server['expire_date']#-->
                             <p><b>$T('srv-expire_date'):</b> $(server['expire_date'])</p>
@@ -402,8 +403,11 @@
             if(!isNaN(articleRatio)) {
                 // Use filesize to convert to unit-display
                 \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', filesize(totalArticlesTriedThisRange, {unix: true, round: 0, spacer: "", base: 1})))
+                // If we have a low value, we link them to the website
+                if(articleRatio > 60) \$('#server-article-not-complete-' + server_id).hide()
             } else {
                 \$('#server-article-value-' + server_id).text('$T("notAvailable")')
+                \$('#server-article-not-complete-' + server_id).hide()
             }
 
             // Save bandwidth data in a very ugly way, but we need to do this
