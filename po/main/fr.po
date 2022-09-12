@@ -2836,6 +2836,11 @@ msgid ""
 "the Completed Download Folder.<br>Recurring backups can be configured on the"
 " Scheduling page."
 msgstr ""
+"Créer une sauvegarde du fichier de configuration et des bases de données "
+"dans le Dossier de sauvegarde.<br>Si le Dossier de sauvegarde n'est pas "
+"défini, la sauvegarde sera créée dans le Dossier des téléchargements "
+"terminés.<br>Les sauvegardes récurrentes peuvent être configurées sur la "
+"page Planification."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -3129,7 +3134,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Backup Folder"
-msgstr ""
+msgstr "Dossier de sauvegarde"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3137,6 +3142,9 @@ msgid ""
 "stored.<br />If left empty, the backup will be created in the Completed "
 "Download Folder."
 msgstr ""
+"Emplacement où sont stockées les sauvegardes du fichier de configuration et "
+"des bases de données.<br />Si laissé vide, la sauvegarde sera créée dans le "
+"Dossier des téléchargements terminés."
 
 #: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
