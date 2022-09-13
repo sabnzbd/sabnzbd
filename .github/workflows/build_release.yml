@@ -168,7 +168,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     env:
-      SNAP_TOKEN: ${{ secrets.SNAP_TOKEN }}
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -178,5 +178,4 @@ jobs:
       - name: Release latest available Snap
         run: |
           sudo snap install snapcraft --classic
-          echo "${SNAP_TOKEN}" | snapcraft login --with -
           python3 snap/local/release_snap.py
