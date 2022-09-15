@@ -48,7 +48,7 @@ function ViewModel() {
     self.nrWarnings = ko.observable(0);
     self.allWarnings = ko.observableArray([]);
     self.allMessages = ko.observableArray([]);
-    self.onQueueFinish = ko.observable('');
+    self.finishaction = ko.observable();
     self.speedHistory = [];
 
     // Statusinfo container
@@ -165,7 +165,7 @@ function ViewModel() {
         self.downloadsPaused(response.queue.paused);
 
         // Finish action. Replace null with empty
-        self.onQueueFinish(response.queue.finishaction ? response.queue.finishaction : '');
+        self.finishaction(response.queue.finishaction ? response.queue.finishaction : '');
 
         // Disk sizes
         self.diskSpaceLeft1(response.queue.diskspace1_norm)
@@ -590,18 +590,12 @@ function ViewModel() {
 
     // Shutdown options
     self.setOnQueueFinish = function(model, event) {
-        // Ignore updates before the page is done
-        if (!self.hasStatusInfo()) return;
-
         // Something changes
         callAPI({
             mode: 'queue',
             name: 'change_complete_action',
             value: $(event.target).val()
         })
-
-        // Top stop blinking while the API is calling
-        self.onQueueFinish($(event.target).val())
     }
 
     // Use global settings or device-specific?
@@ -1124,8 +1118,31 @@ function ViewModel() {
         if (!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
         self.bandwithLimit(response.config.misc.bandwidth_max);
 
-        // Save servers (for reporting functionality)
-        self.servers = response.config.servers;
+        // Reformat and set categories
+        self.queue.categoriesList($.map(response.config.categories, function(cat) {
+            // Default?
+            if(cat.name == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
+            return { catValue: cat.name, catText: cat.name };
+        }))
+
+        // Get the scripts, if there are any
+        if(response.config.misc.script_dir) {
+            callAPI({
+                mode: 'get_scripts'
+            }).then(function(script_response) {
+                // Reformat script-list
+                self.queue.scriptsList($.map(script_response.scripts, function(script) {
+                    // None?
+                    if(script == 'None') return { scriptValue: 'None', scriptText: glitterTranslate.noneText };
+                    return { scriptValue: script, scriptText: script };
+                }))
+                self.queue.scriptsListLoaded(true)
+            })
+        } else {
+            // We can already continue
+            self.queue.scriptsListLoaded(true)
+        }
+
 
         // Already set if we are using a proxy
         if (response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)

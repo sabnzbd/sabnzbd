@@ -163,7 +163,7 @@
                             </li>
                             <li title="$T('eoq-scripts')" data-tooltip="true" data-placement="left">
                                 <span class="glyphicon glyphicon-flash"></span>
-                                <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, event: { change: changeScript }, enable: (parent.scriptsList().length > 1)"></select>
+                                <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, optionsValue: 'scriptValue', optionsText: 'scriptText', event: { change: changeScript }, enable: (parent.scriptsList().length > 1)"></select>
                             </li>
                         </ul>
                         <!-- /ko -->
@@ -210,7 +210,7 @@
         </div>
         <div class="add-nzb-inputbox" data-tooltip="true" data-placement="top" title="$T('eoq-scripts')">
             <span class="glyphicon glyphicon-flash"></span>
-            <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
+            <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsValue: 'scriptValue', optionsText: 'scriptText', optionsCaption: '', event: { change: queue.doMultiEditUpdate }"></select>
         </div>
         <div class="clearfix"></div>
     </form>

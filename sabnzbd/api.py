@@ -1340,7 +1340,7 @@ def build_queue(
     info["noofslots"] = nzos_matched
     info["start"] = start
     info["limit"] = limit
-    info["finish"] = info["start"] + info["limit"]
+    info["finish"] = start + limit
 
     if sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc:
         status = Status.PAUSED
@@ -1350,8 +1350,6 @@ def build_queue(
         status = Status.IDLE
     info["status"] = status
     info["timeleft"] = calc_timeleft(queue_bytes_left, sabnzbd.BPSMeter.bps)
-    info["scripts"] = list_scripts()
-    info["categories"] = list_cats()
 
     n = start
     running_bytes = bytes_left_previous_page

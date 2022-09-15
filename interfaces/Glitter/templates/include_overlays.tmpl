@@ -517,7 +517,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">$T('category')</label>
                     <div class="col-sm-6">
-                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText',"></select>
+                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText'"></select>
                         <span class="glyphicon glyphicon-tag"></span>
                     </div>
                 </div>
@@ -538,7 +538,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">$T('eoq-scripts')</label>
                     <div class="col-sm-6">
-                        <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '$T('default')', enable: (queue.scriptsList().length > 1)"></select>
+                        <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '$T('default')', optionsValue: 'scriptValue', optionsText: 'scriptText', enable: (queue.scriptsList().length > 1)"></select>
                         <span class="glyphicon glyphicon-flash"></span>
                     </div>
                 </div>
