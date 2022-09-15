@@ -51,8 +51,6 @@ stages:
           noofslots_total: 0
           status: "Idle"
           timeleft: "0:00:00"
-          scripts: !anylist
-          categories: !anylist
           noofslots: 0
           start: 0
           limit: 0
@@ -144,8 +142,6 @@ stages:
             <noofslots_total>0</noofslots_total>
             <status>Idle</status>
             <timeleft>0:00:00</timeleft>
-            <scripts>!anystr</scripts>
-            <categories>!anystr</categories>
             <noofslots>0</noofslots>
             <start>0</start>
             <limit>0</limit>

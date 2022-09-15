@@ -52,8 +52,6 @@ stages:
           noofslots_total: !anyint
           status: "Paused"
           timeleft: "0:00:00"
-          scripts: !anylist
-          categories: !anylist
           noofslots: !anyint
           start: !anyint
           limit: !anyint
@@ -166,10 +164,6 @@ stages:
             <noofslots_total>!anyint</noofslots_total>
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
-            <scripts>
-            <script>!anystr</script>
-            </scripts>
-            <categories>!anything</categories>
             <noofslots>!anyint</noofslots>
             <start>!anyint</start>
             <limit>!anyint</limit>
