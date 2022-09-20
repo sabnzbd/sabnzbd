@@ -275,7 +275,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         biggest_file = None
     if not biggest_file or not os.path.isfile(biggest_file):
         # no file found, which is weird
-        logging.error("No file given, or not found (%s)", biggest_file)
+        logging.info("No file given, or not found (%s)", biggest_file)
         return
     logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
     if not first_file_is_much_bigger(filelist):
