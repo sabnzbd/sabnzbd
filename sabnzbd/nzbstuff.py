@@ -494,12 +494,12 @@ class NzbFile(TryList):
         # Set non-transferable values
         self.md5 = None
 
-    def __eq__(self, other):
+    def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the numer bytes and first article
         are the same or if there are no articles left, use the filenames.
         Some NZB's are just a mess and report different sizes for the same article.
         """
-        if self.bytes == other.bytes or len(self.decodetable) == len(other.decodetable):
+        if other and (self.bytes == other.bytes or len(self.decodetable) == len(other.decodetable)):
             if self.decodetable and other.decodetable:
                 return self.decodetable[0] == other.decodetable[0]
             # Fallback to filename comparison
