@@ -1542,15 +1542,6 @@ def clear_trans_cache():
 
 def build_header(webdir: str = "", for_template: bool = True, trans_functions: bool = True) -> Dict:
     """Build the basic header"""
-    speed_limit = sabnzbd.Downloader.get_limit()
-    if speed_limit <= 0:
-        speed_limit = 100
-    speed_limit_abs = sabnzbd.Downloader.get_limit_abs()
-    if speed_limit_abs <= 0:
-        speed_limit_abs = ""
-
-    diskspace_info = diskspace()
-
     header = {}
 
     # We don't output everything for API
@@ -1587,6 +1578,7 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
+    diskspace_info = diskspace()
     header["diskspace1"] = "%.2f" % diskspace_info["download_dir"][1]
     header["diskspace2"] = "%.2f" % diskspace_info["complete_dir"][1]
     header["diskspace1_norm"] = to_units(diskspace_info["download_dir"][1] * GIGI)
@@ -1594,8 +1586,8 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["diskspacetotal1"] = "%.2f" % diskspace_info["download_dir"][0]
     header["diskspacetotal2"] = "%.2f" % diskspace_info["complete_dir"][0]
     header["loadavg"] = loadavg()
-    header["speedlimit"] = "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit)
-    header["speedlimit_abs"] = "%s" % speed_limit_abs
+    header["speedlimit"] = str(sabnzbd.Downloader.bandwidth_perc)
+    header["speedlimit_abs"] = str(sabnzbd.Downloader.bandwidth_limit)
 
     header["have_warnings"] = str(sabnzbd.GUIHANDLER.count())
     header["finishaction"] = sabnzbd.QUEUECOMPLETE

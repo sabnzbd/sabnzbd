@@ -393,13 +393,12 @@ class SABnzbdDelegate(NSObject):
 
     def speedlimitUpdate(self):
         try:
-            speed = int(sabnzbd.Downloader.get_limit())
-            if self.speed != speed:
-                self.speed = speed
+            if self.speed != sabnzbd.Downloader.bandwidth_perc:
+                self.speed = sabnzbd.Downloader.bandwidth_perc
                 speedsValues = self.menu_speed.numberOfItems()
                 for i in range(speedsValues):
                     menuitem = self.menu_speed.itemAtIndex_(i)
-                    if speed == int(menuitem.representedObject()):
+                    if sabnzbd.Downloader.bandwidth_perc == int(menuitem.representedObject()):
                         menuitem.setState_(NSOnState)
                     else:
                         menuitem.setState_(NSOffState)

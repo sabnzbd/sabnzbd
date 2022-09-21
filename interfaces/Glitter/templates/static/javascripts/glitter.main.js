@@ -254,15 +254,16 @@ function ViewModel() {
         /***
             Speedlimit
         ***/
-        // Nothing = 100%
-        response.queue.speedlimit = (response.queue.speedlimit == '') ? 100.0 : parseFloat(response.queue.speedlimit).toFixed(1);
-        // Trick to only get decimal-point when needed
-        response.queue.speedlimit = Math.round(response.queue.speedlimit * 10) / 10;
-        self.speedLimitInt(response.queue.speedlimit)
+        // Nothing or 0 means 100%
+        if(response.queue.speedlimit == '' || response.queue.speedlimit == '0') {
+            self.speedLimitInt(100)
+        } else {
+            self.speedLimitInt(parseInt(response.queue.speedlimit));
+        }
 
         // Only update from external source when user isn't doing input
         if (!$('.speedlimit-dropdown .btn-group .btn-group').is('.open')) {
-            self.speedLimit(response.queue.speedlimit)
+            self.speedLimit(self.speedLimitInt())
         }
 
         /***

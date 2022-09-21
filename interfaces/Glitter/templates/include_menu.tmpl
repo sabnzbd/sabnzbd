@@ -43,7 +43,7 @@
                         <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)">
                             <span class="caret"></span>
                         </button>
-                        <a href="#" class="max-speed-input-clear hover-button" data-bind="click: clearSpeedLimit, visible:(speedLimit() != 100)" style="display: none;">
+                        <a href="#" class="max-speed-input-clear hover-button" data-bind="click: clearSpeedLimit, visible:(speedLimit() < 100 && speedLimit() > 0)" style="display: none;">
                             <span class="glyphicon glyphicon-link"></span>
                         </a>
                         <div class="dropdown-menu max-speed-input">
