@@ -227,7 +227,7 @@ SKIN_TEXT = {
     "dashboard-delayed": TT("Download speed limited by"),
     "dashboard-delayed-cpu": TT("CPU"),
     "dashboard-delayed-disk": TT("Disk speed"),
-    "dashboard-loadavg": TT("System load (5, 10, 15 minutes)"),
+    "dashboard-loadavg": TT("System load"),
     "dashboard-systemPerformance": TT("System Performance (Pystone)"),  #: Do not translate Pystone
     "dashboard-downloadDirSpeed": TT("Download folder speed"),
     "dashboard-completeDirSpeed": TT("Complete folder speed"),

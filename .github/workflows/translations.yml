@@ -36,7 +36,9 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
         if: env.TX_TOKEN
         with:
-          commit_message: Update translatable texts
+          commit_message: | 
+            Update translatable texts
+            [skip ci]
           commit_user_name: SABnzbd Automation
           commit_user_email: bugs@sabnzbd.org
           commit_author: SABnzbd Automation <bugs@sabnzbd.org>
