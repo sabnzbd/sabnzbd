@@ -2200,10 +2200,6 @@ msgid "Download Dir"
 msgstr "Map voor verwerkte downloads"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Sysload"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Weet je zeker dat je SABnzbd wilt afsluiten?"
 
@@ -2498,6 +2494,10 @@ msgstr "Processor"
 #: sabnzbd/skintext.py
 msgid "Disk speed"
 msgstr "Hardeschijf"
+
+#: sabnzbd/skintext.py
+msgid "System load (5, 10, 15 minutes)"
+msgstr ""
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py

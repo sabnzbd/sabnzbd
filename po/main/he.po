@@ -2162,10 +2162,6 @@ msgid "Download Dir"
 msgstr "תיקיית הורדות"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "עומס מערכת"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "האם אתה בטוח שאתה רוצה לכבות את SABnzbd?"
 
@@ -2460,6 +2456,10 @@ msgstr "יע״מ"
 #: sabnzbd/skintext.py
 msgid "Disk speed"
 msgstr "מהירות דיסק"
+
+#: sabnzbd/skintext.py
+msgid "System load (5, 10, 15 minutes)"
+msgstr ""
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py

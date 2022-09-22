@@ -2155,10 +2155,6 @@ msgid "Download Dir"
 msgstr "Lataukset-kansio"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Kuorma"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Oletko varma, että haluat sammuttaa SABnzbdn?"
 
@@ -2450,6 +2446,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "System load (5, 10, 15 minutes)"
 msgstr ""
 
 #. Do not translate Pystone

@@ -2148,10 +2148,6 @@ msgid "Download Dir"
 msgstr "Фасцикла преузимања"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Sysload"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Da li ste sigurni da želite ugasiti SABnzbd?"
 
@@ -2443,6 +2439,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "System load (5, 10, 15 minutes)"
 msgstr ""
 
 #. Do not translate Pystone

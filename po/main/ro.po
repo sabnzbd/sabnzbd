@@ -2188,10 +2188,6 @@ msgid "Download Dir"
 msgstr "Dosar Descărcare"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Încărcare sistem"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Sunteţi sigur că doriţi să inchideţi SABnzbd?"
 
@@ -2483,6 +2479,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "System load (5, 10, 15 minutes)"
 msgstr ""
 
 #. Do not translate Pystone

@@ -2160,10 +2160,6 @@ msgid "Download Dir"
 msgstr "Pasta de Download"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Carga do sistema"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Tem certeza de que quer encerrar o SABnzbd?"
 
@@ -2455,6 +2451,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "System load (5, 10, 15 minutes)"
 msgstr ""
 
 #. Do not translate Pystone

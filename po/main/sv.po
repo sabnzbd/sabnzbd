@@ -2154,10 +2154,6 @@ msgid "Download Dir"
 msgstr "Temporär nedladdningmapp"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Systembelastning"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Är du säker på att du vill stänga av SABnzbd?"
 
@@ -2449,6 +2445,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "System load (5, 10, 15 minutes)"
 msgstr ""
 
 #. Do not translate Pystone
