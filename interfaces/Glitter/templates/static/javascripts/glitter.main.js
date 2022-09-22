@@ -64,6 +64,7 @@ function ViewModel() {
     self.statusInfo.dnslookup = ko.observable();
     self.statusInfo.delayed_decoder = ko.observable();
     self.statusInfo.delayed_assembler = ko.observable();
+    self.statusInfo.loadavg = ko.observable();
     self.statusInfo.pystone = ko.observable();
     self.statusInfo.downloaddir = ko.observable();
     self.statusInfo.downloaddirspeed = ko.observable();
@@ -184,9 +185,6 @@ function ViewModel() {
         // Quota
         self.quotaLimit(response.queue.quota)
         self.quotaLimitLeft(response.queue.left_quota)
-
-        // System load
-        self.systemLoad(response.queue.loadavg)
 
         // Cache
         self.cacheSize(response.queue.cache_size)
@@ -755,6 +753,7 @@ function ViewModel() {
         }, 30000).then(function(data) {
             // Update basic
             self.statusInfo.folders(data.status.folders)
+            self.statusInfo.loadavg(data.status.loadavg)
             self.statusInfo.delayed_decoder(data.status.delayed_decoder)
             self.statusInfo.delayed_assembler(data.status.delayed_assembler)
 

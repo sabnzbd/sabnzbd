@@ -142,7 +142,6 @@ SKIN_TEXT = {
     "cmenu-search": TT("Search"),  #: Main menu item
     # Footer
     "ft-download": TT("Download Dir"),  # Used in Footer
-    "ft-sysload": TT("Sysload"),  # Used in Footer
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
     "link-pause": TT("Pause"),  #: Pause downloading
@@ -228,6 +227,7 @@ SKIN_TEXT = {
     "dashboard-delayed": TT("Download speed limited by"),
     "dashboard-delayed-cpu": TT("CPU"),
     "dashboard-delayed-disk": TT("Disk speed"),
+    "dashboard-loadavg": TT("System load (5, 10, 15 minutes)"),
     "dashboard-systemPerformance": TT("System Performance (Pystone)"),  #: Do not translate Pystone
     "dashboard-downloadDirSpeed": TT("Download folder speed"),
     "dashboard-completeDirSpeed": TT("Complete folder speed"),

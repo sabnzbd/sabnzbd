@@ -9,12 +9,6 @@
             </a>
         </div>
         <!-- /ko -->
-        <!--#if $loadavg#-->
-        <div class="info-container-box" title="$T('ft-sysload') - $T('menu-config') &#10140; $T('cmenu-special') &#10140; show_sysload">
-            <span class="glyphicon glyphicon-record"></span>
-            <span data-bind="text: systemLoad"></span>
-        </div>
-        <!--#end if#-->
         <!-- ko if: (queueDataLeft() != '')  -->
         <div class="info-container-box">
             <span class="glyphicon glyphicon-save"></span>

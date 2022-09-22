@@ -117,6 +117,12 @@
                                 <span data-bind="text: cacheSize"></span> (<span data-bind="text: cacheArticles"></span> $T('Glitter-articles'))
                             </div>
                         </div>
+                        <div class="row" data-bind="visible: statusInfo.loadavg()">
+                            <div class="col-sm-6">$T('dashboard-loadavg') &nbsp; </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: statusInfo.loadavg"></span>
+                            </div>
+                        </div>
                         <div class="row" data-bind="visible: statusInfo.delayed_decoder() > 5 || statusInfo.delayed_assembler() > 5">
                             <div class="col-sm-6">$T('dashboard-delayed') &nbsp; </div>
                             <div class="col-sm-6">

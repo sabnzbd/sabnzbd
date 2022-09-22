@@ -720,14 +720,12 @@ def loadavg():
     """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
     if not sabnzbd.WIN32 and not sabnzbd.MACOS:
-        opt = cfg.show_sysload()
-        if opt:
-            try:
-                p = "%.2f | %.2f | %.2f" % os.getloadavg()
-            except:
-                pass
-            if opt > 1 and _HAVE_STATM:
-                p = "%s | %s" % (p, memory_usage())
+        try:
+            p = "%.2f | %.2f | %.2f" % os.getloadavg()
+        except:
+            pass
+        if _HAVE_STATM:
+            p = "%s | %s" % (p, memory_usage())
     return p
 
 

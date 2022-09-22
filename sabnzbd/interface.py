@@ -877,7 +877,6 @@ SPECIAL_VALUE_LIST = (
     "req_completion_rate",
     "wait_ext_drive",
     "max_foldername_length",
-    "show_sysload",
     "url_base",
     "num_simd_decoders",
     "direct_unpack_threads",

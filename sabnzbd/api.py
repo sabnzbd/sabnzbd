@@ -1246,7 +1246,8 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["delayed_decoder"] = sabnzbd.BPSMeter.delayed_decoder
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
 
-    # Dashboard: Speed of System
+    # Dashboard: Speed and load of System
+    info["loadavg"] = loadavg()
     info["pystone"] = sabnzbd.PYSTONE_SCORE
 
     # Dashboard: Speed of Download directory:
@@ -1585,7 +1586,6 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["diskspace2_norm"] = to_units(diskspace_info["complete_dir"][1] * GIGI)
     header["diskspacetotal1"] = "%.2f" % diskspace_info["download_dir"][0]
     header["diskspacetotal2"] = "%.2f" % diskspace_info["complete_dir"][0]
-    header["loadavg"] = loadavg()
     header["speedlimit"] = str(sabnzbd.Downloader.bandwidth_perc)
     header["speedlimit_abs"] = str(sabnzbd.Downloader.bandwidth_limit)
 
