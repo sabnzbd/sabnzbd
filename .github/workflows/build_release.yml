@@ -2,8 +2,10 @@ name: Build binaries and source distribution
 
 on: [push, pull_request]
 
+# Setting PYTHONNODEBUGRANGES reduces binary size
 env:
   AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+  PYTHONNODEBUGRANGES: 1
 
 jobs:
   build_windows:
@@ -12,10 +14,10 @@ jobs:
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.10 (64bit)
+    - name: Set up Python 3.11 (64bit)
       uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: "3.11.0-rc.2"
         architecture: "x64"
     - name: Cache Python virtualenv (64bit)
       uses: syphar/restore-virtualenv@v1.2
@@ -88,7 +90,7 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.10.6"
+      PYTHON_VERSION: "3.11.0"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
@@ -103,7 +105,7 @@ jobs:
         key: macOS-Python-${{ env.PYTHON_VERSION }}
     - name: Get Python
       if: steps.cache-python-download.outputs.cache-hit != 'true'
-      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
+      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}rc2-macos11.pkg -o ~/python.pkg
     - name: Install Python
       run: |
         sudo installer -pkg ~/python.pkg -target /
@@ -124,6 +126,7 @@ jobs:
       #     https://github.com/pyca/cryptography/issues/5918
       # 2.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
+      # 3.  TEMPORARY: Add aarch64 for orjson universal2 build, until they provide a wheel
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python3 --version
@@ -134,6 +137,8 @@ jobs:
         pip3 uninstall cryptography -y
         pip3 download -r builder/osx/requirements.txt --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
         pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
+        
+        rustup target add aarch64-apple-darwin
         
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
     - name: Import macOS codesign certificates

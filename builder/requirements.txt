@@ -1,6 +1,7 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-pyinstaller==5.4.1
+pyinstaller==5.4.1; python_version < '3.11'
+git+https://github.com/pyinstaller/pyinstaller.git; python_version > '3.10'
 pyinstaller-hooks-contrib==2022.10
 altgraph==0.17.2
 wrapt==1.14.1
