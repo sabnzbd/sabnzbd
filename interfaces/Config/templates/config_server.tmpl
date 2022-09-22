@@ -49,7 +49,7 @@
                         <label class="config" for="host">$T('srv-host')</label>
                         <input type="text" name="host" id="host" required />
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="port">$T('srv-port')</label>
                         <input type="number" name="port" id="port" size="8" value="119" min="0" />
                     </div>
@@ -180,7 +180,7 @@
                             <label class="config" for="host$cur">$T('srv-host')</label>
                             <input type="text" name="host" id="host$cur" value="$server['host']" required />
                         </div>
-                        <div class="field-pair">
+                        <div class="field-pair advanced-settings">
                             <label class="config" for="port$cur">$T('srv-port')</label>
                             <input type="number" name="port" id="port$cur" value="$server['port']" size="8" min="0" required />
                         </div>
@@ -259,7 +259,7 @@
                             <label class="config" for="notes$cur">$T('srv-notes')</label>
                             <textarea name="notes" id="notes$cur" rows="3" cols="50">$server['notes']</textarea>
                         </div>
-                        <div class="field-pair">
+                        <div class="field-pair no-field-pair-bg">
                             <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                             <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                             <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
