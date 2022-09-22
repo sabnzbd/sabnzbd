@@ -2458,7 +2458,7 @@ msgid "Disk speed"
 msgstr "מהירות דיסק"
 
 #: sabnzbd/skintext.py
-msgid "System load (5, 10, 15 minutes)"
+msgid "System load"
 msgstr ""
 
 #. Do not translate Pystone
