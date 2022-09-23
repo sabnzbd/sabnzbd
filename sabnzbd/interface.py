@@ -1351,9 +1351,8 @@ class ConfigRss:
             # Did we get a new name for this feed?
             new_name = kwargs.get("feed_new_name")
             if new_name and new_name != feed_name:
-                cf.rename(new_name)
                 # Update the feed name for the redirect
-                kwargs["feed"] = new_name
+                kwargs["feed"] = cf.rename(new_name)
 
             config.save_config()
 

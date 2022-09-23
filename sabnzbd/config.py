@@ -650,12 +650,15 @@ class ConfigRSS:
         """Remove from database"""
         delete_from_database("rss", self.__name)
 
-    def rename(self, new_name: str):
+    def rename(self, new_name: str) -> str:
         """Update the name and the saved entries"""
+        # Sanitize the name before using it
+        new_name = clean_section_name(new_name)
         delete_from_database("rss", self.__name)
         sabnzbd.RSSReader.rename(self.__name, new_name)
         self.__name = new_name
         add_to_database("rss", self.__name, self)
+        return self.__name
 
 
 # Add typing to the options database-dict
