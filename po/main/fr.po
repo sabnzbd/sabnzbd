@@ -2517,7 +2517,7 @@ msgstr "Vitesse du disque"
 
 #: sabnzbd/skintext.py
 msgid "System load"
-msgstr ""
+msgstr "Charge du système"
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
