@@ -1156,7 +1156,7 @@ def main():
         daemonize()
     else:
         if console_logging:
-            console = logging.StreamHandler()
+            console = logging.StreamHandler(stream=sys.stdout)
             console.setLevel(LOGLEVELS[logging_level + 1])
             console.setFormatter(logging.Formatter(logformat))
             logger.addHandler(console)
