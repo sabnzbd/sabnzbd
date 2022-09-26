@@ -3,9 +3,9 @@
 pyinstaller==5.4.1; python_version < '3.11'
 git+https://github.com/pyinstaller/pyinstaller.git; python_version > '3.10'
 pyinstaller-hooks-contrib==2022.10
-altgraph==0.17.2
+altgraph==0.17.3
 wrapt==1.14.1
-setuptools==65.3.0
+setuptools==65.4.0
 pkginfo==1.8.3
 PyGithub==1.55
 charset-normalizer==2.1.1
@@ -18,6 +18,6 @@ orjson==3.8.0; python_version > '3.8'
 # For the macOS build
 dmgbuild==1.5.2; sys_platform == 'darwin'
 mac-alias==2.2.0; sys_platform == 'darwin'
-macholib==1.16; sys_platform == 'darwin'
+macholib==1.16.2; sys_platform == 'darwin'
 ds-store==1.3.0; sys_platform == 'darwin'
 PyNaCl==1.5.0; sys_platform == 'darwin'
