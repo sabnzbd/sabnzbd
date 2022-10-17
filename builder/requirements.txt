@@ -4,9 +4,9 @@ pyinstaller==5.5
 pyinstaller-hooks-contrib==2022.10
 altgraph==0.17.3
 wrapt==1.14.1
-setuptools==65.4.1
+setuptools==65.5.0
 pkginfo==1.8.3
-PyGithub==1.55
+PyGithub==1.56
 charset-normalizer==2.1.1
 certifi
 
