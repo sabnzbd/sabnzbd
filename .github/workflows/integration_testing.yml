@@ -51,7 +51,7 @@ jobs:
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar p7zip-full par2
     - name: Cache Python virtualenv
-      uses: syphar/restore-virtualenv@v1.2
+      uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv
       with:
         custom_cache_key_element: "ci"

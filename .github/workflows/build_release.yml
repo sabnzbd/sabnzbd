@@ -20,7 +20,7 @@ jobs:
         python-version: "3.11.0-rc.2"
         architecture: "x64"
     - name: Cache Python virtualenv (64bit)
-      uses: syphar/restore-virtualenv@v1.2
+      uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv-64bit
       with:
         custom_virtualenv_dir: "venv64"
@@ -53,7 +53,7 @@ jobs:
         python-version: "3.8"
         architecture: "x86"
     - name: Cache Python virtualenv (32bit and legacy)
-      uses: syphar/restore-virtualenv@v1.2
+      uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv-32bit
       with:
         custom_virtualenv_dir: "venv32"
@@ -112,7 +112,7 @@ jobs:
         unlink /usr/local/bin/python
         ln -s /usr/local/bin/python3 /usr/local/bin/python
     - name: Cache Python virtualenv
-      uses: syphar/restore-virtualenv@v1.2
+      uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv
       with:
         custom_cache_key_element: "release"
