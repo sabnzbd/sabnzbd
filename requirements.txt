@@ -10,7 +10,7 @@ cheroot==8.6.0
 six==1.16.0
 cherrypy==18.8.0
 jaraco.functools==3.5.2
-jaraco.collections==3.5.2
+jaraco.collections==3.6.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.2.3
 jaraco.context==4.1.2
@@ -18,7 +18,7 @@ more-itertools==8.14.0
 zc.lockfile==2.0
 python-dateutil==2.8.2
 tempora==5.0.2
-pytz==2022.4
+pytz==2022.5
 sgmllib3k==1.0.0
 portend==3.1.0
 chardet==5.0.0
