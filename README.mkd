@@ -17,7 +17,7 @@ Release Notes - SABnzbd 3.7.0 Release Candidate 1
 - Removed Special settings `enable_meta`, `disable_key`,
   `replace_illegal`, `osx_speed` and `show_sysload`.
 - Merged Special settings `win_menu` and `osx_menu` into `tray_icon`.
-- macOS/Windows: Use Python 3.11rc2, boosting overall performance.
+- macOS/Windows: Use Python 3.11, boosting overall performance.
 - macOS/Windows: Updated UnRar to 6.12.
 - Windows: Updated MultiPar to 1.3.2.5.
 
