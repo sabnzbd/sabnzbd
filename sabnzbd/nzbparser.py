@@ -469,7 +469,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
                 # Check if we already have this exact NZF (see custom eq-checks)
                 if nzf in nzo.files:
-                    logging.info("File %s occured twice in NZB, skipping", nzf.filename)
+                    logging.info("File %s occurred twice in NZB, skipping", nzf.filename)
                     continue
 
                 # Add valid NZF's

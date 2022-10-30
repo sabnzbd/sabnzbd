@@ -89,13 +89,13 @@ class TestDeobfuscateFinalResult:
         deobfuscate(nzo, filelist, jobname)
 
     def test_deobfuscate_filelist_lite(self):
-        # ligthweight test of deobfuscating: with just one file
+        # lightweight test of deobfuscating: with just one file
 
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        # Create a big file with a non-useful, obfuscated filename
+        # Create a big file with a useless, obfuscated filename
         output_file1 = os.path.join(dirname, "111c1c9e2bdfb5114044bf25152b7eab.bin")
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
@@ -124,7 +124,7 @@ class TestDeobfuscateFinalResult:
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        # Create a big enough file with a non-useful filename
+        # Create a big enough file with a useless filename
         isofile = os.path.join(dirname, "myiso.iso")
         create_big_file(isofile)
         assert os.path.isfile(isofile)
@@ -173,7 +173,7 @@ class TestDeobfuscateFinalResult:
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        # Create a big enough file with a non-useful filename
+        # Create a big enough file with a useless filename
         output_file1 = os.path.join(dirname, "111c1c9e2bdfb5114044bf25152b7eaa.bin")
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
@@ -218,7 +218,7 @@ class TestDeobfuscateFinalResult:
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        # Create a small file with a non-useful, obfuscated filename
+        # Create a small file with a useless, obfuscated filename
         output_file1 = os.path.join(dirname, "blabla.txt")
         create_small_file(output_file1)
         assert os.path.isfile(output_file1)
@@ -249,7 +249,7 @@ class TestDeobfuscateFinalResult:
         subsubdirname = os.path.join(subdirname, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(subsubdirname)
 
-        # Create a big enough file with a non-useful, obfuscated filename
+        # Create a big enough file with a useless, obfuscated filename
         output_file1 = os.path.join(subsubdirname, "111c1c9e2bdfb5114044bf25152b7eab.bin")
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
@@ -278,7 +278,7 @@ class TestDeobfuscateFinalResult:
         os.mkdir(dirname)
         subdirname = os.path.join(dirname, "VIDEO_TS")
         os.mkdir(subdirname)
-        # Create a big file with a non-useful, obfuscated filename (which normally should get renamed)
+        # Create a big file with a useless, obfuscated filename (which normally should get renamed)
         output_file1 = os.path.join(subdirname, "111c1c9e2bdfb5114044bf25152b7eab.bin")
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
@@ -290,7 +290,7 @@ class TestDeobfuscateFinalResult:
         self.deobfuscate_wrapper(myfilelist, jobname)
 
         # ... but because inside "VIDEO_TS" directory, the file should not be touched / renamed:
-        assert os.path.isfile(output_file1)  # should stil be there
+        assert os.path.isfile(output_file1)  # should still be there
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
@@ -303,7 +303,7 @@ class TestDeobfuscateFinalResult:
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        # Create big enough files with a non-useful filenames, all with same extension
+        # Create big enough files with a useless filenames, all with same extension
         file1 = os.path.join(dirname, "file1.bin")
         create_big_file(file1)
         assert os.path.isfile(file1)

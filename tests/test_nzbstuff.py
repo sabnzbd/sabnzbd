@@ -137,9 +137,9 @@ class TestNZBStuffHelpers:
                 '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
             ),
             (
-                "[PRiVATE]-[WtFnZb]-[219]-[1/serie.name.s01e01.1080p.web.h264-group.mkv] - "
+                "[PRiVATE]-[WtFnZb]-[219]-[1/series.name.s01e01.1080p.web.h264-group.mkv] - "
                 " yEnc (1/[PRiVATE] \\c2b510b594\\::686ea969999193.155368eba4965e56a8cd263382e012.f2712fdc::/97bd201cf931/) 1 (1/0)",
-                "serie.name.s01e01.1080p.web.h264-group.mkv",
+                "series.name.s01e01.1080p.web.h264-group.mkv",
             ),
         ],
     )
