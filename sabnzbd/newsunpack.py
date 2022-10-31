@@ -1403,7 +1403,7 @@ def par2cmdline_verify(
         elif "Could not write" in line and "at offset 0:" in line:
             # If there are joinables, this error will only happen in case of 100% complete files
             # We can just skip the retry, because par2cmdline will fail in those cases
-            # becauses it refuses to scan the ".001" file
+            # because it refuses to scan the ".001" file
             if joinables:
                 finished = True
                 used_joinables = []
@@ -1980,7 +1980,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     if par2pack is None:
         return False
 
-    # We use bitwise assigment (&=) so False always wins in case of failure
+    # We use bitwise assignment (&=) so False always wins in case of failure
     # This way the renames always get saved!
     result = True
     nzf_list = nzo.finished_files
@@ -2141,7 +2141,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
     nzo.status = Status.VERIFYING
     nzo.set_action_line(T("Trying SFV verification"), "...")
 
-    # We use bitwise assigment (&=) so False always wins in case of failure
+    # We use bitwise assignment (&=) so False always wins in case of failure
     # This way the renames always get saved!
     result = True
     nzf_list = nzo.finished_files
@@ -2219,7 +2219,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
 
 
 def parse_sfv(sfv_filename):
-    """Parse SFV file and return dictonary of crc32's and filenames"""
+    """Parse SFV file and return dictionary of crc32's and filenames"""
     results = {}
     with open(sfv_filename, mode="rb") as sfv_list:
         for sfv_item in sfv_list:
@@ -2271,7 +2271,7 @@ def analyse_show(name: str) -> Tuple[str, str, str, str, bool]:
 
 def pre_queue(nzo: NzbObject, pp, cat):
     """Run pre-queue script (if any) and process results.
-    pp and cat are supplied seperate since they can change.
+    pp and cat are supplied separate since they can change.
     """
 
     def fix(p):
