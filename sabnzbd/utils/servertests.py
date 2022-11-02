@@ -22,27 +22,31 @@ sabnzbd.utils.servertests - Debugging server connections. Currently only NNTP se
 import socket
 import sys
 
+from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 from sabnzbd.downloader import Server, clues_login, clues_too_many, nntp_to_msg
 from sabnzbd.config import get_servers
-from sabnzbd.misc import int_conv
+from sabnzbd.misc import int_conv, match_str
 
 
 def test_nntp_server_dict(kwargs):
-    # Grab the host/port/user/pass/connections/ssl
+    """Will connect (blocking) to the NNTP server and report back any errors"""
     host = kwargs.get("host", "").strip()
-    if not host:
-        return False, T("The hostname is not set.")
+    port = int_conv(kwargs.get("port", 0))
     username = kwargs.get("username", "").strip()
     password = kwargs.get("password", "").strip()
     server = kwargs.get("server", "").strip()
     connections = int_conv(kwargs.get("connections", 0))
-    if not connections:
-        return False, T("There are no connections set. Please set at least one connection.")
+    timeout = int_conv(kwargs.get("timeout", DEF_TIMEOUT))
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
-    ssl_ciphers = kwargs.get("ssl_ciphers")
-    port = int_conv(kwargs.get("port", 0))
+    ssl_ciphers = kwargs.get("ssl_ciphers").strip()
+
+    if not host:
+        return False, T("The hostname is not set.")
+
+    if not connections:
+        return False, T("There are no connections set. Please set at least one connection.")
 
     if not port:
         if ssl:
@@ -50,45 +54,39 @@ def test_nntp_server_dict(kwargs):
         else:
             port = 119
 
-    return test_nntp_server(
-        host,
-        port,
-        server,
-        username=username,
-        password=password,
-        ssl=ssl,
-        ssl_verify=ssl_verify,
-        ssl_ciphers=ssl_ciphers,
-    )
+    if not timeout:
+        # Lower value during new server testing
+        timeout = 10
 
-
-def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_verify=1, ssl_ciphers=None):
-    """Will connect (blocking) to the nttp server and report back any errors"""
-    timeout = 4.0
     if "*" in password and not password.strip("*"):
         # If the password is masked, try retrieving it from the config
-        if not server:
-            servers = get_servers()
-            got_pass = False
-            for server in servers:
-                if host in servers[server].host():
-                    srv = servers[server]
-                    password = srv.password()
-                    got_pass = True
+        srv = get_servers().get(server)
+        if srv:
+            password = srv.password()
         else:
-            srv = get_servers().get(server)
-            if srv:
-                password = srv.password()
-                got_pass = True
-        if not got_pass:
             return False, T("Password masked in ******, please re-enter")
+
     try:
-        s = Server(-1, "", host, port, timeout, 0, 0, ssl, ssl_verify, ssl_ciphers, False, username, password)
+        s = Server(
+            server_id=-1,
+            displayname="",
+            host=host,
+            port=port,
+            timeout=timeout,
+            threads=0,
+            priority=0,
+            use_ssl=ssl,
+            ssl_verify=ssl_verify,
+            ssl_ciphers=ssl_ciphers,
+            send_group=False,
+            username=username,
+            password=password,
+        )
     except:
         return False, T("Invalid server details")
 
     try:
-        nw = NewsWrapper(s, -1, block=True)
+        nw = NewsWrapper(server=s, thrdnum=-1, block=True)
         nw.init_connect()
         while not nw.connected:
             nw.clear_data()
@@ -103,7 +101,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
     except socket.error as err:
         # Trying SSL on non-SSL port?
-        if "unknown protocol" in str(err).lower() or "wrong version number" in str(err).lower():
+        if match_str(str(err), ("unknown protocol", "wrong version number")):
             return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
 
         return False, str(err)
@@ -131,16 +129,21 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             # Some internal error, not always safe to close connection
             return False, str(sys.exc_info()[1])
 
-    if nw.status_code == 480:
-        return_status = (False, T("Server requires username and password."))
-    elif nw.status_code < 300 or nw.status_code in (411, 423, 430):
-        # If no username/password set and we requested fake-article, it will return 430 Not Found
-        return_status = (True, T("Connection Successful!"))
-    elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
-        return_status = (False, T("Authentication failed, check username/password."))
-    elif clues_too_many(nntp_to_msg(nw.data)):
-        return_status = (False, T("Too many connections, please pause downloading or try again later"))
-    else:
+    # Parse result
+    return_status = ()
+    if nw.status_code:
+        if nw.status_code == 480:
+            return_status = (False, T("Server requires username and password."))
+        elif nw.status_code < 300 or nw.status_code in (411, 423, 430):
+            # If no username/password set and we requested fake-article, it will return 430 Not Found
+            return_status = (True, T("Connection Successful!"))
+        elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
+            return_status = (False, T("Authentication failed, check username/password."))
+        elif clues_too_many(nntp_to_msg(nw.data)):
+            return_status = (False, T("Too many connections, please pause downloading or try again later"))
+
+    # Fallback in case no data was received or unknown status
+    if not return_status:
         return_status = (False, T("Could not determine connection result (%s)") % nntp_to_msg(nw.data))
 
     # Close the connection and return result
