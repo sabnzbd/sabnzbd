@@ -84,9 +84,6 @@ jobs:
     runs-on: macos-11
     timeout-minutes: 30
     env:
-      SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
-      NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
-      NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
@@ -142,11 +139,19 @@ jobs:
         
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
     - name: Import macOS codesign certificates
-      uses: apple-actions/import-codesign-certs@v1
-      if: env.SIGNING_AUTH
-      with:
-        p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
-        p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+      # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
+      env:
+        CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+        CERTIFICATES_P12_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+        MACOS_KEYCHAIN_TEMP_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_TEMP_PASSWORD }}
+      run: |
+        echo $CERTIFICATES_P12 | base64 --decode > certificate.p12
+        security create-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain 
+        security default-keychain -s build.keychain 
+        security unlock-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain
+        security set-keychain-settings -lut 21600 build.keychain
+        security import certificate.p12 -k build.keychain -P "$CERTIFICATES_P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productsign -T /usr/bin/xcrun
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain
     - name: Build source distribution
       # Run this on macOS so the line endings are correct by default
       run: python builder/package.py source
@@ -156,6 +161,10 @@ jobs:
         path: "*-src.tar.gz"
         name: Source distribution
     - name: Build macOS binary
+      env:
+        SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
+        NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
+        NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
       run: |
         python3 builder/package.py app
         python3 builder/make_dmg.py
