@@ -24,12 +24,13 @@ import os.path
 import shutil
 from unittest.mock import call
 
-from sabnzbd.filesystem import build_filelists
+
 from tests.testhelper import *
 
 import sabnzbd
 import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
+from sabnzbd.misc import format_time_string
 
 
 class TestNewsUnpackFunctions:
@@ -131,12 +132,17 @@ class TestPar2Repair:
         assert not readd
 
         # Verify history updates
-        nzo.set_unpack_info.assert_has_calls(
-            [
-                call("Repair", "[test] Verified in 0 seconds, repair is required"),
-                call("Repair", "[test] Repaired in 0 seconds"),
-            ]
-        )
+        # Try with multiple values, as it can take longer sometimes
+        for text in ("[test] Verified in %s, repair is required", "[test] Repaired in %s"):
+            for i in range(10):
+                try:
+                    nzo.set_unpack_info.assert_has_calls([call("Repair", text % format_time_string(i))])
+                    break
+                except AssertionError:
+                    pass
+            else:
+                # It never succeeded
+                raise AssertionError("Failed to match: %s" % text)
 
         # Check externally
         return nzo, dir_contents

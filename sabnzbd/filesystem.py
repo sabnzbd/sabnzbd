@@ -259,13 +259,11 @@ def sanitize_foldername(name: str) -> str:
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
 
-    repl = sabnzbd.cfg.replace_illegal()
     lst = []
     for ch in name.strip():
         if ch in illegal:
-            if repl:
-                ch = legal[illegal.find(ch)]
-                lst.append(ch)
+            ch = legal[illegal.find(ch)]
+            lst.append(ch)
         else:
             lst.append(ch)
     name = "".join(lst)
@@ -1222,6 +1220,8 @@ def backup_nzb(nzb_path: str):
 
 def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
     """Save compressed NZB file in folder, return path to saved nzb file"""
+    # Make sure it's a clean filename
+    filename = sanitize_filename(filename)
     if filename.endswith(".nzb"):
         filename += ".gz"
     else:

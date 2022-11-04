@@ -140,7 +140,7 @@ if not os.path.exists(PO_DIR):
 
 # Determine location of PyGetText tool
 path, py = os.path.split(sys.argv[0])
-PYGETTEXT = os.path.abspath(os.path.normpath(os.path.join(path, "pygettext.py")))
+PYGETTEXT = os.path.normpath(os.path.join(path, "pygettext.py"))
 cmd = "%s %s %s %s" % (sys.executable, PYGETTEXT, PARMS, FILES)
 os.system(cmd)
 print("Finished creating POT file")

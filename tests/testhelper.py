@@ -28,6 +28,7 @@ import pytest
 from random import choice, randint
 import requests
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from string import ascii_lowercase, digits
@@ -242,7 +243,7 @@ class SABnzbdBaseTest:
         self.no_page_crash()
 
     def scroll_to_top(self):
-        self.driver.find_element_by_tag_name("body").send_keys(Keys.CONTROL + Keys.HOME)
+        self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
         time.sleep(2)
 
     def wait_for_ajax(self):
@@ -257,7 +258,7 @@ class SABnzbdBaseTest:
     @staticmethod
     def selenium_wrapper(func, *args):
         """Wrapper with retries for more stable Selenium"""
-        for i in range(3):
+        for _ in range(3):
             try:
                 return func(*args)
             except WebDriverException as e:

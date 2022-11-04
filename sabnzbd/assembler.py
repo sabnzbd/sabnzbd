@@ -132,7 +132,8 @@ class Assembler(Thread):
 
     @staticmethod
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
-        """Check diskspace requirements. If not enough space left, pause downloader and send email"""
+        """Check diskspace requirements.
+        If not enough space left, pause downloader and send email"""
         freespace = diskspace(force=True)
         full_dir = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
@@ -144,11 +145,13 @@ class Assembler(Thread):
         if complete_free > 0 and not full_dir:
             required_space = 0
             if cfg.direct_unpack():
-                required_space = (complete_free + nzo.bytes_downloaded) / GIGI
-            else:
-                # Continue downloading until 95% complete before checking
-                if nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
-                    required_space = (complete_free + nzo.bytes) / GIGI
+                # We unpack while we download, so we should check every time
+                # if the unpack maybe already filled up the drive
+                required_space = complete_free / GIGI
+            elif nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
+                # Since only at 100% unpack is started, continue
+                # downloading until 95% complete before checking
+                required_space = (complete_free + nzo.bytes) / GIGI
 
             if required_space and freespace["complete_dir"][1] < required_space:
                 full_dir = "complete_dir"

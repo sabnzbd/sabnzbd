@@ -284,10 +284,13 @@ class URLGrabber(Thread):
         msg: message to be logged
         content: report in history that cause is a bad NZB file
         """
-        # Remove the "Trying to fetch" part
-        if url:
-            nzo.filename = url
-            nzo.final_name = url.strip()
+        # Overwrite the "Trying to fetch" temporary name
+        url = url.strip()
+        nzo.filename = url
+        nzo.final_name = url
+        if nzo.custom_name:
+            # Try to set a nice name, if available
+            nzo.final_name = "%s - %s" % (nzo.custom_name, url)
 
         if content:
             # Bad content
@@ -296,7 +299,8 @@ class URLGrabber(Thread):
             # Failed fetch
             msg = T("URL Fetching failed; %s") % msg
 
-        # Mark as failed
+        # Mark as failed and set the info why
+        nzo.set_unpack_info("Source", url)
         nzo.set_unpack_info("Source", msg)
         nzo.fail_msg = msg
 

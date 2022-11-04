@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0RC2\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Romanian (https://www.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -144,14 +144,6 @@ msgstr "Închidere SABnzbd terminată"
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Semnal %s  prins, salvez şi ies..."
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -297,6 +289,10 @@ msgstr "%s nu este o adresă email validă"
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Adresă server necesară"
+
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Adresă server invalidă"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
@@ -667,14 +663,6 @@ msgid ""
 msgstr ""
 "Cheie API incorectă, Folosiţi cheia api din Configurare->General în "
 "programul dumneavoastră terţ:"
-
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Autentificare lipsă, vă rugăm să introduceţi numele de utilizator/parola de "
-"la Configurare->General în programul dumneavoastră terţ:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
@@ -1232,27 +1220,27 @@ msgstr "Anulat nu poate fi finalizat"
 msgid "Error importing %s"
 msgstr "Eroare importare %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLICAT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "ENCRIPTAT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "PREA MARE"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "INCOMPLET"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "NEDORIT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "AŞTEAPTĂ %s sec"
 
@@ -2200,10 +2188,6 @@ msgid "Download Dir"
 msgstr "Dosar Descărcare"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Încărcare sistem"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Sunteţi sigur că doriţi să inchideţi SABnzbd?"
 
@@ -2497,6 +2481,10 @@ msgstr ""
 msgid "Disk speed"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "System load"
+msgstr ""
+
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
@@ -2783,12 +2771,17 @@ msgstr ""
 "Stochează articolele în memorie pentru a reduce acesul disc.<br /><i>În "
 "octeţi, opţional urmaţi de K,M,G. De exemplu : \"64M\" sau\"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3062,6 +3055,17 @@ msgstr ""
 "doar când coada e goală.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr ""
 "<i>Informaţiile vor <b>nu vor</b> fi mutate. Necesită repornire SABnzbd!</i>"
@@ -3253,16 +3257,6 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "Unele server oferă o alternativă dacă un NZB eșuează."
 
 #: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Activează redenumire dosar"
 
@@ -3316,6 +3310,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "Întârziere de propagare"
 
@@ -3347,6 +3345,14 @@ msgstr "Înlocuieşte Spaţiile din Numele Dosarelor"
 #: sabnzbd/skintext.py
 msgid "Replace spaces with underscores in folder names."
 msgstr "Înlocuieşte spaţiile cu _ în numele dosarelor."
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4505,14 +4511,6 @@ msgid "Submit"
 msgstr "Trimite"
 
 #: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Trimis. Vă mulțumim!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Nimic selectat!"
-
-#: sabnzbd/skintext.py
 msgid "Remove all selected files"
 msgstr "Elimină toate fișierele selectate"
 
@@ -4600,6 +4598,10 @@ msgstr "Reîmprospătează"
 msgid ""
 "All usernames, passwords and API-keys are automatically removed from the log"
 " and the included copy of your settings."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4819,10 +4821,6 @@ msgstr "A depăşit timpul alocat"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Adresă server invalidă"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

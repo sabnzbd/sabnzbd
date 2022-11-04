@@ -512,6 +512,9 @@ def check_all_tasks():
     # Check (and terminate) idle jobs
     sabnzbd.NzbQueue.stop_idle_jobs()
 
+    # Check that the queue is sorted correctly
+    sabnzbd.NzbQueue.update_sort_order()
+
     return True
 
 

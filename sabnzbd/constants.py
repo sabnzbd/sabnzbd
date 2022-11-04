@@ -36,7 +36,6 @@ GIGI = float(2**30)
 MEBI = float(2**20)
 KIBI = float(2**10)
 
-BYTES_FILE_NAME_OLD = "totals9.sab"
 BYTES_FILE_NAME = "totals10.sab"
 QUEUE_FILE_TMPL = "queue%s.sab"
 QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION
@@ -50,7 +49,7 @@ RENAMES_FILE = "__renames__"
 ATTRIB_FILE = "SABnzbd_attrib"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABYENC_VERSION_REQUIRED = "5.4.3"
+SABYENC_VERSION_REQUIRED = "5.4.4"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION

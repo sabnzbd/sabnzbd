@@ -10,7 +10,7 @@ function HistoryListModel(parent) {
     self.historyItems = ko.observableArray([])
     self.showFailed = ko.observable(false).extend({ persist: 'historyShowFailed' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
-    self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
+    self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
     self.totalItems = ko.observable(0);
     self.pagination = new paginationModel(self);
@@ -139,14 +139,15 @@ function HistoryListModel(parent) {
         form.reset()
     }
 
-    // Searching in history (rate-limited in decleration)
+    // Searching in history (rate-limited in declaration)
     self.searchTerm.subscribe(function() {
-        // Make sure we refresh
-        self.lastUpdate = 0
-        self.parent.refresh();
         // Go back to page 1
         if(self.pagination.currentPage() != 1) {
+            // This forces a refresh
             self.pagination.moveToPage(1);
+        } else {
+            // Make sure we refresh
+            self.parent.refresh(true);
         }
     })
 
@@ -157,7 +158,6 @@ function HistoryListModel(parent) {
             // Set the loader so it doesn't flicker and then switch
             self.isLoading(true)
             self.searchTerm('');
-            self.parent.refresh()
         }
         // Was it click and the field is empty? Then we focus on the field
         if(event.type == 'mousedown' && self.searchTerm() == '') {

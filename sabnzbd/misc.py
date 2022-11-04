@@ -72,7 +72,7 @@ RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
-HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
+HAVE_AMPM = bool(time.strftime("%p"))
 
 
 def helpful_warning(*args, **kwargs):
@@ -231,14 +231,13 @@ def pp_to_opts(pp: int) -> Tuple[bool, bool, bool]:
 
 def opts_to_pp(repair: bool, unpack: bool, delete: bool) -> int:
     """Convert (repair, unpack, delete) to numeric process options"""
-    pp = 0
-    if repair:
-        pp = 1
-    if unpack:
-        pp = 2
     if delete:
-        pp = 3
-    return pp
+        return 3
+    if unpack:
+        return 2
+    if repair:
+        return 1
+    return 0
 
 
 _wildcard_to_regex = {
@@ -504,7 +503,8 @@ def upload_file_to_sabnzbd(url, fp):
 
 
 def from_units(val: str) -> float:
-    """Convert K/M/G/T/P notation to float"""
+    """Convert K/M/G/T/P notation to float
+    Does not support negative numbers"""
     val = str(val).strip().upper()
     if val == "-1":
         return float(val)
@@ -530,30 +530,29 @@ def from_units(val: str) -> float:
 def to_units(val: Union[int, float], postfix="") -> str:
     """Convert number to K/M/G/T/P notation
     Show single decimal for M and higher
+    Also supports negative numbers
     """
-    dec_limit = 1
+    if not isinstance(val, (int, float)):
+        return ""
+
     if val < 0:
         sign = "-"
     else:
         sign = ""
-    val = str(abs(val)).strip()
 
+    # Determine what form we are at
+    val = abs(val)
     n = 0
-    try:
-        val = float(val)
-    except:
-        return ""
-    while (val > 1023.0) and (n < 5):
-        val = val / 1024.0
+    while (val > 1023) and (n < 5):
+        val = val / 1024
         n = n + 1
-    unit = TAB_UNITS[n]
-    if n > dec_limit:
+
+    if n > 1:
         decimals = 1
     else:
         decimals = 0
 
-    fmt = "%%s%%.%sf %%s%%s" % decimals
-    return fmt % (sign, val, unit, postfix)
+    return ("%%s%%.%sf %%s%%s" % decimals) % (sign, val, TAB_UNITS[n], postfix)
 
 
 def caller_name(skip=2):
@@ -721,14 +720,12 @@ def loadavg():
     """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
     if not sabnzbd.WIN32 and not sabnzbd.MACOS:
-        opt = cfg.show_sysload()
-        if opt:
-            try:
-                p = "%.2f | %.2f | %.2f" % os.getloadavg()
-            except:
-                pass
-            if opt > 1 and _HAVE_STATM:
-                p = "%s | %s" % (p, memory_usage())
+        try:
+            p = "%.2f | %.2f | %.2f" % os.getloadavg()
+        except:
+            pass
+        if _HAVE_STATM:
+            p = "%s | %s" % (p, memory_usage())
     return p
 
 
@@ -804,9 +801,10 @@ def get_all_passwords(nzo) -> List[str]:
         logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords.append(nzo.password.strip())
 
+    # Note that we get a reference to the list, so adding to it updates the original list!
     meta_passwords = nzo.meta.get("password", [])
     pw = nzo.nzo_info.get("password")
-    if pw:
+    if pw and pw not in meta_passwords:
         meta_passwords.append(pw)
 
     if meta_passwords:

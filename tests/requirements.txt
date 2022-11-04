@@ -1,15 +1,16 @@
 # Testing requirements
-selenium<4.3.0 # needs code changes for 4.3.0
+selenium
 requests
 pkginfo
 pytest
 pyfakefs
-werkzeug<2.1.0 # breaks httpbin in newer versions
+werkzeug<2.1.0 # Breaks httpbin in newer versions
 pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict
 tavern
 tavalidate
-lxml>=4.5.0 # needed by tavalidate
+importlib_metadata<5.0.0 # Required by tavern but 5.0.0 is not compatible with Python 3.7
+lxml
 black

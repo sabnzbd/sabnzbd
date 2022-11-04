@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import glob
+import hashlib
 import platform
 import re
 import sys
@@ -481,6 +482,16 @@ if __name__ == "__main__":
 
         # Remove source folder
         safe_remove(src_folder)
+
+        # Calculate hashes for Synology release
+        with open(RELEASE_SRC, "rb") as inp_file:
+            source_data = inp_file.read()
+
+        print("----")
+        print(RELEASE_SRC, "SHA1", hashlib.sha1(source_data).hexdigest())
+        print(RELEASE_SRC, "SHA256", hashlib.sha256(source_data).hexdigest())
+        print(RELEASE_SRC, "MD5", hashlib.md5(source_data).hexdigest())
+        print("----")
 
     # Release to github
     if "release" in sys.argv:

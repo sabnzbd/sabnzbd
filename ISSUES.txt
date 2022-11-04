@@ -53,3 +53,6 @@
   to your servers to a total of 7. There is a CPU-usage reduction feature in SABnzbd that
   gets confused by the way some VPN's handle the state of a connection. Below 8 connections
   this feature is not active.
+
+- If the queue is paused but one or more jobs have the Force priority, SABnzbd might still
+  download some data from other jobs in the queue if active servers have unused connections.

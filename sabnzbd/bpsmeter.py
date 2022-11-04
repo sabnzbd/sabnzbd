@@ -391,10 +391,10 @@ class BPSMeter:
     def get_sums(self):
         """return tuple of grand, month, week, day totals"""
         return (
-            sum([v for v in self.grand_total.values()]),
-            sum([v for v in self.month_total.values()]),
-            sum([v for v in self.week_total.values()]),
-            sum([v for v in self.day_total.values()]),
+            sum(self.grand_total.values()),
+            sum(self.month_total.values()),
+            sum(self.week_total.values()),
+            sum(self.day_total.values()),
         )
 
     def amounts(self, server: str):

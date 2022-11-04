@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0RC2\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: ION, 2022\n"
 "Language-Team: Hebrew (https://www.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -139,17 +139,6 @@ msgstr "כיבוי SABnzbd הסתיים"
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "אות %s נתפס, שומר ויוצא…"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
-"אנחנו מתכננים להסיר את ההגדרה '%s', אשר שינית מערך ברירת המחדל. אתה יכול "
-"ליידע אותנו למה עשית את השינוי הזה בכתובת: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -290,6 +279,10 @@ msgstr "%s אינה כתובת דוא״ל תקפה"
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "כתובת שרת דרושה"
+
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "כתובת שרת בלתי תקפה."
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
@@ -655,14 +648,6 @@ msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr "מפתח API שגוי, השתמש במפתח ה־API מתצורה->כללי בתוכנית הצד השלישי שלך:"
-
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"אימות חסר, אנא הכנס שם משתמש/סיסמה מתוך תצורה->כללי לתוך תוכנית הצד השלישי "
-"שלך:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
@@ -1213,27 +1198,27 @@ msgstr "בוטל, לא יכול להיות שלם"
 msgid "Error importing %s"
 msgstr "שגיאה ביבוא %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "כפול"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "מוצפן"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "גדול מדי"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "בלתי שלם"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "בלתי רצוי"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "המתן %s שניות"
 
@@ -2177,10 +2162,6 @@ msgid "Download Dir"
 msgstr "תיקיית הורדות"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "עומס מערכת"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "האם אתה בטוח שאתה רוצה לכבות את SABnzbd?"
 
@@ -2476,6 +2457,10 @@ msgstr "יע״מ"
 msgid "Disk speed"
 msgstr "מהירות דיסק"
 
+#: sabnzbd/skintext.py
+msgid "System load"
+msgstr ""
+
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
@@ -2764,13 +2749,18 @@ msgstr ""
 "הטמן מאמרים בזיכרון כדי להפחית גישת דיסק.<br /><i>בבתים, יכול לבוא עם K,M,G."
 " לדוגמה: \"64M\" או \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
-msgstr "הורד גיבוי"
+msgid "Create backup"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
-msgstr "שמור או שחזר גיבוי של קובץ התצורה ומסדי נתונים."
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -3048,6 +3038,17 @@ msgstr ""
 " ריק.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr "<i>נתונים <b>לא</b> יועברו. דורש הפעלה מחדש של SABnzbd!</i>"
 
@@ -3238,18 +3239,6 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "מספר שרתים מספקים קובץ NZB חלופי כאשר הורדה נכשלת."
 
 #: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr "השתמש בתגים ממדדן"
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-"בעת מיון, השתמש בתגים ממדדן עבור כותרת, עונה, פרק וכדומה. אחרת כל מתן השמות "
-"נגזר משם קובץ NZB."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "אפשר שינוי שם תיקייה"
 
@@ -3302,6 +3291,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr "מיין עבודות בתור באופן אוטומטי כאשר עבודה חדשה מתווספת."
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr "התור ימוין כל 30 שניות אם האפשרות % ירד נבחרה."
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "עיכוב רביה"
 
@@ -3333,6 +3326,14 @@ msgstr "החלף רווחים בשמות תיקיות"
 #: sabnzbd/skintext.py
 msgid "Replace spaces with underscores in folder names."
 msgstr "החלף רווחים בקווים תחתונים בשמות תיקיות."
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4497,14 +4498,6 @@ msgid "Submit"
 msgstr "הגש"
 
 #: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "הוגש. תודה!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "שום דבר לא נבחר!"
-
-#: sabnzbd/skintext.py
 msgid "Remove all selected files"
 msgstr "הסר את כל הקבצים הנבחרים"
 
@@ -4595,6 +4588,10 @@ msgid ""
 msgstr ""
 "כל שמות המשתמש, הסיסמאות ומפתחות API מוסרים באופן אוטומטי מהיומן ומהעותק "
 "הכלול של ההגדרות שלך."
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr "מיין לפי % ירד <small>הכי הרבה&rarr;הכי מעט</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4809,10 +4806,6 @@ msgstr "אזל הזמן"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr "פרוטוקול SSL בלתי ידוע: נסה להשבית SSL או להתחבר על פתחה שונה."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "כתובת שרת בלתי תקפה."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

@@ -18,14 +18,15 @@
 """
 tests.test_config - Tests of config methods
 """
-
 from tests.testhelper import *
 import shutil
 import zipfile
 import os
 
+import sabnzbd.cfg
 from sabnzbd.constants import DEF_INI_FILE
 from sabnzbd import config
+from sabnzbd import filesystem
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -37,16 +38,25 @@ class TestConfig:
                 zip_ref.writestr(filename, "foobar")
             return zip_buffer.getvalue()
 
-    @set_config({"admin_dir": os.path.join(SAB_CACHE_DIR, "test_config")})
+    @set_config({"admin_dir": os.path.join(SAB_CACHE_DIR, "test_config"), "complete_dir": SAB_COMPLETE_DIR})
     def test_config(self):
         full_ini_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DEF_INI_FILE)
         shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), full_ini_path)
         assert os.path.exists(full_ini_path)
         config.read_config(full_ini_path)
 
+        # Make sure the Complete folder exists
+        filesystem.create_all_dirs(sabnzbd.cfg.complete_dir())
+
         # Check actual backup data
-        config_backup_data = config.create_config_backup()
-        assert config_backup_data
+        config_backup_path = config.create_config_backup()
+        assert os.path.exists(config_backup_path)
+        assert sabnzbd.__version__ in config_backup_path
+        assert time.strftime("%Y.%m.%d_%H") in config_backup_path
+
+        with open(config_backup_path, "rb") as config_backup_fp:
+            config_backup_data = config_backup_fp.read()
+
         assert config.validate_config_backup(config_backup_data)
 
         # Validate basic dummy data

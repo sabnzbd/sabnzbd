@@ -1,60 +1,39 @@
-Release Notes - SABnzbd 3.6.1
+Release Notes - SABnzbd 3.7.0
 =========================================================
 
-## Bugfixes since 3.6.0
-- Downloads in `Checking` status were not displayed correctly.
-- Prevent showing crash on Status window during shutdown.
-- Prevent scheduler crash if removed event is canceled.
-- Updated UnRar to 6.11 (Windows) and 6.12 (macOS).
-- macOS/Windows: Updated dependencies and Python versions.
+## Changes since 3.6.1
+- The queue and history can be filtered using keywords:
+  `cat` and `priority`. For example: `show name cat:tv`.
+- Use shortcut `shift + arrow-key` to navigate the queue/history pages.
+- The backup is now created in a local folder for security.
+- Recurring backups can be configured using the scheduler.
+- Improvements to Deobfuscate Final Filenames.
+- RSS overview shows the rule that accepted the job.
+- Added option to sort the queue by `% downloaded`.
+- Added option to replace underscores with dots in folder names.
+- SABnzbd Host input will be validated before being applied.
+- Moved system load information from the main page to the Status window.
+- Console logging is now written to `stdout` instead of `stderr`.
+- Removed Special settings `enable_meta`, `disable_key`,
+  `replace_illegal`, `osx_speed` and `show_sysload`.
+- Merged Special settings `win_menu` and `osx_menu` into `tray_icon`.
+- macOS/Windows: Use Python 3.11, slightly boosting overall performance.
+- macOS/Windows: Updated UnRar to 6.12.
+- Windows: Updated MultiPar to 1.3.2.5.
 
-## Changes since 3.5.3
-- Significantly increased performance by using the yEnc-decoding
-  library of @animetosho. Usenet articles are now decoded using
-  specialized CPU instructions (SIMD) on x86 and ARM systems.
-- Create and restore a backup of configuration and database.
-- Show source of lower download speed (CPU or disk).
-- Added keyboard shortcuts (`P`ause, `A`dd, `S`tatus, `C`onfig).
-- Result of the `Deobfuscate` step is listed in History details.
-- `Path` of `Default` category will be used if category doesn't have one.
-- Disabling `api_warnings` prevents showing `Access Denied`
-  information to the external client.
-- Jobs with `Force` priority will always skip the duplicate check.
-- Added `ext_rename_ignore` to add custom extensions that should
-  be ignored during the `Deobfuscate` step.
-- Removed Indexer Feedback Integration.
-- Removed included `Deobfuscate.py` as it is outdated.
-- Show a warning when there are no valid news servers active.
-- Show a warning if the filesystem does not support special characters.
-- Allow multiple parameters to be passed to par2cmdline/Multipar.
-- Linux: Added AppStream metadata, desktop shortcut and MimeInfo.
-- Linux: Added support for bash completion.
-- macOS: Application and included tools fully native on M1 systems.
-- macOS/Windows: Updated UnRar to 6.10 and 7-Zip to 21.07.
-- Windows: Updated MultiPar to v1.3.2.3.
+# API changes since 3.6.1
+- Minor improvements in API performance.
+- Removed fields `scripts` and `categories` from `queue` API call.
+- Moved `loadavg` from `queue` to `status` API call.
 
-# API changes since 3.5.3
-- Removed several (status) fields from the `queue` API call.
-- Remove unused and undocumented API calls: `addid`, `options`, `rescan`,
-  `osx_icon`, `set_speedlimit`, `get_speedlimit`, `set_colorscheme`.
-- Removed undocumented `xcat` parameter.
-- `None` values in XML API-output are left empty.
-- Adding NZB's would not always return `nzo_ids`.
-- Prevent crash in `history` call during post-processing.
-
-# Bugfixes since 3.5.3
-- Extended timeout when measuring system performance.
-- Interface settings were sometimes reset on page reload.
-- Par2 sets with duplicate names could skip verification and repair.
-- Ignore `.par2` files that could not be parsed.
-- Correctly default to `Glitter - Auto` on new installs.
-- Download speed was not updated when stalled due to disk performance.
-- Prevent traceback when status functions timeout.
-- Prevent crash if not enough repair blocks are available.
-- Prevent crash when there is an unknown `language` setting.
-- Source release had Windows line-endings.
-- Windows: If a job password contained a double quote it
-  would not be picked up by UnRar and unpack would fail.
+# Bugfixes since 3.6.1
+- Free Space Detection was too strict when using Direct Unpack.
+- File uploads with special characters would be parsed incorrectly.
+- Passwords from NZB meta-data were tried multiple times.
+- Passwords were not always supplied to the pre-queue script.
+- RSS-feed names were not sanitized when renamed.
+- Make sure short-dates are detected as `YY-MM-DD` in Sorting.
+- Show the custom job name in History when the NZB could not be fetched.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x

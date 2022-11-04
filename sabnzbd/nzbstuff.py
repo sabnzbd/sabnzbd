@@ -494,12 +494,12 @@ class NzbFile(TryList):
         # Set non-transferable values
         self.md5 = None
 
-    def __eq__(self, other):
+    def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the numer bytes and first article
         are the same or if there are no articles left, use the filenames.
         Some NZB's are just a mess and report different sizes for the same article.
         """
-        if self.bytes == other.bytes or len(self.decodetable) == len(other.decodetable):
+        if other and (self.bytes == other.bytes or len(self.decodetable) == len(other.decodetable)):
             if self.decodetable and other.decodetable:
                 return self.decodetable[0] == other.decodetable[0]
             # Fallback to filename comparison
@@ -566,7 +566,6 @@ NzbObjectSaver = (
     "nzo_id",
     "futuretype",
     "removed_from_queue",
-    "parsed",
     "action_line",
     "unpack_info",
     "fail_msg",
@@ -709,7 +708,6 @@ class NzbObject(TryList):
         self.futuretype = futuretype
         self.removed_from_queue = False
         self.to_be_removed = False
-        self.parsed = False
         self.duplicate = False
         self.oversized = False
         self.precheck = False
@@ -761,6 +759,9 @@ class NzbObject(TryList):
         if cfg.replace_spaces():
             logging.info("Replacing spaces with underscores in %s", self.final_name)
             self.final_name = self.final_name.replace(" ", "_")
+        if cfg.replace_underscores():
+            logging.info("Replacing underscores with dots in %s", self.final_name)
+            self.final_name = self.final_name.replace("_", ".")
         if cfg.replace_dots():
             logging.info("Replacing dots with spaces in %s", self.final_name)
             self.final_name = self.final_name.replace(".", " ")
@@ -839,6 +840,10 @@ class NzbObject(TryList):
         self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
         self.set_priority(priority)
         self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
+
+        # Show first meta-password (if any), when there's no explicit password
+        if not self.password and self.meta.get("password"):
+            self.password = self.meta.get("password", [None])[0]
 
         # Run user pre-queue script if set and valid
         if not reuse and make_script_path(cfg.pre_script()):
@@ -966,10 +971,6 @@ class NzbObject(TryList):
             if not self.nzo_info.get(kw):
                 self.nzo_info[kw] = self.meta[kw][0]
         logging.debug("NZB nzo-info = %s", self.nzo_info)
-
-        # Show first meta-password (if any), when there's no explicit password
-        if not self.password and self.meta.get("password"):
-            self.password = self.meta.get("password", [None])[0]
 
         # Set nzo save-delay to minimum 120 seconds
         self.save_timeout = max(120, min(6.0 * self.bytes / GIGI, 300.0))

@@ -1,14 +1,14 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Rik Brouwer, 2022
 # Safihre <safihre@sabnzbd.org>, 2022
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0RC2\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Dutch (https://www.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -146,14 +146,6 @@ msgstr "SABnzbd is afgesloten"
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signaal %s ontvangen, opslaan en afsluiten..."
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -301,6 +293,10 @@ msgstr "%s is geen geldig e-mailadres"
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Serveradres verplicht"
+
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ongeldige servernaam"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
@@ -639,11 +635,15 @@ msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
+"Het is niet mogelijk bestanden met speciale tekens op te slaan in %s. Dit "
+"geeft mogelijk problemen bij het verwerken van downloads."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
+"Het is niet mogelijk bestanden te schrijven in %s. Hierdoor kan er niet "
+"gedownload worden."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -677,14 +677,6 @@ msgid ""
 msgstr ""
 "API-sleutel incorrect; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
 "in bij het externe programma:"
-
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Autenticatie ontbreekt; vul gebruikersnaam en wachtwoord van 'Configuratie' "
-"=> 'Algemeen' in bij het externe programma:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
@@ -1243,27 +1235,27 @@ msgstr "Afgebroken, kan niet voltooid worden"
 msgid "Error importing %s"
 msgstr "Fout bij importeren van %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUBBEL"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "VERSLEUTELD"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "TE GROOT"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "ONVOLLEDIG"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "ONGEWENST"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "WACHT %s sec"
 
@@ -2208,10 +2200,6 @@ msgid "Download Dir"
 msgstr "Map voor verwerkte downloads"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Sysload"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Weet je zeker dat je SABnzbd wilt afsluiten?"
 
@@ -2506,6 +2494,10 @@ msgstr "Processor"
 #: sabnzbd/skintext.py
 msgid "Disk speed"
 msgstr "Hardeschijf"
+
+#: sabnzbd/skintext.py
+msgid "System load"
+msgstr "Systeembelasting"
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -2811,13 +2803,22 @@ msgstr ""
 "Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik).<br "
 "/><i>In bytes, in K,M,G notatie. Bijvoorbeeld: \"64M\" of \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
-msgstr "Backup downloaden"
+msgid "Create backup"
+msgstr "Maak backup"
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
-msgstr "Backup van de configuratie en de database opslaan of herstellen"
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
+msgstr ""
+"Maak een backup van de configuratie en de database in de Backup Map.<br>Als "
+"er geen Backup Map is ingesteld wordt de backup aangemaakt in de Map voor "
+"verwerkte downloads.<br>Automatische backups kunnen worden ingesteld via de "
+"Taakplanner."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -3095,6 +3096,20 @@ msgstr ""
 "alleen gewijzigd worden als de wachtrij leeg is.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr "Backup map"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+"Map waar de backups van de configuratie en databases worden opgeslagen.<br "
+"/>Als deze map niet is ingesteld worden de backups aangemaakt in de Map voor"
+" verwerkte downloads."
+
+#: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr ""
 "<i>De bestanden worden <b>niet</b> verplaatst. SABnzbd moet herstart "
@@ -3301,19 +3316,6 @@ msgstr ""
 "Sommige indexers hebben een alternatieve NZB wanneer een download mislukt"
 
 #: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr "Gebruik indexer informatie"
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-"Maak tijdens het sorteren gebruik van informatie van de indexer zoals titel,"
-" seizoen, aflevering, enz. Anders wordt alle informatie uit de naam van de "
-"download gehaald."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Gebruik tijdelijke mapnamen"
 
@@ -3369,6 +3371,12 @@ msgstr ""
 "wordt toegevoegd"
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+"De wachtrij wordt elke 30 seconden opnieuw gesorteerd als de optie % "
+"gedownload is gekozen."
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "Verspreidingswachttijd"
 
@@ -3400,6 +3408,14 @@ msgstr "Vervang spaties in mapnamen"
 #: sabnzbd/skintext.py
 msgid "Replace spaces with underscores in folder names."
 msgstr "Vervang spaties door onderliggende streepjes in namen van mappen."
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr "Vervang onderstrepingstekens in mapnamen"
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr "Vervang onderstrepingstekens door punten in mapnamen."
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4588,14 +4604,6 @@ msgid "Submit"
 msgstr "Verstuur"
 
 #: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Ingediend. Bedankt!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Niets geselecteerd!"
-
-#: sabnzbd/skintext.py
 msgid "Remove all selected files"
 msgstr "Verwijder alle geselecteerde bestanden"
 
@@ -4686,6 +4694,10 @@ msgid ""
 msgstr ""
 "Alle gebruikersnamen, wachtwoorden en API-sleutels worden automatisch "
 "verwijderd uit het logbestand en de bijgevoegde kopie van je instellingen."
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr "Sorteer Op % Gedownload <small>Meest&rarr;Minst</small>"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4903,10 +4915,6 @@ msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 "Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ongeldige servernaam"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

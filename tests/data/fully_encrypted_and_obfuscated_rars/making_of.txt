@@ -1,0 +1,4 @@
+fallocate -l50k blabla.bin
+rar a fully_encrypted  -hpgeheim  -v10k -m0 blabla.bin 
+for f in *rar; do echo "Processing $f file.." ; mv $f `uuidgen` ; done
+

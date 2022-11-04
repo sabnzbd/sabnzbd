@@ -24,6 +24,7 @@ import os
 import re
 import shutil
 import threading
+import time
 import uuid
 import io
 import zipfile
@@ -649,12 +650,15 @@ class ConfigRSS:
         """Remove from database"""
         delete_from_database("rss", self.__name)
 
-    def rename(self, new_name: str):
+    def rename(self, new_name: str) -> str:
         """Update the name and the saved entries"""
+        # Sanitize the name before using it
+        new_name = clean_section_name(new_name)
         delete_from_database("rss", self.__name)
         sabnzbd.RSSReader.rename(self.__name, new_name)
         self.__name = new_name
         add_to_database("rss", self.__name, self)
+        return self.__name
 
 
 # Add typing to the options database-dict
@@ -917,20 +921,33 @@ def save_config(force=False):
     return res
 
 
-def create_config_backup():
-    """Put config data in a zip file"""
-    adminpath = sabnzbd.cfg.admin_dir.get_path()
-    logging.debug("Backing up %s + %s", adminpath, CFG_OBJ.filename)
-    with io.BytesIO() as zip_buffer:
-        with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
-            for filename in CONFIG_BACKUP_FILES:
-                full_path = os.path.join(adminpath, filename)
-                if os.path.isfile(full_path):
-                    with open(full_path, "rb") as data:
-                        zip_ref.writestr(filename, data.read())
-            with open(CFG_OBJ.filename, "rb") as data:
-                zip_ref.writestr(DEF_INI_FILE, data.read())
-        return zip_buffer.getvalue()
+def create_config_backup() -> Union[str, bool]:
+    """Put config data in a zip file, returns path on success"""
+    admin_path = sabnzbd.cfg.admin_dir.get_path()
+    output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
+
+    # Check if there is a backup folder set, use complete otherwise
+    if sabnzbd.cfg.backup_dir():
+        backup_dir = sabnzbd.cfg.backup_dir.get_path()
+    else:
+        backup_dir = sabnzbd.cfg.complete_dir.get_path()
+    complete_path = os.path.join(backup_dir, output_filename)
+    logging.debug("Backing up %s + %s in %s", admin_path, CFG_OBJ.filename, complete_path)
+
+    try:
+        with open(complete_path, "wb") as zip_buffer:
+            with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
+                for filename in CONFIG_BACKUP_FILES:
+                    full_path = os.path.join(admin_path, filename)
+                    if os.path.isfile(full_path):
+                        with open(full_path, "rb") as data:
+                            zip_ref.writestr(filename, data.read())
+                with open(CFG_OBJ.filename, "rb") as data:
+                    zip_ref.writestr(DEF_INI_FILE, data.read())
+        return clip_path(complete_path)
+    except:
+        logging.info("Failed to create backup: ", exc_info=True)
+        return False
 
 
 def validate_config_backup(config_backup_data: bytes) -> bool:
@@ -945,7 +962,7 @@ def validate_config_backup(config_backup_data: bytes) -> bool:
         return False
 
 
-def restore_config_backup(config_backup_data: bytes) -> bool:
+def restore_config_backup(config_backup_data: bytes):
     """Restore configuration files from zip file"""
     try:
         with io.BytesIO(config_backup_data) as backup_ref:

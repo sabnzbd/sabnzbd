@@ -1,5 +1,5 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/3.6/servers"#-->
+<!--#set global $help_uri="configuration/3.7/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#import json#-->
@@ -49,7 +49,7 @@
                         <label class="config" for="host">$T('srv-host')</label>
                         <input type="text" name="host" id="host" required />
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="port">$T('srv-port')</label>
                         <input type="number" name="port" id="port" size="8" value="119" min="0" />
                     </div>
@@ -180,7 +180,7 @@
                             <label class="config" for="host$cur">$T('srv-host')</label>
                             <input type="text" name="host" id="host$cur" value="$server['host']" required />
                         </div>
-                        <div class="field-pair">
+                        <div class="field-pair advanced-settings">
                             <label class="config" for="port$cur">$T('srv-port')</label>
                             <input type="number" name="port" id="port$cur" value="$server['port']" size="8" min="0" required />
                         </div>
@@ -259,7 +259,7 @@
                             <label class="config" for="notes$cur">$T('srv-notes')</label>
                             <textarea name="notes" id="notes$cur" rows="3" cols="50">$server['notes']</textarea>
                         </div>
-                        <div class="field-pair">
+                        <div class="field-pair no-field-pair-bg">
                             <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                             <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                             <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
@@ -283,7 +283,8 @@
 
                             <p title="$T('readwiki')">
                                 <b>$T('srv-article-availability'):</b><br/>
-                                $T('selectedDates'): <span id="server-article-value-${cur}"></span>
+                                $T('selectedDates'): <span id="server-article-value-${cur}"></span><br/>
+                                <a href="https://sabnzbd.org/not-complete" id="server-article-not-complete-${cur}" target="_blank">https://sabnzbd.org/not-complete</a>
                             </p>
                             <!--#if $server['expire_date']#-->
                             <p><b>$T('srv-expire_date'):</b> $(server['expire_date'])</p>
@@ -402,8 +403,11 @@
             if(!isNaN(articleRatio)) {
                 // Use filesize to convert to unit-display
                 \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', filesize(totalArticlesTriedThisRange, {unix: true, round: 0, spacer: "", base: 1})))
+                // If we have a low value, we link them to the website
+                if(articleRatio > 60) \$('#server-article-not-complete-' + server_id).hide()
             } else {
                 \$('#server-article-value-' + server_id).text('$T("notAvailable")')
+                \$('#server-article-not-complete-' + server_id).hide()
             }
 
             // Save bandwidth data in a very ugly way, but we need to do this

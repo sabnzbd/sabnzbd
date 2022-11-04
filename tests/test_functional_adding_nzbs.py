@@ -23,7 +23,6 @@ import shutil
 import stat
 import sys
 from random import sample
-from zipfile import ZipFile
 
 from sabnzbd.constants import (
     DUP_PRIORITY,

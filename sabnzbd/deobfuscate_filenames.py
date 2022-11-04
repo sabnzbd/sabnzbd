@@ -168,11 +168,58 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
+def first_file_is_much_bigger(filelist):
+    # returns True if first file is much bigger than second file
+    # Note: input parameter filelist must ordered on size!
+    try:
+        factor = os.path.getsize(filelist[0]) / os.path.getsize(filelist[1])
+        if factor > 3:
+            return True
+        else:
+            return False
+    except:
+        # no second file at all
+        return True
+
+
 def deobfuscate(nzo, filelist: List[str], usefulname: str):
-    """Check all files in filelist, and deobfuscate: rename to filename based on usefulname.
-    Methods
-    # 1. if no meaningful extension, add it
-    # 2. based on detecting obfuscated filenames"""
+    """
+    For files in filelist:
+    1. if a file has no meaningful extension, add it (for example ".txt" or ".png")
+    2. pick biggest file (and its lookalikes), and deobfuscate (if needed), to usefulname
+
+    Typical cases for step 2:
+
+    Case 1:
+
+    bla.iso (1000MB, so much bigger than next biggest file)
+    bla-sample.iso (100MB)
+    bla.txt (1MB)
+    something.txt (1MB)
+
+    Because "bla" (of biggest file bla.iso) looks meaningless / obfuscated, we rename these files to
+
+    Nice_Name_1234.iso
+    Nice_Name_1234-sample.iso
+    Nice_Name_1234.txt
+    something.txt (no renaming)
+
+    Case 2:
+
+    one.bin (10MB)
+    two.bin (12MB)
+    three.bin (8MB)
+
+    No renaming, because the biggest file (12MB) is not much bigger than the second biggest file (10MB)
+
+    Case 3:
+
+    Great_File_1969.iso (1000MB)
+
+    No renaming because the filename looks OK already (not obfuscated)
+
+    """
+
     # Can't be imported directly due to circular import
     nzo: sabnzbd.nzbstuff.NzbObject
 
@@ -190,8 +237,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate skipped due to DVD/Bluray directories"))
         return
 
-    # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
-    # if so, let's give them a better extension based on their internal content/info
+    # If needed, add a useful extension (by looking at file contents)
     # Example: if 'kjladsflkjadf.adsflkjads' is probably a PNG, rename to 'kjladsflkjadf.adsflkjads.png'
     newlist = []
     nr_ext_renamed = 0
@@ -217,64 +263,51 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate corrected the extension of %d file(s)") % nr_ext_renamed)
         filelist = newlist
 
-    # Now we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
-    excluded_file_exts = EXCLUDED_FILE_EXTS
-    # If there is a collection with bigger files with the same extension, we don't want to rename it
-    extcounter = {}
-    for file in filelist:
-        if os.path.getsize(file) < MIN_FILE_SIZE:
-            # too small to care
-            continue
-        ext = get_ext(file)
-        if ext in extcounter:
-            extcounter[ext] += 1
-        else:
-            extcounter[ext] = 1
-        if extcounter[ext] >= 3 and ext not in excluded_file_exts:
-            # collection, and extension not yet in excluded_file_exts, so add it
-            excluded_file_exts = (*excluded_file_exts, ext)
-            logging.debug(
-                "Found a collection of at least %s files with extension %s, so not renaming those files",
-                extcounter[ext],
-                ext,
-            )
-
     logging.debug("Trying to see if there are qualifying files to be deobfuscated")
-    # We start with he biggest file ... probably the most important file
-    filelist = sorted(filelist, key=os.path.getsize, reverse=True)
     nr_files_renamed = 0
-    for filename in filelist:
-        # check that file is still there (and not renamed by the secondary renaming process below)
-        if not os.path.isfile(filename):
-            continue
 
-        logging.debug("Deobfuscate inspecting %s", filename)
-        # Do we need to rename this file?
-        # Criteria: big, not-excluded extension, obfuscated (in that order)
-        if (
-            os.path.getsize(filename) > MIN_FILE_SIZE
-            and get_ext(filename) not in excluded_file_exts
-            and is_probably_obfuscated(filename)  # this as last test to avoid unnecessary analysis
-        ):
+    # We pick the biggest file ... probably the most important file
+    # so sort filelist on size:
+    filelist = sorted(filelist, key=os.path.getsize, reverse=True)
+    if filelist:
+        biggest_file = filelist[0]
+    else:
+        biggest_file = None
+    if not biggest_file or not os.path.isfile(biggest_file):
+        # no file found, which is weird
+        logging.info("No file given, or not found (%s)", biggest_file)
+        return
+    logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
+    if not first_file_is_much_bigger(filelist):
+        logging.debug("%s excluded from deobfuscation because it is not much bigger than other file(s)", biggest_file)
+        return
+    if get_ext(biggest_file) in EXCLUDED_FILE_EXTS:
+        logging.debug("%s excluded from deobfuscation because of excluded extension", biggest_file)
+        return
+    if not is_probably_obfuscated(biggest_file):
+        logging.debug("%s excluded from deobfuscation because filename does not look obfuscated", biggest_file)
+        return
+
+    # if we get here, the biggest_file is relatively big, has no excluded extension, and is obfuscated
+    # Rename the biggest_file and make sure the new filename is unique
+    path, file = os.path.split(biggest_file)
+    # construct new_name: <path><usefulname><extension>
+    new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), get_ext(biggest_file)))
+    logging.info("Deobfuscate renaming %s to %s", biggest_file, new_name)
+    renamer(biggest_file, new_name)
+    nr_files_renamed += 1
+
+    # Now find other files with the same basename in filelist, and rename them in the same way:
+    basedirfile, _ = os.path.splitext(biggest_file)  # something like "/home/this/myiso"
+    for otherfile in filelist:
+        if otherfile.startswith(basedirfile) and os.path.isfile(otherfile):
+            # yes, same basedirfile, only different ending
+            remaining_ending = otherfile.replace(basedirfile, "")  # might be long ext, like ".dut.srt" or "-sample.iso"
+            new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), remaining_ending))
+            logging.info("Deobfuscate renaming %s to %s", otherfile, new_name)
             # Rename and make sure the new filename is unique
-            path, file = os.path.split(filename)
-            # construct new_name: <path><usefulname><extension>
-            new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), get_ext(filename)))
-            logging.info("Deobfuscate renaming %s to %s", filename, new_name)
-            renamer(filename, new_name)
-            # find other files with the same basename in filelist, and rename them in the same way:
-            basedirfile, _ = os.path.splitext(filename)  # something like "/home/this/myiso"
-            for otherfile in filelist:
-                if otherfile.startswith(basedirfile + ".") and os.path.isfile(otherfile):
-                    # yes, same basedirfile, only different extension
-                    remainingextension = otherfile.replace(basedirfile, "")  # might be long ext, like ".dut.srt"
-                    new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), remainingextension))
-                    logging.info("Deobfuscate renaming %s to %s", otherfile, new_name)
-                    # Rename and make sure the new filename is unique
-                    renamer(otherfile, new_name)
-                    nr_files_renamed += 1
-        else:
-            logging.debug("%s excluded from deobfuscation based on size, extension or non-obfuscation", filename)
+            renamer(otherfile, new_name)
+            nr_files_renamed += 1
 
     if nr_files_renamed:
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d file(s)") % nr_files_renamed)

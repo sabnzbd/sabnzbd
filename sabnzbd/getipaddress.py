@@ -106,21 +106,24 @@ def publicipv4():
     """Because of dual IPv4/IPv6 clients, finding the
     public ipv4 needs special attention, meaning forcing
     IPv4 connections, and not allowing IPv6 connections
+    Function uses sabnzbd.cfg.selftest_host(), which must report our public IPv4 address over which we access it
     """
     start = time.time()
-    public_ipv4 = None
     try:
-        ipv4_found = False
-        # we only want IPv4 resolving, so socket.AF_INET:
-        result = addresslookup4(sabnzbd.cfg.selftest_host())
-    except (ValueError, socket.error, multiprocessing.context.TimeoutError):
-        # something very bad: no urllib2, no resolving of selftest_host, no network at all
-        # Or strange DSM problem: https://github.com/sabnzbd/sabnzbd/issues/2008
-        logging.debug("Failed to detect public IPv4 address")
-        return public_ipv4
+        # look up IPv4 addresses of selftest_host
+        lookup_result_iv4 = addresslookup4(sabnzbd.cfg.selftest_host())
 
-    # we got one or more IPv4 address(es), so let's connect to them
-    for item in result:
+        # Make sure there is a result, abort otherwise
+        if not lookup_result_iv4:
+            raise Exception
+    except Exception:
+        # something very bad: no name resolving of selftest_host
+        logging.debug("Failed to detect public IPv4 address: looking up %s failed", sabnzbd.cfg.selftest_host())
+        return None
+
+    public_ipv4 = None
+    # we got one or more IPv4 address(es) for selftest_host, so let's connect and ask for our own public IPv4
+    for item in lookup_result_iv4:
         # get next IPv4 address of sabnzbd.cfg.selftest_host()
         selftest_ipv4 = item[4][0]
         try:
@@ -135,16 +138,17 @@ def publicipv4():
             # ... check the response is indeed an IPv4 address:
             # if we got anything else than a plain IPv4 address, this will raise an exception
             socket.inet_aton(public_ipv4)
-            # if we get here without exception, we're done:
-            ipv4_found = True
+            # if we get here without exception, we found our public IPv4, and we're done:
             break
         except (socket.error, urllib.error.URLError):
             # the connect OR the inet_aton raised an exception, so:
+            public_ipv4 = None  # reset
             # continue the for loop to try next server IPv4 address
             pass
 
-    if not ipv4_found:
-        public_ipv4 = None
+    if not public_ipv4:
+        logging.debug("Failed to get public IPv4 address from %s", sabnzbd.cfg.selftest_host())
+        return None
 
     logging.debug("Public IPv4 address = %s (in %.2f seconds)", public_ipv4, time.time() - start)
     return public_ipv4

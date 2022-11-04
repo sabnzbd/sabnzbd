@@ -6,8 +6,6 @@ function QueueListModel(parent) {
     var self = this;
     self.parent = parent;
     self.dragging = false;
-    self.rawCatList = [];
-    self.rawScriptList = [];
 
     // Because SABNZB returns the name
     // But when you want to set Priority you need the number..
@@ -39,7 +37,8 @@ function QueueListModel(parent) {
     self.multiEditItems = ko.observableArray([]);
     self.categoriesList = ko.observableArray([]);
     self.scriptsList = ko.observableArray([]);
-    self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
+    self.scriptsListLoaded = ko.observable(false);
+    self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(20).extend({ persist: 'queuePaginationLimit' });
     self.pagination = new paginationModel(self);
 
@@ -65,31 +64,6 @@ function QueueListModel(parent) {
         var itemIds = $.map(self.queueItems(), function(i) {
             return i.id;
         });
-
-        // Did the category-list change?
-        // Otherwise KO will send updates to all <select> for every refresh()
-        if(self.rawCatList != data.categories.toString()) {
-            // Reformat categories
-            self.categoriesList($.map(data.categories, function(cat) {
-                // Default?
-                if(cat == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
-                return { catValue: cat, catText: cat };
-            }))
-            // Update
-            self.rawCatList = data.categories.toString();
-        }
-
-        // Did the script-list change?
-        if(self.rawScriptList != data.scripts.toString()) {
-            // Reformat script-list
-            self.scriptsList($.map(data.scripts, function(script) {
-                // Default?
-                if(script == 'None') return glitterTranslate.noneText;
-                return script;
-            }))
-            // Update
-            self.rawScriptList = data.scripts.toString();
-        }
 
         // Set limit
         self.totalItems(data.noofslots);
@@ -194,11 +168,13 @@ function QueueListModel(parent) {
 
     // Searching in queue (rate-limited in decleration)
     self.searchTerm.subscribe(function() {
-        // Refresh now
-        self.parent.refresh();
         // Go back to page 1
         if(self.pagination.currentPage() != 1) {
+            // This forces a refresh
             self.pagination.moveToPage(1);
+        } else {
+            // Refresh now
+            self.parent.refresh();
         }
     })
 
@@ -208,7 +184,6 @@ function QueueListModel(parent) {
         if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
             self.isLoading(true)
             self.searchTerm('');
-            self.parent.refresh()
         }
         // Was it click and the field is empty? Then we focus on the field
         if(event.type == 'mousedown' && self.searchTerm() == '') {
@@ -226,6 +201,10 @@ function QueueListModel(parent) {
         // What action?
         var sort, dir;
         switch($(event.currentTarget).data('action')) {
+            case 'sortRemainingAsc':
+                sort = 'remaining';
+                dir = 'asc';
+                break;
             case 'sortAgeAsc':
                 sort = 'avg_age';
                 dir = 'desc';
@@ -693,8 +672,6 @@ function QueueModel(parent, data) {
         })
     }
     self.changeScript = function(item) {
-        // Not on empty handlers
-        if(!item.script() || parent.scriptsList().length <= 1) return;
         callAPI({
             mode: 'change_script',
             value: item.id,

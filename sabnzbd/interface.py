@@ -344,35 +344,19 @@ def check_apikey(kwargs):
         return None
 
     # First check API-key, if OK that's sufficient
-    if not cfg.disable_key():
-        key = kwargs.get("apikey")
-        if not key:
-            log_warning_and_ip(
-                T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
-            )
-            return _MSG_APIKEY_REQUIRED
-        elif req_access == 1 and key == cfg.nzb_key():
-            return None
-        elif key == cfg.api_key():
-            return None
-        else:
-            log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
-            return _MSG_APIKEY_INCORRECT
-
-    # No active API-key, check web credentials instead
-    if cfg.username() and cfg.password():
-        if check_login() or (
-            kwargs.get("ma_username") == cfg.username() and kwargs.get("ma_password") == cfg.password()
-        ):
-            pass
-        else:
-            log_warning_and_ip(
-                T(
-                    "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
-                )
-            )
-            return _MSG_MISSING_AUTH
-    return None
+    key = kwargs.get("apikey")
+    if not key:
+        log_warning_and_ip(
+            T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
+        )
+        return _MSG_APIKEY_REQUIRED
+    elif req_access == 1 and key == cfg.nzb_key():
+        return None
+    elif key == cfg.api_key():
+        return None
+    else:
+        log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
+        return _MSG_APIKEY_INCORRECT
 
 
 def template_filtered_response(file: str, search_list: Dict[str, Any]):
@@ -701,12 +685,6 @@ class ConfigPage:
             search_list=conf,
         )
 
-    @secured_expose(check_configlock=True, check_api_key=True)
-    def backup(self, **kwargs):
-        cherrypy.response.headers["Content-Type"] = "application/zip"
-        cherrypy.response.headers["Content-Disposition"] = 'attachment; filename="sabnzbd-config.zip"'
-        return config.create_config_backup()
-
 
 ##############################################################################
 LIST_DIRPAGE = (
@@ -722,6 +700,7 @@ LIST_DIRPAGE = (
     "email_dir",
     "permissions",
     "log_dir",
+    "backup_dir",
     "password_file",
 )
 
@@ -749,7 +728,7 @@ class ConfigFolders:
         for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
             value = kwargs.get(kw)
             if value is not None or kw in LIST_BOOL_DIRPAGE:
-                if kw in ("complete_dir", "dirscan_dir"):
+                if kw in ("complete_dir", "dirscan_dir", "backup_dir"):
                     msg = config.get_config("misc", kw).set(value, create=True)
                 else:
                     msg = config.get_config("misc", kw).set(value)
@@ -774,7 +753,6 @@ SWITCH_LIST = (
     "par_option",
     "top_only",
     "direct_unpack",
-    "enable_meta",
     "win_process_prio",
     "auto_sort",
     "propagation_delay",
@@ -782,6 +760,7 @@ SWITCH_LIST = (
     "flat_unpack",
     "safe_postproc",
     "no_dupes",
+    "replace_underscores",
     "replace_spaces",
     "replace_dots",
     "ignore_samples",
@@ -873,9 +852,7 @@ SPECIAL_BOOL_LIST = (
     "enable_filejoin",
     "enable_tsjoin",
     "ignore_unrar_dates",
-    "osx_menu",
-    "osx_speed",
-    "win_menu",
+    "tray_icon",
     "allow_incomplete_nzb",
     "rss_filenames",
     "ipv6_hosting",
@@ -885,9 +862,7 @@ SPECIAL_BOOL_LIST = (
     "wait_for_dfolder",
     "enable_broadcast",
     "warn_dupl_jobs",
-    "replace_illegal",
     "backup_for_duplicates",
-    "disable_api_key",
     "api_logging",
     "x_frame_options",
     "allow_old_ssl_tls",
@@ -902,7 +877,6 @@ SPECIAL_VALUE_LIST = (
     "req_completion_rate",
     "wait_ext_drive",
     "max_foldername_length",
-    "show_sysload",
     "url_base",
     "num_simd_decoders",
     "direct_unpack_threads",
@@ -1026,7 +1000,7 @@ class ConfigGeneral:
             value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
-                return badParameterResponse(msg)
+                return badParameterResponse(msg, ajax=kwargs.get("ajax"))
 
         # Handle special options
         cfg.password.set(kwargs.get("password"))
@@ -1377,9 +1351,8 @@ class ConfigRss:
             # Did we get a new name for this feed?
             new_name = kwargs.get("feed_new_name")
             if new_name and new_name != feed_name:
-                cf.rename(new_name)
                 # Update the feed name for the redirect
-                kwargs["feed"] = new_name
+                kwargs["feed"] = cf.rename(new_name)
 
             config.save_config()
 
@@ -1592,6 +1565,7 @@ _SCHED_ACTIONS = (
     "resume_post",
     "scan_folder",
     "rss_scan",
+    "create_backup",
     "remove_failed",
     "remove_completed",
     "pause_all_low",

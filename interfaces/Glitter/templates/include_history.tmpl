@@ -86,7 +86,7 @@
                                     <div class="col-sm-2">$T('srv-password')</div>
                                     <div class="col-sm-10" data-bind="text: historyStatus.password"></div>
                                 </div>
-                                <div class="row">
+                                <div class="row" data-bind="visible: historyStatus.storage() || historyStatus.path()">
                                     <div class="col-sm-2">$T('msg-path')</div>
                                     <div class="col-sm-10" data-bind="text: historyStatus.storage() == '' ? historyStatus.path : historyStatus.storage"></div>
                                 </div>

@@ -42,8 +42,9 @@ snap_status = run_external_command(["snapcraft", "status", "sabnzbd"])
 if not snap_status:
     raise ValueError("No information to parse")
 
-# To store the version
+# To store the version and number of released items
 arch = None
+released_items = 0
 
 # Parse line-by-line
 for line in snap_status.splitlines():
@@ -54,15 +55,20 @@ for line in snap_status.splitlines():
         split_line.remove("latest")
 
     # Only care for the lines that have the revision and the arch
-    if len(split_line) == 4:
+    if len(split_line) == 5:
         arch = split_line[0]
         if arch not in ("amd64", "arm64", "armhf"):
             # Don't care about this arch
             arch = None
 
     # Line that has the channel and the revision, but not the arch
-    if len(split_line) == 3:
+    if len(split_line) == 4:
         # Do we have an arch that we care about?
         if arch and split_line[0] == "edge":
             # Release this version
             run_external_command(["snapcraft", "release", "sabnzbd", split_line[2], "stable"])
+            released_items += 1
+
+# We expect to release something, crash if not
+if not released_items:
+    raise ValueError("No releases updated! Is this expected?")

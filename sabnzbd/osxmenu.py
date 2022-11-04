@@ -55,7 +55,7 @@ class SABnzbdDelegate(NSObject):
 
     def awakeFromNib(self):
         # Do we want the menu
-        if sabnzbd.cfg.osx_menu():
+        if sabnzbd.cfg.tray_icon():
             # Status Bar initialize
             self.buildMenu()
 
@@ -92,8 +92,6 @@ class SABnzbdDelegate(NSObject):
         # Variables
         self.state = "Idle"
         self.speed = 0
-        self.version_notify = 1
-        self.status_removed = 0
 
         # Menu construction
         self.menu = NSMenu.alloc().init()
@@ -363,16 +361,7 @@ class SABnzbdDelegate(NSObject):
                 if "M" in speed and len(speed) > 5:
                     speed = speed.replace(" ", "")
                 time_left = (bpsnow > 10 and time_left) or "------"
-
-                statusbarText = "\n\n%s\n%sB/s\n" % (time_left, speed)
-
-                if sabnzbd.SABSTOP:
-                    statusbarText = "..."
-
-                if not sabnzbd.cfg.osx_speed():
-                    statusbarText = ""
-
-                self.setMenuTitle_(statusbarText)
+                self.setMenuTitle_("\n\n%s\n%sB/s\n" % (time_left, speed))
             else:
                 self.state = T("Idle")
                 self.setMenuTitle_("")
@@ -404,13 +393,12 @@ class SABnzbdDelegate(NSObject):
 
     def speedlimitUpdate(self):
         try:
-            speed = int(sabnzbd.Downloader.get_limit())
-            if self.speed != speed:
-                self.speed = speed
+            if self.speed != sabnzbd.Downloader.bandwidth_perc:
+                self.speed = sabnzbd.Downloader.bandwidth_perc
                 speedsValues = self.menu_speed.numberOfItems()
                 for i in range(speedsValues):
                     menuitem = self.menu_speed.itemAtIndex_(i)
-                    if speed == int(menuitem.representedObject()):
+                    if sabnzbd.Downloader.bandwidth_perc == int(menuitem.representedObject()):
                         menuitem.setState_(NSOnState)
                     else:
                         menuitem.setState_(NSOffState)

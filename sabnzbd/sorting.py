@@ -601,6 +601,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         # "allowed_countries": [],
         # "allowed_languages": [],
         "excludes": EXCLUDED_GUESSIT_PROPERTIES,
+        "date_year_first": True,  # Make sure also short-dates are detected as YY-MM-DD
     }
     if sort_type:
         # Hint the type if known
@@ -735,14 +736,6 @@ def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict], job
 
     # Return the episode names with spaces, dots, and underscores
     return ep_name.replace("_", " "), ep_name.replace(" - ", "-").replace(" ", "."), ep_name.replace(" ", "_")
-
-
-def has_subdirectory(path: str) -> bool:
-    """Return True if any directory is found inside the tree at 'path'"""
-    for _root, dirs, _files in os.walk(path):
-        if dirs:
-            return True
-    return False
 
 
 def to_lowercase(path: str) -> str:

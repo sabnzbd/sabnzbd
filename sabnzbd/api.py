@@ -258,16 +258,28 @@ def _api_queue_sort(value, kwargs):
 
 
 def _api_queue_default(value, kwargs):
-    """API: accepts sort, dir, start, limit"""
+    """API: accepts sort, dir, start, limit and search terms"""
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
     search = kwargs.get("search")
+    categories = kwargs.get("cat") or kwargs.get("category")
+    priorities = kwargs.get("priority")
     nzo_ids = kwargs.get("nzo_ids")
 
+    if categories and not isinstance(categories, list):
+        categories = categories.split(",")
+    if priorities and not isinstance(priorities, list):
+        # Make sure it's an integer
+        priorities = [int_conv(prio) for prio in priorities.split(",")]
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
 
-    return report(keyword="queue", data=build_queue(start=start, limit=limit, search=search, nzo_ids=nzo_ids))
+    return report(
+        keyword="queue",
+        data=build_queue(
+            start=start, limit=limit, search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids
+        ),
+    )
 
 
 def _api_translate(name, kwargs):
@@ -474,7 +486,7 @@ def _api_history(name, kwargs):
         return report(keyword="history", data=False)
 
     if categories and not isinstance(categories, list):
-        categories = [categories]
+        categories = categories.split(",")
 
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
@@ -668,19 +680,15 @@ def _api_version(name, kwargs):
 
 
 def _api_auth(name, kwargs):
-    auth = "None"
-    if not cfg.disable_key():
+    key = kwargs.get("key", "")
+    if not key:
+        auth = "apikey"
+    else:
         auth = "badkey"
-        key = kwargs.get("key", "")
-        if not key:
+        if key == cfg.nzb_key():
+            auth = "nzbkey"
+        if key == cfg.api_key():
             auth = "apikey"
-        else:
-            if key == cfg.nzb_key():
-                auth = "nzbkey"
-            if key == cfg.api_key():
-                auth = "apikey"
-    elif cfg.username() and cfg.password():
-        auth = "login"
     return report(keyword="auth", data=auth)
 
 
@@ -898,6 +906,11 @@ def _api_config_test_server(kwargs):
     return report(data={"result": result, "message": msg})
 
 
+def _api_config_create_backup(kwargs):
+    backup_file = config.create_config_backup()
+    return report(data={"result": bool(backup_file), "message": backup_file})
+
+
 def _api_config_undefined(kwargs):
     return report(_MSG_NOT_IMPLEMENTED)
 
@@ -1011,6 +1024,7 @@ _api_config_table = {
     "set_nzbkey": (_api_config_set_nzbkey, 3),
     "regenerate_certs": (_api_config_regenerate_certs, 3),
     "test_server": (_api_config_test_server, 3),
+    "create_backup": (_api_config_create_backup, 3),
 }
 
 
@@ -1083,9 +1097,6 @@ class XmlOutputFactory:
         In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>
         In Three tiered lists hard-coded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
     """
-
-    def __init__(self):
-        self.__text = ""
 
     def _tuple(self, keyw, lst):
         text = []
@@ -1235,7 +1246,8 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["delayed_decoder"] = sabnzbd.BPSMeter.delayed_decoder
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
 
-    # Dashboard: Speed of System
+    # Dashboard: Speed and load of System
+    info["loadavg"] = loadavg()
     info["pystone"] = sabnzbd.PYSTONE_SCORE
 
     # Dashboard: Speed of Download directory:
@@ -1299,7 +1311,14 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     return info
 
 
-def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None):
+def build_queue(
+    start: int = 0,
+    limit: int = 0,
+    search: Optional[str] = None,
+    categories: Optional[List[str]] = None,
+    priorities: Optional[List[str]] = None,
+    nzo_ids: Optional[List[str]] = None,
+):
     info = build_header(for_template=False)
     (
         queue_bytes_total,
@@ -1308,7 +1327,9 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         nzo_list,
         queue_fullsize,
         nzos_matched,
-    ) = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
+    ) = sabnzbd.NzbQueue.queue_info(
+        search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids, start=start, limit=limit
+    )
 
     info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
     info["speed"] = to_units(sabnzbd.BPSMeter.bps)
@@ -1320,7 +1341,7 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
     info["noofslots"] = nzos_matched
     info["start"] = start
     info["limit"] = limit
-    info["finish"] = info["start"] + info["limit"]
+    info["finish"] = start + limit
 
     if sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc:
         status = Status.PAUSED
@@ -1330,8 +1351,6 @@ def build_queue(start: int = 0, limit: int = 0, search: Optional[str] = None, nz
         status = Status.IDLE
     info["status"] = status
     info["timeleft"] = calc_timeleft(queue_bytes_left, sabnzbd.BPSMeter.bps)
-    info["scripts"] = list_scripts()
-    info["categories"] = list_cats()
 
     n = start
     running_bytes = bytes_left_previous_page
@@ -1524,15 +1543,6 @@ def clear_trans_cache():
 
 def build_header(webdir: str = "", for_template: bool = True, trans_functions: bool = True) -> Dict:
     """Build the basic header"""
-    speed_limit = sabnzbd.Downloader.get_limit()
-    if speed_limit <= 0:
-        speed_limit = 100
-    speed_limit_abs = sabnzbd.Downloader.get_limit_abs()
-    if speed_limit_abs <= 0:
-        speed_limit_abs = ""
-
-    diskspace_info = diskspace()
-
     header = {}
 
     # We don't output everything for API
@@ -1569,15 +1579,15 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
+    diskspace_info = diskspace()
     header["diskspace1"] = "%.2f" % diskspace_info["download_dir"][1]
     header["diskspace2"] = "%.2f" % diskspace_info["complete_dir"][1]
     header["diskspace1_norm"] = to_units(diskspace_info["download_dir"][1] * GIGI)
     header["diskspace2_norm"] = to_units(diskspace_info["complete_dir"][1] * GIGI)
     header["diskspacetotal1"] = "%.2f" % diskspace_info["download_dir"][0]
     header["diskspacetotal2"] = "%.2f" % diskspace_info["complete_dir"][0]
-    header["loadavg"] = loadavg()
-    header["speedlimit"] = "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit)
-    header["speedlimit_abs"] = "%s" % speed_limit_abs
+    header["speedlimit"] = str(sabnzbd.Downloader.bandwidth_perc)
+    header["speedlimit_abs"] = str(sabnzbd.Downloader.bandwidth_limit)
 
     header["have_warnings"] = str(sabnzbd.GUIHANDLER.count())
     header["finishaction"] = sabnzbd.QUEUECOMPLETE

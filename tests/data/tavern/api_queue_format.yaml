@@ -33,7 +33,6 @@ stages:
           diskspace2_norm: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
           diskspacetotal1: !re_match "[0-9.]*"
           diskspacetotal2: !re_match "[0-9.]*"
-          loadavg: !anystr
           speedlimit: !re_match "[0-9]*"
           speedlimit_abs: !re_match "[0-9.]*" # Value may be empty if unset so !anyint won't work
           have_warnings: !re_match "[0-9]*"
@@ -52,8 +51,6 @@ stages:
           noofslots_total: !anyint
           status: "Paused"
           timeleft: "0:00:00"
-          scripts: !anylist
-          categories: !anylist
           noofslots: !anyint
           start: !anyint
           limit: !anyint
@@ -147,7 +144,6 @@ stages:
             <diskspace2_norm>!anystr</diskspace2_norm>
             <diskspacetotal1>!anyfloat</diskspacetotal1>
             <diskspacetotal2>!anyfloat</diskspacetotal2>
-            <loadavg>!anystr</loadavg>
             <speedlimit>!anyint</speedlimit>
             <speedlimit_abs>!anystr</speedlimit_abs>
             <have_warnings>!anyint</have_warnings>
@@ -166,10 +162,6 @@ stages:
             <noofslots_total>!anyint</noofslots_total>
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
-            <scripts>
-            <script>!anystr</script>
-            </scripts>
-            <categories>!anything</categories>
             <noofslots>!anyint</noofslots>
             <start>!anyint</start>
             <limit>!anyint</limit>

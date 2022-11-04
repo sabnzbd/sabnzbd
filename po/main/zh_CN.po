@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0RC2\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -134,14 +134,6 @@ msgstr "SABnzbd 关闭完成"
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "捕捉到 %s 信号，正在保存并退出..."
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -281,6 +273,10 @@ msgstr "%s 不是有效的电子邮箱地址"
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "服务器地址必填"
+
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "服务器地址无效。"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
@@ -641,12 +637,6 @@ msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr "API Key 不正确，请在第三方程序中使用“配置”->“常规”中的 api key:"
-
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr "缺身份认证信息，请在第三方程序中输入“配置”->“常规”中的用户名/密码:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
@@ -1191,27 +1181,27 @@ msgstr "已中止，无法完成"
 msgid "Error importing %s"
 msgstr "导入 %s 出错"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "*重复*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "*加密*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "*太大*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "*不完整*"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "不需要"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "*等待* %s 秒"
 
@@ -2151,10 +2141,6 @@ msgid "Download Dir"
 msgstr "下载目录"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "系统负载"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "是否确定要关闭 SABnzbd?"
 
@@ -2448,6 +2434,10 @@ msgstr ""
 msgid "Disk speed"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "System load"
+msgstr ""
+
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
@@ -2719,12 +2709,17 @@ msgid ""
 " follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
 msgstr "在内存中缓存文章，以减轻硬盘访问压力。<br /><i>单位为字节，可以选择加上 K、M、G 后缀。例如: \"64M\" 或 \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -2982,6 +2977,17 @@ msgid ""
 msgstr "队列管理及历史数据库的存放位置。<br /><i>仅当队列为空时可以修改。</i>"
 
 #: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr "<i>数据<b>不会</b>自动移动。需要重启 SABnzbd 才能生效!</i>"
 
@@ -3164,16 +3170,6 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "部分服务器在下载失败时可提供备用 NZB 文件。"
 
 #: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "启用文件夹重命名"
 
@@ -3224,6 +3220,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "传播延迟"
 
@@ -3253,6 +3253,14 @@ msgstr "替换文件夹名称中的空格"
 #: sabnzbd/skintext.py
 msgid "Replace spaces with underscores in folder names."
 msgstr "将文件夹名称中的空格替换成下划线。"
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4399,14 +4407,6 @@ msgid "Submit"
 msgstr "提交"
 
 #: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "已提交。感谢!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "未选择任何内容!"
-
-#: sabnzbd/skintext.py
 msgid "Remove all selected files"
 msgstr "移除已选文件"
 
@@ -4492,6 +4492,10 @@ msgstr "刷新"
 msgid ""
 "All usernames, passwords and API-keys are automatically removed from the log"
 " and the included copy of your settings."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4705,10 +4709,6 @@ msgstr "超时"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "服务器地址无效。"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

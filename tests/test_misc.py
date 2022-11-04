@@ -117,10 +117,12 @@ class TestMisc:
         assert 1125899906842624.0 == misc.from_units("1P")
 
     def test_to_units(self):
+        assert "" == misc.to_units("foobar")
         assert "1 K" == misc.to_units(1024)
         assert "1 KBla" == misc.to_units(1024, postfix="Bla")
         assert "1.0 M" == misc.to_units(1024 * 1024)
         assert "1.0 M" == misc.to_units(1024 * 1024 + 10)
+        assert "-1.0 M" == misc.to_units(-1024 * 1024)
         assert "10.0 M" == misc.to_units(1024 * 1024 * 10)
         assert "100.0 M" == misc.to_units(1024 * 1024 * 100)
         assert "9.8 G" == misc.to_units(1024 * 1024 * 10000)
@@ -130,6 +132,9 @@ class TestMisc:
         assert 100 == misc.from_units(misc.to_units(100))
         assert 1024 == misc.from_units(misc.to_units(1024))
         assert 1024**3 == misc.from_units(misc.to_units(1024**3))
+
+        # Negative numbers are not supported
+        assert 100 == misc.from_units(misc.to_units(-100))
 
     def test_caller_name(self):
         @set_config({"log_level": 0})

@@ -48,7 +48,7 @@ function ViewModel() {
     self.nrWarnings = ko.observable(0);
     self.allWarnings = ko.observableArray([]);
     self.allMessages = ko.observableArray([]);
-    self.onQueueFinish = ko.observable('');
+    self.finishaction = ko.observable();
     self.speedHistory = [];
 
     // Statusinfo container
@@ -64,6 +64,7 @@ function ViewModel() {
     self.statusInfo.dnslookup = ko.observable();
     self.statusInfo.delayed_decoder = ko.observable();
     self.statusInfo.delayed_assembler = ko.observable();
+    self.statusInfo.loadavg = ko.observable();
     self.statusInfo.pystone = ko.observable();
     self.statusInfo.downloaddir = ko.observable();
     self.statusInfo.downloaddirspeed = ko.observable();
@@ -78,7 +79,7 @@ function ViewModel() {
     // Make the speedlimit tekst
     self.speedLimitText = ko.pureComputed(function() {
         // Set?
-        if(!self.bandwithLimit()) return;
+        if (!self.bandwithLimit()) return;
 
         // The text
         var bandwithLimitText = self.bandwithLimit().replace(/[^a-zA-Z]+/g, '');
@@ -87,10 +88,10 @@ function ViewModel() {
         var speedLimitNumberFull = (parseFloat(self.bandwithLimit()) * (self.speedLimit() / 100));
 
         // Trick to only get decimal-point when needed
-        var speedLimitNumber = Math.round(speedLimitNumberFull*10)/10;
+        var speedLimitNumber = Math.round(speedLimitNumberFull * 10) / 10;
 
         // Fix it for lower than 1MB/s
-        if(bandwithLimitText == 'M' && speedLimitNumber < 1) {
+        if (bandwithLimitText == 'M' && speedLimitNumber < 1) {
             bandwithLimitText = 'K';
             speedLimitNumber = Math.round(speedLimitNumberFull * 1024);
         }
@@ -106,7 +107,7 @@ function ViewModel() {
 
     // Dynamic icon
     self.SABIcon = ko.pureComputed(function() {
-        if(self.downloadsPaused()) {
+        if (self.downloadsPaused()) {
             return './staticcfg/ico/faviconpaused.ico?v=1.1.0';
         } else {
             return './staticcfg/ico/favicon.ico?v=1.1.0';
@@ -115,7 +116,7 @@ function ViewModel() {
 
     // Dynamic queue length check
     self.hasQueue = ko.pureComputed(function() {
-        return(self.queue.queueItems().length > 0 || self.queue.searchTerm() || self.queue.isLoading())
+        return (self.queue.queueItems().length > 0 || self.queue.searchTerm() || self.queue.isLoading())
     })
 
     // Dynamic history length check
@@ -125,7 +126,7 @@ function ViewModel() {
     })
 
     self.hasWarnings = ko.pureComputed(function() {
-        return(self.allWarnings().length > 0)
+        return (self.allWarnings().length > 0)
     })
 
     // Check for any warnings/messages
@@ -136,10 +137,10 @@ function ViewModel() {
     // Update main queue
     self.updateQueue = function(response) {
         // Block in case off dragging
-        if(!self.queue.shouldUpdate()) return;
+        if (!self.queue.shouldUpdate()) return;
 
         // Make sure we are displaying the interface
-        if(self.isRestarting() >= 1) {
+        if (self.isRestarting() >= 1) {
             // Decrease the counter by 1
             // In case of restart (which takes time to fire) we count down
             // In case of re-connect after failure it counts from 1 so emmediate continuation
@@ -150,7 +151,7 @@ function ViewModel() {
         /***
             Possible login failure?
         ***/
-        if(response.hasOwnProperty('error') && response.error == 'Missing authentication') {
+        if (response.hasOwnProperty('error') && response.error == 'Missing authentication') {
             // Restart
             document.location = document.location;
         }
@@ -165,28 +166,25 @@ function ViewModel() {
         self.downloadsPaused(response.queue.paused);
 
         // Finish action. Replace null with empty
-        self.onQueueFinish(response.queue.finishaction ? response.queue.finishaction : '');
+        self.finishaction(response.queue.finishaction ? response.queue.finishaction : '');
 
         // Disk sizes
         self.diskSpaceLeft1(response.queue.diskspace1_norm)
 
         // Same sizes? Then it's all 1 disk!
-        if(response.queue.diskspace1 != response.queue.diskspace2) {
+        if (response.queue.diskspace1 != response.queue.diskspace2) {
             self.diskSpaceLeft2(response.queue.diskspace2_norm)
         } else {
             self.diskSpaceLeft2('')
         }
 
         // Did we exceed the space?
-        self.diskSpaceExceeded1(parseInt(response.queue.mbleft)/1024 > parseFloat(response.queue.diskspace1))
-        self.diskSpaceExceeded2(parseInt(response.queue.mbleft)/1024 > parseFloat(response.queue.diskspace2))
+        self.diskSpaceExceeded1(parseInt(response.queue.mbleft) / 1024 > parseFloat(response.queue.diskspace1))
+        self.diskSpaceExceeded2(parseInt(response.queue.mbleft) / 1024 > parseFloat(response.queue.diskspace2))
 
         // Quota
         self.quotaLimit(response.queue.quota)
         self.quotaLimitLeft(response.queue.left_quota)
-
-        // System load
-        self.systemLoad(response.queue.loadavg)
 
         // Cache
         self.cacheSize(response.queue.cache_size)
@@ -199,7 +197,7 @@ function ViewModel() {
             Spark line
         ***/
         // Break the speed if empty queue
-        if(response.queue.sizeleft == '0 B') {
+        if (response.queue.sizeleft == '0 B') {
             response.queue.kbpersec = 0;
             response.queue.speed = '0';
         }
@@ -210,7 +208,7 @@ function ViewModel() {
         self.speedMetric(speedSplit[1]);
 
         // Update sparkline data
-        if(self.speedHistory.length >= 275) {
+        if (self.speedHistory.length >= 275) {
             // Remove first one
             self.speedHistory.shift();
         }
@@ -218,12 +216,12 @@ function ViewModel() {
         self.speedHistory.push(parseInt(response.queue.kbpersec));
 
         // Is sparkline visible? Not on small mobile devices..
-        if($('.sparkline-container').css('display') != 'none') {
+        if ($('.sparkline-container').css('display') != 'none') {
             // Make sparkline
-            if(self.speedHistory.length == 1) {
+            if (self.speedHistory.length == 1) {
                 // We only use speedhistory from SAB if we use global settings
                 // Otherwise SAB doesn't know the refresh rate
-                if(!self.useGlobalOptions()) {
+                if (!self.useGlobalOptions()) {
                     sabSpeedHistory = [];
                 } else {
                     // Update internally
@@ -254,30 +252,31 @@ function ViewModel() {
         /***
             Speedlimit
         ***/
-        // Nothing = 100%
-        response.queue.speedlimit = (response.queue.speedlimit == '') ? 100.0 : parseFloat(response.queue.speedlimit).toFixed(1);
-        // Trick to only get decimal-point when needed
-        response.queue.speedlimit = Math.round(response.queue.speedlimit*10)/10;
-        self.speedLimitInt(response.queue.speedlimit)
+        // Nothing or 0 means 100%
+        if(response.queue.speedlimit == '' || response.queue.speedlimit == '0') {
+            self.speedLimitInt(100)
+        } else {
+            self.speedLimitInt(parseInt(response.queue.speedlimit));
+        }
 
         // Only update from external source when user isn't doing input
-        if(!$('.speedlimit-dropdown .btn-group .btn-group').is('.open')) {
-            self.speedLimit(response.queue.speedlimit)
+        if (!$('.speedlimit-dropdown .btn-group .btn-group').is('.open')) {
+            self.speedLimit(self.speedLimitInt())
         }
 
         /***
             Download timing and pausing
         ***/
         var timeString = response.queue.timeleft;
-        if(timeString === '') {
+        if (timeString === '') {
             timeString = '0:00';
         } else {
             timeString = rewriteTime(response.queue.timeleft)
         }
 
         // Paused main queue
-        if(self.downloadsPaused()) {
-            if(response.queue.pause_int == '0') {
+        if (self.downloadsPaused()) {
+            if (response.queue.pause_int == '0') {
                 timeString = glitterTranslate.paused;
             } else {
                 var pauseSplit = response.queue.pause_int.split(/:/);
@@ -287,21 +286,21 @@ function ViewModel() {
                 seconds -= minutes * 60;
 
                 // Add leading zeros
-                if(minutes < 10) minutes = '0' + minutes;
-                if(seconds < 10) seconds = '0' + seconds;
+                if (minutes < 10) minutes = '0' + minutes;
+                if (seconds < 10) seconds = '0' + seconds;
 
                 // Final formating
                 timeString = glitterTranslate.paused + ' (' + rewriteTime(hours + ":" + minutes + ":" + seconds) + ')';
             }
 
             // Add info about amount of download (if actually downloading)
-            if(response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
+            if (response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
                 self.title(timeString + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
             } else {
                 // Set title with pause information
                 self.title(timeString + ' - SABnzbd')
             }
-        } else if(response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
+        } else if (response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
             // Set title only if we are actually downloading something..
             self.title(self.speedText() + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
         } else {
@@ -318,7 +317,7 @@ function ViewModel() {
 
     // Update history items
     self.updateHistory = function(response) {
-        if(!response) return;
+        if (!response) return;
         self.history.updateFromData(response.history);
     }
 
@@ -334,38 +333,46 @@ function ViewModel() {
 
         // Do requests for full information
         // Catch the fail to display message
-        var queueApi = callAPI({
+        var api_call = {
             mode: "queue",
-            search: self.queue.searchTerm(),
             start: self.queue.pagination.currentStart(),
             limit: parseInt(self.queue.paginationLimit())
-        })
-        .done(self.updateQueue)
-        .fail(function(response) {
-            // Catch the failure of authorization error
-            if(response.status == 401) {
-                // Stop refresh and reload
-                clearInterval(self.interval)
-                location.reload();
-            }
-            // Show screen
-            self.isRestarting(1)
-        }).always(self.setNextUpdate);
+        }
+        if (self.queue.searchTerm()) {
+            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority"])
+        }
+        var queueApi = callAPI(api_call)
+            .done(self.updateQueue)
+            .fail(function(response) {
+                // Catch the failure of authorization error
+                if (response.status == 401) {
+                    // Stop refresh and reload
+                    clearInterval(self.interval)
+                    location.reload();
+                }
+                // Show screen
+                self.isRestarting(1)
+            }).always(self.setNextUpdate);
 
         // Force full history update?
-        if(forceFullHistory) {
+        if (forceFullHistory) {
             self.history.lastUpdate = 0
         }
 
-        // History
-        callAPI({
+        // Build history request and parse search
+        var history_call = {
             mode: "history",
-            search: self.history.searchTerm(),
-            failed_only: self.history.showFailed()*1,
+            failed_only: self.history.showFailed() * 1,
             start: self.history.pagination.currentStart(),
             limit: parseInt(self.history.paginationLimit()),
             last_history_update: self.history.lastUpdate
-        }).done(self.updateHistory);
+        }
+        if (self.history.searchTerm()) {
+            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category"])
+        }
+
+        // History
+        callAPI(history_call).done(self.updateHistory);
 
         // We are now done with any loading
         // But we wait a few ms so Knockout has time to update
@@ -377,6 +384,25 @@ function ViewModel() {
         // Return for .then() functionality
         return queueApi;
     };
+
+    function parseSearchQuery(api_request, search, keywords) {
+        var parsed_query = search_query_parse(search, { keywords: keywords })
+        api_request["search"] = parsed_query.text
+        for (const keyword of keywords) {
+            if (Array.isArray(parsed_query[keyword])) {
+                api_request[keyword] = parsed_query[keyword].join(",")
+            } else {
+                api_request[keyword] = parsed_query[keyword]
+            }
+            // Special case for priority, dirty replace of string by numeric value
+            if (keyword == "priority" && api_request["priority"]) {
+                for (const prio_name in self.queue.priorityName) {
+                    api_request["priority"] = api_request["priority"].replace(prio_name, self.queue.priorityName[prio_name])
+
+                }
+            }
+        }
+    }
 
     // Set pause action on click of toggle
     self.pauseToggle = function() {
@@ -399,23 +425,23 @@ function ViewModel() {
     // Open modal
     self.openCustomPauseTime = function() {
         // Was it loaded already?
-        if(!Date.i18n) {
-             jQuery.getScript('./static/javascripts/date.min.js').then(function() {
+        if (!Date.i18n) {
+            jQuery.getScript('./static/javascripts/date.min.js').then(function() {
                 // After loading we start again
                 self.openCustomPauseTime()
-             })
-             return;
+            })
+            return;
         }
         // Show modal
         $('#modal_custom_pause').modal('show')
 
         // Focus on the input field
-        $('#modal_custom_pause').on('shown.bs.modal', function () {
+        $('#modal_custom_pause').on('shown.bs.modal', function() {
             $('#customPauseInput').focus()
         })
 
         // Reset on modal close
-        $('#modal_custom_pause').on('hide.bs.modal', function () {
+        $('#modal_custom_pause').on('hide.bs.modal', function() {
             self.pauseCustom('');
         })
     }
@@ -423,13 +449,13 @@ function ViewModel() {
     // Update on changes
     self.pauseCustom.subscribe(function(newValue) {
         // Is it plain numbers?
-        if(newValue.match(/^\s*\d+\s*$/)) {
+        if (newValue.match(/^\s*\d+\s*$/)) {
             // Treat it as a number of minutes
             newValue += "minutes";
         }
 
         // At least 3 charaters
-        if(newValue.length < 3) {
+        if (newValue.length < 3) {
             $('#customPauseOutput').text('').data('time', 0)
             $('#modal_custom_pause .btn-default').addClass('disabled')
             return;
@@ -445,19 +471,19 @@ function ViewModel() {
         var pauseParsed = Date.parse(newValue);
 
         // Did we get it?
-        if(pauseParsed) {
+        if (pauseParsed) {
             // Is it just now?
-            if(pauseParsed <= Date.parse('now')) {
+            if (pauseParsed <= Date.parse('now')) {
                 // Try again with the '+' in front, the parser doesn't get 100min
                 pauseParsed = Date.parse('+' + newValue);
             }
 
             // Calculate difference in minutes and save
-            var pauseDuration = Math.round((pauseParsed - Date.parse('now'))/1000/60);
-            $('#customPauseOutput').html('<span class="glyphicon glyphicon-pause"></span> ' +glitterTranslate.pauseFor + ' ' + pauseDuration + ' ' + glitterTranslate.minutes)
+            var pauseDuration = Math.round((pauseParsed - Date.parse('now')) / 1000 / 60);
+            $('#customPauseOutput').html('<span class="glyphicon glyphicon-pause"></span> ' + glitterTranslate.pauseFor + ' ' + pauseDuration + ' ' + glitterTranslate.minutes)
             $('#customPauseOutput').data('time', pauseDuration)
             $('#modal_custom_pause .btn-default').removeClass('disabled')
-        } else if(newValue) {
+        } else if (newValue) {
             // No..
             $('#customPauseOutput').text(glitterTranslate.pausePromptFail)
             $('#modal_custom_pause .btn-default').addClass('disabled')
@@ -470,7 +496,7 @@ function ViewModel() {
         var pauseDuration = $('#customPauseOutput').data('time');
 
         // If in the future
-        if(pauseDuration > 0) {
+        if (pauseDuration > 0) {
             callAPI({
                 mode: 'config',
                 name: 'set_pause',
@@ -487,7 +513,7 @@ function ViewModel() {
     // Update the warnings
     self.nrWarnings.subscribe(function(newValue) {
         // Really any change?
-        if(newValue == self.allWarnings().length) return;
+        if (newValue == self.allWarnings().length) return;
 
         // Get all warnings
         callAPI({
@@ -496,7 +522,7 @@ function ViewModel() {
 
             // Reset it all
             self.allWarnings.removeAll();
-            if(response) {
+            if (response) {
                 // Newest first
                 response.warnings.reverse()
 
@@ -537,10 +563,10 @@ function ViewModel() {
     // Update on speed-limit change
     self.speedLimit.subscribe(function(newValue) {
         // Only on new load
-        if(!self.speedLimitInt()) return;
+        if (!self.speedLimitInt()) return;
 
         // Update
-        if(self.speedLimitInt() != newValue) {
+        if (self.speedLimitInt() != newValue) {
             callAPI({
                 mode: "config",
                 name: "speedlimit",
@@ -563,24 +589,18 @@ function ViewModel() {
 
     // Shutdown options
     self.setOnQueueFinish = function(model, event) {
-        // Ignore updates before the page is done
-        if(!self.hasStatusInfo()) return;
-
         // Something changes
         callAPI({
             mode: 'queue',
             name: 'change_complete_action',
             value: $(event.target).val()
         })
-
-        // Top stop blinking while the API is calling
-        self.onQueueFinish($(event.target).val())
     }
 
     // Use global settings or device-specific?
     self.useGlobalOptions.subscribe(function(newValue) {
         // Reload in case of enabling global options
-        if(newValue) document.location = document.location;
+        if (newValue) document.location = document.location;
     })
 
     // Update refreshrate
@@ -589,7 +609,7 @@ function ViewModel() {
         self.refresh();
 
         // Save in config if global-settings
-        if(self.useGlobalOptions()) {
+        if (self.useGlobalOptions()) {
             callAPI({
                 mode: "set_config",
                 section: "misc",
@@ -607,24 +627,24 @@ function ViewModel() {
         // Get filename
         var fileName = $(event.target).val().replace(/\\/g, '/').replace(/.*\//, '');
         // Set label
-        if(fileName) $('.btn-file em').text(fileName)
+        if (fileName) $('.btn-file em').text(fileName)
     }
 
     // Add NZB form
     self.addNZB = function(form) {
         // Anything?
-        if(!$(form.nzbFile)[0].files[0] && !$(form.nzbURL).val()) {
+        if (!$(form.nzbFile)[0].files[0] && !$(form.nzbURL).val()) {
             $('.btn-file, input[name="nzbURL"]').attr('style', 'border-color: red !important')
             setTimeout(function() { $('.btn-file, input[name="nzbURL"]').css('border-color', '') }, 2000)
             return false;
         }
 
         // Upload file using the method we also use for drag-and-drop
-        if($(form.nzbFile)[0].files[0]) {
+        if ($(form.nzbFile)[0].files[0]) {
             self.addNZBFromFile($(form.nzbFile)[0].files);
             // Hide modal, upload will reset the form
             $("#modal-add-nzb").modal("hide");
-        } else if($(form.nzbURL).val()) {
+        } else if ($(form.nzbURL).val()) {
             // Or add URL
             var theCall = {
                 mode: "addurl",
@@ -637,8 +657,8 @@ function ViewModel() {
             }
 
             // Optional, otherwise they get mis-labeled if left empty
-            if($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
-            if($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
+            if ($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
+            if ($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
 
             // Add
             callAPI(theCall).then(function(r) {
@@ -654,14 +674,14 @@ function ViewModel() {
     // From the upload or filedrop
     self.addNZBFromFile = function(files, fileindex) {
         // First file
-        if(fileindex === undefined) {
+        if (fileindex === undefined) {
             fileindex = 0
         }
         var file = files[fileindex]
         fileindex++
 
         // Check if it's maybe a folder, we can't handle those
-        if(!file.type && file.size % 4096 == 0) return;
+        if (!file.type && file.size % 4096 == 0) return;
 
         // Add notification
         showNotification('.main-notification-box-uploading', 0, fileindex)
@@ -677,8 +697,8 @@ function ViewModel() {
         data.append("apikey", apiKey);
 
         // Optional, otherwise they get mis-labeled if left empty
-        if($('#modal-add-nzb select[name="Category"]').val() != '*') data.append("cat", $('#modal-add-nzb select[name="Category"]').val());
-        if($('#modal-add-nzb select[name="Processing"]').val()) data.append("pp", $('#modal-add-nzb select[name="Processing"]').val());
+        if ($('#modal-add-nzb select[name="Category"]').val() != '*') data.append("cat", $('#modal-add-nzb select[name="Category"]').val());
+        if ($('#modal-add-nzb select[name="Processing"]').val()) data.append("pp", $('#modal-add-nzb select[name="Processing"]').val());
 
         // Add this one
         $.ajax({
@@ -690,7 +710,7 @@ function ViewModel() {
             data: data
         }).then(function(r) {
             // Are we done?
-            if(fileindex < files.length) {
+            if (fileindex < files.length) {
                 // Do the next one
                 self.addNZBFromFile(files, fileindex)
             } else {
@@ -716,28 +736,29 @@ function ViewModel() {
 
         // Make it spin if the user requested it otherwise we don't,
         // because browsers use a lot of CPU for the animation
-        if(statusFullRefresh) {
+        if (statusFullRefresh) {
             self.hasStatusInfo(false)
         }
 
         // Show loading text for performance measures
-        if(statusPerformance) {
+        if (statusPerformance) {
             self.hasPerformanceInfo(false)
         }
 
         // Load the custom status info, allowing for longer timeouts
         callAPI({
             mode: 'status',
-            skip_dashboard: (!statusFullRefresh)*1,
-            calculate_performance: statusPerformance*1,
+            skip_dashboard: (!statusFullRefresh) * 1,
+            calculate_performance: statusPerformance * 1,
         }, 30000).then(function(data) {
             // Update basic
             self.statusInfo.folders(data.status.folders)
+            self.statusInfo.loadavg(data.status.loadavg)
             self.statusInfo.delayed_decoder(data.status.delayed_decoder)
             self.statusInfo.delayed_assembler(data.status.delayed_assembler)
 
             // Update the full set if the data is available
-            if("dnslookup" in data.status) {
+            if ("dnslookup" in data.status) {
                 self.statusInfo.pystone(data.status.pystone)
                 self.statusInfo.downloaddir(data.status.downloaddir)
                 self.statusInfo.downloaddirspeed(data.status.downloaddirspeed)
@@ -752,7 +773,7 @@ function ViewModel() {
             }
 
             // Update the servers
-            if(self.statusInfo.servers().length != data.status.servers.length) {
+            if (self.statusInfo.servers().length != data.status.servers.length) {
                 // Empty them, in case of update
                 self.statusInfo.servers([])
 
@@ -777,21 +798,21 @@ function ViewModel() {
                 $.each(data.status.servers, function(index) {
                     var activeServer = self.statusInfo.servers()[index];
                     activeServer.servername(this.servername),
-                    activeServer.serveroptional(this.serveroptional),
-                    activeServer.serverpriority(this.serverpriority),
-                    activeServer.servertotalconn(this.servertotalconn),
-                    activeServer.serverssl(this.serverssl),
-                    activeServer.serversslinfo(this.serversslinfo),
-                    activeServer.serveractiveconn(this.serveractiveconn),
-                    activeServer.servererror(this.servererror),
-                    activeServer.serveractive(this.serveractive),
-                    activeServer.serverconnections(this.serverconnections),
-                    activeServer.serverbps(this.serverbps)
+                        activeServer.serveroptional(this.serveroptional),
+                        activeServer.serverpriority(this.serverpriority),
+                        activeServer.servertotalconn(this.servertotalconn),
+                        activeServer.serverssl(this.serverssl),
+                        activeServer.serversslinfo(this.serversslinfo),
+                        activeServer.serveractiveconn(this.serveractiveconn),
+                        activeServer.servererror(this.servererror),
+                        activeServer.serveractive(this.serveractive),
+                        activeServer.serverconnections(this.serverconnections),
+                        activeServer.serverbps(this.serverbps)
                 })
             }
 
             // Add tooltips to possible new items
-            if(!isMobile) $('#modal-options [data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+            if (!isMobile) $('#modal-options [data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
 
             // Stop it spin
             self.hasStatusInfo(true)
@@ -804,7 +825,7 @@ function ViewModel() {
         var nzbSize = $(event.target).data('size')
 
         // Maybe it was a click on the icon?
-        if(nzbSize == undefined) {
+        if (nzbSize == undefined) {
             nzbSize = $(event.target.parentElement).data('size')
         }
 
@@ -846,7 +867,7 @@ function ViewModel() {
             checkSize()
 
             // Check if still visible
-            if(!$('#options_connections').is(':visible') && connectionRefresh) {
+            if (!$('#options_connections').is(':visible') && connectionRefresh) {
                 // Stop refreshing
                 clearInterval(connectionRefresh)
                 return
@@ -865,9 +886,9 @@ function ViewModel() {
     // Function that handles the actual sizing of connections tab
     function checkSize() {
         // Any connections?
-        if(self.showActiveConnections() && $('#options_connections').is(':visible') && $('.table-server-connections').height() > 1) {
+        if (self.showActiveConnections() && $('#options_connections').is(':visible') && $('.table-server-connections').height() > 1) {
             var mainWidth = $('.main-content').width()
-            $('#modal-options .modal-dialog').width(mainWidth*0.85 > 650 ? mainWidth*0.85 : '')
+            $('#modal-options .modal-dialog').width(mainWidth * 0.85 > 650 ? mainWidth * 0.85 : '')
         } else {
             // Small again
             $('#modal-options .modal-dialog').width('')
@@ -875,7 +896,7 @@ function ViewModel() {
     }
 
     // Make sure Connections get refreshed also after open->close->open
-    $('#modal-options').on('show.bs.modal', function () {
+    $('#modal-options').on('show.bs.modal', function() {
         // Trigger
         $('.nav-tabs a[href="#options_connections"]').trigger('shown.bs.tab')
     })
@@ -886,7 +907,7 @@ function ViewModel() {
         $('#options-orphans [data-tooltip="true"]').tooltip('hide')
 
         // Show notification on delete
-        if($(htmlElement.currentTarget).data('action') == 'delete_orphan') {
+        if ($(htmlElement.currentTarget).data('action') == 'delete_orphan') {
             showNotification('.main-notification-box-removing', 1000)
         } else {
             // Adding back to queue
@@ -908,8 +929,8 @@ function ViewModel() {
 
     // Orphaned folder deletion of all
     self.removeAllOrphaned = function() {
-        if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
-             // Show notification
+        if (!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+            // Show notification
             showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.folders().length)
             // Delete them all
             callAPI({
@@ -925,8 +946,8 @@ function ViewModel() {
 
     // Orphaned folder adding of all
     self.addAllOrphaned = function() {
-        if(!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
-             // Show notification
+        if (!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+            // Show notification
             showNotification('.main-notification-box-sendback')
             // Delete them all
             callAPI({
@@ -956,7 +977,7 @@ function ViewModel() {
     })
 
     // Change hash for page-reload
-    $('.history-queue-swicher .nav-tabs a').on('shown.bs.tab', function (e) {
+    $('.history-queue-swicher .nav-tabs a').on('shown.bs.tab', function(e) {
         window.location.hash = e.target.hash;
     })
 
@@ -965,7 +986,7 @@ function ViewModel() {
     **/
     // Shutdown
     self.shutdownSAB = function() {
-        if(confirm(glitterTranslate.shutdown)) {
+        if (confirm(glitterTranslate.shutdown)) {
             // Show notification and return true to follow the URL
             showNotification('.main-notification-box-shutdown')
             return true
@@ -973,14 +994,14 @@ function ViewModel() {
     }
     // Restart
     self.restartSAB = function() {
-        if(!confirm(glitterTranslate.restart)) return;
+        if (!confirm(glitterTranslate.restart)) return;
         // Call restart function
         callAPI({ mode: "restart" })
 
         // Set counter, we need at least 15 seconds
         self.isRestarting(Math.max(1, Math.floor(15 / self.refreshRate())));
         // Force refresh in case of very long refresh-times
-        if(self.refreshRate() > 30) {
+        if (self.refreshRate() > 30) {
             setTimeout(self.refresh, 30 * 1000)
         }
     }
@@ -989,7 +1010,7 @@ function ViewModel() {
         // Event
         var theAction = $(event.target).data('mode');
         // Show notification if available
-        if(['rss_now', 'watched_now'].indexOf(theAction) > -1) {
+        if (['rss_now', 'watched_now'].indexOf(theAction) > -1) {
             showNotification('.main-notification-box-' + theAction, 2000)
         }
         // Send to the API
@@ -997,7 +1018,7 @@ function ViewModel() {
     }
     // Repair queue
     self.repairQueue = function() {
-        if(!confirm(glitterTranslate.repair)) return;
+        if (!confirm(glitterTranslate.repair)) return;
         // Hide the modal and show the notifucation
         $("#modal-options").modal("hide");
         showNotification('.main-notification-box-queue-repair', 5000)
@@ -1018,18 +1039,18 @@ function ViewModel() {
         Retrieve config information and do startup functions
     ***/
     // Force compact mode as fast as possible
-    if(localStorageGetItem('displayCompact') === 'true') {
+    if (localStorageGetItem('displayCompact') === 'true') {
         // Add extra class
         $('body').addClass('container-compact')
     }
 
-    if(localStorageGetItem('displayFullWidth') === 'true') {
+    if (localStorageGetItem('displayFullWidth') === 'true') {
         // Add extra class
         $('body').addClass('container-full-width')
     }
 
     // Tabbed layout?
-    if(localStorageGetItem('displayTabbed') === 'true') {
+    if (localStorageGetItem('displayTabbed') === 'true') {
         $('body').addClass('container-tabbed')
 
         var tab_from_hash = location.hash.replace(/^#/, '');
@@ -1069,9 +1090,9 @@ function ViewModel() {
         mode: 'get_config'
     }).then(function(response) {
         // Do we use global, or local settings?
-        if(self.useGlobalOptions()) {
+        if (self.useGlobalOptions()) {
             // Set refreshrate (defaults to 1/s)
-            if(!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
+            if (!response.config.misc.refresh_rate) response.config.misc.refresh_rate = 1;
             self.refreshRate(response.config.misc.refresh_rate.toString());
 
             // Set history and queue limit
@@ -1079,10 +1100,10 @@ function ViewModel() {
             self.queue.paginationLimit(response.config.misc.queue_limit.toString())
 
             // Import the rest of the settings
-            if(response.config.misc.interface_settings) {
+            if (response.config.misc.interface_settings) {
                 var interfaceSettings = JSON.parse(response.config.misc.interface_settings);
-                for (const setting of self.globalInterfaceSettings){
-                    if(setting in interfaceSettings) {
+                for (const setting of self.globalInterfaceSettings) {
+                    if (setting in interfaceSettings) {
                         self[setting](interfaceSettings[setting]);
                     }
                 }
@@ -1094,14 +1115,37 @@ function ViewModel() {
         }
 
         // Set bandwidth limit
-        if(!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
+        if (!response.config.misc.bandwidth_max) response.config.misc.bandwidth_max = false;
         self.bandwithLimit(response.config.misc.bandwidth_max);
 
-        // Save servers (for reporting functionality)
-        self.servers = response.config.servers;
+        // Reformat and set categories
+        self.queue.categoriesList($.map(response.config.categories, function(cat) {
+            // Default?
+            if(cat.name == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
+            return { catValue: cat.name, catText: cat.name };
+        }))
+
+        // Get the scripts, if there are any
+        if(response.config.misc.script_dir) {
+            callAPI({
+                mode: 'get_scripts'
+            }).then(function(script_response) {
+                // Reformat script-list
+                self.queue.scriptsList($.map(script_response.scripts, function(script) {
+                    // None?
+                    if(script == 'None') return { scriptValue: 'None', scriptText: glitterTranslate.noneText };
+                    return { scriptValue: script, scriptText: script };
+                }))
+                self.queue.scriptsListLoaded(true)
+            })
+        } else {
+            // We can already continue
+            self.queue.scriptsListLoaded(true)
+        }
+
 
         // Already set if we are using a proxy
-        if(response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)
+        if (response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)
 
         // Set logging and only then subscribe to changes
         self.loglevel(response.config.logging.log_level);
@@ -1115,28 +1159,28 @@ function ViewModel() {
         })
 
         // Update message
-        if(newRelease) {
+        if (newRelease) {
             self.allMessages.push({
                 index: 'UpdateMsg',
                 type: glitterTranslate.status['INFO'],
-                text: ('<a class="queue-update-sab" href="'+newReleaseUrl+'" target="_blank">'+glitterTranslate.updateAvailable+' '+newRelease+' <span class="glyphicon glyphicon-save"></span></a>'),
+                text: ('<a class="queue-update-sab" href="' + newReleaseUrl + '" target="_blank">' + glitterTranslate.updateAvailable + ' ' + newRelease + ' <span class="glyphicon glyphicon-save"></span></a>'),
                 css: 'info'
             });
         }
 
         // Message about cache - Not for 5 days if user ignored it
-        if(!response.config.misc.cache_limit && localStorageGetItem('CacheMsg')*1+(1000*3600*24*5) < Date.now()) {
+        if (!response.config.misc.cache_limit && localStorageGetItem('CacheMsg') * 1 + (1000 * 3600 * 24 * 5) < Date.now()) {
             self.allMessages.push({
                 index: 'CacheMsg',
                 type: glitterTranslate.status['INFO'],
-                text: ('<a href="./config/general/#cache_limit">'+glitterTranslate.useCache.replace(/<br \/>/g, " ")+' <span class="glyphicon glyphicon-cog"></span></a>'),
+                text: ('<a href="./config/general/#cache_limit">' + glitterTranslate.useCache.replace(/<br \/>/g, " ") + ' <span class="glyphicon glyphicon-cog"></span></a>'),
                 css: 'info',
-                clear: function() { self.clearMessages('CacheMsg')}
+                clear: function() { self.clearMessages('CacheMsg') }
             });
         }
 
         // Message about tips and tricks, only once
-        if(response.config.misc.notified_new_skin < 2) {
+        if (response.config.misc.notified_new_skin < 2) {
             self.allMessages.push({
                 index: 'TipsMsgV110',
                 type: glitterTranslate.status['INFO'],
@@ -1159,71 +1203,87 @@ function ViewModel() {
     })
 
     // Orphaned folder check - Not for 5 days if user ignored it
-    var orphanMsg = localStorageGetItem('OrphanedMsg')*1+(1000*3600*24*5) < Date.now();
+    var orphanMsg = localStorageGetItem('OrphanedMsg') * 1 + (1000 * 3600 * 24 * 5) < Date.now();
     // Delay the check
-    if(orphanMsg) {
+    if (orphanMsg) {
         setTimeout(self.loadStatusInfo, 200);
     }
 
     // On any status load we check Orphaned folders
     self.hasStatusInfo.subscribe(function(finishedLoading) {
         // Loaded or just starting?
-        if(!finishedLoading) return;
+        if (!finishedLoading) return;
 
         // Orphaned folders? If user clicked away we check again in 5 days
-        if(self.statusInfo.folders().length >= 3 && orphanMsg) {
+        if (self.statusInfo.folders().length >= 3 && orphanMsg) {
             // Check if not already there
-            if(!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index == 'OrphanedMsg' })) {
+            if (!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index == 'OrphanedMsg' })) {
                 self.allMessages.push({
                     index: 'OrphanedMsg',
                     type: glitterTranslate.status['INFO'],
                     text: glitterTranslate.orphanedJobsMsg + ' <a href="#" onclick="showOrphans()"><span class="glyphicon glyphicon-wrench"></span></a>',
                     css: 'info',
-                    clear: function() { self.clearMessages('OrphanedMsg')}
+                    clear: function() { self.clearMessages('OrphanedMsg') }
                 });
             }
         } else {
             // Remove any message, if it was there
             self.allMessages.remove(function(item) {
-               return item.index == 'OrphanedMsg';
+                return item.index == 'OrphanedMsg';
             })
         }
     })
 
     // Message about localStorage not being enabled every 20 days
-    if(!hasLocalStorage && localStorageGetItem('LocalStorageMsg')*1+(1000*3600*24*20) < Date.now()) {
+    if (!hasLocalStorage && localStorageGetItem('LocalStorageMsg') * 1 + (1000 * 3600 * 24 * 20) < Date.now()) {
         self.allMessages.push({
             index: 'LocalStorageMsg',
             type: glitterTranslate.status['WARNING'].replace(':', ''),
             text: glitterTranslate.noLocalStorage,
             css: 'warning',
-            clear: function() { self.clearMessages('LocalStorageMsg')}
+            clear: function() { self.clearMessages('LocalStorageMsg') }
         });
     }
 
-    document.onkeydown = function(e) {
-        if(self.keyboardShortcuts()) {
-            // Ignore if the user used a combination
-            if(e.altKey || e.metaKey || e.ctrlKey) return;
-
-            // Do not act if the user is typing something
-            if($("input:focus, textarea:focus").length === 0) {
-                if (e.code === 'KeyP') {
-                    self.pauseToggle();
-                }
-                if (e.code === 'KeyA') {
-                    $('#modal-add-nzb').modal('show');
-                }
-                if (e.code === 'KeyC') {
-                    window.location.href = './config/';
-                }
-                if (e.code === 'KeyS') {
-                    self.loadStatusInfo(true, true)
-                    $('#modal-options').modal('show');
-                }
+    if (self.keyboardShortcuts()) {
+        $(document).bind('keydown', 'p', function(e) {
+            self.pauseToggle();
+        });
+        $(document).bind('keydown', 'a', function(e) {
+            // avoid modal clashes
+            if (!$('.modal-dialog').is(':visible')) {
+                $('#modal-add-nzb').modal('show');
             }
-
-        }
+        });
+        $(document).bind('keydown', 'c', function(e) {
+            window.location.href = './config/';
+        });
+        $(document).bind('keydown', 's', function(e) {
+            // avoid modal clashes
+            if (!$('.modal-dialog').is(':visible')) {
+                $('#modal-options').modal('show');
+            }
+        });
+        $(document).bind('keydown', 'shift+left', function(e) {
+            $('#history-tab.active > ul.pagination li.active').prev().click();
+            $('#queue-tab.active > ul.pagination li.active').prev().click();
+            e.preventDefault();
+        });
+        $(document).bind('keydown', 'shift+right', function(e) {
+            $('#history-tab.active > ul.pagination li.active').next().click();
+            $('#queue-tab.active > ul.pagination li.active').next().click();
+            e.preventDefault();
+        });
+        $(document).bind('keydown', 'shift+up', function(e) {
+            $('#history-tab.active > ul.pagination li').first().click();
+            $('#queue-tab.active > ul.pagination li').first().click();
+            e.preventDefault();
+        });
+        $(document).bind('keydown', 'shift+down', function(e) {
+            $('#history-tab.active > ul.pagination li').last().click();
+            $('#queue-tab.active > ul.pagination li').last().click();
+            e.preventDefault();
+        });
     }
 
     /***
@@ -1241,7 +1301,7 @@ function ViewModel() {
         $('[data-timestamp]').each(function() {
             $(this).text(displayDateTime($(this).data('timestamp'), self.dateFormat(), 'X'))
         })
-    }, 60*1000)
+    }, 60 * 1000)
 
     /***
         End of main functions, start of the fun!
@@ -1253,5 +1313,5 @@ function ViewModel() {
     self.refresh()
 
     // Activate tooltips
-    if(!isMobile) $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+    if (!isMobile) $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
 }

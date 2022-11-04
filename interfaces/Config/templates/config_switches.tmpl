@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/3.6/switches"#-->
+<!--#set global $help_uri="configuration/3.7/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -141,6 +141,7 @@
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
                         <select name="auto_sort" id="auto_sort">
                             <option value="">$T('default')</option>
+                            <option value="remaining asc" <!--#if $auto_sort == "remaining asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortRemaining')</option>
                             <option value="avg_age desc" <!--#if $auto_sort == "avg_age desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeAsc')</option>
                             <option value="avg_age asc" <!--#if $auto_sort == "avg_age asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeDesc')</option>
                             <option value="name asc" <!--#if $auto_sort == "name asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortNameAsc')</option>
@@ -148,7 +149,7 @@
                             <option value="size asc" <!--#if $auto_sort == "size asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortSizeAsc')</option>
                             <option value="size desc" <!--#if $auto_sort == "size desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortSizeDesc')</option>
                         </select>
-                        <span class="desc">$T('explain-auto_sort')</span>
+                        <span class="desc">$T('explain-auto_sort') $T('explain-auto_sort_remaining')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="direct_unpack">$T('opt-direct_unpack')</label>
@@ -247,11 +248,6 @@
                         <input type="checkbox" name="deobfuscate_final_filenames" id="deobfuscate_final_filenames" value="1" <!--#if int($deobfuscate_final_filenames) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-deobfuscate_final_filenames') $T('explain-deobfuscate_final_filenames-ext')</span>
                     </div>
-                    <div class="field-pair advanced-settings">
-                        <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
-                        <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_meta').replace('. ', '.<br/>')</span>
-                    </div>
                     <div class="field-pair">
                         <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                         <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
@@ -291,6 +287,11 @@
                         <label class="config" for="replace_spaces">$T('opt-replace_spaces')</label>
                         <input type="checkbox" name="replace_spaces" id="replace_spaces" value="1" <!--#if int($replace_spaces) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-replace_spaces')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="replace_underscores">$T('opt-replace_underscores')</label>
+                        <input type="checkbox" name="replace_underscores" id="replace_underscores" value="1" <!--#if int($replace_underscores) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-replace_underscores')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="replace_dots">$T('opt-replace_dots')</label>

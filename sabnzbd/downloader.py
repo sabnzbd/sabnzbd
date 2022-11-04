@@ -35,7 +35,7 @@ from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, nntp_to_msg, get_server_addrinfo, helpful_warning
+from sabnzbd.misc import from_units, nntp_to_msg, get_server_addrinfo, helpful_warning, int_conv
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
@@ -264,7 +264,7 @@ class Downloader(Thread):
         # Used for scheduled pausing
         self.paused: bool = paused
 
-        # Used for reducing speed
+        # Used for reducing speed, should always be int and not float
         self.bandwidth_limit: int = 0
         self.bandwidth_perc: int = 0
         cfg.bandwidth_perc.callback(self.speed_set)
@@ -422,33 +422,27 @@ class Downloader(Thread):
             mx = cfg.bandwidth_max.get_int()
             if "%" in str(value) or (0 < from_units(value) < 101):
                 limit = value.strip(" %")
-                self.bandwidth_perc = from_units(limit)
+                self.bandwidth_perc = int_conv(limit)
                 if mx:
-                    self.bandwidth_limit = mx * self.bandwidth_perc / 100
+                    self.bandwidth_limit = int(mx * self.bandwidth_perc / 100)
                 else:
                     helpful_warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
             else:
-                self.bandwidth_limit = from_units(value)
+                self.bandwidth_limit = int(from_units(value))
                 if mx:
-                    self.bandwidth_perc = self.bandwidth_limit / mx * 100
+                    self.bandwidth_perc = int(self.bandwidth_limit / mx * 100)
                 else:
                     self.bandwidth_perc = 100
         else:
             self.speed_set()
         logging.info("Speed limit set to %s B/s", self.bandwidth_limit)
 
-    def get_limit(self):
-        return self.bandwidth_perc
-
-    def get_limit_abs(self):
-        return self.bandwidth_limit
-
     def speed_set(self):
-        limit = cfg.bandwidth_max.get_int()
         perc = cfg.bandwidth_perc()
+        limit = cfg.bandwidth_max.get_int()
         if limit and perc:
-            self.bandwidth_perc = perc
-            self.bandwidth_limit = limit * perc / 100
+            self.bandwidth_perc = int(perc)
+            self.bandwidth_limit = int(limit * perc / 100)
         else:
             self.bandwidth_perc = 0
             self.bandwidth_limit = 0

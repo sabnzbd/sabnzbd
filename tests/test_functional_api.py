@@ -235,8 +235,8 @@ class TestOtherApi(ApiTestFunctions):
                 float(self._get_api_json("queue")["queue"]["speedlimit_abs"]), abs=1, rel=0.005
             ) == speed_pct / 100 * from_units(linespeed)
         else:
-            assert int(json["queue"]["speedlimit"]) == 100
-            assert bool(json["queue"]["speedlimit_abs"]) is False
+            assert int(json["queue"]["speedlimit"]) == 0
+            assert int(json["queue"]["speedlimit_abs"]) == 0
 
     @pytest.mark.parametrize(
         "test_with_units, limit_pct, should_limit",
@@ -278,8 +278,8 @@ class TestOtherApi(ApiTestFunctions):
                 == from_units(speed_abs) / from_units(linespeed) * 100
             )
         else:
-            assert bool(json["queue"]["speedlimit_abs"]) is False
-            assert int(json["queue"]["speedlimit"]) == 100
+            assert int(json["queue"]["speedlimit_abs"]) == 0
+            assert int(json["queue"]["speedlimit"]) == 0
 
     @pytest.mark.parametrize(
         "language, value, translation",

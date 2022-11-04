@@ -2,8 +2,10 @@ name: Build binaries and source distribution
 
 on: [push, pull_request]
 
+# Setting PYTHONNODEBUGRANGES reduces binary size
 env:
   AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+  PYTHONNODEBUGRANGES: 1
 
 jobs:
   build_windows:
@@ -12,13 +14,13 @@ jobs:
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.10 (64bit)
-      uses: actions/setup-python@v3
+    - name: Set up Python 3.11 (64bit)
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: "3.11"
         architecture: "x64"
     - name: Cache Python virtualenv (64bit)
-      uses: syphar/restore-virtualenv@v1.2
+      uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv-64bit
       with:
         custom_virtualenv_dir: "venv64"
@@ -46,12 +48,12 @@ jobs:
         path: "*-win-setup.exe"
         name: Windows installer
     - name: Set up Python 3.8 (32bit and legacy)
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: "3.8"
         architecture: "x86"
     - name: Cache Python virtualenv (32bit and legacy)
-      uses: syphar/restore-virtualenv@v1.2
+      uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv-32bit
       with:
         custom_virtualenv_dir: "venv32"
@@ -82,16 +84,14 @@ jobs:
     runs-on: macos-11
     timeout-minutes: 30
     env:
-      SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
-      NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
-      NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.10.6"
+      PYTHON_VERSION: "3.11.0"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
-      CFLAGS: -arch arm64 -arch x86_64
+      CFLAGS: -arch x86_64 -arch arm64
+      ARCHFLAGS: -arch x86_64 -arch arm64
     steps:
     - uses: actions/checkout@v3
     - name: Cache Python download
@@ -99,7 +99,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/python.pkg
-        key: macOS-Python-${{ env.PYTHON_VERSION }}
+        key: cache-macOS-Python-${{ env.PYTHON_VERSION }}
     - name: Get Python
       if: steps.cache-python-download.outputs.cache-hit != 'true'
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
@@ -109,7 +109,7 @@ jobs:
         unlink /usr/local/bin/python
         ln -s /usr/local/bin/python3 /usr/local/bin/python
     - name: Cache Python virtualenv
-      uses: syphar/restore-virtualenv@v1.2
+      uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv
       with:
         custom_cache_key_element: "release"
@@ -117,34 +117,41 @@ jobs:
           **/requirements.txt
           PKG-INFO
     - name: Install Python dependencies
-      # We have to manually install a few packages:
-      # 1.  cffi will pick up the single-arch libffi from Homebrew, while Apple provides universal2-version
-      #     of libffi with XCode. So we forcefully have to remove the Homebrew one.
-      # 2.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
+      # We have to manually take a few steps:
+      # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
       #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
       #     https://github.com/pyca/cryptography/issues/5918
-      # 3.  We need to build the PyInstaller bootloader from sources:
+      # 2.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
+      # 3.  TEMPORARY: Add aarch64 for orjson universal2 build, until they provide a wheel
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
         
-        brew uninstall libffi --ignore-dependencies
-        ARCHFLAGS="-arch x86_64 -arch arm64" pip3 install --upgrade cffi --no-binary cffi
-        pip3 install --upgrade -r requirements.txt
+        pip3 install --upgrade -r requirements.txt --no-binary cffi
         
         pip3 uninstall cryptography -y
         pip3 download -r builder/osx/requirements.txt --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
         pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
         
+        rustup target add aarch64-apple-darwin
+        
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
     - name: Import macOS codesign certificates
-      uses: apple-actions/import-codesign-certs@v1
-      if: env.SIGNING_AUTH
-      with:
-        p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
-        p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+      # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
+      env:
+        CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+        CERTIFICATES_P12_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+        MACOS_KEYCHAIN_TEMP_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_TEMP_PASSWORD }}
+      run: |
+        echo $CERTIFICATES_P12 | base64 --decode > certificate.p12
+        security create-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain 
+        security default-keychain -s build.keychain 
+        security unlock-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain
+        security set-keychain-settings -lut 21600 build.keychain
+        security import certificate.p12 -k build.keychain -P "$CERTIFICATES_P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productsign -T /usr/bin/xcrun
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain
     - name: Build source distribution
       # Run this on macOS so the line endings are correct by default
       run: python builder/package.py source
@@ -154,6 +161,10 @@ jobs:
         path: "*-src.tar.gz"
         name: Source distribution
     - name: Build macOS binary
+      env:
+        SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
+        NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
+        NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
       run: |
         python3 builder/package.py app
         python3 builder/make_dmg.py
@@ -171,15 +182,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     env:
-      SNAP_TOKEN: ${{ secrets.SNAP_TOKEN }}
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x"
       - name: Release latest available Snap
         run: |
           sudo snap install snapcraft --classic
-          echo "${SNAP_TOKEN}" | snapcraft login --with -
           python3 snap/local/release_snap.py

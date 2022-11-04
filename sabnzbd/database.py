@@ -26,7 +26,8 @@ import logging
 import sys
 import threading
 import sqlite3
-from typing import Union, Dict, Optional, List
+from sqlite3 import Connection, Cursor
+from typing import Union, Dict, Optional, List, Sequence
 
 import sabnzbd
 import sabnzbd.cfg
@@ -76,7 +77,8 @@ class HistoryDB:
     @synchronized(DB_LOCK)
     def __init__(self):
         """Determine databse path and create connection"""
-        self.con = self.c = None
+        self.connection: Optional[Connection] = None
+        self.cursor: Optional[Cursor] = None
         if not HistoryDB.db_path:
             HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         self.connect()
@@ -84,9 +86,9 @@ class HistoryDB:
     def connect(self):
         """Create a connection to the database"""
         create_table = not os.path.exists(HistoryDB.db_path)
-        self.con = sqlite3.connect(HistoryDB.db_path)
-        self.con.row_factory = sqlite3.Row
-        self.c = self.con.cursor()
+        self.connection = sqlite3.connect(HistoryDB.db_path)
+        self.connection.row_factory = sqlite3.Row
+        self.cursor = self.connection.cursor()
         if create_table:
             self.create_history_db()
         elif not HistoryDB.done_cleaning:
@@ -98,7 +100,7 @@ class HistoryDB:
 
         self.execute("PRAGMA user_version;")
         try:
-            version = self.c.fetchone()["user_version"]
+            version = self.cursor.fetchone()["user_version"]
         except IndexError:
             version = 0
         if version < 1:
@@ -116,16 +118,13 @@ class HistoryDB:
                 'ALTER TABLE "history" ADD COLUMN password TEXT;'
             )
 
-    def execute(self, command, args=(), save=False):
+    def execute(self, command: str, args: Sequence = (), save: bool = False) -> bool:
         """Wrapper for executing SQL commands"""
         for tries in range(5, 0, -1):
             try:
-                if args and isinstance(args, tuple):
-                    self.c.execute(command, args)
-                else:
-                    self.c.execute(command)
+                self.cursor.execute(command, args)
                 if save:
-                    self.con.commit()
+                    self.connection.commit()
                 return True
             except:
                 error = str(sys.exc_info()[1])
@@ -155,7 +154,7 @@ class HistoryDB:
                     logging.info("Arguments: %s", repr(args))
                     logging.info("Traceback: ", exc_info=True)
                     try:
-                        self.con.rollback()
+                        self.connection.rollback()
                     except:
                         logging.debug("Rollback Failed:", exc_info=True)
             return False
@@ -200,8 +199,8 @@ class HistoryDB:
     def close(self):
         """Close database connection"""
         try:
-            self.c.close()
-            self.con.close()
+            self.cursor.close()
+            self.connection.close()
         except:
             logging.error(T("Failed to close database, see log"))
             logging.info("Traceback: ", exc_info=True)
@@ -221,7 +220,7 @@ class HistoryDB:
             """SELECT path FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED)
         )
         if fetch_ok:
-            return [item["path"] for item in self.c.fetchall()]
+            return [item["path"] for item in self.cursor.fetchall()]
         else:
             return []
 
@@ -322,8 +321,8 @@ class HistoryDB:
 
         cmd = "SELECT COUNT(*) FROM history WHERE name LIKE ?"
         total_items = -1
-        if self.execute(cmd + post, tuple(command_args)):
-            total_items = self.c.fetchone()["COUNT(*)"]
+        if self.execute(cmd + post, command_args):
+            total_items = self.cursor.fetchone()["COUNT(*)"]
 
         if not start:
             start = 0
@@ -332,8 +331,8 @@ class HistoryDB:
 
         command_args.extend([start, limit])
         cmd = "SELECT * FROM history WHERE name LIKE ?"
-        if self.execute(cmd + post + " ORDER BY completed desc LIMIT ?, ?", tuple(command_args)):
-            items = self.c.fetchall()
+        if self.execute(cmd + post + " ORDER BY completed desc LIMIT ?, ?", command_args):
+            items = self.cursor.fetchall()
         else:
             items = []
 
@@ -351,7 +350,7 @@ class HistoryDB:
             if self.execute(
                 """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
             ):
-                total = self.c.fetchone()["COUNT(*)"]
+                total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
 
     def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
@@ -361,7 +360,7 @@ class HistoryDB:
             """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
             (name, md5sum, Status.FAILED),
         ):
-            total = self.c.fetchone()["COUNT(*)"]
+            total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
 
     def get_history_size(self):
@@ -371,21 +370,21 @@ class HistoryDB:
         # Total Size of the history
         total = 0
         if self.execute("""SELECT sum(bytes) FROM history"""):
-            total = self.c.fetchone()["sum(bytes)"]
+            total = self.cursor.fetchone()["sum(bytes)"]
 
         # Amount downloaded this month
         month_timest = int(this_month(time.time()))
 
         month = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (month_timest,)):
-            month = self.c.fetchone()["sum(bytes)"]
+            month = self.cursor.fetchone()["sum(bytes)"]
 
         # Amount downloaded this week
         week_timest = int(this_week(time.time()))
 
         week = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (week_timest,)):
-            week = self.c.fetchone()["sum(bytes)"]
+            week = self.cursor.fetchone()["sum(bytes)"]
 
         return total, month, week
 
@@ -395,7 +394,7 @@ class HistoryDB:
         t = (nzo_id,)
         if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
             try:
-                data = ubtou(zlib.decompress(self.c.fetchone()["script_log"]))
+                data = ubtou(zlib.decompress(self.cursor.fetchone()["script_log"]))
             except:
                 pass
         return data
@@ -406,7 +405,7 @@ class HistoryDB:
         name = ""
         if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
             try:
-                name = self.c.fetchone()["name"]
+                name = self.cursor.fetchone()["name"]
             except TypeError:
                 # No records found
                 pass
@@ -418,7 +417,7 @@ class HistoryDB:
         path = ""
         if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
             try:
-                path = self.c.fetchone()["path"]
+                path = self.cursor.fetchone()["path"]
             except TypeError:
                 # No records found
                 pass
@@ -431,7 +430,7 @@ class HistoryDB:
         t = (nzo_id,)
         if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
             try:
-                item = self.c.fetchone()
+                item = self.cursor.fetchone()
                 return item["report"], item["url"], item["pp"], item["script"], item["category"]
             except TypeError:
                 # No records found

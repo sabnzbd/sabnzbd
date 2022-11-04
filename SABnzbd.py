@@ -1156,7 +1156,7 @@ def main():
         daemonize()
     else:
         if console_logging:
-            console = logging.StreamHandler()
+            console = logging.StreamHandler(stream=sys.stdout)
             console.setLevel(LOGLEVELS[logging_level + 1])
             console.setFormatter(logging.Formatter(logformat))
             logger.addHandler(console)
@@ -1260,7 +1260,7 @@ def main():
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
 
     # Handle the several tray icons
-    if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
+    if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WIN32:
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
@@ -1271,7 +1271,7 @@ def main():
                 from gi.repository import Gtk
                 import sabnzbd.sabtraylinux
 
-                sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
+                sabnzbd.sabtraylinux.StatusIcon()
             except:
                 logging.info("python3-gi not found, no SysTray.")
 

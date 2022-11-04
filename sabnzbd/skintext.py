@@ -142,7 +142,6 @@ SKIN_TEXT = {
     "cmenu-search": TT("Search"),  #: Main menu item
     # Footer
     "ft-download": TT("Download Dir"),  # Used in Footer
-    "ft-sysload": TT("Sysload"),  # Used in Footer
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
     "link-pause": TT("Pause"),  #: Pause downloading
@@ -228,6 +227,7 @@ SKIN_TEXT = {
     "dashboard-delayed": TT("Download speed limited by"),
     "dashboard-delayed-cpu": TT("CPU"),
     "dashboard-delayed-disk": TT("Disk speed"),
+    "dashboard-loadavg": TT("System load"),
     "dashboard-systemPerformance": TT("System Performance (Pystone)"),  #: Do not translate Pystone
     "dashboard-downloadDirSpeed": TT("Download folder speed"),
     "dashboard-completeDirSpeed": TT("Complete folder speed"),
@@ -307,8 +307,12 @@ SKIN_TEXT = {
     "explain-cache_limitstr": TT(
         'Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'
     ),
-    "download-backup": TT("Download backup"),
-    "explain-admin_backup": TT("Save or restore a backup of the configuration file and databases."),
+    "create-backup": TT("Create backup"),
+    "explain-create_backup": TT(
+        "Create a backup of the configuration file and databases in the Backup Folder.<br>"
+        "If the Backup Folder is not set, the backup will be created in the Completed Download Folder.<br>"
+        "Recurring backups can be configured on the Scheduling page."
+    ),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
         "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
@@ -389,6 +393,11 @@ SKIN_TEXT = {
     "explain-admin_dir1": TT(
         "Location for queue admin and history database.<br /><i>Can only be changed when queue is empty.</i>"
     ),
+    "opt-backup_dir": TT("Backup Folder"),
+    "explain-backup_dir": TT(
+        "Location where the backups of the configuration file and databases are stored.<br />"
+        "If left empty, the backup will be created in the Completed Download Folder."
+    ),
     "explain-admin_dir2": TT("<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"),
     "opt-log_dir": TT("Log Folder"),
     "explain-log_dir": TT("Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"),
@@ -444,10 +453,6 @@ SKIN_TEXT = {
     ),
     "opt-new_nzb_on_failure": TT("On failure, try alternative NZB"),
     "explain-new_nzb_on_failure": TT("Some servers provide an alternative NZB when a download fails."),
-    "opt-enable_meta": TT("Use tags from indexer"),
-    "explain-enable_meta": TT(
-        "When sorting, use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name."
-    ),
     "opt-folder_rename": TT("Enable folder rename"),
     "explain-folder_rename": TT(
         "Use temporary names during post processing. Disable when your system doesn't handle that properly."
@@ -470,6 +475,7 @@ SKIN_TEXT = {
     "explain-auto_disconnect": TT("Disconnect from Usenet server(s) when queue is empty or paused."),
     "opt-auto_sort": TT("Automatically sort queue"),
     "explain-auto_sort": TT("Automatically sort jobs in the queue when a new job is added."),
+    "explain-auto_sort_remaining": TT("The queue will resort every 30 seconds if % downloaded is selected."),
     "opt-direct_unpack": TT("Direct Unpack"),
     "explain-direct_unpack": TT(
         "Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair."
@@ -483,6 +489,8 @@ SKIN_TEXT = {
     "also-test": TT("Also test releases"),  #: Pick list for weekly test for new releases
     "opt-replace_spaces": TT("Replace Spaces in Foldername"),
     "explain-replace_spaces": TT("Replace spaces with underscores in folder names."),
+    "opt-replace_underscores": TT("Replace underscores in folder name"),
+    "explain-replace_underscores": TT("Replace underscores with dots in folder names."),
     "opt-replace_dots": TT("Replace dots in Foldername"),
     "explain-replace_dots": TT("Replace dots with spaces in folder names."),
     "opt-sanitize_safe": TT("Make Windows compatible"),
@@ -598,6 +606,7 @@ SKIN_TEXT = {
     "sch-pause": TT("Pause"),  #:Config->Scheduling
     "sch-shutdown": TT("Shutdown"),  #:Config->Scheduling
     "sch-restart": TT("Restart"),  #:Config->Scheduling
+    "sch-create_backup": TT("Create backup"),  #:Config->Scheduling
     # Config->RSS
     "explain-RSS": TT(
         'The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".'
@@ -798,12 +807,6 @@ SKIN_TEXT = {
     "Glitter-afterRestart": TT("In case of SABnzbd restart this screen will disappear automatically!"),
     "Glitter-disabled": TT("Disabled"),
     "Glitter-warning": TT("WARNING:"),
-    "Glitter-encrypted": TT("ENCRYPTED"),
-    "Glitter-incomplete": TT("INCOMPLETE"),
-    "Glitter-duplicate": TT("DUPLICATE"),
-    "Glitter-unwanted": TT("UNWANTED"),
-    "Glitter-tooLarge": TT("TOO LARGE"),
-    "Glitter-waitSec": TT("WAIT %s sec"),
     "Glitter-error": TT("ERROR:"),
     "Glitter-fetch": TT("Fetch"),
     "Glitter-interfaceOptions": TT("Web Interface"),
@@ -831,8 +834,6 @@ SKIN_TEXT = {
     "Glitter-chooseFile": TT("Browse"),
     "Glitter-addnzbFilename": TT("Optionally specify a filename"),
     "Glitter-submit": TT("Submit"),
-    "Glitter-sendThanks": TT("Submitted. Thank you!"),
-    "Glitter-noSelect": TT("Nothing selected!"),
     "Glitter-removeSelected": TT("Remove all selected files"),
     "Glitter-toggleCompletedFiles": TT("Hide/show completed files"),
     "Glitter-top": TT("Top"),
@@ -862,6 +863,7 @@ SKIN_TEXT = {
     "Glitter-logText": TT(
         "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
     ),
+    "Glitter-sortRemaining": TT("Sort by % downloaded <small>Most&rarr;Least</small>"),
     "Glitter-sortAgeAsc": TT("Sort by Age <small>Oldest&rarr;Newest</small>"),
     "Glitter-sortAgeDesc": TT("Sort by Age <small>Newest&rarr;Oldest</small>"),
     "Glitter-sortNameAsc": TT("Sort by Name <small>A&rarr;Z</small>"),

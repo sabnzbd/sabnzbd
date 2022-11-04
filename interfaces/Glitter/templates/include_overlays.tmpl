@@ -117,6 +117,12 @@
                                 <span data-bind="text: cacheSize"></span> (<span data-bind="text: cacheArticles"></span> $T('Glitter-articles'))
                             </div>
                         </div>
+                        <div class="row" data-bind="visible: statusInfo.loadavg()">
+                            <div class="col-sm-6">$T('dashboard-loadavg') &nbsp; </div>
+                            <div class="col-sm-6">
+                                <span data-bind="text: statusInfo.loadavg"></span>
+                            </div>
+                        </div>
                         <div class="row" data-bind="visible: statusInfo.delayed_decoder() > 5 || statusInfo.delayed_assembler() > 5">
                             <div class="col-sm-6">$T('dashboard-delayed') &nbsp; </div>
                             <div class="col-sm-6">
@@ -517,7 +523,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">$T('category')</label>
                     <div class="col-sm-6">
-                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText',"></select>
+                        <select name="Category" class="form-control" data-bind="options: queue.categoriesList, optionsValue: 'catValue', optionsText: 'catText'"></select>
                         <span class="glyphicon glyphicon-tag"></span>
                     </div>
                 </div>
@@ -538,7 +544,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">$T('eoq-scripts')</label>
                     <div class="col-sm-6">
-                        <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '$T('default')', enable: (queue.scriptsList().length > 1)"></select>
+                        <select name="Post-processing" class="form-control" data-bind="options: queue.scriptsList, optionsCaption: '$T('default')', optionsValue: 'scriptValue', optionsText: 'scriptText', enable: (queue.scriptsList().length > 1)"></select>
                         <span class="glyphicon glyphicon-flash"></span>
                     </div>
                 </div>

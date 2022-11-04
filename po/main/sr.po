@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0RC2\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Serbian (https://www.transifex.com/sabnzbd/teams/111101/sr/)\n"
@@ -136,14 +136,6 @@ msgstr "Гашење SABnzbd је завршено"
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s primljen, snimanje i napuštanje..."
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -283,6 +275,10 @@ msgstr "%s nije ispravna email adresa"
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Потребна је адреса сервера"
+
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Погрешна адреса сервера."
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
@@ -646,14 +642,6 @@ msgid ""
 "program:"
 msgstr ""
 "API кључ је погрешан, унети у спољни програм API кључ из Подешавања->Опште:"
-
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Недостаје аутентификација, унети у спољни програм име/лозинку из "
-"Подешавања->Опште:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
@@ -1200,27 +1188,27 @@ msgstr "Поништено, не може да се заврши"
 msgid "Error importing %s"
 msgstr "Грешка увоза %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "ДУПЛИКАТ"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "ШИФРИРАНО"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "ПРЕВЕЛИКО"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "НЕПОТПУНО"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "NEŽELJENI"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "Чекање %s сек"
 
@@ -2160,10 +2148,6 @@ msgid "Download Dir"
 msgstr "Фасцикла преузимања"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Sysload"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Da li ste sigurni da želite ugasiti SABnzbd?"
 
@@ -2457,6 +2441,10 @@ msgstr ""
 msgid "Disk speed"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "System load"
+msgstr ""
+
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
@@ -2737,12 +2725,17 @@ msgstr ""
 "Кеширати артикле у меморији. То смањује приступ диска.<br /><i>У бајтовима, "
 "опционо додати K,M,G. Пример: \"64M\" или \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3017,6 +3010,17 @@ msgstr ""
 "ред празан.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr ""
 "<i>Податци <b>неће</b> бити премештени. Потребно поновно покретање "
@@ -3207,16 +3211,6 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "Neki serveri nude alternativni NZB pri neuspešnom preuzimanju"
 
 #: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Упали преименовање фасцикле"
 
@@ -3269,6 +3263,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr ""
 
@@ -3298,6 +3296,14 @@ msgstr "Размени размаке у имену фасцикле"
 #: sabnzbd/skintext.py
 msgid "Replace spaces with underscores in folder names."
 msgstr "Размени <b>размаке</b> са <b>_</b> у имену фасцикле."
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4452,14 +4458,6 @@ msgid "Submit"
 msgstr "Пошаљи"
 
 #: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Poslato. Hvala!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Mišta nije odabrano!"
-
-#: sabnzbd/skintext.py
 msgid "Remove all selected files"
 msgstr "Ukloni sve odabrane fajlove"
 
@@ -4545,6 +4543,10 @@ msgstr "Освежи"
 msgid ""
 "All usernames, passwords and API-keys are automatically removed from the log"
 " and the included copy of your settings."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4761,10 +4763,6 @@ msgstr "Време је истекло"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Погрешна адреса сервера."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

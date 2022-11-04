@@ -9,7 +9,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0RC2\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/sabnzbd/teams/111101/es/)\n"
@@ -149,14 +149,6 @@ msgstr "Cierre de SABnzbd terminado"
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Señal %s capturado, guardando y saliendo..."
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -306,6 +298,10 @@ msgstr "%s no es una dirección de correo electrónico válida."
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Se necesita la dirección del servidor"
+
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Dirección del servidor no válida."
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
@@ -679,14 +675,6 @@ msgid ""
 msgstr ""
 "Clave de API erróneo, favor ingresar la clave correcta desde Config->General"
 " en tu aplicacion externa:"
-
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Faltaron datos de cuenta, favor ingresar usuario/contraseña desde "
-"Config->General en tu aplicacion externa:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
@@ -1258,27 +1246,27 @@ msgstr "Abortado, No puede ser completado"
 msgid "Error importing %s"
 msgstr "Error importando %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLICADO"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "ENCRIPTADO"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "DEMASIADO GRANDE"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "INCOMPLETO"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "NO DESEADO"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "ESPERAR %s seg"
 
@@ -2229,10 +2217,6 @@ msgid "Download Dir"
 msgstr "Dir de Descarga"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Carga del Sistema"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "¿Seguro que deseas detener SABnzbd?"
 
@@ -2527,6 +2511,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "System load"
 msgstr ""
 
 #. Do not translate Pystone
@@ -2829,12 +2817,17 @@ msgstr ""
 "Cachear artículos en memoria para reducir el acceso a disco.<br /><i>En "
 "bytes, opcionalmente seguido de K,M,G. Por ejemplo: \"64M\" o \"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3118,6 +3111,17 @@ msgstr ""
 " puede cambiar si la cola está vacía.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr ""
 "<i>Los datos <b>no</b> se moverán. Requiere queu SABnzbd sea reiniciado!</i>"
@@ -3318,19 +3322,6 @@ msgstr ""
 "Algunos servidores ofrecen una NZB alternativa cuando falla una descarga ."
 
 #: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr "Utilizar etiquetas del indexer"
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-"Al clasificar, utilice etiquetas del indexer para el título, temporada, "
-"episodio, etc. De no hacerlo así, todos los nombres se extraen del nombre "
-"NZB."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Habilitar renombrado de directorios"
 
@@ -3386,6 +3377,10 @@ msgstr ""
 "nueva."
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "Demora de la propagación"
 
@@ -3419,6 +3414,14 @@ msgstr "Reemplazar espacios en el nombre de directorio"
 msgid "Replace spaces with underscores in folder names."
 msgstr ""
 "Reemplaza los espacios con guiones bajos en los nombres de directorio."
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4600,14 +4603,6 @@ msgid "Submit"
 msgstr "Enviar"
 
 #: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Enviado. ¡Muchas gracias!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "¡No hay nada seleccionado!"
-
-#: sabnzbd/skintext.py
 msgid "Remove all selected files"
 msgstr "Eliminar todos los ficheros seleccionados"
 
@@ -4699,6 +4694,10 @@ msgid ""
 msgstr ""
 "Todos los nombres de usuarios, contraseñas y llaves-API se eliminan "
 "automáticamente del registro y se incluye una copia de su configuración."
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4915,10 +4914,6 @@ msgid ""
 msgstr ""
 "Protocolo SSL desconocido: intente desabilitar el SSL o conectarse a un "
 "puerto diferente."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Dirección del servidor no válida."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

@@ -294,7 +294,7 @@ function paginationModel(parent) {
             self.nrPages(1)
             self.currentStart(0);
 
-            // Are we on next page?
+            // Are we on next page? Bad!
             if(self.currentPage() > 1) {
                 // Force full update
                 parent.parent.refresh(true);
@@ -302,9 +302,6 @@ function paginationModel(parent) {
 
             // Move to current page
             self.currentPage(1);
-
-            // Force full update
-            parent.parent.refresh(true);
         } else {
             // Calculate number of pages needed
             var newNrPages = Math.ceil(parent.totalItems() / parent.paginationLimit())

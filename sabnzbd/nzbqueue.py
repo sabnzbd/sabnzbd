@@ -22,14 +22,12 @@ sabnzbd.nzbqueue - nzb queue
 import os
 import logging
 import time
-import datetime
-import functools
 import cherrypy._cpreqbody
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject, Article
-from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe_lower
+from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
@@ -566,36 +564,41 @@ class NzbQueue:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def sort_by_avg_age(self, reverse: bool = False):
-        logging.info("Sorting by average date... (reversed: %s)", reverse)
-        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
-
-    @NzbQueueLocker
-    def sort_by_name(self, reverse: bool = False):
-        logging.info("Sorting by name... (reversed: %s)", reverse)
-        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
-
-    @NzbQueueLocker
-    def sort_by_size(self, reverse: bool = False):
-        logging.info("Sorting by size... (reversed: %s)", reverse)
-        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
-
     def sort_queue(self, field: str, direction: Optional[str] = None):
-        """Sort queue by field: "name", "size" or "avg_age"
+        """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
         Direction is specified as "desc" or "asc"
         """
+        field = field.lower()
+        reverse = False
         if safe_lower(direction) == "desc":
             reverse = True
-        else:
-            reverse = False
-        if field.lower() == "name":
-            self.sort_by_name(reverse)
-        elif field.lower() == "size" or field.lower() == "bytes":
-            self.sort_by_size(reverse)
-        elif field.lower() == "avg_age":
-            self.sort_by_avg_age(not reverse)
+
+        if field == "name":
+            logging.info("Sorting by name (reversed: %s)", reverse)
+            sort_function = lambda nzo: nzo.final_name.lower()
+        elif field == "size" or field == "bytes":
+            logging.info("Sorting by size (reversed: %s)", reverse)
+            sort_function = lambda nzo: nzo.bytes
+        elif field == "avg_age":
+            reverse = not reverse
+            logging.info("Sorting by average date... (reversed: %s)", reverse)
+            sort_function = lambda nzo: nzo.avg_date
+        elif field == "remaining":
+            logging.debug("Sorting by percentage downloaded...")
+            sort_function = lambda nzo: nzo.remaining / nzo.bytes
         else:
             logging.debug("Sort: %s not recognized", field)
+            return
+
+        # Apply sort by requested order, then restore priority ordering
+        self.__nzo_list.sort(key=sort_function, reverse=reverse)
+        self.__nzo_list.sort(key=lambda nzo: nzo.priority, reverse=True)
+
+    def update_sort_order(self):
+        """Resorts the queue if it is useful for the selected sort method"""
+        auto_sort = cfg.auto_sort()
+        if auto_sort and auto_sort.startswith("remaining"):
+            self.sort_queue("remaining")
 
     @NzbQueueLocker
     def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
@@ -810,7 +813,13 @@ class NzbQueue:
         return n
 
     def queue_info(
-        self, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None, start: int = 0, limit: int = 0
+        self,
+        search: Optional[str] = None,
+        categories: Optional[List[str]] = None,
+        priorities: Optional[List[str]] = None,
+        nzo_ids: Optional[List[str]] = None,
+        start: int = 0,
+        limit: int = 0,
     ) -> Tuple[int, int, int, List[NzbObject], int, int]:
         """Return list of queued jobs,
         optionally filtered by 'search' and 'nzo_ids', and limited by start and limit.
@@ -835,11 +844,19 @@ class NzbQueue:
                 if nzos_matched < start:
                     bytes_left_previous_page += b_left
 
-            if (not search) or search in nzo.final_name.lower():
-                if (not nzo_ids) or nzo.nzo_id in nzo_ids:
-                    if (not limit) or (start <= nzos_matched < start + limit):
-                        nzo_list.append(nzo)
-                    nzos_matched += 1
+            # Conditions split up for readability
+            if search and search not in nzo.final_name.lower():
+                continue
+            if categories and nzo.cat not in categories:
+                continue
+            if priorities and nzo.priority not in priorities:
+                continue
+            if nzo_ids and nzo.nzo_id not in nzo_ids:
+                continue
+
+            if not limit or start <= nzos_matched < start + limit:
+                nzo_list.append(nzo)
+            nzos_matched += 1
 
         if not search and not nzo_ids:
             nzos_matched = len(self.__nzo_list)
@@ -928,53 +945,3 @@ class NzbQueue:
 
     def __repr__(self):
         return "<NzbQueue>"
-
-
-def _nzo_date_cmp(nzo1: NzbObject, nzo2: NzbObject):
-    avg_date1 = nzo1.avg_date
-    avg_date2 = nzo2.avg_date
-
-    if avg_date1 is None and avg_date2 is None:
-        return 0
-
-    if avg_date1 is None:
-        avg_date1 = datetime.datetime.now()
-    elif avg_date2 is None:
-        avg_date2 = datetime.datetime.now()
-
-    return cmp(avg_date1, avg_date2)
-
-
-def _nzo_name_cmp(nzo1, nzo2):
-    return cmp(nzo1.final_name.lower(), nzo2.final_name.lower())
-
-
-def _nzo_size_cmp(nzo1, nzo2):
-    return cmp(nzo1.bytes, nzo2.bytes)
-
-
-def sort_queue_function(nzo_list: List[NzbObject], method, reverse: bool) -> List[NzbObject]:
-    ultra_high_priority = [nzo for nzo in nzo_list if nzo.priority == REPAIR_PRIORITY]
-    super_high_priority = [nzo for nzo in nzo_list if nzo.priority == FORCE_PRIORITY]
-    high_priority = [nzo for nzo in nzo_list if nzo.priority == HIGH_PRIORITY]
-    normal_priority = [nzo for nzo in nzo_list if nzo.priority == NORMAL_PRIORITY]
-    low_priority = [nzo for nzo in nzo_list if nzo.priority == LOW_PRIORITY]
-
-    ultra_high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    super_high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    normal_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-    low_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
-
-    new_list = ultra_high_priority
-    new_list.extend(super_high_priority)
-    new_list.extend(high_priority)
-    new_list.extend(normal_priority)
-    new_list.extend(low_priority)
-
-    # Make sure any left-over jobs enter the new list
-    for item in nzo_list:
-        if item not in new_list:
-            new_list.append(item)
-
-    return new_list

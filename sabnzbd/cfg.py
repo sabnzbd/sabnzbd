@@ -22,6 +22,8 @@ sabnzbd.cfg - Configuration Parameters
 import logging
 import re
 import argparse
+import socket
+import ipaddress
 from typing import List, Tuple
 
 import sabnzbd
@@ -147,6 +149,48 @@ def validate_server(value):
         return None, value
 
 
+def validate_host(value):
+    """Check if host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
+
+    # easy: value is a plain IPv4 or IPv6 address:
+    try:
+        ipaddress.ip_address(value)
+        # valid host, so return it
+        return None, value
+    except:
+        pass
+
+    # we don't want a plain number. As socket.getaddrinfo("100", ...) allows that, we have to pre-check
+    try:
+        int(value)
+        # plain int as input, which is not allowed
+        return T("Invalid server address."), None
+    except:
+        pass
+
+    # not a plain IPv4 nor IPv6 address, so let's check if it's a name that resolves to IPv4
+    try:
+        socket.getaddrinfo(value, None, socket.AF_INET)
+        # all good
+        logging.debug("Valid host name")
+        return None, value
+    except:
+        pass
+
+    # ... and if not: does it resolve to IPv6 ... ?
+    try:
+        socket.getaddrinfo(value, None, socket.AF_INET6)
+        # all good
+        logging.debug("Valid host name")
+        return None, value
+    except:
+        logging.debug("No valid host name")
+        pass
+
+    # if we get here, it is not valid host, so return None
+    return T("Invalid server address."), None
+
+
 def validate_script(value):
     """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
@@ -226,7 +270,7 @@ version_check = OptionNumber("misc", "check_new_rel", 1)
 autobrowser = OptionBool("misc", "auto_browser", True)
 language = OptionStr("misc", "language", "en")
 enable_https_verification = OptionBool("misc", "enable_https_verification", True)
-cherryhost = OptionStr("misc", "host", DEF_HOST)
+cherryhost = OptionStr("misc", "host", DEF_HOST, validation=validate_host)
 cherryport = OptionStr("misc", "port", DEF_PORT)
 https_port = OptionStr("misc", "https_port")
 username = OptionStr("misc", "username")
@@ -261,6 +305,7 @@ fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
 script_dir = OptionDir("misc", "script_dir", writable=False)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
+backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
 dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
 password_file = OptionDir("misc", "password_file", "", create=False)
@@ -296,6 +341,7 @@ direct_unpack = OptionBool("misc", "direct_unpack", False)
 propagation_delay = OptionNumber("misc", "propagation_delay", 0)
 folder_rename = OptionBool("misc", "folder_rename", True)
 replace_spaces = OptionBool("misc", "replace_spaces", False)
+replace_underscores = OptionBool("misc", "replace_underscores", False)
 replace_dots = OptionBool("misc", "replace_dots", False)
 safe_postproc = OptionBool("misc", "safe_postproc", True)
 pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
@@ -307,7 +353,6 @@ action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensi
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
 history_retention = OptionStr("misc", "history_retention", "0")
-enable_meta = OptionBool("misc", "enable_meta", True)
 
 quota_size = OptionStr("misc", "quota_size")
 quota_day = OptionStr("misc", "quota_day")
@@ -341,7 +386,6 @@ rss_rate = OptionNumber("misc", "rss_rate", 60, minval=15, maxval=24 * 60)
 ##############################################################################
 # Bool switches
 ampm = OptionBool("misc", "ampm", False)
-replace_illegal = OptionBool("misc", "replace_illegal", True)
 start_paused = OptionBool("misc", "start_paused", False)
 preserve_paused_state = OptionBool("misc", "preserve_paused_state", False)
 enable_par_cleanup = OptionBool("misc", "enable_par_cleanup", True)
@@ -359,17 +403,14 @@ wait_for_dfolder = OptionBool("misc", "wait_for_dfolder", False)
 rss_filenames = OptionBool("misc", "rss_filenames", False)
 api_logging = OptionBool("misc", "api_logging", True)
 html_login = OptionBool("misc", "html_login", True)
-osx_menu = OptionBool("misc", "osx_menu", True)
-osx_speed = OptionBool("misc", "osx_speed", True)
 warn_dupl_jobs = OptionBool("misc", "warn_dupl_jobs", True)
 helpful_warnings = OptionBool("misc", "helpful_warnings", True)
 keep_awake = OptionBool("misc", "keep_awake", True)
-win_menu = OptionBool("misc", "win_menu", True)
+tray_icon = OptionBool("misc", "tray_icon", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
 enable_broadcast = OptionBool("misc", "enable_broadcast", True)
 ipv6_hosting = OptionBool("misc", "ipv6_hosting", False)
 api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
-disable_key = OptionBool("misc", "disable_api_key", False, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
@@ -382,7 +423,6 @@ selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
 episode_rename_limit = OptionStr("misc", "episode_rename_limit", "20M")
 size_limit = OptionStr("misc", "size_limit", "0")
-show_sysload = OptionNumber("misc", "show_sysload", 2, minval=0, maxval=2)
 direct_unpack_threads = OptionNumber("misc", "direct_unpack_threads", 3, minval=1)
 history_limit = OptionNumber("misc", "history_limit", 10, minval=0)
 wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, minval=1, maxval=60)
@@ -547,6 +587,7 @@ def set_root_folders(home, lcldata):
     script_dir.set_root(home)
     nzb_backup_dir.set_root(lcldata)
     admin_dir.set_root(lcldata)
+    backup_dir.set_root(home)
     dirscan_dir.set_root(home)
     log_dir.set_root(lcldata)
     password_file.set_root(home)

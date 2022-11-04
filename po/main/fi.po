@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.6.0RC2\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: Finnish (https://www.transifex.com/sabnzbd/teams/111101/fi/)\n"
@@ -142,14 +142,6 @@ msgstr "SABnzbd sammutus valmis"
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signaali %s kaapattu, tallennetaan ja lopetetaan..."
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid ""
-"We are planning to remove the '%s' setting, which you have changed from the "
-"default value. Could you let us know why you made this change at: "
-"https://github.com/sabnzbd/sabnzbd/discussions"
-msgstr ""
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -289,6 +281,10 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
+
+#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Virheellinen palvelimen osoite."
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
@@ -654,14 +650,6 @@ msgid ""
 msgstr ""
 "API avain virheellinen, käytä Asetukset->Yleiset löytyvää api avainta "
 "käyttämääsi kolmannen osapuolen ohjelmaan:"
-
-#: sabnzbd/interface.py
-msgid ""
-"Authentication missing, please enter username/password from Config->General "
-"into your 3rd party program:"
-msgstr ""
-"Authentikointi puuttuu, ole hyvä ja syötä käyttäjänimi/salasana "
-"Asetukset->Yleiset kolmannen osapuolen ohjelmaasi:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
@@ -1207,27 +1195,27 @@ msgstr "Peruutettu, ei voi valmistua"
 msgid "Error importing %s"
 msgstr "Virhe tuotaessa %s"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "KAKSOISKAPPALE"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
 msgstr "SALATTU"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "TOO LARGE"
 msgstr "LIIAN SUURI"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "INCOMPLETE"
 msgstr "KESKENERÄINEN"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "UNWANTED"
 msgstr "EI TOIVOTTU"
 
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py
 msgid "WAIT %s sec"
 msgstr "ODOTA %s sekuntia"
 
@@ -2167,10 +2155,6 @@ msgid "Download Dir"
 msgstr "Lataukset-kansio"
 
 #: sabnzbd/skintext.py
-msgid "Sysload"
-msgstr "Kuorma"
-
-#: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Oletko varma, että haluat sammuttaa SABnzbdn?"
 
@@ -2464,6 +2448,10 @@ msgstr ""
 msgid "Disk speed"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "System load"
+msgstr ""
+
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
@@ -2754,12 +2742,17 @@ msgstr ""
 "/><i>Tavuina, vaihtoehtoisesti lisää pääte K,M,G. Esimerkiksi: \"64M\" tai "
 "\"128M\"</i>"
 
+#. Config->Scheduling
 #: sabnzbd/skintext.py
-msgid "Download backup"
+msgid "Create backup"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Save or restore a backup of the configuration file and databases."
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3042,6 +3035,17 @@ msgstr ""
 "/><i>Voidaan muuttaa vain jonon ollessa tyhjä.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr ""
 "<i>Tiedostoja <b>ei</b> tulla siirtämään. Vaatii SABnzbd "
@@ -3235,16 +3239,6 @@ msgstr ""
 "Jotkin palvelimet tarjoavat vaihtoehtoisen NZB:n kun lataus epäonnistuu."
 
 #: sabnzbd/skintext.py
-msgid "Use tags from indexer"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"When sorting, use tags from indexer for title, season, episode, etc. "
-"Otherwise all naming is derived from the NZB name."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Kansion uudelleennimeäminen käytössä"
 
@@ -3299,6 +3293,10 @@ msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Propagation delay"
 msgstr "Levitysviive"
 
@@ -3330,6 +3328,14 @@ msgstr "Korvaa välilyönnit kansionimessä"
 #: sabnzbd/skintext.py
 msgid "Replace spaces with underscores in folder names."
 msgstr "Korvaa välilyönnit alaviivoilla kansionimissä."
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -4494,14 +4500,6 @@ msgid "Submit"
 msgstr "Lähetä"
 
 #: sabnzbd/skintext.py
-msgid "Submitted. Thank you!"
-msgstr "Lähetetty. Kiitos!"
-
-#: sabnzbd/skintext.py
-msgid "Nothing selected!"
-msgstr "Ei mitään valittuna!"
-
-#: sabnzbd/skintext.py
 msgid "Remove all selected files"
 msgstr "Poista kaikki valitut tiedostot"
 
@@ -4590,6 +4588,10 @@ msgstr "Päivitä"
 msgid ""
 "All usernames, passwords and API-keys are automatically removed from the log"
 " and the included copy of your settings."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4807,10 +4809,6 @@ msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 "Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Virheellinen palvelimen osoite."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server quit during login sequence."

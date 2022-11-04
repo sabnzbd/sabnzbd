@@ -47,6 +47,7 @@ def clean_cache_dir(request):
     # Remove cache dir with retries in case it's still running
     for x in range(10):
         try:
+            time.sleep(1)
             shutil.rmtree(SAB_CACHE_DIR)
             break
         except OSError:
