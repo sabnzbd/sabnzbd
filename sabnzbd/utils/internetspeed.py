@@ -9,6 +9,10 @@ Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 import time
 import logging
 import urllib.request
+import subprocess
+import re
+import shutil
+import os
 
 SIZE_URL_LIST = [
     [5, "https://sabnzbd.org/tests/internetspeed/5MB.bin"],
@@ -42,8 +46,65 @@ def bytes_to_bits(megabytes_per_second: float) -> float:
     return 8.05 * megabytes_per_second  # bits
 
 
-def internetspeed() -> float:
-    """Report Internet speed in MB/s as a float"""
+def valuestring_to_float(x) -> float:
+    """convert string like 555k and 12M to a float"""
+    try:
+        if x.endswith("k"):
+            return float(x.replace("k", "")) * 1024
+        if x.endswith("M"):
+            return float(x.replace("M", "")) * 1024 * 1024
+        return float(x)
+    except:
+        return 0.0
+def internetspeed_with_curl() -> float:
+    """ measures Internetspeed in MB/s using curl"""
+    URL = "https://speed.hetzner.de/1GB.bin"
+    # URL = "http://ipv4.download.thinkbroadband.com/1GB.zip"
+    # URL = "http://speedtest.tele2.net/50GB.zip"
+    MAXTIME = 6  # seconds
+    VERBOSE = False
+    all_speeds = []
+    start = time.time()
+
+    if os.name == 'nt':
+        cmd = "curl -4 " + URL + " --output NULL --stderr -"  # Windows 10 and 11 have curl installed
+    if os.name == "posix":
+        curl_exe = shutil.which("curl")
+        if not curl_exe:
+            return None
+        cmd = curl_exe + " -4 -o /dev/null " + URL + " --stderr -"
+
+    try:
+        popen = subprocess.Popen(
+            cmd.split(), stdout=subprocess.PIPE, universal_newlines=True
+        )
+    except:
+        return None
+
+    for line in iter(popen.stdout.readline, ""):
+        # print(line)
+        #   2 1000M    2 21.0M    0     0  2285k      0  0:07:27  0:00:09  0:07:18 1876k
+        try:
+            average_speed = line.split()[6]
+            current_speed = line.split()[11]
+            speedMbps = valuestring_to_float(current_speed) / (1024 * 1024)
+            all_speeds.append(speedMbps)
+            if VERBOSE:
+                print(average_speed, current_speed)
+                print("speed Mbps", speedMbps)
+        except:
+            pass
+        if VERBOSE:
+            print(f"Time: {time.time() - start}")
+        if time.time() - start > MAXTIME:
+            break
+
+    popen.kill()
+    all_speeds.sort()
+    return all_speeds[-1]
+
+def internetspeed_pure_python() -> float:
+    """Report Internet speed in MB/s as a float, with pure python code"""
     # Do basic test with a small download
     logging.debug("Basic measurement, with small download:")
     start = time.time()
@@ -81,6 +142,13 @@ def internetspeed() -> float:
 
     logging.debug("Internet Bandwidth = %.2f MB/s (in %.2f seconds)", max_megabytes_per_second, time.time() - start)
     return max_megabytes_per_second
+
+def internetspeed() -> float:
+    speed = internetspeed_with_curl()
+    if speed:
+        # curl method went well
+        return speed
+    return internetspeed_pure_python()
 
 
 # MAIN
