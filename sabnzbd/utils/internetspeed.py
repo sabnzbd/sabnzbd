@@ -64,7 +64,6 @@ def internetspeed_with_curl() -> float:
     # URL = "http://ipv4.download.thinkbroadband.com/1GB.zip"
     # URL = "http://speedtest.tele2.net/50GB.zip"
     MAXTIME = 6  # seconds
-    VERBOSE = False
     all_speeds = []
     start = time.time()
 
@@ -73,35 +72,34 @@ def internetspeed_with_curl() -> float:
     if os.name == "posix":
         curl_exe = shutil.which("curl")
         if not curl_exe:
+            logging.debug("No curl found")
             return None
         cmd = curl_exe + " -4 -o /dev/null " + URL + " --stderr -"
 
     try:
         popen = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, universal_newlines=True)
     except:
+        logging.debug("Error running %s", cmd)
         return None
 
     for line in iter(popen.stdout.readline, ""):
         # print(line)
         #   2 1000M    2 21.0M    0     0  2285k      0  0:07:27  0:00:09  0:07:18 1876k
         try:
-            average_speed = line.split()[6]
             current_speed = line.split()[11]
-            speedMbps = valuestring_to_float(current_speed) / (1024 * 1024)
-            all_speeds.append(speedMbps)
-            if VERBOSE:
-                print(average_speed, current_speed)
-                print("speed Mbps", speedMbps)
+            speed_megabytes = valuestring_to_float(current_speed) / (1024 * 1024)
+            all_speeds.append(speed_megabytes)
+            logging.debug("current_speed %s, speed_megabytes %s", current_speed, speed_megabytes)
         except:
             pass
-        if VERBOSE:
-            print(f"Time: {time.time() - start}")
         if time.time() - start > MAXTIME:
             break
 
     popen.kill()
     all_speeds.sort()
-    return all_speeds[-1]
+    topspeed = all_speeds[-1]
+    logging.debug("curl method resulted in %s MB/s", topspeed)
+    return topspeed
 
 
 def internetspeed_pure_python() -> float:
@@ -149,7 +147,9 @@ def internetspeed() -> float:
     speed = internetspeed_with_curl()
     if speed:
         # curl method went well
+        logging.debug("internetspeed_with_curl run successfully")
         return speed
+    logging.debug("running internetspeed_pure_python()")
     return internetspeed_pure_python()
 
 
