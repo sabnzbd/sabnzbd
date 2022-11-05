@@ -56,8 +56,10 @@ def valuestring_to_float(x) -> float:
         return float(x)
     except:
         return 0.0
+
+
 def internetspeed_with_curl() -> float:
-    """ measures Internetspeed in MB/s using curl"""
+    """measures Internetspeed in MB/s using curl"""
     URL = "https://speed.hetzner.de/1GB.bin"
     # URL = "http://ipv4.download.thinkbroadband.com/1GB.zip"
     # URL = "http://speedtest.tele2.net/50GB.zip"
@@ -66,7 +68,7 @@ def internetspeed_with_curl() -> float:
     all_speeds = []
     start = time.time()
 
-    if os.name == 'nt':
+    if os.name == "nt":
         cmd = "curl -4 " + URL + " --output NULL --stderr -"  # Windows 10 and 11 have curl installed
     if os.name == "posix":
         curl_exe = shutil.which("curl")
@@ -75,9 +77,7 @@ def internetspeed_with_curl() -> float:
         cmd = curl_exe + " -4 -o /dev/null " + URL + " --stderr -"
 
     try:
-        popen = subprocess.Popen(
-            cmd.split(), stdout=subprocess.PIPE, universal_newlines=True
-        )
+        popen = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, universal_newlines=True)
     except:
         return None
 
@@ -102,6 +102,7 @@ def internetspeed_with_curl() -> float:
     popen.kill()
     all_speeds.sort()
     return all_speeds[-1]
+
 
 def internetspeed_pure_python() -> float:
     """Report Internet speed in MB/s as a float, with pure python code"""
@@ -142,6 +143,7 @@ def internetspeed_pure_python() -> float:
 
     logging.debug("Internet Bandwidth = %.2f MB/s (in %.2f seconds)", max_megabytes_per_second, time.time() - start)
     return max_megabytes_per_second
+
 
 def internetspeed() -> float:
     speed = internetspeed_with_curl()
