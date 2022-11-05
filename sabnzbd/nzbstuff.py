@@ -134,6 +134,13 @@ class TryList:
         with TRYLIST_LOCK:
             self.try_list = []
 
+    def cleanup_try_list(self, servers: List[Server]):
+        """Remove invalid servers from try_list"""
+        with TRYLIST_LOCK:
+            for server in self.try_list:
+                if not server in servers:
+                    self.try_list.remove(server)
+
     def __getstate__(self):
         """Save the servers"""
         return [server.id for server in self.try_list]
