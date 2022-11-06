@@ -59,7 +59,7 @@ def valuestring_to_float(x) -> float:
 
 
 def internetspeed_with_curl() -> float:
-    """measures Internetspeed in MB/s using curl"""
+    """measures Internetspeed in MB/s using curl. If no curl or error, return None"""
     URL = "https://speed.hetzner.de/1GB.bin"
     # URL = "http://ipv4.download.thinkbroadband.com/1GB.zip"
     # URL = "http://speedtest.tele2.net/50GB.zip"
@@ -70,11 +70,11 @@ def internetspeed_with_curl() -> float:
     if os.name == "nt":
         cmd = "curl -4 " + URL + " --output NULL --stderr -"  # Windows 10 and 11 have curl installed
     if os.name == "posix":
-        curl_exe = shutil.which("curl")
-        if not curl_exe:
+        curl_binary = shutil.which("curl")
+        if not curl_binary:
             logging.debug("No curl found")
             return None
-        cmd = curl_exe + " -4 -o /dev/null " + URL + " --stderr -"
+        cmd = curl_binary + " -4 -o /dev/null " + URL + " --stderr -"
 
     try:
         popen = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, universal_newlines=True)
@@ -144,6 +144,7 @@ def internetspeed_pure_python() -> float:
 
 
 def internetspeed() -> float:
+    """Report Internet speed in MB/s as a float, with curl (if possible), or pure python otherwise"""
     speed = internetspeed_with_curl()
     if speed:
         # curl method went well
