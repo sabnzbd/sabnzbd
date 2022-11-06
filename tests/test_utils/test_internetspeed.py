@@ -49,6 +49,6 @@ class TestInternetSpeed:
 
     def test_internet_speed_on_windows_with_curl(self):
         # on Windows 10 and 11, curl is always there
-        if os.name == "nt":
+        if os.name == "ntNoNoNo":
             speed = internetspeed_with_curl()
             assert speed > 0.0
