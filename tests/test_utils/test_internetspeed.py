@@ -18,6 +18,7 @@
 """
 tests.test_utils.test_internetspeed - Testing SABnzbd internetspeed
 """
+import os
 import pytest
 
 from sabnzbd.utils.internetspeed import internetspeed, measure_speed_from_url, SIZE_URL_LIST
@@ -45,3 +46,9 @@ class TestInternetSpeed:
 
         assert isinstance(curr_speed_mbps, float)
         assert curr_speed_mbps > 0
+
+    def test_internet_speed_on_windows_with_curl(self):
+        # on Windows 10 and 11, curl is always there
+        if os.name == "nt":
+            speed = internetspeed_with_curl()
+            assert speed > 0.0
