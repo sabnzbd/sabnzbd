@@ -37,10 +37,10 @@ cryptography==38.0.3
 ujson==5.5.0
 
 # Windows system integration
-pywin32==304; sys_platform == 'win32'
+pywin32==305; sys_platform == 'win32'
 
 # macOS system calls
-pyobjc==8.5.1; sys_platform == 'darwin'
+pyobjc==9.0; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
