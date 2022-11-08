@@ -144,6 +144,7 @@ jobs:
         CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
         CERTIFICATES_P12_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
         MACOS_KEYCHAIN_TEMP_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_TEMP_PASSWORD }}
+      if: env.CERTIFICATES_P12
       run: |
         echo $CERTIFICATES_P12 | base64 --decode > certificate.p12
         security create-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain 
