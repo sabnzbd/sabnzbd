@@ -64,7 +64,7 @@ extra_folders = [
 
 # Support functions
 def safe_remove(path):
-    """Remove file without erros if the file doesn't exist
+    """Remove file without errors if the file doesn't exist
     Can also handle folders
     """
     if os.path.exists(path):
