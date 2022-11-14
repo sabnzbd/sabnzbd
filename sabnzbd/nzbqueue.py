@@ -903,18 +903,16 @@ class NzbQueue:
                 for nzf in nzo.files:
                     if nzo.removed_from_queue:
                         break
-                    if len(nzf.try_list) >= nr_servers:
-                        logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
-                        nzf.reset_try_list()
 
+                    if len(nzf.try_list) >= nr_servers:
                         # Check for articles where all active servers have already been tried
-                        for article in nzf.articles:
-                            if nzf.deleted or nzo.removed_from_queue:
-                                break
+                        for article in nzf.articles[:]:
                             if article.all_servers_in_try_list(active_servers):
                                 sabnzbd.NzbQueue.register_article(article, success=False)
                                 nzo.increase_bad_articles_counter("missing_articles")
-                                nzf.has_bad_articles = True
+
+                        logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
+                        nzf.reset_try_list()
 
                 # Reset main trylist, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)
