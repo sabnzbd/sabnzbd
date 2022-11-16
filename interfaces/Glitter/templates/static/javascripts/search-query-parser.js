@@ -35,7 +35,12 @@ function search_query_parse(string, options) {
         var exclusion = {};
         var terms = [];
         // Get a list of search terms respecting single and double quotes
+        var regex = /(\S+:'(?:[^'\\]|\\.)*')|(\S+:"(?:[^"\\]|\\.)*")|\S+|\S+:\S+/g;
+        /*
+        Removed exclusion matching for SABnzbd, original regex:
         var regex = /(\S+:'(?:[^'\\]|\\.)*')|(\S+:"(?:[^"\\]|\\.)*")|(-?"(?:[^"\\]|\\.)*")|(-?'(?:[^'\\]|\\.)*')|\S+|\S+:\S+/g;
+        See: https://github.com/sabnzbd/sabnzbd/issues/2342
+         */
         var match;
         while ((match = regex.exec(string)) !== null) {
             var term = match[0];
@@ -67,10 +72,15 @@ function search_query_parse(string, options) {
                 });
             } else {
                 var isExcludedTerm = false;
+                /*
+                    Removed for SABnzbd
+                    See: https://github.com/sabnzbd/sabnzbd/issues/2342
+
                 if (term[0] === '-') {
                     isExcludedTerm = true;
                     term = term.slice(1);
                 }
+                */
 
                 // Strip surrounding quotes
                 term = term.replace(/^\"|\"$|^\'|\'$/g, '');
