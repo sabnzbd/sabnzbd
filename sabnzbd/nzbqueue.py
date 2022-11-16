@@ -883,8 +883,13 @@ class NzbQueue:
     def stop_idle_jobs(self):
         """Detect jobs that have zero files left and send them to post processing"""
         # Only check servers that are active
-        nr_servers = len([server for server in sabnzbd.Downloader.servers[:] if server.active])
+        active_servers = [server for server in sabnzbd.Downloader.servers[:] if server.active]
+        nr_servers = len(active_servers)
         empty = []
+
+        if nr_servers <= 0:
+            logging.debug("Skipping stop_idle_jobs because no servers are active")
+            return
 
         for nzo in self.__nzo_list:
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
@@ -896,8 +901,16 @@ class NzbQueue:
             if len(nzo.try_list) >= nr_servers:
                 # Maybe the NZF's need a reset too?
                 for nzf in nzo.files:
+                    if nzo.removed_from_queue:
+                        break
+
                     if len(nzf.try_list) >= nr_servers:
-                        # We do not want to reset all article trylists, they are good
+                        # Check for articles where all active servers have already been tried
+                        for article in nzf.articles[:]:
+                            if article.all_servers_in_try_list(active_servers):
+                                sabnzbd.NzbQueue.register_article(article, success=False)
+                                nzo.increase_bad_articles_counter("missing_articles")
+
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
 
