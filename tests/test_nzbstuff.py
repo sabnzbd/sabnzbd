@@ -93,6 +93,7 @@ class TestArticle:
         servers[1].active = False
         server = servers[2]
         assert article.get_article(server, servers) == article
+        assert article.tries == 3
 
 
 class TestNZBStuffHelpers:
