@@ -50,6 +50,44 @@ class TestNZO:
         # TODO: More checks!
 
 
+class Server:
+    def __init__(self, host, priority, active):
+        self.host = host
+        self.priority = priority
+        self.active = active
+
+
+class TestArticle:
+    def test_get_article(self):
+        article_id = "test@host" + os.urandom(8).hex() + ".sab"
+        article = nzbstuff.Article(article_id, randint(4321, 54321), None)
+        servers = []
+        servers.append(Server("testserver1", 10, True))
+        servers.append(Server("testserver2", 20, True))
+        servers.append(Server("testserver3", 30, True))
+
+        # Test fetching top priority server
+        server = servers[0]
+        assert article.get_article(server, servers) == article
+        assert article.fetcher_priority == 10
+        assert article.fetcher == server
+        assert article.get_article(server, servers) == None
+        article.fetcher = None
+        article.add_to_try_list(server)
+        assert article.get_article(server, servers) == None
+
+        # Test fetching when there is a higher priority server available
+        server = servers[2]
+        assert article.fetcher_priority == 10
+        assert article.get_article(server, servers) == None
+        assert article.fetcher_priority == 20
+
+        # Test that server is used even though article.fetcher_priority is higher than server.priority
+        article.fetcher_priority == 30
+        server = servers[1]
+        assert article.get_article(server, servers) == article
+
+
 class TestNZBStuffHelpers:
     @pytest.mark.parametrize(
         "argument, name, password",
