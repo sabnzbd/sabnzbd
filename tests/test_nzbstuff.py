@@ -82,9 +82,16 @@ class TestArticle:
         assert article.get_article(server, servers) == None
         assert article.fetcher_priority == 20
 
-        # Test that server is used even though article.fetcher_priority is higher than server.priority
+        # Server should be used even if article.fetcher_priority is a higher number than server.priority
         article.fetcher_priority == 30
         server = servers[1]
+        assert article.get_article(server, servers) == article
+
+        # Inactive servers in servers list should be ignored
+        article.fetcher = None
+        article.fetcher_priority = 0
+        servers[1].active = False
+        server = servers[2]
         assert article.get_article(server, servers) == article
 
 
