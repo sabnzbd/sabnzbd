@@ -83,7 +83,7 @@ class TestArticle:
         assert article.fetcher_priority == 20
 
         # Server should be used even if article.fetcher_priority is a higher number than server.priority
-        article.fetcher_priority == 30
+        article.fetcher_priority = 30
         server = servers[1]
         assert article.get_article(server, servers) == article
 
