@@ -186,33 +186,15 @@ class Article(TryList):
 
     def get_article(self, server: Server, servers: List[Server]):
         """Return article when appropriate for specified server"""
-        log = sabnzbd.LOG_ALL
-
         if self.fetcher or self.server_in_try_list(server):
-            if log:
-                logging.debug("Article %s | Server: %s | Returning None", self.article, server.host)
             return None
 
-        if log:
-            logging.debug(
-                "Article %s | Server: %s | Article priority: %s", self.article, server.host, self.fetcher_priority
-            )
-            logging.debug("Article %s | Server: %s | Server priority: %s", self.article, server.host, server.priority)
-
         if server.priority > self.fetcher_priority:
-            if log:
-                logging.debug("Article %s | Server: %s | lower priority", self.article, server.host)
-
             # Check for higher priority server, taking advantage of servers list being sorted by priority
             for server_check in servers:
-                if log:
-                    logging.debug("Article %s | Server: %s | Checking %s", self.article, server.host, server_check.host)
                 if server_check.priority < server.priority:
                     if server_check.active and not self.server_in_try_list(server_check):
                         # There is a higher priority server, so set article priority and return
-                        if log:
-                            logging.debug("Article %s | Server: %s | setting self priority", self.article, server.host)
-                            logging.debug("Article %s | Server: %s | Returning None", self.article, server.host)
                         self.fetcher_priority = server_check.priority
                         return None
                 else:
@@ -223,8 +205,6 @@ class Article(TryList):
         self.fetcher_priority = server.priority
         self.fetcher = server
         self.tries += 1
-        if log:
-            logging.debug("Article %s | Server: %s | Article-try: %s", self.article, server.host, self.tries)
         return self
 
     def get_art_id(self):
