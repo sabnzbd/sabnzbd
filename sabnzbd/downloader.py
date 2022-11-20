@@ -170,7 +170,7 @@ class Server:
         In case of problems: return the host name itself
         """
         # Check if already a successful ongoing connection
-        if self.busy_threads and self.busy_threads[0].nntp:
+        if self.info and self.busy_threads and self.busy_threads[0].nntp:
             # Re-use that IP
             logging.debug("%s: Re-using address %s", self.host, self.busy_threads[0].nntp.host)
             return self.busy_threads[0].nntp.host
@@ -968,7 +968,7 @@ class Downloader(Thread):
                 nw.article.tries += 1
 
             # Do we discard, or try again for this server
-            if not retry_article or nw.article.tries > cfg.max_art_tries():
+            if not retry_article or (not nw.server.required and nw.article.tries > cfg.max_art_tries()):
                 # Too many tries on this server, consider article missing
                 self.decode(nw.article, None)
                 nw.article.tries = 0
