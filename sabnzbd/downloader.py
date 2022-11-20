@@ -170,7 +170,7 @@ class Server:
         In case of problems: return the host name itself
         """
         # Check if already a successful ongoing connection
-        if self.info and self.busy_threads and self.busy_threads[0].nntp:
+        if self.busy_threads and self.busy_threads[0].nntp:
             # Re-use that IP
             logging.debug("%s: Re-using address %s", self.host, self.busy_threads[0].nntp.host)
             return self.busy_threads[0].nntp.host
@@ -178,7 +178,16 @@ class Server:
         # Determine IP
         ip = self.host
         if self.info:
-            if cfg.load_balancing() == 0 or len(self.info) == 1:
+            # Check this first so we can fall back to default method if it returns None.
+            if cfg.load_balancing() == 2:
+                # RFC6555 / Happy Eyeballs:
+                ip = happyeyeballs(self.host, port=self.port)
+                if ip:
+                    logging.debug("%s: Connecting to address %s", self.host, ip)
+                else:
+                    # nothing returned, so there was a connection problem
+                    logging.debug("%s: No successful IP connection was possible using happyeyeballs", self.host)
+            if not ip or cfg.load_balancing == 0 or len(self.info) == 1:
                 # Just return the first one, so all next threads use the same IP
                 ip = self.info[0][4][0]
                 logging.debug("%s: Connecting to address %s", self.host, ip)
@@ -187,14 +196,6 @@ class Server:
                 rnd = random.randint(0, len(self.info) - 1)
                 ip = self.info[rnd][4][0]
                 logging.debug("%s: Connecting to address %s", self.host, ip)
-            elif cfg.load_balancing() == 2:
-                # RFC6555 / Happy Eyeballs:
-                ip = happyeyeballs(self.host, port=self.port)
-                if ip:
-                    logging.debug("%s: Connecting to address %s", self.host, ip)
-                else:
-                    # nothing returned, so there was a connection problem
-                    logging.debug("%s: No successful IP connection was possible", self.host)
         return ip
 
     def deactivate(self):
