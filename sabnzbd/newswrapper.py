@@ -397,7 +397,7 @@ class NNTP:
             raise socket.error(errno.ECONNREFUSED, str(error))
         else:
             msg = "Failed to connect: %s" % (str(error))
-            msg = "%s %s:%s" % (msg, self.host, self.nw.server.port)
+            msg = "%s %s:%s (%s)" % (msg, self.nw.server.host, self.nw.server.port, self.host)
             self.error_msg = msg
             self.nw.server.next_busy_threads_check = 0
             if self.nw.server.warning == msg:
