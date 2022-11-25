@@ -397,10 +397,13 @@ class NNTP:
             raise socket.error(errno.ECONNREFUSED, str(error))
         else:
             msg = "Failed to connect: %s" % (str(error))
-            msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.nw.server.port)
+            msg = "%s %s:%s (%s)" % (msg, self.nw.server.host, self.nw.server.port, self.host)
             self.error_msg = msg
             self.nw.server.next_busy_threads_check = 0
-            logging.info(msg)
+            if self.nw.server.warning == msg:
+                logging.info(msg)
+            else:
+                logging.warning(msg)
             self.nw.server.warning = msg
 
     def __repr__(self):
