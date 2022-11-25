@@ -182,20 +182,17 @@ class Server:
             if len(self.info) > 1 and cfg.load_balancing() == 2:
                 # RFC6555 / Happy Eyeballs:
                 ip = happyeyeballs(self.host, port=self.port)
-                if ip:
-                    logging.debug("%s: Connecting to address %s", self.host, ip)
-                else:
+                if not ip:
                     # nothing returned, so there was a connection problem
                     logging.debug("%s: No successful IP connection was possible using happyeyeballs", self.host)
             if not ip or cfg.load_balancing() == 0 or len(self.info) == 1:
                 # Just return the first one, so all next threads use the same IP
                 ip = self.info[0][4][0]
-                logging.debug("%s: Connecting to address %s", self.host, ip)
             elif cfg.load_balancing() == 1:
                 # Return a random entry from the possible IPs
                 rnd = random.randint(0, len(self.info) - 1)
                 ip = self.info[rnd][4][0]
-                logging.debug("%s: Connecting to address %s", self.host, ip)
+        logging.debug("%s: Connecting to address %s", self.host, ip)
         return ip
 
     def deactivate(self):
