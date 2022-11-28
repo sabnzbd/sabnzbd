@@ -452,14 +452,11 @@ class Downloader(Thread):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
         logging.debug("Sleep time: %f seconds", self.sleep_time)
 
-    def is_paused(self):
-        if not self.paused:
+    def is_paused(self) -> bool:
+        """Is the queue paused or is it paused but are there still forced items?"""
+        if not self.paused or sabnzbd.NzbQueue.has_forced_items():
             return False
-        else:
-            if sabnzbd.NzbQueue.has_forced_items():
-                return False
-            else:
-                return True
+        return True
 
     def highest_server(self, me: Server):
         """Return True when this server has the highest priority of the active ones
