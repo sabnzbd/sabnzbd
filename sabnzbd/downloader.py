@@ -463,12 +463,13 @@ class Downloader(Thread):
 
     def highest_server(self, me: Server):
         """Return True when this server has the highest priority of the active ones
-        0 is the highest priority
+        0 is the highest priority, servers are sorted by priority.
         """
         for server in self.servers:
-            if server is not me and server.active and server.priority < me.priority:
+            if server.priority == me.priority:
+                return True
+            if server.active:
                 return False
-        return True
 
     def maybe_block_server(self, server: Server):
         # Was it resolving problem?
