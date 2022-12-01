@@ -56,6 +56,7 @@ class NewsWrapper:
         "timeout",
         "article",
         "data",
+        "data_size",
         "nntp",
         "connected",
         "user_sent",
@@ -75,6 +76,7 @@ class NewsWrapper:
         self.timeout: Optional[float] = None
         self.article: Optional[sabnzbd.nzbstuff.Article] = None
         self.data: List[AnyStr] = []
+        self.data_size: int = 0
 
         self.nntp: Optional[NNTP] = None
 
@@ -207,9 +209,10 @@ class NewsWrapper:
 
         # Append so we can do 1 join(), much faster than multiple!
         self.data.append(chunk)
+        chunk_len = len(chunk)
+        self.data_size += chunk_len
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
-        chunk_len = len(chunk)
         if chunk[-5:] == b"\r\n.\r\n":
             return chunk_len, True, False
         elif chunk_len < 5 and len(self.data) > 1:
@@ -231,6 +234,7 @@ class NewsWrapper:
     def clear_data(self):
         """Clear the stored raw data"""
         self.data = []
+        self.data_size = 0
         self.status_code = None
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
@@ -333,9 +337,8 @@ class NNTP:
     def connect(self):
         """Start of connection, can be performed a-sync"""
         try:
-            # Wait only 15 seconds during server test
-            if self.nw.blocking:
-                self.sock.settimeout(15)
+            # Wait the defined timeout during connect and SSL-setup
+            self.sock.settimeout(self.nw.server.timeout)
 
             # Connect
             self.sock.connect((self.host, self.nw.server.port))
@@ -353,12 +356,11 @@ class NNTP:
                 )
                 self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
 
-            # Set blocking mode
-            self.sock.setblocking(self.nw.blocking)
-
-            # Now it's safe to add the socket to the list of active sockets
-            # Skip this step during server test
+            # Skip during server test
             if not self.nw.blocking:
+                # Set to non-blocking mode
+                self.sock.settimeout(None)
+                # Now it's safe to add the socket to the list of active sockets
                 sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:
             self.error(e)
@@ -399,10 +401,13 @@ class NNTP:
             raise socket.error(errno.ECONNREFUSED, str(error))
         else:
             msg = "Failed to connect: %s" % (str(error))
-            msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.nw.server.port)
+            msg = "%s %s:%s (%s)" % (msg, self.nw.server.host, self.nw.server.port, self.host)
             self.error_msg = msg
             self.nw.server.next_busy_threads_check = 0
-            logging.info(msg)
+            if self.nw.server.warning == msg:
+                logging.info(msg)
+            else:
+                logging.warning(msg)
             self.nw.server.warning = msg
 
     def __repr__(self):
