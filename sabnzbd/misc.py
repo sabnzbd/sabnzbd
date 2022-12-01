@@ -1364,7 +1364,7 @@ def keep_awake():
         if sabnzbd.cfg.keep_awake():
             ES_CONTINUOUS = 0x80000000
             ES_SYSTEM_REQUIRED = 0x00000001
-            if (not sabnzbd.Downloader.is_paused() and not sabnzbd.NzbQueue.is_empty()) or (
+            if (not sabnzbd.Downloader.no_active_jobs() and not sabnzbd.NzbQueue.is_empty()) or (
                 not sabnzbd.PostProcessor.paused and not sabnzbd.PostProcessor.empty()
             ):
                 if sabnzbd.KERNEL32:

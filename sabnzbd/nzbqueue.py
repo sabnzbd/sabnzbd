@@ -698,9 +698,9 @@ class NzbQueue:
         article.nzf.reset_try_list()
         article.nzf.nzo.reset_try_list()
 
-    def has_forced_items(self) -> bool:
+    def has_forced_jobs(self) -> bool:
         """Check if the queue contains any Forced
-        Priority items to download while paused
+        Priority jobs to download while paused
         """
         for nzo in self.__nzo_list:
             if nzo.priority == FORCE_PRIORITY and nzo.status not in (Status.PAUSED, Status.GRABBING):

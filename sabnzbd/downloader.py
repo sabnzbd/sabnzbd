@@ -53,6 +53,8 @@ _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 _SERVER_CHECK_DELAY = 0.5
 # Wait this many seconds between updates of the BPSMeter
 _BPSMETER_UPDATE_DELAY = 0.05
+# How many articles should be prefetched when checking the next articles?
+_ARTICLE_PREFETCH = 20
 
 TIMER_LOCK = RLock()
 
@@ -395,7 +397,7 @@ class Downloader(Thread):
             sabnzbd.notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
             if cfg.preserve_paused_state():
                 cfg.start_paused.set(True)
-            if self.is_paused():
+            if self.no_active_jobs():
                 sabnzbd.BPSMeter.reset()
             if cfg.autodisconnect():
                 self.disconnect()
@@ -452,11 +454,9 @@ class Downloader(Thread):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
         logging.debug("Sleep time: %f seconds", self.sleep_time)
 
-    def is_paused(self) -> bool:
+    def no_active_jobs(self) -> bool:
         """Is the queue paused or is it paused but are there still forced items?"""
-        if not self.paused or sabnzbd.NzbQueue.has_forced_items():
-            return False
-        return True
+        return self.paused and not sabnzbd.NzbQueue.has_forced_jobs()
 
     def highest_server(self, me: Server):
         """Return True when this server has the highest priority of the active ones
@@ -612,7 +612,7 @@ class Downloader(Thread):
 
                 if (
                     not server.idle_threads
-                    or self.is_paused()
+                    or self.no_active_jobs()
                     or self.shutdown
                     or self.paused_for_postproc
                     or not server.active
@@ -638,7 +638,7 @@ class Downloader(Thread):
                         article = server.article_queue.pop(0)
                     else:
                         # Pre-fetch new articles
-                        server.article_queue = sabnzbd.NzbQueue.get_articles(server, self.servers, server.threads)
+                        server.article_queue = sabnzbd.NzbQueue.get_articles(server, self.servers, _ARTICLE_PREFETCH)
                         if server.article_queue:
                             article = server.article_queue.pop(0)
                             # Mark expired articles as tried on this server
@@ -734,7 +734,7 @@ class Downloader(Thread):
 
                 with DOWNLOADER_CV:
                     while (
-                        (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.paused_for_postproc)
+                        (sabnzbd.NzbQueue.is_empty() or self.no_active_jobs() or self.paused_for_postproc)
                         and not self.shutdown
                         and not self.force_disconnect
                         and not self.server_restarts
