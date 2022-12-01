@@ -1,5 +1,15 @@
-Release Notes - SABnzbd 3.7.0
+Release Notes - SABnzbd 3.7.1 Release Candidate 1
 =========================================================
+
+## Bugfixes and changes since 3.7.0
+- Minor improvements in download performance.
+- Scripts set `On queue finish` are no longer persistent by default.
+- Improved `Test Server` to handle more failure cases.
+- Priority list in `Add NZB`-window was missing `Paused` priority.
+- Keyboard shortcuts did not work if not in Tabbed-mode.
+- Keyboard shortcut `S` did not reload status information.
+- Using the `-` character broke the queue/history search.
+- Improved detection and handling of stuck jobs.
 
 ## Changes since 3.6.1
 - The queue and history can be filtered using keywords:
