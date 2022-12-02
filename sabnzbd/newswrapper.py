@@ -29,6 +29,8 @@ from typing import List, Optional, Tuple, AnyStr
 
 import sabnzbd
 import sabnzbd.cfg
+
+from sabnzbd.readsock import readsock
 from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.encoding import utob
 from sabnzbd.misc import nntp_to_msg, is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
@@ -186,10 +188,10 @@ class NewsWrapper:
                 if self.nntp.nw.server.ssl:
                     # SSL chunks come in 16K frames
                     # Setting higher limits results in slowdown
-                    chunk = self.nntp.sock.recv(16384)
+                    data = readsock(self.nntp.sock)
                 else:
                     # Get as many bytes as possible
-                    chunk = self.nntp.sock.recv(262144)
+                    data = [self.nntp.sock.recv(262144)]
                 break
             except ssl.SSLWantReadError:
                 # SSL connections will block until they are ready.
@@ -203,22 +205,25 @@ class NewsWrapper:
 
         if not self.data:
             try:
-                self.status_code = int(chunk[:3])
+                self.status_code = int(data[0][:3])
             except:
                 self.status_code = None
 
         # Append so we can do 1 join(), much faster than multiple!
-        self.data.append(chunk)
-        chunk_len = len(chunk)
-        self.data_size += chunk_len
+        self.data.extend(data)
+        chunk_len = 0
+        for chunk in data:
+            chunk_len += len(chunk)
+            self.data_size += chunk_len
+        # logging.debug("Read %s bytes from socket", chunk_len)
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
-        if chunk[-5:] == b"\r\n.\r\n":
+        if self.data[-1][-5:] == b"\r\n.\r\n":
             return chunk_len, True, False
         elif chunk_len < 5 and len(self.data) > 1:
             # We need to make sure the end is not split over 2 chunks
             # This is faster than join()
-            combine_chunk = self.data[-2][-5:] + chunk
+            combine_chunk = self.data[-2][-5:] + self.data[-1]
             if combine_chunk[-5:] == b"\r\n.\r\n":
                 return chunk_len, True, False
 
