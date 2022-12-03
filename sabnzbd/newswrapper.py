@@ -188,11 +188,10 @@ class NewsWrapper:
                 if self.nntp.nw.server.ssl:
                     # SSL chunks come in 16K frames
                     # Setting higher limits results in slowdown
-                    data, chunk_len = readsock(self.nntp.sock)
+                    data = readsock(self.nntp.sock)
                 else:
                     # Get as many bytes as possible
                     data = [self.nntp.sock.recv(262144)]
-                    chunk_len = len(data[0])
                 break
             except ssl.SSLWantReadError:
                 # SSL connections will block until they are ready.
@@ -212,7 +211,10 @@ class NewsWrapper:
 
         # Append so we can do 1 join(), much faster than multiple!
         self.data.extend(data)
-        self.data_size += chunk_len
+        chunk_len = 0
+        for chunk in data:
+            chunk_len += len(chunk)
+            self.data_size += chunk_len
         # logging.debug("Read %s bytes from socket", chunk_len)
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
