@@ -2,10 +2,11 @@ import socket
 import time
 from typing import List
 
+
 def readsock(sock: socket.socket):
     data: List[bytes] = []
     readcount: int = 0
-    endtime: float = time.time() + 0.0005
+    endtime: float = time.time() + 0.00011
     while 1:
         data.append(sock.recv(16384))
         readcount += 1
