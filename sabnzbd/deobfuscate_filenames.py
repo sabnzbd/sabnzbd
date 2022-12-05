@@ -46,7 +46,7 @@ MIN_FILE_SIZE = 10 * 1024 * 1024
 
 
 def decode_par2(parfile: str) -> List[str]:
-    """Parse a par2 file and rename files listed in the par2 to their real name. Return list of generated files"""
+    """Parse a par2 file and rename files listed in the par2 to their real name. Resturn list of generated files"""
     # Check if really a par2 file
     if not is_parfile(parfile):
         logging.info("Par2 file %s was not really a par2 file")

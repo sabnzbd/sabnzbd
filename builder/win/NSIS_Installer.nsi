@@ -56,7 +56,7 @@ Unicode true
   CRCCheck on ; (can be off)
   AutoCloseWindow false ; (can be true for the window go away automatically at end)
   ShowInstDetails hide ; (can be show to have them shown, or nevershow to disable)
-  SetDateSave off ; (can be on to have files restored to their original date)
+  SetDateSave off ; (can be on to have files restored to their orginal date)
   WindowIcon on
   SpaceTexts none
 
@@ -185,7 +185,7 @@ Section "SABnzbd" SecDummy
   liteFirewallW::AddRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
 
   ;------------------------------------------------------------------
-  ; Add to registry
+  ; Add to registery
   WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" "" "$INSTDIR"
   WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" "Installer Language" "$(MsgLangCode)"
   WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayName" "SABnzbd ${SAB_VERSION}"
@@ -328,7 +328,7 @@ FunctionEnd
 UninstallText $(MsgUninstall)
 
 Section "un.$(MsgDelProgram)" Uninstall
-;make sure sabnzbd.exe isn't running..if so shut it down
+;make sure sabnzbd.exe isnt running..if so shut it down
   ${nsProcess::KillProcess} "SABnzbd.exe" $R0
   ${nsProcess::Unload}
   DetailPrint "Process Killed"

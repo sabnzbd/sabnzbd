@@ -1,5 +1,5 @@
 Kronos.py is written by Irmen de Jong.
-Retrieved from:
+Retreived from:
 http://www.razorvine.net/download/kronos.py
 
 Quote from the module:
