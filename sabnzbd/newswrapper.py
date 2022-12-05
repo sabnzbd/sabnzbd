@@ -29,8 +29,6 @@ from typing import List, Optional, Tuple, AnyStr
 
 import sabnzbd
 import sabnzbd.cfg
-
-from sabnzbd.readsock import readsock
 from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.encoding import utob
 from sabnzbd.misc import nntp_to_msg, is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
@@ -180,55 +178,51 @@ class NewsWrapper:
         self.nntp.sock.sendall(command)
         self.clear_data()
 
-    def recv_chunk(self, block: bool = False) -> Tuple[int, bool, bool]:
+    def recv_chunk(self) -> Tuple[int, bool, bool]:
         """Receive data, return #bytes, done, skip"""
         self.timeout = time.time() + self.server.timeout
-        while 1:
+        chunk_len = 0
+        total_chunk_len = 0
+        if self.nntp.nw.server.ssl:
             try:
-                if self.nntp.nw.server.ssl:
+                while total_chunk_len < 65536:
                     # SSL chunks come in 16K frames
                     # Setting higher limits results in slowdown
-                    data = readsock(self.nntp.sock)
-                else:
-                    # Get as many bytes as possible
-                    data = [self.nntp.sock.recv(262144)]
-                break
+                    self.data.append(self.nntp.sock.recv(16384))
+                    chunk_len = len(self.data[-1])
+                    total_chunk_len += chunk_len
+                    if chunk_len < 16384:
+                        break
             except ssl.SSLWantReadError:
-                # SSL connections will block until they are ready.
-                # Either ignore the connection until it responds
-                # Or wait in a loop until it responds
-                if block:
-                    # time.sleep(0.0001)
-                    continue
-                else:
+                if total_chunk_len == 0:
                     return 0, False, True
+        else:
+            # Get as many bytes as possible
+            self.data.append(self.nntp.sock.recv(262144))
+            total_chunk_len = chunk_len = len(self.data[-1])
 
-        if not self.data:
+        if self.data_size == 0:
             try:
-                self.status_code = int(data[0][:3])
+                self.status_code = int(self.data[0][:3])
             except:
                 self.status_code = None
 
-        # Append so we can do 1 join(), much faster than multiple!
-        self.data.extend(data)
-        chunk_len = 0
-        for chunk in data:
-            chunk_len += len(chunk)
-            self.data_size += chunk_len
-        # logging.debug("Read %s bytes from socket", chunk_len)
+        self.data_size += total_chunk_len
+
+        # logging.debug("Read %d bytes from socket, last chunk %d", total_chunk_len, chunk_len)
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
         if self.data[-1][-5:] == b"\r\n.\r\n":
-            return chunk_len, True, False
+            return total_chunk_len, True, False
         elif chunk_len < 5 and len(self.data) > 1:
             # We need to make sure the end is not split over 2 chunks
             # This is faster than join()
             combine_chunk = self.data[-2][-5:] + self.data[-1]
             if combine_chunk[-5:] == b"\r\n.\r\n":
-                return chunk_len, True, False
+                return total_chunk_len, True, False
 
         # Still in middle of data, so continue!
-        return chunk_len, False, False
+        return total_chunk_len, False, False
 
     def soft_reset(self):
         """Reset for the next article"""
@@ -364,7 +358,7 @@ class NNTP:
             # Skip during server test
             if not self.nw.blocking:
                 # Set to non-blocking mode
-                self.sock.settimeout(None)
+                self.sock.setblocking(False)
                 # Now it's safe to add the socket to the list of active sockets
                 sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:
