@@ -230,7 +230,6 @@ class Server:
         self.info = get_server_addrinfo(self.host, self.port)
         if not self.info:
             self.bad_cons += self.threads
-            self.info = False
         else:
             self.bad_cons = 0
         self.request = False

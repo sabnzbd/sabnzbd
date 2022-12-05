@@ -112,18 +112,10 @@ class TryList:
     def __init__(self):
         self.try_list: List[Server] = []
 
-    def server_in_try_list(self, server: Server) -> bool:
+    def server_in_try_list(self, server: Server):
         """Return whether specified server has been tried"""
         with TRYLIST_LOCK:
             return server in self.try_list
-
-    def all_servers_in_try_list(self, servers: List[Server]) -> bool:
-        """Check if all servers have been tried"""
-        with TRYLIST_LOCK:
-            for server in servers:
-                if not server in self.try_list:
-                    return False
-        return True
 
     def add_to_try_list(self, server: Server):
         """Register server as having been tried already"""
