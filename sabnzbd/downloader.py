@@ -151,14 +151,12 @@ class Server:
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
         self.article_queue: List[sabnzbd.nzbstuff.Article] = []
 
-        # Skip during server testing
-        if not threads:
-            # Initialize threads
-            for i in range(threads):
-                self.idle_threads.append(NewsWrapper(self, i + 1))
+        # Initialize threads
+        for i in range(threads):
+            self.idle_threads.append(NewsWrapper(self, i + 1))
 
-            # Tell the BPSMeter about this server
-            sabnzbd.BPSMeter.init_server_stats(self.id)
+        # Tell the BPSMeter about this server
+        sabnzbd.BPSMeter.init_server_stats(self.id)
 
     @property
     def hostip(self) -> str:

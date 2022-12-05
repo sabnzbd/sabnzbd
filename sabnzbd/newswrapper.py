@@ -333,8 +333,9 @@ class NNTP:
     def connect(self):
         """Start of connection, can be performed a-sync"""
         try:
-            # Wait the defined timeout during connect and SSL-setup
-            self.sock.settimeout(self.nw.server.timeout)
+            # Wait only 15 seconds during server test
+            if self.nw.blocking:
+                self.sock.settimeout(15)
 
             # Connect
             self.sock.connect((self.host, self.nw.server.port))
@@ -352,11 +353,12 @@ class NNTP:
                 )
                 self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
 
-            # Skip during server test
+            # Set blocking mode
+            self.sock.setblocking(self.nw.blocking)
+
+            # Now it's safe to add the socket to the list of active sockets
+            # Skip this step during server test
             if not self.nw.blocking:
-                # Set to non-blocking mode
-                self.sock.settimeout(None)
-                # Now it's safe to add the socket to the list of active sockets
                 sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:
             self.error(e)

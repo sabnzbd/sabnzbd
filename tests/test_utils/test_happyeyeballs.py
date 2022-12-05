@@ -51,6 +51,6 @@ class TestHappyEyeballs:
         ip = happyeyeballs("www.google.com", port=33333)
         assert ip is None
 
-    def test_newszilla_nntp(self):
+    def test_newszilla_nttp(self):
         ip = happyeyeballs("newszilla.xs4all.nl", port=119)
         assert "." in ip or ":" in ip
