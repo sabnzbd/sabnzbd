@@ -4,13 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
-# Simon W., 2021
+# reloxx13 <reloxx@interia.pl>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
+"Project-Id-Version: SABnzbd-3.8.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Simon W., 2021\n"
+"Last-Translator: reloxx13 <reloxx@interia.pl>, 2022\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,15 +44,15 @@ msgid ""
 "The installer only supports 64-bit Windows, use the standalone version to "
 "run on 32-bit Windows."
 msgstr ""
-"Der Installer unterstützt nur Windows 64-bit. Benutze die Standalone Version"
-" für Windows 32-bit."
+"Der Installer unterstützt nur Windows 64-Bit. Benutze die Portable Version "
+"für Windows 32-Bit."
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
 "The installer only supports Windows 8.1 and above, use the standalone legacy"
 " version to run on older Windows version."
 msgstr ""
-"Der Installer unterstützt nur Windows 8.1 und höher. Benutze die standalone "
+"Der Installer unterstützt nur Windows 8.1 und höher. Benutze die Standalone-"
 "Version für ältere Windows Versionen."
 
 #: builder/win/NSIS_Installer.nsi
