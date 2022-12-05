@@ -705,10 +705,6 @@ class NzbQueue:
         for nzo in self.__nzo_list:
             if nzo.priority == FORCE_PRIORITY and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 return True
-            # Each time the priority of a job is changed the queue is sorted, so we can
-            # assume that if we reach a job below Force priority we can continue
-            if nzo.priority < FORCE_PRIORITY:
-                return False
         return False
 
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
