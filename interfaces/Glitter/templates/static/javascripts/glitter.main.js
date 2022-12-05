@@ -1259,8 +1259,6 @@ function ViewModel() {
             window.location.href = './config/';
         });
         $(document).bind('keydown', 's', function(e) {
-            // Update the data
-            self.loadStatusInfo(true, true)
             // avoid modal clashes
             if (!$('.modal-dialog').is(':visible')) {
                 $('#modal-options').modal('show');
