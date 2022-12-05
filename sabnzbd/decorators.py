@@ -18,8 +18,7 @@
 ##############################################################################
 # Decorators
 ##############################################################################
-from typing import Union, Callable
-from threading import Lock, RLock, Condition
+from threading import RLock, Condition
 
 
 # All operations that modify the queue need to happen in a lock
@@ -30,22 +29,18 @@ NZBQUEUE_LOCK = RLock()
 DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 
 
-def synchronized(lock: Union[Lock, RLock]):
-    def wrap(func: Callable):
+def synchronized(lock):
+    def wrap(f):
         def call_func(*args, **kw):
-            # Using the try/finally approach is 25% faster compared to using "with lock"
-            try:
-                lock.acquire()
-                return func(*args, **kw)
-            finally:
-                lock.release()
+            with lock:
+                return f(*args, **kw)
 
         return call_func
 
     return wrap
 
 
-def NzbQueueLocker(func: Callable):
+def NzbQueueLocker(func):
     global DOWNLOADER_CV
 
     def call_func(*params, **kparams):
