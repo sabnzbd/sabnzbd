@@ -40,7 +40,7 @@ def test_nntp_server_dict(kwargs):
     timeout = int_conv(kwargs.get("timeout", DEF_TIMEOUT))
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
-    ssl_ciphers = kwargs.get("ssl_ciphers", "").strip()
+    ssl_ciphers = kwargs.get("ssl_ciphers").strip()
 
     if not host:
         return False, T("The hostname is not set.")

@@ -152,7 +152,7 @@ class Server:
         self.article_queue: List[sabnzbd.nzbstuff.Article] = []
 
         # Skip during server testing
-        if threads:
+        if not threads:
             # Initialize threads
             for i in range(threads):
                 self.idle_threads.append(NewsWrapper(self, i + 1))

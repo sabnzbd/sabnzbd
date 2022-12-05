@@ -109,7 +109,6 @@ class TestNewsWrapper:
         nw.server.host = TEST_HOST
         nw.server.port = TEST_PORT
         nw.server.info = socket.getaddrinfo(TEST_HOST, TEST_PORT, 0, socket.SOCK_STREAM)
-        nw.server.timeout = 10
         nw.server.ssl = True
         nw.server.ssl_context = None
         nw.server.ssl_verify = 0

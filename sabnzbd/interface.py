@@ -513,7 +513,6 @@ class Wizard:
         # Just in case, add server
         servers = config.get_servers()
         if not servers:
-            info["server"] = ""
             info["host"] = ""
             info["port"] = ""
             info["username"] = ""
@@ -531,7 +530,6 @@ class Wizard:
             for server in server_names:
                 # If there are multiple servers, just use the first enabled one
                 s = servers[server]
-                info["server"] = server
                 info["host"] = s.host()
                 info["port"] = s.port()
                 info["username"] = s.username()
