@@ -21,7 +21,7 @@ tempora==5.1.0
 pytz==2022.6
 sgmllib3k==1.0.0
 portend==3.1.0
-chardet==5.0.0
+chardet==5.1.0
 PySocks==1.7.1
 puremagic==1.14
 guessit==3.5.0
@@ -34,7 +34,7 @@ cryptography==38.0.4
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.5.0
+ujson==5.6.0
 
 # Windows system integration
 pywin32==305; sys_platform == 'win32'
