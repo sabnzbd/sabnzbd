@@ -1192,7 +1192,7 @@ def main():
     # Find encoding; relevant for external processing activities
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
 
-    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
+    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
     if not sabnzbd.WIN32 and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
         helpful_warning(
             T(
@@ -1622,7 +1622,7 @@ def main():
         try:
             AppHelper.stopEventLoop()
         except:
-            # Failing AppHelper library!
+            # Failing AppHelper libary!
             os._exit(0)
     elif sabnzbd.WIN_SERVICE:
         # Do nothing, let service handle it

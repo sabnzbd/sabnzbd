@@ -76,7 +76,7 @@ HAVE_AMPM = bool(time.strftime("%p"))
 
 
 def helpful_warning(*args, **kwargs):
-    """Wrapper to ignore helpful warnings if desired"""
+    """Wrapper to ignore helpfull warnings if desired"""
     if sabnzbd.cfg.helpful_warnings():
         return logging.warning(*args, **kwargs)
     return logging.info(*args, **kwargs)
@@ -161,7 +161,7 @@ def safe_lower(txt: Any) -> str:
 
 def cmp(x, y):
     """
-    Replacement for built-in function cmp that was removed in Python 3
+    Replacement for built-in funciton cmp that was removed in Python 3
 
     Compare the two objects x and y and return an integer according to
     the outcome. The return value is negative if x < y, zero if x == y
@@ -407,7 +407,7 @@ def check_latest_version():
     Formula for the version numbers (line 1 and 3).
         <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
 
-    The <cand> value for a final version is assumed to be 99.
+    The <cand> value for a final version is assumned to be 99.
     The <cand> value for the beta/rc version is 1..98, with RC getting
     a boost of 80 and Beta of 40.
     This is done to signal alpha/beta/rc users of availability of the final
@@ -1103,7 +1103,7 @@ def list2cmdline_unrar(lst: List[str]) -> str:
 
 
 def build_and_run_command(command: List[str], windows_unrar_command: bool = False, **kwargs):
-    """Builds and then runs command with necessary flags and optional
+    """Builds and then runs command with nessecary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
     Returns the Popen-instance.

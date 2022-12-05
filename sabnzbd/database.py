@@ -76,7 +76,7 @@ class HistoryDB:
 
     @synchronized(DB_LOCK)
     def __init__(self):
-        """Determine database path and create connection"""
+        """Determine databse path and create connection"""
         self.connection: Optional[Connection] = None
         self.cursor: Optional[Cursor] = None
         if not HistoryDB.db_path:

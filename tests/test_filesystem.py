@@ -507,7 +507,7 @@ class TestCheckMountWin(ffs.TestCase):
 
     @set_platform("win32")
     def test_dir_nonexistent_win(self):
-        # The existence of the drive letter is what really matters
+        # The existance of the drive letter is what really matters
         assert filesystem.check_mount("F:\\NoSuchDir") is True
         assert filesystem.check_mount("F:\\NoSuchDir\\") is True
         assert filesystem.check_mount("F:\\NOsuchdir\\subdir") is True
@@ -901,7 +901,7 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
     def _runner(self, perms_before_test):
         """
         Generic test runner for permissions testing. The permissions are set per test
-        via the relevant sab config option; the filesystem parameter in setUp().
+        via the relevant sab config option; the fileystem parameter in setUp().
         Note that the umask set in the environment before starting the program
         also affects the results if sabnzbd.cfg.permissions isn't set.
 

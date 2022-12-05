@@ -31,7 +31,7 @@ except ImportError:
 
 def get_rar_extension(myrarfile):
     """
-    Find out original extension of a rar file. Returns "" in case of file problems
+    Find out orginal extension of a rar file. Returns "" in case of file problems
     So ... returns:     "part001.rar", ... "part005.rar"
     or old number scheme (can only happen for rar3/rar4 files): "rar", r00, ... r89
     """

@@ -64,7 +64,7 @@ def get_ext(filename: str) -> str:
 def is_listed_ext(ext: str, ext_list: list) -> bool:
     """Check if the extension is listed. In case of a regexp the entire extension must be matched;
     partial matches aren't accepted (e.g. 'r[0-9]{2}' will be treated the same as '^r[0-9]{2}$' and
-    thus return false for extensions such as 'r007' despite the substring match on 'r00').
+    thus return false for extentions such as 'r007' despite the substring match on 'r00').
     """
     for item in ext_list:
         RE_EXT = sabnzbd.misc.convert_filter(item)
@@ -840,7 +840,7 @@ def cleanup_empty_directories(path: str):
 @synchronized(DIR_LOCK)
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
-    Optionally allows the creation of local directories if they don't exist yet
+    Optionally alows the creation of local directories if they don't exist yet
     Returns new filename (which could be changed due to sanitize_filename) on success"""
     # Sanitize last part of new name
     path, name = os.path.split(new)

@@ -196,7 +196,7 @@ class Server:
         return ip
 
     def deactivate(self):
-        """Deactivate server and reset queued articles"""
+        """Deactive server and reset queued articles"""
         self.active = False
         self.reset_article_queue()
 
@@ -415,7 +415,7 @@ class Downloader(Thread):
 
     def limit_speed(self, value: Union[str, int]):
         """Set the actual download speed in Bytes/sec
-        When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a percentage of the maximum bandwidth
+        When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
         When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
         """
         if value:

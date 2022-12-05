@@ -16,7 +16,7 @@
       no_penalties = 1
   See: https://sabnzbd.org/wiki/configuration/3.4/special
 
-- Some third-party utilities try to probe SABnzbd API in such a way that you will
+- Some third-party utilties try to probe SABnzbd API in such a way that you will
   often see warnings about unauthenticated access.
   If you are sure these probes are harmless, you can suppress the warnings by
   setting the option "api_warnings" to 0.

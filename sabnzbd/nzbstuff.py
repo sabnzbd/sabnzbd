@@ -290,7 +290,7 @@ class Article(TryList):
     def __hash__(self):
         """Required because we implement eq. Articles with the same
         usenet address can appear in different NZF's. So we make every
-        article object unique, even though it is bad practice.
+        article object unique, even though it is bad pratice.
         """
         return id(self)
 
@@ -495,7 +495,7 @@ class NzbFile(TryList):
         self.md5 = None
 
     def __eq__(self, other: "NzbFile"):
-        """Assume it's the same file if the number bytes and first article
+        """Assume it's the same file if the numer bytes and first article
         are the same or if there are no articles left, use the filenames.
         Some NZB's are just a mess and report different sizes for the same article.
         """
@@ -509,7 +509,7 @@ class NzbFile(TryList):
     def __hash__(self):
         """Required because we implement eq. The same file can be spread
         over multiple NZO's so we make every NZF unique. Even though
-        it's considered bad practice.
+        it's considered bad pratice.
         """
         return id(self)
 

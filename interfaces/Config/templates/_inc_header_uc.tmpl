@@ -69,7 +69,7 @@
         // Set default functions for the autocomplete everywhere
         \$.extend(\$.fn.typeahead.defaults, {
             source: function (query, process) {
-                // If there's no separator, it must be a relative path
+                // If there's no seperator, it must be a relative path
                 if(query.split(folderSeperator).length < 2 && this.\$element.data('initialdir')) {
                     query  = this.\$element.data('initialdir') + folderSeperator + query;
                 }

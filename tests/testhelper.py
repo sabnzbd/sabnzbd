@@ -158,9 +158,9 @@ def create_and_read_nzb_fp(nzbdir: str, metadata: Optional[Dict[str, str]] = Non
     return io.BytesIO(nzb_data)
 
 
-def random_name(length: int = 16) -> str:
+def random_name(lenghth: int = 16) -> str:
     """Shorthand to create a simple random string"""
-    return "".join(choice(ascii_lowercase + digits) for _ in range(length))
+    return "".join(choice(ascii_lowercase + digits) for _ in range(lenghth))
 
 
 class FakeHistoryDB(db.HistoryDB):
