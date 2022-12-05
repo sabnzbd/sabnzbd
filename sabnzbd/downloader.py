@@ -178,21 +178,23 @@ class Server:
         # Determine IP
         ip = self.host
         if self.info:
-            # Check this first so we can fall back to default method if it returns None.
-            if len(self.info) > 1 and cfg.load_balancing() == 2:
-                # RFC6555 / Happy Eyeballs:
-                ip = happyeyeballs(self.host, port=self.port)
-                if not ip:
-                    # nothing returned, so there was a connection problem
-                    logging.debug("%s: No successful IP connection was possible using happyeyeballs", self.host)
-            if not ip or cfg.load_balancing() == 0 or len(self.info) == 1:
+            if cfg.load_balancing() == 0 or len(self.info) == 1:
                 # Just return the first one, so all next threads use the same IP
                 ip = self.info[0][4][0]
+                logging.debug("%s: Connecting to address %s", self.host, ip)
             elif cfg.load_balancing() == 1:
                 # Return a random entry from the possible IPs
                 rnd = random.randint(0, len(self.info) - 1)
                 ip = self.info[rnd][4][0]
-        logging.debug("%s: Connecting to address %s", self.host, ip)
+                logging.debug("%s: Connecting to address %s", self.host, ip)
+            elif cfg.load_balancing() == 2:
+                # RFC6555 / Happy Eyeballs:
+                ip = happyeyeballs(self.host, port=self.port)
+                if ip:
+                    logging.debug("%s: Connecting to address %s", self.host, ip)
+                else:
+                    # nothing returned, so there was a connection problem
+                    logging.debug("%s: No successful IP connection was possible", self.host)
         return ip
 
     def deactivate(self):
@@ -966,7 +968,7 @@ class Downloader(Thread):
                 nw.article.tries += 1
 
             # Do we discard, or try again for this server
-            if not retry_article or (not nw.server.required and nw.article.tries > cfg.max_art_tries()):
+            if not retry_article or nw.article.tries > cfg.max_art_tries():
                 # Too many tries on this server, consider article missing
                 self.decode(nw.article, None)
                 nw.article.tries = 0
