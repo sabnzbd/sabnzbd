@@ -165,7 +165,7 @@ msgstr "Schwerer Fehler beim Speichern des Zustands"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
-msgstr "Neustart aufgrund eines abgestürzten Nachbearbeitungsprozesses"
+msgstr "Neustart aufgrund eines abgestürzten Postprocessors"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -175,7 +175,7 @@ msgstr "Neustart aufgrund eines abgestürzten Downloaders"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed decoder"
-msgstr "Neustart aufgrund eines abgestürzten Decoders"
+msgstr "Neustart aufgrund eines abgestürzten Dekoders"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -396,15 +396,14 @@ msgstr "Unbekannter Fehler %s beim Dekodieren"
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate skipped due to DVD/Bluray directories"
 msgstr ""
-"Entschleiern wird aufgrund von DVD/Blu-ray-Verzeichnissen übersprungen"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate corrected the extension of %d file(s)"
-msgstr "Entschleiern korrigierte die Erweiterung von %d Datei(en)"
+msgstr ""
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
-msgstr "Entschleiern hat %dDatei(en) umbenannt"
+msgstr ""
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -472,7 +471,7 @@ msgstr "Server %s wird für %s Minuten ignoriert"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "There are no active servers!"
-msgstr "Es gibt keine aktiven Server!"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -516,7 +515,7 @@ msgstr "Server %s läuft in %s Tag(en) ab"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s has used the specified quota"
-msgstr "Server %s hat das angegebene Kontingent verbraucht"
+msgstr "Server %s hat die angegebene Quote verbraucht"
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -647,13 +646,11 @@ msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
-"Dateinamen mit Umlaute können nicht in %s gespeichert werden. Dies kann zu "
-"Problemen führen."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "%s is not writable at all. This blocks downloads."
-msgstr "%s ist nicht beschreibbar. Downloads sind dadurch blockiert."
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -708,7 +705,7 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
-msgstr "Invalides Backup Archiv"
+msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -1134,12 +1131,12 @@ msgstr "Senden von macOS Benachrichtigung fehlgeschlagen"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
-msgstr "Prowl-Nachricht konnte nicht versendet werden"
+msgstr "Konnte Prowl-Nachricht nicht versenden"
 
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushover (%s): %s"
-msgstr "Fehlerhafte Antwort von Pushover (%s): %s"
+msgstr "Fehlerhafte Antwort von Pushbullet (%s): %s"
 
 #. Error message - Warning message
 #: sabnzbd/notifier.py
@@ -1154,7 +1151,7 @@ msgstr "Fehlerhafte Antwort von Pushbullet (%s): %s"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushbullet message"
-msgstr "Pushbullet-Nachricht konnte nicht versendet werden"
+msgstr "Konnte Pushbullet-Nachricht nicht versenden"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1206,7 +1203,7 @@ msgstr "NZB zur Warteschlange hinzugefügt"
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "Ungültige NZB-Datei %s wird übersprungen (Fehler: %s)"
+msgstr "Ungültige NZB-Datei %s wird übersprungen: %s "
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
@@ -1807,7 +1804,7 @@ msgstr "Entpacken"
 #. PP phase "deobfuscate"
 #: sabnzbd/skintext.py
 msgid "Deobfuscate"
-msgstr "Entschleiern"
+msgstr ""
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
@@ -2512,19 +2509,19 @@ msgstr "DNS-Server"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
-msgstr "Downloadgeschwindigkeit begrenzt durch"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "CPU"
-msgstr "CPU"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
-msgstr "Festplattengeschwindigkeit"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "System load"
-msgstr "Systemlast"
+msgstr ""
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -2746,7 +2743,7 @@ msgid ""
 "Modern web browsers and other clients will not accept self-signed "
 "certificates and will give a warning and/or won't connect at all."
 msgstr ""
-"Moderne Webbrowser und andere Clients akzeptieren keine selbst signierten "
+"Moderne Webbrowser und andere Clients akzeptieren keine selbstsignierten "
 "Zertifikate und geben eine Warnung aus und/oder stellen gar keine Verbindung"
 " her."
 
@@ -2835,7 +2832,7 @@ msgstr ""
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Create backup"
-msgstr "Backup erstellen"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2844,11 +2841,6 @@ msgid ""
 "the Completed Download Folder.<br>Recurring backups can be configured on the"
 " Scheduling page."
 msgstr ""
-"Erstelle eine Sicherungskopie der Konfigurationsdatei und der Datenbanken im"
-" Backup-Ordner.<br>Wenn der Backup-Ordner nicht festgelegt ist, wird die "
-"Sicherungskopie im Ordner der abgeschlossenen Downloads "
-"erstellt.<br>Wiederkehrende Sicherungen können auf der Seite Planung "
-"konfiguriert werden."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -2957,8 +2949,7 @@ msgstr "Externer Internetzugriff"
 #: sabnzbd/skintext.py
 msgid "You can set access rights for systems outside your local network."
 msgstr ""
-"Es können Zugriffsrechte für Systeme außerhalb des Netzwerkes gesetzt "
-"werden."
+"Du kannst Zugriffsrechte für Systeme ausserhalb deines Netzwerkes setzen."
 
 #: sabnzbd/skintext.py
 msgid "No access"
@@ -3040,12 +3031,12 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
-msgstr "Minimaler freier Speicherplatz des abgeschlossene Downloads-Ordners"
+msgstr "Minimaler freier Speicherplatz im Download Ordner"
 
 #: sabnzbd/skintext.py
 msgid "Will not work if a category folder is on a different disk."
 msgstr ""
-"Funktioniert nicht, wenn sich der Kategorie-Ordner auf einer anderen "
+"Funktioniert nicht, wenn sich der Kategorie Ordner auf einer anderen "
 "Festplatte befindet."
 
 #. Auto-resume download on the reset day
@@ -3059,10 +3050,9 @@ msgid ""
 " again.<br />Applies to both the Temporary and Complete Download Folder.<br "
 "/>Checked every few minutes."
 msgstr ""
-"Das Herunterladen wird automatisch fortgesetzt, wenn der minimale freie "
-"Speicherplatz wieder verfügbar ist.<br />Gilt sowohl für den temporären als "
-"auch für den abgeschlossene Downloads-Ordner.<br />Dies wird alle paar "
-"Minuten überprüft."
+"Das Herunterladen wird automatisch fortgesetzt, wenn der minimale freie Speicherplatz wieder verfügbar ist. <br />\n"
+"Gilt sowohl für den temporären als auch für den Download Ordner.<br />\n"
+"Wird alle paar Minuten überprüft."
 
 #: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
@@ -3141,7 +3131,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Backup Folder"
-msgstr "Backup Ordner"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3149,9 +3139,6 @@ msgid ""
 "stored.<br />If left empty, the backup will be created in the Completed "
 "Download Folder."
 msgstr ""
-"Pfad, an dem die Sicherungen der Konfigurationsdatei und der Datenbanken "
-"gespeichert werden.<br />Wenn diese Option leer bleibt, wird die Sicherung "
-"im Ordner der abgeschlossenen Downloads erstellt."
 
 #: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
@@ -3234,7 +3221,7 @@ msgid ""
 "incomplete."
 msgstr ""
 "Entpacken und starten von Skripten nur bei verifizierten Jobs. Wenn "
-"ausgeschaltet, werden alle Jobs als vollständig markiert, selbst wenn sie "
+"ausgeschaltet werden alle Jobs als vollständig markiert, selbst wenn sie "
 "unvollständig sind."
 
 #: sabnzbd/skintext.py
@@ -3309,7 +3296,7 @@ msgstr "Aktion bei ungewollter Dateienendung"
 
 #: sabnzbd/skintext.py
 msgid "Action when an unwanted extension is detected"
-msgstr "Aktion bei ungewollter Dateiendung"
+msgstr "Aktion bei ungewollter Dateienendung"
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
@@ -3317,11 +3304,11 @@ msgstr "Ungewollte Dateiendungen"
 
 #: sabnzbd/skintext.py
 msgid "Blacklist"
-msgstr "Sperrliste"
+msgstr "Blacklist"
 
 #: sabnzbd/skintext.py
 msgid "Whitelist"
-msgstr "Erlaubtliste"
+msgstr "Whitelist"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3329,7 +3316,7 @@ msgid ""
 " <b>exe, com</b>"
 msgstr ""
 "Modus auswählen, und alle (nicht-)erwünschten Erweiterungen auflisten. Zum "
-"Beispiel: <b>exe</b> oder <b>exe, com</b>"
+"Beispiel : <b>exe</b> oder <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
@@ -3420,8 +3407,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "The queue will resort every 30 seconds if % downloaded is selected."
 msgstr ""
-"Die Warteschlange wird alle 30 Sekunden neu sortiert, wenn % "
-"heruntergeladen, ausgewählt ist."
 
 #: sabnzbd/skintext.py
 msgid "Propagation delay"
@@ -3459,11 +3444,11 @@ msgstr "Leerzeichen in Ordnernamen durch Unterstriche ersetzen."
 
 #: sabnzbd/skintext.py
 msgid "Replace underscores in folder name"
-msgstr "Ersetze Unterstriche in Ordnernamen"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace underscores with dots in folder names."
-msgstr "Ersetze Unterstriche mit Punkte in Ordnernamen."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
@@ -3531,7 +3516,7 @@ msgid ""
 "Additionally, attempts to set the correct file extension based on the file "
 "signature if the extension is not present or meaningless."
 msgstr ""
-"Zusätzlich wird versucht, die korrekte Dateierweiterung mithilfe der "
+"Zusätzlich wird versucht die korrekte Dateierweiterung mithilfe der "
 "Dateisignatur zu ermitteln, falls noch keine Dateierweiterung vorhanden, "
 "oder sie sinnlos sein sollte."
 
@@ -3708,9 +3693,6 @@ msgid ""
 "optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
 " minutes."
 msgstr ""
-"Kontingent für dieses Konto, gezählt ab dem Zeitpunkt, an dem es festgelegt "
-"wird. In Bytes, optional gefolgt von K, M, G.<br />Warne, wenn es 0 "
-"erreicht, wird alle paar Minuten überprüft."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -3759,15 +3741,15 @@ msgstr "0 ist die höchste, 99 die niedrigste Priorität"
 #. Server required tickbox
 #: sabnzbd/skintext.py
 msgid "Required"
-msgstr "Erforderlich"
+msgstr "Benötigt"
 
 #: sabnzbd/skintext.py
 msgid ""
 "In case of connection failures, the download queue will be paused for a few "
 "minutes instead of skipping this server"
 msgstr ""
-"Im Fall von Verbindungsausfällen wird die Download-Warteschlange für ein "
-"paar Minuten pausiert, anstatt diesen Server zu überspringen"
+"Im Fall von Verbindungsausfällen wird die Downloadwarteschlange für ein paar"
+" Minuten pausiert, statt diesen Server zu überspringen"
 
 #. Server optional tickbox
 #: sabnzbd/skintext.py
@@ -3968,7 +3950,7 @@ msgid ""
 "If only the <em>Default</em> category is selected, notifications are enabled"
 " for jobs in all categories."
 msgstr ""
-"Wenn nur die <em>Standard</em>-Kategorie ausgewählt ist, werden die "
+"Wenn nur die <em>Standart</em> Kategorie ausgewählt ist werden die "
 "Benachrichtigungen für Jobs in allen Kategorien aktiviert. "
 
 #: sabnzbd/skintext.py
@@ -4088,7 +4070,7 @@ msgstr "Prowl-Benachrichtigungen aktivieren"
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Requires a Prowl account"
-msgstr "Erfordert ein Prowl-Konto"
+msgstr "Benötigt einen Prowl-Account"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
@@ -4113,17 +4095,17 @@ msgstr "Pushover-Benachrichtungen aktivieren"
 #. Pushoversettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushover account"
-msgstr "Benötigt einen Pushover-Konto"
+msgstr "Benötigt einen Pushover-Account"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application Token"
-msgstr "Anwendungs-Token"
+msgstr "Applikationstoken"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "Application token (required)"
-msgstr "Anwendungs-Token (erforderlich)"
+msgstr "Applikationstoken (benötigt)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4133,7 +4115,7 @@ msgstr "Benutzer-Schlüssel"
 #. Pushover settings
 #: sabnzbd/skintext.py
 msgid "User Key (required)"
-msgstr "Benutzer-Schlüssel (erforderlich)"
+msgstr "Benutzer-Schlüssel (benötigt)"
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4152,8 +4134,7 @@ msgstr "Notfall Wiederanlauf"
 
 #: sabnzbd/skintext.py
 msgid "How often (in seconds) the same notification will be sent"
-msgstr ""
-"Wie oft dieselbe Benachrichtigung (in Sekunden) geschickt werden soll."
+msgstr "Wie oft die selbe benachrichtigung (in Sekunden) geschickt wird."
 
 #. Pushover settings
 #: sabnzbd/skintext.py
@@ -4163,7 +4144,7 @@ msgstr "Notfall Verfall"
 #: sabnzbd/skintext.py
 msgid "How many seconds your notification will continue to be retried"
 msgstr ""
-"Wie viele Sekunden soll versucht werden die Nachricht erneut zu versenden"
+"Wieviele Sekunden soll versucht werden deine Nachricht erneut zu versenden"
 
 #. Header for Pushbullet notification section
 #: sabnzbd/skintext.py
@@ -4178,17 +4159,17 @@ msgstr "Pushbullet-Benachrichtigungen aktivieren"
 #. Pushbulletsettings
 #: sabnzbd/skintext.py
 msgid "Requires a Pushbullet account"
-msgstr "Erfordert ein Pushbullet-Konto"
+msgstr "Benötigt einen Pushbullet-Account"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Personal API key"
-msgstr "Persönlicher API-Schlüssel"
+msgstr "Persönlicher API-Key"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Your personal Pushbullet API key (required)"
-msgstr "Dein Pushbullet API-Schlüssel (erforderlich)"
+msgstr "Dein Pushbullet API-Key (benötigt)"
 
 #. Pushbullet settings
 #: sabnzbd/skintext.py
@@ -4464,23 +4445,23 @@ msgstr "Ergebnis"
 
 #: sabnzbd/skintext.py
 msgid "Any property"
-msgstr "Jede Eigenschaft"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "property"
-msgstr "Eigenschaft"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "GuessIt Property"
-msgstr "GuessIt Eigenschaft"
+msgstr "GuessIt Property"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt.Property"
-msgstr "GuessIt.Eigenschaft"
+msgstr "GuessIt.Property"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
-msgstr "GuessIt_Eigenschaft"
+msgstr "GuessIt_Property"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4587,11 +4568,11 @@ msgstr "Datumsformat"
 
 #: sabnzbd/skintext.py
 msgid "Extra queue columns"
-msgstr "Weitere Spalten bei der Warteschlange"
+msgstr "Weitere Warteschlangen Spalten"
 
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
-msgstr "Weitere Spalten bei der Verlaufsliste"
+msgstr "Weitere Verlaufspalten"
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4719,7 +4700,7 @@ msgstr "Löschen von Verlaufeinträgen bestätigen"
 
 #: sabnzbd/skintext.py
 msgid "Keyboard shortcuts"
-msgstr "Tastaturkürzel"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
@@ -4747,7 +4728,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
-msgstr "Sortiere nach % heruntergeladen <small>Viel&rarr;Wenig</small>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4881,7 +4862,7 @@ msgstr "Assistenten starten"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"
-msgstr "Backup wiederherstellen"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
