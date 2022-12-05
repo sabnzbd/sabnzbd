@@ -56,7 +56,6 @@ class NewsWrapper:
         "timeout",
         "article",
         "data",
-        "data_size",
         "nntp",
         "connected",
         "user_sent",
@@ -76,7 +75,6 @@ class NewsWrapper:
         self.timeout: Optional[float] = None
         self.article: Optional[sabnzbd.nzbstuff.Article] = None
         self.data: List[AnyStr] = []
-        self.data_size: int = 0
 
         self.nntp: Optional[NNTP] = None
 
@@ -209,10 +207,9 @@ class NewsWrapper:
 
         # Append so we can do 1 join(), much faster than multiple!
         self.data.append(chunk)
-        chunk_len = len(chunk)
-        self.data_size += chunk_len
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
+        chunk_len = len(chunk)
         if chunk[-5:] == b"\r\n.\r\n":
             return chunk_len, True, False
         elif chunk_len < 5 and len(self.data) > 1:
@@ -234,7 +231,6 @@ class NewsWrapper:
     def clear_data(self):
         """Clear the stored raw data"""
         self.data = []
-        self.data_size = 0
         self.status_code = None
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):

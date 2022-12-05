@@ -638,7 +638,9 @@ class Downloader(Thread):
                         article = server.article_queue.pop(0)
                     else:
                         # Pre-fetch new articles
-                        server.article_queue = sabnzbd.NzbQueue.get_articles(server, self.servers, server.threads)
+                        server.article_queue = sabnzbd.NzbQueue.get_articles(
+                            server, self.servers, max(1, server.threads // 4)
+                        )
                         if server.article_queue:
                             article = server.article_queue.pop(0)
                             # Mark expired articles as tried on this server
@@ -764,7 +766,14 @@ class Downloader(Thread):
                 if bytes_received < 1:
                     self.__reset_nw(nw, "server closed connection", wait=False)
                     continue
+
                 else:
+                    try:
+                        article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, bytes_received)
+                    except AttributeError:
+                        # In case nzf has disappeared because the file was deleted before the update could happen
+                        pass
+
                     BPSMeter.update(server.id, bytes_received)
 
                     if self.bandwidth_limit:
@@ -913,13 +922,9 @@ class Downloader(Thread):
                     # Successful data, clear "bad" counter
                     server.bad_cons = 0
                     server.errormsg = server.warning = ""
-
-                    # Update statistics and decode
-                    article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_size)
-                    self.decode(article, nw.data)
-
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
+                    self.decode(article, nw.data)
 
                     # Reset connection for new activity
                     nw.soft_reset()
