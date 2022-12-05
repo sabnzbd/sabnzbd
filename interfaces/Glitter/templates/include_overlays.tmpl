@@ -530,15 +530,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">$T('priority')</label>
                     <div class="col-sm-6">
-                        <!-- This list is different from the one during download! -->
-                        <select name="Priority" class="form-control">
-                            <option value="-100">$T('default')</option>
-                            <option value="2">$T('pr-force')</option>
-                            <option value="1">$T('pr-high')</option>
-                            <option value="0">$T('pr-normal')</option>
-                            <option value="-1">$T('pr-low')</option>
-                            <option value="-2" >$T('pr-paused')</option>
-                        </select>
+                        <select name="Priority" class="form-control" data-bind="options: queue.priorityOptions, optionsValue: 'value', optionsText: 'name', optionsCaption: '$T('default')'"></select>
                         <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                     </div>
                 </div>
