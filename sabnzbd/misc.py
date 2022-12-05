@@ -1325,18 +1325,19 @@ def system_standby():
         sabnzbd.powersup.linux_standby()
 
 
-def change_queue_complete_action(action: str, new: bool = True):
+def change_queue_complete_action(action, new=True):
     """Action or script to be performed once the queue has been completed
     Scripts are prefixed with 'script_'
+    When "new" is False, check whether non-script actions are acceptable
     """
     _action = None
     _argument = None
-    if new or cfg.queue_complete_pers():
-        if action.startswith("script_") and is_valid_script(action.replace("script_", "", 1)):
-            # all scripts are labeled script_xxx
-            _action = sabnzbd.misc.run_script
-            _argument = action.replace("script_", "", 1)
-        elif action == "shutdown_pc":
+    if action.startswith("script_") and is_valid_script(action.replace("script_", "", 1)):
+        # all scripts are labeled script_xxx
+        _action = sabnzbd.misc.run_script
+        _argument = action.replace("script_", "", 1)
+    elif new or cfg.queue_complete_pers():
+        if action == "shutdown_pc":
             _action = system_shutdown
         elif action == "hibernate_pc":
             _action = system_hibernate
