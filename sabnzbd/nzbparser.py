@@ -465,6 +465,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
                 # Create NZF
                 nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
+                nzf.has_bad_articles = bad_articles
 
                 # Check if we already have this exact NZF (see custom eq-checks)
                 if nzf in nzo.files:

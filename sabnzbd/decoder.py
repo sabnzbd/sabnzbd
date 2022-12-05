@@ -395,5 +395,6 @@ def search_new_server(article: Article) -> bool:
     if not article.search_new_server():
         # Increase bad articles if no new server was found
         article.nzf.nzo.increase_bad_articles_counter("bad_articles")
+        article.nzf.has_bad_articles = True
         return False
     return True

@@ -311,6 +311,7 @@ NzbFileSaver = (
     "vol",
     "blocks",
     "setname",
+    "has_bad_articles",
     "articles",
     "decodetable",
     "bytes",
@@ -346,6 +347,8 @@ class NzbFile(TryList):
         self.vol: Optional[int] = None
         self.blocks: Optional[int] = None
         self.setname: Optional[str] = None
+
+        self.has_bad_articles: bool = False
 
         # Articles are removed from "articles" after being fetched
         self.articles: List[Article] = []
