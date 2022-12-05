@@ -503,7 +503,7 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[List[bytes]] = None, data_size: Optional[int] = None):
+    def decode(self, article, raw_data: Optional[List[bytes]]):
         """Decode article and check the status of
         the decoder and the assembler
         """
@@ -518,7 +518,7 @@ class Downloader(Thread):
             return
 
         # Send to decoder-queue
-        sabnzbd.Decoder.process(article, raw_data, data_size)
+        sabnzbd.Decoder.process(article, raw_data)
 
         # See if we need to delay because the queues are full
         logged_counter = 0
@@ -643,9 +643,9 @@ class Downloader(Thread):
                             article = server.article_queue.pop(0)
                             # Mark expired articles as tried on this server
                             if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                                self.decode(article)
+                                self.decode(article, None)
                                 while server.article_queue:
-                                    self.decode(server.article_queue.pop())
+                                    self.decode(server.article_queue.pop(), None)
                                 # Move to the next server, allowing the next server to already start
                                 # fetching the articles that were too old for this server
                                 break
@@ -916,7 +916,7 @@ class Downloader(Thread):
 
                     # Update statistics and decode
                     article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_size)
-                    self.decode(article, nw.data, nw.data_size)
+                    self.decode(article, nw.data)
 
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
@@ -961,7 +961,7 @@ class Downloader(Thread):
             # Do we discard, or try again for this server
             if not retry_article or (not nw.server.required and nw.article.tries > cfg.max_art_tries()):
                 # Too many tries on this server, consider article missing
-                self.decode(nw.article)
+                self.decode(nw.article, None)
                 nw.article.tries = 0
             else:
                 # Retry again with the same server
