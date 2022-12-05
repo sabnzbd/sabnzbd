@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.8.0-develop\n"
+"Project-Id-Version: SABnzbd-3.7.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: ION, 2022\n"
 "Language-Team: Hebrew (https://www.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -2459,7 +2459,7 @@ msgstr "מהירות דיסק"
 
 #: sabnzbd/skintext.py
 msgid "System load"
-msgstr "טעינת מערכת"
+msgstr ""
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -2752,7 +2752,7 @@ msgstr ""
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Create backup"
-msgstr "צור גיבוי"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2761,9 +2761,6 @@ msgid ""
 "the Completed Download Folder.<br>Recurring backups can be configured on the"
 " Scheduling page."
 msgstr ""
-"צור גיבוי של קובץ התצורה ומסדי הנתונים בתיקיית הגיבויים.<br>אם תיקיית "
-"הגיבויים לא הוגדרה, הגיבוי ייווצר בתיקיית ההורדות שהושלמו.<br>גיבויים חוזרים"
-" יכולים להיות מתוצרים בדף התזמון."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -3042,7 +3039,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Backup Folder"
-msgstr "תיקיית גיבויים"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3050,8 +3047,6 @@ msgid ""
 "stored.<br />If left empty, the backup will be created in the Completed "
 "Download Folder."
 msgstr ""
-"מיקום שבו הגיבויים של קובץ התצורה ומסדי הנתונים מאוחסנים.<br />אם נשאר ריק, "
-"הגיבוי ייווצר בתיקיית ההורדות שהושלמו."
 
 #: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
@@ -3334,11 +3329,11 @@ msgstr "החלף רווחים בקווים תחתונים בשמות תיקיו�
 
 #: sabnzbd/skintext.py
 msgid "Replace underscores in folder name"
-msgstr "החלף קווים תחתונים בשמות תיקייה"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace underscores with dots in folder names."
-msgstr "החלף קווים תחתונים בנקודות בשמות תיקייה"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Replace dots in Foldername"
