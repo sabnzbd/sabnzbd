@@ -93,7 +93,7 @@ class Decoder:
     def stop(self):
         # Put multiple to stop all decoders
         for _ in self.decoder_workers:
-            self.decoder_queue.put((None, None, None))
+            self.decoder_queue.put((None, None))
 
     def join(self):
         # Wait for all decoders to finish
@@ -103,9 +103,10 @@ class Decoder:
             except:
                 pass
 
-    def process(self, article: Article, raw_data: List[bytes], data_size: int):
-        sabnzbd.ArticleCache.reserve_space(data_size)
-        self.decoder_queue.put((article, raw_data, data_size))
+    def process(self, article: Article, raw_data: List[bytes]):
+        # We use reported article-size, just like sabyenc does
+        sabnzbd.ArticleCache.reserve_space(article.bytes)
+        self.decoder_queue.put((article, raw_data))
 
     def queue_full(self) -> bool:
         # Check if the queue size exceeds the limits
@@ -118,14 +119,14 @@ class DecoderWorker(Thread):
     def __init__(self, decoder_queue):
         super().__init__()
         logging.debug("Initializing decoder %s", self.name)
-        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]], Optional[int]]] = decoder_queue
+        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]]]] = decoder_queue
 
     def run(self):
         while 1:
             # Set Article and NzbObject objects to None so references from this
             # thread do not keep the parent objects alive (see #1628)
             decoded_data = raw_data = article = nzo = None
-            article, raw_data, data_size = self.decoder_queue.get()
+            article, raw_data = self.decoder_queue.get()
             if not article:
                 logging.debug("Shutting down decoder %s", self.name)
                 break
@@ -134,7 +135,7 @@ class DecoderWorker(Thread):
             art_id = article.article
 
             # Free space in the decoder-queue
-            sabnzbd.ArticleCache.free_reserved_space(data_size)
+            sabnzbd.ArticleCache.free_reserved_space(article.bytes)
 
             # Keeping track
             article_success = False
