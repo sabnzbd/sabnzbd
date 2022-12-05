@@ -1265,43 +1265,23 @@ function ViewModel() {
             }
         });
         $(document).bind('keydown', 'shift+left', function(e) {
-            if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li.active').prev().click();
-                $('#queue-tab.active > ul.pagination li.active').prev().click();
-            } else {
-                $('#history-tab > ul.pagination li.active').prev().click();
-                $('#queue-tab > ul.pagination li.active').prev().click();
-            }
+            $('#history-tab.active > ul.pagination li.active').prev().click();
+            $('#queue-tab.active > ul.pagination li.active').prev().click();
             e.preventDefault();
         });
         $(document).bind('keydown', 'shift+right', function(e) {
-            if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li.active').next().click();
-                $('#queue-tab.active > ul.pagination li.active').next().click();
-            } else {
-                $('#history-tab > ul.pagination li.active').next().click();
-                $('#queue-tab > ul.pagination li.active').next().click();
-            }
+            $('#history-tab.active > ul.pagination li.active').next().click();
+            $('#queue-tab.active > ul.pagination li.active').next().click();
             e.preventDefault();
         });
         $(document).bind('keydown', 'shift+up', function(e) {
-            if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li').first().click();
-                $('#queue-tab.active > ul.pagination li').first().click();
-            } else {
-                $('#history-tab > ul.pagination li').first().click();
-                $('#queue-tab > ul.pagination li').first().click();
-            }
+            $('#history-tab.active > ul.pagination li').first().click();
+            $('#queue-tab.active > ul.pagination li').first().click();
             e.preventDefault();
         });
         $(document).bind('keydown', 'shift+down', function(e) {
-            if($("body").hasClass("container-tabbed")) {
-                $('#history-tab.active > ul.pagination li').last().click();
-                $('#queue-tab.active > ul.pagination li').last().click();
-            } else {
-                $('#history-tab > ul.pagination li').last().click();
-                $('#queue-tab > ul.pagination li').last().click();
-            }
+            $('#history-tab.active > ul.pagination li').last().click();
+            $('#queue-tab.active > ul.pagination li').last().click();
             e.preventDefault();
         });
     }
