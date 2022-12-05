@@ -1323,7 +1323,7 @@ class RAR3Parser(CommonParser):
 
         pos = S_BLK_HDR.size
 
-        # block has data assiciated with it?
+        # block has data associated with it?
         if h.flags & RAR_LONG_BLOCK:
             h.add_size, pos = load_le32(hdata, pos)
         else:
@@ -1373,7 +1373,7 @@ class RAR3Parser(CommonParser):
             "Header CRC error (%02x): exp=%x got=%x (xlen = %d)", h.type, h.header_crc, calc_crc, len(crcdat)
         )
 
-        # instead panicing, send eof
+        # instead panicking, send eof
         return None
 
     # read file-specific header
@@ -2896,7 +2896,7 @@ def custom_popen(cmd):
     creationflags = 0
     if sys.platform == "win32":
         creationflags = 0x08000000  # CREATE_NO_WINDOW
-        # We need to patch the special UnRar escaping of double qoutes on Windows
+        # We need to patch the special UnRar escaping of double quotes on Windows
         from sabnzbd.misc import list2cmdline_unrar
 
         cmd = list2cmdline_unrar(cmd)

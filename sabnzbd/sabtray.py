@@ -189,7 +189,7 @@ class SABTrayThread(SysTrayIconThread):
 
     def shutdown(self, icon):
         self.hover_text = T("Shutdown")
-        # In seperate thread, because the shutdown also stops the tray icon
+        # In separate thread, because the shutdown also stops the tray icon
         Thread(target=sabnzbd.shutdown_program).start()
 
     def pause(self):

@@ -590,7 +590,7 @@ def _api_addurl(name, kwargs):
         # Reporting a list of NZO's, for compatibility with other add-methods
         return report(keyword="", data={"status": True, "nzo_ids": [nzo_id]})
     else:
-        logging.info("API-call addurl: no URLs recieved")
+        logging.info("API-call addurl: no URLs received")
         return report(_MSG_NO_VALUE)
 
 
