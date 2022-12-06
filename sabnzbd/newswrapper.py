@@ -178,28 +178,20 @@ class NewsWrapper:
         self.nntp.sock.sendall(command)
         self.clear_data()
 
-    def recv_chunk(self, block: bool = False) -> Tuple[int, bool, bool]:
+    def recv_chunk(self) -> Tuple[int, bool, bool]:
         """Receive data, return #bytes, done, skip"""
-        self.timeout = time.time() + self.server.timeout
-        while 1:
+        if self.nntp.nw.server.ssl:
             try:
-                if self.nntp.nw.server.ssl:
-                    # SSL chunks come in 16K frames
-                    # Setting higher limits results in slowdown
-                    chunk = self.nntp.sock.recv(16384)
-                else:
-                    # Get as many bytes as possible
-                    chunk = self.nntp.sock.recv(262144)
-                break
+                # SSL chunks come in 16K frames
+                # Setting higher limits results in slowdown
+                chunk = self.nntp.sock.recv(16384)
             except ssl.SSLWantReadError:
                 # SSL connections will block until they are ready.
-                # Either ignore the connection until it responds
-                # Or wait in a loop until it responds
-                if block:
-                    # time.sleep(0.0001)
-                    continue
-                else:
-                    return 0, False, True
+                return 0, False, True
+        else:
+            chunk = self.nntp.sock.recv(262144)
+
+        self.timeout = time.time() + self.server.timeout
 
         if not self.data:
             try:

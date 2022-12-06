@@ -90,7 +90,9 @@ def test_nntp_server_dict(kwargs):
         nw.init_connect()
         while not nw.connected:
             nw.clear_data()
-            nw.recv_chunk(block=True)
+            nw.nntp.sock.setblocking(True)
+            nw.recv_chunk()
+            nw.nntp.sock.setblocking(nw.blocking)
             nw.finish_connect(nw.status_code)
 
     except socket.timeout:
@@ -124,7 +126,9 @@ def test_nntp_server_dict(kwargs):
         nw.nntp.sock.sendall(b"ARTICLE <test@home>\r\n")
         try:
             nw.clear_data()
-            nw.recv_chunk(block=True)
+            nw.nntp.sock.setblocking(True)
+            nw.recv_chunk()
+            nw.nntp.sock.setblocking(nw.blocking)
         except:
             # Some internal error, not always safe to close connection
             return False, str(sys.exc_info()[1])
