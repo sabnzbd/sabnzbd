@@ -1614,9 +1614,14 @@ def main():
     # Send our final goodbyes!
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")
     logging.info("Leaving SABnzbd")
-    sys.stderr.flush()
-    sys.stdout.flush()
     sabnzbd.pid_file()
+
+    try:
+        sys.stderr.flush()
+        sys.stdout.flush()
+    except AttributeError:
+        # Not supported on Windows binaries
+        pass
 
     if hasattr(sys, "frozen") and sabnzbd.MACOS:
         try:

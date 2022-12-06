@@ -359,7 +359,7 @@ class NNTP:
             # Skip during server test
             if not self.nw.blocking:
                 # Set to non-blocking mode
-                self.sock.settimeout(None)
+                self.sock.setblocking(False)
                 # Now it's safe to add the socket to the list of active sockets
                 sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:

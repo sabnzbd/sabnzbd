@@ -543,6 +543,8 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
         # Sort it so it is more logical
         parsed_stage_log.sort(key=lambda stage_log: STAGES.get(stage_log["name"], 100))
         item["stage_log"] = parsed_stage_log
+    else:
+        item["stage_log"] = []
 
     if item["script_log"]:
         item["script_log"] = ""
