@@ -191,8 +191,6 @@ class NewsWrapper:
         else:
             chunk = self.nntp.sock.recv(262144)
 
-        self.timeout = time.time() + self.server.timeout
-
         if not self.data:
             try:
                 self.status_code = int(chunk[:3])
@@ -203,6 +201,8 @@ class NewsWrapper:
         self.data.append(chunk)
         chunk_len = len(chunk)
         self.data_size += chunk_len
+
+        self.timeout = time.time() + self.server.timeout
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
         if chunk[-5:] == b"\r\n.\r\n":
