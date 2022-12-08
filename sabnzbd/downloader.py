@@ -754,25 +754,19 @@ class Downloader(Thread):
                 server = nw.server
 
                 try:
-                    bytes_received, done, skip = nw.recv_chunk()
-                except:
-                    bytes_received, done, skip = (0, False, False)
-
-                if skip:
+                    bytes_received, done = nw.recv_chunk()
+                except ssl.SSLWantReadError:
                     continue
-
-                if bytes_received < 1:
+                except:
                     self.__reset_nw(nw, "server closed connection", wait=False)
                     continue
-                else:
-                    BPSMeter.update(server.id, bytes_received)
 
-                    if self.bandwidth_limit:
-                        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
-                            BPSMeter.update()
-                            while BPSMeter.bps > self.bandwidth_limit:
-                                time.sleep(0.01)
-                                BPSMeter.update()
+                BPSMeter.update(server.id, bytes_received)
+                if self.bandwidth_limit and BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
+                    BPSMeter.update()
+                    while BPSMeter.bps > self.bandwidth_limit:
+                        time.sleep(0.01)
+                        BPSMeter.update()
 
                 if nw.status_code != 222 and not done:
                     if not nw.connected or nw.status_code == 480:
