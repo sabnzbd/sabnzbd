@@ -178,18 +178,18 @@ class NewsWrapper:
         self.nntp.sock.sendall(command)
         self.clear_data()
 
-    def recv_chunk(self) -> Tuple[int, bool, bool]:
-        """Receive data, return #bytes, done, skip"""
+    def recv_chunk(self) -> Tuple[int, bool]:
+        """Receive data, return #bytes, done"""
         if self.nntp.nw.server.ssl:
-            try:
-                # SSL chunks come in 16K frames
-                # Setting higher limits results in slowdown
-                chunk = self.nntp.sock.recv(16384)
-            except ssl.SSLWantReadError:
-                # SSL connections will block until they are ready.
-                return 0, False, True
+            # SSL chunks come in 16K frames
+            # Setting higher limits results in slowdown
+            chunk = self.nntp.sock.recv(16384)
         else:
             chunk = self.nntp.sock.recv(262144)
+
+        chunk_len = len(chunk)
+        if chunk_len == 0:
+            raise ConnectionError("server closed connection")
 
         if not self.data:
             try:
@@ -199,23 +199,21 @@ class NewsWrapper:
 
         # Append so we can do 1 join(), much faster than multiple!
         self.data.append(chunk)
-        chunk_len = len(chunk)
         self.data_size += chunk_len
-
         self.timeout = time.time() + self.server.timeout
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
         if chunk[-5:] == b"\r\n.\r\n":
-            return chunk_len, True, False
+            return chunk_len, True
         elif chunk_len < 5 and len(self.data) > 1:
             # We need to make sure the end is not split over 2 chunks
             # This is faster than join()
             combine_chunk = self.data[-2][-5 + chunk_len :] + chunk
             if combine_chunk == b"\r\n.\r\n":
-                return chunk_len, True, False
+                return chunk_len, True
 
         # Still in middle of data, so continue!
-        return chunk_len, False, False
+        return chunk_len, False
 
     def soft_reset(self):
         """Reset for the next article"""
