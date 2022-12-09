@@ -853,13 +853,15 @@ class Downloader(Thread):
                     self.plan_server(server, _PENALTY_TOOMANY)
                     server.threads -= 1
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
-                # Account sharing?
+                # Login from (too many) different IP addresses
                 if server.active:
-                    errormsg = T("Probable account sharing") + display_msg
+                    errormsg = T("Login from (too many) different IP addresses") + display_msg
+                    logging.debug("SJ100 %s", display_msg)
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
                         name = " (%s)" % server.host
-                        logging.warning(T("Probable account sharing") + name)
+                        logging.warning(T("Login from (too many) different IP addresses") + name + display_msg)
+                        logging.warning("Help ... :" + " - https://sabnzbd.org/multiple-addresses")
                 penalty = _PENALTY_SHARE
                 block = True
             elif error.code in (452, 481, 482, 381) or (error.code in (500, 502) and clues_login(error.msg)):
