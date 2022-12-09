@@ -400,7 +400,7 @@ class ConfigServer:
 
         self.displayname = OptionStr(name, "displayname", add=False)
         self.host = OptionStr(name, "host", add=False)
-        self.port = OptionNumber(name, "port", 119, 0, 2**16 - 1, add=False)
+        self.port = OptionNumber(name, "port", 119, 0, 2 ** 16 - 1, add=False)
         self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
         self.username = OptionStr(name, "username", add=False)
         self.password = OptionPassword(name, "password", add=False)
@@ -713,7 +713,16 @@ def get_dconfig(section, keyword, nested=False):
             sect = CFG_DATABASE[section]
         except KeyError:
             return False, {}
-        if section in ("servers", "categories", "rss"):
+        if section == "categories":
+            data[section] = []
+            res, conf = get_dconfig(section, "*", True)
+            data[section].append(conf)
+            for keyword in sect.keys():
+                if keyword == "*":
+                    continue
+                res, conf = get_dconfig(section, keyword, True)
+                data[section].append(conf)
+        elif section in ("servers", "rss"):
             data[section] = []
             for keyword in sect.keys():
                 res, conf = get_dconfig(section, keyword, True)
