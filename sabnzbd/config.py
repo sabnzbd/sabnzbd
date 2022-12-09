@@ -713,20 +713,16 @@ def get_dconfig(section, keyword, nested=False):
             sect = CFG_DATABASE[section]
         except KeyError:
             return False, {}
-        if section == "categories":
-            data[section] = []
-            res, conf = get_dconfig(section, "*", True)
-            data[section].append(conf)
-            for keyword in sect.keys():
-                if keyword == "*":
-                    continue
-                res, conf = get_dconfig(section, keyword, True)
-                data[section].append(conf)
-        elif section in ("servers", "rss"):
+
+        if section in ("servers", "categories", "rss"):
             data[section] = []
             for keyword in sect.keys():
                 res, conf = get_dconfig(section, keyword, True)
                 data[section].append(conf)
+            if section == "categories":
+                res, conf = get_dconfig(section, "*", True)
+                data[section].remove(conf)
+                data[section].insert(0, conf)
         else:
             data[section] = {}
             for keyword in sect.keys():
