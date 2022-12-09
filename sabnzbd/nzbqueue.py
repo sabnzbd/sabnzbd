@@ -585,7 +585,7 @@ class NzbQueue:
             sort_function = lambda nzo: nzo.avg_date
         elif field == "remaining":
             logging.debug("Sorting by percentage downloaded...")
-            sort_function = lambda nzo: nzo.remaining / nzo.bytes
+            sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
         else:
             logging.debug("Sort: %s not recognized", field)
             return
