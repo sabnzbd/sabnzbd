@@ -208,8 +208,7 @@ class NewsWrapper:
         elif chunk_len < 5 and len(self.data) > 1:
             # We need to make sure the end is not split over 2 chunks
             # This is faster than join()
-            combine_chunk = self.data[-2][-5 + chunk_len :] + chunk
-            if combine_chunk == b"\r\n.\r\n":
+            if self.data[-2][-5 + chunk_len :] + chunk == b"\r\n.\r\n":
                 return chunk_len, True
 
         # Still in middle of data, so continue!
