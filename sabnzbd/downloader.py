@@ -860,8 +860,12 @@ class Downloader(Thread):
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
                         servername = " (%s)" % server.host
-                        logging.warning(T("Login from (too many) different IP addresses") + servername + display_msg +
-                                        " - https://sabnzbd.org/multiple-adresses")
+                        logging.warning(
+                            T("Login from (too many) different IP addresses")
+                            + servername
+                            + display_msg
+                            + " - https://sabnzbd.org/multiple-adresses"
+                        )
                 penalty = _PENALTY_SHARE
                 block = True
             elif error.code in (452, 481, 482, 381) or (error.code in (500, 502) and clues_login(error.msg)):
