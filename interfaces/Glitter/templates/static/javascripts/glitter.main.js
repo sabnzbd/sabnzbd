@@ -1334,6 +1334,12 @@ function ViewModel() {
     // And refresh now!
     self.refresh()
 
-    // Activate tooltips
-    if (!isMobile) $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+    // Special options for (non) mobile
+    if (isMobile) {
+        // Disable accept parameter on file inputs, as it doesn't work on mobile Safari
+        $("input[accept!=''][accept]").attr("accept","")
+    } else {
+        // Activate tooltips
+        $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+    }
 }
