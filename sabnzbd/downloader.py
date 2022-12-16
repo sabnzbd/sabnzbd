@@ -53,6 +53,8 @@ _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 _SERVER_CHECK_DELAY = 0.5
 # Wait this many seconds between updates of the BPSMeter
 _BPSMETER_UPDATE_DELAY = 0.05
+# How many articles should be prefetched when checking the next articles?
+_ARTICLE_PREFETCH = 20
 
 TIMER_LOCK = RLock()
 
@@ -151,12 +153,14 @@ class Server:
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
         self.article_queue: List[sabnzbd.nzbstuff.Article] = []
 
-        # Initialize threads
-        for i in range(threads):
-            self.idle_threads.append(NewsWrapper(self, i + 1))
+        # Skip during server testing
+        if threads:
+            # Initialize threads
+            for i in range(threads):
+                self.idle_threads.append(NewsWrapper(self, i + 1))
 
-        # Tell the BPSMeter about this server
-        sabnzbd.BPSMeter.init_server_stats(self.id)
+            # Tell the BPSMeter about this server
+            sabnzbd.BPSMeter.init_server_stats(self.id)
 
     @property
     def hostip(self) -> str:
@@ -176,27 +180,25 @@ class Server:
         # Determine IP
         ip = self.host
         if self.info:
-            if cfg.load_balancing() == 0 or len(self.info) == 1:
+            # Check this first so we can fall back to default method if it returns None.
+            if len(self.info) > 1 and cfg.load_balancing() == 2:
+                # RFC6555 / Happy Eyeballs:
+                ip = happyeyeballs(self.host, port=self.port)
+                if not ip:
+                    # nothing returned, so there was a connection problem
+                    logging.debug("%s: No successful IP connection was possible using happyeyeballs", self.host)
+            if not ip or cfg.load_balancing() == 0 or len(self.info) == 1:
                 # Just return the first one, so all next threads use the same IP
                 ip = self.info[0][4][0]
-                logging.debug("%s: Connecting to address %s", self.host, ip)
             elif cfg.load_balancing() == 1:
                 # Return a random entry from the possible IPs
                 rnd = random.randint(0, len(self.info) - 1)
                 ip = self.info[rnd][4][0]
-                logging.debug("%s: Connecting to address %s", self.host, ip)
-            elif cfg.load_balancing() == 2:
-                # RFC6555 / Happy Eyeballs:
-                ip = happyeyeballs(self.host, port=self.port)
-                if ip:
-                    logging.debug("%s: Connecting to address %s", self.host, ip)
-                else:
-                    # nothing returned, so there was a connection problem
-                    logging.debug("%s: No successful IP connection was possible", self.host)
+        logging.debug("%s: Connecting to address %s", self.host, ip)
         return ip
 
     def deactivate(self):
-        """Deactive server and reset queued articles"""
+        """Deactivate server and reset queued articles"""
         self.active = False
         self.reset_article_queue()
 
@@ -228,6 +230,7 @@ class Server:
         self.info = get_server_addrinfo(self.host, self.port)
         if not self.info:
             self.bad_cons += self.threads
+            self.info = False
         else:
             self.bad_cons = 0
         self.request = False
@@ -394,7 +397,7 @@ class Downloader(Thread):
             sabnzbd.notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
             if cfg.preserve_paused_state():
                 cfg.start_paused.set(True)
-            if self.is_paused():
+            if self.no_active_jobs():
                 sabnzbd.BPSMeter.reset()
             if cfg.autodisconnect():
                 self.disconnect()
@@ -415,7 +418,7 @@ class Downloader(Thread):
 
     def limit_speed(self, value: Union[str, int]):
         """Set the actual download speed in Bytes/sec
-        When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
+        When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a percentage of the maximum bandwidth
         When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
         """
         if value:
@@ -451,23 +454,19 @@ class Downloader(Thread):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
         logging.debug("Sleep time: %f seconds", self.sleep_time)
 
-    def is_paused(self):
-        if not self.paused:
-            return False
-        else:
-            if sabnzbd.NzbQueue.has_forced_items():
-                return False
-            else:
-                return True
+    def no_active_jobs(self) -> bool:
+        """Is the queue paused or is it paused but are there still forced items?"""
+        return self.paused and not sabnzbd.NzbQueue.has_forced_jobs()
 
     def highest_server(self, me: Server):
         """Return True when this server has the highest priority of the active ones
-        0 is the highest priority
+        0 is the highest priority, servers are sorted by priority.
         """
         for server in self.servers:
-            if server is not me and server.active and server.priority < me.priority:
+            if server.priority == me.priority:
+                return True
+            if server.active:
                 return False
-        return True
 
     def maybe_block_server(self, server: Server):
         # Was it resolving problem?
@@ -504,7 +503,7 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[List[bytes]]):
+    def decode(self, article, raw_data: Optional[List[bytes]] = None, data_size: Optional[int] = None):
         """Decode article and check the status of
         the decoder and the assembler
         """
@@ -516,11 +515,10 @@ class Downloader(Thread):
             if not article.search_new_server():
                 sabnzbd.NzbQueue.register_article(article, success=False)
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
-                article.nzf.has_bad_articles = True
             return
 
         # Send to decoder-queue
-        sabnzbd.Decoder.process(article, raw_data)
+        sabnzbd.Decoder.process(article, raw_data, data_size)
 
         # See if we need to delay because the queues are full
         logged_counter = 0
@@ -614,7 +612,7 @@ class Downloader(Thread):
 
                 if (
                     not server.idle_threads
-                    or self.is_paused()
+                    or self.no_active_jobs()
                     or self.shutdown
                     or self.paused_for_postproc
                     or not server.active
@@ -640,16 +638,14 @@ class Downloader(Thread):
                         article = server.article_queue.pop(0)
                     else:
                         # Pre-fetch new articles
-                        server.article_queue = sabnzbd.NzbQueue.get_articles(
-                            server, self.servers, max(1, server.threads // 4)
-                        )
+                        server.article_queue = sabnzbd.NzbQueue.get_articles(server, self.servers, _ARTICLE_PREFETCH)
                         if server.article_queue:
                             article = server.article_queue.pop(0)
                             # Mark expired articles as tried on this server
                             if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                                self.decode(article, None)
+                                self.decode(article)
                                 while server.article_queue:
-                                    self.decode(server.article_queue.pop(), None)
+                                    self.decode(server.article_queue.pop())
                                 # Move to the next server, allowing the next server to already start
                                 # fetching the articles that were too old for this server
                                 break
@@ -738,7 +734,7 @@ class Downloader(Thread):
 
                 with DOWNLOADER_CV:
                     while (
-                        (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.paused_for_postproc)
+                        (sabnzbd.NzbQueue.is_empty() or self.no_active_jobs() or self.paused_for_postproc)
                         and not self.shutdown
                         and not self.force_disconnect
                         and not self.server_restarts
@@ -768,14 +764,7 @@ class Downloader(Thread):
                 if bytes_received < 1:
                     self.__reset_nw(nw, "server closed connection", wait=False)
                     continue
-
                 else:
-                    try:
-                        article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, bytes_received)
-                    except AttributeError:
-                        # In case nzf has disappeared because the file was deleted before the update could happen
-                        pass
-
                     BPSMeter.update(server.id, bytes_received)
 
                     if self.bandwidth_limit:
@@ -924,9 +913,13 @@ class Downloader(Thread):
                     # Successful data, clear "bad" counter
                     server.bad_cons = 0
                     server.errormsg = server.warning = ""
+
+                    # Update statistics and decode
+                    article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_size)
+                    self.decode(article, nw.data, nw.data_size)
+
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
-                    self.decode(article, nw.data)
 
                     # Reset connection for new activity
                     nw.soft_reset()
@@ -966,9 +959,9 @@ class Downloader(Thread):
                 nw.article.tries += 1
 
             # Do we discard, or try again for this server
-            if not retry_article or nw.article.tries > cfg.max_art_tries():
+            if not retry_article or (not nw.server.required and nw.article.tries > cfg.max_art_tries()):
                 # Too many tries on this server, consider article missing
-                self.decode(nw.article, None)
+                self.decode(nw.article)
                 nw.article.tries = 0
             else:
                 # Retry again with the same server

@@ -1192,7 +1192,7 @@ def main():
     # Find encoding; relevant for external processing activities
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
 
-    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
+    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
     if not sabnzbd.WIN32 and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
         helpful_warning(
             T(
@@ -1614,15 +1614,20 @@ def main():
     # Send our final goodbyes!
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")
     logging.info("Leaving SABnzbd")
-    sys.stderr.flush()
-    sys.stdout.flush()
     sabnzbd.pid_file()
+
+    try:
+        sys.stderr.flush()
+        sys.stdout.flush()
+    except AttributeError:
+        # Not supported on Windows binaries
+        pass
 
     if hasattr(sys, "frozen") and sabnzbd.MACOS:
         try:
             AppHelper.stopEventLoop()
         except:
-            # Failing AppHelper libary!
+            # Failing AppHelper library!
             os._exit(0)
     elif sabnzbd.WIN_SERVICE:
         # Do nothing, let service handle it

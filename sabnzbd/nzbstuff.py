@@ -112,10 +112,18 @@ class TryList:
     def __init__(self):
         self.try_list: List[Server] = []
 
-    def server_in_try_list(self, server: Server):
+    def server_in_try_list(self, server: Server) -> bool:
         """Return whether specified server has been tried"""
         with TRYLIST_LOCK:
             return server in self.try_list
+
+    def all_servers_in_try_list(self, servers: List[Server]) -> bool:
+        """Check if all servers have been tried"""
+        with TRYLIST_LOCK:
+            for server in servers:
+                if not server in self.try_list:
+                    return False
+        return True
 
     def add_to_try_list(self, server: Server):
         """Register server as having been tried already"""
@@ -178,66 +186,26 @@ class Article(TryList):
 
     def get_article(self, server: Server, servers: List[Server]):
         """Return article when appropriate for specified server"""
-        log = sabnzbd.LOG_ALL
-        if not self.fetcher and not self.server_in_try_list(server):
-            if log:
-                logging.debug("Article %s | Server: %s | in second if", self.article, server.host)
-                # Is the current selected server of the same priority as this article?
-                logging.debug(
-                    "Article %s | Server: %s | Article priority: %s", self.article, server.host, self.fetcher_priority
-                )
-                logging.debug(
-                    "Article %s | Server: %s | Server priority: %s", self.article, server.host, server.priority
-                )
-            if server.priority == self.fetcher_priority:
-                self.fetcher = server
-                self.tries += 1
-                if log:
-                    logging.debug("Article %s | Server: %s | same priority, use it", self.article, server.host)
-                    logging.debug("Article %s | Server: %s | Article-try: %s", self.article, server.host, self.tries)
-                return self
-            else:
-                if log:
-                    logging.debug("Article %s | Server: %s | not the same priority", self.article, server.host)
-                # No, so is it a lower priority?
-                if server.priority > self.fetcher_priority:
-                    if log:
-                        logging.debug("Article %s | Server: %s | lower priority", self.article, server.host)
-                    # Is there an available server that is a higher priority?
-                    found_priority = 1000
-                    # for server_check in config.get_servers():
-                    for server_check in servers:
-                        if log:
-                            logging.debug("Article %s | Server: %s | checking", self.article, server.host)
-                        if server_check.active and (server_check.priority < found_priority):
-                            if server_check.priority < server.priority:
-                                if not self.server_in_try_list(server_check):
-                                    if log:
-                                        logging.debug(
-                                            "Article %s | Server: %s | setting found priority to %s",
-                                            self.article,
-                                            server.host,
-                                            server_check.priority,
-                                        )
-                                    found_priority = server_check.priority
-                    if found_priority == 1000:
-                        # If no higher priority servers, use this server
-                        self.fetcher_priority = server.priority
-                        self.fetcher = server
-                        self.tries += 1
-                        if log:
-                            logging.debug(
-                                "Article %s | Server: %s | Article-try: %s", self.article, server.host, self.tries
-                            )
-                        return self
-                    else:
-                        # There is a higher priority server, so set article priority
-                        if log:
-                            logging.debug("Article %s | Server: %s | setting self priority", self.article, server.host)
-                        self.fetcher_priority = found_priority
-        if log:
-            logging.debug("Article %s | Server: %s | Returning None", self.article, server.host)
-        return None
+        if self.fetcher or self.server_in_try_list(server):
+            return None
+
+        if server.priority > self.fetcher_priority:
+            # Check for higher priority server, taking advantage of servers list being sorted by priority
+            for server_check in servers:
+                if server_check.priority < server.priority:
+                    if server_check.active and not self.server_in_try_list(server_check):
+                        # There is a higher priority server, so set article priority and return
+                        self.fetcher_priority = server_check.priority
+                        return None
+                else:
+                    # All servers with a higher priority have been checked
+                    break
+
+        # If no higher priority servers, use this server
+        self.fetcher_priority = server.priority
+        self.fetcher = server
+        self.tries += 1
+        return self
 
     def get_art_id(self):
         """Return unique article storage name, create if needed"""
@@ -290,7 +258,7 @@ class Article(TryList):
     def __hash__(self):
         """Required because we implement eq. Articles with the same
         usenet address can appear in different NZF's. So we make every
-        article object unique, even though it is bad pratice.
+        article object unique, even though it is bad practice.
         """
         return id(self)
 
@@ -311,7 +279,6 @@ NzbFileSaver = (
     "vol",
     "blocks",
     "setname",
-    "has_bad_articles",
     "articles",
     "decodetable",
     "bytes",
@@ -347,8 +314,6 @@ class NzbFile(TryList):
         self.vol: Optional[int] = None
         self.blocks: Optional[int] = None
         self.setname: Optional[str] = None
-
-        self.has_bad_articles: bool = False
 
         # Articles are removed from "articles" after being fetched
         self.articles: List[Article] = []
@@ -495,7 +460,7 @@ class NzbFile(TryList):
         self.md5 = None
 
     def __eq__(self, other: "NzbFile"):
-        """Assume it's the same file if the numer bytes and first article
+        """Assume it's the same file if the number bytes and first article
         are the same or if there are no articles left, use the filenames.
         Some NZB's are just a mess and report different sizes for the same article.
         """
@@ -509,7 +474,7 @@ class NzbFile(TryList):
     def __hash__(self):
         """Required because we implement eq. The same file can be spread
         over multiple NZO's so we make every NZF unique. Even though
-        it's considered bad pratice.
+        it's considered bad practice.
         """
         return id(self)
 
