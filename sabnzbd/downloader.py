@@ -855,14 +855,15 @@ class Downloader(Thread):
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
                 if server.active:
-                    errormsg = T("Login from (too many) different IP addresses") + display_msg
-                    logging.debug("SJ100 %s", display_msg)
+                    errormsg = T("Login from too many different IP addresses to server") + display_msg
+                    logging.debug("SJ111: %s", display_msg)
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
-                        servername = " (%s)" % server.host
+                        # servername = " (%s)" % server.host
                         logging.warning(
-                            T("Login from (too many) different IP addresses")
-                            + servername
+                            T("Login from too many different IP addresses to server")
+                            + " "
+                            + server.host
                             + display_msg
                             + " - https://sabnzbd.org/multiple-adresses"
                         )
