@@ -568,6 +568,8 @@ class Downloader(Thread):
         can_be_slowed: Optional[float] = None
         can_be_slowed_timer: float = 0.0
         next_stable_speed_check: float = 0.0
+        if not cfg.downloader_sleep_test():
+            can_be_slowed = 1
 
         # Check server expiration dates
         check_server_expiration()

@@ -414,6 +414,7 @@ api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
+downloader_sleep_test = OptionBool("misc", "downloader_sleep_test", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
