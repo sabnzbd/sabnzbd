@@ -18,7 +18,7 @@ more-itertools==9.0.0
 zc.lockfile==2.0
 python-dateutil==2.8.2
 tempora==5.1.0
-pytz==2022.6
+pytz==2022.7
 sgmllib3k==1.0.0
 portend==3.1.0
 chardet==5.1.0
@@ -40,7 +40,7 @@ ujson==5.6.0
 pywin32==305; sys_platform == 'win32'
 
 # macOS system calls
-pyobjc==9.0; sys_platform == 'darwin'
+pyobjc==9.0.1; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
