@@ -856,10 +856,8 @@ class Downloader(Thread):
                 # Login from (too many) different IP addresses
                 if server.active:
                     errormsg = T("Login from too many different IP addresses to server") + display_msg
-                    logging.debug("SJ111: %s", display_msg)
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
-                        # servername = " (%s)" % server.host
                         logging.warning(
                             T("Login from too many different IP addresses to server")
                             + " "
