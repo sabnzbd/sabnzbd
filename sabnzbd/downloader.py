@@ -855,16 +855,16 @@ class Downloader(Thread):
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
                 if server.active:
-                    errormsg = T("Login from too many different IP addresses to server") + display_msg
+                    errormsg = (
+                        T("Login from too many different IP addresses to server")
+                        + " "
+                        + server.host
+                        + display_msg
+                        + " - https://sabnzbd.org/multiple-adresses"
+                    )
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
-                        logging.warning(
-                            T("Login from too many different IP addresses to server")
-                            + " "
-                            + server.host
-                            + display_msg
-                            + " - https://sabnzbd.org/multiple-adresses"
-                        )
+                        logging.warning(errormsg)
                 penalty = _PENALTY_SHARE
                 block = True
             elif error.code in (452, 481, 482, 381) or (error.code in (500, 502) and clues_login(error.msg)):
