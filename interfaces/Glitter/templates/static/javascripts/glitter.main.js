@@ -673,7 +673,7 @@ function ViewModel() {
 
     // default to url input when modal is shown
     $('#modal-add-nzb').on('shown.bs.modal', function() {
-      $('input[name="nzbURL"').focus();
+      $('input[name="nzbURL"]').focus();
     })
 
     // From the upload or filedrop
