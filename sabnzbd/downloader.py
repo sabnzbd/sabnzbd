@@ -855,13 +855,10 @@ class Downloader(Thread):
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
                 if server.active:
-                    errormsg = (
-                        T("Login from too many different IP addresses to server")
-                        + " "
-                        + server.host
-                        + display_msg
-                        + " - https://sabnzbd.org/multiple-adresses"
-                    )
+                    errormsg = T(
+                        "Login from too many different IP addresses to server %s [%s]"
+                        " - https://sabnzbd.org/multiple-adresses"
+                    ) % (server.host, error.msg)
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
                         logging.warning(errormsg)
@@ -879,10 +876,10 @@ class Downloader(Thread):
             elif error.code in (502, 482):
                 # Cannot connect (other reasons), block this server
                 if server.active:
-                    errormsg = T("Cannot connect to server %s [%s]") % ("", error.msg)
+                    errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
-                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
+                        logging.warning(errormsg)
                 if clues_pay(error.msg):
                     penalty = _PENALTY_PERM
                 else:
@@ -897,10 +894,10 @@ class Downloader(Thread):
             else:
                 # Unknown error, just keep trying
                 if server.active:
-                    errormsg = T("Cannot connect to server %s [%s]") % ("", display_msg)
+                    errormsg = T("Cannot connect to server %s [%s]") % (server.host, display_msg)
                     if server.errormsg != errormsg:
                         server.errormsg = errormsg
-                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
+                        logging.warning(errormsg)
                 penalty = _PENALTY_UNKNOWN
                 block = True
             if block or (penalty and server.optional):
