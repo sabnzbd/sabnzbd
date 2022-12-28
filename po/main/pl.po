@@ -415,7 +415,6 @@ msgstr ""
 "Przed ustawieniem limitu przepustowości należy ustawić maksymalną "
 "przepustowość"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Nie można połączyć się z serwerem %s [%s]"
@@ -444,10 +443,11 @@ msgstr "Błąd podczas inicjalizacji %s@%s: %s"
 msgid "Too many connections to server %s"
 msgstr "Zbyt wiele połączeń do serwera %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Prawdopodobne współdzielenie konta"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

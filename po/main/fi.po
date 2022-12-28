@@ -422,7 +422,6 @@ msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Sinun täytyy määrittää enimmäiskaista ennen kaistarajoituksen käyttöönottoa."
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Palvelimeen %s ei voida yhdistää [%s]"
@@ -451,10 +450,11 @@ msgstr "Alustaminen epäonnistui kohteessa %s@%s syy: %s"
 msgid "Too many connections to server %s"
 msgstr "Liikaa yhteyksiä palvelimelle %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Mahdollinen tilin jakaminen"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

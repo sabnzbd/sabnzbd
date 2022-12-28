@@ -416,7 +416,6 @@ msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Требате да поставите максимални проток пре него што поставите ограничење"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Neuspešno povezivanje na server %s[%s]"
@@ -445,10 +444,11 @@ msgstr "Neuspešna inicijalizacija %s@%s iz razloga: %s"
 msgid "Too many connections to server %s"
 msgstr "Previše konekcija ka serveru %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Moguće deljenje naloga"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

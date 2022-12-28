@@ -426,7 +426,6 @@ msgstr ""
 "Du skal angive den maksimale båndbredde, før du kan angive en båndbredde "
 "begrænsning"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Kan ikke tilslutte til server %s [%s]"
@@ -455,10 +454,11 @@ msgstr "Det lykkedes ikke at initialisere %s@%s med begrundelse %s"
 msgid "Too many connections to server %s"
 msgstr "Alt for mange forbindelser til serveren %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Sandsynligt delt konto"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

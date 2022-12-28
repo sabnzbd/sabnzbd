@@ -435,7 +435,6 @@ msgstr ""
 "Trebuie să seta-ţi lățimea de bandă maximă înainte de a seta o limită de "
 "viteză."
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Nu mă pot conecta la serverul %s [%s]"
@@ -464,10 +463,11 @@ msgstr "Nu am putu inițializa %s@%s din cauza următorului motiv: %s"
 msgid "Too many connections to server %s"
 msgstr "Prea multe conexiuni la serverul %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Partajare cont probabilă"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

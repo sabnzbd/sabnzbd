@@ -455,7 +455,6 @@ msgstr ""
 "Bevor ein Bandbreitenlimit gesetzt werden kann, muss die maximale Bandbreite"
 " festgelegt werden"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Verbindung zum Server %s kann nicht hergestellt werden. %s"
@@ -484,10 +483,11 @@ msgstr "Fehler %s@%s zu initialisieren, aus folgendem Grund: %s"
 msgid "Too many connections to server %s"
 msgstr "Zu viele Verbindungen zu Server %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Möglicherweise wird das Konto geteilt"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

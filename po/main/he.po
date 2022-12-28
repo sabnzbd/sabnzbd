@@ -422,7 +422,6 @@ msgstr "מושהה"
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "אתה חייב לקבוע רוחב פס מרבי לפני שאתה קובע מגבלת רוחב פס"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "לא ניתן להתחבר אל השרת %s [%s]"
@@ -451,10 +450,11 @@ msgstr "נכשל באתחול %s@%s עם סיבה: %s"
 msgid "Too many connections to server %s"
 msgstr "יותר מדי חיבורים לשרת %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "שיתוף סביר של חשבון"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

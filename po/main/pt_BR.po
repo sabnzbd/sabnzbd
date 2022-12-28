@@ -421,7 +421,6 @@ msgstr ""
 "Você deve definir a largura de banda máxima antes de definir um limite de "
 "banda"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Não é possível conectar ao servidor %s [%s]"
@@ -450,10 +449,11 @@ msgstr "Falha ao iniciar %s@%s devido as seguintes razões: %s"
 msgid "Too many connections to server %s"
 msgstr "Excesso de conexões ao servidor %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Provável compartilhamento de conta"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

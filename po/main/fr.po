@@ -451,7 +451,6 @@ msgstr ""
 "Vous devez définir une bande passante maximale avant de pouvoir définir une "
 "limite de bande passante"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Impossible de se connecter au serveur %s [%s]"
@@ -480,10 +479,11 @@ msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
 msgid "Too many connections to server %s"
 msgstr "Trop de connexions au serveur %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Partage de compte probable"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py

@@ -393,7 +393,6 @@ msgstr ""
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr ""
@@ -422,9 +421,8 @@ msgstr ""
 msgid "Too many connections to server %s"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
+msgid "Login from too many different IP addresses to server %s [%s] - https://sabnzbd.org/multiple-adresses"
 msgstr ""
 
 #. Error message
