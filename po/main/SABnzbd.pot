@@ -418,7 +418,7 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
+msgid "Too many connections to server %s [%s]"
 msgstr ""
 
 #: sabnzbd/downloader.py
@@ -427,7 +427,7 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
+msgid "Failed login for server %s [%s]"
 msgstr ""
 
 #. Error message

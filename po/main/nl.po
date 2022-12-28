@@ -1,11 +1,11 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Rik Brouwer, 2022
 # Safihre <safihre@sabnzbd.org>, 2022
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -470,8 +470,8 @@ msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 
 #. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
-msgstr "Te veel verbindingen met server %s"
+msgid "Too many connections to server %s [%s]"
+msgstr "Te veel verbindingen met server %s [%s]"
 
 #: sabnzbd/downloader.py
 msgid ""
@@ -481,8 +481,8 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
-msgstr "Aanmelden bij server %s mislukt"
+msgid "Failed login for server %s [%s]"
+msgstr "Aanmelden bij server %s mislukt [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py

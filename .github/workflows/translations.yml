@@ -22,7 +22,7 @@ jobs:
         if: env.TX_TOKEN
         run: |
           curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
-          ./tx push --source
+          ./tx push --translation --source
           ./tx pull --all --force
       - name: Compile translations to validate them
         run: |

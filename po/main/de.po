@@ -1,7 +1,7 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # C E <githubce@eiselt.ch>, 2020
 # Nikolai Bohl <n.kay01@gmail.com>, 2020
@@ -12,7 +12,7 @@
 # Nils Briggen, 2022
 # Safihre <safihre@sabnzbd.org>, 2022
 # reloxx13 <reloxx@interia.pl>, 2022
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -480,8 +480,8 @@ msgstr "Fehler %s@%s zu initialisieren, aus folgendem Grund: %s"
 
 #. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
-msgstr "Zu viele Verbindungen zu Server %s"
+msgid "Too many connections to server %s [%s]"
+msgstr "Zu viele Verbindungen zu Server %s [%s]"
 
 #: sabnzbd/downloader.py
 msgid ""
@@ -491,8 +491,8 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
-msgstr "Anmelden beim Server fehlgeschlagen. %s"
+msgid "Failed login for server %s [%s]"
+msgstr "Anmelden beim Server fehlgeschlagen. %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py

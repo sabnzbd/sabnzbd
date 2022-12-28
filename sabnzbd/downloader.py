@@ -838,48 +838,32 @@ class Downloader(Thread):
             # Handle login problems
             block = False
             penalty = 0
-            display_msg = " [%s]" % error.msg
+            errormsg = None
             logging.debug("Server login problem: %s", error.msg)
             if error.code in (502, 400, 481, 482) and clues_too_many(error.msg):
                 # Too many connections: remove this thread and reduce thread-setting for server
                 # Plan to go back to the full number after a penalty timeout
+                errormsg = T("Too many connections to server %s [%s]") % (server.host, error.msg)
                 if server.active:
-                    errormsg = T("Too many connections to server %s") % display_msg
-                    if server.errormsg != errormsg:
-                        server.errormsg = errormsg
-                        logging.warning(T("Too many connections to server %s"), server.host)
                     # Don't count this for the tries (max_art_tries) on this server
                     self.__reset_nw(nw, send_quit=True)
                     self.plan_server(server, _PENALTY_TOOMANY)
                     server.threads -= 1
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
-                if server.active:
-                    errormsg = T(
-                        "Login from too many different IP addresses to server %s [%s]"
-                        " - https://sabnzbd.org/multiple-adresses"
-                    ) % (server.host, error.msg)
-                    if server.errormsg != errormsg:
-                        server.errormsg = errormsg
-                        logging.warning(errormsg)
+                errormsg = T(
+                    "Login from too many different IP addresses to server %s [%s] - https://sabnzbd.org/multiple-adresses"
+                ) % (server.host, error.msg)
                 penalty = _PENALTY_SHARE
                 block = True
             elif error.code in (452, 481, 482, 381) or (error.code in (500, 502) and clues_login(error.msg)):
                 # Cannot login, block this server
-                if server.active:
-                    errormsg = T("Failed login for server %s") % display_msg
-                    if server.errormsg != errormsg:
-                        server.errormsg = errormsg
-                        logging.error(T("Failed login for server %s"), server.host)
+                errormsg = T("Failed login for server %s [%s]") % (server.host, error.msg)
                 penalty = _PENALTY_PERM
                 block = True
             elif error.code in (502, 482):
                 # Cannot connect (other reasons), block this server
-                if server.active:
-                    errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
-                    if server.errormsg != errormsg:
-                        server.errormsg = errormsg
-                        logging.warning(errormsg)
+                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                 if clues_pay(error.msg):
                     penalty = _PENALTY_PERM
                 else:
@@ -887,17 +871,12 @@ class Downloader(Thread):
                 block = True
             elif error.code == 400:
                 # Temp connection problem?
-                if server.active:
-                    logging.debug("Unspecified error 400 from server %s", server.host)
+                logging.debug("Unspecified error 400 from server %s", server.host)
                 penalty = _PENALTY_VERYSHORT
                 block = True
             else:
                 # Unknown error, just keep trying
-                if server.active:
-                    errormsg = T("Cannot connect to server %s [%s]") % (server.host, display_msg)
-                    if server.errormsg != errormsg:
-                        server.errormsg = errormsg
-                        logging.warning(errormsg)
+                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                 penalty = _PENALTY_UNKNOWN
                 block = True
             if block or (penalty and server.optional):
@@ -912,6 +891,11 @@ class Downloader(Thread):
                             self.plan_server(server, penalty)
                 # Note that the article is discard for this server if the server is not required
                 self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
+
+            # Set error for server and warn user if it was first time thrown
+            if errormsg and server.active and server.errormsg != errormsg:
+                server.errormsg = errormsg
+                logging.warning(errormsg)
             return False
         except:
             logging.error(
