@@ -29,6 +29,7 @@ from typing import List, Optional, Tuple, AnyStr
 
 import sabnzbd
 import sabnzbd.cfg
+import sabyenc3
 from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.encoding import utob
 from sabnzbd.misc import nntp_to_msg, is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
@@ -181,9 +182,7 @@ class NewsWrapper:
     def recv_chunk(self) -> Tuple[int, bool]:
         """Receive data, return #bytes, done"""
         if self.nntp.nw.server.ssl:
-            # SSL chunks come in 16K frames
-            # Setting higher limits results in slowdown
-            chunk = self.nntp.sock.recv(16384)
+            chunk = sabyenc3.unlocked_ssl_recv(self.nntp.sock._sslobj, 262144)
         else:
             chunk = self.nntp.sock.recv(262144)
 

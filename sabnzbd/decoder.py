@@ -38,6 +38,8 @@ from sabnzbd.misc import match_str
 SABYENC_VERSION = None
 SABYENC_SIMD = None
 try:
+    # We need to import ssl before sabyenc3 in order to locate OpenSSL
+    import ssl
     import sabyenc3
 
     SABYENC_ENABLED = True
@@ -45,6 +47,10 @@ try:
     SABYENC_SIMD = sabyenc3.simd
     # Verify version to at least match minor version
     if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
+        raise ImportError
+    # TEMPORARY: Fail if not linked to OpenSSL
+    if not sabyenc3.openssl_linked:
+        print("Failed to link to OpenSSL!")
         raise ImportError
 except:
     SABYENC_ENABLED = False
