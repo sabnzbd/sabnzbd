@@ -477,6 +477,8 @@ msgid ""
 "Login from too many different IP addresses to server %s [%s] - "
 "https://sabnzbd.org/multiple-adresses"
 msgstr ""
+"Teveel verschillende IP-adressen probeerde in te loggen op server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
 
 #: sabnzbd/downloader.py
 msgid "Failed login for server %s [%s]"
