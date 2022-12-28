@@ -1,11 +1,11 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
 # Eduard Baniceru <war4peace@gmail.com>, 2021
 # Safihre <safihre@sabnzbd.org>, 2022
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -458,7 +458,6 @@ msgstr ""
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Nu am putu inițializa %s@%s din cauza următorului motiv: %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Prea multe conexiuni la serverul %s [%s]"
@@ -469,7 +468,6 @@ msgid ""
 "https://sabnzbd.org/multiple-adresses"
 msgstr ""
 
-#. Error message
 #: sabnzbd/downloader.py
 msgid "Failed login for server %s [%s]"
 msgstr "Autentificare nereuşită la serverul %s [%s]"

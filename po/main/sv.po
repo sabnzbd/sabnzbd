@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2022
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -439,7 +439,6 @@ msgstr ""
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Misslyckades att initiera %s@%s med orsak %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "För många anslutningar till servern %s [%s]"
@@ -450,7 +449,6 @@ msgid ""
 "https://sabnzbd.org/multiple-adresses"
 msgstr ""
 
-#. Error message
 #: sabnzbd/downloader.py
 msgid "Failed login for server %s [%s]"
 msgstr "Det gick inte att logga in på server %s [%s]"
