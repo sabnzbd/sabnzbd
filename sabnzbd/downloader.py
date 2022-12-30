@@ -569,6 +569,10 @@ class Downloader(Thread):
         can_be_slowed_timer: float = 0.0
         next_stable_speed_check: float = 0.0
 
+        last_max_chunk_size: int = 0
+        max_chunk_size: int = 32768
+        tcp_read_buffer: int = cfg.tcp_read_buffer()
+
         # Check server expiration dates
         check_server_expiration()
 
@@ -695,36 +699,14 @@ class Downloader(Thread):
                     logging.info("Shutting down")
                     break
 
+            if self.sleep_time and last_max_chunk_size < max_chunk_size:
+                time.sleep(self.sleep_time)
+            last_max_chunk_size = 0
+
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
             if readkeys:
                 read, _, _ = select.select(readkeys, (), (), 1.0)
-
-                # Add a sleep if there are too few results compared to the number of active connections
-                if self.sleep_time:
-                    if can_be_slowed and len(read) < 1 + len(readkeys) / 10:
-                        time.sleep(self.sleep_time)
-
-                    # Initialize by waiting for stable speed and then enable sleep
-                    if can_be_slowed is None or can_be_slowed_timer:
-                        # Wait for stable speed to start testing
-
-                        if not can_be_slowed_timer and now > next_stable_speed_check:
-                            if BPSMeter.get_stable_speed(timespan=10):
-                                can_be_slowed_timer = now + 8
-                                can_be_slowed = 1
-                            else:
-                                next_stable_speed_check = now + _BPSMETER_UPDATE_DELAY
-
-                        # Check 10 seconds after enabling slowdown
-                        if can_be_slowed_timer and now > can_be_slowed_timer:
-                            # Now let's check if it was stable in the last 10 seconds
-                            can_be_slowed = BPSMeter.get_stable_speed(timespan=10)
-                            can_be_slowed_timer = 0
-                            if not can_be_slowed:
-                                self.sleep_time = 0
-                            logging.debug("Downloader-slowdown: %r", can_be_slowed)
-
             else:
                 read = []
 
@@ -754,7 +736,12 @@ class Downloader(Thread):
                 server = nw.server
 
                 try:
-                    bytes_received, done = nw.recv_chunk()
+                    bytes_received, done = nw.recv_chunk(tcp_read_buffer)
+                    if bytes_received > last_max_chunk_size:
+                        last_max_chunk_size = bytes_received
+                        if bytes_received > max_chunk_size:
+                            logging.debug("New max_chunk_size %d -> %d", max_chunk_size, bytes_received)
+                            max_chunk_size = bytes_received
                 except (ssl.SSLWantReadError, sabnzbd.decoder.sabyenc3.SSLWantReadError):
                     continue
                 except:
@@ -823,9 +810,13 @@ class Downloader(Thread):
 
                     # Reset connection for new activity
                     nw.soft_reset()
-                    server.busy_threads.remove(nw)
-                    server.idle_threads.append(nw)
-                    self.remove_socket(nw)
+                    if server.article_queue and nw.connected:
+                        nw.article = server.article_queue.pop(0)
+                        self.__request_article(nw)
+                    else:
+                        server.busy_threads.remove(nw)
+                        server.idle_threads.append(nw)
+                        self.remove_socket(nw)
 
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
         server = nw.server

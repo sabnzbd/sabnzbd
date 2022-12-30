@@ -179,12 +179,12 @@ class NewsWrapper:
         self.nntp.sock.sendall(command)
         self.clear_data()
 
-    def recv_chunk(self) -> Tuple[int, bool]:
+    def recv_chunk(self, tcp_read_buffer: int = 131072) -> Tuple[int, bool]:
         """Receive data, return #bytes, done"""
         if self.nntp.nw.server.ssl:
-            chunk = sabyenc3.unlocked_ssl_recv(self.nntp.sock._sslobj, 262144)
+            chunk = sabyenc3.unlocked_ssl_recv(self.nntp.sock._sslobj, tcp_read_buffer)
         else:
-            chunk = self.nntp.sock.recv(262144)
+            chunk = self.nntp.sock.recv(tcp_read_buffer)
 
         chunk_len = len(chunk)
         if chunk_len == 0:

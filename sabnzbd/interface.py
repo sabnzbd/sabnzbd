@@ -871,6 +871,7 @@ SPECIAL_BOOL_LIST = (
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
+    "tcp_read_buffer",
     "size_limit",
     "movie_rename_limit",
     "episode_rename_limit",
