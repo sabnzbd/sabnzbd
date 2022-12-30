@@ -64,37 +64,3 @@ class TestSkintext:
 
         # If anything shows up, the translation string is no longer used and should be removed!
         assert not not_found
-
-
-@pytest.mark.usefixtures("run_sabnzbd")
-class TestWiki:
-    def test_added_wiki_entries(self):
-        """Test that every option has a Wiki entry, and removed options are removed from the wiki"""
-        wiki_diff = {}
-        config_diff = {}
-        for url in ("general", "switches", "special"):
-            config_tree = lxml.html.fromstring(
-                requests.get("http://%s:%s/config/%s/" % (SAB_HOST, SAB_PORT, url)).content
-            )
-            # Have to remove some decorating stuff and empty values
-            config_labels = [
-                label.lower().strip().strip(" ()") for label in config_tree.xpath("//fieldset//label/text()")
-            ]
-            config_labels = [label for label in config_labels if label]
-
-            # Parse the version info to get the right Wiki version
-            version = re.search(r"(\d+\.\d+)\.(\d+)([a-zA-Z]*)(\d*)", pkginfo.Develop(".").version).group(1)
-            wiki_tree = lxml.html.fromstring(
-                requests.get("https://sabnzbd.org/wiki/configuration/%s/%s" % (version, url)).content
-            )
-
-            # Special-page needs different label locator
-            label_element = "code" if "special" in url else "strong"
-            wiki_labels = [label.lower() for label in wiki_tree.xpath("//tbody/tr/td[1]/%s/text()" % label_element)]
-
-            wiki_diff[url] = set(config_labels) - set(wiki_labels)
-            assert not wiki_diff[url]
-
-            # There can be a difference, for example Windows-only options are not shown on macOS
-            config_diff[url] = set(wiki_labels) - set(config_labels)
-            # Add print() to see this difference
