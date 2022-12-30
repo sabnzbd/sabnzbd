@@ -175,34 +175,32 @@ class Assembler(Thread):
             nzf.md5 = hashlib.md5()
 
         # We write large article-sized chunks, so we can safely skip the buffering of Python
-        with open(nzf.filepath, "ab", buffering=0) as fout:
-            for article in nzf.decodetable:
-                # Break if deleted during writing
-                if nzo.status is Status.DELETED:
-                    break
-
-                # Skip already written articles
-                if article.on_disk:
-                    continue
-
-                # Write all decoded articles
-                if article.decoded:
-                    data = sabnzbd.ArticleCache.load_article(article)
-                    # Could be empty in case nzo was deleted
-                    if data:
-                        fout.write(data)
-                        nzf.md5.update(data)
-                        article.on_disk = True
-                    else:
-                        logging.info("No data found when trying to write %s", article)
-                else:
-                    # If the article was not decoded but the file
-                    # is done, it is just a missing piece, so keep writing
-                    if file_done:
-                        continue
-                    else:
-                        # We reach an article that was not decoded
+        if nzf.decodetable[nzf.assembler_index].decoded or file_done:
+            with open(nzf.filepath, "ab", buffering=0) as fout:
+                while nzf.assembler_index < len(nzf.decodetable):
+                    # Break if deleted during writing
+                    if nzo.status is Status.DELETED:
                         break
+
+                    article = nzf.decodetable[nzf.assembler_index]
+                    if not article.on_disk:
+                        # Write all decoded articles
+                        if article.decoded:
+                            data = sabnzbd.ArticleCache.load_article(article)
+                            # Could be empty in case nzo was deleted
+                            if data:
+                                fout.write(data)
+                                nzf.md5.update(data)
+                                article.on_disk = True
+                            else:
+                                logging.info("No data found when trying to write %s", article)
+                        else:
+                            # If the article was not decoded but the file
+                            # is done, it is just a missing piece, so keep writing
+                            # Otherwise we reach an article that was not decoded
+                            if not file_done:
+                                break
+                    nzf.assembler_index += 1
 
         # Final steps
         if file_done:

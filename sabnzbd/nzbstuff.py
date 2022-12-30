@@ -285,6 +285,7 @@ NzbFileSaver = (
     "bytes_left",
     "nzo",
     "nzf_id",
+    "assembler_index",
     "deleted",
     "valid",
     "import_finished",
@@ -324,6 +325,7 @@ class NzbFile(TryList):
 
         self.nzo: NzbObject = nzo
         self.nzf_id: str = sabnzbd.filesystem.get_new_id("nzf", nzo.admin_path)
+        self.assembler_index: int = 0
         self.deleted = False
         self.import_finished = False
 
