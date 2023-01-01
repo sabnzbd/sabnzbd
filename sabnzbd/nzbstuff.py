@@ -285,7 +285,6 @@ NzbFileSaver = (
     "bytes_left",
     "nzo",
     "nzf_id",
-    "assembler_index",
     "deleted",
     "valid",
     "import_finished",
@@ -298,7 +297,10 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("md5",)
+    __slots__ = NzbFileSaver + (
+        "md5",
+        "next_assemble_article",
+    )
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -325,9 +327,9 @@ class NzbFile(TryList):
 
         self.nzo: NzbObject = nzo
         self.nzf_id: str = sabnzbd.filesystem.get_new_id("nzf", nzo.admin_path)
-        self.assembler_index: int = 0
         self.deleted = False
         self.import_finished = False
+        self.next_assemble_article: Optional[Article] = None
 
         self.md5 = None
         self.md5sum: Optional[bytes] = None
