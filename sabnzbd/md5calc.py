@@ -40,8 +40,6 @@ class MD5Calc(Thread):
 
     def run(self):
         while 1:
-            # Set NzbObject and NzbFile objects to None so references
-            # from this thread do not keep the objects alive (see #1628)
             data = nzf = None
             nzf, data = self.queue.get()
             if not nzf:
