@@ -108,6 +108,7 @@ import sabnzbd.postproc
 import sabnzbd.downloader
 import sabnzbd.decoder
 import sabnzbd.assembler
+import sabnzbd.md5calc
 import sabnzbd.articlecache
 import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
@@ -122,6 +123,7 @@ import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
+MD5Calc: sabnzbd.md5calc.MD5Calc
 Assembler: sabnzbd.assembler.Assembler
 Decoder: sabnzbd.decoder.Decoder
 Downloader: sabnzbd.downloader.Downloader
@@ -301,6 +303,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
     sabnzbd.Downloader = sabnzbd.downloader.Downloader(sabnzbd.BPSMeter.read() or pause_downloader)
     sabnzbd.Decoder = sabnzbd.decoder.Decoder()
+    sabnzbd.MD5Calc = sabnzbd.md5calc.MD5Calc()
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
     sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
     sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
@@ -327,6 +330,9 @@ def start():
     if sabnzbd.__INITIALIZED__:
         logging.debug("Starting postprocessor")
         sabnzbd.PostProcessor.start()
+
+        logging.debug("Starting md5calculator")
+        sabnzbd.MD5Calc.start()
 
         logging.debug("Starting assembler")
         sabnzbd.Assembler.start()
@@ -401,6 +407,13 @@ def halt():
         sabnzbd.Assembler.stop()
         try:
             sabnzbd.Assembler.join()
+        except:
+            pass
+
+        logging.debug("Stopping md5calc")
+        sabnzbd.MD5Calc.stop()
+        try:
+            sabnzbd.MD5Calc.join()
         except:
             pass
 
@@ -486,6 +499,9 @@ def check_all_tasks():
         return False
     if not sabnzbd.Assembler.is_alive():
         logging.warning(T("Restarting because of crashed assembler"))
+        return False
+    if not sabnzbd.MD5Calc.is_alive():
+        logging.warning(T("Restarting because of crashed md5calc"))
         return False
 
     # Kick the downloader, in case it missed the semaphore

@@ -26,6 +26,7 @@ import re
 from threading import Thread
 import hashlib
 import ctypes
+import time
 from typing import Tuple, Optional, List
 
 import sabnzbd
@@ -191,7 +192,7 @@ class Assembler(Thread):
                     # Could be empty in case nzo was deleted
                     if data:
                         fout.write(data)
-                        nzf.md5.update(data)
+                        sabnzbd.MD5Calc.process(nzf, data)
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
@@ -207,7 +208,11 @@ class Assembler(Thread):
         # Final steps
         if file_done:
             set_permissions(nzf.filepath)
-            nzf.md5sum = nzf.md5.digest()
+
+            # Make MD5 calculator set the md5 value and wait until it's done
+            sabnzbd.MD5Calc.process(nzf, None)
+            while sabnzbd.MD5Calc.queue.qsize():
+                time.sleep(0.002)
 
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
