@@ -213,6 +213,7 @@ class Assembler(Thread):
         # Final steps
         if file_done:
             set_permissions(nzf.filepath)
+            nzf.next_assemble_article = None
             nzf.md5sum = nzf.md5.digest()
 
     @staticmethod
