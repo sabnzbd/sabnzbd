@@ -38,9 +38,6 @@ class MD5Calc(Thread):
     def process(self, nzf: Optional[NzbFile] = None, data: Optional[str] = None):
         self.queue.put((nzf, data))
 
-    def queue_(self):
-        return self.queue.qsize() >= MAX_ASSEMBLER_QUEUE
-
     def run(self):
         while 1:
             # Set NzbObject and NzbFile objects to None so references
