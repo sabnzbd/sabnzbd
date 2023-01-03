@@ -36,7 +36,7 @@ def utob(str_in: AnyStr) -> bytes:
 
 def ubtou(str_in: AnyStr) -> str:
     """Shorthand for converting unicode bytes to UTF-8 string"""
-    if not isinstance(str_in, bytes):
+    if isinstance(str_in, str):
         return str_in
     return str_in.decode("utf-8")
 

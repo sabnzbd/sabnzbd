@@ -29,7 +29,7 @@ from typing import Tuple, List, Optional
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import SABYENC_VERSION_REQUIRED
+from sabnzbd.constants import SABYENC_VERSION_REQUIRED, NNTP_LARGE_BUFFER
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
@@ -103,9 +103,9 @@ class Decoder:
             except:
                 pass
 
-    def process(self, article: Article, raw_data: List[bytes], data_size: int):
-        sabnzbd.ArticleCache.reserve_space(data_size)
-        self.decoder_queue.put((article, raw_data, data_size))
+    def process(self, article: Article, raw_data: bytearray, raw_data_size: int):
+        sabnzbd.ArticleCache.reserve_space(NNTP_LARGE_BUFFER)
+        self.decoder_queue.put((article, raw_data, raw_data_size))
 
     def queue_full(self) -> bool:
         # Check if the queue size exceeds the limits
@@ -118,23 +118,27 @@ class DecoderWorker(Thread):
     def __init__(self, decoder_queue):
         super().__init__()
         logging.debug("Initializing decoder %s", self.name)
-        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]], Optional[int]]] = decoder_queue
+        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[bytearray], Optional[int]]] = decoder_queue
 
     def run(self):
         while 1:
             # Set Article and NzbObject objects to None so references from this
             # thread do not keep the parent objects alive (see #1628)
             decoded_data = raw_data = article = nzo = None
-            article, raw_data, data_size = self.decoder_queue.get()
+            article, raw_data, raw_data_size = self.decoder_queue.get()
             if not article:
                 logging.debug("Shutting down decoder %s", self.name)
                 break
+
+            # TODO: temporary
+            n = 250000
+            raw_data = [bytes(raw_data[i : min(raw_data_size, i + n)]) for i in range(0, len(raw_data), n)]
 
             nzo = article.nzf.nzo
             art_id = article.article
 
             # Free space in the decoder-queue
-            sabnzbd.ArticleCache.free_reserved_space(data_size)
+            sabnzbd.ArticleCache.free_reserved_space(NNTP_LARGE_BUFFER)
 
             # Keeping track
             article_success = False
