@@ -35,7 +35,7 @@ from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, nntp_to_msg, get_server_addrinfo, helpful_warning, int_conv
+from sabnzbd.misc import from_units, get_server_addrinfo, helpful_warning, int_conv
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
@@ -503,7 +503,7 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[List[bytes]] = None, data_size: Optional[int] = None):
+    def decode(self, article, raw_data: Optional[bytearray] = None, raw_data_size: Optional[int] = None):
         """Decode article and check the status of
         the decoder and the assembler
         """
@@ -518,7 +518,7 @@ class Downloader(Thread):
             return
 
         # Send to decoder-queue
-        sabnzbd.Decoder.process(article, raw_data, data_size)
+        sabnzbd.Decoder.process(article, raw_data, raw_data_size)
 
         # See if we need to delay because the queues are full
         logged_counter = 0
@@ -781,9 +781,9 @@ class Downloader(Thread):
                         logging.debug("Article <%s> is present", article.article)
 
                     elif nw.status_code == 211:
-                        logging.debug("group command ok -> %s", nntp_to_msg(nw.data))
+                        logging.debug("group command ok -> %s", nw.nntp_msg)
                         nw.group = nw.article.nzf.nzo.group
-                        nw.clear_data()
+                        nw.reset_data_buffer()
                         self.__request_article(nw)
 
                     elif nw.status_code in (411, 423, 430):
@@ -795,7 +795,7 @@ class Downloader(Thread):
                             article.article,
                             nw.status_code,
                         )
-                        nw.clear_data()
+                        nw.reset_data_buffer()
 
                     elif nw.status_code == 500:
                         if article.nzf.nzo.precheck:
@@ -806,7 +806,7 @@ class Downloader(Thread):
                             # Assume "BODY" command is not supported
                             server.have_body = False
                             logging.debug("Server %s does not support BODY", server.host)
-                        nw.clear_data()
+                        nw.reset_data_buffer()
                         self.__request_article(nw)
 
                 if done:
@@ -815,8 +815,8 @@ class Downloader(Thread):
                     server.errormsg = server.warning = ""
 
                     # Update statistics and decode
-                    article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_size)
-                    self.decode(article, nw.data, nw.data_size)
+                    article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_position)
+                    self.decode(article, nw.data, nw.data_position)
 
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
@@ -832,8 +832,8 @@ class Downloader(Thread):
         try:
             nw.finish_connect(nw.status_code)
             if sabnzbd.LOG_ALL:
-                logging.debug("%s@%s last message -> %s", nw.thrdnum, server.host, nntp_to_msg(nw.data))
-            nw.clear_data()
+                logging.debug("%s@%s last message -> %s", nw.thrdnum, server.host, nw.nntp_msg)
+            nw.reset_data_buffer()
         except NNTPPermanentError as error:
             # Handle login problems
             block = False
@@ -902,7 +902,7 @@ class Downloader(Thread):
                 T("Connecting %s@%s failed, message=%s"),
                 nw.thrdnum,
                 nw.server.host,
-                nntp_to_msg(nw.data),
+                nw.nntp_msg,
             )
             # No reset-warning needed, above logging is sufficient
             self.__reset_nw(nw, retry_article=False)

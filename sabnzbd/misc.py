@@ -1058,20 +1058,6 @@ def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
     return None
 
 
-def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
-    """Format raw NNTP bytes data for display"""
-    if isinstance(text, list):
-        text = text[0]
-
-    # Only need to split if it was raw data
-    # Sometimes (failed login) we put our own texts
-    if not isinstance(text, bytes):
-        return text
-    else:
-        lines = text.split(b"\r\n")
-        return ubtou(lines[0])
-
-
 def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclude_items: Tuple[str, ...] = ()):
     """Recursively update the input_dict in-place with html-safe values"""
     if isinstance(input_dict_or_list, (dict, list)):

@@ -25,13 +25,13 @@ from threading import Thread
 import time
 import logging
 import ssl
-from typing import List, Optional, Tuple, AnyStr
+from typing import Optional, Tuple
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DEF_TIMEOUT
-from sabnzbd.encoding import utob
-from sabnzbd.misc import nntp_to_msg, is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
+from sabnzbd.constants import DEF_TIMEOUT, NNTP_LARGE_BUFFER, NNTP_SMALL_BUFFER
+from sabnzbd.encoding import utob, ubtou
+from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
@@ -56,7 +56,8 @@ class NewsWrapper:
         "timeout",
         "article",
         "data",
-        "data_size",
+        "data_view",
+        "data_position",
         "nntp",
         "connected",
         "user_sent",
@@ -65,7 +66,6 @@ class NewsWrapper:
         "user_ok",
         "pass_ok",
         "force_login",
-        "status_code",
     )
 
     def __init__(self, server, thrdnum, block=False):
@@ -75,8 +75,10 @@ class NewsWrapper:
 
         self.timeout: Optional[float] = None
         self.article: Optional[sabnzbd.nzbstuff.Article] = None
-        self.data: List[AnyStr] = []
-        self.data_size: int = 0
+
+        self.data: Optional[bytearray] = None
+        self.data_view: Optional[memoryview] = None
+        self.data_position: int = 0
 
         self.nntp: Optional[NNTP] = None
 
@@ -87,7 +89,15 @@ class NewsWrapper:
         self.pass_ok: bool = False
         self.force_login: bool = False
         self.group: Optional[str] = None
-        self.status_code: Optional[int] = None
+
+    @property
+    def status_code(self) -> Optional[int]:
+        if self.data_position >= 3:
+            return int(self.data[:3])
+
+    @property
+    def nntp_msg(self) -> str:
+        return ubtou(self.data[: self.data_position]).strip()
 
     def init_connect(self):
         """Setup the connection in NNTP object"""
@@ -97,6 +107,7 @@ class NewsWrapper:
             self.server.info = get_server_addrinfo(self.server.host, self.server.port)
 
         # Construct NNTP object
+        self.reset_data_buffer()
         self.nntp = NNTP(self, self.server.hostip)
         self.timeout = time.time() + self.server.timeout
 
@@ -109,14 +120,6 @@ class NewsWrapper:
             self.pass_sent = True
             self.pass_ok = True
 
-        if code == 501 and self.user_sent:
-            # Change to a sensible text
-            code = 481
-            self.data[0] = "%d %s" % (code, T("Authentication failed, check username/password."))
-            self.status_code = code
-            self.user_ok = True
-            self.pass_sent = True
-
         if code == 480:
             self.force_login = True
             self.connected = False
@@ -126,11 +129,11 @@ class NewsWrapper:
             self.pass_ok = False
 
         if code in (400, 500, 502):
-            raise NNTPPermanentError(nntp_to_msg(self.data), code)
+            raise NNTPPermanentError(self.nntp_msg, code)
         elif not self.user_sent:
             command = utob("authinfo user %s\r\n" % self.server.username)
             self.nntp.sock.sendall(command)
-            self.clear_data()
+            self.reset_data_buffer()
             self.user_sent = True
         elif not self.user_ok:
             if code == 381:
@@ -145,12 +148,12 @@ class NewsWrapper:
         if self.user_ok and not self.pass_sent:
             command = utob("authinfo pass %s\r\n" % self.server.password)
             self.nntp.sock.sendall(command)
-            self.clear_data()
+            self.reset_data_buffer()
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if code != 281:
                 # Assume that login failed (code 481 or other)
-                raise NNTPPermanentError(nntp_to_msg(self.data), code)
+                raise NNTPPermanentError(self.nntp_msg, code)
             else:
                 self.connected = True
 
@@ -169,62 +172,70 @@ class NewsWrapper:
         else:
             command = utob("ARTICLE <%s>\r\n" % self.article.article)
         self.nntp.sock.sendall(command)
-        self.clear_data()
+        self.reset_data_buffer(buffer_size=NNTP_LARGE_BUFFER)
 
     def send_group(self, group: str):
         """Send the NNTP GROUP command"""
         self.timeout = time.time() + self.server.timeout
         command = utob("GROUP %s\r\n" % group)
         self.nntp.sock.sendall(command)
-        self.clear_data()
+        self.reset_data_buffer()
 
     def recv_chunk(self) -> Tuple[int, bool]:
-        """Receive data, return #bytes, done"""
-        if self.nntp.nw.server.ssl:
-            # SSL chunks come in 16K frames
-            # Setting higher limits results in slowdown
-            chunk = self.nntp.sock.recv(16384)
-        else:
-            chunk = self.nntp.sock.recv(262144)
+        """Receive data, return #bytes, done, skip"""
 
-        chunk_len = len(chunk)
-        if chunk_len == 0:
+        request_bytes = 262144
+        # SSL chunks come in 16K frames, setting higher limits results in slowdown
+        # See https://bugs.python.org/issue37355
+        if self.nntp.nw.server.ssl:
+            request_bytes = 16384
+
+        # The amount of requested bytes is not allowed to exceed the space left in the buffer
+        request_bytes = min(request_bytes, len(self.data) - self.data_position)
+
+        # Resize the buffer in the extremely unlikely case that it got full
+        if not request_bytes:
+            request_bytes = self.nntp.nw.increase_data_buffer()
+
+        # Receive data into the pre-allocated buffer
+        bytes_recv = self.nntp.sock.recv_into(self.data_view[self.data_position :], request_bytes)
+
+        # No data received
+        if bytes_recv == 0:
             raise ConnectionError("server closed connection")
 
-        if not self.data:
-            try:
-                self.status_code = int(chunk[:3])
-            except:
-                self.status_code = None
-
-        # Append so we can do 1 join(), much faster than multiple!
-        self.data.append(chunk)
-        self.data_size += chunk_len
+        # Success, move our internal data position
         self.timeout = time.time() + self.server.timeout
+        self.data_position += bytes_recv
 
-        # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
-        if chunk[-5:] == b"\r\n.\r\n":
-            return chunk_len, True
-        elif chunk_len < 5 and len(self.data) > 1:
-            # We need to make sure the end is not split over 2 chunks
-            # This is faster than join()
-            if self.data[-2][-5 + chunk_len :] + chunk == b"\r\n.\r\n":
-                return chunk_len, True
+        # Official end-of-article is "\r\n.\r\n",
+        # Using the data directly seems faster than the memoryview
+        if self.data[self.data_position - 5 : self.data_position] == b"\r\n.\r\n":
+            return bytes_recv, True
 
         # Still in middle of data, so continue!
-        return chunk_len, False
+        return bytes_recv, False
 
     def soft_reset(self):
         """Reset for the next article"""
         self.timeout = None
         self.article = None
-        self.clear_data()
+        self.reset_data_buffer()
 
-    def clear_data(self):
-        """Clear the stored raw data"""
-        self.data = []
-        self.data_size = 0
-        self.status_code = None
+    def reset_data_buffer(self, buffer_size: int = NNTP_SMALL_BUFFER):
+        """Clear the data by setting new buffers.
+        Size depends on if we are requesting status codes or a full article"""
+        self.data = bytearray(buffer_size)
+        self.data_view = memoryview(self.data)
+        self.data_position = 0
+
+    def increase_data_buffer(self) -> int:
+        """Resize the buffer in the extremely unlikely case that it overflows"""
+        new_buffer = bytearray(len(self.data) + NNTP_SMALL_BUFFER)
+        new_buffer[: len(self.data)] = self.data
+        self.data = new_buffer
+        self.data_view = memoryview(self.data)
+        return len(self.data)
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
         """Destroy and restart"""
