@@ -209,10 +209,8 @@ class Assembler(Thread):
         if file_done:
             set_permissions(nzf.filepath)
 
-            # Make MD5 calculator set the md5 value and wait until it's done
+            # Make MD5 calculator set the md5sum value
             sabnzbd.MD5Calc.process(nzf, None)
-            while sabnzbd.MD5Calc.queue.qsize():
-                time.sleep(0.002)
 
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
