@@ -227,7 +227,7 @@ class Article(TryList):
                     sabnzbd.NzbQueue.reset_try_lists(self, remove_fetcher_from_trylist=False)
                     return True
 
-        logging.info("Article %s unavailable on all servers, discarding", self.article)
+        logging.info("Article %s unavailable or broken on all servers", self.article)
         return False
 
     def __getstate__(self):
