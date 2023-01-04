@@ -233,7 +233,9 @@ class DecoderWorker(Thread):
                 # If the data needs to be written to disk due to full cache, this will be slow
                 # Causing the decoder-queue to fill up and delay the downloader
                 sabnzbd.ArticleCache.save_article(article, decoded_data)
-
+            elif not nzo.precheck:
+                # Nothing to save
+                article.on_disk = True
             sabnzbd.NzbQueue.register_article(article, article_success)
 
 
