@@ -191,8 +191,8 @@ class Assembler(Thread):
                     data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
                     if data:
-                        # fout.write(data)
-                        # nzf.md5.update(data)
+                        fout.write(data)
+                        nzf.md5.update(data)
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
