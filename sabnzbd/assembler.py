@@ -26,7 +26,6 @@ import re
 from threading import Thread
 import hashlib
 import ctypes
-import time
 from typing import Tuple, Optional, List
 
 import sabnzbd
@@ -171,6 +170,7 @@ class Assembler(Thread):
         1) Partial write: write what we have
         2) Nothing written before: write all
         """
+
         # New hash-object needed?
         if not nzf.md5:
             nzf.md5 = hashlib.md5()
@@ -178,21 +178,21 @@ class Assembler(Thread):
         # We write large article-sized chunks, so we can safely skip the buffering of Python
         with open(nzf.filepath, "ab", buffering=0) as fout:
             for article in nzf.decodetable:
-                # Break if deleted during writing
-                if nzo.status is Status.DELETED:
-                    break
-
                 # Skip already written articles
                 if article.on_disk:
                     continue
+
+                # Break if deleted during writing
+                if nzo.status is Status.DELETED:
+                    break
 
                 # Write all decoded articles
                 if article.decoded:
                     data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
                     if data:
-                        fout.write(data)
-                        sabnzbd.MD5Calc.process(nzf, data)
+                        # fout.write(data)
+                        # nzf.md5.update(data)
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
@@ -208,9 +208,7 @@ class Assembler(Thread):
         # Final steps
         if file_done:
             set_permissions(nzf.filepath)
-
-            # Make MD5 calculator set the md5sum value
-            sabnzbd.MD5Calc.process(nzf, None)
+            nzf.md5sum = nzf.md5.digest()
 
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):

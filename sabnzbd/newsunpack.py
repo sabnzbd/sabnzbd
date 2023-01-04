@@ -1997,13 +1997,6 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                # Wait up to 30 seconds for MD5sum. Should not be missing or take this long.
-                if not nzf.md5sum and result and sabnzbd.MD5Calc.queue.qsize() > 0:
-                    logging.debug("Waiting for md5sum to finish: %s", nzf.filename)
-                    for i in range(300):
-                        if nzf.md5sum:
-                            break
-                        time.sleep(0.1)
                 if (nzf.md5sum is not None) and nzf.md5sum == par2info.filehash:
                     logging.debug("Quick-check of file %s OK", file)
                     result &= True
@@ -2012,10 +2005,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     logging.debug("Quick-check ignoring file %s", file)
                     result &= True
                 else:
-                    if not nzf.md5sum:
-                        logging.warning("MD5 sum missing for %s", file)
-                    else:
-                        logging.info("Quick-check of file %s failed!", file)
+                    logging.info("Quick-check of file %s failed!", file)
                     result = False
                 break
 
