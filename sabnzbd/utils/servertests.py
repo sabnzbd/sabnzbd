@@ -89,7 +89,6 @@ def test_nntp_server_dict(kwargs):
         nw = NewsWrapper(server=s, thrdnum=-1, block=True)
         nw.init_connect()
         while not nw.connected:
-            nw.reset_data_buffer()
             nw.recv_chunk()
             nw.finish_connect(nw.status_code)
 

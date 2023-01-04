@@ -25,6 +25,7 @@ from threading import Thread
 import time
 import logging
 import ssl
+import sabyenc3
 from typing import Optional, Tuple
 
 import sabnzbd
@@ -183,28 +184,22 @@ class NewsWrapper:
 
     def recv_chunk(self) -> Tuple[int, bool]:
         """Receive data, return #bytes, done, skip"""
-
-        request_bytes = 262144
-        # SSL chunks come in 16K frames, setting higher limits results in slowdown
-        # See https://bugs.python.org/issue37355
-        if self.nntp.nw.server.ssl:
-            request_bytes = 16384
-
-        # The amount of requested bytes is not allowed to exceed the space left in the buffer
-        request_bytes = min(request_bytes, len(self.data) - self.data_position)
-
         # Resize the buffer in the extremely unlikely case that it got full
-        if not request_bytes:
-            request_bytes = self.nntp.nw.increase_data_buffer()
+        if len(self.data) - self.data_position == 0:
+            self.nntp.nw.increase_data_buffer()
 
         # Receive data into the pre-allocated buffer
-        bytes_recv = self.nntp.sock.recv_into(self.data_view[self.data_position :], request_bytes)
+        if self.nntp.nw.server.ssl and not self.nntp.nw.blocking and sabyenc3.openssl_linked:
+            # Use patched version when downloading
+            bytes_recv = sabyenc3.unlocked_ssl_recv_into(self.nntp.sock._sslobj, self.data_view[self.data_position :])
+        else:
+            bytes_recv = self.nntp.sock.recv_into(self.data_view[self.data_position :])
 
         # No data received
         if bytes_recv == 0:
             raise ConnectionError("server closed connection")
 
-        # Success, move our internal data position
+        # Success, move timeout and internal data position
         self.timeout = time.time() + self.server.timeout
         self.data_position += bytes_recv
 
@@ -229,13 +224,12 @@ class NewsWrapper:
         self.data_view = memoryview(self.data)
         self.data_position = 0
 
-    def increase_data_buffer(self) -> int:
+    def increase_data_buffer(self):
         """Resize the buffer in the extremely unlikely case that it overflows"""
         new_buffer = bytearray(len(self.data) + NNTP_SMALL_BUFFER)
         new_buffer[: len(self.data)] = self.data
         self.data = new_buffer
         self.data_view = memoryview(self.data)
-        return len(self.data)
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
         """Destroy and restart"""
