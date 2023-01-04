@@ -29,7 +29,7 @@ from typing import Tuple, List, Optional
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import SABYENC_VERSION_REQUIRED, NNTP_LARGE_BUFFER
+from sabnzbd.constants import SABYENC_VERSION_REQUIRED, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
@@ -103,8 +103,8 @@ class Decoder:
             except:
                 pass
 
-    def process(self, article: Article, raw_data: bytearray, raw_data_size: int):
-        sabnzbd.ArticleCache.reserve_space(NNTP_LARGE_BUFFER)
+    def process(self, article: Article, raw_data: bytes, raw_data_size: int):
+        sabnzbd.ArticleCache.reserve_space(raw_data_size)
         self.decoder_queue.put((article, raw_data, raw_data_size))
 
     def queue_full(self) -> bool:
@@ -118,7 +118,7 @@ class DecoderWorker(Thread):
     def __init__(self, decoder_queue):
         super().__init__()
         logging.debug("Initializing decoder %s", self.name)
-        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[bytearray], Optional[int]]] = decoder_queue
+        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[bytes], Optional[int]]] = decoder_queue
 
     def run(self):
         while 1:
@@ -138,7 +138,7 @@ class DecoderWorker(Thread):
             art_id = article.article
 
             # Free space in the decoder-queue
-            sabnzbd.ArticleCache.free_reserved_space(NNTP_LARGE_BUFFER)
+            sabnzbd.ArticleCache.free_reserved_space(raw_data_size)
 
             # Keeping track
             article_success = False

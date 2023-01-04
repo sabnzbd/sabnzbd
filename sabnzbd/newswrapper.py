@@ -30,7 +30,7 @@ from typing import Optional, Tuple
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DEF_TIMEOUT, NNTP_LARGE_BUFFER, NNTP_SMALL_BUFFER
+from sabnzbd.constants import DEF_TIMEOUT, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import utob, ubtou
 from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
 
@@ -107,7 +107,9 @@ class NewsWrapper:
         if self.blocking and not self.server.info:
             self.server.info = get_server_addrinfo(self.server.host, self.server.port)
 
-        # Construct NNTP object
+        # Construct buffer and NNTP object
+        self.data = bytearray(NNTP_BUFFER_SIZE)
+        self.data_view = memoryview(self.data)
         self.reset_data_buffer()
         self.nntp = NNTP(self, self.server.hostip)
         self.timeout = time.time() + self.server.timeout
@@ -173,7 +175,7 @@ class NewsWrapper:
         else:
             command = utob("ARTICLE <%s>\r\n" % self.article.article)
         self.nntp.sock.sendall(command)
-        self.reset_data_buffer(buffer_size=NNTP_LARGE_BUFFER)
+        self.reset_data_buffer()
 
     def send_group(self, group: str):
         """Send the NNTP GROUP command"""
@@ -217,19 +219,21 @@ class NewsWrapper:
         self.article = None
         self.reset_data_buffer()
 
-    def reset_data_buffer(self, buffer_size: int = NNTP_SMALL_BUFFER):
-        """Clear the data by setting new buffers.
-        Size depends on if we are requesting status codes or a full article"""
-        self.data = bytearray(buffer_size)
-        self.data_view = memoryview(self.data)
+    def reset_data_buffer(self):
+        """Reset the data position"""
         self.data_position = 0
 
     def increase_data_buffer(self):
         """Resize the buffer in the extremely unlikely case that it overflows"""
-        new_buffer = bytearray(len(self.data) + NNTP_SMALL_BUFFER)
+        new_buffer = bytearray(len(self.data) + NNTP_BUFFER_SIZE)
         new_buffer[: len(self.data)] = self.data
+        logging.info("Increasing buffer from %n to %n for %s", len(self.data), len(new_buffer), str(self))
         self.data = new_buffer
         self.data_view = memoryview(self.data)
+
+    def get_data_buffer(self) -> bytes:
+        """Get a copy of the data buffer in a new bytes object"""
+        return self.data_view[: self.data_position].tobytes()
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
         """Destroy and restart"""

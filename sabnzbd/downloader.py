@@ -503,7 +503,7 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[bytearray] = None, raw_data_size: Optional[int] = None):
+    def decode(self, article, raw_data: Optional[bytes] = None, raw_data_size: Optional[int] = None):
         """Decode article and check the status of
         the decoder and the assembler
         """
@@ -816,7 +816,7 @@ class Downloader(Thread):
 
                     # Update statistics and decode
                     article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_position)
-                    self.decode(article, nw.data, nw.data_position)
+                    self.decode(article, nw.get_data_buffer(), nw.data_position)
 
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
