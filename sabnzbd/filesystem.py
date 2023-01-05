@@ -621,10 +621,6 @@ def set_permissions(path: str, recursive: bool = True):
 
         if os.path.isdir(path):
             if recursive:
-                # If custom permissions are absent, set them when doing recursion
-                if not custom_permissions:
-                    logging.debug("Setting permission bits of files based on parent folder")
-                    custom_permissions = int(os.stat(path).st_mode)
                 # Parse the dir/file tree and set permissions
                 for root, _, files in os.walk(path):
                     if custom_permissions:
