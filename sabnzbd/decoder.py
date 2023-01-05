@@ -167,9 +167,6 @@ class DecoderWorker(Thread):
             except BadData as error:
                 # Continue to the next one if we found new server
                 if search_new_server(article):
-                    if error.data and not article.decoded:
-                        article.decoded = True
-                        sabnzbd.ArticleCache.save_article(article, error.data)
                     continue
 
                 # Store data, maybe par2 can still fix it
@@ -232,14 +229,6 @@ class DecoderWorker(Thread):
                 if search_new_server(article):
                     continue
 
-            if article.decoded:
-                if decoded_data:
-                    # Clear old cache data
-                    sabnzbd.ArticleCache.load_article(article)
-                else:
-                    # Load broken data from a higher priority server
-                    decoded_data = sabnzbd.ArticleCache.load_article(article)
-
             if decoded_data:
                 # If the data needs to be written to disk due to full cache, this will be slow
                 # Causing the decoder-queue to fill up and delay the downloader
@@ -248,6 +237,7 @@ class DecoderWorker(Thread):
             elif not nzo.precheck:
                 # Nothing to save
                 article.on_disk = True
+
             sabnzbd.NzbQueue.register_article(article, article_success)
 
 
