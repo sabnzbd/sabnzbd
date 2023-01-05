@@ -701,7 +701,6 @@ def rar_extract_core(
             "%s/" % extraction_path,
         ]
     else:
-        # Don't use "-ai" (not needed for non-Windows)
         # The -scf forces the output to be UTF8
         command = [
             RAR_COMMAND,
@@ -710,6 +709,7 @@ def rar_extract_core(
             "-scf",
             overwrite,
             rename,
+            "-ai",
             password_command,
             rarfile_path,
             "%s/" % extraction_path,
