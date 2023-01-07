@@ -34,7 +34,7 @@ from sabnzbd.constants import SABYENC_VERSION_REQUIRED
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
-from sabnzbd.crc32calc import crc_2pow
+from sabnzbd.utils.crc32calc import crc_2pow
 
 # Check for correct SABYenc version
 SABYENC_VERSION = None

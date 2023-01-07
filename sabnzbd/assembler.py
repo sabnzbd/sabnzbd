@@ -24,7 +24,6 @@ import queue
 import logging
 import re
 from threading import Thread
-import hashlib
 import ctypes
 from typing import Tuple, Optional, List
 
@@ -43,7 +42,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.crc32calc import crc_multiply, crc_concat
+from sabnzbd.utils.crc32calc import crc_multiply, crc_concat
 
 
 class Assembler(Thread):
@@ -117,7 +116,7 @@ class Assembler(Thread):
                                 logging.info(
                                     "Winerror: %s - %s",
                                     err.winerror,
-                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32),
+                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32),
                                 )
                             logging.info("Traceback: ", exc_info=True)
                             # Pause without saving

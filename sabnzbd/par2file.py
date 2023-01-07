@@ -28,7 +28,7 @@ from typing import Dict, Optional, Tuple, BinaryIO
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
-from sabnzbd.crc32calc import crc_2pow, crc_multiply, crc_concat, crc_zero_unpad
+from sabnzbd.utils.crc32calc import crc_2pow, crc_multiply, crc_concat, crc_zero_unpad
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -165,6 +165,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
         logging.info("Par2 parser crashed in file %s", fname)
         logging.debug("Traceback: ", exc_info=True)
         table = {}
+        set_id = None
 
     # Have to remove duplicates at the end to make sure
     # no trace is left in case of multi-duplicates
