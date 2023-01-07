@@ -156,7 +156,7 @@ class TryList:
 ##############################################################################
 # Article
 ##############################################################################
-ArticleSaver = ("article", "art_id", "bytes", "lowest_partnum", "decoded", "on_disk", "nzf")
+ArticleSaver = ("article", "art_id", "bytes", "lowest_partnum", "decoded", "on_disk", "nzf", "crc32")
 
 
 class Article(TryList):
@@ -176,6 +176,7 @@ class Article(TryList):
         self.tries: int = 0  # Try count
         self.decoded: bool = False
         self.on_disk: bool = False
+        self.crc32: Optional[int] = None
         self.nzf: NzbFile = nzf
 
     def reset_try_list(self):
@@ -288,6 +289,7 @@ NzbFileSaver = (
     "deleted",
     "valid",
     "import_finished",
+    "crc32",
     "md5sum",
     "md5of16k",
 )
@@ -297,7 +299,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("md5",)
+    __slots__ = NzbFileSaver
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -327,7 +329,7 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
 
-        self.md5 = None
+        self.crc32: int = 0
         self.md5sum: Optional[bytes] = None
         self.md5of16k: Optional[bytes] = None
 
@@ -456,9 +458,6 @@ class NzbFile(TryList):
         if isinstance(self.decodetable, dict):
             self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable)]
 
-        # Set non-transferable values
-        self.md5 = None
-
     def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the number bytes and first article
         are the same or if there are no articles left, use the filenames.
@@ -555,6 +554,8 @@ NzbObjectSaver = (
     "servercount",
     "unwanted_ext",
     "renames",
+    "article_size",
+    "crc32_coeff",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -651,6 +652,8 @@ class NzbObject(TryList):
         self.md5packs = {}  # TODO: Remove in 4.0.0. Kept for backwards compatibility
         self.par2packs: Dict[str, Dict[str, FilePar2Info]] = {}  # Holds the par2info for each file in each set
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
+        self.article_size: int = 0
+        self.crc32_coeff: int = 0
 
         self.files: List[NzbFile] = []  # List of all NZFs
         self.files_table: Dict[str, NzbFile] = {}  # Dictionary of NZFs indexed using NZF_ID

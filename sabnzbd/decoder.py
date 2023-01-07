@@ -26,6 +26,7 @@ import binascii
 from io import BytesIO
 from threading import Thread
 from typing import Tuple, List, Optional
+from zlib import crc32
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -33,6 +34,7 @@ from sabnzbd.constants import SABYENC_VERSION_REQUIRED
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
+from sabnzbd.crc32calc import crc_2pow
 
 # Check for correct SABYenc version
 SABYENC_VERSION = None
@@ -245,23 +247,30 @@ def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
     # Let SABYenc do all the heavy lifting
     decoded_data, yenc_filename, crc_correct = sabyenc3.decode_usenet_chunks(raw_data)
 
+    nzf = article.nzf
     # Assume it is yenc
-    article.nzf.type = "yenc"
+    nzf.type = "yenc"
 
     # Only set the name if it was found and not obfuscated
-    if not article.nzf.filename_checked and yenc_filename:
+    if not nzf.filename_checked and yenc_filename:
         # Set the md5-of-16k if this is the first article
         if article.lowest_partnum:
-            article.nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
+            nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
 
         # Try the rename, even if it's not the first article
         # For example when the first article was missing
-        article.nzf.nzo.verify_nzf_filename(article.nzf, yenc_filename)
+        nzf.nzo.verify_nzf_filename(nzf, yenc_filename)
 
     # CRC check
     if not crc_correct:
         logging.info("CRC Error in %s", article.article)
         raise BadData(decoded_data)
+
+    article.crc32 = crc32(decoded_data)
+    # Determine part size and precalculate crc_2pow
+    if article.lowest_partnum and len(decoded_data) > nzf.nzo.article_size:
+        nzf.nzo.article_size = len(decoded_data)
+        nzf.nzo.crc32_coeff = crc_2pow(nzf.nzo.article_size * 8)
 
     return decoded_data
 
@@ -385,7 +394,9 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
             if not article.nzf.filename_checked and uu_filename:
                 article.nzf.nzo.verify_nzf_filename(article.nzf, uu_filename)
 
-        return decoded_data.getvalue()
+        data = decoded_data.getvalue()
+        article.crc32 = crc32(data)
+        return data
 
 
 def search_new_server(article: Article) -> bool:

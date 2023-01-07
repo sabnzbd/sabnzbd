@@ -43,6 +43,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
+from sabnzbd.crc32calc import crc_multiply, crc_concat
 
 
 class Assembler(Thread):
@@ -170,9 +171,6 @@ class Assembler(Thread):
         1) Partial write: write what we have
         2) Nothing written before: write all
         """
-        # New hash-object needed?
-        if not nzf.md5:
-            nzf.md5 = hashlib.md5()
 
         # We write large article-sized chunks, so we can safely skip the buffering of Python
         with open(nzf.filepath, "ab", buffering=0) as fout:
@@ -191,7 +189,10 @@ class Assembler(Thread):
                     # Could be empty in case nzo was deleted
                     if data:
                         fout.write(data)
-                        nzf.md5.update(data)
+                        if len(data) == nzo.article_size:
+                            nzf.crc32 = crc_multiply(nzf.crc32, nzo.crc32_coeff) ^ article.crc32
+                        else:
+                            nzf.crc32 = crc_concat(nzf.crc32, article.crc32, len(data))
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
@@ -207,7 +208,7 @@ class Assembler(Thread):
         # Final steps
         if file_done:
             set_permissions(nzf.filepath)
-            nzf.md5sum = nzf.md5.digest()
+            nzf.md5sum = nzf.crc32
 
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
