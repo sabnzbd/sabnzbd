@@ -47,7 +47,6 @@ class FilePar2Info:
     hash16k: bytes
     filehash: bytes
     filesize: int
-    CRC32: int = 0
     has_duplicate: bool = False
 
 
@@ -225,7 +224,7 @@ def parse_par2_packet(f: BinaryIO, metadata: Dict, filedata: Dict):
             return
         filehash = data[48:64]
         hash16k = data[64:80]
-        filesize = int.from_bytes(data[80:88], byteorder="little", signed=False)
+        filesize = struct.unpack("<Q", data[80:88])[0]
         filename = correct_unknown_encoding(data[88:].strip(b"\0"))
         filedata[fileid] = [filename, hash16k, filehash, filesize, []]
     elif par2_packet_type == PAR_CREATOR_ID:

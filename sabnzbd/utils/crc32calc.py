@@ -2,7 +2,7 @@
 
 """
 Functions for doing CRC32 calculations
-Written by animetoshi
+Written by animetosho
 https://github.com/sabnzbd/sabnzbd/issues/2396
 """
 

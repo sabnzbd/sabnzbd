@@ -87,6 +87,7 @@ import sabnzbd.nzbparser
 from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
 from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
+from sabnzbd.utils.crc32calc import crc_multiply, crc_concat
 
 # Name patterns
 # In the subject, we expect the filename within double quotes
@@ -395,6 +396,12 @@ class NzbFile(TryList):
         self.setname = setname
         self.vol = vol
         self.blocks = int_conv(blocks)
+
+    def update_crc32(self, crc32: int, length: int) -> None:
+        if length == self.nzo.article_size:
+            self.crc32 = crc_multiply(self.crc32, self.nzo.crc32_coeff) ^ crc32
+        else:
+            self.crc32 = crc_concat(self.crc32, crc32, length)
 
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
         """Get next articles to be downloaded"""

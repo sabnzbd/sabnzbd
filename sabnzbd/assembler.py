@@ -42,7 +42,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.utils.crc32calc import crc_multiply, crc_concat
 
 
 class Assembler(Thread):
@@ -116,7 +115,7 @@ class Assembler(Thread):
                                 logging.info(
                                     "Winerror: %s - %s",
                                     err.winerror,
-                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32),
+                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32),
                                 )
                             logging.info("Traceback: ", exc_info=True)
                             # Pause without saving
@@ -188,10 +187,7 @@ class Assembler(Thread):
                     # Could be empty in case nzo was deleted
                     if data:
                         fout.write(data)
-                        if len(data) == nzo.article_size:
-                            nzf.crc32 = crc_multiply(nzf.crc32, nzo.crc32_coeff) ^ article.crc32
-                        else:
-                            nzf.crc32 = crc_concat(nzf.crc32, article.crc32, len(data))
+                        nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
