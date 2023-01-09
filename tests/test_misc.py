@@ -29,7 +29,7 @@ from sabnzbd import lang
 from sabnzbd import misc
 from sabnzbd import newsunpack
 from sabnzbd.config import ConfigCat
-from sabnzbd.constants import HIGH_PRIORITY, FORCE_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY
+from sabnzbd.constants import HIGH_PRIORITY, FORCE_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY, MEBI, GIGI
 from tests.testhelper import *
 
 
@@ -241,42 +241,33 @@ class TestMisc:
         os.unlink("test.key")
 
     @pytest.mark.parametrize(
-        "name, result",
+        "name, size, result",
         [
-            ("Free.Open.Source.Movie.2001.1080p.WEB-DL.DD5.1.H264-FOSS", False),  # Not samples
-            ("Setup.exe", False),
-            ("23.123.hdtv-rofl", False),
-            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample", True),  # Samples
-            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample.ogg", True),
-            ("Sumtin_Else_1080p_WEB-DL_DD5.1_H264_proof-EMRG", True),
-            ("Wot.Eva.540i.WEB-DL.aac.H264-Groupie sample.mp4", True),
-            ("file-sample.mkv", True),
-            ("PROOF.JPG", True),
-            ("Bla.s01e02.title.1080p.aac-sample proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac-proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac sample proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac proof.mkv", True),
-            ("Lwtn.s08e26.1080p.web.h264-glhf-sample.par2", True),
-            ("Lwtn.s08e26.1080p.web.h264-glhf-sample.vol001-002.par2", True),
-            ("Look at That 2011 540i WEB-DL.H265-NoSample", False),
+            ("Free.Open.Source.Movie.2001.1080p.WEB-DL.DD5.1.H264-FOSS", 5 * GIGI, False),  # Not samples
+            ("Setup.exe", 10 * MEBI, False),
+            ("23.123.hdtv-rofl", 500 * MEBI, False),
+            ("Not Death Proof (2022) 1080p x264 (DD5.1) BE Subs.mkv", 2 * GIGI, False),
+            ("Proof.of.Everything.(2042).4320p.x266-4U.mkv", 3 * GIGI, False),
+            ("Crime_Scene_S01E13_Free_Sample_For_Sale_480p-OhDear.mkv", 4 * GIGI, False),
+            ("Sample That 2011 480p WEB-DL.H265-aMiGo.mkv", 5 * GIGI, False),
+            ("NOT A SAMPLE.JPG", 6 * GIGI, False),
+            ("Look at That 2011 540i WEB-DL.H265-NoSample.mp4", 200 * MEBI, False),
+            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample.mkv", 10 * MEBI, True),  # Samples
+            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample.ogg", 2 * MEBI, True),
+            ("Sumtin_Else_1080p_WEB-DL_DD5.1_H264_proof-EMRG.mkv", 49 * MEBI, True),
+            ("Wot.Eva.540i.WEB-DL.aac.H264-Groupie sample.mp4", 5 * MEBI, True),
+            ("file-sample.mkv", 15 * MEBI, True),
+            ("PROOF.JPG", 524288, True),
+            ("Bla.s01e02.title.1080p.aac-sample proof.mkv", 2 * MEBI, True),
+            ("Bla.s01e02.title.1080p.aac-proof.mkv", 3 * MEBI, True),
+            ("Bla.s01e02.title.1080p.aac sample proof.mkv", 4 * MEBI, True),
+            ("Bla.s01e02.title.1080p.aac proof.mkv", 5 * MEBI, True),
+            ("Lwtn.s08e26.1080p.web.h264-glhf-sample.par2", 6 * MEBI, True),
+            ("Lwtn.s08e26.1080p.web.h264-glhf-sample.vol001-002.par2", 7 * MEBI, True),
         ],
     )
-    def test_is_sample(self, name, result):
-        assert misc.is_sample(name) == result
-
-    @pytest.mark.parametrize(
-        "name, result",
-        [
-            ("Not Death Proof (2022) 1080p x264 (DD5.1) BE Subs", False),  # Try to trigger some false positives
-            ("Proof.of.Everything.(2042).4320p.x266-4U", False),
-            ("Crime_Scene_S01E13_Free_Sample_For_Sale_480p-OhDear", False),
-            ("Sample That 2011 480p WEB-DL.H265-aMiGo", False),
-            ("NOT A SAMPLE.JPG", False),
-        ],
-    )
-    def test_is_sample_known_false_positives(self, name, result):
-        """We know these fail, but don't have a better solution for them at the moment."""
-        assert misc.is_sample(name) != result
+    def test_is_sample(self, name, size, result):
+        assert misc.is_sample(name, size) == result
 
     @pytest.mark.parametrize(
         "test_input, expected_output",

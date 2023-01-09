@@ -44,7 +44,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT,
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file, is_valid_script
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file, is_valid_script, get_ext
 
 if sabnzbd.WIN32:
     try:
@@ -68,11 +68,16 @@ TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
 RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
+RE_SAMPLE_EXTENSIONS = re.compile(
+    r"^(\.mkv|\.avi|\.divx|\.xvid|\.mov|\.wmv|\.mp4|\.mpg|\.mpeg|\.ogg|\.jpg|\.jpeg|\.png|\.par2)$", re.I
+)
 RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime("%p"))
+
+SAMPLE_MAX_SIZE = 100 * MEBI
 
 
 def helpful_warning(*args, **kwargs):
@@ -853,8 +858,14 @@ def get_all_passwords(nzo) -> List[str]:
     return unique_passwords
 
 
-def is_sample(filename: str) -> bool:
-    """Try to determine if filename is (most likely) a sample"""
+def is_sample(filename: str, size: int) -> bool:
+    """Try to determine if filename and size is (most likely) a sample"""
+    if size > SAMPLE_MAX_SIZE:
+        return False
+
+    if not bool(re.search(RE_SAMPLE_EXTENSIONS, get_ext(filename))):
+        return False
+
     return bool(re.search(RE_SAMPLE, filename))
 
 

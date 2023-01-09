@@ -456,7 +456,8 @@ class MovieSorter(BaseSorter):
         def filter_files(f, current_path):
             filepath = os.path.normpath(f) if is_full_path(f) else os.path.normpath(os.path.join(current_path, f))
             if os.path.exists(filepath):
-                if os.stat(filepath).st_size >= min_size and not is_sample(f) and get_ext(f) not in EXCLUDED_FILE_EXTS:
+                size = os.path.getsize(filepath)
+                if size >= min_size and not is_sample(f, size) and get_ext(f) not in EXCLUDED_FILE_EXTS:
                     return True
             return False
 

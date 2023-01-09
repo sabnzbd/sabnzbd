@@ -736,9 +736,9 @@ def parring(nzo: NzbObject):
 
     if nzo.extrapars:
         # Need to make a copy because it can change during iteration
-        for setname in list(nzo.extrapars):
+        for setname, setfiles in dict(nzo.extrapars).items():
             # We do not care about repairing samples
-            if cfg.ignore_samples() and is_sample(setname.lower()):
+            if cfg.ignore_samples() and is_sample(setname.lower(), sum(nzf.bytes for nzf in setfiles)):
                 logging.info("Skipping verification and repair of %s because it looks like a sample", setname)
                 continue
 
@@ -1163,8 +1163,9 @@ def remove_samples(path):
     for root, _dirs, files in os.walk(path):
         for file_to_match in files:
             nr_files += 1
-            if is_sample(file_to_match):
-                files_to_delete.append(os.path.join(root, file_to_match))
+            path = os.path.join(root, file_to_match)
+            if is_sample(file_to_match, os.path.getsize(path)):
+                files_to_delete.append(path)
 
     # Make sure we skip false-positives
     if len(files_to_delete) < nr_files:
