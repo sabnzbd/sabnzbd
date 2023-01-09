@@ -7,40 +7,6 @@ https://github.com/sabnzbd/sabnzbd/issues/2396
 """
 
 CRC32_POLYNOMIAL = 0xEDB88320
-CRC32_POWER_TABLE = [  # pre-computed 2**(2**n)
-    0x40000000,
-    0x20000000,
-    0x08000000,
-    0x00800000,
-    0x00008000,
-    0xEDB88320,
-    0xB1E6B092,
-    0xA06A2517,
-    0xED627DAE,
-    0x88D14467,
-    0xD7BBFE6A,
-    0xEC447F11,
-    0x8E7EA170,
-    0x6427800E,
-    0x4D47BAE0,
-    0x09FE548F,
-    0x83852D0F,
-    0x30362F1A,
-    0x7B5A9CC3,
-    0x31FEC169,
-    0x9FEC022A,
-    0x6C8DEDC4,
-    0x15D6874D,
-    0x5FDE7A4E,
-    0xBAD90E37,
-    0x2E4E5EEF,
-    0x4EABA214,
-    0xA8A472C0,
-    0x429A969E,
-    0x148D302A,
-    0xC40BA6D0,
-    0xC4E22C3C,
-]
 
 
 def crc_multiply(a: int, b: int):
@@ -50,6 +16,19 @@ def crc_multiply(a: int, b: int):
         a = (a >> 1) ^ (CRC32_POLYNOMIAL & -(a & 1))
         b = (b << 1) & 0xFFFFFFFF
     return prod
+
+
+# compute 2**n (without LUT)
+def crc_2pow_slow(n: int):
+    k = 0x80000000
+    for bit in range(0, 32):
+        k = crc_multiply(k, k)
+        if n & (0x80000000 >> bit):
+            k = (k >> 1) ^ (CRC32_POLYNOMIAL & -(k & 1))
+    return k
+
+
+CRC32_POWER_TABLE = [[crc_2pow_slow(v << (tbl * 4)) for v in range(0, 16)] for tbl in range(0, 8)]
 
 
 # append `zeroes` null bytes to `crc`
@@ -65,13 +44,14 @@ def crc_zero_unpad(crc: int, zeroes: int):
 
 # compute 2**n
 def crc_2pow(n: int):
-    result = 0x80000000
-    power = 0
-    while n != 0:
-        if n & 1 != 0:
-            result = crc_multiply(result, CRC32_POWER_TABLE[power])
-        n >>= 1
-        power = (power + 1) & 31
+    result = CRC32_POWER_TABLE[0][n & 15]
+    n >>= 4
+    tbl = 1
+    while n:
+        if n & 15:
+            result = crc_multiply(result, CRC32_POWER_TABLE[tbl & 7][n & 15])
+        n >>= 4
+        tbl += 1
     return result
 
 
