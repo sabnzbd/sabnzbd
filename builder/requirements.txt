@@ -5,14 +5,14 @@ pyinstaller-hooks-contrib==2022.14
 altgraph==0.17.3
 wrapt==1.14.1
 setuptools==65.6.3
-pkginfo==1.9.2
+pkginfo==1.9.6
 PyGithub==1.57
 charset-normalizer==3.0.1
 certifi
 
 # orjson does not support 32bit Windows, exclude it based on Python-version
 # This way we also test ujson on Python 3.7 and 3.8 in the CI-tests
-orjson==3.8.3; python_version > '3.8'
+orjson==3.8.4; python_version > '3.8'
 
 # For the macOS build
 dmgbuild==1.6.0; sys_platform == 'darwin'
