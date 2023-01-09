@@ -138,10 +138,16 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
             filesize = filedata[fileid][3]
 
             crclist = filedata[fileid][4]
+            if not crclist:
+                logging.debug("Missing CRC32 data in %s. Unfinished download?", fname)
+                table = {}
+                break
+
             slices = filesize // slice_size
             tail_size = filesize % slice_size
             crc32 = 0
             slice_nr = 0
+            # logging.debug("File %s size %d slices %d tail %d, list %d", name, filesize, slices, tail_size, len(crclist))
             while slice_nr < slices:
                 crc32 = crc_multiply(crc32, coeff) ^ crclist[slice_nr]
                 slice_nr += 1
