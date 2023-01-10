@@ -1975,7 +1975,7 @@ def rar_sort(a: str, b: str) -> int:
 
 
 def quick_check_set(setname: str, nzo: NzbObject) -> bool:
-    """Check all on-the-fly md5sums of a set"""
+    """Check all on-the-fly crc32sums of a set"""
     par2pack = nzo.par2packs.get(setname)
     if par2pack is None:
         return False
@@ -1997,7 +1997,11 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if (nzf.md5sum is not None) and nzf.md5sum == par2info.filehash:
+                if (
+                    (nzf.crc32sum is not None)
+                    and nzf.crc32sum == par2info.filehash
+                    and os.path.getsize(nzf.filepath) == par2info.filesize
+                ):
                     logging.debug("Quick-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -2010,7 +2014,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 break
 
             # Now let's do obfuscation check
-            if nzf.md5sum == par2info.filehash:
+            if nzf.crc32sum == par2info.filehash and os.path.getsize(nzf.filepath) == par2info.filesize:
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 

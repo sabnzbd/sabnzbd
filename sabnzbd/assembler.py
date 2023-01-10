@@ -24,7 +24,6 @@ import queue
 import logging
 import re
 from threading import Thread
-import hashlib
 import ctypes
 from typing import Tuple, Optional, List
 
@@ -170,9 +169,6 @@ class Assembler(Thread):
         1) Partial write: write what we have
         2) Nothing written before: write all
         """
-        # New hash-object needed?
-        if not nzf.md5:
-            nzf.md5 = hashlib.md5()
 
         # We write large article-sized chunks, so we can safely skip the buffering of Python
         with open(nzf.filepath, "ab", buffering=0) as fout:
@@ -191,7 +187,7 @@ class Assembler(Thread):
                     # Could be empty in case nzo was deleted
                     if data:
                         fout.write(data)
-                        nzf.md5.update(data)
+                        nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
@@ -207,7 +203,7 @@ class Assembler(Thread):
         # Final steps
         if file_done:
             set_permissions(nzf.filepath)
-            nzf.md5sum = nzf.md5.digest()
+            nzf.crc32sum = nzf.crc32
 
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
