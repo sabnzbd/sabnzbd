@@ -87,6 +87,7 @@ import sabnzbd.nzbparser
 from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
 from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
+from sabnzbd.utils.crc32calc import crc_multiply, crc_concat
 
 # Name patterns
 # In the subject, we expect the filename within double quotes
@@ -156,7 +157,7 @@ class TryList:
 ##############################################################################
 # Article
 ##############################################################################
-ArticleSaver = ("article", "art_id", "bytes", "lowest_partnum", "decoded", "on_disk", "nzf")
+ArticleSaver = ("article", "art_id", "bytes", "lowest_partnum", "decoded", "on_disk", "nzf", "crc32")
 
 
 class Article(TryList):
@@ -176,6 +177,7 @@ class Article(TryList):
         self.tries: int = 0  # Try count
         self.decoded: bool = False
         self.on_disk: bool = False
+        self.crc32: Optional[int] = None
         self.nzf: NzbFile = nzf
 
     def reset_try_list(self):
@@ -288,7 +290,8 @@ NzbFileSaver = (
     "deleted",
     "valid",
     "import_finished",
-    "md5sum",
+    "crc32",
+    "crc32sum",
     "md5of16k",
 )
 
@@ -297,7 +300,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("md5",)
+    __slots__ = NzbFileSaver
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -327,8 +330,8 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
 
-        self.md5 = None
-        self.md5sum: Optional[bytes] = None
+        self.crc32: int = 0
+        self.crc32sum: Optional[bytes] = None
         self.md5of16k: Optional[bytes] = None
 
         self.valid: bool = bool(raw_article_db)
@@ -394,6 +397,12 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int_conv(blocks)
 
+    def update_crc32(self, crc32: int, length: int) -> None:
+        if length == self.nzo.article_size:
+            self.crc32 = crc_multiply(self.crc32, self.nzo.crc32_coeff) ^ crc32
+        else:
+            self.crc32 = crc_concat(self.crc32, crc32, length)
+
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
         """Get next articles to be downloaded"""
         articles = []
@@ -455,9 +464,6 @@ class NzbFile(TryList):
         # Convert 2.x.x jobs
         if isinstance(self.decodetable, dict):
             self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable)]
-
-        # Set non-transferable values
-        self.md5 = None
 
     def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the number bytes and first article
@@ -555,6 +561,8 @@ NzbObjectSaver = (
     "servercount",
     "unwanted_ext",
     "renames",
+    "article_size",
+    "crc32_coeff",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -651,6 +659,8 @@ class NzbObject(TryList):
         self.md5packs = {}  # TODO: Remove in 4.0.0. Kept for backwards compatibility
         self.par2packs: Dict[str, Dict[str, FilePar2Info]] = {}  # Holds the par2info for each file in each set
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
+        self.article_size: int = 0
+        self.crc32_coeff: int = 0
 
         self.files: List[NzbFile] = []  # List of all NZFs
         self.files_table: Dict[str, NzbFile] = {}  # Dictionary of NZFs indexed using NZF_ID
