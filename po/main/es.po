@@ -4,14 +4,14 @@
 # 
 # Translators:
 # Ester Molla Aragones <moarages@gmail.com>, 2020
-# 1024mb <angelb2203@gmail.com>, 2020
-# Safihre <safihre@sabnzbd.org>, 2022
+# 1024mb <angelb2203@gmail.com>, 2023
+# Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Spanish (https://www.transifex.com/sabnzbd/teams/111101/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -114,6 +114,8 @@ msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
 msgstr ""
+"La umask actual (%o) podría denegarle acceso a SABnzbd a los archivos y "
+"carpetas que este crea."
 
 #. Warning message
 #: SABnzbd.py
@@ -158,22 +160,22 @@ msgstr "Error grave al guardar estado"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
-msgstr ""
+msgstr "Reiniciando a causa de un posprocesador colgado"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
-msgstr ""
+msgstr "Reiniciando debido al cuelgue del descargador"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed decoder"
-msgstr ""
+msgstr "Reiniciando a causa de un decodificador colgado"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed assembler"
-msgstr ""
+msgstr "Reiniciando debido al cuelgue del ensamblador"
 
 #. Warning message
 #: sabnzbd/__init__.py
