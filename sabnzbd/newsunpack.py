@@ -61,6 +61,7 @@ from sabnzbd.filesystem import (
     build_filelists,
     get_filename,
     SEVENMULTI_RE,
+    is_size,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import SeriesSorter
@@ -1997,11 +1998,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if (
-                    (nzf.crc32sum is not None)
-                    and nzf.crc32sum == par2info.filehash
-                    and os.path.getsize(nzf.filepath) == par2info.filesize
-                ):
+                if nzf.crc32sum > 0 and nzf.crc32sum == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
                     logging.debug("Quick-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -2014,7 +2011,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 break
 
             # Now let's do obfuscation check
-            if nzf.crc32sum == par2info.filehash and os.path.getsize(nzf.filepath) == par2info.filesize:
+            if nzf.crc32sum == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
