@@ -330,8 +330,8 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
 
-        self.crc32: int = 0
-        self.crc32sum: Optional[bytes] = None
+        self.crc32: Optional[int] = 0
+        self.crc32sum: Optional[int] = None
         self.md5of16k: Optional[bytes] = None
 
         self.valid: bool = bool(raw_article_db)
@@ -397,11 +397,14 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int_conv(blocks)
 
-    def update_crc32(self, crc32: int, length: int) -> None:
-        if length == self.nzo.article_size:
-            self.crc32 = crc_multiply(self.crc32, self.nzo.crc32_coeff) ^ crc32
+    def update_crc32(self, crc32: Optional[int], length: int) -> None:
+        if self.crc32 is None or crc32 is None:
+            self.crc32 = None
         else:
-            self.crc32 = crc_concat(self.crc32, crc32, length)
+            if length == self.nzo.article_size:
+                self.crc32 = crc_multiply(self.crc32, self.nzo.crc32_coeff) ^ crc32
+            else:
+                self.crc32 = crc_concat(self.crc32, crc32, length)
 
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
         """Get next articles to be downloaded"""
