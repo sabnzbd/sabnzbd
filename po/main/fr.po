@@ -3121,6 +3121,10 @@ msgid "System Folders"
 msgstr "Dossiers système"
 
 #: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Administrative Folder"
 msgstr "Dossier administrateur"
 

@@ -3041,6 +3041,10 @@ msgid "System Folders"
 msgstr "Dosare Sistem"
 
 #: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Administrative Folder"
 msgstr "Dosar Administrativ"
 

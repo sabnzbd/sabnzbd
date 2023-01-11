@@ -3027,6 +3027,10 @@ msgid "System Folders"
 msgstr "תיקיות מערכת"
 
 #: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Administrative Folder"
 msgstr "תיקייה מינהלית"
 
