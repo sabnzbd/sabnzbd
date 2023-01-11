@@ -121,6 +121,14 @@ def is_writable(path: str) -> bool:
         return True
 
 
+def is_size(filepath: str, size: int) -> bool:
+    """Return True if filepath exists and is specified size"""
+    try:
+        return os.path.getsize(filepath) == size
+    except:
+        return False
+
+
 _DEVICES = (
     "con",
     "prn",

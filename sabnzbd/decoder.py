@@ -270,7 +270,7 @@ def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
         logging.info("CRC Error in %s", article.article)
         raise BadData(decoded_data)
 
-    article.crc32 = crc32(decoded_data)
+    article.crc32 = crc_correct
     # Determine part size and precalculate crc_2pow
     if article.lowest_partnum and len(decoded_data) > nzf.nzo.article_size:
         nzf.nzo.article_size = len(decoded_data)
