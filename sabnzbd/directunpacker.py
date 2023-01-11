@@ -350,7 +350,7 @@ class DirectUnpacker(threading.Thread):
             if (
                 nzf_search.setname == self.cur_setname
                 and nzf_search.vol == (self.cur_volume + 1)
-                and nzf_search.crc32sum
+                and nzf_search.crc32sum is not None
             ):
                 return nzf_search
         return False
