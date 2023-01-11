@@ -291,7 +291,7 @@ NzbFileSaver = (
     "valid",
     "import_finished",
     "crc32",
-    "crc32sum",
+    "assembled",
     "md5of16k",
 )
 
@@ -331,7 +331,7 @@ class NzbFile(TryList):
         self.import_finished = False
 
         self.crc32: Optional[int] = 0
-        self.crc32sum: Optional[int] = None
+        self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
 
         self.valid: bool = bool(raw_article_db)

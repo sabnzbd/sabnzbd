@@ -1976,7 +1976,7 @@ def rar_sort(a: str, b: str) -> int:
 
 
 def quick_check_set(setname: str, nzo: NzbObject) -> bool:
-    """Check all on-the-fly crc32sums of a set"""
+    """Check all on-the-fly crc32s of a set"""
     par2pack = nzo.par2packs.get(setname)
     if par2pack is None:
         return False
@@ -1999,8 +1999,8 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             if file == nzf.filename:
                 found = True
                 if (
-                    nzf.crc32sum is not None
-                    and nzf.crc32sum == par2info.filehash
+                    nzf.crc32 is not None
+                    and nzf.crc32 == par2info.filehash
                     and is_size(nzf.filepath, par2info.filesize)
                 ):
                     logging.debug("Quick-check of file %s OK", file)
@@ -2015,7 +2015,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 break
 
             # Now let's do obfuscation check
-            if nzf.crc32sum == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
+            if nzf.crc32 is not None and nzf.crc32 == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
@@ -2160,9 +2160,10 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
     verifytotal = len(nzo.finished_files)
     verifynum = 0
     for nzf in nzf_list:
-        verifynum += 1
-        nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
-        calculated_crc32[nzf.filename] = b"%08x" % (nzf.crc32sum & 0xFFFFFFFF)
+        if nzf.crc32 is not None:
+            verifynum += 1
+            nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
+            calculated_crc32[nzf.filename] = b"%08x" % (nzf.crc32 & 0xFFFFFFFF)
 
     sfv_parse_results = {}
     nzo.set_action_line(T("Trying SFV verification"), "...")
