@@ -83,6 +83,7 @@ def helpful_warning(*args, **kwargs):
 
 
 def T_wrapper(message: str) -> str:
+    """Wrap T() for mypyc"""
     return T(message)
 
 
