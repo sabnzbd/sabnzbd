@@ -344,13 +344,13 @@ class DirectUnpacker(threading.Thread):
     def have_next_volume(self):
         """Check if next volume of set is available, start
         from the end of the list where latest completed files are
-        Make sure that files are 100% written to disk by checking crc32sum
+        Make sure that files are 100% written to disk by checking nzf.assembled
         """
         for nzf_search in reversed(self.nzo.finished_files):
             if (
                 nzf_search.setname == self.cur_setname
                 and nzf_search.vol == (self.cur_volume + 1)
-                and nzf_search.crc32sum
+                and nzf_search.assembled
             ):
                 return nzf_search
         return False
