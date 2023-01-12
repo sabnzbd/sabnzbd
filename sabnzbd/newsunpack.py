@@ -1976,7 +1976,7 @@ def rar_sort(a: str, b: str) -> int:
 
 
 def quick_check_set(setname: str, nzo: NzbObject) -> bool:
-    """Check all on-the-fly crc32sums of a set"""
+    """Check all on-the-fly crc32s of a set"""
     par2pack = nzo.par2packs.get(setname)
     if par2pack is None:
         return False
@@ -1998,7 +1998,11 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if nzf.crc32sum > 0 and nzf.crc32sum == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
+                if (
+                    nzf.crc32 is not None
+                    and nzf.crc32 == par2info.filehash
+                    and is_size(nzf.filepath, par2info.filesize)
+                ):
                     logging.debug("Quick-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -2011,7 +2015,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 break
 
             # Now let's do obfuscation check
-            if nzf.crc32sum == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
+            if nzf.crc32 is not None and nzf.crc32 == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
@@ -2156,9 +2160,10 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
     verifytotal = len(nzo.finished_files)
     verifynum = 0
     for nzf in nzf_list:
-        verifynum += 1
-        nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
-        calculated_crc32[nzf.filename] = crc_calculate(os.path.join(nzo.download_path, nzf.filename))
+        if nzf.crc32 is not None:
+            verifynum += 1
+            nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
+            calculated_crc32[nzf.filename] = b"%08x" % (nzf.crc32 & 0xFFFFFFFF)
 
     sfv_parse_results = {}
     nzo.set_action_line(T("Trying SFV verification"), "...")
@@ -2177,7 +2182,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
+                if calculated_crc32.get(nzf.filename, "") == sfv_parse_results[file]:
                     logging.debug("SFV-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -2190,7 +2195,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
                 break
 
             # Now lets do obfuscation check
-            if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
+            if calculated_crc32.get(nzf.filename, "") == sfv_parse_results[file]:
                 try:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
                     renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
@@ -2206,7 +2211,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
         if not found:
             if file_to_ignore:
                 # We don't care about these files
-                logging.debug("SVF-check ignoring missing file %s", file)
+                logging.debug("SFV-check ignoring missing file %s", file)
                 continue
 
             logging.info("Cannot SFV-check missing file %s!", file)
@@ -2233,18 +2238,6 @@ def parse_sfv(sfv_filename):
             # We don't know what encoding is used when it was created
             results[correct_unknown_encoding(filename)] = expected_crc32.lower()
     return results
-
-
-def crc_calculate(path):
-    """Calculate crc32 of the given file"""
-    crc = 0
-    with open(path, "rb") as fp:
-        while 1:
-            data = fp.read(4096)
-            if not data:
-                break
-            crc = zlib.crc32(data, crc)
-    return b"%08x" % (crc & 0xFFFFFFFF)
 
 
 def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Optional[float] = None) -> str:

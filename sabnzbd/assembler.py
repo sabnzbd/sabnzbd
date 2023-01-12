@@ -203,7 +203,7 @@ class Assembler(Thread):
         # Final steps
         if file_done:
             set_permissions(nzf.filepath)
-            nzf.crc32sum = nzf.crc32
+            nzf.assembled = True
 
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
