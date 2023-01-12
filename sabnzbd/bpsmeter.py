@@ -26,7 +26,7 @@ from typing import List, Dict, Optional
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, KIBI
-from sabnzbd.misc import to_units
+from sabnzbd.misc import to_units, T_wrapper
 import sabnzbd.cfg as cfg
 
 DAY = float(24 * 60 * 60)
@@ -125,7 +125,7 @@ class BPSMeter:
         "quota_enabled",
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         t = time.time()
         self.start_time = t
         self.log_time = t
@@ -159,7 +159,7 @@ class BPSMeter:
         self.quota = 0.0  # Quota
         self.left = 0.0  # Remaining quota
         self.have_quota = False  # Flag for quota active
-        self.q_time = 0  # Next reset time for quota
+        self.q_time = 0.0  # Next reset time for quota
         self.q_hour = 0  # Quota reset hour
         self.q_minute = 0  # Quota reset minute
         self.quota_enabled: bool = True  # Scheduled quota enable/disable
@@ -207,7 +207,7 @@ class BPSMeter:
         """Read admin from disk, return True when pause is needed"""
         res = False
         quota = self.left = cfg.quota_size.get_float()  # Quota for this period
-        self.have_quota = bool(cfg.quota_size())
+        self.have_quota = cfg.quota_size.get_int() > 0
         data = sabnzbd.filesystem.load_admin(BYTES_FILE_NAME)
         try:
             (
@@ -243,7 +243,7 @@ class BPSMeter:
             self.defaults()
         return res
 
-    def init_server_stats(self, server: str = None):
+    def init_server_stats(self, server: str):
         """Initialize counters for "server" """
         if server not in self.cached_amount:
             self.cached_amount[server] = 0
@@ -300,8 +300,8 @@ class BPSMeter:
                 self.end_of_month = next_month(t) - 1.0
 
             # Need to reset all counters
-            for server in sabnzbd.Downloader.servers[:]:
-                self.init_server_stats(server.id)
+            for serv in sabnzbd.Downloader.servers[:]:
+                self.init_server_stats(serv.id)
 
         # Add amounts that have been stored temporarily to statistics
         for srv in self.cached_amount:
@@ -329,7 +329,7 @@ class BPSMeter:
             if self.left <= 0.0:
                 if not sabnzbd.Downloader.paused:
                     sabnzbd.Downloader.pause()
-                    logging.warning(T("Quota spent, pausing downloading"))
+                    logging.warning(T_wrapper("Quota spent, pausing downloading"))
 
         # Speedometer
         try:
@@ -452,7 +452,7 @@ class BPSMeter:
 
         # Calculate the variance in the speed
         avg = sum(self.bps_list[-timespan:]) / timespan
-        vari = 0
+        vari = 0.0
         for bps in self.bps_list[-timespan:]:
             vari += abs(bps - avg)
         vari = vari / timespan
@@ -460,7 +460,7 @@ class BPSMeter:
         try:
             # See if the variance is less than 5%
             if (vari / (self.bps / KIBI)) < 0.05:
-                return avg
+                return int(avg)
             else:
                 return 0
         except:
@@ -507,10 +507,10 @@ class BPSMeter:
             ):
                 tm = time.localtime(next_month(t))
             day = min(last_month_day(tm), self.q_day)
-            tm = (tm[0], tm[1], day, self.q_hour, self.q_minute, 0, 0, 0, tm[8])
+            tm = time.struct_time((tm[0], tm[1], day, self.q_hour, self.q_minute, 0, 0, 0, tm[8]))
         else:
             return
-        tm = (tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8])
+        tm = time.struct_time((tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8]))
         self.q_time = time.mktime(tm)
         logging.debug("Will reset quota at %s", tm)
 

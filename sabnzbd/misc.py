@@ -82,6 +82,10 @@ def helpful_warning(*args, **kwargs):
     return logging.info(*args, **kwargs)
 
 
+def T_wrapper(message: str) -> str:
+    return T(message)
+
+
 def time_format(fmt):
     """Return time-format string adjusted for 12/24 hour clock setting"""
     if cfg.ampm() and HAVE_AMPM:
