@@ -31,6 +31,7 @@ import time
 import fnmatch
 import stat
 import ctypes
+import subprocess
 from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
@@ -611,6 +612,41 @@ def set_chmod(path: str, permissions: int, allow_failures: bool = False):
             logging.debug("Could not change permissions of %s", path)
 
 
+def syno_deny_exec(path: str, allow_failures: bool = False):
+    """Add deny executable permissions to everyone on 'path'"""
+    try:
+        logging.debug("Restricting executable permission on %s", path)
+        subprocess.check_output(
+            ["synoacltool", "-add", path, "everyone:*:deny:--x----------:----"],
+            universal_newlines=True,
+        )
+    except subprocess.CalledProcessError as e:
+        if not allow_failures and not sabnzbd.misc.match_str(path, IGNORED_FILES_AND_FOLDERS):
+            logging.error(
+                T("Cannot restrict executable permission on %s for everyone"),
+                clip_path(path),
+            )
+            logging.info("Traceback: %s", e.output)
+        else:
+            logging.debug("Could not restrict executable permission on %s for everyone", path)
+    else:
+        # Deny executable also needs to be explicitly set for owner
+        try:
+            subprocess.check_output(
+                ["synoacltool", "-add", path, "owner:*:deny:--x----------:----"],
+                universal_newlines=True,
+            )
+        except subprocess.CalledProcessError as e:
+            if not allow_failures and not sabnzbd.misc.match_str(path, IGNORED_FILES_AND_FOLDERS):
+                logging.error(
+                    T("Cannot restrict executable permission on %s for owner"),
+                    clip_path(path),
+                )
+                logging.info("Traceback: %s", e.output)
+            else:
+                logging.debug("Could not restrict executable permission on %s for owner", path)
+
+
 def set_permissions(path: str, recursive: bool = True):
     """Give folder tree and its files their proper permissions"""
     if not sabnzbd.WIN32:
@@ -646,8 +682,11 @@ def removexbits(path: str, custom_permissions: int = None):
             current_permissions = os.stat(path).st_mode
             # Allow failures if no custom permissions are set, changing permissions might not be supported
             allow_failures = True
+        # Check if we are running on Synology and no custom permissions are set
+        if not custom_permissions and shutil.which("synoacltool") is not None:
+            syno_deny_exec(path, allow_failures)
         # Check if the file has any x-bits, no need to remove them otherwise
-        if custom_permissions or current_permissions & UNWANTED_FILE_PERMISSIONS:
+        elif custom_permissions or current_permissions & UNWANTED_FILE_PERMISSIONS:
             # Mask out the X-bits
             set_chmod(path, current_permissions & ~UNWANTED_FILE_PERMISSIONS, allow_failures)
 
