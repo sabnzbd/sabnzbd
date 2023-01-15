@@ -12,7 +12,8 @@ certifi
 
 # orjson does not support 32bit Windows, exclude it based on Python-version
 # This way we also test ujson on Python 3.7 and 3.8 in the CI-tests
-orjson==3.8.4; python_version > '3.8'
+# Fixed to 3.8.3 due to issue in 3.8.4: https://github.com/ijl/orjson/issues/331
+orjson==3.8.3; python_version > '3.8'
 
 # For the macOS build
 dmgbuild==1.6.0; sys_platform == 'darwin'
