@@ -132,10 +132,6 @@ class DecoderWorker(Thread):
                 logging.debug("Shutting down decoder %s", self.name)
                 break
 
-            # TODO: temporary
-            n = 250000
-            raw_data = [bytes(raw_data[i : min(raw_data_size, i + n)]) for i in range(0, len(raw_data), n)]
-
             nzo = article.nzf.nzo
             art_id = article.article
 
@@ -153,9 +149,12 @@ class DecoderWorker(Thread):
                     logging.debug("Decoding %s", art_id)
 
                 if article.nzf.type == "uu":
+                    # TODO: UU needs to be fixed
+                    n = 250000
+                    raw_data = [bytes(raw_data[i : min(raw_data_size, i + n)]) for i in range(0, len(raw_data), n)]
                     decoded_data = decode_uu(article, raw_data)
                 else:
-                    decoded_data = decode_yenc(article, raw_data)
+                    decoded_data = decode_yenc(article, raw_data, raw_data_size)
 
                 article_success = True
 
@@ -247,9 +246,9 @@ class DecoderWorker(Thread):
             sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
+def decode_yenc(article: Article, data: bytes, raw_data_size: int) -> bytes:
     # Let SABYenc do all the heavy lifting
-    decoded_data, yenc_filename, crc_correct = sabyenc3.decode_usenet_chunks(raw_data)
+    yenc_filename, crc_correct = sabyenc3.decode_buffer(data, raw_data_size)
 
     nzf = article.nzf
     # Assume it is yenc
@@ -259,24 +258,24 @@ def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
     if not nzf.filename_checked and yenc_filename:
         # Set the md5-of-16k if this is the first article
         if article.lowest_partnum:
-            nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
+            nzf.md5of16k = hashlib.md5(data[:16384]).digest()
 
         # Try the rename, even if it's not the first article
         # For example when the first article was missing
         nzf.nzo.verify_nzf_filename(nzf, yenc_filename)
 
     # CRC check
-    if not crc_correct:
+    if crc_correct is None:
         logging.info("CRC Error in %s", article.article)
-        raise BadData(decoded_data)
+        raise BadData(data)
 
     article.crc32 = crc_correct
     # Determine part size and precalculate crc_2pow
-    if article.lowest_partnum and len(decoded_data) > nzf.nzo.article_size:
-        nzf.nzo.article_size = len(decoded_data)
+    if article.lowest_partnum and len(data) > nzf.nzo.article_size:
+        nzf.nzo.article_size = len(data)
         nzf.nzo.crc32_coeff = crc_2pow(nzf.nzo.article_size * 8)
 
-    return decoded_data
+    return data
 
 
 def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:

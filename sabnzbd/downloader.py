@@ -755,7 +755,7 @@ class Downloader(Thread):
 
                 try:
                     bytes_received, done = nw.recv_chunk()
-                except (ssl.SSLWantReadError, sabnzbd.decoder.sabyenc3.SSLWantReadError):
+                except ssl.SSLWantReadError:
                     continue
                 except:
                     self.__reset_nw(nw, "server closed connection", wait=False)

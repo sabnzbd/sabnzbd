@@ -193,7 +193,7 @@ class NewsWrapper:
         # Receive data into the pre-allocated buffer
         if self.nntp.nw.server.ssl and not self.nntp.nw.blocking and sabyenc3.openssl_linked:
             # Use patched version when downloading
-            bytes_recv = sabyenc3.unlocked_ssl_recv_into(self.nntp.sock._sslobj, self.data_view[self.data_position :])
+            bytes_recv = sabyenc3.unlocked_ssl_recv_into(self.nntp.sock, self.data_view[self.data_position :])
         else:
             bytes_recv = self.nntp.sock.recv_into(self.data_view[self.data_position :])
 

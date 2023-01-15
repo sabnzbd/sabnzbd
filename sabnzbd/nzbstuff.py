@@ -2017,6 +2017,8 @@ class NzbObject(TryList):
             self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
         if self.par2packs is None:
             self.par2packs = {}
+        if self.article_size is None:
+            self.article_size = 0
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)
