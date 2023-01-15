@@ -1,5 +1,14 @@
-Release Notes - SABnzbd 3.7.1
+Release Notes - SABnzbd 3.7.2 Beta 1
 =========================================================
+
+## Bugfixes and changes since 3.7.1
+- Ignore permissions inside archives during unpacking by UnRar.
+- Improvements to connection error messages.
+- Apply other changes only after updating the `Category` in multi-edit.
+- Categories were not sorted correctly in dropdowns.
+- Prevent crash when `Automatically sort queue` was enabled.
+- Tweaks to download performance.
+- Linux: Update appstream metadata.
 
 ## Bugfixes and changes since 3.7.0
 - Minor improvements in download performance.
