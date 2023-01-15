@@ -4,13 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2022
-# Fred L <88com88@gmail.com>, 2022
+# Fred L <88com88@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Fred L <88com88@gmail.com>, 2022\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2023\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3122,7 +3122,7 @@ msgstr "Dossiers système"
 
 #: sabnzbd/skintext.py
 msgid "Hidden Folders"
-msgstr ""
+msgstr "Dossiers cachés"
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"
