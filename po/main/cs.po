@@ -428,7 +428,6 @@ msgstr ""
 "Musíte nastavit maximální rychlost linky předtím než začnete nastavovat "
 "limity pro přenos"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Nelze se připojit k serveru %s [%s]"
@@ -452,20 +451,19 @@ msgstr ""
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
-msgstr "Příliš mnoho spojení k serveru %s"
+msgid "Too many connections to server %s [%s]"
+msgstr "Příliš mnoho spojení k serveru %s [%s]"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Pravděpodobné sdílení účtu"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
-#. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
-msgstr "Přihlášení k serveru %s se nezdařilo"
+msgid "Failed login for server %s [%s]"
+msgstr "Přihlášení k serveru %s se nezdařilo [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -2955,6 +2953,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "System Folders"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Hidden Folders"
 msgstr ""
 
 #: sabnzbd/skintext.py

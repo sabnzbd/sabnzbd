@@ -233,6 +233,10 @@ class DecoderWorker(Thread):
                 # If the data needs to be written to disk due to full cache, this will be slow
                 # Causing the decoder-queue to fill up and delay the downloader
                 sabnzbd.ArticleCache.save_article(article, decoded_data)
+                article.decoded = True
+            elif not nzo.precheck:
+                # Nothing to save
+                article.on_disk = True
 
             sabnzbd.NzbQueue.register_article(article, article_success)
 
@@ -240,9 +244,6 @@ class DecoderWorker(Thread):
 def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
     # Let SABYenc do all the heavy lifting
     decoded_data, yenc_filename, crc_correct = sabyenc3.decode_usenet_chunks(raw_data)
-
-    # Mark as decoded
-    article.decoded = True
 
     # Assume it is yenc
     article.nzf.type = "yenc"
@@ -373,9 +374,8 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
             # Store the decoded data
             decoded_data.write(decoded_line)
 
-        # Mark as decoded and set the type to uu; the latter is still needed in
+        # Set the type to uu; the latter is still needed in
         # case the lowest_partnum article was damaged or slow to download.
-        article.decoded = True
         article.nzf.type = "uu"
 
         if article.lowest_partnum:

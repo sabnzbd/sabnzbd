@@ -671,6 +671,11 @@ function ViewModel() {
         }
     }
 
+    // default to url input when modal is shown
+    $('#modal-add-nzb').on('shown.bs.modal', function() {
+      $('input[name="nzbURL"]').focus();
+    })
+
     // From the upload or filedrop
     self.addNZBFromFile = function(files, fileindex) {
         // First file
@@ -1334,6 +1339,12 @@ function ViewModel() {
     // And refresh now!
     self.refresh()
 
-    // Activate tooltips
-    if (!isMobile) $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+    // Special options for (non) mobile
+    if (isMobile) {
+        // Disable accept parameter on file inputs, as it doesn't work on mobile Safari
+        $("input[accept!=''][accept]").attr("accept","")
+    } else {
+        // Activate tooltips
+        $('[data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
+    }
 }

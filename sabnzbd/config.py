@@ -713,7 +713,9 @@ def get_dconfig(section, keyword, nested=False):
             sect = CFG_DATABASE[section]
         except KeyError:
             return False, {}
-        if section in ("servers", "categories", "rss"):
+        if section == "categories":
+            data[section] = get_ordered_categories()
+        elif section in ("servers", "rss"):
             data[section] = []
             for keyword in sect.keys():
                 res, conf = get_dconfig(section, keyword, True)

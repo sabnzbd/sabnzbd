@@ -343,10 +343,49 @@ function QueueListModel(parent) {
         var newStatus = $('.multioperations-selector input[name="multiedit-status"]:checked').val()
 
         // List all the ID's
-        var  strIDs = '';
+        var strIDs = '';
         $.each(self.multiEditItems(), function(index) {
             strIDs = strIDs + this.id + ',';
         })
+
+        // All non-category updates need to only happen after a category update
+        function nonCatUpdates() {
+            if(newScript != '') {
+                callAPI({
+                    mode: 'change_script',
+                    value: strIDs,
+                    value2: newScript
+                })
+            }
+            if(newPrior != '') {
+                callAPI({
+                    mode: 'queue',
+                    name: 'priority',
+                    value: strIDs,
+                    value2: newPrior
+                })
+            }
+            if(newProc != '') {
+                callAPI({
+                    mode: 'change_opts',
+                    value: strIDs,
+                    value2: newProc
+                })
+            }
+            if(newStatus) {
+                callAPI({
+                    mode: 'queue',
+                    name: newStatus,
+                    value: strIDs
+                })
+            }
+
+            // Wat a little and do the refresh
+            // Only if anything changed!
+            if(newStatus || newProc != '' || newPrior != '' || newScript != '' || newCat != '') {
+                setTimeout(parent.refresh, 100)
+            }
+        }
 
         // What is changed?
         if(newCat != '') {
@@ -354,43 +393,11 @@ function QueueListModel(parent) {
                 mode: 'change_cat',
                 value: strIDs,
                 value2: newCat
-            })
-        }
-        if(newScript != '') {
-            callAPI({
-                mode: 'change_script',
-                value: strIDs,
-                value2: newScript
-            })
-        }
-        if(newPrior != '') {
-            callAPI({
-                mode: 'queue',
-                name: 'priority',
-                value: strIDs,
-                value2: newPrior
-            })
-        }
-        if(newProc != '') {
-            callAPI({
-                mode: 'change_opts',
-                value: strIDs,
-                value2: newProc
-            })
-        }
-        if(newStatus) {
-            callAPI({
-                mode: 'queue',
-                name: newStatus,
-                value: strIDs
-            })
+            }).then(nonCatUpdates)
+        } else {
+            nonCatUpdates()
         }
 
-        // Wat a little and do the refresh
-        // Only if anything changed!
-        if(newStatus || newProc != '' || newPrior != '' || newScript != '' || newCat != '') {
-            setTimeout(parent.refresh, 100)
-        }
     }
 
     // Selete all selected

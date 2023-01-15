@@ -87,7 +87,7 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.11.0"
+      PYTHON_VERSION: "3.11.1"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
@@ -123,7 +123,6 @@ jobs:
       #     https://github.com/pyca/cryptography/issues/5918
       # 2.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
-      # 3.  TEMPORARY: Add aarch64 for orjson universal2 build, until they provide a wheel
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python3 --version
@@ -132,11 +131,9 @@ jobs:
         pip3 install --upgrade -r requirements.txt --no-binary cffi
         
         pip3 uninstall cryptography -y
-        pip3 download -r builder/osx/requirements.txt --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
+        pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest .
         pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
-        
-        rustup target add aarch64-apple-darwin
-        
+
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)

@@ -445,7 +445,6 @@ msgstr ""
 "Je moet eerst een maximumbandbreedte instellen voordat je een limiet kunt "
 "instellen"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Verbinding maken met server %s [%s] niet mogelijk"
@@ -469,20 +468,21 @@ msgstr "Er zijn geen actieve servers!"
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
-msgstr "Te veel verbindingen met server %s"
+msgid "Too many connections to server %s [%s]"
+msgstr "Te veel verbindingen met server %s [%s]"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Mogelijk delen van account"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
+"Teveel verschillende IP-adressen probeerde in te loggen op server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
 
-#. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
-msgstr "Aanmelden bij server %s mislukt"
+msgid "Failed login for server %s [%s]"
+msgstr "Aanmelden bij server %s mislukt [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -3082,6 +3082,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "System Folders"
 msgstr "Systeemmappen"
+
+#: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"

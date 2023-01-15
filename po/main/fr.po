@@ -451,7 +451,6 @@ msgstr ""
 "Vous devez définir une bande passante maximale avant de pouvoir définir une "
 "limite de bande passante"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Impossible de se connecter au serveur %s [%s]"
@@ -475,20 +474,21 @@ msgstr "Il n'y a aucun serveur actif !"
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
-msgstr "Trop de connexions au serveur %s"
+msgid "Too many connections to server %s [%s]"
+msgstr "Trop de connexions au serveur %s [%s]"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Partage de compte probable"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
+"Connexion au serveur %s [%s] à partir de trop d'adresses IP différentes - "
+"https://sabnzbd.org/multiple-adresses"
 
-#. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
-msgstr "Échec de la connexion au serveur %s"
+msgid "Failed login for server %s [%s]"
+msgstr "Échec de la connexion au serveur %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -3119,6 +3119,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "System Folders"
 msgstr "Dossiers système"
+
+#: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"

@@ -23,16 +23,26 @@
   </categories>
   <url type="homepage">https://sabnzbd.org</url>
   <url type="bugtracker">https://github.com/sabnzbd/sabnzbd/issues</url>
+  <url type="vcs-browser">https://github.com/sabnzbd/sabnzbd</url>
   <url type="translate">https://sabnzbd.org/wiki/translate</url>
   <url type="donation">https://sabnzbd.org/donate</url>
   <url type="help">https://sabnzbd.org/wiki/</url>
   <url type="faq">https://sabnzbd.org/wiki/faq</url>
-  <url type="contact">https://forums.sabnzbd.org</url>
+  <url type="contact">https://sabnzbd.org/live-chat.html</url>
   <launchable type="desktop-id">sabnzbd.desktop</launchable>
   <provides>
     <mediatype>application/x-nzb</mediatype>
     <mediatype>application/x-compressed-nzb</mediatype>
   </provides>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  <recommends>
+    <display_length compare="ge">small</display_length>
+    <internet>always</internet>
+  </recommends>
   <project_license>GPL-2.0-or-later</project_license>
   <developer_name>The SABnzbd-team</developer_name>
   <screenshots>
