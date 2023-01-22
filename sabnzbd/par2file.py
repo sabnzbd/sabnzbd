@@ -23,12 +23,12 @@ import logging
 import os
 import re
 import struct
+import sabyenc3
 from dataclasses import dataclass
 from typing import Dict, Optional, Tuple, BinaryIO
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
-from sabnzbd.utils.crc32calc import crc_2pow, crc_multiply, crc_concat, crc_zero_unpad
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -130,7 +130,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
 
         set_id = metadata["set_id"]
         slice_size = metadata["slice_size"]
-        coeff = crc_2pow(slice_size * 8)
+        coeff = sabyenc3.crc32_xpow8n(slice_size)
 
         for fileid in filedata:
             name = filedata[fileid][0]
@@ -149,11 +149,13 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
             slice_nr = 0
             # logging.debug("File %s size %d slices %d tail %d, list %d", name, filesize, slices, tail_size, len(crclist))
             while slice_nr < slices:
-                crc32 = crc_multiply(crc32, coeff) ^ crclist[slice_nr]
+                crc32 = sabyenc3.crc32_multiply(crc32, coeff) ^ crclist[slice_nr]
                 slice_nr += 1
 
             if tail_size:
-                crc32 = crc_concat(crc32, crc_zero_unpad(crclist[slice_nr], slice_size - tail_size), tail_size)
+                crc32 = sabyenc3.crc32_combine(
+                    crc32, sabyenc3.crc32_zero_unpad(crclist[slice_nr], slice_size - tail_size), tail_size
+                )
             # logging.debug("File %s crc32 %s, int %d", name, hex(crc32), crc32)
 
             table[name] = FilePar2Info(hash16k, crc32, filesize)

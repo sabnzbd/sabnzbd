@@ -30,6 +30,7 @@ from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO
 
 # SABnzbd modules
 import sabnzbd
+import sabyenc3
 from sabnzbd.constants import (
     GIGI,
     ATTRIB_FILE,
@@ -87,7 +88,6 @@ import sabnzbd.nzbparser
 from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
 from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
-from sabnzbd.utils.crc32calc import crc_multiply, crc_concat
 
 # Name patterns
 # In the subject, we expect the filename within double quotes
@@ -401,10 +401,7 @@ class NzbFile(TryList):
         if self.crc32 is None or crc32 is None:
             self.crc32 = None
         else:
-            if length == self.nzo.article_size:
-                self.crc32 = crc_multiply(self.crc32, self.nzo.crc32_coeff) ^ crc32
-            else:
-                self.crc32 = crc_concat(self.crc32, crc32, length)
+            self.crc32 = sabyenc3.crc32_combine(self.crc32, crc32, length)
 
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
         """Get next articles to be downloaded"""
@@ -564,8 +561,6 @@ NzbObjectSaver = (
     "servercount",
     "unwanted_ext",
     "renames",
-    "article_size",
-    "crc32_coeff",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -662,8 +657,6 @@ class NzbObject(TryList):
         self.md5packs = {}  # TODO: Remove in 4.0.0. Kept for backwards compatibility
         self.par2packs: Dict[str, Dict[str, FilePar2Info]] = {}  # Holds the par2info for each file in each set
         self.md5of16k: Dict[bytes, str] = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
-        self.article_size: int = 0
-        self.crc32_coeff: int = 0
 
         self.files: List[NzbFile] = []  # List of all NZFs
         self.files_table: Dict[str, NzbFile] = {}  # Dictionary of NZFs indexed using NZF_ID
@@ -2017,8 +2010,6 @@ class NzbObject(TryList):
             self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
         if self.par2packs is None:
             self.par2packs = {}
-        if self.article_size is None:
-            self.article_size = 0
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)

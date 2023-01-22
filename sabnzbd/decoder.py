@@ -34,7 +34,6 @@ from sabnzbd.constants import SABYENC_VERSION_REQUIRED, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
-from sabnzbd.utils.crc32calc import crc_2pow
 
 # Check for correct SABYenc version
 SABYENC_VERSION = None
@@ -270,10 +269,6 @@ def decode_yenc(article: Article, data: bytearray, raw_data_size: int) -> bytear
         raise BadData(data)
 
     article.crc32 = crc_correct
-    # Determine part size and precalculate crc_2pow
-    if article.lowest_partnum and len(data) > nzf.nzo.article_size:
-        nzf.nzo.article_size = len(data)
-        nzf.nzo.crc32_coeff = crc_2pow(nzf.nzo.article_size * 8)
 
     return data
 

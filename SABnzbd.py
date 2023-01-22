@@ -40,6 +40,7 @@ import gc
 from typing import List, Dict, Any
 
 try:
+    import sabyenc3
     import Cheetah
     import feedparser
     import configobj
@@ -423,20 +424,13 @@ def print_modules():
         logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
         logging.info("SABYenc module is using SIMD set: %s", sabnzbd.decoder.SABYENC_SIMD)
     else:
-        # Something wrong with SABYenc, so let's determine and print what:
-        if sabnzbd.decoder.SABYENC_VERSION:
-            # We have a VERSION, thus a SABYenc module, but it's not the correct version
-            logging.error(
-                T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"),
-                sabnzbd.decoder.SABYENC_VERSION,
-                sabnzbd.constants.SABYENC_VERSION_REQUIRED,
-            )
-        else:
-            # No SABYenc module at all
-            logging.error(
-                T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"),
-                sabnzbd.constants.SABYENC_VERSION_REQUIRED,
-            )
+        # Wrong SABYenc version, if it was fully missing it would fail to start due to check at the very top
+        logging.error(
+            T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"),
+            sabnzbd.decoder.SABYENC_VERSION,
+            sabnzbd.constants.SABYENC_VERSION_REQUIRED,
+        )
+
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
 
