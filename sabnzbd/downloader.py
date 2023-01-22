@@ -503,7 +503,7 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[bytes] = None, raw_data_size: Optional[int] = None):
+    def decode(self, article, raw_data: Optional[bytearray] = None, raw_data_size: Optional[int] = None):
         """Decode article and check the status of
         the decoder and the assembler
         """

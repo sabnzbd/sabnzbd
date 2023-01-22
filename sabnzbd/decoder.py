@@ -105,7 +105,7 @@ class Decoder:
             except:
                 pass
 
-    def process(self, article: Article, raw_data: bytes, raw_data_size: int):
+    def process(self, article: Article, raw_data: bytearray, raw_data_size: int):
         sabnzbd.ArticleCache.reserve_space(raw_data_size)
         self.decoder_queue.put((article, raw_data, raw_data_size))
 
@@ -120,7 +120,7 @@ class DecoderWorker(Thread):
     def __init__(self, decoder_queue):
         super().__init__()
         logging.debug("Initializing decoder %s", self.name)
-        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[bytes], Optional[int]]] = decoder_queue
+        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[bytearray], Optional[int]]] = decoder_queue
 
     def run(self):
         while 1:
@@ -246,9 +246,9 @@ class DecoderWorker(Thread):
             sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, data: bytes, raw_data_size: int) -> bytes:
+def decode_yenc(article: Article, data: bytearray, raw_data_size: int) -> bytearray:
     # Let SABYenc do all the heavy lifting
-    yenc_filename, crc_correct = sabyenc3.decode_buffer(data, raw_data_size)
+    yenc_filename, crc_correct = sabyenc3.decode_buffer(data)
 
     nzf = article.nzf
     # Assume it is yenc
