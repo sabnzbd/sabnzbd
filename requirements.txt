@@ -5,7 +5,7 @@ cheetah3==3.2.6.post1
 cffi==1.15.1
 pycparser==2.21
 feedparser==6.0.10
-configobj==5.0.6
+configobj==5.0.8
 cheroot==9.0.0
 six==1.16.0
 cherrypy==18.8.0
@@ -13,11 +13,11 @@ jaraco.functools==3.5.2
 jaraco.collections==3.8.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.2.3
-jaraco.context==4.2.0
+jaraco.context==4.3.0
 more-itertools==9.0.0
 zc.lockfile==2.0
 python-dateutil==2.8.2
-tempora==5.2.0
+tempora==5.2.1
 pytz==2022.7.1
 sgmllib3k==1.0.0
 portend==3.1.0
