@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.7.2 Beta 1
+Release Notes - SABnzbd 3.7.2 Release Candidate 1
 =========================================================
 
 ## Bugfixes and changes since 3.7.1
