@@ -29,18 +29,15 @@ import lxml.html
 from sabnzbd.skintext import SKIN_TEXT
 from tests.testhelper import *
 
-# Not today
-pytest.skip("TODO: Enable after testing", allow_module_level=True)
-
 
 class TestVersion:
     def test_sabnzbd_version_match(self):
         assert sabnzbd.__version__ == pkginfo.Develop(".").version
 
-    def test_sabyenc3_version_match(self):
+    def test_sabctools_version_match(self):
         with open("requirements.txt", "r") as reqs:
-            req_version = next(req for req in pkg_resources.parse_requirements(reqs) if req.project_name == "sabyenc3")
-            assert sabnzbd.constants.SABYENC_VERSION_REQUIRED == req_version.specs[0][1]
+            req_version = next(req for req in pkg_resources.parse_requirements(reqs) if req.project_name == "sabctools")
+            assert sabnzbd.constants.SABCTOOLS_VERSION_REQUIRED == req_version.specs[0][1]
 
 
 class TestSkintext:

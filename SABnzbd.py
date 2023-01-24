@@ -40,7 +40,7 @@ import gc
 from typing import List, Dict, Any
 
 try:
-    import sabyenc3
+    import sabctools
     import Cheetah
     import feedparser
     import configobj
@@ -419,16 +419,16 @@ def get_user_profile_paths():
 
 def print_modules():
     """Log all detected optional or external modules"""
-    if sabnzbd.decoder.SABYENC_ENABLED:
-        # Yes, we have SABYenc, and it's the correct version, so it's enabled
-        logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
-        logging.info("SABYenc module is using SIMD set: %s", sabnzbd.decoder.SABYENC_SIMD)
+    if sabnzbd.decoder.SABCTOOLS_ENABLED:
+        # Yes, we have SABCTools, and it's the correct version, so it's enabled
+        logging.info("SABCTools module (v%s)... found!", sabnzbd.decoder.SABCTOOLS_VERSION)
+        logging.info("SABCTools module is using SIMD set: %s", sabnzbd.decoder.SABCTOOLS_SIMD)
     else:
-        # Wrong SABYenc version, if it was fully missing it would fail to start due to check at the very top
+        # Wrong SABCTools version, if it was fully missing it would fail to start due to check at the very top
         logging.error(
-            T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"),
-            sabnzbd.decoder.SABYENC_VERSION,
-            sabnzbd.constants.SABYENC_VERSION_REQUIRED,
+            T("SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"),
+            sabnzbd.decoder.SABCTOOLS_VERSION,
+            sabnzbd.constants.SABCTOOLS_VERSION_REQUIRED,
         )
 
         # Do not allow downloading

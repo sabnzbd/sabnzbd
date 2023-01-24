@@ -449,7 +449,6 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                     logging.info("Skipping duplicate article (%s)", article_id)
                             elif segment_size <= 0 or segment_size >= 2**23:
                                 # Perform sanity check (not negative, 0 or larger than 8MB) on article size
-                                # We use this value later to allocate memory in cache and sabyenc
                                 logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
                                 nzo.increase_bad_articles_counter("bad_articles")
                                 bad_articles = True

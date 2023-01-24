@@ -30,7 +30,7 @@ from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO
 
 # SABnzbd modules
 import sabnzbd
-import sabyenc3
+import sabctools
 from sabnzbd.constants import (
     GIGI,
     ATTRIB_FILE,
@@ -401,7 +401,7 @@ class NzbFile(TryList):
         if self.crc32 is None or crc32 is None:
             self.crc32 = None
         else:
-            self.crc32 = sabyenc3.crc32_combine(self.crc32, crc32, length)
+            self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
         """Get next articles to be downloaded"""

@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2022
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -39,13 +39,13 @@ msgstr "Немогуће наћи веб модел: %s, програм поку
 
 #. Error message
 #: SABnzbd.py
-msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
+msgid "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
 #. Error message
 #: SABnzbd.py
 msgid ""
-"SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
+"SABCTools module... NOT found! Expecting v%s - https://sabnzbd.org/sabctools"
 msgstr ""
 
 #. Error message

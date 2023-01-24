@@ -162,7 +162,7 @@ WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 
 CERTIFICATE_VALIDATION = True
-NO_DOWNLOADING = False  # When essentials are missing (SABYenc/par2/unrar)
+NO_DOWNLOADING = False  # When essentials are missing (SABCTools/par2/unrar)
 
 WEB_DIR = None
 WEB_DIR_CONFIG = None

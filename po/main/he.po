@@ -1,11 +1,11 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # ION, 2022
 # Safihre <safihre@sabnzbd.org>, 2022
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -40,14 +40,14 @@ msgstr "לא ניתן למצוא תבניות רשת: %s, מנסה תבנית ת
 
 #. Error message
 #: SABnzbd.py
-msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
-msgstr "SABYenc מושבת: גרסה נכונה לא נמצאה! (%s נמצאה, מצפה אל %s)"
+msgid "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
+msgstr "SABCTools מושבת: גרסה נכונה לא נמצאה! (%s נמצאה, מצפה אל %s)"
 
 #. Error message
 #: SABnzbd.py
 msgid ""
-"SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
-msgstr "מודול SABYenc… לא נמצא! מצפה אל %s - https://sabnzbd.org/sabyenc"
+"SABCTools module... NOT found! Expecting v%s - https://sabnzbd.org/sabctools"
+msgstr "מודול SABCTools… לא נמצא! מצפה אל %s - https://sabnzbd.org/sabctools"
 
 #. Error message
 #: SABnzbd.py

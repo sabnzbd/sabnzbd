@@ -1,7 +1,7 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Ester Molla Aragones <moarages@gmail.com>, 2020
 # 1024mb <angelb2203@gmail.com>, 2023
@@ -43,18 +43,18 @@ msgstr ""
 
 #. Error message
 #: SABnzbd.py
-msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
+msgid "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
-"SABYenc deshabilitado: ¡no se ha encontrado la versión correcta! (Se ha "
+"SABCTools deshabilitado: ¡no se ha encontrado la versión correcta! (Se ha "
 "encontrado la v%s, se esperaba la v%s)"
 
 #. Error message
 #: SABnzbd.py
 msgid ""
-"SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
+"SABCTools module... NOT found! Expecting v%s - https://sabnzbd.org/sabctools"
 msgstr ""
-"Módulo SABYenc... ¡NO encontrado! Se esperaba la v%s - "
-"https://sabnzbd.org/sabyenc"
+"Módulo SABCTools... ¡NO encontrado! Se esperaba la v%s - "
+"https://sabnzbd.org/sabctools"
 
 #. Error message
 #: SABnzbd.py

@@ -762,7 +762,7 @@ class NzbQueue:
         ):
             if not nzo.precheck:
                 # Only start decoding if we have a filename and type
-                # The type is only set if sabyenc could decode the article
+                # The type is only set if sabctools could decode the article
                 if nzf.filename and nzf.type:
                     sabnzbd.Assembler.process(nzo, nzf, file_done)
                 elif nzf.filename.lower().endswith(".par2"):

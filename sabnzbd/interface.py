@@ -420,7 +420,7 @@ class MainPage:
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
 
             info["cpumodel"] = getcpu()
-            info["cpusimd"] = sabnzbd.decoder.SABYENC_SIMD
+            info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
@@ -676,7 +676,7 @@ class ConfigPage:
 
         conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        conf["have_sabyenc"] = sabnzbd.decoder.SABYENC_ENABLED
+        conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
         conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION

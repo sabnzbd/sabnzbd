@@ -30,25 +30,25 @@ from zlib import crc32
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import SABYENC_VERSION_REQUIRED, NNTP_BUFFER_SIZE
+from sabnzbd.constants import SABCTOOLS_VERSION_REQUIRED, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
 
-# Check for correct SABYenc version
-SABYENC_VERSION = None
-SABYENC_SIMD = None
+# Check for correct SABCTools version
+SABCTOOLS_VERSION = None
+SABCTOOLS_SIMD = None
 try:
-    import sabyenc3
+    import sabctools
 
-    SABYENC_ENABLED = True
-    SABYENC_VERSION = sabyenc3.__version__
-    SABYENC_SIMD = sabyenc3.simd
+    SABCTOOLS_ENABLED = True
+    SABCTOOLS_VERSION = sabctools.__version__
+    SABCTOOLS_SIMD = sabctools.simd
     # Verify version to at least match minor version
-    if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
+    if SABCTOOLS_VERSION[:3] != SABCTOOLS_VERSION_REQUIRED[:3]:
         raise ImportError
 except:
-    SABYENC_ENABLED = False
+    SABCTOOLS_ENABLED = False
 
 
 class BadData(Exception):
@@ -246,8 +246,8 @@ class DecoderWorker(Thread):
 
 
 def decode_yenc(article: Article, data: bytearray, raw_data_size: int) -> bytearray:
-    # Let SABYenc do all the heavy lifting
-    yenc_filename, crc_correct = sabyenc3.decode_buffer(data)
+    # Let SABCTools do all the heavy lifting
+    yenc_filename, crc_correct = sabctools.yenc_decode(data)
 
     nzf = article.nzf
     # Assume it is yenc

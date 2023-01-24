@@ -23,7 +23,7 @@ import logging
 import os
 import re
 import struct
-import sabyenc3
+import sabctools
 from dataclasses import dataclass
 from typing import Dict, Optional, Tuple, BinaryIO
 
@@ -130,7 +130,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
 
         set_id = metadata["set_id"]
         slice_size = metadata["slice_size"]
-        coeff = sabyenc3.crc32_xpow8n(slice_size)
+        coeff = sabctools.crc32_xpow8n(slice_size)
 
         for fileid in filedata:
             name = filedata[fileid][0]
@@ -149,12 +149,12 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
             slice_nr = 0
             # logging.debug("File %s size %d slices %d tail %d, list %d", name, filesize, slices, tail_size, len(crclist))
             while slice_nr < slices:
-                crc32 = sabyenc3.crc32_multiply(crc32, coeff) ^ crclist[slice_nr]
+                crc32 = sabctools.crc32_multiply(crc32, coeff) ^ crclist[slice_nr]
                 slice_nr += 1
 
             if tail_size:
-                crc32 = sabyenc3.crc32_combine(
-                    crc32, sabyenc3.crc32_zero_unpad(crclist[slice_nr], slice_size - tail_size), tail_size
+                crc32 = sabctools.crc32_combine(
+                    crc32, sabctools.crc32_zero_unpad(crclist[slice_nr], slice_size - tail_size), tail_size
                 )
             # logging.debug("File %s crc32 %s, int %d", name, hex(crc32), crc32)
 

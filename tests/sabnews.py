@@ -31,7 +31,7 @@ import time
 
 from random import randint
 
-import sabyenc3
+import sabctools
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -115,7 +115,7 @@ class NewsServerProtocol(asyncio.Protocol):
             inp_buffer = inp_file.read(size)
 
         # Encode data
-        output_string, crc = sabyenc3.encode(inp_buffer)
+        output_string, crc = sabctools.yenc_encode(inp_buffer)
         self.transport.write(output_string)
 
         # Write footer

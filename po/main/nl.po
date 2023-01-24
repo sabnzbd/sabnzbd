@@ -1,11 +1,11 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Rik Brouwer, 2022
 # Safihre <safihre@sabnzbd.org>, 2022
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -40,17 +40,17 @@ msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
 
 #. Error message
 #: SABnzbd.py
-msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
+msgid "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
-"SABYenc uitgeschakeld, geen bruikbare versie gevonden! (V%s gevonden, V%s "
+"SABCTools uitgeschakeld, geen bruikbare versie gevonden! (V%s gevonden, V%s "
 "verwacht)"
 
 #. Error message
 #: SABnzbd.py
 msgid ""
-"SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
+"SABCTools module... NOT found! Expecting v%s - https://sabnzbd.org/sabctools"
 msgstr ""
-"SABYenc module... NIET gevonden! Verwacht V%s - https://sabnzbd.org/sabyenc"
+"SABCTools module... NIET gevonden! Verwacht V%s - https://sabnzbd.org/sabctools"
 
 #. Error message
 #: SABnzbd.py
