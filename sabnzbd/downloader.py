@@ -823,9 +823,14 @@ class Downloader(Thread):
 
                     # Reset connection for new activity
                     nw.soft_reset()
-                    server.busy_threads.remove(nw)
-                    server.idle_threads.append(nw)
-                    self.remove_socket(nw)
+                    # Request a new article immediately if possible
+                    if server.article_queue and nw.connected:
+                        nw.article = server.article_queue.pop(0)
+                        self.__request_article(nw)
+                    else:
+                        server.busy_threads.remove(nw)
+                        server.idle_threads.append(nw)
+                        self.remove_socket(nw)
 
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
         server = nw.server
