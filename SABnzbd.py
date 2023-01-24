@@ -423,6 +423,14 @@ def print_modules():
         # Yes, we have SABCTools, and it's the correct version, so it's enabled
         logging.info("SABCTools module (v%s)... found!", sabnzbd.decoder.SABCTOOLS_VERSION)
         logging.info("SABCTools module is using SIMD set: %s", sabnzbd.decoder.SABCTOOLS_SIMD)
+        logging.info("SABCTools module is linked to OpenSSL: %s", sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED)
+
+        # Check if we managed to link, warning for now
+        if not sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED:
+            logging.warning(
+                "Could not link to OpenSSL library, please report here: "
+                "https://github.com/sabnzbd/sabnzbd/issues/2421"
+            )
     else:
         # Wrong SABCTools version, if it was fully missing it would fail to start due to check at the very top
         logging.error(

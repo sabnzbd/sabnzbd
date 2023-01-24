@@ -38,12 +38,14 @@ from sabnzbd.misc import match_str
 # Check for correct SABCTools version
 SABCTOOLS_VERSION = None
 SABCTOOLS_SIMD = None
+SABCTOOLS_OPENSSL_LINKED = None
 try:
     import sabctools
 
     SABCTOOLS_ENABLED = True
     SABCTOOLS_VERSION = sabctools.__version__
     SABCTOOLS_SIMD = sabctools.simd
+    SABCTOOLS_OPENSSL_LINKED = sabctools.openssl_linked
     # Verify version to at least match minor version
     if SABCTOOLS_VERSION[:3] != SABCTOOLS_VERSION_REQUIRED[:3]:
         raise ImportError
