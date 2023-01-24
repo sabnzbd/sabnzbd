@@ -1,15 +1,15 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2022
-#
+# Safihre <safihre@sabnzbd.org>, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,14 +39,9 @@ msgstr "无法找到 web 模板: %s，正在尝试标准模板"
 
 #. Error message
 #: SABnzbd.py
-msgid "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
-msgstr "SABCTools 已禁用：未找到正确的版本！（找到 v%s，要求 v%s）"
-
-#. Error message
-#: SABnzbd.py
 msgid ""
-"SABCTools module... NOT found! Expecting v%s - https://sabnzbd.org/sabctools"
-msgstr "SABCTools 模块... 未找到！要求  v%s - https://sabnzbd.org/sabctools"
+"SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
+msgstr "SABCTools 已禁用：未找到正确的版本！（找到 v%s，要求 v%s）"
 
 #. Error message
 #: SABnzbd.py
@@ -636,7 +631,7 @@ msgid ""
 "program:"
 msgstr "API Key 不正确，请在第三方程序中使用“配置”->“常规”中的 api key:"
 
-#: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "身份认证失败，请检查用户名/密码。"
 

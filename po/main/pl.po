@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2022
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -39,13 +39,8 @@ msgstr "Nie znaleziono szablonu: %s, próbuję użyć standardowego szablonu"
 
 #. Error message
 #: SABnzbd.py
-msgid "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
-msgstr ""
-
-#. Error message
-#: SABnzbd.py
 msgid ""
-"SABCTools module... NOT found! Expecting v%s - https://sabnzbd.org/sabctools"
+"SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
 #. Error message
@@ -644,7 +639,7 @@ msgstr ""
 "Klucz API jest nieprawidłowy, użyj klucza API z sekcji Konfiguracja->Ogólne "
 "w zewnętrznym programie:"
 
-#: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
 

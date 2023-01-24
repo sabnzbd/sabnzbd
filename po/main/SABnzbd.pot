@@ -40,11 +40,6 @@ msgstr ""
 
 #. Error message
 #: SABnzbd.py
-msgid "SABCTools module... NOT found! Expecting v%s - https://sabnzbd.org/sabctools"
-msgstr ""
-
-#. Error message
-#: SABnzbd.py
 msgid "par2 binary... NOT found!"
 msgstr ""
 
@@ -598,7 +593,7 @@ msgstr ""
 msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
 msgstr ""
 
-#: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr ""
 
