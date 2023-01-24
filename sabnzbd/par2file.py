@@ -252,8 +252,12 @@ def parse_par2_packet(f: BinaryIO, metadata: Dict, filedata: Dict):
     elif par2_packet_type == PAR_SLICE_ID:
         # "PAR 2.0\0IFSC\0\0\0\0"
         fileid = data[32:48].hex()
-        if filedata[fileid][4]:
-            # Already have data
+        try:
+            if filedata[fileid][4]:
+                # Already have data
+                return
+        except KeyError:
+            logging.debug("Unknown fileid %s for par2 slice, skipping", fileid)
             return
         i = 48
         for i in range(48, pack_len - 32, 20):

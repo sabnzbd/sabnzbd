@@ -227,7 +227,7 @@ class NewsWrapper:
         """Resize the buffer in the extremely unlikely case that it overflows"""
         new_buffer = bytearray(len(self.data) + NNTP_BUFFER_SIZE)
         new_buffer[: len(self.data)] = self.data
-        logging.info("Increasing buffer from %n to %n for %s", len(self.data), len(new_buffer), str(self))
+        logging.info("Increasing buffer from %d to %d for %s", len(self.data), len(new_buffer), str(self))
         self.data = new_buffer
         self.data_view = memoryview(self.data)
 
