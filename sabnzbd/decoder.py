@@ -30,7 +30,7 @@ from zlib import crc32
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import SABCTOOLS_VERSION_REQUIRED, NNTP_BUFFER_SIZE
+from sabnzbd.constants import SABCTOOLS_VERSION_REQUIRED
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
