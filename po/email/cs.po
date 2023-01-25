@@ -1,7 +1,7 @@
 # SABnzbd Translation Template file EMAIL
-# Copyright 2007-2023 The SABnzbd-Team
+# Copyright 2007-2022 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
