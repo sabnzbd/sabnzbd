@@ -569,6 +569,10 @@ class Downloader(Thread):
         # Sleep check variables
         last_max_chunk_size: int = 0
         max_chunk_size: int = _DEFAULT_CHUNK_SIZE
+        # Debugging code for v4 test release
+        sleep_count_start: float = time.time()
+        sleep_count: int = 0
+        time_slept: float = 0
 
         # Check server expiration dates
         check_server_expiration()
@@ -702,7 +706,23 @@ class Downloader(Thread):
                     logging.debug("New max_chunk_size %d -> %d", max_chunk_size, last_max_chunk_size)
                     max_chunk_size = last_max_chunk_size
                 elif last_max_chunk_size < max_chunk_size / 3:
+                    now = time.time()
                     time.sleep(self.sleep_time)
+                    # Debugging code for v4 test release
+                    time_slept += time.time() - now
+                    sleep_count += 1
+                    if sleep_count_start + 10 < now:
+                        logging.debug(
+                            "Slept %d times for an average of %.5f seconds the last %.2f seconds. sleep_time = %s",
+                            sleep_count,
+                            time_slept / sleep_count,
+                            time.time() - sleep_count_start,
+                            self.sleep_time,
+                        )
+                        sleep_count_start = now
+                        sleep_count = 0
+                        time_slept = 0
+
                 last_max_chunk_size = 0
 
             # Use select to find sockets ready for reading/writing
