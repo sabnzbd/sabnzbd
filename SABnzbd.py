@@ -17,8 +17,8 @@
 
 import sys
 
-if sys.hexversion < 0x03070000:
-    print("Sorry, requires Python 3.7 or above")
+if sys.hexversion < 0x03080000:
+    print("Sorry, requires Python 3.8 or above")
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
