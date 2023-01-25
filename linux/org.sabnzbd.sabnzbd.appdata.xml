@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2022 The SABnzbd-Team <team@sabnzbd.org> -->
+<!-- Copyright 2022-2023 The SABnzbd-Team <team@sabnzbd.org> -->
 <component type="desktop-application">
   <id>org.sabnzbd.sabnzbd</id>
   <metadata_license>MIT</metadata_license>

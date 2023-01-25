@@ -1,7 +1,7 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2022 The SABnzbd-Team
+# Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # C E <githubce@eiselt.ch>, 2020
 # Nikolai Bohl <n.kay01@gmail.com>, 2020
@@ -12,7 +12,7 @@
 # Nils Briggen, 2022
 # reloxx13 <reloxx@interia.pl>, 2022
 # Safihre <safihre@sabnzbd.org>, 2023
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
