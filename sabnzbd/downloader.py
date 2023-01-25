@@ -218,6 +218,28 @@ class Server:
             self.request = True
             Thread(target=self._request_info_internal).start()
 
+    def get_article(self):
+        """Get article from pre-fetched and pre-fetch new ones if necessary.
+        Articles that are too old for this server are immediately marked as tried"""
+        if self.article_queue:
+            return self.article_queue.pop(0)
+        elif self.next_article_search < time.time():
+            # Pre-fetch new articles
+            self.article_queue = sabnzbd.NzbQueue.get_articles(self, sabnzbd.Downloader.servers, _ARTICLE_PREFETCH)
+            if self.article_queue:
+                article = self.article_queue.pop(0)
+                # Mark expired articles as tried on this server
+                if self.retention and article.nzf.nzo.avg_stamp < time.time() - self.retention:
+                    sabnzbd.Downloader.decode(article)
+                    while self.article_queue:
+                        sabnzbd.Downloader.decode(self.article_queue.pop())
+                else:
+                    return article
+            else:
+                # No available articles, skip this server for a short time
+                self.next_article_search = time.time() + _SERVER_CHECK_DELAY
+        return None
+
     def reset_article_queue(self):
         logging.debug("Resetting article queue for %s", self)
         for article in self.article_queue:
@@ -633,31 +655,12 @@ class Downloader(Thread):
                             server.request_info()
                         break
 
-                    # Get article from pre-fetched ones or fetch new ones
-                    if server.article_queue:
-                        article = server.article_queue.pop(0)
-                    else:
-                        # Pre-fetch new articles
-                        server.article_queue = sabnzbd.NzbQueue.get_articles(server, self.servers, _ARTICLE_PREFETCH)
-                        if server.article_queue:
-                            article = server.article_queue.pop(0)
-                            # Mark expired articles as tried on this server
-                            if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                                self.decode(article)
-                                while server.article_queue:
-                                    self.decode(server.article_queue.pop())
-                                # Move to the next server, allowing the next server to already start
-                                # fetching the articles that were too old for this server
-                                break
-                        else:
-                            # Skip this server for a short time
-                            server.next_article_search = now + _SERVER_CHECK_DELAY
-                            break
+                    nw.article = server.get_article()
+                    if not nw.article:
+                        break
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
-
-                    nw.article = article
 
                     if nw.connected:
                         self.__request_article(nw)
@@ -824,13 +827,14 @@ class Downloader(Thread):
                     # Reset connection for new activity
                     nw.soft_reset()
                     # Request a new article immediately if possible
-                    if server.article_queue and nw.connected:
-                        nw.article = server.article_queue.pop(0)
-                        self.__request_article(nw)
-                    else:
-                        server.busy_threads.remove(nw)
-                        server.idle_threads.append(nw)
-                        self.remove_socket(nw)
+                    if nw.connected:
+                        nw.article = server.get_article()
+                        if nw.article:
+                            self.__request_article(nw)
+                            continue
+                    server.busy_threads.remove(nw)
+                    server.idle_threads.append(nw)
+                    self.remove_socket(nw)
 
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
         server = nw.server
