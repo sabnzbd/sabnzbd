@@ -709,6 +709,8 @@ class Downloader(Thread):
                     now = time.time()
                     time.sleep(self.sleep_time)
                     # Debugging code for v4 test release
+                    if time.time() - now > self.sleep_time * 3:
+                        logging.debug("Slept %.5f seconds, sleep_time = %s", time.time() - now, self.sleep_time)
                     time_slept += time.time() - now
                     sleep_count += 1
                     if sleep_count_start + 10 < now:
