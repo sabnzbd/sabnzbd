@@ -756,12 +756,9 @@ class Downloader(Thread):
                 continue
 
             if dl_threads > 1:
-                for i in range(0, len(read), dl_threads):
-                    for nw, bytes_received, done in dl_pool.map(
-                        self.__recv, read[i : min(len(read), i + dl_threads - 1)]
-                    ):
-                        if nw:
-                            self.__handle_recv_result(nw, bytes_received, done)
+                for nw, bytes_received, done in dl_pool.imap_unordered(self.__recv, read):
+                    if nw:
+                        self.__handle_recv_result(nw, bytes_received, done)
             else:
                 for selected in read:
                     nw, bytes_received, done = self.__recv(selected)
