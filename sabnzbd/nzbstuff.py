@@ -300,7 +300,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver
+    __slots__ = NzbFileSaver + ("next_assemble_time",)
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -333,6 +333,7 @@ class NzbFile(TryList):
         self.crc32: Optional[int] = 0
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
+        self.next_assemble_time: float = 0
 
         self.valid: bool = bool(raw_article_db)
 
@@ -460,6 +461,7 @@ class NzbFile(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
+        setattr(self, "next_assemble_time", 0)
 
         # Convert 2.x.x jobs
         if isinstance(self.decodetable, dict):
