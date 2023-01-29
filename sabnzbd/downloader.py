@@ -545,8 +545,16 @@ class Downloader(Thread):
 
         # See if we need to delay because the queues are full
         logged_counter = 0
-        decoder_full = sabnzbd.Decoder.queue_full()
-        assembler_full = sabnzbd.Assembler.queue_full()
+
+        decoder_level = sabnzbd.Decoder.queue_level()
+        assembler_level = sabnzbd.Assembler.queue_level()
+
+        # Sleep a short while to release the GIL if the queue is starting to fill
+        if decoder_level > 0.5 or assembler_level > 0.5:
+            time.sleep(0.01)
+
+        decoder_full = decoder_level >= 1
+        assembler_full = assembler_level >= 1
         while not self.shutdown and (decoder_full or assembler_full):
             # Only log/update once every second, to not waste any CPU-cycles
             if not logged_counter % 10:
@@ -566,8 +574,8 @@ class Downloader(Thread):
             # Wait and update the queue sizes
             time.sleep(0.1)
             logged_counter += 1
-            decoder_full = sabnzbd.Decoder.queue_full()
-            assembler_full = sabnzbd.Assembler.queue_full()
+            decoder_full = sabnzbd.Decoder.queue_level() >= 100
+            assembler_full = sabnzbd.Assembler.queue_level() >= 100
 
     def run(self):
         # First check IPv6 connectivity
@@ -757,26 +765,27 @@ class Downloader(Thread):
 
             if dl_threads > 1:
                 for nw, bytes_received, done in dl_pool.imap_unordered(self.__recv, read):
-                    if nw:
-                        self.__handle_recv_result(nw, bytes_received, done)
+                    self.__handle_recv_result(nw, bytes_received, done)
             else:
                 for selected in read:
                     nw, bytes_received, done = self.__recv(selected)
-                    if nw:
-                        self.__handle_recv_result(nw, bytes_received, done)
+                    self.__handle_recv_result(nw, bytes_received, done)
 
-    def __recv(self, selected) -> List:
+    def __recv(self, selected):
         nw = self.read_fds[selected]
         try:
             bytes_received, done = nw.recv_chunk()
             return nw, bytes_received, done
         except ssl.SSLWantReadError:
-            return None, None, None
+            return nw, 0, False
         except:
-            self.__reset_nw(nw, "server closed connection", wait=False)
-            return None, None, None
+            return nw, 0, True
 
-    def __handle_recv_result(self, nw: NewsWrapper, bytes_received: int = 0, done: bool = False) -> List:
+    def __handle_recv_result(self, nw: NewsWrapper, bytes_received: int = 0, done: bool = False):
+        if not bytes_received:
+            if done:
+                self.__reset_nw(nw, "server closed connection", wait=False)
+            return
         article = nw.article
         server = nw.server
         BPSMeter = sabnzbd.BPSMeter

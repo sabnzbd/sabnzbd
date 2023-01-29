@@ -110,9 +110,13 @@ class Decoder:
         sabnzbd.ArticleCache.reserve_space(raw_data_size)
         self.decoder_queue.put((article, raw_data, raw_data_size))
 
-    def queue_full(self) -> bool:
-        # Check if the queue size exceeds the limits
-        return self.decoder_queue.qsize() >= sabnzbd.ArticleCache.decoder_cache_article_limit
+    def queue_level(self) -> float:
+        # Return level of decoder queue. 0 = empty, >=1 = full.
+        size = self.decoder_queue.qsize()
+        if size:
+            return size / sabnzbd.ArticleCache.decoder_cache_article_limit
+        else:
+            return 0
 
 
 class DecoderWorker(Thread):
@@ -203,17 +207,20 @@ class DecoderWorker(Thread):
                     if not article_success:
                         # Convert the initial chunks of raw socket data to article lines,
                         # and examine the headers (for precheck) or body (for download).
-                        for line in b"".join(raw_data[:2]).split(b"\r\n"):
-                            lline = line.lower()
-                            if lline.startswith(b"message-id:"):
-                                article_success = True
-                            # Look for DMCA clues (while skipping "X-" headers)
-                            if not lline.startswith(b"x-") and match_str(
-                                lline, (b"dmca", b"removed", b"cancel", b"blocked")
-                            ):
-                                article_success = False
-                                logging.info("Article removed from server (%s)", art_id)
-                                break
+                        try:
+                            for line in b"".join(raw_data[:2]).split(b"\r\n"):
+                                lline = line.lower()
+                                if lline.startswith(b"message-id:"):
+                                    article_success = True
+                                # Look for DMCA clues (while skipping "X-" headers)
+                                if not lline.startswith(b"x-") and match_str(
+                                    lline, (b"dmca", b"removed", b"cancel", b"blocked")
+                                ):
+                                    article_success = False
+                                    logging.info("Article removed from server (%s)", art_id)
+                                    break
+                        except TypeError:
+                            article_success = False
 
                 # Pre-check, proper article found so just register
                 if nzo.precheck and article_success and sabnzbd.LOG_ALL:
