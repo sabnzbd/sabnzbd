@@ -170,11 +170,6 @@ class Assembler(Thread):
         1) Partial write: write what we have
         2) Nothing written before: write all
         """
-        # Run at most once per second unless the file is finished.
-        if nzf.next_assemble_time > time.time() and not file_done:
-            return
-        nzf.next_assemble_time = time.time() + 1
-
         # We write large article-sized chunks, so we can safely skip the buffering of Python
         with open(nzf.filepath, "ab", buffering=0) as fout:
             for article in nzf.decodetable:

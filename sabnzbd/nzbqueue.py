@@ -758,12 +758,14 @@ class NzbQueue:
         if file_done or (
             articles_left
             and (articles_left % DIRECT_WRITE_TRIGGER) == 0
+            and nzf.next_assemble_time < time.time()
             and not sabnzbd.Assembler.partial_nzf_in_queue(nzf)
         ):
             if not nzo.precheck:
                 # Only start decoding if we have a filename and type
                 # The type is only set if sabctools could decode the article
                 if nzf.filename and nzf.type:
+                    nzf.next_assemble_time = time.time() + 1
                     sabnzbd.Assembler.process(nzo, nzf, file_done)
                 elif nzf.filename.lower().endswith(".par2"):
                     # Broken par2 file, try to get another one
