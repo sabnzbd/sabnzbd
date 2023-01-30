@@ -47,7 +47,6 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
     Status,
     IGNORED_FILES_AND_FOLDERS,
-    DIRECT_WRITE_TRIGGER,
 )
 
 import sabnzbd.cfg as cfg
