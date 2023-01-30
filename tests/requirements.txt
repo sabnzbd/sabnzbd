@@ -14,3 +14,4 @@ tavalidate
 importlib_metadata
 lxml
 black
+pytest-mock

@@ -23,12 +23,15 @@ import os
 import time
 import logging
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
 import sabnzbd.filesystem as filesystem
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+
+VALID_EXTENSIONS = set(VALID_NZB_FILES + VALID_ARCHIVES)
 
 
 def compare_stat_tuple(tup1, tup2):
@@ -44,18 +47,10 @@ def compare_stat_tuple(tup1, tup2):
     return True
 
 
-def clean_file_list(inp_list, folder, files):
+def clean_file_list(inp_list, files):
     """Remove elements of "inp_list" not found in "files" """
-    for path in sorted(inp_list):
-        fld, name = os.path.split(path)
-        if fld == folder:
-            present = False
-            for name in files:
-                if os.path.join(folder, name) == path:
-                    present = True
-                    break
-            if not present:
-                del inp_list[path]
+    for path in set(inp_list.keys()).difference(files):
+        del inp_list[path]
 
 
 class DirScanner(threading.Thread):
@@ -124,90 +119,116 @@ class DirScanner(threading.Thread):
             if self.dirscan_speed and not self.shutdown:
                 self.scan()
 
+    def __listfiles(self, folder, catdir=None):
+        """Generator listing possible paths to NZB files"""
+
+        cats = config.get_categories() if catdir is None else {}
+
+        try:
+            with os.scandir(os.path.join(folder, catdir or "")) as it:
+                for entry in it:
+                    if self.shutdown:
+                        break
+
+                    path = entry.path
+
+                    if path in self.ignored:
+                        # We still need to know that an ignored file is still present when we clean up
+                        yield path, catdir, None
+                        continue
+
+                    # If the entry is a catdir then recursion
+                    if entry.is_dir():
+                        if not catdir and entry.name.lower() in cats:
+                            for result in self.__listfiles(folder, entry.name):
+                                yield result
+                        continue
+
+                    if filesystem.get_ext(path) in VALID_EXTENSIONS:
+                        try:
+                            # https://docs.python.org/3/library/os.html#os.DirEntry.stat
+                            # On Windows, the st_ino, st_dev and st_nlink attributes of the stat_result are always set
+                            # to zero. Call os.stat() to get these attributes.
+                            stat_tuple = os.stat(path) if sabnzbd.WIN32 else entry.stat()
+                        except OSError:
+                            continue
+                    else:
+                        self.ignored[path] = 1
+                        yield path, catdir, None
+                        continue
+
+                    if path in self.suspected:
+                        if not compare_stat_tuple(self.suspected[path], stat_tuple):
+                            # Suspected file attributes have changed
+                            del self.suspected[path]
+
+                    yield path, catdir, stat_tuple
+        except OSError:
+            if not self.error_reported and not catdir:
+                logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(folder))
+                self.error_reported = True
+
+    def __when_stable_add_nzbfile(self, path, catdir, stat_tuple):
+        """Try and import the NZB but wait until the attributes are stable for 1 second, but give up after 3 sec"""
+
+        logging.info("Trying to import %s", path)
+
+        # Wait until the attributes are stable for 1 second, but give up after 3 sec
+        # This indicates that the file is fully written to disk
+        for n in range(3):
+            with self.loop_condition:
+                self.loop_condition.wait(1.0)
+            if self.shutdown:
+                return
+
+            try:
+                stat_tuple_tmp = os.stat(path)
+            except OSError:
+                continue
+            if compare_stat_tuple(stat_tuple, stat_tuple_tmp):
+                break
+            stat_tuple = stat_tuple_tmp
+        else:
+            # Not stable
+            return
+
+        # Add the NZB's
+        res, _ = sabnzbd.nzbparser.add_nzbfile(path, catdir=catdir, keep=False)
+        if res < 0:
+            # Retry later, for example when we can't read the file
+            self.suspected[path] = stat_tuple
+        elif res == 0:
+            self.error_reported = False
+        else:
+            self.ignored[path] = 1
+
     def scan(self):
         """Do one scan of the watched folder"""
 
-        def run_dir(folder, catdir):
-            try:
-                files = os.listdir(folder)
-            except OSError:
-                if not self.error_reported and not catdir:
-                    logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(folder))
-                    self.error_reported = True
-                files = []
+        def run_dir(folder):
+            files = set()
 
-            for filename in files:
-                if self.shutdown:
-                    break
-                path = os.path.join(folder, filename)
-                if os.path.isdir(path) or path in self.ignored or filename[0] == ".":
-                    continue
+            with ThreadPoolExecutor() as executor:
+                for path, catdir, stat_tuple in self.__listfiles(folder):
+                    if self.shutdown:
+                        break
 
-                if filesystem.get_ext(path) in VALID_NZB_FILES + VALID_ARCHIVES:
-                    try:
-                        stat_tuple = os.stat(path)
-                    except OSError:
-                        continue
-                else:
-                    self.ignored[path] = 1
-                    continue
+                    files.add(path)
 
-                if path in self.suspected:
-                    if compare_stat_tuple(self.suspected[path], stat_tuple):
-                        # Suspected file still has the same attributes
-                        continue
-                    else:
-                        del self.suspected[path]
-
-                if stat_tuple.st_size > 0:
-                    logging.info("Trying to import %s", path)
-
-                    # Wait until the attributes are stable for 1 second, but give up after 3 sec
-                    # This indicates that the file is fully written to disk
-                    for n in range(3):
-                        time.sleep(1.0)
-                        try:
-                            stat_tuple_tmp = os.stat(path)
-                        except OSError:
-                            continue
-                        if compare_stat_tuple(stat_tuple, stat_tuple_tmp):
-                            break
-                        stat_tuple = stat_tuple_tmp
-                    else:
-                        # Not stable
+                    if path in self.ignored or path in self.suspected:
                         continue
 
-                    # Add the NZB's
-                    res, _ = sabnzbd.nzbparser.add_nzbfile(path, catdir=catdir, keep=False)
-                    if res < 0:
-                        # Retry later, for example when we can't read the file
-                        self.suspected[path] = stat_tuple
-                    elif res == 0:
-                        self.error_reported = False
-                    else:
-                        self.ignored[path] = 1
+                    if stat_tuple.st_size > 0:
+                        executor.submit(self.__when_stable_add_nzbfile, path, catdir, stat_tuple)
 
-            # Remove files from the bookkeeping that are no longer on the disk
-            clean_file_list(self.ignored, folder, files)
-            clean_file_list(self.suspected, folder, files)
+            if not self.shutdown:
+                # Remove files from the bookkeeping that are no longer on the disk
+                clean_file_list(self.ignored, files)
+                clean_file_list(self.suspected, files)
 
         if not self.busy:
             self.busy = True
             dirscan_dir = self.dirscan_dir
             if dirscan_dir and not sabnzbd.PAUSED_ALL:
-                run_dir(dirscan_dir, None)
-
-                try:
-                    dirscan_list = os.listdir(dirscan_dir)
-                except OSError:
-                    if not self.error_reported:
-                        logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(dirscan_dir))
-                        self.error_reported = True
-                    dirscan_list = []
-
-                cats = config.get_categories()
-                for dd in dirscan_list:
-                    dpath = os.path.join(dirscan_dir, dd)
-                    if os.path.isdir(dpath) and dd.lower() in cats:
-                        run_dir(dpath, dd.lower())
+                run_dir(dirscan_dir)
             self.busy = False

@@ -35,6 +35,7 @@ from string import ascii_lowercase, digits
 from unittest import mock
 from urllib3.exceptions import ProtocolError
 import xmltodict
+from functools import wraps
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -71,6 +72,7 @@ def set_config(settings_dict):
     """Change config-values on the fly, per test"""
 
     def set_config_decorator(func):
+        @wraps(func)
         def wrapper_func(*args, **kwargs):
             # Setting up as requested
             for item, val in settings_dict.items():
