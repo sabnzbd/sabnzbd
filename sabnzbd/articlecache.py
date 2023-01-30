@@ -44,6 +44,8 @@ class ArticleCache:
         # Limit for the decoder is based on the total available cache
         # so it can be larger on memory-rich systems
         self.decoder_cache_article_limit = 0
+        # nzbqueue will only add every direct_write_trigger-th article to the assembler queue
+        self.direct_write_trigger: int = 1
 
         # On 32 bit we only allow the user to set 1GB
         # For 64 bit we allow up to 4GB, in case somebody wants that
@@ -67,6 +69,8 @@ class ArticleCache:
         decoder_cache_limit = int(min(self.__cache_limit / 3 / MEBI, LIMIT_DECODE_QUEUE))
         # The cache should also not be too small
         self.decoder_cache_article_limit = max(decoder_cache_limit, MIN_DECODE_QUEUE)
+        # Set direct_write_trigger to 5% of the total cache, assuming an article size of 750 000 bytes
+        self.direct_write_trigger = int(self.__cache_limit / 15_00_000)
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int):
