@@ -26,7 +26,7 @@ from typing import Dict, List
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE
+from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE, DIRECT_WRITE_TRIGGER_PERCENT
 from sabnzbd.nzbstuff import Article
 
 # Operations on the article table are handled via try/except.
@@ -69,10 +69,9 @@ class ArticleCache:
         decoder_cache_limit = int(min(self.__cache_limit / 3 / MEBI, LIMIT_DECODE_QUEUE))
         # The cache should also not be too small
         self.decoder_cache_article_limit = max(decoder_cache_limit, MIN_DECODE_QUEUE)
-        # Set direct_write_trigger to 5% of the total cache, assuming an article size of 750 000 bytes
-        if self.__cache_limit >= 15_000_000:
-            self.direct_write_trigger = int(self.__cache_limit / 15_000_000)
-        else:
+        # Set direct_write_trigger to DIRECT_WRITE_TRIGGER_LIMIT % of the total cache, assuming an article size of 750 000 bytes
+        self.direct_write_trigger = int(self.__cache_limit * DIRECT_WRITE_TRIGGER_PERCENT / 100 / 750_000)
+        if not self.__cache_limit:
             self.direct_write_trigger = 1
 
     @synchronized(ARTICLE_COUNTER_LOCK)
