@@ -70,7 +70,10 @@ class ArticleCache:
         # The cache should also not be too small
         self.decoder_cache_article_limit = max(decoder_cache_limit, MIN_DECODE_QUEUE)
         # Set direct_write_trigger to 5% of the total cache, assuming an article size of 750 000 bytes
-        self.direct_write_trigger = int(self.__cache_limit / 15_00_000)
+        if self.__cache_limit >= 15_000_000:
+            self.direct_write_trigger = int(self.__cache_limit / 15_000_000)
+        else:
+            self.direct_write_trigger = 1
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int):
