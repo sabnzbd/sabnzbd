@@ -47,7 +47,6 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
     Status,
     IGNORED_FILES_AND_FOLDERS,
-    DIRECT_WRITE_TRIGGER,
 )
 
 import sabnzbd.cfg as cfg
@@ -757,7 +756,7 @@ class NzbQueue:
         # Skip if the file is already queued, since all available articles will then be written
         if file_done or (
             articles_left
-            and (articles_left % DIRECT_WRITE_TRIGGER) == 0
+            and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0
             and not sabnzbd.Assembler.partial_nzf_in_queue(nzf)
         ):
             if not nzo.precheck:
