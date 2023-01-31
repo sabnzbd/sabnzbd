@@ -203,17 +203,20 @@ class DecoderWorker(Thread):
                     if not article_success:
                         # Convert the initial chunks of raw socket data to article lines,
                         # and examine the headers (for precheck) or body (for download).
-                        for line in b"".join(raw_data[:2]).split(b"\r\n"):
-                            lline = line.lower()
-                            if lline.startswith(b"message-id:"):
-                                article_success = True
-                            # Look for DMCA clues (while skipping "X-" headers)
-                            if not lline.startswith(b"x-") and match_str(
-                                lline, (b"dmca", b"removed", b"cancel", b"blocked")
-                            ):
-                                article_success = False
-                                logging.info("Article removed from server (%s)", art_id)
-                                break
+                        try:
+                            for line in b"".join(raw_data[:2]).split(b"\r\n"):
+                                lline = line.lower()
+                                if lline.startswith(b"message-id:"):
+                                    article_success = True
+                                # Look for DMCA clues (while skipping "X-" headers)
+                                if not lline.startswith(b"x-") and match_str(
+                                    lline, (b"dmca", b"removed", b"cancel", b"blocked")
+                                ):
+                                    article_success = False
+                                    logging.info("Article removed from server (%s)", art_id)
+                                    break
+                        except TypeError:
+                            article_success = False
 
                 # Pre-check, proper article found so just register
                 if nzo.precheck and article_success and sabnzbd.LOG_ALL:
