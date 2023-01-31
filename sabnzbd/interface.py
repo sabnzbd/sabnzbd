@@ -880,6 +880,7 @@ SPECIAL_VALUE_LIST = (
     "wait_ext_drive",
     "max_foldername_length",
     "url_base",
+    "receive_threads",
     "num_simd_decoders",
     "direct_unpack_threads",
     "ipv6_servers",
