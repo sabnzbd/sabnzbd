@@ -551,6 +551,8 @@ class Downloader(Thread):
         # Sleep for an increasing amount of time, depending on queue sizes.
         if decoder_level > 0.5 or assembler_level > 0.5:
             time.sleep(decoder_level + assembler_level - 0.5)
+            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level >= 0.5)
+            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level >= 0.5)
 
         while not self.shutdown and (decoder_level >= 1 or assembler_level >= 1):
             # Only log/update once every second, to not waste any CPU-cycles
@@ -559,8 +561,6 @@ class Downloader(Thread):
                 sabnzbd.BPSMeter.update()
 
                 # Update who is delaying us
-                sabnzbd.BPSMeter.delayed_decoder += int(decoder_level >= 1)
-                sabnzbd.BPSMeter.delayed_assembler += int(assembler_level >= 1)
                 logging.debug(
                     "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
                     logged_counter / 10,
