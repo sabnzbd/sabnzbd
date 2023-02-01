@@ -774,10 +774,14 @@ class Downloader(Thread):
             if self.recv_threads > 1:
                 for nw, bytes_received, done in self.recv_pool.imap_unordered(self.__recv, read):
                     self.__handle_recv_result(nw, bytes_received, done)
+                if self.bandwidth_limit:
+                    self.__check_speed()
             else:
                 for selected in read:
                     nw, bytes_received, done = self.__recv(selected)
                     self.__handle_recv_result(nw, bytes_received, done)
+                    if self.bandwidth_limit and bytes_received:
+                        self.__check_speed()
 
     def __recv(self, selected):
         nw = self.read_fds[selected]
@@ -789,20 +793,23 @@ class Downloader(Thread):
         except:
             return nw, 0, True
 
+    def __check_speed(self):
+        BPSMeter = sabnzbd.BPSMeter
+        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
+            BPSMeter.update()
+            while BPSMeter.bps > self.bandwidth_limit:
+                time.sleep(0.01)
+                BPSMeter.update()
+
     def __handle_recv_result(self, nw: NewsWrapper, bytes_received: int = 0, done: bool = False):
         if not bytes_received:
             if done:
                 self.__reset_nw(nw, "server closed connection", wait=False)
             return
+
         article = nw.article
         server = nw.server
-        BPSMeter = sabnzbd.BPSMeter
-        BPSMeter.update(server.id, bytes_received)
-        if self.bandwidth_limit and BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
-            BPSMeter.update()
-            while BPSMeter.bps > self.bandwidth_limit:
-                time.sleep(0.01)
-                BPSMeter.update()
+        sabnzbd.BPSMeter.update(server.id, bytes_received)
 
         if nw.status_code != 222 and not done:
             if not nw.connected or nw.status_code == 480:
@@ -851,7 +858,7 @@ class Downloader(Thread):
             server.errormsg = server.warning = ""
 
             # Update statistics and decode
-            article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_position)
+            article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
             self.decode(article, nw.get_data_buffer(), nw.data_position)
 
             if sabnzbd.LOG_ALL:
