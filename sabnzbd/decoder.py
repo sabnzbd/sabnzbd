@@ -205,7 +205,6 @@ class DecoderWorker(Thread):
                         # and examine the headers (for precheck) or body (for download).
                         for line in raw_data[:2000].split(b"\r\n"):
                             lline = line.lower()
-                            logging.debug("Line %s", lline)
                             if lline.startswith(b"message-id:"):
                                 article_success = True
                             # Look for DMCA clues (while skipping "X-" headers)
