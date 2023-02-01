@@ -71,7 +71,6 @@ class Decoder:
     """Implement thread-like coordinator for the decoders"""
 
     def __init__(self):
-
         # Initialize queue and servers
         self.decoder_queue = queue.Queue()
 

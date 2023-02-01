@@ -116,7 +116,6 @@ class Server:
         optional=False,
         retention=0,
     ):
-
         self.id: str = server_id
         self.newid: Optional[str] = None
         self.restart: bool = False
