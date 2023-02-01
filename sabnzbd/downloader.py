@@ -554,25 +554,23 @@ class Downloader(Thread):
             sabnzbd.BPSMeter.delayed_decoder += int(decoder_level >= 0.5)
             sabnzbd.BPSMeter.delayed_assembler += int(assembler_level >= 0.5)
 
-        while not self.shutdown and (decoder_level >= 1 or assembler_level >= 1):
-            # Only log/update once every second, to not waste any CPU-cycles
-            if not logged_counter % 10:
-                # Make sure the BPS-meter is updated
-                sabnzbd.BPSMeter.update()
+            while not self.shutdown and (sabnzbd.Decoder.queue_level() >= 1 or sabnzbd.Assembler.queue_level() >= 1):
+                # Only log/update once every second, to not waste any CPU-cycles
+                if not logged_counter % 10:
+                    # Make sure the BPS-meter is updated
+                    sabnzbd.BPSMeter.update()
 
-                # Update who is delaying us
-                logging.debug(
-                    "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
-                    logged_counter / 10,
-                    sabnzbd.Decoder.decoder_queue.qsize(),
-                    sabnzbd.Assembler.queue.qsize(),
-                )
+                    # Update who is delaying us
+                    logging.debug(
+                        "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
+                        logged_counter / 10,
+                        sabnzbd.Decoder.decoder_queue.qsize(),
+                        sabnzbd.Assembler.queue.qsize(),
+                    )
 
-            # Wait and update the queue sizes
-            time.sleep(0.1)
-            logged_counter += 1
-            decoder_level = sabnzbd.Decoder.queue_level()
-            assembler_level = sabnzbd.Assembler.queue_level()
+                # Wait and update the queue sizes
+                time.sleep(0.1)
+                logged_counter += 1
 
     def run(self):
         # First check IPv6 connectivity
