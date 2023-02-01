@@ -116,7 +116,6 @@ class Server:
         optional=False,
         retention=0,
     ):
-
         self.id: str = server_id
         self.newid: Optional[str] = None
         self.restart: bool = False
@@ -549,8 +548,8 @@ class Downloader(Thread):
         assembler_level = sabnzbd.Assembler.queue_level()
 
         # Sleep for an increasing amount of time, depending on queue sizes.
-        if decoder_level > 0.5 or assembler_level > 0.5:
-            time.sleep(decoder_level + assembler_level - 0.5)
+        if decoder_level > 0.6 or assembler_level > 0.6:
+            time.sleep((decoder_level + assembler_level - 0.6) / 2)
             sabnzbd.BPSMeter.delayed_decoder += int(decoder_level >= 0.5)
             sabnzbd.BPSMeter.delayed_assembler += int(assembler_level >= 0.5)
 
