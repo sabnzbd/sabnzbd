@@ -95,7 +95,12 @@ class ArticleCache:
         if article.lowest_partnum and not article.nzf.import_finished:
             # Write the first-fetched articles to disk
             # Otherwise the cache could overflow
-            self.__flush_article_to_disk(article, data)
+            if article.nzf.filename_checked and self.space_left():
+                self.reserve_space(len(data))
+                self.__article_table[article] = data
+                sabnzbd.Assembler.process(nzo, article.nzf, False)
+            else:
+                self.__flush_article_to_disk(article, data)
             return
 
         if self.__cache_limit:
