@@ -98,7 +98,6 @@ class ArticleCache:
             if article.nzf.filename_checked and self.space_left():
                 self.reserve_space(len(data))
                 self.__article_table[article] = data
-                sabnzbd.Assembler.process(nzo, article.nzf, False)
             else:
                 self.__flush_article_to_disk(article, data)
             return
