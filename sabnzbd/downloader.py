@@ -28,7 +28,8 @@ import socket
 import random
 import sys
 import ssl
-from typing import List, Dict, Optional, Union
+import collections
+from typing import List, Dict, Optional, Union, Deque
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -152,7 +153,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        self.article_queue: List[sabnzbd.nzbstuff.Article] = []
+        self.article_queue: Deque[sabnzbd.nzbstuff.Article] = collections.deque()
 
         # Skip during server testing
         if threads:
@@ -223,17 +224,17 @@ class Server:
         """Get article from pre-fetched and pre-fetch new ones if necessary.
         Articles that are too old for this server are immediately marked as tried"""
         if self.article_queue:
-            return self.article_queue.pop(0)
+            return self.article_queue.popleft()
         elif self.next_article_search < time.time():
             # Pre-fetch new articles
             self.article_queue = sabnzbd.NzbQueue.get_articles(self, sabnzbd.Downloader.servers, _ARTICLE_PREFETCH)
             if self.article_queue:
-                article = self.article_queue.pop(0)
+                article = self.article_queue.popleft()
                 # Mark expired articles as tried on this server
                 if self.retention and article.nzf.nzo.avg_stamp < time.time() - self.retention:
                     sabnzbd.Downloader.decode(article)
                     while self.article_queue:
-                        sabnzbd.Downloader.decode(self.article_queue.pop())
+                        sabnzbd.Downloader.decode(self.article_queue.popleft())
                 else:
                     return article
             else:
@@ -245,7 +246,7 @@ class Server:
         logging.debug("Resetting article queue for %s", self)
         for article in self.article_queue:
             sabnzbd.NzbQueue.reset_try_lists(article, remove_fetcher_from_trylist=False)
-        self.article_queue = []
+        self.article_queue = collections.deque()
 
     def _request_info_internal(self):
         """Async attempt to run getaddrinfo() for specified server"""

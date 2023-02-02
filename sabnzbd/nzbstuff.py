@@ -18,6 +18,7 @@
 """
 sabnzbd.nzbstuff - misc
 """
+
 import os
 import time
 import re
@@ -26,7 +27,8 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO
+import collections
+from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO, Deque
 
 # SABnzbd modules
 import sabnzbd
@@ -403,9 +405,9 @@ class NzbFile(TryList):
         else:
             self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> Deque[Article]:
         """Get next articles to be downloaded"""
-        articles = []
+        articles = collections.deque()
         for article in self.articles:
             article = article.get_article(server, servers)
             if article:
@@ -1596,8 +1598,8 @@ class NzbObject(TryList):
         self.nzo_info[bad_article_type] += 1
         self.bad_articles += 1
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
-        articles = []
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> Deque[Article]:
+        articles = collections.deque()
         nzf_remove_list = []
 
         # Did we go through all first-articles?

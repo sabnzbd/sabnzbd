@@ -23,7 +23,8 @@ import os
 import logging
 import time
 import cherrypy._cpreqbody
-from typing import List, Dict, Union, Tuple, Optional
+import collections
+from typing import List, Dict, Union, Tuple, Optional, Deque
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject, Article
@@ -711,7 +712,7 @@ class NzbQueue:
                 return False
         return False
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> Deque[Article]:
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """
@@ -732,8 +733,8 @@ class NzbQueue:
                             return articles
                     # Stop after first job that wasn't paused/propagating/etc
                     if self.__top_only:
-                        return []
-        return []
+                        return collections.deque()
+        return collections.deque()
 
     def register_article(self, article: Article, success: bool = True):
         """Register the articles we tried
