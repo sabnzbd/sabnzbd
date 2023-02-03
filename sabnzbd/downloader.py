@@ -55,6 +55,7 @@ _SERVER_CHECK_DELAY = 0.5
 _BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
 _ARTICLE_PREFETCH = 20
+_QSLOWDOWN_LEVEL = 0.6
 
 TIMER_LOCK = RLock()
 
@@ -548,10 +549,10 @@ class Downloader(Thread):
         assembler_level = sabnzbd.Assembler.queue_level()
 
         # Sleep for an increasing amount of time, depending on queue sizes.
-        if decoder_level > 0.6 or assembler_level > 0.6:
-            time.sleep((decoder_level + assembler_level - 0.6) / 2)
-            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level >= 0.5)
-            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level >= 0.5)
+        if decoder_level > _QSLOWDOWN_LEVEL or assembler_level > _QSLOWDOWN_LEVEL:
+            time.sleep((decoder_level + assembler_level - _QSLOWDOWN_LEVEL) / 2)
+            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level >= _QSLOWDOWN_LEVEL)
+            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level >= _QSLOWDOWN_LEVEL)
 
             while not self.shutdown and (sabnzbd.Decoder.queue_level() >= 1 or sabnzbd.Assembler.queue_level() >= 1):
                 # Only log/update once every second, to not waste any CPU-cycles
