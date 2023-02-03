@@ -716,14 +716,15 @@ class Downloader(Thread):
                         logging.debug("Slept %.5f seconds, sleep_time = %s", now - time_before, self.sleep_time)
                     time_slept += now - time_before
                     sleep_count += 1
-                    if sleep_count_start + 10 < now:
-                        logging.debug(
-                            "Slept %d times for an average of %.5f seconds the last %.2f seconds. sleep_time = %s",
-                            sleep_count,
-                            time_slept / sleep_count,
-                            now - sleep_count_start,
-                            self.sleep_time,
-                        )
+                    if sleep_count_start + 20 < now:
+                        if sleep_count > 21:
+                            logging.debug(
+                                "Slept %d times for an average of %.5f seconds the last %.2f seconds. sleep_time = %s",
+                                sleep_count,
+                                time_slept / sleep_count,
+                                now - sleep_count_start,
+                                self.sleep_time,
+                            )
                         sleep_count_start = now
                         sleep_count = 0
                         time_slept = 0
