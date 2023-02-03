@@ -48,7 +48,6 @@ start_time = NSDate.date()
 
 
 class SABnzbdDelegate(NSObject):
-
     icons = {}
     status_bar = None
     history_db = None

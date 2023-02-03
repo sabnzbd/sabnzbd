@@ -394,7 +394,6 @@ class ConfigServer:
     """Class defining a single server"""
 
     def __init__(self, name, values):
-
         self.__name = clean_section_name(name)
         name = "servers," + self.__name
 

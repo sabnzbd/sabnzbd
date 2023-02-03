@@ -352,7 +352,6 @@ class SeriesSorter(BaseSorter):
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ):
-
         super().__init__(nzo, job_name, path, cat, cfg.tv_sort_string(), cfg.tv_categories(), guess, force)
 
     def match(self):
@@ -506,7 +505,6 @@ class DateSorter(BaseSorter):
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ):
-
         super().__init__(nzo, job_name, path, cat, cfg.date_sort_string(), cfg.date_categories(), guess, force)
 
     def match(self):

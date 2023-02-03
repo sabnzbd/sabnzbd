@@ -55,7 +55,10 @@ _SERVER_CHECK_DELAY = 0.5
 _BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
 _ARTICLE_PREFETCH = 20
+# Minimum decoder or assembler queue level before slowing down download. 1 = full
 _QSLOWDOWN_LEVEL = 0.6
+# Minimum expected size of TCP receive buffer
+_DEFAULT_CHUNK_SIZE = 65536
 
 TIMER_LOCK = RLock()
 
@@ -551,8 +554,8 @@ class Downloader(Thread):
         # Sleep for an increasing amount of time, depending on queue sizes.
         if decoder_level > _QSLOWDOWN_LEVEL or assembler_level > _QSLOWDOWN_LEVEL:
             time.sleep((decoder_level + assembler_level - _QSLOWDOWN_LEVEL) / 2)
-            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level >= _QSLOWDOWN_LEVEL)
-            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level >= _QSLOWDOWN_LEVEL)
+            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level > _QSLOWDOWN_LEVEL)
+            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level > _QSLOWDOWN_LEVEL)
 
             while not self.shutdown and (sabnzbd.Decoder.queue_level() >= 1 or sabnzbd.Assembler.queue_level() >= 1):
                 # Only log/update once every second, to not waste any CPU-cycles
@@ -590,10 +593,13 @@ class Downloader(Thread):
         BPSMeter.update()
         next_bpsmeter_update = 0
 
-        # can_be_slowed variables
-        can_be_slowed: Optional[float] = None
-        can_be_slowed_timer: float = 0.0
-        next_stable_speed_check: float = 0.0
+        # Sleep check variables
+        last_max_chunk_size: int = 0
+        max_chunk_size: int = _DEFAULT_CHUNK_SIZE
+        # Debugging code for v4 test release
+        sleep_count_start: float = time.time()
+        sleep_count: int = 0
+        time_slept: float = 0
 
         # Check server expiration dates
         check_server_expiration()
@@ -702,43 +708,44 @@ class Downloader(Thread):
                     logging.info("Shutting down")
                     break
 
+            # If less data than possible was received then it should be ok to sleep a bit
+            if self.sleep_time:
+                if last_max_chunk_size > max_chunk_size:
+                    logging.debug("New max_chunk_size %d -> %d", max_chunk_size, last_max_chunk_size)
+                    max_chunk_size = last_max_chunk_size
+                elif last_max_chunk_size < max_chunk_size / 3:
+                    time_before = time.time()
+                    time.sleep(self.sleep_time)
+                    now = time.time()
+                    # Debugging code for v4 test release
+                    if now - time_before > self.sleep_time + 0.01:
+                        logging.debug("Slept %.5f seconds, sleep_time = %s", now - time_before, self.sleep_time)
+                    time_slept += now - time_before
+                    sleep_count += 1
+                    if sleep_count_start + 20 < now:
+                        if sleep_count > 21:
+                            logging.debug(
+                                "Slept %d times for an average of %.5f seconds the last %.2f seconds. sleep_time = %s",
+                                sleep_count,
+                                time_slept / sleep_count,
+                                now - sleep_count_start,
+                                self.sleep_time,
+                            )
+                        sleep_count_start = now
+                        sleep_count = 0
+                        time_slept = 0
+
+                last_max_chunk_size = 0
+
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
             if readkeys:
                 read, _, _ = select.select(readkeys, (), (), 1.0)
-
-                # Add a sleep if there are too few results compared to the number of active connections
-                if self.sleep_time:
-                    if can_be_slowed and len(read) < 1 + len(readkeys) / 10:
-                        time.sleep(self.sleep_time)
-
-                    # Initialize by waiting for stable speed and then enable sleep
-                    if can_be_slowed is None or can_be_slowed_timer:
-                        # Wait for stable speed to start testing
-
-                        if not can_be_slowed_timer and now > next_stable_speed_check:
-                            if BPSMeter.get_stable_speed(timespan=10):
-                                can_be_slowed_timer = now + 8
-                                can_be_slowed = 1
-                            else:
-                                next_stable_speed_check = now + _BPSMETER_UPDATE_DELAY
-
-                        # Check 10 seconds after enabling slowdown
-                        if can_be_slowed_timer and now > can_be_slowed_timer:
-                            # Now let's check if it was stable in the last 10 seconds
-                            can_be_slowed = BPSMeter.get_stable_speed(timespan=10)
-                            can_be_slowed_timer = 0
-                            if not can_be_slowed:
-                                self.sleep_time = 0
-                            logging.debug("Downloader-slowdown: %r", can_be_slowed)
-
             else:
                 read = []
-
                 BPSMeter.reset()
-
                 time.sleep(1.0)
-
+                max_chunk_size = _DEFAULT_CHUNK_SIZE
                 with DOWNLOADER_CV:
                     while (
                         (sabnzbd.NzbQueue.is_empty() or self.no_active_jobs() or self.paused_for_postproc)
@@ -762,6 +769,8 @@ class Downloader(Thread):
 
                 try:
                     bytes_received, done = nw.recv_chunk()
+                    if bytes_received > last_max_chunk_size:
+                        last_max_chunk_size = bytes_received
                 except ssl.SSLWantReadError:
                     continue
                 except:

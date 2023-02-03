@@ -364,7 +364,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.exists(test_input)
 
         list_of_files = []
-        for (dirpath, dirnames, filenames) in os.walk(test_dir):
+        for dirpath, dirnames, filenames in os.walk(test_dir):
             list_of_files += [os.path.join(dirpath, file) for file in filenames]
         # Run deobfuscate
         recover_par2_names(list_of_files)
@@ -389,7 +389,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(os.path.join(work_dir, "aaaaaaaaaaa"))  # a 20MB no-name file ...
 
         list_of_files = []
-        for (dirpath, dirnames, filenames) in os.walk(work_dir):
+        for dirpath, dirnames, filenames in os.walk(work_dir):
             list_of_files += [os.path.join(dirpath, file) for file in filenames]
 
         # deobfuscate will do:

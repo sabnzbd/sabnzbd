@@ -100,7 +100,6 @@ class TestValidators:
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
 
     def test_validate_host(self):
-
         # valid input
         assert cfg.validate_host("127.0.0.1") == (None, "127.0.0.1")
         assert cfg.validate_host("0.0.0.0") == (None, "0.0.0.0")

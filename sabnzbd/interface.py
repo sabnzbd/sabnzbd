@@ -959,7 +959,6 @@ class ConfigGeneral:
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
-
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION

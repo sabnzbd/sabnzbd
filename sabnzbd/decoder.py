@@ -71,7 +71,6 @@ class Decoder:
     """Implement thread-like coordinator for the decoders"""
 
     def __init__(self):
-
         # Initialize queue and servers
         self.decoder_queue = queue.Queue()
 
@@ -187,7 +186,7 @@ class DecoderWorker(Thread):
 
             except (BadYenc, ValueError):
                 # Handles precheck and badly formed articles
-                if nzo.precheck and raw_data and raw_data[0].startswith(b"223 "):
+                if nzo.precheck and raw_data and raw_data.startswith(b"223 "):
                     # STAT was used, so we only get a status code
                     article_success = True
                 else:
@@ -201,9 +200,9 @@ class DecoderWorker(Thread):
                             pass
                     # Only bother with further checks if uu-decoding didn't work out
                     if not article_success:
-                        # Convert the initial chunks of raw socket data to article lines,
+                        # Convert the first 2000 bytes of raw socket data to article lines,
                         # and examine the headers (for precheck) or body (for download).
-                        for line in b"".join(raw_data[:2]).split(b"\r\n"):
+                        for line in raw_data[:2000].split(b"\r\n"):
                             lline = line.lower()
                             if lline.startswith(b"message-id:"):
                                 article_success = True
