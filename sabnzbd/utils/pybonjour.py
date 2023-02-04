@@ -561,7 +561,6 @@ _DNSServiceQueryRecordReply = _CFunc(
 
 
 def _create_function_bindings():
-
     ERRCHECK = True
     NO_ERRCHECK = False
 
@@ -805,7 +804,6 @@ def _length_and_void_p_to_string(length, void_p):
 def DNSServiceProcessResult(
     sdRef,
 ):
-
     """
 
     Read a reply from the daemon, calling the appropriate application
@@ -834,7 +832,6 @@ def DNSServiceProcessResult(
 
 
 def DNSServiceEnumerateDomains(flags, interfaceIndex=kDNSServiceInterfaceIndexAny, callBack=None):
-
     """
 
     Asynchronously enumerate domains available for browsing and
@@ -915,7 +912,6 @@ def DNSServiceRegister(
     txtRecord="",
     callBack=None,
 ):
-
     """
 
     Register a service that is discovered via DNSServiceBrowse() and
@@ -1065,7 +1061,6 @@ def DNSServiceRegister(
 
 
 def DNSServiceAddRecord(sdRef, flags=0, rrtype=_NO_DEFAULT, rdata=_NO_DEFAULT, ttl=0):
-
     """
 
     Add a record to a registered service.  The name of the record will
@@ -1124,7 +1119,6 @@ def DNSServiceAddRecord(sdRef, flags=0, rrtype=_NO_DEFAULT, rdata=_NO_DEFAULT, t
 
 
 def DNSServiceUpdateRecord(sdRef, RecordRef=None, flags=0, rdata=_NO_DEFAULT, ttl=0):
-
     """
 
     Update a registered resource record.  The record must either be:
@@ -1166,7 +1160,6 @@ def DNSServiceUpdateRecord(sdRef, RecordRef=None, flags=0, rdata=_NO_DEFAULT, tt
 
 
 def DNSServiceRemoveRecord(sdRef, RecordRef, flags=0):
-
     """
 
     Remove a record previously added to a service record set via
@@ -1200,7 +1193,6 @@ def DNSServiceRemoveRecord(sdRef, RecordRef, flags=0):
 def DNSServiceBrowse(
     flags=0, interfaceIndex=kDNSServiceInterfaceIndexAny, regtype=_NO_DEFAULT, domain=None, callBack=None
 ):
-
     """
 
     Browse for instances of a service.
@@ -1306,7 +1298,6 @@ def DNSServiceBrowse(
 def DNSServiceResolve(
     flags=0, interfaceIndex=_NO_DEFAULT, name=_NO_DEFAULT, regtype=_NO_DEFAULT, domain=_NO_DEFAULT, callBack=None
 ):
-
     """
 
     Resolve a service name discovered via DNSServiceBrowse() to a
@@ -1417,7 +1408,6 @@ def DNSServiceResolve(
 
 
 def DNSServiceCreateConnection():
-
     """
 
     Create a connection to the daemon allowing efficient registration
@@ -1449,7 +1439,6 @@ def DNSServiceRegisterRecord(
     ttl=0,
     callBack=None,
 ):
-
     """
 
     Register an individual resource record on a connected
@@ -1554,7 +1543,6 @@ def DNSServiceQueryRecord(
     rrclass=kDNSServiceClass_IN,
     callBack=None,
 ):
-
     """
 
     Query for an arbitrary DNS record.
@@ -1661,7 +1649,6 @@ def DNSServiceReconfirmRecord(
     rrclass=kDNSServiceClass_IN,
     rdata=_NO_DEFAULT,
 ):
-
     """
 
     Instruct the daemon to verify the validity of a resource record
@@ -1708,7 +1695,6 @@ def DNSServiceReconfirmRecord(
 
 
 def DNSServiceConstructFullName(service=None, regtype=_NO_DEFAULT, domain=_NO_DEFAULT):
-
     r"""
 
     Concatenate a three-part domain name (as returned by a callback

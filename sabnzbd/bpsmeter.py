@@ -434,40 +434,6 @@ class BPSMeter:
         # We record every second, but display at the user's refresh-rate
         return self.bps_list[::refresh_rate]
 
-    def get_stable_speed(self, timespan: int = 10) -> Optional[int]:
-        """See if there is a stable speed the last <timespan> seconds
-        None: indicates it can't determine yet
-        0: the speed was not stable during <timespan>
-        Positive float: the speed was stable
-        """
-        if len(self.bps_list) < timespan:
-            return None
-
-        # Check if speed fell by more than 15%
-        try:
-            if self.bps_list[-1] / self.bps_list[-timespan] < 0.85:
-                return 0
-        except:
-            pass
-
-        # Calculate the variance in the speed
-        avg = sum(self.bps_list[-timespan:]) / timespan
-        vari = 0
-        for bps in self.bps_list[-timespan:]:
-            vari += abs(bps - avg)
-        vari = vari / timespan
-
-        try:
-            # See if the variance is less than 5%
-            if (vari / (self.bps / KIBI)) < 0.05:
-                return avg
-            else:
-                return 0
-        except:
-            # Probably one of the values was 0
-            pass
-        return None
-
     def reset_quota(self, force: bool = False):
         """Check if it's time to reset the quota, optionally resuming
         Return True, when still paused or should be paused

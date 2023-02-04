@@ -54,7 +54,6 @@ def diskspeedmeasure(dirname: str) -> float:
 
 
 if __name__ == "__main__":
-
     print("Let's go")
 
     if len(sys.argv) >= 2:
