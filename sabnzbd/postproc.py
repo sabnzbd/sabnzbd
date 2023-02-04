@@ -234,6 +234,10 @@ class PostProcessor(Thread):
         directory_is_writable(sabnzbd.cfg.download_dir.get_path())
         directory_is_writable(sabnzbd.cfg.complete_dir.get_path())
 
+        # Do an extra purge of the history on startup to ensure timely removal on systems that
+        # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
+        database.scheduled_history_purge()
+
         # Start looping
         check_eoq = False
         while not self.__stop:
