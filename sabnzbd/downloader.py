@@ -37,6 +37,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, get_server_addrinfo, helpful_warning, int_conv
 from sabnzbd.utils.happyeyeballs import happyeyeballs
+from sabnzbd.constants import SOFT_QUEUE_LIMIT
 
 
 # Timeout penalty in minutes for each cause
@@ -55,8 +56,6 @@ _SERVER_CHECK_DELAY = 0.5
 _BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
 _ARTICLE_PREFETCH = 20
-# Minimum decoder or assembler queue level before slowing down download. 1 = full
-_QSLOWDOWN_LEVEL = 0.6
 # Minimum expected size of TCP receive buffer
 _DEFAULT_CHUNK_SIZE = 65536
 
@@ -552,10 +551,10 @@ class Downloader(Thread):
         assembler_level = sabnzbd.Assembler.queue_level()
 
         # Sleep for an increasing amount of time, depending on queue sizes.
-        if decoder_level > _QSLOWDOWN_LEVEL or assembler_level > _QSLOWDOWN_LEVEL:
-            time.sleep((decoder_level + assembler_level - _QSLOWDOWN_LEVEL) / 2)
-            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level > _QSLOWDOWN_LEVEL)
-            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level > _QSLOWDOWN_LEVEL)
+        if decoder_level > SOFT_QUEUE_LIMIT or assembler_level > SOFT_QUEUE_LIMIT:
+            time.sleep((decoder_level + assembler_level - SOFT_QUEUE_LIMIT) / 2)
+            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level > SOFT_QUEUE_LIMIT)
+            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level > SOFT_QUEUE_LIMIT)
 
             while not self.shutdown and (sabnzbd.Decoder.queue_level() >= 1 or sabnzbd.Assembler.queue_level() >= 1):
                 # Only log/update once every second, to not waste any CPU-cycles
