@@ -554,7 +554,7 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
     return item
 
 
-def midnight_history_purge():
+def scheduled_history_purge():
     logging.info("Scheduled history purge")
     with HistoryDB() as history_db:
         history_db.auto_history_purge()
