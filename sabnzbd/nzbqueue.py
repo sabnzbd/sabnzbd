@@ -755,10 +755,14 @@ class NzbQueue:
 
         # Write data if file is done or at trigger time
         # Skip if the file is already queued, since all available articles will then be written
-        if file_done or (
-            articles_left
-            and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0
-            and not sabnzbd.Assembler.partial_nzf_in_queue(nzf)
+        if (
+            file_done
+            or (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
+            or (
+                articles_left
+                and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0
+                and not sabnzbd.Assembler.partial_nzf_in_queue(nzf)
+            )
         ):
             if not nzo.precheck:
                 # Only start decoding if we have a filename and type

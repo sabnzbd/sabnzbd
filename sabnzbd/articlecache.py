@@ -98,9 +98,10 @@ class ArticleCache:
         # Register article for bookkeeping in case the job is deleted
         nzo.add_saved_article(article)
 
-        if article.lowest_partnum and not article.nzf.import_finished:
-            # Write the first-fetched articles to disk
-            # Otherwise the cache could overflow
+        if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
+            # Write the first-fetched articles to temporary file unless downloading
+            # of the rest of the parts has started or filename is verified.
+            # Otherwise the cache could overflow.
             self.__flush_article_to_disk(article, data)
             return
 
