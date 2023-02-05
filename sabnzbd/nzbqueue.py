@@ -757,7 +757,7 @@ class NzbQueue:
         # Skip if the file is already queued, since all available articles will then be written
         if (
             file_done
-            or (article.lowest_partnum and nzf.filename_checked and not article.nzf.import_finished)
+            or (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
             or (
                 articles_left
                 and (articles_left % DIRECT_WRITE_TRIGGER) == 0
