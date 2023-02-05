@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.7.2 Release Candidate 1
+Release Notes - SABnzbd 3.7.2
 =========================================================
 
 ## Bugfixes and changes since 3.7.1
@@ -7,6 +7,7 @@ Release Notes - SABnzbd 3.7.2 Release Candidate 1
 - Apply other changes only after updating the `Category` in multi-edit.
 - Categories were not sorted correctly in dropdowns.
 - Prevent crash when `Automatically sort queue` was enabled.
+- Apply `History Retention` setting during startup.
 - Tweaks to download performance.
 - Linux: Update appstream metadata.
 
