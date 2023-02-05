@@ -93,8 +93,9 @@ class ArticleCache:
         nzo.add_saved_article(article)
 
         if article.lowest_partnum and not article.nzf.import_finished:
-            # Write the first-fetched articles to disk
-            # Otherwise the cache could overflow
+            # If the filename is verified and there is room left then the first part
+            # will be saved to the correct file immediately, so it's kept in cache.
+            # Otherwise it will be saved temporarily to save cache space.
             if article.nzf.filename_checked and self.space_left():
                 self.reserve_space(len(data))
                 self.__article_table[article] = data
