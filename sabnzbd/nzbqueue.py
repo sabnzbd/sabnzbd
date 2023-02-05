@@ -47,7 +47,6 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
     Status,
     IGNORED_FILES_AND_FOLDERS,
-    DIRECT_WRITE_TRIGGER,
 )
 
 import sabnzbd.cfg as cfg
@@ -584,7 +583,8 @@ class NzbQueue:
             logging.info("Sorting by average date... (reversed: %s)", reverse)
             sort_function = lambda nzo: nzo.avg_date
         elif field == "remaining":
-            logging.debug("Sorting by percentage downloaded...")
+            if self.__nzo_list:
+                logging.debug("Sorting by percentage downloaded...")
             sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
         else:
             logging.debug("Sort: %s not recognized", field)
@@ -760,7 +760,7 @@ class NzbQueue:
             or (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
             or (
                 articles_left
-                and (articles_left % DIRECT_WRITE_TRIGGER) == 0
+                and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0
                 and not sabnzbd.Assembler.partial_nzf_in_queue(nzf)
             )
         ):

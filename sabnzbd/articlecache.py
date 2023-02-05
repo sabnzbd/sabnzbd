@@ -26,7 +26,7 @@ from typing import Dict, List
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE
+from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE, ASSEMBLER_WRITE_THRESHOLD
 from sabnzbd.nzbstuff import Article
 
 # Operations on the article table are handled via try/except.
@@ -44,6 +44,8 @@ class ArticleCache:
         # Limit for the decoder is based on the total available cache
         # so it can be larger on memory-rich systems
         self.decoder_cache_article_limit = 0
+
+        self.assembler_write_trigger: int = 1
 
         # On 32 bit we only allow the user to set 1GB
         # For 64 bit we allow up to 4GB, in case somebody wants that
@@ -67,6 +69,10 @@ class ArticleCache:
         decoder_cache_limit = int(min(self.__cache_limit / 3 / MEBI, LIMIT_DECODE_QUEUE))
         # The cache should also not be too small
         self.decoder_cache_article_limit = max(decoder_cache_limit, MIN_DECODE_QUEUE)
+
+        # Set assembler_write_trigger to be the equivalent of ASSEMBLER_WRITE_THRESHOLD %
+        # of the total cache, assuming an article size of 750 000 bytes
+        self.assembler_write_trigger = int(self.__cache_limit * ASSEMBLER_WRITE_THRESHOLD / 100 / 750_000) + 1
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int):
