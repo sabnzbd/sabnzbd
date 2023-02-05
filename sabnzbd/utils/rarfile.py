@@ -1193,7 +1193,6 @@ class CommonParser(object):
         return DirectReader(self, inf)
 
     def _open_hack_core(self, inf, psw, prefix, suffix):
-
         size = inf.compress_size + inf.header_size
         rf = XFile(inf.volume_file, 0)
         rf.seek(inf.header_offset)
@@ -1461,7 +1460,6 @@ class RAR3Parser(CommonParser):
         return pos
 
     def _read_comment_v3(self, inf, psw=None):
-
         # read data
         with XFile(inf.volume_file) as rf:
             rf.seek(inf.data_offset)

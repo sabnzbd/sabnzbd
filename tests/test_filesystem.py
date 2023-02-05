@@ -193,7 +193,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername(" . .") == "unknown"
 
     def test_filename_too_long(self):
-
         # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
         # but we stay on the safe side: max DEF_FILE_MAX bytes
 

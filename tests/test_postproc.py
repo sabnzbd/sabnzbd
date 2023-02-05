@@ -16,10 +16,8 @@ from tests.testhelper import *
 
 
 class TestPostProc:
-
     # Tests of rar_renamer() (=deobfuscate) against various input directories
     def test_rar_renamer(self):
-
         # Function to deobfuscate one directory with rar_renamer()
         def deobfuscate_dir(sourcedir, expected_filename_matches):
             # We create a workingdir inside the sourcedir, because the filenames are really changed
