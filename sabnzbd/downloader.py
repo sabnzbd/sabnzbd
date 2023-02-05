@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -116,7 +116,6 @@ class Server:
         optional=False,
         retention=0,
     ):
-
         self.id: str = server_id
         self.newid: Optional[str] = None
         self.restart: bool = False
@@ -754,124 +753,24 @@ class Downloader(Thread):
                 server = nw.server
 
                 try:
-                    bytes_received, done, skip = nw.recv_chunk()
-                except:
-                    bytes_received, done, skip = (0, False, False)
-
-                if skip:
+                    bytes_received, done = nw.recv_chunk()
+                except ssl.SSLWantReadError:
                     continue
-
-                if bytes_received < 1:
+                except:
                     self.__reset_nw(nw, "server closed connection", wait=False)
                     continue
-                else:
-                    BPSMeter.update(server.id, bytes_received)
 
-                    if self.bandwidth_limit:
-                        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
-                            BPSMeter.update()
-                            while BPSMeter.bps > self.bandwidth_limit:
-                                time.sleep(0.01)
-                                BPSMeter.update()
+                BPSMeter.update(server.id, bytes_received)
+                if self.bandwidth_limit and BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
+                    BPSMeter.update()
+                    while BPSMeter.bps > self.bandwidth_limit:
+                        time.sleep(0.01)
+                        BPSMeter.update()
 
                 if nw.status_code != 222 and not done:
                     if not nw.connected or nw.status_code == 480:
-                        try:
-                            nw.finish_connect(nw.status_code)
-                            if sabnzbd.LOG_ALL:
-                                logging.debug(
-                                    "%s@%s last message -> %s", nw.thrdnum, nw.server.host, nntp_to_msg(nw.data)
-                                )
-                            nw.clear_data()
-                        except NNTPPermanentError as error:
-                            # Handle login problems
-                            block = False
-                            penalty = 0
-                            display_msg = " [%s]" % error.msg
-                            logging.debug("Server login problem: %s", error.msg)
-                            if error.code in (502, 400, 481, 482) and clues_too_many(error.msg):
-                                # Too many connections: remove this thread and reduce thread-setting for server
-                                # Plan to go back to the full number after a penalty timeout
-                                if server.active:
-                                    errormsg = T("Too many connections to server %s") % display_msg
-                                    if server.errormsg != errormsg:
-                                        server.errormsg = errormsg
-                                        logging.warning(T("Too many connections to server %s"), server.host)
-                                    # Don't count this for the tries (max_art_tries) on this server
-                                    self.__reset_nw(nw, send_quit=True)
-                                    self.plan_server(server, _PENALTY_TOOMANY)
-                                    server.threads -= 1
-                            elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
-                                # Account sharing?
-                                if server.active:
-                                    errormsg = T("Probable account sharing") + display_msg
-                                    if server.errormsg != errormsg:
-                                        server.errormsg = errormsg
-                                        name = " (%s)" % server.host
-                                        logging.warning(T("Probable account sharing") + name)
-                                penalty = _PENALTY_SHARE
-                                block = True
-                            elif error.code in (452, 481, 482, 381) or (
-                                error.code in (500, 502) and clues_login(error.msg)
-                            ):
-                                # Cannot login, block this server
-                                if server.active:
-                                    errormsg = T("Failed login for server %s") % display_msg
-                                    if server.errormsg != errormsg:
-                                        server.errormsg = errormsg
-                                        logging.error(T("Failed login for server %s"), server.host)
-                                penalty = _PENALTY_PERM
-                                block = True
-                            elif error.code in (502, 482):
-                                # Cannot connect (other reasons), block this server
-                                if server.active:
-                                    errormsg = T("Cannot connect to server %s [%s]") % ("", error.msg)
-                                    if server.errormsg != errormsg:
-                                        server.errormsg = errormsg
-                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
-                                if clues_pay(error.msg):
-                                    penalty = _PENALTY_PERM
-                                else:
-                                    penalty = _PENALTY_502
-                                block = True
-                            elif error.code == 400:
-                                # Temp connection problem?
-                                if server.active:
-                                    logging.debug("Unspecified error 400 from server %s", server.host)
-                                penalty = _PENALTY_VERYSHORT
-                                block = True
-                            else:
-                                # Unknown error, just keep trying
-                                if server.active:
-                                    errormsg = T("Cannot connect to server %s [%s]") % ("", display_msg)
-                                    if server.errormsg != errormsg:
-                                        server.errormsg = errormsg
-                                        logging.warning(T("Cannot connect to server %s [%s]"), server.host, error.msg)
-                                penalty = _PENALTY_UNKNOWN
-                                block = True
-                            if block or (penalty and server.optional):
-                                retry_article = False
-                                if server.active:
-                                    if server.required:
-                                        sabnzbd.Scheduler.plan_required_server_resume()
-                                        retry_article = True
-                                    else:
-                                        server.deactivate()
-                                        if penalty and (block or server.optional):
-                                            self.plan_server(server, penalty)
-                                # Note that the article is discard for this server if the server is not required
-                                self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
+                        if not self.__finish_connect_nw(nw):
                             continue
-                        except:
-                            logging.error(
-                                T("Connecting %s@%s failed, message=%s"),
-                                nw.thrdnum,
-                                nw.server.host,
-                                nntp_to_msg(nw.data),
-                            )
-                            # No reset-warning needed, above logging is sufficient
-                            self.__reset_nw(nw, retry_article=False)
-
                         if nw.connected:
                             logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
                             self.__request_article(nw)
@@ -926,6 +825,87 @@ class Downloader(Thread):
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
                     self.remove_socket(nw)
+
+    def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
+        server = nw.server
+        try:
+            nw.finish_connect(nw.status_code)
+            if sabnzbd.LOG_ALL:
+                logging.debug("%s@%s last message -> %s", nw.thrdnum, server.host, nntp_to_msg(nw.data))
+            nw.clear_data()
+        except NNTPPermanentError as error:
+            # Handle login problems
+            block = False
+            penalty = 0
+            errormsg = None
+            logging.debug("Server login problem: %s", error.msg)
+            if error.code in (502, 400, 481, 482) and clues_too_many(error.msg):
+                # Too many connections: remove this thread and reduce thread-setting for server
+                # Plan to go back to the full number after a penalty timeout
+                errormsg = T("Too many connections to server %s [%s]") % (server.host, error.msg)
+                if server.active:
+                    # Don't count this for the tries (max_art_tries) on this server
+                    self.__reset_nw(nw, send_quit=True)
+                    self.plan_server(server, _PENALTY_TOOMANY)
+                    server.threads -= 1
+            elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
+                # Login from (too many) different IP addresses
+                errormsg = T(
+                    "Login from too many different IP addresses to server %s [%s] - https://sabnzbd.org/multiple-adresses"
+                ) % (server.host, error.msg)
+                penalty = _PENALTY_SHARE
+                block = True
+            elif error.code in (452, 481, 482, 381) or (error.code in (500, 502) and clues_login(error.msg)):
+                # Cannot login, block this server
+                errormsg = T("Failed login for server %s [%s]") % (server.host, error.msg)
+                penalty = _PENALTY_PERM
+                block = True
+            elif error.code in (502, 482):
+                # Cannot connect (other reasons), block this server
+                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
+                if clues_pay(error.msg):
+                    penalty = _PENALTY_PERM
+                else:
+                    penalty = _PENALTY_502
+                block = True
+            elif error.code == 400:
+                # Temp connection problem?
+                logging.debug("Unspecified error 400 from server %s", server.host)
+                penalty = _PENALTY_VERYSHORT
+                block = True
+            else:
+                # Unknown error, just keep trying
+                errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
+                penalty = _PENALTY_UNKNOWN
+                block = True
+            if block or (penalty and server.optional):
+                retry_article = False
+                if server.active:
+                    if server.required:
+                        sabnzbd.Scheduler.plan_required_server_resume()
+                        retry_article = True
+                    else:
+                        server.deactivate()
+                        if penalty and (block or server.optional):
+                            self.plan_server(server, penalty)
+                # Note that the article is discard for this server if the server is not required
+                self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
+
+            # Set error for server and warn user if it was first time thrown
+            if errormsg and server.active and server.errormsg != errormsg:
+                server.errormsg = errormsg
+                logging.warning(errormsg)
+            return False
+        except:
+            logging.error(
+                T("Connecting %s@%s failed, message=%s"),
+                nw.thrdnum,
+                nw.server.host,
+                nntp_to_msg(nw.data),
+            )
+            # No reset-warning needed, above logging is sufficient
+            self.__reset_nw(nw, retry_article=False)
+        return True
 
     def __reset_nw(
         self,

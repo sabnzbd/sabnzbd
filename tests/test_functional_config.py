@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -158,7 +158,6 @@ class TestConfigLogin(SABnzbdBaseTest):
 
 
 class TestConfigCategories(SABnzbdBaseTest):
-
     category_name = "testCat"
 
     def test_page(self):
@@ -175,7 +174,6 @@ class TestConfigCategories(SABnzbdBaseTest):
 
 
 class TestConfigRSS(SABnzbdBaseTest):
-
     rss_name = "_SeleniumFeed"
 
     def test_rss_basic_flow(self, httpserver: HTTPServer):
@@ -255,7 +253,6 @@ class TestConfigRSS(SABnzbdBaseTest):
 
 
 class TestConfigServers(SABnzbdBaseTest):
-
     server_name = "_SeleniumServer"
 
     def open_config_servers(self):

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -193,7 +193,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername(" . .") == "unknown"
 
     def test_filename_too_long(self):
-
         # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
         # but we stay on the safe side: max DEF_FILE_MAX bytes
 

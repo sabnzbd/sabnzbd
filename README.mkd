@@ -1,5 +1,15 @@
-Release Notes - SABnzbd 3.7.1
+Release Notes - SABnzbd 3.7.2
 =========================================================
+
+## Bugfixes and changes since 3.7.1
+- Ignore permissions inside archives during unpacking by UnRar.
+- Improvements to connection error messages.
+- Apply other changes only after updating the `Category` in multi-edit.
+- Categories were not sorted correctly in dropdowns.
+- Prevent crash when `Automatically sort queue` was enabled.
+- Apply `History Retention` setting during startup.
+- Tweaks to download performance.
+- Linux: Update appstream metadata.
 
 ## Bugfixes and changes since 3.7.0
 - Minor improvements in download performance.
@@ -61,4 +71,4 @@ Release Notes - SABnzbd 3.7.1
   that automatically verify, repair, extract and clean up posts downloaded
   from Usenet.
 
-  (c) Copyright 2007-2022 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2023 by "The SABnzbd-team" \<team@sabnzbd.org\>

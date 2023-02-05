@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2022 The SABnzbd-Team
+# Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
 #
 # Translators:
@@ -10,14 +10,14 @@
 # Andreas Kames, 2021
 # Simon W., 2021
 # Nils Briggen, 2022
-# Safihre <safihre@sabnzbd.org>, 2022
 # reloxx13 <reloxx@interia.pl>, 2022
-# 
+# Safihre <safihre@sabnzbd.org>, 2023
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: reloxx13 <reloxx@interia.pl>, 2022\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -455,7 +455,6 @@ msgstr ""
 "Bevor ein Bandbreitenlimit gesetzt werden kann, muss die maximale Bandbreite"
 " festgelegt werden"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Verbindung zum Server %s kann nicht hergestellt werden. %s"
@@ -479,20 +478,19 @@ msgstr "Es gibt keine aktiven Server!"
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Fehler %s@%s zu initialisieren, aus folgendem Grund: %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
-msgstr "Zu viele Verbindungen zu Server %s"
+msgid "Too many connections to server %s [%s]"
+msgstr "Zu viele Verbindungen zu Server %s [%s]"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Möglicherweise wird das Konto geteilt"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
-#. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
-msgstr "Anmelden beim Server fehlgeschlagen. %s"
+msgid "Failed login for server %s [%s]"
+msgstr "Anmelden beim Server fehlgeschlagen. %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -3125,6 +3123,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "System Folders"
 msgstr "System-Ordner"
+
+#: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"

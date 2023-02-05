@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -352,7 +352,6 @@ class SeriesSorter(BaseSorter):
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ):
-
         super().__init__(nzo, job_name, path, cat, cfg.tv_sort_string(), cfg.tv_categories(), guess, force)
 
     def match(self):
@@ -506,7 +505,6 @@ class DateSorter(BaseSorter):
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ):
-
         super().__init__(nzo, job_name, path, cat, cfg.date_sort_string(), cfg.date_categories(), guess, force)
 
     def match(self):

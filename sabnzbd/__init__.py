@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -195,6 +195,7 @@ CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
+
 
 ##############################################################################
 # Signal Handler

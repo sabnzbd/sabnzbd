@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2022 The SABnzbd-Team
+# Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2022
-# 
+# Safihre <safihre@sabnzbd.org>, 2023
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.8.0-develop\n"
@@ -418,7 +418,6 @@ msgstr "Pauset"
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "Du må sette maks båndbredde før du kan sette en båndbreddebegrensning"
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr "Kan ikke koble til server %s [%s]"
@@ -442,20 +441,19 @@ msgstr ""
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Feilet å starte %s@%s grunnet: %s"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
-msgstr "For mange tilkoblinger til server %s"
+msgid "Too many connections to server %s [%s]"
+msgstr "For mange tilkoblinger til server %s [%s]"
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
-msgstr "Mistenkt kontodeling"
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
 
-#. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
-msgstr "Kunne ikke logge inn på server %s"
+msgid "Failed login for server %s [%s]"
+msgstr "Kunne ikke logge inn på server %s [%s]"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -3006,6 +3004,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "System Folders"
 msgstr "Systemmapper"
+
+#: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"

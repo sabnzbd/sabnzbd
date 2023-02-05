@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -414,7 +414,6 @@ class DirectUnpacker(threading.Thread):
                 "%s\\" % long_path(extraction_path),
             ]
         else:
-            # Don't use "-ai" (not needed for non-Windows)
             # The -scf forces the output to be UTF8
             command = [
                 sabnzbd.newsunpack.RAR_COMMAND,
@@ -423,6 +422,7 @@ class DirectUnpacker(threading.Thread):
                 "-idp",
                 "-scf",
                 "-o+",
+                "-ai",
                 password_command,
                 rarfile_path,
                 "%s/" % extraction_path,

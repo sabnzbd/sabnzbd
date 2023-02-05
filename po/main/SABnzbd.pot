@@ -1,6 +1,6 @@
 #
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2022 The SABnzbd-Team
+# Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
 #
 msgid ""
@@ -393,7 +393,6 @@ msgstr ""
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/downloader.py
 msgid "Cannot connect to server %s [%s]"
 msgstr ""
@@ -417,19 +416,16 @@ msgstr ""
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Too many connections to server %s"
+msgid "Too many connections to server %s [%s]"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/downloader.py
-msgid "Probable account sharing"
+msgid "Login from too many different IP addresses to server %s [%s] - https://sabnzbd.org/multiple-adresses"
 msgstr ""
 
-#. Error message
 #: sabnzbd/downloader.py
-msgid "Failed login for server %s"
+msgid "Failed login for server %s [%s]"
 msgstr ""
 
 #. Error message
@@ -2826,6 +2822,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "System Folders"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Hidden Folders"
 msgstr ""
 
 #: sabnzbd/skintext.py

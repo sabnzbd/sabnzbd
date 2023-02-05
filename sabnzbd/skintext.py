@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -389,6 +389,7 @@ SKIN_TEXT = {
     "opt-password_file": TT("Password file"),
     "explain-password_file": TT("File containing all passwords to be tried on encrypted RAR files."),
     "systemFolders": TT("System Folders"),
+    "hiddenFolders": TT("Hidden Folders"),
     "opt-admin_dir": TT("Administrative Folder"),
     "explain-admin_dir1": TT(
         "Location for queue admin and history database.<br /><i>Can only be changed when queue is empty.</i>"

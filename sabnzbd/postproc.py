@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -233,6 +233,10 @@ class PostProcessor(Thread):
 
         directory_is_writable(sabnzbd.cfg.download_dir.get_path())
         directory_is_writable(sabnzbd.cfg.complete_dir.get_path())
+
+        # Do an extra purge of the history on startup to ensure timely removal on systems that
+        # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
+        database.scheduled_history_purge()
 
         # Start looping
         check_eoq = False

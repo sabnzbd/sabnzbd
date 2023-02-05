@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -959,7 +959,6 @@ class ConfigGeneral:
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
-
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -394,7 +394,6 @@ class ConfigServer:
     """Class defining a single server"""
 
     def __init__(self, name, values):
-
         self.__name = clean_section_name(name)
         name = "servers," + self.__name
 
@@ -713,7 +712,9 @@ def get_dconfig(section, keyword, nested=False):
             sect = CFG_DATABASE[section]
         except KeyError:
             return False, {}
-        if section in ("servers", "categories", "rss"):
+        if section == "categories":
+            data[section] = get_ordered_categories()
+        elif section in ("servers", "rss"):
             data[section] = []
             for keyword in sect.keys():
                 res, conf = get_dconfig(section, keyword, True)

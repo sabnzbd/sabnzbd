@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -209,7 +209,7 @@ class Scheduler:
         if sabnzbd.misc.int_conv(cfg.history_retention()) > 0:
             logging.info("Setting schedule for midnight auto history-purge")
             self.scheduler.add_daytime_task(
-                sabnzbd.database.midnight_history_purge, "midnight_history_purge", DAILY_RANGE, None, (0, 0)
+                sabnzbd.database.scheduled_history_purge, "midnight_history_purge", DAILY_RANGE, None, (0, 0)
             )
 
         logging.info("Setting schedule for midnight BPS reset")

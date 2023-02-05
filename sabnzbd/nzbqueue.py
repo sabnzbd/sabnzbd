@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -585,7 +585,7 @@ class NzbQueue:
             sort_function = lambda nzo: nzo.avg_date
         elif field == "remaining":
             logging.debug("Sorting by percentage downloaded...")
-            sort_function = lambda nzo: nzo.remaining / nzo.bytes
+            sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
         else:
             logging.debug("Sort: %s not recognized", field)
             return

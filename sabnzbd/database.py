@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2022 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -554,7 +554,7 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
     return item
 
 
-def midnight_history_purge():
+def scheduled_history_purge():
     logging.info("Scheduled history purge")
     with HistoryDB() as history_db:
         history_db.auto_history_purge()

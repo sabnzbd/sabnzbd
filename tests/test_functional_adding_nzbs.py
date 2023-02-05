@@ -246,6 +246,7 @@ class TestAddingNZBs:
 
     def _expected_results(self, STAGES, return_state=None):
         """Figure out what priority and state the job should end up with"""
+
         # Define a bunch of helpers
         def sanitize_stages(hit_stage, STAGES):
             # Fallback is always category-based, so nix any explicit priorities (stages 1, 3).
