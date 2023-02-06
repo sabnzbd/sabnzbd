@@ -59,6 +59,11 @@ CONFIG_BACKUP_FILES = [
     RSS_FILE_NAME,
     DB_HISTORY_NAME,
 ]
+CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
+    "server.cert": "https_cert",
+    "server.key": "https_key",
+    "server.chain": "https_chain",
+}
 
 DEF_DOWNLOAD_DIR = os.path.normpath("Downloads/incomplete")
 DEF_COMPLETE_DIR = os.path.normpath("Downloads/complete")

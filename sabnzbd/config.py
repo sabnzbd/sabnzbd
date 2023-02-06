@@ -34,7 +34,14 @@ from urllib.parse import urlparse
 import configobj
 
 import sabnzbd
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, CONFIG_BACKUP_FILES, DEF_INI_FILE
+from sabnzbd.constants import (
+    CONFIG_VERSION,
+    NORMAL_PRIORITY,
+    DEFAULT_PRIORITY,
+    CONFIG_BACKUP_FILES,
+    CONFIG_BACKUP_HTTPS,
+    DEF_INI_FILE,
+)
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
@@ -943,6 +950,17 @@ def create_config_backup() -> Union[str, bool]:
                     if os.path.isfile(full_path):
                         with open(full_path, "rb") as data:
                             zip_ref.writestr(filename, data.read())
+                for filename, setting in CONFIG_BACKUP_HTTPS.items():
+                    full_path = getattr(sabnzbd.cfg, setting).get_path()
+                    # Only accept HTTPS config files that were successfully loaded by cherrypy on
+                    # startup to protect against last-minute breaking config changes as well as
+                    # inclusion of unrelated files in the backup through manipulated settings.
+                    if full_path and os.path.isfile(full_path) and full_path in sabnzbd.CONFIG_BACKUP_HTTPS_OK:
+                        logging.debug("Adding %s file %s to backup", setting, full_path)
+                        with open(full_path, "rb") as data:
+                            # Add the https cert/key/chain files with a fixed relative filename,
+                            # regardless of where they are actually stored on the filesystem
+                            zip_ref.writestr(filename, data.read())
                 with open(CFG_OBJ.filename, "rb") as data:
                     zip_ref.writestr(DEF_INI_FILE, data.read())
         return clip_path(complete_path)
@@ -965,6 +983,7 @@ def validate_config_backup(config_backup_data: bytes) -> bool:
 
 def restore_config_backup(config_backup_data: bytes):
     """Restore configuration files from zip file"""
+    global CFG_MODIFIED
     try:
         with io.BytesIO(config_backup_data) as backup_ref:
             with zipfile.ZipFile(backup_ref, "r") as zip_ref:
@@ -977,16 +996,22 @@ def restore_config_backup(config_backup_data: bytes):
 
                 # Write the rest of the admin files that we want to recover
                 adminpath = sabnzbd.cfg.admin_dir.get_path()
-                for filename in CONFIG_BACKUP_FILES:
+                for filename in CONFIG_BACKUP_FILES + list(CONFIG_BACKUP_HTTPS.keys()):
                     try:
                         zip_ref.getinfo(filename)
                         destination_file = os.path.join(adminpath, filename)
                         logging.debug("Writing backup of %s to %s", filename, destination_file)
                         with open(destination_file, "wb") as destination_ref:
                             destination_ref.write(zip_ref.read(filename))
+                        # For HTTPS config files, point the associated setting to the restored file
+                        if setting := CONFIG_BACKUP_HTTPS.get(filename):
+                            logging.debug("Setting value of %s to restored file %s", setting, filename)
+                            getattr(sabnzbd.cfg, setting).set(filename)
+                            CFG_MODIFIED = True
                     except KeyError:
                         # File not in archive
                         pass
+                save_config()
     except:
         logging.warning(T("Could not restore backup"))
         logging.info("Traceback: ", exc_info=True)

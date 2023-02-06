@@ -77,6 +77,7 @@ from sabnzbd.constants import (
     DEF_LOG_FILE,
     DEF_STD_CONFIG,
     DEF_LOG_CHERRY,
+    CONFIG_BACKUP_HTTPS,
 )
 import sabnzbd.newsunpack
 from sabnzbd.misc import (
@@ -1445,6 +1446,12 @@ def main():
         # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
         abort_and_show_error(browserhost, cherryport)
+
+    # Create a record of the active cert/key/chain files, for use with config.create_config_backup()
+    if enable_https:
+        for setting in CONFIG_BACKUP_HTTPS.values():
+            if full_path := getattr(sabnzbd.cfg, setting).get_path():
+                sabnzbd.CONFIG_BACKUP_HTTPS_OK.append(full_path)
 
     if sabnzbd.WIN32:
         if enable_https:

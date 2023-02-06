@@ -190,6 +190,9 @@ DOWNLOAD_DIR_SPEED = 0
 COMPLETE_DIR_SPEED = 0
 INTERNET_BANDWIDTH = 0
 
+# Record of HTTPS config files at startup
+CONFIG_BACKUP_HTTPS_OK = []
+
 # Rendering of original command line arguments in Config
 CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
 
