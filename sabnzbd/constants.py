@@ -54,17 +54,6 @@ SABCTOOLS_VERSION_REQUIRED = "6.0.0"
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
 
-CONFIG_BACKUP_FILES = [
-    BYTES_FILE_NAME,
-    RSS_FILE_NAME,
-    DB_HISTORY_NAME,
-]
-CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
-    "server.cert": "https_cert",
-    "server.key": "https_key",
-    "server.chain": "https_chain",
-}
-
 DEF_DOWNLOAD_DIR = os.path.normpath("Downloads/incomplete")
 DEF_COMPLETE_DIR = os.path.normpath("Downloads/complete")
 DEF_ADMIN_DIR = "admin"
@@ -87,8 +76,21 @@ DEF_ARTICLE_CACHE_DEFAULT = "500M"
 DEF_ARTICLE_CACHE_MAX = "1G"
 DEF_TIMEOUT = 60
 DEF_SCANRATE = 5
+DEF_HTTPS_CERT_FILE = "server.cert"
+DEF_HTTPS_KEY_FILE = "server.key"
 MAX_WARNINGS = 20
 MAX_BAD_ARTICLES = 5
+
+CONFIG_BACKUP_FILES = [
+    BYTES_FILE_NAME,
+    RSS_FILE_NAME,
+    DB_HISTORY_NAME,
+]
+CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
+    DEF_HTTPS_CERT_FILE: "https_cert",
+    DEF_HTTPS_KEY_FILE: "https_key",
+    "server.chain": "https_chain",
+}
 
 # Constants affecting download performance
 MIN_DECODE_QUEUE = 10

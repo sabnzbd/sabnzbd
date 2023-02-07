@@ -70,7 +70,13 @@ import sabnzbd.newsunpack
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.getperformance import getcpu
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import DEF_STD_CONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
+from sabnzbd.constants import (
+    DEF_STD_CONFIG,
+    DEFAULT_PRIORITY,
+    CHEETAH_DIRECTIVES,
+    EXCLUDED_GUESSIT_PROPERTIES,
+    DEF_HTTPS_CERT_FILE,
+)
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
@@ -979,6 +985,7 @@ class ConfigGeneral:
 
         conf["language"] = cfg.language()
         conf["lang_list"] = list_languages()
+        conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
 
         for kw in GENERAL_LIST:
             conf[kw] = config.get_config("misc", kw)()

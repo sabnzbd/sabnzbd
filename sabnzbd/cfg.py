@@ -47,6 +47,8 @@ from sabnzbd.constants import (
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
     DEF_STD_WEB_COLOR,
+    DEF_HTTPS_CERT_FILE,
+    DEF_HTTPS_KEY_FILE,
 )
 
 
@@ -279,8 +281,8 @@ bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
 web_dir = OptionStr("misc", "web_dir", DEF_STD_WEB_DIR)
 web_color = OptionStr("misc", "web_color", DEF_STD_WEB_COLOR)
-https_cert = OptionDir("misc", "https_cert", "server.cert", create=False)
-https_key = OptionDir("misc", "https_key", "server.key", create=False)
+https_cert = OptionDir("misc", "https_cert", DEF_HTTPS_CERT_FILE, create=False)
+https_key = OptionDir("misc", "https_key", DEF_HTTPS_KEY_FILE, create=False)
 https_chain = OptionDir("misc", "https_chain", create=False)
 enable_https = OptionBool("misc", "enable_https", False)
 # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
