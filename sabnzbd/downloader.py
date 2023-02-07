@@ -37,6 +37,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, get_server_addrinfo, helpful_warning, int_conv
 from sabnzbd.utils.happyeyeballs import happyeyeballs
+from sabnzbd.constants import SOFT_QUEUE_LIMIT
 
 
 # Timeout penalty in minutes for each cause
@@ -545,29 +546,33 @@ class Downloader(Thread):
 
         # See if we need to delay because the queues are full
         logged_counter = 0
-        decoder_full = sabnzbd.Decoder.queue_full()
-        assembler_full = sabnzbd.Assembler.queue_full()
-        while not self.shutdown and (decoder_full or assembler_full):
-            # Only log/update once every second, to not waste any CPU-cycles
-            if not logged_counter % 10:
-                # Make sure the BPS-meter is updated
-                sabnzbd.BPSMeter.update()
 
-                # Update who is delaying us
-                sabnzbd.BPSMeter.delayed_decoder += int(decoder_full)
-                sabnzbd.BPSMeter.delayed_assembler += int(assembler_full)
-                logging.debug(
-                    "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
-                    logged_counter / 10,
-                    sabnzbd.Decoder.decoder_queue.qsize(),
-                    sabnzbd.Assembler.queue.qsize(),
-                )
+        decoder_level = sabnzbd.Decoder.queue_level()
+        assembler_level = sabnzbd.Assembler.queue_level()
 
-            # Wait and update the queue sizes
-            time.sleep(0.1)
-            logged_counter += 1
-            decoder_full = sabnzbd.Decoder.queue_full()
-            assembler_full = sabnzbd.Assembler.queue_full()
+        # Sleep for an increasing amount of time, depending on queue sizes.
+        if decoder_level > SOFT_QUEUE_LIMIT or assembler_level > SOFT_QUEUE_LIMIT:
+            time.sleep((decoder_level + assembler_level - SOFT_QUEUE_LIMIT) / 2)
+            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level > SOFT_QUEUE_LIMIT)
+            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level > SOFT_QUEUE_LIMIT)
+
+            while not self.shutdown and (sabnzbd.Decoder.queue_level() >= 1 or sabnzbd.Assembler.queue_level() >= 1):
+                # Only log/update once every second, to not waste any CPU-cycles
+                if not logged_counter % 10:
+                    # Make sure the BPS-meter is updated
+                    sabnzbd.BPSMeter.update()
+
+                    # Update who is delaying us
+                    logging.debug(
+                        "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
+                        logged_counter / 10,
+                        sabnzbd.Decoder.decoder_queue.qsize(),
+                        sabnzbd.Assembler.queue.qsize(),
+                    )
+
+                # Wait and update the queue sizes
+                time.sleep(0.1)
+                logged_counter += 1
 
     def run(self):
         # First check IPv6 connectivity

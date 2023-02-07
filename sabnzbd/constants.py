@@ -88,7 +88,8 @@ MAX_BAD_ARTICLES = 5
 # Constants affecting download performance
 MIN_DECODE_QUEUE = 10
 LIMIT_DECODE_QUEUE = 100
-MAX_ASSEMBLER_QUEUE = 5
+MAX_ASSEMBLER_QUEUE = 10
+SOFT_QUEUE_LIMIT = 0.6
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_WRITE_THRESHOLD = 5
 NNTP_BUFFER_SIZE = int(800 * KIBI)

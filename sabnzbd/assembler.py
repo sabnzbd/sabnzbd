@@ -55,11 +55,8 @@ class Assembler(Thread):
     def process(self, nzo: NzbObject, nzf: Optional[NzbFile] = None, file_done: Optional[bool] = None):
         self.queue.put((nzo, nzf, file_done))
 
-    def queue_full(self):
-        return self.queue.qsize() >= MAX_ASSEMBLER_QUEUE
-
-    def partial_nzf_in_queue(self, nzf: NzbFile):
-        return (nzf.nzo, nzf, False) in self.queue.queue
+    def queue_level(self) -> float:
+        return self.queue.qsize() / MAX_ASSEMBLER_QUEUE
 
     def run(self):
         while 1:

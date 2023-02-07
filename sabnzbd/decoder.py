@@ -109,9 +109,9 @@ class Decoder:
         sabnzbd.ArticleCache.reserve_space(raw_data_size)
         self.decoder_queue.put((article, raw_data, raw_data_size))
 
-    def queue_full(self) -> bool:
-        # Check if the queue size exceeds the limits
-        return self.decoder_queue.qsize() >= sabnzbd.ArticleCache.decoder_cache_article_limit
+    def queue_level(self) -> float:
+        # Return level of decoder queue. 0 = empty, >=1 = full.
+        return self.decoder_queue.qsize() / sabnzbd.ArticleCache.decoder_cache_article_limit
 
 
 class DecoderWorker(Thread):
