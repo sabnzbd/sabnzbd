@@ -185,8 +185,8 @@ class TestConfig:
         assert os.path.exists(key_file)
 
         # Copy cert and key to create a second set of https config files outside the admin dir
-        other_cert_file = os.path.join(SAB_CACHE_DIR, "foobar.ใบรับรอง")
-        other_key_file = os.path.join(SAB_CACHE_DIR, "foobar.สำคัญ")
+        other_cert_file = os.path.join(SAB_CACHE_DIR, "foobar.mycert")
+        other_key_file = os.path.join(SAB_CACHE_DIR, "foobar.mykey")
         shutil.copyfile(cert_file, other_key_file)
         shutil.copyfile(key_file, other_cert_file)
         assert os.path.exists(other_cert_file)
