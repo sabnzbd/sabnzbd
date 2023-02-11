@@ -67,8 +67,7 @@ def is_listed_ext(ext: str, ext_list: list) -> bool:
     thus return false for extensions such as 'r007' despite the substring match on 'r00').
     """
     for item in ext_list:
-        RE_EXT = sabnzbd.misc.convert_filter(item)
-        if RE_EXT:
+        if RE_EXT := sabnzbd.misc.convert_filter(item):
             try:
                 if len(RE_EXT.match(ext).group()) == len(ext):
                     return True
@@ -622,8 +621,7 @@ def set_chmod(path: str, permissions: int, allow_failures: bool = False):
 def set_permissions(path: str, recursive: bool = True):
     """Give folder tree and its files their proper permissions"""
     if not sabnzbd.WIN32:
-        custom_permissions = sabnzbd.cfg.permissions()
-        if custom_permissions:
+        if custom_permissions := sabnzbd.cfg.permissions():
             # If user set permissions, parse them
             custom_permissions = int(custom_permissions, 8)
 
@@ -1220,8 +1218,7 @@ def backup_exists(filename: str) -> bool:
 
 def backup_nzb(nzb_path: str):
     """Backup NZB file, return path to nzb if it was saved"""
-    nzb_backup_dir = sabnzbd.cfg.nzb_backup_dir.get_path()
-    if nzb_backup_dir:
+    if nzb_backup_dir := sabnzbd.cfg.nzb_backup_dir.get_path():
         logging.debug("Saving copy of %s in %s", get_filename(nzb_path), nzb_backup_dir)
         shutil.copy(nzb_path, nzb_backup_dir)
 

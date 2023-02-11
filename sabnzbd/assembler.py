@@ -74,9 +74,7 @@ class Assembler(Thread):
                     self.diskspace_check(nzo, nzf)
 
                 # Prepare filepath
-                filepath = nzf.prepare_filepath()
-
-                if filepath:
+                if filepath := nzf.prepare_filepath():
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)

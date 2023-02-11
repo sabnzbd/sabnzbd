@@ -534,8 +534,7 @@ def process_job(nzo: NzbObject):
                     deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
 
                 # Run the user script
-                script_path = make_script_path(script)
-                if script_path:
+                if script_path := make_script_path(script):
                     # Set the current nzo status to "Ext Script...". Used in History
                     nzo.status = Status.RUNNING
                     nzo.set_action_line(T("Running script"), script)
@@ -543,10 +542,9 @@ def process_job(nzo: NzbObject):
                     script_log, script_ret = external_processing(
                         script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
                     )
-                    script_line = get_last_line(script_log)
                     if script_log:
                         script_output = nzo.nzo_id
-                    if script_line:
+                    if script_line := get_last_line(script_log):
                         nzo.set_unpack_info("Script", script_line, unique=True)
                     else:
                         nzo.set_unpack_info("Script", T("Ran %s") % script, unique=True)
@@ -911,7 +909,7 @@ def rar_renamer(nzo: NzbObject) -> int:
         file_to_check = os.path.join(nzo.download_path, file_to_check)
 
         # We only want files:
-        if not (os.path.isfile(file_to_check)):
+        if not os.path.isfile(file_to_check):
             continue
 
         if rarfile.is_rarfile(file_to_check):
@@ -1211,8 +1209,7 @@ def rename_and_collapse_folder(oldpath, newpath, files):
 
 def set_marker(folder: str) -> Optional[str]:
     """Set marker file and return name"""
-    name = cfg.marker_file()
-    if name:
+    if name := cfg.marker_file():
         path = os.path.join(folder, name)
         logging.debug("Create marker file %s", path)
         try:

@@ -400,15 +400,13 @@ def get_user_profile_paths():
         return
 
     elif sabnzbd.MACOS:
-        home = os.environ.get("HOME")
-        if home:
+        if home := os.environ.get("HOME"):
             sabnzbd.DIR_LCLDATA = "%s/Library/Application Support/SABnzbd" % home
             sabnzbd.DIR_HOME = home
             return
     else:
         # Unix/Linux
-        home = os.environ.get("HOME")
-        if home:
+        if home := os.environ.get("HOME"):
             sabnzbd.DIR_LCLDATA = "%s/.%s" % (home, DEF_WORKDIR)
             sabnzbd.DIR_HOME = home
             return
