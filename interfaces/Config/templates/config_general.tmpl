@@ -375,7 +375,7 @@
     })
 
     // Only allow re-generate if default certs
-    if(\$('#https_cert').val() != 'server.cert') {
+    if(\$('#https_cert').val() != '$def_https_cert_file') {
         \$('.generate_cert').attr('disabled', 'disabled')
     }
 
