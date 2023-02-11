@@ -145,8 +145,7 @@ class DirScanner(threading.Thread):
                     # If the entry is a catdir then recursion
                     if entry.is_dir():
                         if not catdir and entry.name.lower() in cats:
-                            for result in self.__listfiles(folder, entry.name):
-                                yield result
+                            yield from self.get_suspected_files(folder, entry.name)
                         continue
 
                     if filesystem.get_ext(path) in VALID_EXTENSIONS:
