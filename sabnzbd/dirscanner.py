@@ -20,10 +20,10 @@ sabnzbd.dirscanner - Scanner for Watched Folder
 """
 
 import os
-import time
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from typing import Generator, Set, Optional, Tuple
 
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
@@ -119,7 +119,9 @@ class DirScanner(threading.Thread):
             if self.dirscan_speed and not self.shutdown:
                 self.scan()
 
-    def __listfiles(self, folder, catdir=None):
+    def get_suspected_files(
+        self, folder: str, catdir: Optional[str] = None
+    ) -> Generator[Tuple[str, Optional[str], os.stat_result], None, None]:
         """Generator listing possible paths to NZB files"""
 
         if catdir is None:
@@ -174,7 +176,7 @@ class DirScanner(threading.Thread):
                 logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(folder))
                 self.error_reported = True
 
-    def __when_stable_add_nzbfile(self, path, catdir, stat_tuple):
+    def when_stable_add_nzbfile(self, path: str, catdir: Optional[str], stat_tuple: os.stat_result):
         """Try and import the NZB but wait until the attributes are stable for 1 second, but give up after 3 sec"""
 
         logging.info("Trying to import %s", path)
@@ -212,10 +214,10 @@ class DirScanner(threading.Thread):
         """Do one scan of the watched folder"""
 
         def run_dir(folder):
-            files = set()
+            files: Set[str] = set()
 
             with ThreadPoolExecutor() as executor:
-                for path, catdir, stat_tuple in self.__listfiles(folder):
+                for path, catdir, stat_tuple in self.get_suspected_files(folder):
                     if self.shutdown:
                         break
 
@@ -225,7 +227,7 @@ class DirScanner(threading.Thread):
                         continue
 
                     if stat_tuple.st_size > 0:
-                        executor.submit(self.__when_stable_add_nzbfile, path, catdir, stat_tuple)
+                        executor.submit(self.when_stable_add_nzbfile, path, catdir, stat_tuple)
 
             if not self.shutdown:
                 # Remove files from the bookkeeping that are no longer on the disk
