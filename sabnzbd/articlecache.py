@@ -74,6 +74,12 @@ class ArticleCache:
         # of the total cache, assuming an article size of 750 000 bytes
         self.assembler_write_trigger = int(self.__cache_limit * ASSEMBLER_WRITE_THRESHOLD / 100 / 750_000) + 1
 
+        logging.debug(
+            "Decoder cache limit = %d - Assembler trigger = %d",
+            self.decoder_cache_article_limit,
+            self.assembler_write_trigger,
+        )
+
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int):
         """Reserve space in the cache"""
