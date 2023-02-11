@@ -122,7 +122,10 @@ class DirScanner(threading.Thread):
     def __listfiles(self, folder, catdir=None):
         """Generator listing possible paths to NZB files"""
 
-        cats = config.get_categories() if catdir is None else {}
+        if catdir is None:
+            cats = config.get_categories()
+        else:
+            cats = {}
 
         try:
             with os.scandir(os.path.join(folder, catdir or "")) as it:
@@ -149,7 +152,10 @@ class DirScanner(threading.Thread):
                             # https://docs.python.org/3/library/os.html#os.DirEntry.stat
                             # On Windows, the st_ino, st_dev and st_nlink attributes of the stat_result are always set
                             # to zero. Call os.stat() to get these attributes.
-                            stat_tuple = os.stat(path) if sabnzbd.WIN32 else entry.stat()
+                            if sabnzbd.WIN32:
+                                stat_tuple = os.stat(path)
+                            else:
+                                stat_tuple = entry.stat()
                         except OSError:
                             continue
                     else:
