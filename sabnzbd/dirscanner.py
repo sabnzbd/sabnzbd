@@ -121,7 +121,7 @@ class DirScanner(threading.Thread):
 
     def get_suspected_files(
         self, folder: str, catdir: Optional[str] = None
-    ) -> Generator[Tuple[str, Optional[str], os.stat_result], None, None]:
+    ) -> Generator[Tuple[str, Optional[str], Optional[os.stat_result]], None, None]:
         """Generator listing possible paths to NZB files"""
 
         if catdir is None:
