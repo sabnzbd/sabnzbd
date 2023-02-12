@@ -19,10 +19,10 @@
 sabnzbd.dirscanner - Scanner for Watched Folder
 """
 
+import asyncio
 import os
 import logging
 import threading
-from concurrent.futures import ThreadPoolExecutor
 from typing import Generator, Set, Optional, Tuple
 
 import sabnzbd
@@ -31,6 +31,7 @@ import sabnzbd.filesystem as filesystem
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
+DIR_SCANNER_LOCK = threading.RLock()
 VALID_EXTENSIONS = set(VALID_NZB_FILES + VALID_ARCHIVES)
 
 
@@ -47,7 +48,7 @@ def compare_stat_tuple(tup1, tup2):
     return True
 
 
-def clean_file_list(inp_list, files):
+async def clean_file_list(inp_list, files):
     """Remove elements of "inp_list" not found in "files" """
     for path in set(inp_list.keys()).difference(files):
         del inp_list[path]
@@ -63,7 +64,15 @@ class DirScanner(threading.Thread):
     def __init__(self):
         super().__init__()
 
-        self.newdir()
+        self.loop: Optional[asyncio.AbstractEventLoop] = None
+        self.scanner_task: Optional[asyncio.Task] = None
+        self.lock = asyncio.Lock()  # Prevents concurrent scans
+        self.error_reported = False  # Prevents multiple reporting of missing watched folder
+        self.dirscan_dir = cfg.dirscan_dir.get_path()
+        self.dirscan_speed = cfg.dirscan_speed()
+        cfg.dirscan_dir.callback(self.newdir)
+        cfg.dirscan_speed.callback(self.newspeed)
+
         try:
             dirscan_dir, self.ignored, self.suspected = sabnzbd.filesystem.load_admin(SCAN_FILE_NAME)
             if dirscan_dir != self.dirscan_dir:
@@ -74,34 +83,24 @@ class DirScanner(threading.Thread):
             # successfully processed ones that cannot be deleted
             self.suspected = {}  # Will hold name/attributes of suspected candidates
 
-        self.loop_condition = threading.Condition(threading.Lock())
-        self.shutdown = False
-        self.error_reported = False  # Prevents multiple reporting of missing watched folder
-        self.dirscan_dir = cfg.dirscan_dir.get_path()
-        self.dirscan_speed = cfg.dirscan_speed() or None  # If set to 0, use None so the wait() is forever
-        self.busy = False
-        cfg.dirscan_dir.callback(self.newdir)
-        cfg.dirscan_speed.callback(self.newspeed)
-
     def newdir(self):
         """We're notified of a dir change"""
         self.ignored = {}
         self.suspected = {}
         self.dirscan_dir = cfg.dirscan_dir.get_path()
-        self.dirscan_speed = cfg.dirscan_speed()
+
+        self.start_scanner()
 
     def newspeed(self):
         """We're notified of a scan speed change"""
-        # If set to 0, use None so the wait() is forever
-        self.dirscan_speed = cfg.dirscan_speed() or None
-        with self.loop_condition:
-            self.loop_condition.notify()
+        self.dirscan_speed = cfg.dirscan_speed()
+
+        self.start_scanner()
 
     def stop(self):
         """Stop the dir scanner"""
-        self.shutdown = True
-        with self.loop_condition:
-            self.loop_condition.notify()
+        if self.loop:
+            asyncio.run_coroutine_threadsafe(self.shutdown(), self.loop)
 
     def save(self):
         """Save dir scanner bookkeeping"""
@@ -110,14 +109,24 @@ class DirScanner(threading.Thread):
     def run(self):
         """Start the scanner"""
         logging.info("Dirscanner starting up")
-        self.shutdown = False
 
-        while not self.shutdown:
-            # Wait to be woken up or triggered
-            with self.loop_condition:
-                self.loop_condition.wait(self.dirscan_speed)
-            if self.dirscan_speed and not self.shutdown:
-                self.scan()
+        self.loop = asyncio.new_event_loop()
+
+        try:
+            self.start_scanner()
+            self.loop.run_forever()
+        finally:
+            self.loop.close()
+
+    def start_scanner(self):
+        """Start the scanner if it is not already running"""
+        with DIR_SCANNER_LOCK:
+            if not self.loop:
+                logging.debug("Can not start scanner because loop not found")
+                return
+
+            if not self.scanner_task or self.scanner_task.done():
+                self.scanner_task = asyncio.run_coroutine_threadsafe(self.scanner(), self.loop)
 
     def get_suspected_files(
         self, folder: str, catdir: Optional[str] = None
@@ -132,9 +141,6 @@ class DirScanner(threading.Thread):
         try:
             with os.scandir(os.path.join(folder, catdir or "")) as it:
                 for entry in it:
-                    if self.shutdown:
-                        break
-
                     path = entry.path
 
                     if path in self.ignored:
@@ -175,7 +181,7 @@ class DirScanner(threading.Thread):
                 logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(folder))
                 self.error_reported = True
 
-    def when_stable_add_nzbfile(self, path: str, catdir: Optional[str], stat_tuple: os.stat_result):
+    async def when_stable_add_nzbfile(self, path: str, catdir: Optional[str], stat_tuple: os.stat_result):
         """Try and import the NZB but wait until the attributes are stable for 1 second, but give up after 3 sec"""
 
         logging.info("Trying to import %s", path)
@@ -183,10 +189,7 @@ class DirScanner(threading.Thread):
         # Wait until the attributes are stable for 1 second, but give up after 3 sec
         # This indicates that the file is fully written to disk
         for n in range(3):
-            with self.loop_condition:
-                self.loop_condition.wait(1.0)
-            if self.shutdown:
-                return
+            await asyncio.sleep(1.0)
 
             try:
                 stat_tuple_tmp = os.stat(path)
@@ -210,32 +213,65 @@ class DirScanner(threading.Thread):
             self.ignored[path] = 1
 
     def scan(self):
+        """Schedule a scan of the watched folder"""
+        if not self.loop:
+            return
+
+        if not (dirscan_dir := self.dirscan_dir):
+            return
+
+        asyncio.run_coroutine_threadsafe(self.scan_async(dirscan_dir), self.loop)
+
+    async def scan_async(self, dirscan_dir: str):
         """Do one scan of the watched folder"""
+        async with self.lock:
+            if sabnzbd.PAUSED_ALL:
+                return
 
-        def run_dir(folder):
             files: Set[str] = set()
+            futures: Set[asyncio.Task] = set()
 
-            with ThreadPoolExecutor() as executor:
-                for path, catdir, stat_tuple in self.get_suspected_files(folder):
-                    if self.shutdown:
-                        break
+            for path, catdir, stat_tuple in self.get_suspected_files(dirscan_dir):
+                files.add(path)
 
-                    files.add(path)
+                if path in self.ignored or path in self.suspected:
+                    continue
 
-                    if path in self.ignored or path in self.suspected:
-                        continue
+                if stat_tuple.st_size > 0:
+                    futures.add(asyncio.create_task(self.when_stable_add_nzbfile(path, catdir, stat_tuple)))
+                    await asyncio.sleep(0)
 
-                    if stat_tuple.st_size > 0:
-                        executor.submit(self.when_stable_add_nzbfile, path, catdir, stat_tuple)
+            # Remove files from the bookkeeping that are no longer on the disk
+            # Wait for the paths found in this scan to finish
+            await asyncio.gather(clean_file_list(self.ignored, files), clean_file_list(self.suspected, files), *futures)
 
-            if not self.shutdown:
-                # Remove files from the bookkeeping that are no longer on the disk
-                clean_file_list(self.ignored, files)
-                clean_file_list(self.suspected, files)
+    async def scanner(self):
+        """Periodically scan the directory and add NZB files to the queue"""
+        while True:
+            if not (dirscan_speed := self.dirscan_speed):
+                break
 
-        if not self.busy:
-            self.busy = True
-            dirscan_dir = self.dirscan_dir
-            if dirscan_dir and not sabnzbd.PAUSED_ALL:
-                run_dir(dirscan_dir)
-            self.busy = False
+            if not (dirscan_dir := self.dirscan_dir):
+                break
+
+            try:
+                await self.scan_async(dirscan_dir)
+            except:
+                pass
+
+            await asyncio.sleep(dirscan_speed)
+
+    async def shutdown(self):
+        """Cancel all tasks and stop the loop"""
+        loop = asyncio.get_event_loop()
+
+        # Get all tasks except for this one
+        tasks = filter(lambda task: task is not asyncio.current_task(), asyncio.all_tasks())
+
+        # Cancel them all
+        [task.cancel() for task in tasks]
+
+        # Wait for the tasks to be done
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+        loop.stop()

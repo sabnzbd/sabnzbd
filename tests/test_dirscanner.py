@@ -18,11 +18,8 @@
 """
 tests.test_dirscanner - Testing functions in dirscanner.py
 """
-import threading
-import time
 
 import pyfakefs.fake_filesystem_unittest as ffs
-from pyfakefs.fake_filesystem import OSType
 
 from tests.testhelper import *
 
@@ -32,98 +29,102 @@ global_uid = 1000
 ffs.set_uid(global_uid)
 
 
-class WrappedDirScanner(sabnzbd.dirscanner.DirScanner):
-    def __init__(self):
-        self.finished_startup_scan = threading.Event()
+@pytest.fixture
+def create_mock_coroutine(mocker, monkeypatch):
+    def _create_mock_patch_coro(to_patch=None):
+        mock = mocker.Mock()
 
-        super().__init__()
+        async def coroutine(*args, **kwargs):
+            return mock(*args, **kwargs)
 
-    def scan(self):
-        super().scan()
+        if to_patch:
+            monkeypatch.setattr(to_patch, coroutine)
+        return mock
 
-        self.finished_startup_scan.set()
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, *args):
-        self.stop()
-        self.join()
+    return _create_mock_patch_coro
 
 
 @pytest.fixture
-def dirscanner():
-    scanner = WrappedDirScanner()
-    with scanner:
-        yield scanner
-
-
-def wait_for(condition, timeout: float = 30):
-    timeout = time.time() + timeout
-    while time.time() < timeout:
-        if condition():
-            break
-        time.sleep(0.01)
+def mock_sleep(create_mock_coroutine):
+    return create_mock_coroutine(to_patch="asyncio.sleep")
 
 
 class TestDirScanner:
     @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
-    def test_adds_valid_nzbs_on_startup(self, fs, mocker, dirscanner):
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "path, catdir",
+        [
+            ("file.zip", None),
+            ("file.rar", None),
+            ("file.7z", None),
+            ("file.nzb", None),
+            ("file.gz", None),
+            ("file.bz2", None),
+            ("file.zip", "movies"),
+            ("file.rar", "tv"),
+            ("file.7z", "audio"),
+            ("file.nzb", "software"),
+            ("file.gz", "movies"),
+            ("file.bz2", "tv"),
+        ],
+    )
+    async def test_adds_valid_nzbs(self, mock_sleep, fs, mocker, path, catdir):
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(-1, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        filenames = [
+        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), contents="FAKEFILE")
+
+        scanner = sabnzbd.dirscanner.DirScanner()
+
+        await scanner.scan_async(scanner.dirscan_dir)
+
+        sabnzbd.nzbparser.add_nzbfile.assert_any_call(
+            os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), catdir=catdir, keep=False
+        )
+
+    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "path",
+        [
             "file.zip",
             "file.rar",
             "file.7z",
             "file.nzb",
             "file.gz",
             "file.bz2",
-        ]
-
-        for filename in filenames:
-            fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), filename), contents="FAKEFILE")
-
-        # This could be in __enter__ instead
-        dirscanner.start()
-
-        wait_for(lambda: sabnzbd.nzbparser.add_nzbfile.call_count == len(filenames))
-
-        for filename in filenames:
-            sabnzbd.nzbparser.add_nzbfile.assert_any_call(
-                os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), filename), catdir=None, keep=False
-            )
-
-    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
-    def test_detects_nzbs(self, fs, mocker, dirscanner):
+        ],
+    )
+    async def test_ignores_empty_files(self, mock_sleep, fs, mocker, path):
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(-1, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        dirscanner.start()
+        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path))
 
-        dirscanner.finished_startup_scan.wait()
+        scanner = sabnzbd.dirscanner.DirScanner()
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), "file.nzb"), contents="FAKEFILE")
+        await scanner.scan_async(scanner.dirscan_dir)
 
-        wait_for(lambda: sabnzbd.nzbparser.add_nzbfile.called)
-
-        sabnzbd.nzbparser.add_nzbfile.assert_called_once_with(
-            os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), "file.nzb"), catdir=None, keep=False
-        )
+        sabnzbd.nzbparser.add_nzbfile.assert_not_called()
 
     @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
-    def test_detects_catdir_nzbs(self, fs, mocker, dirscanner):
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "path",
+        [
+            "file.doc",
+            "filenzb",
+        ],
+    )
+    async def test_ignores_non_nzbs(self, mock_sleep, fs, mocker, path):
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(-1, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        dirscanner.start()
+        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path), contents="FAKEFILE")
 
-        dirscanner.finished_startup_scan.wait()
+        scanner = sabnzbd.dirscanner.DirScanner()
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), "movies", "file.nzb"), contents="FAKEFILE")
+        await scanner.scan_async(scanner.dirscan_dir)
 
-        wait_for(lambda: sabnzbd.nzbparser.add_nzbfile.called)
-
-        sabnzbd.nzbparser.add_nzbfile.assert_called_once_with(
-            os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), "movies", "file.nzb"), catdir="movies", keep=False
-        )
+        sabnzbd.nzbparser.add_nzbfile.assert_not_called()
