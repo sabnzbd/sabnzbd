@@ -269,7 +269,8 @@ class DirScanner(threading.Thread):
         tasks = filter(lambda task: task is not asyncio.current_task(), asyncio.all_tasks())
 
         # Cancel them all
-        [task.cancel() for task in tasks]
+        for task in tasks:
+            task.cancel()
 
         # Wait for the tasks to be done
         await asyncio.gather(*tasks, return_exceptions=True)
