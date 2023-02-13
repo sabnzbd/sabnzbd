@@ -29,7 +29,6 @@ import random
 import sys
 import ssl
 from typing import List, Dict, Optional, Union
-from multiprocessing.pool import ThreadPool
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -274,8 +273,6 @@ class Downloader(Thread):
         "bandwidth_limit",
         "bandwidth_perc",
         "sleep_time",
-        "recv_pool",
-        "recv_threads",
         "paused_for_postproc",
         "shutdown",
         "server_restarts",
@@ -304,11 +301,6 @@ class Downloader(Thread):
         self.sleep_time: float = 0.0
         self.sleep_time_set()
         cfg.downloader_sleep_time.callback(self.sleep_time_set)
-
-        self.recv_pool: Optional[ThreadPool] = None
-        self.recv_threads: int = 1
-        self.recv_threads_set()
-        cfg.receive_threads.callback(self.recv_threads_set)
 
         self.paused_for_postproc: bool = False
         self.shutdown: bool = False
@@ -484,18 +476,6 @@ class Downloader(Thread):
     def sleep_time_set(self):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
         logging.debug("Sleep time: %f seconds", self.sleep_time)
-
-    def recv_threads_set(self):
-        self.recv_threads = cfg.receive_threads()
-        logging.debug("Receive threads: %s", self.recv_threads)
-        old_pool = self.recv_pool
-        self.recv_pool = ThreadPool(self.recv_threads)
-        if old_pool:
-            try:
-                time.sleep(0.1)
-                old_pool.close()
-            except Exception as e:
-                logging.warning("Got exception %s when trying to close old receive pool", e)
 
     def no_active_jobs(self) -> bool:
         """Is the queue paused or is it paused but are there still forced items?"""
@@ -776,27 +756,17 @@ class Downloader(Thread):
             if not read:
                 continue
 
-            if self.recv_threads > 1:
-                for nw, bytes_received, done in self.recv_pool.imap_unordered(self.__recv, read):
-                    self.__handle_recv_result(nw, bytes_received, done)
-                if self.bandwidth_limit:
-                    self.__check_speed()
-            else:
-                for selected in read:
-                    nw, bytes_received, done = self.__recv(selected)
-                    self.__handle_recv_result(nw, bytes_received, done)
-                    if self.bandwidth_limit and bytes_received:
-                        self.__check_speed()
+            result_count = 0
+            for selected in read:
+                sabnzbd.Receiver.process(self.read_fds[selected])
+                result_count += 1
 
-    def __recv(self, selected):
-        nw = self.read_fds[selected]
-        try:
-            bytes_received, done = nw.recv_chunk()
-            return nw, bytes_received, done
-        except ssl.SSLWantReadError:
-            return nw, 0, False
-        except:
-            return nw, 0, True
+            for _ in range(result_count):
+                nw, bytes_received, done = sabnzbd.Receiver.get_result()
+                self.__handle_recv_result(nw, bytes_received, done)
+
+            if self.bandwidth_limit:
+                self.__check_speed()
 
     def __check_speed(self):
         BPSMeter = sabnzbd.BPSMeter

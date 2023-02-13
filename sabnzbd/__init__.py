@@ -105,12 +105,14 @@ import sabnzbd.dirscanner
 import sabnzbd.urlgrabber
 import sabnzbd.nzbqueue
 import sabnzbd.postproc
+import sabnzbd.receiver
 import sabnzbd.downloader
 import sabnzbd.decoder
 import sabnzbd.assembler
 import sabnzbd.articlecache
 import sabnzbd.bpsmeter
-import sabnzbd.scheduler as scheduler
+import sabnzbd.rss
+import sabnzbd.scheduler
 import sabnzbd.notifier as notifier
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
@@ -124,6 +126,7 @@ import sabnzbd.utils.ssdp
 ArticleCache: sabnzbd.articlecache.ArticleCache
 Assembler: sabnzbd.assembler.Assembler
 Decoder: sabnzbd.decoder.Decoder
+Receiver: sabnzbd.receiver.Receiver
 Downloader: sabnzbd.downloader.Downloader
 PostProcessor: sabnzbd.postproc.PostProcessor
 NzbQueue: sabnzbd.nzbqueue.NzbQueue
@@ -300,6 +303,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.ArticleCache = sabnzbd.articlecache.ArticleCache()
     sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
     sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
+    sabnzbd.Receiver = sabnzbd.receiver.Receiver()
     sabnzbd.Downloader = sabnzbd.downloader.Downloader(sabnzbd.BPSMeter.read() or pause_downloader)
     sabnzbd.Decoder = sabnzbd.decoder.Decoder()
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
@@ -331,6 +335,9 @@ def start():
 
         logging.debug("Starting assembler")
         sabnzbd.Assembler.start()
+
+        logging.debug("Starting receivers")
+        sabnzbd.Receiver.start()
 
         logging.debug("Starting downloader")
         sabnzbd.Downloader.start()
@@ -393,9 +400,10 @@ def halt():
         except:
             pass
 
-        # Decoder handles join gracefully
-        logging.debug("Stopping decoders")
+        logging.debug("Stopping receivers and decoders")
+        sabnzbd.Receiver.stop()
         sabnzbd.Decoder.stop()
+        sabnzbd.Receiver.join()
         sabnzbd.Decoder.join()
 
         logging.debug("Stopping assembler")
