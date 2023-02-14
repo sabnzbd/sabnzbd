@@ -24,6 +24,7 @@ import re
 import argparse
 import socket
 import ipaddress
+import os
 from typing import List, Tuple
 
 import sabnzbd
@@ -434,8 +435,9 @@ host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
-receive_threads = OptionNumber("misc", "receive_threads", 1, minval=1)
-num_simd_decoders = OptionNumber("misc", "num_simd_decoders", 2, minval=1)
+# Set receive_threads and num_simd_decoders defaults based on cpu count or 2 if unknown
+receive_threads = OptionNumber("misc", "receive_threads", 1 + (os.cpu_count() or 2) // 2, minval=1)
+num_simd_decoders = OptionNumber("misc", "num_simd_decoders", 1 + (os.cpu_count() or 4) // 4, minval=1)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 

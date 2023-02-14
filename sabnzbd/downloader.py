@@ -763,6 +763,8 @@ class Downloader(Thread):
 
             for _ in range(result_count):
                 nw, bytes_received, done = sabnzbd.Receiver.get_result()
+                if not nw:
+                    break
                 self.__handle_recv_result(nw, bytes_received, done)
 
             if self.bandwidth_limit:

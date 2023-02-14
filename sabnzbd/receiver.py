@@ -59,7 +59,7 @@ class Receiver:
         # Put multiple to stop all receivers
         for _ in self.receiver_workers:
             self.request_queue.put(None)
-            self.result_queue.put((None, None, None))
+            self.result_queue.put((None, 0, False))
 
     def join(self):
         # Wait for all receivers to finish
@@ -83,7 +83,7 @@ class ReceiverWorker(Thread):
         super().__init__()
         logging.debug("Initializing receiver %s", self.name)
         self.request_queue: queue.Queue[Optional[NewsWrapper]] = request_queue
-        self.result_queue: queue.Queue[Tuple[NewsWrapper, int, bool]] = result_queue
+        self.result_queue: queue.Queue[Tuple[Optional[NewsWrapper], int, bool]] = result_queue
 
     def run(self):
         while 1:
