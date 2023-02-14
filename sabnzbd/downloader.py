@@ -29,6 +29,7 @@ import random
 import sys
 import ssl
 from typing import List, Dict, Optional, Union
+from concurrent.futures import ThreadPoolExecutor
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -274,6 +275,8 @@ class Downloader(Thread):
         "bandwidth_limit",
         "bandwidth_perc",
         "sleep_time",
+        "recv_pool",
+        "recv_threads",
         "paused_for_postproc",
         "shutdown",
         "server_restarts",
@@ -302,6 +305,10 @@ class Downloader(Thread):
         self.sleep_time: float = 0.0
         self.sleep_time_set()
         cfg.downloader_sleep_time.callback(self.sleep_time_set)
+
+        self.recv_threads: int = cfg.receive_threads()
+        self.recv_pool: Optional[ThreadPoolExecutor] = ThreadPoolExecutor(self.recv_threads)
+        logging.debug("Receive threads: %s", self.recv_threads)
 
         self.paused_for_postproc: bool = False
         self.shutdown: bool = False
@@ -761,96 +768,111 @@ class Downloader(Thread):
             if not read:
                 continue
 
-            for selected in read:
-                nw = self.read_fds[selected]
-                article = nw.article
-                server = nw.server
+            if self.recv_threads > 1:
+                for nw, bytes_received, done in self.recv_pool.map(self.__recv, read):
+                    self.__handle_recv_result(nw, bytes_received, done)
+                if self.bandwidth_limit:
+                    self.__check_speed()
+            else:
+                for selected in read:
+                    nw, bytes_received, done = self.__recv(selected)
+                    self.__handle_recv_result(nw, bytes_received, done)
+                    if self.bandwidth_limit and bytes_received:
+                        self.__check_speed()
 
-                try:
-                    bytes_received, done = nw.recv_chunk()
-                    if bytes_received > last_max_chunk_size:
-                        last_max_chunk_size = bytes_received
-                except ssl.SSLWantReadError:
-                    continue
-                except:
-                    self.__reset_nw(nw, "server closed connection", wait=False)
-                    continue
+    def __recv(self, selected):
+        nw = None
+        try:
+            nw = self.read_fds[selected]
+            bytes_received, done = nw.recv_chunk()
+            return nw, bytes_received, done
+        except ssl.SSLWantReadError:
+            return nw, 0, False
+        except:
+            return nw, 0, True
 
-                BPSMeter.update(server.id, bytes_received)
-                if self.bandwidth_limit and BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
-                    BPSMeter.update()
-                    while BPSMeter.bps > self.bandwidth_limit:
-                        time.sleep(0.01)
-                        BPSMeter.update()
+    def __check_speed(self):
+        BPSMeter = sabnzbd.BPSMeter
+        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
+            BPSMeter.update()
+            while BPSMeter.bps > self.bandwidth_limit:
+                time.sleep(0.01)
+                BPSMeter.update()
 
-                if nw.status_code != 222 and not done:
-                    if not nw.connected or nw.status_code == 480:
-                        if not self.__finish_connect_nw(nw):
-                            continue
-                        if nw.connected:
-                            logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
-                            self.__request_article(nw)
+    def __handle_recv_result(self, nw: NewsWrapper, bytes_received: int = 0, done: bool = False):
+        if not bytes_received:
+            if done:
+                self.__reset_nw(nw, "server closed connection", wait=False)
+            return
 
-                    elif nw.status_code == 223:
-                        done = True
-                        logging.debug("Article <%s> is present", article.article)
+        article = nw.article
+        server = nw.server
+        sabnzbd.BPSMeter.update(server.id, bytes_received)
 
-                    elif nw.status_code == 211:
-                        logging.debug("group command ok -> %s", nw.nntp_msg)
-                        nw.group = nw.article.nzf.nzo.group
-                        nw.reset_data_buffer()
-                        self.__request_article(nw)
+        if nw.status_code != 222 and not done:
+            if not nw.connected or nw.status_code == 480:
+                if not self.__finish_connect_nw(nw):
+                    return
+                if nw.connected:
+                    logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
+                    self.__request_article(nw)
 
-                    elif nw.status_code in (411, 423, 430):
-                        done = True
-                        logging.debug(
-                            "Thread %s@%s: Article %s missing (error=%s)",
-                            nw.thrdnum,
-                            nw.server.host,
-                            article.article,
-                            nw.status_code,
-                        )
-                        nw.reset_data_buffer()
+            elif nw.status_code == 223:
+                done = True
+                logging.debug("Article <%s> is present", article.article)
 
-                    elif nw.status_code == 500:
-                        if article.nzf.nzo.precheck:
-                            # Assume "STAT" command is not supported
-                            server.have_stat = False
-                            logging.debug("Server %s does not support STAT", server.host)
-                        else:
-                            # Assume "BODY" command is not supported
-                            server.have_body = False
-                            logging.debug("Server %s does not support BODY", server.host)
-                        nw.reset_data_buffer()
-                        self.__request_article(nw)
+            elif nw.status_code == 211:
+                logging.debug("group command ok -> %s", nw.nntp_msg)
+                nw.group = nw.article.nzf.nzo.group
+                nw.reset_data_buffer()
+                self.__request_article(nw)
 
-                if done:
-                    # Successful data, clear "bad" counter
-                    server.bad_cons = 0
-                    server.errormsg = server.warning = ""
+            elif nw.status_code in (411, 423, 430):
+                done = True
+                logging.debug(
+                    "Thread %s@%s: Article %s missing (error=%s)",
+                    nw.thrdnum,
+                    nw.server.host,
+                    article.article,
+                    nw.status_code,
+                )
+                nw.reset_data_buffer()
 
-                    # Update statistics and decode
-                    article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, nw.data_position)
-                    self.decode(article, nw.get_data_buffer(), nw.data_position)
+            elif nw.status_code == 500:
+                if article.nzf.nzo.precheck:
+                    # Assume "STAT" command is not supported
+                    server.have_stat = False
+                    logging.debug("Server %s does not support STAT", server.host)
+                else:
+                    # Assume "BODY" command is not supported
+                    server.have_body = False
+                    logging.debug("Server %s does not support BODY", server.host)
+                nw.reset_data_buffer()
+                self.__request_article(nw)
 
-                    if sabnzbd.LOG_ALL:
-                        logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
+        if done:
+            # Successful data, clear "bad" counter
+            server.bad_cons = 0
+            server.errormsg = server.warning = ""
 
-                    # Reset connection for new activity
-                    nw.soft_reset()
-                    # Request a new article immediately if possible
-                    if (
-                        nw.connected
-                        and server.active
-                        and not (self.paused or self.shutdown or self.paused_for_postproc)
-                    ):
-                        nw.article = server.get_article()
-                        if nw.article:
-                            self.__request_article(nw)
-                            continue
-                    server.busy_threads.remove(nw)
-                    server.idle_threads.append(nw)
-                    self.remove_socket(nw)
+            # Update statistics and decode
+            article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
+            self.decode(article, nw.get_data_buffer(), nw.data_position)
+
+            if sabnzbd.LOG_ALL:
+                logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
+
+            # Reset connection for new activity
+            nw.soft_reset()
+            # Request a new article immediately if possible
+            if nw.connected and server.active and not (self.paused or self.shutdown or self.paused_for_postproc):
+                nw.article = server.get_article()
+                if nw.article:
+                    self.__request_article(nw)
+                    return
+            server.busy_threads.remove(nw)
+            server.idle_threads.append(nw)
+            self.remove_socket(nw)
 
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
         server = nw.server
