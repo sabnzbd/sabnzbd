@@ -776,8 +776,9 @@ class Downloader(Thread):
                         self.__check_speed()
 
     def __recv(self, selected):
-        nw = self.read_fds[selected]
+        nw = None
         try:
+            nw = self.read_fds[selected]
             bytes_received, done = nw.recv_chunk()
             return nw, bytes_received, done
         except ssl.SSLWantReadError:
