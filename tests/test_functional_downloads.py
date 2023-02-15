@@ -48,6 +48,9 @@ class TestDownloadFlow(SABnzbdBaseTest):
         host_inp.clear()
         host_inp.send_keys(SAB_NEWSSERVER_HOST)
 
+        # Disable SSL for testing
+        self.selenium_wrapper(self.driver.find_element, By.NAME, "ssl").click()
+
         # This will fail if the translations failed to compile!
         self.selenium_wrapper(self.driver.find_element, By.PARTIAL_LINK_TEXT, "Advanced Settings").click()
 

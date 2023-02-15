@@ -277,6 +277,9 @@ class TestConfigServers(SABnzbdBaseTest):
         port_inp.clear()
         port_inp.send_keys(SAB_NEWSSERVER_PORT)
 
+        # Disable SSL for testing
+        self.selenium_wrapper(self.driver.find_element, By.NAME, "ssl").click()
+
         # Test server-check
         self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "#addServerContent .testServer").click()
         self.wait_for_ajax()
