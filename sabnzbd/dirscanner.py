@@ -235,7 +235,6 @@ class DirScanner(threading.Thread):
                 files.add(path)
 
                 if path in self.ignored or path in self.suspected:
-                    await asyncio.sleep(0)
                     continue
 
                 if stat_tuple.st_size > 0:
