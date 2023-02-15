@@ -176,7 +176,7 @@ class DirScanner(threading.Thread):
                             del self.suspected[path]
 
                     yield path, catdir, stat_tuple
-        except OSError:
+        except:
             if not self.error_reported and not catdir:
                 logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(folder))
                 self.error_reported = True
@@ -254,10 +254,7 @@ class DirScanner(threading.Thread):
             if not (dirscan_dir := self.dirscan_dir):
                 break
 
-            try:
-                await self.scan_async(dirscan_dir)
-            except:
-                pass
+            await self.scan_async(dirscan_dir)
 
             await asyncio.sleep(dirscan_speed)
 
