@@ -525,7 +525,7 @@ class Wizard:
             info["username"] = ""
             info["password"] = ""
             info["connections"] = ""
-            info["ssl"] = 0
+            info["ssl"] = 1
             info["ssl_verify"] = 2
         else:
             # Sort servers to get the first enabled one
