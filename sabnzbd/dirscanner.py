@@ -179,6 +179,7 @@ class DirScanner(threading.Thread):
         except:
             if not self.error_reported and not catdir:
                 logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(folder))
+                logging.info("Traceback: ", exc_info=True)
                 self.error_reported = True
 
     async def when_stable_add_nzbfile(self, path: str, catdir: Optional[str], stat_tuple: os.stat_result):
