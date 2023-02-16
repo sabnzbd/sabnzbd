@@ -300,7 +300,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver
+    __slots__ = NzbFileSaver + ("dirty_cache",)
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -329,6 +329,7 @@ class NzbFile(TryList):
         self.nzf_id: str = sabnzbd.filesystem.get_new_id("nzf", nzo.admin_path)
         self.deleted = False
         self.import_finished = False
+        self.dirty_cache: float = 0
 
         self.crc32: Optional[int] = 0
         self.assembled: bool = False
@@ -459,6 +460,7 @@ class NzbFile(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
+        self.dirty_cache = 0
         super().__setstate__(dict_.get("try_list", []))
 
         # Convert 2.x.x jobs

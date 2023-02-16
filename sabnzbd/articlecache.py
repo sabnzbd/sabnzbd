@@ -22,6 +22,7 @@ sabnzbd.articlecache - Article cache handling
 import logging
 import threading
 import struct
+import time
 from typing import Dict, List
 
 import sabnzbd
@@ -32,6 +33,7 @@ from sabnzbd.nzbstuff import Article
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
 ARTICLE_COUNTER_LOCK = threading.RLock()
+DIRTY_CACHE_LOCK = threading.RLock()
 
 
 class ArticleCache:
@@ -46,6 +48,7 @@ class ArticleCache:
         self.decoder_cache_article_limit = 0
 
         self.assembler_write_trigger: int = 1
+        self.next_flush_time: float = 0
 
         # On 32 bit we only allow the user to set 1GB
         # For 64 bit we allow up to 4GB, in case somebody wants that
@@ -94,9 +97,14 @@ class ArticleCache:
         """Is there space left in the set limit?"""
         return self.__cache_size < self.__cache_limit
 
+    @synchronized(DIRTY_CACHE_LOCK)
+    def set_dirty_cache(self, nzf, new_time):
+        nzf.dirty_cache = new_time
+
     def save_article(self, article: Article, data: bytes):
         """Save article in cache, either memory or disk"""
-        nzo = article.nzf.nzo
+        nzf = article.nzf
+        nzo = nzf.nzo
         # Skip if already post-processing or fully finished
         if nzo.pp_or_finished:
             return
@@ -104,7 +112,7 @@ class ArticleCache:
         # Register article for bookkeeping in case the job is deleted
         nzo.add_saved_article(article)
 
-        if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
+        if article.lowest_partnum and not (nzf.import_finished or nzf.filename_checked):
             # Write the first-fetched articles to temporary file unless downloading
             # of the rest of the parts has started or filename is verified.
             # Otherwise the cache could overflow.
@@ -118,13 +126,30 @@ class ArticleCache:
             if self.space_left():
                 # Add new article to the cache
                 self.__article_table[article] = data
+                self.set_dirty_cache(nzf, time.time())
             else:
                 # Return the space and save to disk
                 self.free_reserved_space(data_size)
                 self.__flush_article_to_disk(article, data)
+                self.flush_oldest_file()
         else:
             # No data saved in memory, direct to disk
             self.__flush_article_to_disk(article, data)
+
+    @synchronized(DIRTY_CACHE_LOCK)
+    def flush_oldest_file(self):
+        """Try to assemble oldest unwritten data"""
+        if self.__cache_limit > 250_000_000 and self.next_flush_time < time.time():
+            self.next_flush_time = time.time() + 0.2
+            unflushed = list(set([article.nzf for article in self.__article_table if article.nzf.dirty_cache]))
+            # Reduce the risk of adding the same few files to the assembler each time they get new data
+            if len(unflushed) > 5:
+                unflushed.sort(key=lambda nzf: nzf.dirty_cache)
+                nzf = unflushed[0]
+                logging.debug("Flushing %s (age %.2f seconds)", nzf.filename, time.time() - nzf.dirty_cache)
+                sabnzbd.Assembler.process(nzf.nzo, nzf, False)
+                # Avoid adding duplicates if assembler is lagging behind
+                nzf.dirty_cache = 0
 
     def load_article(self, article: Article):
         """Load the data of the article"""
