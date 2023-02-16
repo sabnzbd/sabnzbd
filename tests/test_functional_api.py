@@ -31,6 +31,7 @@ from tavern.core import run
 from warnings import warn
 
 import sabnzbd.interface as interface
+from sabnzbd.constants import DEF_SORTER_RENAME_SIZE
 from sabnzbd.misc import from_units
 
 from tests.testhelper import *
@@ -405,6 +406,85 @@ class TestOtherApi(ApiTestFunctions):
                 "set_config",
                 extra_args={"apikey": json[name], "section": "misc", "keyword": keyword, "value": "apikey"},
             )
+
+    @pytest.mark.parametrize("identifier", ["name", "keyword"])
+    @pytest.mark.parametrize(
+        "sorter_name, sorter_conf",
+        [
+            [
+                "MyFirstSorter",
+                {
+                    "order": 0,
+                    "min_size": "1234K",
+                    "multipart_label": "CD%1",
+                    "sort_string": "%title (%y)/%title (%y).%ext",
+                    "sort_cats": ["*", "test"],
+                    "sort_type": [3],
+                    "is_active": 0,
+                },
+            ],
+            [
+                "MySecondSorter",
+                {
+                    "order": randint(0, 99),
+                    "min_size": "666G",
+                    "multipart_label": "",
+                    "sort_string": "%s_n/my series S%0sE%0e.%ext",
+                    "sort_cats": ["tv"],
+                    "sort_type": [1, 2],
+                    "is_active": 1,
+                },
+            ],
+            [
+                "MyThirdSorter",
+                {
+                    "order": 42,
+                    "sort_string": "%s_n/my series S%0sE%0e.%ext",
+                    "sort_cats": ["tv"],
+                    "sort_type": [1, 2],
+                    "is_active": 1,
+                },  # Intentionally leave out min_size and multipart_label
+            ],
+        ],
+    )
+    def test_api_handle_sorter_api(self, identifier, sorter_name, sorter_conf):
+        """Test handling of set_config for sorters"""
+        # Set a sorter via the api
+        extra_args = {"section": "sorters", identifier: sorter_name}
+        extra_args.update(sorter_conf)
+        json_set = self._get_api_json(mode="set_config", extra_args=extra_args)
+
+        # Get the configured sorter
+        json_get = self._get_api_json(mode="get_config", extra_args={"section": "sorters", "keyword": sorter_name})
+
+        # Verify the result; responses to both commands should be identical
+        for json in json_set, json_get:
+            assert json["config"]["sorters"]
+            for setting, value in json["config"]["sorters"][0].items():
+                if configured_value := sorter_conf.get(setting):
+                    assert value == configured_value
+                else:
+                    # Check against the default value for anything not specified in sorter_conf
+                    if setting == "min_size":
+                        assert value == DEF_SORTER_RENAME_SIZE
+                    if setting == "multipart_label":
+                        assert value == ""
+
+        # Remove sorter
+        json_del = self._get_api_json(
+            mode="del_config",
+            extra_args={
+                "section": "sorters",
+                "keyword": sorter_name,
+            },
+        )
+        assert json_del["status"] == True
+
+        # Try getting the deleted sorter again and make sure it's actually gone
+        json_get_again = self._get_api_json(
+            mode="get_config", extra_args={"section": "sorters", "keyword": sorter_name}
+        )
+        assert json_get_again["config"] == {}
 
 
 @pytest.mark.usefixtures("run_sabnzbd")

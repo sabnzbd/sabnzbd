@@ -203,7 +203,12 @@ $.fn.extractFormDataTo = function(target) {
     var selects = $("select", this);
 
     selects.each(function (i,elem) {
-        target[elem.name] = elem.value;
+        if (elem.selectedOptions.length > 1) {
+            // Handle <select multiple="multiple">
+            target[elem.name] = Array.from(elem.selectedOptions).map(({ value }) => value).toString();
+        } else {
+            target[elem.name] = elem.value;
+        }
     });
 
     return this;

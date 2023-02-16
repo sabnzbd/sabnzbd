@@ -326,6 +326,41 @@ tr.separator {
     margin: 5px;
 }
 
+.Sorting form:not(.sorting-row) .glyphicon-option-vertical {
+    visibility: hidden;
+}
+.Sorting form.sorting-row {
+    background-color: #F8F8F8;
+}
+.Sorting form:not(.sorting-row) {
+    background-color: #FFFFE0;
+}
+.Sorting .preview .preview_buttons {
+    border: 1px solid #ccc;
+}
+.Sorting .preview {
+    border-top: none;
+}
+.Sorting .preview-buttons {
+    border-bottom: none;
+}
+.Sorting table {
+    margin: 0px;
+}
+.Sorting .sortTable th {
+    padding: 5px 0px 0px 0px;
+}
+.Sorting .sortTable td {
+    padding: 0px 5px 0px 5px;
+}
+.Sorting .sortTable th {
+    text-align: left;
+    padding-left: 5px;
+}
+.Sorting hr {
+    margin: 5px;
+}
+
 .RSS .rss-section input[type="text"] {
     max-width: 180px;
 }

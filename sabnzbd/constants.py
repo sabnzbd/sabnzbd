@@ -78,6 +78,7 @@ DEF_TIMEOUT = 60
 DEF_SCANRATE = 5
 DEF_HTTPS_CERT_FILE = "server.cert"
 DEF_HTTPS_KEY_FILE = "server.key"
+DEF_SORTER_RENAME_SIZE = "50M"
 MAX_WARNINGS = 20
 MAX_BAD_ARTICLES = 5
 
@@ -141,6 +142,8 @@ IGNORED_MOVIE_FOLDERS = ("video_ts", "audio_ts", "bdmv")
 EXCLUDED_GUESSIT_PROPERTIES = [
     "part",
 ]
+GUESSIT_PART_INDICATORS = ("cd", "part")
+GUESSIT_SORT_TYPES = {0: "all", 1: "tv", 2: "date", 3: "movie", 4: "unknown"}
 
 
 class Status:

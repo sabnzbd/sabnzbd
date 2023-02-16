@@ -140,8 +140,6 @@ SKIN_TEXT = {
     "cmenu-sorting": TT("Sorting"),  #: Main menu item
     "cmenu-special": TT("Special"),  #: Main menu item
     "cmenu-search": TT("Search"),  #: Main menu item
-    # Footer
-    "ft-download": TT("Download Dir"),  # Used in Footer
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
     "link-pause": TT("Pause"),  #: Pause downloading
@@ -710,29 +708,18 @@ SKIN_TEXT = {
     "catFolderPath": TT("Folder/Path"),
     "catTags": TT("Indexer Categories / Groups"),
     # Config->Sorting
-    "selectOneCat": TT("Select at least 1 category."),
-    "seriesSorting": TT("Series Sorting"),
-    "opt-tvsort": TT("Enable TV Sorting"),
     "sort-legenda": TT("Pattern Key"),
     "button-clear": TT("Clear"),
     "button-evalFeed": TT("Apply filters"),
     "presetSort": TT("Presets"),
-    "movieSort": TT("Movie Sorting"),
-    "opt-movieSort": TT("Enable Movie Sorting"),
     "affectedCat": TT("Affected Categories"),
     "sort-meaning": TT("Meaning"),
     "sort-pattern": TT("Pattern"),
     "sort-result": TT("Result"),
-    "button-Season1x05": TT("1x05 Season Folder"),
-    "button-SeasonS01E05": TT("S01E05 Season Folder"),
-    "button-Ep1x05": TT("1x05 Episode Folder"),
-    "button-EpS01E05": TT("S01E05 Episode Folder"),
-    "button-FileLikeFolder": TT("Job Name as Filename"),
     "sort-title": TT("Title"),
     "movie-sp-name": TT("Movie Name"),
     "movie-dot-name": TT("Movie.Name"),
     "movie-us-name": TT("Movie_Name"),
-    "show-name": TT("Show Name"),
     "show-sp-name": TT("Show Name"),
     "show-dot-name": TT("Show.Name"),
     "show-us-name": TT("Show_Name"),
@@ -742,7 +729,6 @@ SKIN_TEXT = {
     "ep-sp-name": TT("Episode Name"),
     "ep-dot-name": TT("Episode.Name"),
     "ep-us-name": TT("Episode_Name"),
-    "fileExt": TT("File Extension"),
     "extension": TT("Extension"),
     "partNumber": TT("Part Number"),
     "decade": TT("Decade"),
@@ -753,14 +739,11 @@ SKIN_TEXT = {
     "text": TT("text"),
     "sort-File": TT("file"),
     "sortString": TT("Sort String"),
-    "multiPartLabel": TT("Multi-part label"),
+    "multiPartLabel": TT("Multi-part Label"),
     "button-inFolders": TT("In folders"),
     "button-noFolders": TT("No folders"),
-    "dateSorting": TT("Date Sorting"),
-    "opt-dateSort": TT("Enable Date Sorting"),
-    "button-ShowNameF": TT("Show Name folder"),
-    "button-YMF": TT("Year-Month Folders"),
-    "button-DailyF": TT("Daily Folders"),
+    "button-FileLikeFolder": TT("Job Name as Filename"),
+    "button-Series": TT("Series"),
     "case-adjusted": TT("case-adjusted"),  #: Note for title expression in Sorting that does case adjustment
     "sortResult": TT("Processed Result"),
     "sort-guessitMeaning": TT("Any property"),
@@ -768,6 +751,17 @@ SKIN_TEXT = {
     "guessit-sp-property": TT("GuessIt Property"),
     "guessit-dot-property": TT("GuessIt.Property"),
     "guessit-us-property": TT("GuessIt_Property"),
+    "sort-minimum-size": TT("Minimum Filesize"),
+    "guessit-type": TT("Affected Job Types"),
+    "guessit-type-all": TT("All"),
+    "guessit-type-tv": TT("Series"),
+    "guessit-type-date": TT("Series with air dates"),
+    "guessit-type-movie": TT("Movies"),
+    "guessit-type-other": TT("Other / Unknown"),
+    "explain-sorting": TT(
+        "Configure a new sorter, or edit/remove/reorder existing sorters below.<br>"
+        "<br>Sorters are tried in order of appearance, and can be reordered by dragging and dropping. The first active sorter that meets both selection criteria (affected category and job type) is applied to a job, provided at least one file meets the minumum filesize requirement."
+    ),
     # Config->Special
     "explain-special": TT(
         "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>"

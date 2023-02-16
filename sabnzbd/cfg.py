@@ -263,6 +263,7 @@ fixed_ports = OptionBool("misc", "fixed_ports", False)
 sched_converted = OptionBool("misc", "sched_converted", False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
 direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)
+sorters_converted = OptionBool("misc", "sorters_converted", False)
 
 
 ##############################################################################

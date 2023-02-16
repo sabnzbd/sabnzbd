@@ -56,7 +56,7 @@ def clean_cache_dir(request):
 
 
 @pytest.fixture(scope="module")
-def run_sabnzbd(clean_cache_dir):
+def run_sabnzbd(clean_cache_dir, request):
     """Start SABnzbd (with translations). A number of key configuration parameters are defined
     in testhelper.py (SAB_* variables). Scope is set to 'module' to prevent configuration
     changes made during functional tests from causing failures in unrelated tests."""
@@ -71,8 +71,11 @@ def run_sabnzbd(clean_cache_dir):
         except Exception as err:
             warn("Failed to shutdown the sabnzbd process: %s" % err)
 
+    # Allow the test file to specify what ini to load; if none given, use the basic one by default
+    ini_file = getattr(request.module, "INI_FILE", "sabnzbd.basic.ini")
+
     # Copy basic config file with API key
-    shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, DEF_INI_FILE))
+    shutil.copyfile(os.path.join(SAB_DATA_DIR, ini_file), os.path.join(SAB_CACHE_DIR, DEF_INI_FILE))
 
     # Check if we have language files
     locale_dir = os.path.join(SAB_BASE_DIR, "..", "locale")

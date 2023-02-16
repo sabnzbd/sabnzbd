@@ -23,13 +23,13 @@ import datetime
 import subprocess
 import sys
 import tempfile
-from unittest import mock
+from random import randint, sample
 
 from sabnzbd import lang
 from sabnzbd import misc
 from sabnzbd import newsunpack
-from sabnzbd.config import ConfigCat
-from sabnzbd.constants import HIGH_PRIORITY, FORCE_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY
+from sabnzbd.config import ConfigCat, get_sorters, save_config
+from sabnzbd.constants import HIGH_PRIORITY, FORCE_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY, GUESSIT_SORT_TYPES
 from tests.testhelper import *
 
 
@@ -551,6 +551,132 @@ class TestMisc:
     )
     def test_strip_ipv4_mapped_notation(self, ip, result):
         misc.strip_ipv4_mapped_notation(ip) == result
+
+    def test_sort_to_opts(self):
+        for result, sort_type in GUESSIT_SORT_TYPES.items():
+            assert misc.sort_to_opts(sort_type) == result
+
+    @pytest.mark.parametrize(
+        "sort_type, result",
+        [
+            ("", 0),
+            ("foobar", 0),
+            (False, 0),
+            (666, 0),
+        ],
+    )
+    def test_sort_to_opts_edge_cases(self, sort_type, result):
+        assert misc.sort_to_opts(sort_type) == result
+
+    @pytest.mark.parametrize("movie_limit", ["", "42M"])
+    @pytest.mark.parametrize("episode_limit", ["", "13M"])
+    @pytest.mark.parametrize("movie_sort_extra", ["", "disc%1"])
+    @pytest.mark.parametrize("tv_enabled", [True, False])
+    @pytest.mark.parametrize("tv_str", ["", "foobar tv"])
+    @pytest.mark.parametrize("tv_cats", [sample(["tv", "sports"], randint(0, 2))])
+    @pytest.mark.parametrize("date_enabled", [True, False])
+    @pytest.mark.parametrize("date_str", ["", "foobar date"])
+    @pytest.mark.parametrize("date_cats", [sample(["date"], randint(0, 1))])
+    @pytest.mark.parametrize("movie_enabled", [True, False])
+    @pytest.mark.parametrize("movie_str", ["", "foobar movie"])
+    @pytest.mark.parametrize("movie_cats", [[], ["movie"], ["movie", "horror", "docu"]])
+    def test_convert_sorter_settings(
+        self,
+        movie_limit,
+        episode_limit,
+        movie_sort_extra,
+        tv_enabled,
+        tv_str,
+        tv_cats,
+        date_enabled,
+        date_str,
+        date_cats,
+        movie_enabled,
+        movie_str,
+        movie_cats,
+    ):
+        @set_config(
+            {
+                "movie_rename_limit": movie_limit,
+                "episode_rename_limit": episode_limit,
+                "movie_sort_extra": movie_sort_extra,
+                "enable_tv_sorting": tv_enabled,
+                "tv_sort_string": tv_str,
+                "tv_categories": tv_cats,
+                "enable_movie_sorting": movie_enabled,
+                "movie_sort_string": movie_str,
+                "movie_categories": movie_cats,
+                "enable_date_sorting": date_enabled,
+                "date_sort_string": date_str,
+                "date_categories": date_cats,
+                "language": "en",  # Avoid translated sorter names in the test
+            }
+        )
+        def _func():
+            # Delete any leftover/pre-defined new-style sorters
+            if existing_sorters := get_sorters():
+                for config in list(existing_sorters.keys()):
+                    try:
+                        existing_sorters[config].delete()
+                    except NameError as error:
+                        if "CFG_OBJ" in str(error):
+                            # Ignore failure to save the config to file in this very barebones test environment
+                            pass
+            assert not get_sorters()
+
+            # Run conversion
+            misc.convert_sorter_settings()
+
+            try:
+                save_config()
+            except NameError as error:
+                if "CFG_OBJ" in str(error):
+                    # Once again, ignore failure to save the config
+                    pass
+
+            # Verify the resulting config
+            new_sorters = get_sorters()
+            new_sorter_count = 0
+
+            for old_sorter_type, old_name, old_str, old_cats, old_enabled in (
+                ("tv", "Series Sorting", tv_str, tv_cats, tv_enabled),
+                ("date", "Date Sorting", date_str, date_cats, date_enabled),
+                ("movie", "Movie Sorting", movie_str, movie_cats, movie_enabled),
+            ):
+                if not old_str or not old_cats:
+                    # Without these two essential variables, no new sorter config should be generated
+                    assert old_name not in new_sorters.keys()
+                    continue
+
+                # Run basic checks on the new sorter
+                assert new_sorters[old_name]
+                new_sorter = new_sorters[old_name].get_dict()
+                assert len(new_sorter) == 8
+
+                # Handle the old, movie-specific sorting features
+                size_limit = movie_limit if old_sorter_type == "movie" else episode_limit
+                part_label = movie_sort_extra if old_sorter_type == "movie" else ""
+
+                # Verify the entire new sorter config
+                for key, value in (
+                    ("name", old_name),
+                    ("order", new_sorter_count),
+                    ("min_size", size_limit),
+                    ("multipart_label", part_label),
+                    ("sort_string", old_str),
+                    ("sort_cats", old_cats),
+                    ("sort_type", [misc.sort_to_opts(old_sorter_type)]),
+                    ("is_active", int(old_enabled)),
+                ):
+                    assert (new_sorter[key]) == value
+
+                # Update counter
+                new_sorter_count += 1
+
+            # Verify no extra sorters appeared out of nowhere
+            assert new_sorter_count == len(new_sorters)
+
+        _func()
 
 
 class TestBuildAndRunCommand:

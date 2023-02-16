@@ -41,6 +41,7 @@ from sabnzbd.constants import (
     CONFIG_BACKUP_FILES,
     CONFIG_BACKUP_HTTPS,
     DEF_INI_FILE,
+    DEF_SORTER_RENAME_SIZE,
 )
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
@@ -548,6 +549,57 @@ class ConfigCat:
         delete_from_database("categories", self.__name)
 
 
+class ConfigSorter:
+    """Class defining a single Sorter"""
+
+    def __init__(self, name, values):
+        self.__name = clean_section_name(name)
+        name = "sorters," + self.__name
+
+        self.order = OptionNumber(name, "order", len(get_sorters()), 0, 100, add=False)
+        self.min_size = OptionStr(name, "min_size", DEF_SORTER_RENAME_SIZE, add=False)
+        self.multipart_label = OptionStr(name, "multipart_label", add=False)
+        self.sort_string = OptionStr(name, "sort_string", add=False)
+        self.sort_cats = OptionList(name, "sort_cats", add=False)
+        self.sort_type = OptionList(name, "sort_type", add=False)
+        self.is_active = OptionBool(name, "is_active", add=False)
+
+        self.set_dict(values)
+        add_to_database("sorters", self.__name, self)
+
+    def set_dict(self, values: Dict[str, Any]):
+        """Set one or more fields, passed as dictionary"""
+        for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
+            try:
+                value = values[kw]
+                getattr(self, kw).set(value)
+            except KeyError:
+                continue
+
+    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
+        """Return a dictionary with all attributes"""
+        output_dict = {}
+        output_dict["name"] = self.__name
+        output_dict["order"] = self.order()
+        output_dict["min_size"] = self.min_size()
+        output_dict["multipart_label"] = self.multipart_label()
+        output_dict["sort_string"] = self.sort_string()
+        output_dict["sort_cats"] = self.sort_cats()
+        output_dict["sort_type"] = [int(num) for num in self.sort_type()]
+        output_dict["is_active"] = self.is_active()
+        return output_dict
+
+    def delete(self):
+        """Remove from database"""
+        delete_from_database("sorters", self.__name)
+
+    def rename(self, new_name: str):
+        """Update the name and the saved entries"""
+        delete_from_database("sorters", self.__name)
+        self.__name = new_name
+        add_to_database("sorters", self.__name, self)
+
+
 class OptionFilters(Option):
     """Filter list class"""
 
@@ -719,8 +771,11 @@ def get_dconfig(section, keyword, nested=False):
             sect = CFG_DATABASE[section]
         except KeyError:
             return False, {}
+
         if section == "categories":
             data[section] = get_ordered_categories()
+        elif section == "sorters":
+            data[section] = get_ordered_sorters()
         elif section in ("servers", "rss"):
             data[section] = []
             for keyword in sect.keys():
@@ -739,7 +794,7 @@ def get_dconfig(section, keyword, nested=False):
             return False, {}
         data = item.get_dict(safe=True)
         if not nested:
-            if section in ("servers", "categories", "rss"):
+            if section in ("sorters", "servers", "categories", "rss"):
                 data = {section: [data]}
             else:
                 data = {section: data}
@@ -839,7 +894,7 @@ def _read_config(path, try_backup=False):
 
     # Use CFG data to set values for all static options
     for section in CFG_DATABASE:
-        if section not in ("servers", "categories", "rss"):
+        if section not in ("sorters", "servers", "categories", "rss"):
             for option in CFG_DATABASE[section]:
                 config_option = CFG_DATABASE[section][option]
                 try:
@@ -857,6 +912,9 @@ def _read_config(path, try_backup=False):
     if "servers" in CFG_OBJ:
         for server in CFG_OBJ["servers"]:
             ConfigServer(server, CFG_OBJ["servers"][server])
+    if "sorters" in CFG_OBJ:
+        for sorter in CFG_OBJ["sorters"]:
+            ConfigSorter(sorter, CFG_OBJ["sorters"][sorter])
 
     CFG_MODIFIED = False
     return True, ""
@@ -875,7 +933,7 @@ def save_config(force=False):
         return False
 
     for section in CFG_DATABASE:
-        if section in ("servers", "categories", "rss"):
+        if section in ("sorters", "servers", "categories", "rss"):
             if section not in CFG_OBJ:
                 CFG_OBJ[section] = {}
 
@@ -1023,6 +1081,24 @@ def get_servers() -> Dict[str, ConfigServer]:
         return CFG_DATABASE["servers"]
     except KeyError:
         return {}
+
+
+def get_sorters() -> Dict[str, ConfigSorter]:
+    global CFG_DATABASE
+    try:
+        return CFG_DATABASE["sorters"]
+    except KeyError:
+        return {}
+
+
+def get_ordered_sorters() -> List[Dict]:
+    """Return sorters as an ordered list"""
+    database_sorters = get_sorters()
+
+    sorters = [database_sorters[sorter].get_dict() for sorter in database_sorters.keys()]
+    sorters.sort(key=lambda sorter: sorter["order"])
+
+    return sorters
 
 
 def get_categories() -> Dict[str, ConfigCat]:
