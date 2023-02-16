@@ -328,10 +328,9 @@ class TestSortingFunctions:
         ],
     )
     def test_eval_sort(self, sort_string, job_name, multipart_label, result):
-        if sabnzbd.WIN32:
-            assert sorting.eval_sort(sort_string, job_name, multipart_label) == result.replace("/", "\\")
-        else:
-            assert sorting.eval_sort(sort_string, job_name, multipart_label) == result
+        if sabnzbd.WIN32 and result:
+            result = result.replace("/", "\\")
+        assert sorting.eval_sort(sort_string, job_name, multipart_label) == result
 
     @pytest.mark.skipif(sys.platform.startswith("win"), reason="Unix tests")
     def test_move_to_parent_directory_unix(self):
