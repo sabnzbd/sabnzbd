@@ -502,7 +502,7 @@ def process_job(nzo: NzbObject):
                     )
                     logging.info("Traceback: ", exc_info=True)
                     # Better disable sorting because filenames are all off now
-                    file_sorter.sorter_active = None
+                    file_sorter.sorter_active = False
 
             if empty:
                 job_result = -1
@@ -515,7 +515,7 @@ def process_job(nzo: NzbObject):
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sorter_active:
                 if newfiles:
-                    workdir_complete, ok = file_sorter.sorter.rename(newfiles, workdir_complete)
+                    workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         nzo.fail_msg = T("Failed to move files")
@@ -668,32 +668,36 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
     """
-    one_folder = False
+    create_job_dir = True
     marker_file = None
 
     # Determine category directory
     catdir = config.get_category(nzo.cat).dir()
     if not catdir:
-        # If none defined, check Default category directory
+        # Fall back to Default if undefined at category-level
         catdir = config.get_category().dir()
 
-    # Check if it should have a directory
+    # Check whether the creation of job directories has been disabled
     if catdir.endswith("*"):
-        catdir = catdir.strip("*")
-        one_folder = True
+        catdir = catdir[:-1]
+        create_job_dir = False
 
-    complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
-    complete_dir = long_path(complete_dir)
+    complete_dir = long_path(real_path(cfg.complete_dir.get_path(), catdir))
 
-    # TV/Movie/Date Renaming code part 1 - detect and construct paths
-    file_sorter = Sorter(nzo, nzo.cat)
-    complete_dir = file_sorter.detect(nzo.final_name, complete_dir)
+    # Initialize the sorter and let it construct a path for the Complete directory
+    file_sorter = Sorter(
+        nzo,
+        nzo.final_name,
+        complete_dir,
+        nzo.cat,
+    )
+    complete_dir = sanitize_and_trim_path(file_sorter.get_final_path())
+
+    # Sorting overrides the per-category job directory creation setting
     if file_sorter.sorter_active:
-        one_folder = False
+        create_job_dir = True
 
-    complete_dir = sanitize_and_trim_path(complete_dir)
-
-    if one_folder:
+    if not create_job_dir or not file_sorter.sorter_active:
         workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)
     else:
         workdir_complete = get_unique_dir(os.path.join(complete_dir, nzo.final_name), create_dir=True)
@@ -703,7 +707,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
         logging.error(T("Cannot create final folder %s") % os.path.join(complete_dir, nzo.final_name))
         raise IOError
 
-    if cfg.folder_rename() and not one_folder:
+    if create_job_dir and cfg.folder_rename():
         prefixed_path = prefix(workdir_complete, "_UNPACK_")
         tmp_workdir_complete = get_unique_dir(prefix(workdir_complete, "_UNPACK_"), create_dir=False)
 
@@ -718,7 +722,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     else:
         tmp_workdir_complete = workdir_complete
 
-    return tmp_workdir_complete, workdir_complete, file_sorter, one_folder, marker_file
+    return tmp_workdir_complete, workdir_complete, file_sorter, not create_job_dir, marker_file
 
 
 def parring(nzo: NzbObject):

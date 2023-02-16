@@ -1940,7 +1940,7 @@ class NzbObject(TryList):
 
             # Dupe check off nzb filename
             if not res and no_series_dupes:
-                series, season, episode, _, is_proper = sabnzbd.newsunpack.analyse_show(self.final_name)
+                series, season, episode, _, is_proper = sabnzbd.newsunpack.analyse_show(self.final_name)[:5]
                 if is_proper and series_propercheck:
                     logging.debug("Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found")
                 else:

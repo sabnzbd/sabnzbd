@@ -64,9 +64,9 @@ from sabnzbd.filesystem import (
     is_size,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
+from sabnzbd.sorting import Sorter
 
 # Regex globals
 RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
@@ -2249,17 +2249,38 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def analyse_show(name: str) -> Tuple[str, str, str, str, bool]:
-    """Do a quick SeasonSort check and return basic facts"""
-    job = SeriesSorter(None, name, None, None, force=True)
-    if job.matched:
-        job.get_values()
+def analyse_show(name: str) -> Tuple[str, str, str, str, bool, str, str, str, str, str, str, str, str, str]:
+    """Use the Sorter to collect some basic info on series"""
+    job = Sorter(
+        None,
+        name,
+        None,
+        None,
+        force=True,
+        sorter_config={
+            "name": "newsunpack__analyse_show",
+            "order": 0,
+            "min_size": -1,
+            "multipart_label": "",
+            "sort_string": "",
+            "sort_cats": [],  # Categories and types are ignored when using the force
+            "sort_type": [],
+            "is_active": 1,
+        },
+    )
+    job.get_values()
     return (
         job.info.get("title", ""),
         job.info.get("season_num", ""),
         job.info.get("episode_num", ""),
         job.info.get("ep_name", ""),
         job.is_proper(),
+        job.info.get("resolution", ""),
+        job.info.get("decade", ""),
+        job.info.get("year", ""),
+        job.info.get("month", ""),
+        job.info.get("day", ""),
+        job.info.get("type", ""),
     )
 
 
@@ -2288,7 +2309,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(analyse_show(nzo.final_name_with_password)[:4])
+        command.extend(analyse_show(nzo.final_name_with_password))
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly
@@ -2298,6 +2319,13 @@ def pre_queue(nzo: NzbObject, pp, cat):
             "show_season": command[9],
             "show_episode": command[10],
             "show_episode_name": command[11],
+            "proper": command[12],
+            "resolution": command[13],
+            "decade": command[14],
+            "year": command[15],
+            "month": command[16],
+            "day": command[17],
+            "type": command[18],
         }
 
         try:

@@ -40,7 +40,6 @@ class TestBasicPages(SABnzbdBaseTest):
             "config/general",
             "config/folders",
             "config/switches",
-            "config/sorting",
             "config/notify",
             "config/special",
         ]

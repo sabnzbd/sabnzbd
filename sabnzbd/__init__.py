@@ -290,6 +290,11 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     elif cfg.auto_sort() == "1":
         cfg.auto_sort.set("avg_age asc")
 
+    # Convert old series/date/movie sorters
+    if not cfg.sorters_converted():
+        misc.convert_sorter_settings()
+        cfg.sorters_converted.set(True)
+
     # Add hostname to the whitelist
     if not cfg.host_whitelist():
         cfg.host_whitelist.set(socket.gethostname())
