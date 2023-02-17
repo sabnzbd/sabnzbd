@@ -877,6 +877,7 @@ SPECIAL_BOOL_LIST = (
     "api_logging",
     "x_frame_options",
     "allow_old_ssl_tls",
+    "enable_season_sorting",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
