@@ -149,6 +149,7 @@ class Sorter:
                 # Check for season pack indicators
                 if (
                     self.type == "tv"
+                    and cfg.enable_season_sorting()
                     and self.guess.get("season")
                     and not isinstance(self.guess.get("season"), list)  # No support for multi-season packs (yet)
                     and ((not self.guess.get("episode")) or isinstance(self.guess.get("episode"), list))
