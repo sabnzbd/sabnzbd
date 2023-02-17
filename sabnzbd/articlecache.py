@@ -131,20 +131,20 @@ class ArticleCache:
             # No data saved in memory, direct to disk
             self.__flush_article_to_disk(article, data)
 
-    @synchronized(DIRTY_CACHE_LOCK)
     def flush_oldest_file(self):
         """Try to assemble oldest unwritten data"""
         if self.__cache_limit > 250_000_000 and self.next_flush_time < time.time():
-            self.next_flush_time = time.time() + 0.2
-            unflushed = [article.nzf for article in set(self.__article_table) if article.nzf.dirty_cache]
-            # Reduce the risk of adding the same few files to the assembler each time they get new data
-            if len(unflushed) > 5:
-                unflushed.sort(key=lambda nzf: nzf.dirty_cache)
-                nzf = unflushed[0]
-                logging.debug("Flushing %s (age %.2f seconds)", nzf.filename, time.time() - nzf.dirty_cache)
-                sabnzbd.Assembler.process(nzf.nzo, nzf, False)
-                # Avoid adding duplicates if assembler is lagging behind
-                nzf.dirty_cache = 0
+            with DIRTY_CACHE_LOCK:
+                self.next_flush_time = time.time() + 0.2
+                unflushed = [article.nzf for article in set(self.__article_table) if article.nzf.dirty_cache]
+                # Reduce the risk of adding the same few files to the assembler each time they get new data
+                if len(unflushed) > 5:
+                    unflushed.sort(key=lambda nzf: nzf.dirty_cache)
+                    nzf = unflushed[0]
+                    logging.debug("Flushing %s (age %.2f seconds)", nzf.filename, time.time() - nzf.dirty_cache)
+                    sabnzbd.Assembler.process(nzf.nzo, nzf, False)
+                    # Avoid adding duplicates if assembler is lagging behind
+                    nzf.dirty_cache = 0
 
     def load_article(self, article: Article):
         """Load the data of the article"""
