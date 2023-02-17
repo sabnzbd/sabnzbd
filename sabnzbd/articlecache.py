@@ -136,7 +136,7 @@ class ArticleCache:
         """Try to assemble oldest unwritten data"""
         if self.__cache_limit > 250_000_000 and self.next_flush_time < time.time():
             self.next_flush_time = time.time() + 0.2
-            unflushed = list(set([article.nzf for article in [*self.__article_table] if article.nzf.dirty_cache]))
+            unflushed = [article.nzf for article in set(self.__article_table) if article.nzf.dirty_cache]
             # Reduce the risk of adding the same few files to the assembler each time they get new data
             if len(unflushed) > 5:
                 unflushed.sort(key=lambda nzf: nzf.dirty_cache)
