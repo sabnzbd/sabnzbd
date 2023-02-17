@@ -196,7 +196,7 @@ class Assembler(Thread):
                         break
 
         # Final steps
-        sabnzbd.ArticleCache.set_dirty_cache(nzf, 0)
+        nzf.set_dirty_cache(0)
         if file_done:
             set_permissions(nzf.filepath)
             nzf.assembled = True

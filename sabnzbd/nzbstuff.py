@@ -102,6 +102,7 @@ RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
 ##############################################################################
 
 TRYLIST_LOCK = threading.Lock()
+DIRTY_CACHE_LOCK = threading.Lock()
 
 
 class TryList:
@@ -391,6 +392,11 @@ class NzbFile(TryList):
                 self.bytes_left -= article.bytes
         return len(self.articles)
 
+    def set_dirty_cache(self, new_time):
+        """Setter for dirty_cache (with lock)"""
+        with DIRTY_CACHE_LOCK:
+            self.dirty_cache = new_time
+
     def set_par2(self, setname, vol, blocks):
         """Designate this this file as a par2 file"""
         self.is_par2 = True
@@ -399,6 +405,7 @@ class NzbFile(TryList):
         self.blocks = int_conv(blocks)
 
     def update_crc32(self, crc32: Optional[int], length: int) -> None:
+        """Combines CRC32 value from new part with existing"""
         if self.crc32 is None or crc32 is None:
             self.crc32 = None
         else:

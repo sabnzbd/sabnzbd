@@ -28,12 +28,11 @@ from typing import Dict, List
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE, ASSEMBLER_WRITE_THRESHOLD
-from sabnzbd.nzbstuff import Article
+from sabnzbd.nzbstuff import Article, DIRTY_CACHE_LOCK
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
 ARTICLE_COUNTER_LOCK = threading.RLock()
-DIRTY_CACHE_LOCK = threading.RLock()
 
 
 class ArticleCache:
@@ -97,10 +96,6 @@ class ArticleCache:
         """Is there space left in the set limit?"""
         return self.__cache_size < self.__cache_limit
 
-    @synchronized(DIRTY_CACHE_LOCK)
-    def set_dirty_cache(self, nzf, new_time):
-        nzf.dirty_cache = new_time
-
     def save_article(self, article: Article, data: bytes):
         """Save article in cache, either memory or disk"""
         nzf = article.nzf
@@ -126,7 +121,7 @@ class ArticleCache:
             if self.space_left():
                 # Add new article to the cache
                 self.__article_table[article] = data
-                self.set_dirty_cache(nzf, time.time())
+                nzf.set_dirty_cache(time.time())
             else:
                 # Return the space and save to disk
                 self.free_reserved_space(data_size)
