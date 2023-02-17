@@ -53,7 +53,6 @@ from sabnzbd.misc import (
     ip_in_subnet,
     helpful_warning,
     recursive_html_escape,
-    sort_to_opts,
 )
 from sabnzbd.filesystem import (
     real_path,
