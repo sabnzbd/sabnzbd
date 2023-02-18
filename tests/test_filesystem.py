@@ -89,6 +89,12 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("$mft") == "$mft"
         assert filesystem.sanitize_filename("a$mft") == "a$mft"
 
+    @set_platform("win32")
+    def test_file_illegal_chars_win32(self):
+        assert filesystem.sanitize_filename("test" + filesystem.CH_ILLEGAL_WIN + "aftertest") == (
+            "test" + filesystem.CH_LEGAL_WIN + "aftertest"
+        )
+
     @set_platform("linux")
     def test_file_illegal_chars_linux(self):
         assert filesystem.sanitize_filename("test/aftertest") == "test+aftertest"
