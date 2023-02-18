@@ -186,6 +186,9 @@ def has_win_device(filename: str) -> bool:
 
 CH_ILLEGAL = "/"
 CH_LEGAL = "+"
+for i in range(2, 32):
+    CH_ILLEGAL += chr(i)
+    CH_LEGAL += "_"
 CH_ILLEGAL_WIN = '\\/<>?*|"\t:'
 CH_LEGAL_WIN = "++{}!@#'+-"
 
