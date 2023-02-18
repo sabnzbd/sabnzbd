@@ -66,6 +66,7 @@ class TestSkintext:
         assert not not_found
 
 
+@pytest.mark.skipif(os.environ.get("GITHUB_REF_NAME", "") != "develop", reason="Only check on develop branch")
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestWiki:
     def test_added_wiki_entries(self):
