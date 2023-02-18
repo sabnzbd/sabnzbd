@@ -184,10 +184,13 @@ def has_win_device(filename: str) -> bool:
     return False
 
 
-CH_ILLEGAL = "/"
-CH_LEGAL = "+"
-CH_ILLEGAL_WIN = '\\/<>?*|"\t:'
-CH_LEGAL_WIN = "++{}!@#'+-"
+CH_ILLEGAL = "\0/"
+CH_LEGAL = "_+"
+CH_ILLEGAL_WIN = '\\/<>?*|":'
+CH_LEGAL_WIN = "++{}!@#'-"
+for i in range(1, 32):
+    CH_ILLEGAL_WIN += chr(i)
+    CH_LEGAL_WIN += "_"
 
 
 def sanitize_filename(name: str) -> str:
