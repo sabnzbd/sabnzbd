@@ -188,7 +188,7 @@ CH_ILLEGAL = "/"
 CH_LEGAL = "+"
 CH_ILLEGAL_WIN = '\\/<>?*|":'
 CH_LEGAL_WIN = "++{}!@#'-"
-for i in range(2, 32):
+for i in range(0, 32):
     CH_ILLEGAL_WIN += chr(i)
     CH_LEGAL_WIN += "_"
 
