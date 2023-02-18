@@ -186,11 +186,11 @@ def has_win_device(filename: str) -> bool:
 
 CH_ILLEGAL = "/"
 CH_LEGAL = "+"
+CH_ILLEGAL_WIN = '\\/<>?*|"\t:'
+CH_LEGAL_WIN = "++{}!@#'+-"
 for i in range(2, 32):
-    CH_ILLEGAL += chr(i)
-    CH_LEGAL += "_"
-CH_ILLEGAL_WIN = CH_ILLEGAL + '\\<>?*|"\t:'
-CH_LEGAL_WIN = CH_LEGAL + "+{}!@#'+-"
+    CH_ILLEGAL_WIN += chr(i)
+    CH_LEGAL_WIN += "_"
 
 
 def sanitize_filename(name: str) -> str:
@@ -205,8 +205,8 @@ def sanitize_filename(name: str) -> str:
 
     if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
-        illegal = CH_ILLEGAL_WIN
-        legal = CH_LEGAL_WIN
+        illegal += CH_ILLEGAL_WIN
+        legal += CH_LEGAL_WIN
 
     if ":" in name and sabnzbd.MACOS:
         # Compensate for the foolish way par2 on macOS handles a colon character
