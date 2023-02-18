@@ -189,8 +189,8 @@ CH_LEGAL = "+"
 for i in range(2, 32):
     CH_ILLEGAL += chr(i)
     CH_LEGAL += "_"
-CH_ILLEGAL_WIN = CH_ILLEGAL + '\\/<>?*|"\t:'
-CH_LEGAL_WIN = CH_LEGAL + "++{}!@#'+-"
+CH_ILLEGAL_WIN = CH_ILLEGAL + '\\<>?*|"\t:'
+CH_LEGAL_WIN = CH_LEGAL + "+{}!@#'+-"
 
 
 def sanitize_filename(name: str) -> str:

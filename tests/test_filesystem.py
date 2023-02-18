@@ -113,6 +113,7 @@ class TestFileFolderNameSanitizer:
     @set_platform("linux")
     def test_legal_chars_linux(self):
         # Illegal on Windows but not on Linux, unless sanitize_safe is active.
+        char_ill = filesystem.CH_ILLEGAL_WIN
         assert filesystem.sanitize_filename("test" + char_ill + "aftertest") == ("test" + char_ill + "aftertest")
         for char in char_ill:
             # Try at start, middle, and end of a filename.
