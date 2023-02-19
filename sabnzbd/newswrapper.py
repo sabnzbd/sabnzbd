@@ -207,7 +207,30 @@ class NewsWrapper:
 
         # Official end-of-article is "\r\n.\r\n",
         # Using the data directly seems faster than the memoryview
+        # 222 0 <aaaaa5@Jfa>
+        # =ybegin part=68 total=68 line=128 size=52224000 name=161e.part08.rar
+        # =ypart begin=51456001 end=52224000
+
         if self.data[self.data_position - 5 : self.data_position] == b"\r\n.\r\n":
+            start = stop = stop2 = None
+            start = self.data.index(b"=ybegin")
+            if start != -1:
+                self.article.yenc_begin = 0
+                # If the relative index searches don't find anything they will give an exception instead of -1
+                # Single part yenc articles may not have =ypart
+                try:
+                    # Add 13 because we want the index of the end of the string
+                    start = self.data.index(b"=ypart begin=", start) + 13
+                    stop = self.data.index(b" ", start)
+                    self.article.yenc_begin = int(self.data[start:stop]) - 1
+                    stop2 = self.data.index(b"\r", stop + 5)
+                    self.article.yenc_length = int(self.data[stop + 5 : stop2]) - self.article.yenc_begin
+                except Exception as e:
+                    # with open(str(time.time()), "wb", buffering=0) as fout:
+                    #    fout.write(self.data)
+                    logging.debug("Exception %s Start: %s stop: %s stop2: %s", str(e), start, stop, stop2)
+                    logging.debug("Index: %s-%s", self.article.yenc_begin, self.article.yenc_length)
+
             return bytes_recv, True
 
         # Still in middle of data, so continue!

@@ -241,7 +241,7 @@ class DecoderWorker(Thread):
                 article.decoded = True
             elif not nzo.precheck:
                 # Nothing to save
-                article.on_disk = True
+                article.written_bytes = -1
 
             sabnzbd.NzbQueue.register_article(article, article_success)
 

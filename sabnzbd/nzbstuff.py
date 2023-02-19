@@ -158,7 +158,18 @@ class TryList:
 ##############################################################################
 # Article
 ##############################################################################
-ArticleSaver = ("article", "art_id", "bytes", "lowest_partnum", "decoded", "on_disk", "nzf", "crc32")
+ArticleSaver = (
+    "article",
+    "art_id",
+    "bytes",
+    "lowest_partnum",
+    "decoded",
+    "written_bytes",
+    "nzf",
+    "crc32",
+    "yenc_begin",
+    "yenc_length",
+)
 
 
 class Article(TryList):
@@ -177,9 +188,11 @@ class Article(TryList):
         self.fetcher_priority: int = 0
         self.tries: int = 0  # Try count
         self.decoded: bool = False
-        self.on_disk: bool = False
+        self.written_bytes: int = -1
         self.crc32: Optional[int] = None
         self.nzf: NzbFile = nzf
+        self.yenc_begin: Optional[int] = None
+        self.yenc_length: Optional[int] = None
 
     def reset_try_list(self):
         """In addition to resetting the try list, also reset fetcher so all servers are tried again"""
@@ -294,6 +307,7 @@ NzbFileSaver = (
     "crc32",
     "assembled",
     "md5of16k",
+    "sparse",
 )
 
 
@@ -331,6 +345,7 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
         self.dirty_cache: float = 0
+        self.sparse: bool = False
 
         self.crc32: Optional[int] = 0
         self.assembled: bool = False

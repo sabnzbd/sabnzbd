@@ -788,7 +788,8 @@ class Downloader(Thread):
             return nw, bytes_received, done
         except ssl.SSLWantReadError:
             return nw, 0, False
-        except:
+        except Exception as e:
+            logging.debug("Exception in recv_chunk: %s", str(e))
             return nw, 0, True
 
     def __check_speed(self):

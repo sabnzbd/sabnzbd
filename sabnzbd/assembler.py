@@ -165,35 +165,51 @@ class Assembler(Thread):
         2) Nothing written before: write all
         """
 
+        open_mode = "a+b"
+        sparse_mode = nzf.sparse
+        if sparse_mode and os.path.exists(nzf.filepath):
+            open_mode = "r+b"
+
         # We write large article-sized chunks, so we can safely skip the buffering of Python
-        with open(nzf.filepath, "ab", buffering=0) as fout:
+        with open(nzf.filepath, open_mode, buffering=0) as fout:
             for article in nzf.decodetable:
+                # Skip already written articles
+                if article.written_bytes >= 0:
+                    if file_done:
+                        nzf.update_crc32(article.crc32, article.written_bytes)
+                    continue
+
                 # Break if deleted during writing
                 if nzo.status is Status.DELETED:
                     break
-
-                # Skip already written articles
-                if article.on_disk:
-                    continue
 
                 # Write all decoded articles
                 if article.decoded:
                     data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
                     if data:
-                        fout.write(data)
-                        nzf.update_crc32(article.crc32, len(data))
-                        article.on_disk = True
-                    else:
-                        logging.info("No data found when trying to write %s", article)
-                else:
-                    # If the article was not decoded but the file
-                    # is done, it is just a missing piece, so keep writing
-                    if file_done:
+                        length = len(data)
+                        if article.yenc_length and article.yenc_length != length:
+                            if article.yenc_length < length:
+                                # Article is longer than it should be, only write specified length
+                                length = article.yenc_length
+                            else:
+                                # Article is too short, the next article will need seek.
+                                nzf.sparse = sparse_mode = True
+                        if sparse_mode:
+                            fout.seek(article.yenc_begin)
+                        fout.write(data[:length])
+                        article.written_bytes = length
+                        if file_done:
+                            nzf.update_crc32(article.crc32, article.written_bytes)
                         continue
-                    else:
-                        # We reach an article that was not decoded
-                        break
+                    article.written_bytes = 0
+                elif not (file_done or sparse_mode):
+                    # In append mode, can't skip articles
+                    break
+                # If the article was missing or not decoded but the file
+                # is done or in sparse mode, keep writing
+                nzf.sparse = sparse_mode = True
 
         # Final steps
         nzf.set_dirty_cache(0)

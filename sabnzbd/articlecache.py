@@ -142,9 +142,10 @@ class ArticleCache:
                     unflushed.sort(key=lambda nzf: nzf.dirty_cache)
                     nzf = unflushed[0]
                     logging.debug("Flushing %s (age %.2f seconds)", nzf.filename, time.time() - nzf.dirty_cache)
-                    sabnzbd.Assembler.process(nzf.nzo, nzf, False)
+                    nzf.sparse = True
                     # Avoid adding duplicates if assembler is lagging behind
                     nzf.dirty_cache = 0
+                    sabnzbd.Assembler.process(nzf.nzo, nzf, False)
 
     def load_article(self, article: Article):
         """Load the data of the article"""
