@@ -149,9 +149,6 @@ class DecoderWorker(Thread):
                     logging.debug("Decoding %s", art_id)
 
                 if article.nzf.type == "uu":
-                    # TODO: UU needs to be fixed
-                    n = 250000
-                    raw_data = [bytes(raw_data[i : min(raw_data_size, i + n)]) for i in range(0, len(raw_data), n)]
                     decoded_data = decode_uu(article, raw_data)
                 else:
                     decoded_data = decode_yenc(article, raw_data, raw_data_size)
@@ -274,7 +271,7 @@ def decode_yenc(article: Article, data: bytearray, raw_data_size: int) -> bytear
     return data
 
 
-def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
+def decode_uu(article: Article, raw_data: bytearray) -> bytes:
     """Try to uu-decode an article. The raw_data may or may not contain headers.
     If there are headers, they will be separated from the body by at least one
     empty line. In case of no headers, the first line seems to always be the nntp
@@ -284,10 +281,7 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
         raise BadUu
 
     # Line up the raw_data
-    with BytesIO() as encoded_data:
-        for data in raw_data:
-            encoded_data.write(data)
-        raw_data = encoded_data.getvalue().split(b"\r\n")
+    raw_data = raw_data.split(b"\r\n")
 
     # Index of the uu payload start in raw_data
     uu_start = 0
@@ -301,7 +295,7 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
     # Try to find an empty line separating the body from headers or response
     # code and set the expected payload start to the next line.
     try:
-        uu_start = raw_data[:limit].index(b"") + 1
+        uu_start = raw_data[:limit].index(bytearray(b"")) + 1
     except ValueError:
         # No empty line, look for a response code instead
         if raw_data[0].startswith(b"222 "):
