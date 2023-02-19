@@ -102,7 +102,7 @@ class TestUuDecoder:
         # Concatenate expected result
         result = b"".join(result)
 
-        return article, data, result
+        return article, bytearray(data), result
 
     def test_no_data(self):
         with pytest.raises(decoder.BadUu):
@@ -111,28 +111,28 @@ class TestUuDecoder:
     @pytest.mark.parametrize(
         "raw_data",
         [
-            [b""],
-            [b"\r\n\r\n"],
-            [b"f", b"o", b"o", b"b", b"a", b"r", b"\r\n"],  # Plenty of list items, but (too) few actual lines
-            [b"222 0 <artid@woteva>\r\nX-Too-Short: yup\r\n"],
+            b"",
+            b"\r\n\r\n",
+            b"foobar\r\n",  # Plenty of list items, but (too) few actual lines
+            b"222 0 <artid@woteva>\r\nX-Too-Short: yup\r\n",
         ],
     )
     def test_short_data(self, raw_data):
         with pytest.raises(decoder.BadUu):
-            assert decoder.decode_uu(None, raw_data)
+            assert decoder.decode_uu(None, bytearray(raw_data))
 
     @pytest.mark.parametrize(
         "raw_data",
         [
-            [b"222 0 <foo@bar>\r\n\r\n"],  # Missing altogether
-            [b"222 0 <foo@bar>\r\n\r\nbeing\r\n"],  # Typo in 'begin'
-            [b"222 0 <foo@bar>\r\n\r\nx-header: begin 644 foobar\r\n"],  # Not at start of the line
-            [b"666 0 <foo@bar>\r\nbegin\r\n"],  # No empty line + wrong response code
-            [b"OMG 0 <foo@bar>\r\nbegin\r\n"],  # No empty line + invalid response code
-            [b"222 0 <foo@bar>\r\nbegin\r\n"],  # No perms
-            [b"222 0 <foo@bar>\r\nbegin ABC DEF\r\n"],  # Permissions not octal
-            [b"222 0 <foo@bar>\r\nbegin 755\r\n"],  # No filename
-            [b"222 0 <foo@bar>\r\nbegin 644 \t \t\r\n"],  # Filename empty after stripping
+            b"222 0 <foo@bar>\r\n\r\n",  # Missing altogether
+            b"222 0 <foo@bar>\r\n\r\nbeing\r\n",  # Typo in 'begin'
+            b"222 0 <foo@bar>\r\n\r\nx-header: begin 644 foobar\r\n",  # Not at start of the line
+            b"666 0 <foo@bar>\r\nbegin\r\n",  # No empty line + wrong response code
+            b"OMG 0 <foo@bar>\r\nbegin\r\n",  # No empty line + invalid response code
+            b"222 0 <foo@bar>\r\nbegin\r\n",  # No perms
+            b"222 0 <foo@bar>\r\nbegin ABC DEF\r\n",  # Permissions not octal
+            b"222 0 <foo@bar>\r\nbegin 755\r\n",  # No filename
+            b"222 0 <foo@bar>\r\nbegin 644 \t \t\r\n",  # Filename empty after stripping
         ],
     )
     def test_missing_uu_begin(self, raw_data):
@@ -140,7 +140,9 @@ class TestUuDecoder:
         article.lowest_partnum = True
         filler = b"\r\n" * 4
         with pytest.raises(decoder.BadUu):
-            assert decoder.decode_uu(article, raw_data.append(filler))
+            raw_data = bytearray(raw_data)
+            raw_data.extend(filler)
+            assert decoder.decode_uu(article, raw_data)
 
     @pytest.mark.parametrize("insert_empty_line", [True, False])
     @pytest.mark.parametrize("insert_excess_empty_lines", [True, False])
@@ -161,7 +163,7 @@ class TestUuDecoder:
         article, raw_data, expected_result = self._generate_msg_part(
             "single", insert_empty_line, insert_excess_empty_lines, insert_headers, insert_end, begin_line
         )
-        assert decoder.decode_uu(article, [raw_data]) == expected_result
+        assert decoder.decode_uu(article, raw_data) == expected_result
         assert article.nzf.filename_checked
 
     @pytest.mark.parametrize("insert_empty_line", [True, False])
@@ -172,7 +174,7 @@ class TestUuDecoder:
         decoded_data = expected_data = b""
         for part in ("begin", "middle", "middle", "end"):
             article, data, result = self._generate_msg_part(part, insert_empty_line, False, False, True)
-            decoded_data += decoder.decode_uu(article, [data])
+            decoded_data += decoder.decode_uu(article, data)
             expected_data += result
 
         # Verify results
@@ -191,4 +193,4 @@ class TestUuDecoder:
         article.lowest_partnum = False
         filler = b"\r\n".join(VALID_UU_LINES[:4]) + b"\r\n"
         with pytest.raises(decoder.BadData):
-            assert decoder.decode_uu(article, [b"222 0 <foo@bar>\r\n" + filler + bad_data + b"\r\n"])
+            assert decoder.decode_uu(article, bytearray(b"222 0 <foo@bar>\r\n" + filler + bad_data + b"\r\n"))
