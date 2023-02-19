@@ -113,13 +113,7 @@ class TestUuDecoder:
         [
             b"",
             b"\r\n\r\n",
-            b"f",
-            b"o",
-            b"o",
-            b"b",
-            b"a",
-            b"r",
-            b"\r\n",  # Plenty of list items, but (too) few actual lines
+            b"foobar\r\n",  # Plenty of list items, but (too) few actual lines
             b"222 0 <artid@woteva>\r\nX-Too-Short: yup\r\n",
         ],
     )
