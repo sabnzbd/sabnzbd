@@ -58,7 +58,7 @@ _BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
 _ARTICLE_PREFETCH = 20
 # Minimum expected size of TCP receive buffer
-_DEFAULT_CHUNK_SIZE = 65536
+_DEFAULT_CHUNK_SIZE = 32768
 
 TIMER_LOCK = RLock()
 
