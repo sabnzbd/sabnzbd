@@ -770,12 +770,16 @@ class Downloader(Thread):
 
             if self.recv_threads > 1:
                 for nw, bytes_received, done in self.recv_pool.map(self.__recv, read):
+                    if bytes_received > last_max_chunk_size:
+                        last_max_chunk_size = bytes_received
                     self.__handle_recv_result(nw, bytes_received, done)
                 if self.bandwidth_limit:
                     self.__check_speed()
             else:
                 for selected in read:
                     nw, bytes_received, done = self.__recv(selected)
+                    if bytes_received > last_max_chunk_size:
+                        last_max_chunk_size = bytes_received
                     self.__handle_recv_result(nw, bytes_received, done)
                     if self.bandwidth_limit and bytes_received:
                         self.__check_speed()
