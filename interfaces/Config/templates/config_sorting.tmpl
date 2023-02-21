@@ -5,6 +5,7 @@
 <div class="colmask section padTable">
     <p>$T('explain-sorting')</p>
     <!--#for $cur, $slot in enumerate($slotinfo)#-->
+        <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
         <!-- SORTER $cur -->
         <!--#set $cansort = $slot.name != ''#-->
         <form action="save_sorter" method="get" autocomplete="off" <!--#if $cansort#-->class="sorting-row"<!--#end if#-->>
@@ -52,11 +53,11 @@
                         </td>
                         <td rowspan="3">
                             <select name="sort_type" multiple="multiple" class="multiple_cats" <!--#if $cur == 0#-->id="field_sort_type"<!--#end if#--> >
-                                <option value="0" <!--#if "0" in $slot.sort_type then 'selected="selected"' else ""#-->>$T('guessit-type-all')</option>
-                                <option value="1" <!--#if "1" in $slot.sort_type then 'selected="selected"' else ""#-->>$T('guessit-type-tv')</option>
-                                <option value="2" <!--#if "2" in $slot.sort_type then 'selected="selected"' else ""#-->>$T('guessit-type-date')</option>
-                                <option value="3" <!--#if "3" in $slot.sort_type then 'selected="selected"' else ""#-->>$T('guessit-type-movie')</option>
-                                <option value="4" <!--#if "4" in $slot.sort_type then 'selected="selected"' else ""#-->>$T('guessit-type-other')</option>
+                                <option value="0" <!--#if "0" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-all')</option>
+                                <option value="1" <!--#if "1" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-tv')</option>
+                                <option value="2" <!--#if "2" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-date')</option>
+                                <option value="3" <!--#if "3" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-movie')</option>
+                                <option value="4" <!--#if "4" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-other')</option>
                             </select>
                         </td>
                         <td class="nowrap align-right">
