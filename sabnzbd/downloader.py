@@ -58,7 +58,7 @@ _BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
 _ARTICLE_PREFETCH = 20
 # Minimum expected size of TCP receive buffer
-_DEFAULT_CHUNK_SIZE = 65536
+_DEFAULT_CHUNK_SIZE = 32768
 
 TIMER_LOCK = RLock()
 
@@ -770,12 +770,16 @@ class Downloader(Thread):
 
             if self.recv_threads > 1:
                 for nw, bytes_received, done in self.recv_pool.map(self.__recv, read):
+                    if bytes_received > last_max_chunk_size:
+                        last_max_chunk_size = bytes_received
                     self.__handle_recv_result(nw, bytes_received, done)
                 if self.bandwidth_limit:
                     self.__check_speed()
             else:
                 for selected in read:
                     nw, bytes_received, done = self.__recv(selected)
+                    if bytes_received > last_max_chunk_size:
+                        last_max_chunk_size = bytes_received
                     self.__handle_recv_result(nw, bytes_received, done)
                     if self.bandwidth_limit and bytes_received:
                         self.__check_speed()

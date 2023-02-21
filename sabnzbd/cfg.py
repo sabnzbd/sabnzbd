@@ -260,7 +260,6 @@ configlock = OptionBool("misc", "config_lock", False)
 # One time trackers
 ##############################################################################
 fixed_ports = OptionBool("misc", "fixed_ports", False)
-sched_converted = OptionBool("misc", "sched_converted", False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
 direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)
 

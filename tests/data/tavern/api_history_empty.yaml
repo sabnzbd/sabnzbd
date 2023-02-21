@@ -54,7 +54,7 @@ stages:
         access-control-allow-origin: "*"
         content-length: !re_match "[0-9]+"
       verify_response_with:
-        function: tavern.testutils.helpers:validate_regex
+        function: tavern.helpers:validate_regex
         extra_kwargs:
           # Verify response with a regex using positive looksaheads so
           # parameters match regardless of their order of appearance

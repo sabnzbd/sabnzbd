@@ -56,7 +56,7 @@ stages:
         pragma: "no-cache"
         access-control-allow-origin: "*"
       verify_response_with:
-        function: tavern.testutils.helpers:validate_regex
+        function: tavern.helpers:validate_regex
         extra_kwargs:
           # Verify response parameters with a regex using positive
           # looksaheads, so parameters match regardless of their order

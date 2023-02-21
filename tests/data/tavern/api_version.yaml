@@ -35,7 +35,7 @@ stages:
         content-type: !re_match "text/plain"
         content-type: !re_search "charset=(UTF|utf)-8"
       verify_response_with:
-        function: tavern.testutils.helpers:validate_regex
+        function: tavern.helpers:validate_regex
         extra_kwargs:
           expression: "{SAB_VERSION}"
 
@@ -53,6 +53,6 @@ stages:
         content-type: !re_match "text/xml"
         content-type: !re_search "charset=(UTF|utf)-8"
       verify_response_with:
-        function: tavern.testutils.helpers:validate_regex
+        function: tavern.helpers:validate_regex
         extra_kwargs:
           expression: '<\?xml version="1.0" encoding="UTF-8" \?>\r?\n?<version>{SAB_VERSION}</version>'
