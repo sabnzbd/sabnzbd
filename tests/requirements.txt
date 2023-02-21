@@ -9,7 +9,7 @@ pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict
-tavern<2.0.0 # tavalidate does not support tavern 2.0.0+
+tavern>=2.0.0
 tavalidate
 importlib_metadata
 lxml

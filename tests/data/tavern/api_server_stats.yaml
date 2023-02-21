@@ -47,7 +47,7 @@ stages:
         content-length: !re_match "[0-9]+"
       status_code: 200
       verify_response_with:
-        function: tavern.testutils.helpers:validate_regex
+        function: tavern.helpers:validate_regex
         extra_kwargs:
           expression: "{{(?=.*'total': [0-9]+)(?=.*'month': [0-9]+)(?=.*'week': [0-9]+)(?=.*'day': [0-9]+)(?=.*'servers': .*).*}}"
 
