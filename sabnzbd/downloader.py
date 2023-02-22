@@ -586,6 +586,8 @@ class Downloader(Thread):
         sabnzbd.EXTERNAL_IPV6 = sabnzbd.misc.test_ipv6()
         logging.debug("External IPv6 test result: %s", sabnzbd.EXTERNAL_IPV6)
 
+        logging.debug("switchinterval = %s", sys.getswitchinterval())
+
         # Then we check SSL certificate checking
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
