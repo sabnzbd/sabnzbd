@@ -887,7 +887,6 @@ SPECIAL_VALUE_LIST = (
     "max_foldername_length",
     "url_base",
     "receive_threads",
-    "num_simd_decoders",
     "switchinterval",
     "direct_unpack_threads",
     "ipv6_servers",

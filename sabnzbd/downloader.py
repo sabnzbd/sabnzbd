@@ -29,6 +29,7 @@ import random
 import sys
 import ssl
 from typing import List, Dict, Optional, Union
+import concurrent
 from concurrent.futures import ThreadPoolExecutor
 
 import sabnzbd
@@ -534,10 +535,8 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[bytearray] = None, raw_data_size: Optional[int] = None):
-        """Decode article and check the status of
-        the decoder and the assembler
-        """
+    def decode(self, article, raw_data: Optional[bytearray] = None):
+        """Decode article"""
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
@@ -548,38 +547,8 @@ class Downloader(Thread):
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
             return
 
-        # Send to decoder-queue
-        sabnzbd.Decoder.process(article, raw_data, raw_data_size)
-
-        # See if we need to delay because the queues are full
-        logged_counter = 0
-
-        decoder_level = sabnzbd.Decoder.queue_level()
-        assembler_level = sabnzbd.Assembler.queue_level()
-
-        # Sleep for an increasing amount of time, depending on queue sizes.
-        if decoder_level > SOFT_QUEUE_LIMIT or assembler_level > SOFT_QUEUE_LIMIT:
-            time.sleep((decoder_level + assembler_level - SOFT_QUEUE_LIMIT) / 2)
-            sabnzbd.BPSMeter.delayed_decoder += int(decoder_level > SOFT_QUEUE_LIMIT)
-            sabnzbd.BPSMeter.delayed_assembler += int(assembler_level > SOFT_QUEUE_LIMIT)
-
-            while not self.shutdown and (sabnzbd.Decoder.queue_level() >= 1 or sabnzbd.Assembler.queue_level() >= 1):
-                # Only log/update once every second, to not waste any CPU-cycles
-                if not logged_counter % 10:
-                    # Make sure the BPS-meter is updated
-                    sabnzbd.BPSMeter.update()
-
-                    # Update who is delaying us
-                    logging.debug(
-                        "Delayed - %d seconds - Decoder queue: %d - Assembler queue: %d",
-                        logged_counter / 10,
-                        sabnzbd.Decoder.decoder_queue.qsize(),
-                        sabnzbd.Assembler.queue.qsize(),
-                    )
-
-                # Wait and update the queue sizes
-                time.sleep(0.1)
-                logged_counter += 1
+        # Decode and send to article cache
+        sabnzbd.decoder.decode(article, raw_data)
 
     def run(self):
         # First check IPv6 connectivity
@@ -771,45 +740,27 @@ class Downloader(Thread):
                 continue
 
             if self.recv_threads > 1:
-                for nw, bytes_received, done in self.recv_pool.map(self.__recv, read):
+                futures = {self.recv_pool.submit(self.__process_server, fds) for fds in read}
+                for future in concurrent.futures.as_completed(futures):
+                    bytes_received = future.result()
                     if bytes_received > last_max_chunk_size:
                         last_max_chunk_size = bytes_received
-                    self.__handle_recv_result(nw, bytes_received, done)
-                if self.bandwidth_limit:
-                    self.__check_speed()
             else:
                 for selected in read:
-                    nw, bytes_received, done = self.__recv(selected)
+                    bytes_received = self.__process_server(selected)
                     if bytes_received > last_max_chunk_size:
                         last_max_chunk_size = bytes_received
-                    self.__handle_recv_result(nw, bytes_received, done)
-                    if self.bandwidth_limit and bytes_received:
-                        self.__check_speed()
 
-    def __recv(self, selected):
-        nw = None
-        try:
-            nw = self.read_fds[selected]
-            bytes_received, done = nw.recv_chunk()
-            return nw, bytes_received, done
-        except ssl.SSLWantReadError:
-            return nw, 0, False
-        except:
-            return nw, 0, True
+            self.__check_speed()
+            self.__check_assembler()
 
-    def __check_speed(self):
-        BPSMeter = sabnzbd.BPSMeter
-        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
-            BPSMeter.update()
-            while BPSMeter.bps > self.bandwidth_limit:
-                time.sleep(0.01)
-                BPSMeter.update()
+    def __process_server(self, selected) -> int:
+        nw, bytes_received, done = self.__recv(selected)
 
-    def __handle_recv_result(self, nw: NewsWrapper, bytes_received: int = 0, done: bool = False):
         if not bytes_received:
             if done:
                 self.__reset_nw(nw, "server closed connection", wait=False)
-            return
+            return bytes_received
 
         article = nw.article
         server = nw.server
@@ -818,7 +769,7 @@ class Downloader(Thread):
         if nw.status_code != 222 and not done:
             if not nw.connected or nw.status_code == 480:
                 if not self.__finish_connect_nw(nw):
-                    return
+                    return bytes_received
                 if nw.connected:
                     logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
                     self.__request_article(nw)
@@ -863,7 +814,7 @@ class Downloader(Thread):
 
             # Update statistics and decode
             article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
-            self.decode(article, nw.get_data_buffer(), nw.data_position)
+            self.decode(article, nw.get_data_buffer())
 
             if sabnzbd.LOG_ALL:
                 logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
@@ -875,10 +826,59 @@ class Downloader(Thread):
                 nw.article = server.get_article()
                 if nw.article:
                     self.__request_article(nw)
-                    return
+                    return bytes_received
             server.busy_threads.remove(nw)
             server.idle_threads.append(nw)
             self.remove_socket(nw)
+
+        return bytes_received
+
+    def __recv(self, selected):
+        nw = None
+        try:
+            nw = self.read_fds[selected]
+            bytes_received, done = nw.recv_chunk()
+            return nw, bytes_received, done
+        except ssl.SSLWantReadError:
+            return nw, 0, False
+        except:
+            return nw, 0, True
+
+    def __check_speed(self):
+        if not self.bandwidth_limit:
+            return
+
+        BPSMeter = sabnzbd.BPSMeter
+        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
+            BPSMeter.update()
+            while BPSMeter.bps > self.bandwidth_limit:
+                time.sleep(0.01)
+                BPSMeter.update()
+
+    def __check_assembler(self):
+        """See if we need to delay because the queues are full"""
+        # Sleep for an increasing amount of time, depending on queue sizes.
+        if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
+            time.sleep(assembler_level - SOFT_QUEUE_LIMIT)
+            sabnzbd.BPSMeter.delayed_assembler += 1
+            logged_counter = 0
+
+            while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
+                # Only log/update once every second, to not waste any CPU-cycles
+                if not logged_counter % 10:
+                    # Make sure the BPS-meter is updated
+                    sabnzbd.BPSMeter.update()
+
+                    # Update who is delaying us
+                    logging.debug(
+                        "Delayed - %d seconds - Assembler queue: %d",
+                        logged_counter / 10,
+                        sabnzbd.Assembler.queue.qsize(),
+                    )
+
+                # Wait and update the queue sizes
+                time.sleep(0.1)
+                logged_counter += 1
 
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
         server = nw.server
