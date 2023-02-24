@@ -740,27 +740,32 @@ class Downloader(Thread):
                 continue
 
             if self.recv_threads > 1:
-                futures = {self.recv_pool.submit(self.__process_server, fds) for fds in read}
+                futures = {self.recv_pool.submit(self.__process_nw, self.read_fds.get(fds)) for fds in read}
                 for future in concurrent.futures.as_completed(futures):
                     bytes_received = future.result()
                     if bytes_received > last_max_chunk_size:
                         last_max_chunk_size = bytes_received
             else:
                 for selected in read:
-                    bytes_received = self.__process_server(selected)
+                    bytes_received = self.__process_nw(self.read_fds.get(selected))
                     if bytes_received > last_max_chunk_size:
                         last_max_chunk_size = bytes_received
 
             self.__check_speed()
             self.__check_assembler()
 
-    def __process_server(self, selected) -> int:
-        nw, bytes_received, done = self.__recv(selected)
+    def __process_nw(self, nw: NewsWrapper) -> int:
+        """Receive data from NewsWrapper and handle response"""
+        if nw is None:
+            return 0
 
-        if not bytes_received:
-            if done:
-                self.__reset_nw(nw, "server closed connection", wait=False)
-            return bytes_received
+        try:
+            bytes_received, done = nw.recv_chunk()
+        except ssl.SSLWantReadError:
+            return 0
+        except:
+            self.__reset_nw(nw, "server closed connection", wait=False)
+            return 0
 
         article = nw.article
         server = nw.server
@@ -832,17 +837,6 @@ class Downloader(Thread):
             self.remove_socket(nw)
 
         return bytes_received
-
-    def __recv(self, selected):
-        nw = None
-        try:
-            nw = self.read_fds[selected]
-            bytes_received, done = nw.recv_chunk()
-            return nw, bytes_received, done
-        except ssl.SSLWantReadError:
-            return nw, 0, False
-        except:
-            return nw, 0, True
 
     def __check_speed(self):
         if not self.bandwidth_limit:
