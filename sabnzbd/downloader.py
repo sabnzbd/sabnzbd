@@ -28,9 +28,9 @@ import socket
 import random
 import sys
 import ssl
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Set
 import concurrent
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, Future
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -740,21 +740,27 @@ class Downloader(Thread):
                 continue
 
             if self.recv_threads > 1:
-                futures = {self.recv_pool.submit(self.__process_nw, self.read_fds.get(fds)) for fds in read}
-                for future in concurrent.futures.as_completed(futures):
-                    bytes_received = future.result()
+                process_tasks: Set[Future[int]] = set()
+
+                # Submit a process_nw task to the pool for every NewWrapper which is readable
+                for selected in read:
+                    process_tasks.add(self.recv_pool.submit(self.process_nw, self.read_fds.get(selected)))
+
+                # Process the results in the order they are completed in
+                for task in concurrent.futures.as_completed(process_tasks):
+                    bytes_received = task.result()
                     if bytes_received > last_max_chunk_size:
                         last_max_chunk_size = bytes_received
             else:
                 for selected in read:
-                    bytes_received = self.__process_nw(self.read_fds.get(selected))
+                    bytes_received = self.process_nw(self.read_fds.get(selected))
                     if bytes_received > last_max_chunk_size:
                         last_max_chunk_size = bytes_received
 
             self.__check_speed()
             self.__check_assembler()
 
-    def __process_nw(self, nw: NewsWrapper) -> int:
+    def process_nw(self, nw: NewsWrapper) -> int:
         """Receive data from NewsWrapper and handle response"""
         if nw is None:
             return 0
