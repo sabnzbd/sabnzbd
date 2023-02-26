@@ -28,7 +28,7 @@ import socket
 import random
 import sys
 import ssl
-from typing import List, Dict, Optional, Union, Set
+from typing import List, Dict, Optional, Union, Set, Tuple
 import concurrent
 from concurrent.futures import ThreadPoolExecutor, Future
 
@@ -286,6 +286,7 @@ class Downloader(Thread):
         "read_fds",
         "servers",
         "timers",
+        "process_tasks",
     )
 
     def __init__(self, paused=False):
@@ -311,6 +312,8 @@ class Downloader(Thread):
         self.recv_threads: int = cfg.receive_threads()
         self.recv_pool: Optional[ThreadPoolExecutor] = ThreadPoolExecutor(self.recv_threads)
         logging.debug("Receive threads: %s", self.recv_threads)
+
+        self.process_tasks: Set[Future[NewsWrapper, int]] = set()
 
         self.paused_for_postproc: bool = False
         self.shutdown: bool = False
@@ -741,47 +744,48 @@ class Downloader(Thread):
                 continue
 
             if self.recv_threads > 1:
-                process_tasks: Set[Future[int]] = set()
-
                 # Submit a process_nw task to the pool for every NewWrapper which is readable
                 for selected in read:
-                    process_tasks.add(self.recv_pool.submit(self.process_nw, self.read_fds.get(selected)))
+                    if nw := self.read_fds.get(selected):
+                        self.process_tasks.add(self.recv_pool.submit(self.process_nw, nw))
 
                 # Process the results in the order they are completed in
-                for task in concurrent.futures.as_completed(process_tasks):
-                    bytes_received = task.result()
+                for task in concurrent.futures.as_completed(self.process_tasks):
+                    nw, bytes_received = task.result()
+                    self.handle_process_nw_result(nw, bytes_received)
                     if bytes_received > last_max_chunk_size:
                         last_max_chunk_size = bytes_received
+
+                # Clear task list
+                self.process_tasks.clear()
             else:
                 for selected in read:
-                    bytes_received = self.process_nw(self.read_fds.get(selected))
-                    if bytes_received > last_max_chunk_size:
-                        last_max_chunk_size = bytes_received
+                    if nw := self.read_fds.get(selected):
+                        nw, bytes_received = self.process_nw(nw)
+                        self.handle_process_nw_result(nw, bytes_received)
+                        if bytes_received > last_max_chunk_size:
+                            last_max_chunk_size = bytes_received
 
             self.__check_speed()
             self.__check_assembler()
 
-    def process_nw(self, nw: NewsWrapper) -> int:
+    def process_nw(self, nw: NewsWrapper) -> Tuple[NewsWrapper, int]:
         """Receive data from NewsWrapper and handle response"""
-        if nw is None:
-            return 0
-
         try:
             bytes_received, done = nw.recv_chunk()
         except ssl.SSLWantReadError:
-            return 0
+            return nw, 0
         except:
             self.__reset_nw(nw, "server closed connection", wait=False)
-            return 0
+            return nw, 0
 
         article = nw.article
         server = nw.server
-        sabnzbd.BPSMeter.update(server.id, bytes_received)
 
         if nw.status_code != 222 and not done:
             if not nw.connected or nw.status_code == 480:
                 if not self.__finish_connect_nw(nw):
-                    return bytes_received
+                    return nw, bytes_received
                 if nw.connected:
                     logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
                     self.__request_article(nw)
@@ -838,12 +842,17 @@ class Downloader(Thread):
                 nw.article = server.get_article()
                 if nw.article:
                     self.__request_article(nw)
-                    return bytes_received
+                    return nw, bytes_received
             server.busy_threads.remove(nw)
             server.idle_threads.append(nw)
             self.remove_socket(nw)
 
-        return bytes_received
+        return nw, bytes_received
+
+    def handle_process_nw_result(self, nw: NewsWrapper, bytes_received: int):
+        """Handle the result of process_nw within the downloader thread"""
+        server = nw.server
+        sabnzbd.BPSMeter.update(server.id, bytes_received)
 
     def __check_speed(self):
         if not self.bandwidth_limit:
