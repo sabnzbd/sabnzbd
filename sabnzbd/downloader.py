@@ -782,6 +782,9 @@ class Downloader(Thread):
             sabnzbd.BPSMeter.update(server.id, bytes_received)
             if bytes_received > self.last_max_chunk_size:
                 self.last_max_chunk_size = bytes_received
+            # Update statistics
+            if done:
+                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
 
         if nw.status_code != 222 and not done:
             if not nw.connected or nw.status_code == 480:
@@ -828,10 +831,6 @@ class Downloader(Thread):
             # Successful data, clear "bad" counter
             server.bad_cons = 0
             server.errormsg = server.warning = ""
-
-            # Update statistics
-            with sabnzbd.decorators.NZBQUEUE_LOCK:
-                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
 
             # Decode
             self.decode(article, nw.get_data_buffer())
