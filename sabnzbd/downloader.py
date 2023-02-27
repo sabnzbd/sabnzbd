@@ -890,6 +890,7 @@ class Downloader(Thread):
                 time.sleep(0.1)
                 logged_counter += 1
 
+    @NzbQueueLocker
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
         server = nw.server
         try:
