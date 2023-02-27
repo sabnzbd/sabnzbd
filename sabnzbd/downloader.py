@@ -1036,7 +1036,7 @@ class Downloader(Thread):
                     logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
                 nw.body()
             # Mark as ready to be read
-            self.read_fds[nw.nntp.fileno] = nw
+            self.add_socket(nw.nntp.fileno, nw)
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
             self.__reset_nw(nw, "server broke off connection", warn=True, send_quit=False)
