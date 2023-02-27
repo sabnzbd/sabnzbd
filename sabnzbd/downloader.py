@@ -28,7 +28,7 @@ import socket
 import random
 import sys
 import ssl
-from typing import List, Dict, Optional, Union, Set, Tuple
+from typing import List, Dict, Optional, Union, Set
 import concurrent
 from concurrent.futures import ThreadPoolExecutor, Future
 
@@ -286,6 +286,8 @@ class Downloader(Thread):
         "read_fds",
         "servers",
         "timers",
+        "last_max_chunk_size",
+        "max_chunk_size",
         "process_tasks",
     )
 
@@ -308,6 +310,10 @@ class Downloader(Thread):
         self.sleep_time: float = 0.0
         self.sleep_time_set()
         cfg.downloader_sleep_time.callback(self.sleep_time_set)
+
+        # Sleep check variables
+        self.last_max_chunk_size: int = 0
+        self.max_chunk_size: int = _DEFAULT_CHUNK_SIZE
 
         self.recv_threads: int = cfg.receive_threads()
         self.recv_pool: Optional[ThreadPoolExecutor] = ThreadPoolExecutor(self.recv_threads)
@@ -574,9 +580,6 @@ class Downloader(Thread):
         BPSMeter.update()
         next_bpsmeter_update = 0
 
-        # Sleep check variables
-        last_max_chunk_size: int = 0
-        max_chunk_size: int = _DEFAULT_CHUNK_SIZE
         # Debugging code for v4 test release
         sleep_count_start: float = time.time()
         sleep_count: int = 0
@@ -691,10 +694,10 @@ class Downloader(Thread):
 
             # If less data than possible was received then it should be ok to sleep a bit
             if self.sleep_time:
-                if last_max_chunk_size > max_chunk_size:
-                    logging.debug("New max_chunk_size %d -> %d", max_chunk_size, last_max_chunk_size)
-                    max_chunk_size = last_max_chunk_size
-                elif last_max_chunk_size < max_chunk_size / 3:
+                if self.last_max_chunk_size > self.max_chunk_size:
+                    logging.debug("New max_chunk_size %d -> %d", self.max_chunk_size, self.last_max_chunk_size)
+                    self.max_chunk_size = self.last_max_chunk_size
+                elif self.last_max_chunk_size < self.max_chunk_size / 3:
                     time_before = time.time()
                     time.sleep(self.sleep_time)
                     now = time.time()
@@ -716,7 +719,7 @@ class Downloader(Thread):
                         sleep_count = 0
                         time_slept = 0
 
-                last_max_chunk_size = 0
+                self.last_max_chunk_size = 0
 
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
@@ -726,7 +729,7 @@ class Downloader(Thread):
                 read = []
                 BPSMeter.reset()
                 time.sleep(1.0)
-                max_chunk_size = _DEFAULT_CHUNK_SIZE
+                self.max_chunk_size = _DEFAULT_CHUNK_SIZE
                 with DOWNLOADER_CV:
                     while (
                         (sabnzbd.NzbQueue.is_empty() or self.no_active_jobs() or self.paused_for_postproc)
@@ -749,43 +752,41 @@ class Downloader(Thread):
                     if nw := self.read_fds.get(selected):
                         self.process_tasks.add(self.recv_pool.submit(self.process_nw, nw))
 
-                # Process the results in the order they are completed in
-                for task in concurrent.futures.as_completed(self.process_tasks):
-                    nw, bytes_received = task.result()
-                    self.handle_process_nw_result(nw, bytes_received)
-                    if bytes_received > last_max_chunk_size:
-                        last_max_chunk_size = bytes_received
+                # Wait for all the tasks to complete
+                concurrent.futures.wait(self.process_tasks)
 
                 # Clear task list
                 self.process_tasks.clear()
             else:
                 for selected in read:
                     if nw := self.read_fds.get(selected):
-                        nw, bytes_received = self.process_nw(nw)
-                        self.handle_process_nw_result(nw, bytes_received)
-                        if bytes_received > last_max_chunk_size:
-                            last_max_chunk_size = bytes_received
+                        self.process_nw(nw)
 
             self.__check_speed()
             self.__check_assembler()
 
-    def process_nw(self, nw: NewsWrapper) -> Tuple[NewsWrapper, int]:
+    def process_nw(self, nw: NewsWrapper) -> None:
         """Receive data from NewsWrapper and handle response"""
         try:
             bytes_received, done = nw.recv_chunk()
         except ssl.SSLWantReadError:
-            return nw, 0
+            return
         except:
             self.__reset_nw(nw, "server closed connection", wait=False)
-            return nw, 0
+            return
 
         article = nw.article
         server = nw.server
 
+        with sabnzbd.decorators.NZBQUEUE_LOCK:
+            sabnzbd.BPSMeter.update(server.id, bytes_received)
+            if bytes_received > self.last_max_chunk_size:
+                self.last_max_chunk_size = bytes_received
+
         if nw.status_code != 222 and not done:
             if not nw.connected or nw.status_code == 480:
                 if not self.__finish_connect_nw(nw):
-                    return nw, bytes_received
+                    return
                 if nw.connected:
                     logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
                     self.__request_article(nw)
@@ -828,8 +829,11 @@ class Downloader(Thread):
             server.bad_cons = 0
             server.errormsg = server.warning = ""
 
-            # Update statistics and decode
-            article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
+            # Update statistics
+            with sabnzbd.decorators.NZBQUEUE_LOCK:
+                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
+
+            # Decode
             self.decode(article, nw.get_data_buffer())
 
             if sabnzbd.LOG_ALL:
@@ -837,22 +841,18 @@ class Downloader(Thread):
 
             # Reset connection for new activity
             nw.soft_reset()
+
             # Request a new article immediately if possible
             if nw.connected and server.active and not (self.paused or self.shutdown or self.paused_for_postproc):
                 nw.article = server.get_article()
                 if nw.article:
                     self.__request_article(nw)
-                    return nw, bytes_received
-            server.busy_threads.remove(nw)
-            server.idle_threads.append(nw)
+                    return
+
+            with sabnzbd.decorators.NZBQUEUE_LOCK:
+                server.busy_threads.remove(nw)
+                server.idle_threads.append(nw)
             self.remove_socket(nw)
-
-        return nw, bytes_received
-
-    def handle_process_nw_result(self, nw: NewsWrapper, bytes_received: int):
-        """Handle the result of process_nw within the downloader thread"""
-        server = nw.server
-        sabnzbd.BPSMeter.update(server.id, bytes_received)
 
     def __check_speed(self):
         if not self.bandwidth_limit:
