@@ -164,52 +164,83 @@ class Assembler(Thread):
         1) Partial write: write what we have
         2) Nothing written before: write all
         """
+        sparse_support = True
+        done_writing = False
+        sparse_mode = False
+        while not done_writing:
+            open_mode = "ab"
+            if sparse_support:
+                sparse_mode = nzf.sparse
+                if sparse_mode:
+                    if os.path.exists(nzf.filepath):
+                        open_mode = "r+b"
+                    else:
+                        open_mode = "w+b"
 
-        open_mode = "a+b"
-        sparse_mode = nzf.sparse
-        if sparse_mode and os.path.exists(nzf.filepath):
-            open_mode = "r+b"
+            logging.debug("OPEN %s %s: %s", open_mode, sparse_mode, nzf.filepath)
+            # We write large article-sized chunks, so we can safely skip the buffering of Python
+            with open(nzf.filepath, open_mode, buffering=0) as fout:
+                for article in nzf.decodetable:
+                    # Break if deleted during writing
+                    if nzo.status is Status.DELETED:
+                        done_writing = True
+                        break
 
-        # We write large article-sized chunks, so we can safely skip the buffering of Python
-        with open(nzf.filepath, open_mode, buffering=0) as fout:
-            for article in nzf.decodetable:
-                # Skip already written articles
-                if article.written_bytes >= 0:
-                    if file_done:
-                        nzf.update_crc32(article.crc32, article.written_bytes)
-                    continue
-
-                # Break if deleted during writing
-                if nzo.status is Status.DELETED:
-                    break
-
-                # Write all decoded articles
-                if article.decoded:
-                    data = sabnzbd.ArticleCache.load_article(article)
-                    # Could be empty in case nzo was deleted
-                    if data:
-                        length = len(data)
-                        if article.yenc_length and article.yenc_length != length:
-                            if article.yenc_length < length:
-                                # Article is longer than it should be, only write specified length
-                                length = article.yenc_length
-                            else:
-                                # Article is too short, the next article will need seek.
-                                nzf.sparse = sparse_mode = True
-                        if sparse_mode:
-                            fout.seek(article.yenc_begin)
-                        fout.write(data[:length])
-                        article.written_bytes = length
+                    # Skip already written articles
+                    if article.written_bytes >= 0:
                         if file_done:
                             nzf.update_crc32(article.crc32, article.written_bytes)
                         continue
-                    article.written_bytes = 0
-                elif not (file_done or sparse_mode):
+
+                    # Write all decoded articles
+                    if article.decoded:
+                        data = sabnzbd.ArticleCache.load_article(article)
+                        # Could be empty in case nzo was deleted
+                        if data:
+                            length = len(data)
+                            if sparse_support:
+                                if article.yenc_length:
+                                    if article.yenc_length < length:
+                                        # Article is longer than it should be, only write specified length
+                                        length = article.yenc_length
+                                elif not sparse_mode:
+                                    # Article is too short, set sparse mode and reopen file in correct mode
+                                    logging.debug("1 Setting sparse_mode = True in %s", nzf.filename)
+                                    sabnzbd.ArticleCache.save_article(article, data)
+                                    nzf.sparse = True
+                                    break
+                                if sparse_mode:
+                                    fout.seek(article.yenc_begin, 0)
+                            fout.write(data[:length])
+                            article.written_bytes = length
+                            if file_done:
+                                nzf.update_crc32(article.crc32, length)
+                            continue
+                        article.written_bytes = 0
+                        if sparse_support and not sparse_mode:
+                            # Data missing, use seek for the rest of the file
+                            logging.debug("2 Setting sparse_mode = True in %s", nzf.filename)
+                            nzf.sparse = True
+                            break
+                        continue
+                    # Not decoded or data missing
+                    if file_done:
+                        # Skip this part
+                        article.written_bytes = 0
+                        if sparse_support and not sparse_mode:
+                            # Data missing, use seek for the rest of the file
+                            logging.debug("3 Setting sparse_mode = True in %s", nzf.filename)
+                            nzf.sparse = True
+                            break
+                        continue
+                    if sparse_mode:
+                        continue
                     # In append mode, can't skip articles
+                    done_writing = True
                     break
-                # If the article was missing or not decoded but the file
-                # is done or in sparse mode, keep writing
-                nzf.sparse = sparse_mode = True
+                else:
+                    # Looped through all articles, stop outer loop
+                    done_writing = True
 
         # Final steps
         nzf.set_dirty_cache(0)
