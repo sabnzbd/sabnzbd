@@ -62,6 +62,7 @@ _ARTICLE_PREFETCH = 20
 _DEFAULT_CHUNK_SIZE = 32768
 
 TIMER_LOCK = RLock()
+DOWNLOADER_LOCK = RLock()
 
 
 class Server:
@@ -772,13 +773,14 @@ class Downloader(Thread):
         except ssl.SSLWantReadError:
             return
         except:
-            self.__reset_nw(nw, "server closed connection", wait=False)
+            with DOWNLOADER_LOCK:
+                self.__reset_nw(nw, "server closed connection", wait=False)
             return
 
         article = nw.article
         server = nw.server
 
-        with sabnzbd.decorators.NZBQUEUE_LOCK:
+        with DOWNLOADER_LOCK:
             sabnzbd.BPSMeter.update(server.id, bytes_received)
             if bytes_received > self.last_max_chunk_size:
                 self.last_max_chunk_size = bytes_received
@@ -848,7 +850,7 @@ class Downloader(Thread):
                     self.__request_article(nw)
                     return
 
-            with sabnzbd.decorators.NZBQUEUE_LOCK:
+            with DOWNLOADER_LOCK:
                 server.busy_threads.remove(nw)
                 server.idle_threads.append(nw)
             self.remove_socket(nw)
