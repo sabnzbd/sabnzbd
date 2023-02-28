@@ -2,313 +2,322 @@
 <!--#set global $help_uri="configuration/4.0/sorting"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
-<div class="colmask section padTable">
+<div class="padding section explain-sorting">
     <p>$T('explain-sorting')</p>
+</div>
+<div class="colmask">
+    <div class="padding alt section">
+        <button type="button" class="btn btn-default addSorter"><span class="glyphicon glyphicon-plus"></span> $T('add-sorter')</button>
+        <label for="advanced-settings-button" class="form-control advanced-button ">
+            <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
+        </label>
+        <div class="advanced-buttonSeperator"></div>
+    </div>
     <!--#for $cur, $slot in enumerate($slotinfo)#-->
-        <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
+    <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
+    <!--#if $cur == 1#-->
+    <div class="sortables">
+    <!--#end if#-->
         <!-- SORTER $cur -->
-        <!--#set $cansort = $slot.name != ''#-->
-        <form action="save_sorter" method="get" autocomplete="off" <!--#if $cansort#-->class="sorting-row"<!--#end if#-->>
-            <input type="hidden" name="apikey" value="$apikey" />
-            <!--#if $cur != 0#-->
-            <div class="col2" style="padding:1px; width:100%;"> <!-- onclick="jQuery('#sorter_$cur').toggle()"> -->
-                <h3>$slot.name</h3>
-            </div>
-            <!--#end if#-->
-            <div style="border:1px solid #ccc; margin-bottom:10px; width:100%;" id="sorter_$cur">
-                <table class="sortTable">
-                    <tr>
-                        <th width="50px">
-                            <!--#if $cur != 0#-->
-                            <input type="checkbox" class="toggleSorterCheckbox" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
-                            <!--#else#-->
-                            <a class="main-helplink" style="position: relative; left: -29px;" href="$helpuri$help_uri" title="$T('readwiki')" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                            <input type="hidden" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
-                            <!--#end if#-->
-                        </th>
-                        <th>$T('name')</th>
-                        <th>$T('sort-minimum-size')</th>
-                        <th>$T('affectedCat')</th>
-                        <th>$T('guessit-type')</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                    <tr>
-                        <td rowspan="2">
-                            <input type="hidden" name="order" value="$slot.order" />
-                            <span class="glyphicon glyphicon-option-vertical"></span>
-                        </td>
-                        <td>
-                            <input type="hidden" value="$slot.name" name="name" />
-                            <input type="text" name="newname" value="$slot.name" size="35" required="required" />
-                        </td>
-                        <td>
-                            <input type="text" name="min_size" value="$slot.min_size" size="10" required="required" />
-                        </td>
-                        <td rowspan="3">
-                            <select name="sort_cats" multiple="multiple" class="multiple_cats" required="required">
-                                <!--#for $cat in $categories#-->
-                                <option value="$cat" <!--#if $cat.lower() in $slot.sort_cats then 'selected="selected"' else ""#-->>$Tspec($cat)</option>
-                                <!--#end for#-->
-                            </select>
-                        </td>
-                        <td rowspan="3">
-                            <select name="sort_type" multiple="multiple" class="multiple_cats" <!--#if $cur == 0#-->id="field_sort_type"<!--#end if#--> >
+        <div class="section <!--#if $cur != 0#-->sorter<!--#end if#-->" id="sorter_$cur" <!--#if $cur == 0#-->style="display: none;"<!--#end if#-->>
+            <form action="save_sorter" method="get" autocomplete="off" <!--#if $slot.name != ''#-->class="sorting-row"<!--#end if#-->>
+                <input type="hidden" name="apikey" value="$apikey" />
+                <input type="hidden" name="order" value="$slot.order" />
+                <input type="hidden" value="$slot.name" name="name" />
+                <!--#if $cur == 0#-->
+                <input type="hidden" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
+                <!--#end if#-->
+                <div class="col2">
+                    <!--#if $cur == 0#-->
+                    <h3 class="align-right">$T('new-sorter') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <!--#else#-->
+                    <h3>$slot.name  <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <div class="sorter-switch-container" class="wide">
+                        <input type="checkbox" class="toggleSorterCheckbox sorter-switch float-left" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
+                        <label class="sorter-switch float-left" for="is_active">$T('enabled')</label>
+                    </div>
+                    <button class="btn btn-default showSorter float-right" type="button">
+                        <span class="glyphicon glyphicon-pencil"></span> $T('showDetails')
+                    </button>
+                    <!--#end if#-->
+                </div>
+                <div class="col1" id="sorter_$cur" <!--#if $cur != 0#-->style="display: none;"<!--#end if#-->>
+                    <fieldset>
+                        <div class="field-pair">
+                            <label class="config" for="displayname$cur">$T('name')</label>
+                            <input type="text" name="newname" value="$slot.name" required="required" />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="displayname$cur">$T('sortString')</label>
+                            <input type="text" name="sort_string" id="field_sort_string" value="$slot.sort_string" required="required" />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="displayname$cur">$T('guessit-type')</label>
+                            <select name="sort_type" multiple="multiple" class="multiple_cats" <!--#if $cur == 0#-->id="field_sort_type"<!--#end if#-->>
                                 <option value="0" <!--#if "0" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-all')</option>
                                 <option value="1" <!--#if "1" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-tv')</option>
                                 <option value="2" <!--#if "2" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-date')</option>
                                 <option value="3" <!--#if "3" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-movie')</option>
                                 <option value="4" <!--#if "4" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-other')</option>
                             </select>
-                        </td>
-                        <td class="nowrap align-right">
-                            <button class="btn btn-default">
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="displayname$cur">$T('affectedCat')</label>
+                            <select name="sort_cats" multiple="multiple" class="multiple_cats" required="required">
+                                <!--#for $cat in $categories#-->
+                                <option value="$cat" <!--#if $cat.lower() in $slot.sort_cats then 'selected="selected"' else ""#-->>$Tspec($cat)</option>
+                                <!--#end for#-->
+                            </select>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="displayname$cur">$T('sort-minimum-size')</label>
+                            <input type="text" name="min_size" value="$slot.min_size" size="10" required="required" />
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="displayname$cur">$T('multiPartLabel')</label>
+                            <input type="text" name="multipart_label" id="multipart_label" value="$slot.multipart_label" size="8" />
+                        </div>
+                        <!-- PREVIEW -->
+                        <!--#if $cur == 0#-->
+                        <div id="preview_buttons" class="field-pair">
+                            <label class="config">$T('presetSort')</label>
+                            <div class="presets">
+                                <input type="button" class="btn btn-default" onclick="set_preset('%title (%y)/%title (%y).%ext',' CD%1');" value="$T('button-inFolders')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset('%title (%y).%ext',' CD%1');" value="$T('button-noFolders')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset('%sn season %s/episode %0e %r.%ext','');" value="$T('button-Series')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset('%0decade/%title (%y).%ext',' CD%1');" value="$T('decade')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset('%dn.%ext')" value="$T('button-FileLikeFolder')" />
+                            </div>
+                        </div>
+                        <div id="preview" class="field-pair">
+                            <label class="config" for="preview_name">$T('sort-test-data')</label>
+                            <input type="text" id="preview_name" autocomplete="off" name="preview_name" placeholder="$T('orgJobname')" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+                        </div>
+                        <div class="preview field-pair">
+                            <label class="config">$T('sortResult')</label>
+                            <span class="config desc path" id="preview_result"></span>
+                        </div>
+                        <!--#end if#-->
+                        <!-- BUTTONS -->
+                        <div class="field-pair no-field-pair-bg">
+                            <button class="btn btn-default saveButton">
                                 <!--#if $cur == 0#-->
                                     <span class="glyphicon glyphicon-plus"></span> $T('button-add')
                                 <!--#else#-->
                                     <span class="glyphicon glyphicon-ok"></span> $T('button-save')
                                 <!--#end if#-->
                             </button>
-                            <!--#if $cansort#-->
-                            <button class="btn btn-default delSorter" type="button"><span class="glyphicon glyphicon-trash"></span></button>
+                            <!--#if $cur != 0#-->
+                            <button class="btn btn-default delSorter" type="button">
+                                <span class="glyphicon glyphicon-trash"></span> $T('nzo-delete')
+                            </button>
+                            <!--#else#-->
+                            <button type="button" title="$T('sort-legenda')" class="btn btn-default patternKey" onclick="jQuery('#pattern_explainer').toggle()">
+                                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> $T('sort-legenda')
+                            </button>
                             <!--#end if#-->
-                        </td>
-                    </tr>
-                    <tr>
-                        <th colspan="2">$T('sortString')</th>
-                        <th>$T('multiPartLabel')</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <!--#if $cur == 0#-->
-                            <button type="button" title="$T('sort-legenda')" class="btn btn-default patternKey" onclick="jQuery('#pattern_explainer').toggle()"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>
-                            <!--#end if#-->
-                        </td>
-                        <td class="nowrap" colspan="2">
-                            <input style="display:block; width:100%;" type="text" name="sort_string" id="field_sort_string" value="$slot.sort_string" required="required" />
-                        </td>
-                        <td>
-                            <input type="text" name="multipart_label" id="multipart_label" value="$slot.multipart_label" size="10" />
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </form>
-        <!--#if $cur == 0#-->
-        <!-- PREVIEW -->
-        <div id="preview_buttons" class="preview">
-            <label class="config">$T('presetSort')</label>
-            <div class="presets">
-                <input type="button" class="btn btn-default" onclick="set_preset('%title (%y)/%title (%y).%ext',' CD%1');" value="$T('button-inFolders')" />
-                <input type="button" class="btn btn-default" onclick="set_preset('%title (%y).%ext',' CD%1');" value="$T('button-noFolders')" />
-                <input type="button" class="btn btn-default" onclick="set_preset('%sn season %s/episode %0e %r.%ext','');" value="$T('button-Series')" />
-                <input type="button" class="btn btn-default" onclick="set_preset('%0decade/%title (%y).%ext',' CD%1');" value="$T('decade')" />
-                <input type="button" class="btn btn-default" onclick="set_preset('%dn.%ext')" value="$T('button-FileLikeFolder')" />
-            </div>
+                        </div>
+                        <!-- PATTERN EXPLAINER -->
+                        <div class="Key explain-pattern" id="pattern_explainer">
+                            <div class="field-pair no-field-pair-bg">
+                                <label class="config">$T('sort-legenda')</label>
+                                <table class="pattern-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="align-right">$T('sort-meaning')</th>
+                                            <th>$T('sort-pattern')</th>
+                                            <th>$T('sort-result')<div class="glyphicon glyphicon-remove float-right" onclick="jQuery('#pattern_explainer').hide();"></div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="align-right"><b>$T('sort-title'):</b></td>
+                                            <td>%sn</td>
+                                            <td>$T('movie-sp-name') / $T('show-sp-name') ($T('case-adjusted'))</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%s.n</td>
+                                            <td>$T('movie-dot-name') / $T('show-dot-name') ($T('case-adjusted'))</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%s_n</td>
+                                            <td>$T('movie-us-name') / $T('show-us-name') ($T('case-adjusted'))</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('sort-title'):</b></td>
+                                            <td>%title &nbsp; %t &nbsp; %sN &nbsp;</td>
+                                            <td>$T('movie-sp-name') / $T('show-sp-name')</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%.title &nbsp; %.t &nbsp; %s.N &nbsp;</td>
+                                            <td>$T('movie-dot-name') / $T('show-dot-name')</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%_title &nbsp; %_t &nbsp; %s_N &nbsp;</td>
+                                            <td>$T('movie-us-name') / $T('show-us-name')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('Resolution'):</b></td>
+                                            <td>%r</td>
+                                            <td>1080p</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('year'):</b></td>
+                                            <td>%y</td>
+                                            <td>2021</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('decade'):</b></td>
+                                            <td>%decade</td>
+                                            <td>20</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%0decade</td>
+                                            <td>2020</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('month'):</b></td>
+                                            <td>%m</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%0m</td>
+                                            <td>01</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('day-of-month'):</b></td>
+                                            <td>%d</td>
+                                            <td>2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%0d</td>
+                                            <td>02</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('show-seasonNum'):</b></td>
+                                            <td>%s</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%0s</td>
+                                            <td>01</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('show-epNum'):</b></td>
+                                            <td>%e</td>
+                                            <td>5</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%0e</td>
+                                            <td>05</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('ep-name'):</b></td>
+                                            <td>%en</td>
+                                            <td>$T('ep-sp-name')</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%e.n</td>
+                                            <td>$T('ep-dot-name')</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>%e_n</td>
+                                            <td>$T('ep-us-name')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('extension'):</b></td>
+                                            <td>%ext</td>
+                                            <td>avi</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('orgFilename'):</b></td>
+                                            <td>%fn</td>
+                                            <td>$T('sort-File')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('orgJobname'):</b></td>
+                                            <td>%dn</td>
+                                            <td>$T('orgJobname')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('lowercase'):</b></td>
+                                            <td>{$T('TEXT')}</td>
+                                            <td>$T('text')</td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <th class="align-right"><b>$T('multiPartLabel')</b></th>
+                                            <th>$T('sort-pattern')</th>
+                                            <th>$T('sort-result')</th>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <td class="align-right"><b>$T('partNumber'):</b></td>
+                                            <td>%1</td>
+                                            <td>1</td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <th class="align-right"><b>GuessIt</b></th>
+                                            <th>$T('sort-pattern')</th>
+                                            <th>$T('sort-result')</th>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <td class="align-right"><b>$T('sort-guessitMeaning'):</b></td>
+                                            <td>%GI&lt;$T('sort-guessitProperty')&gt;</td>
+                                            <td>$T('guessit-sp-property')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b></b></td>
+                                            <td>%G.I&lt;$T('sort-guessitProperty')&gt;</td>
+                                            <td>$T('guessit-dot-property')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b></b></td>
+                                            <td>%G_I&lt;$T('sort-guessitProperty')&gt;</td>
+                                            <td>$T('guessit-us-property')</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right"><b>$T('Example')</b></td>
+                                            <td>%GI&lt;audio_codec&gt;</td>
+                                            <td>DTS</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-right valign-top"><b>$T('Valid properties')</b></td>
+                                            <td colspan=2>
+                                                <!--#for $prop in $guessit_properties#-->
+                                                $prop<br>
+                                                <!--#end for#-->
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    <fieldset>
+                </div>
+            </form>
         </div>
-        <div id="preview" class="preview">
-            <div style="display:flex; flex-direction:row">
-                <label class="config" for="preview_name">Test Data</label>
-                <input type="text" style="flex: 2 1 auto;" id="preview_name" autocomplete="off" name="preview_name" placeholder="$T('orgJobname')" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
-            </div>
-            <div>
-                <label class="config">$T('sortResult')</label> <span class="config desc path" id="preview_result">&nbsp;</span>
-            </div>
-        </div>
-        <hr>
-        <!-- PATTERN EXPLAINER -->
-        <div class="Key" style="border:none; width:100%;" id="pattern_explainer">
-            <div class="field-pair no-field-pair-bg">
-                <table style="border:1px solid #ccc;">
-                    <thead>
-                        <tr>
-                            <th class="align-right">$T('sort-meaning')</th>
-                            <th>$T('sort-pattern')</th>
-                            <th>$T('sort-result')<div class="glyphicon glyphicon-remove" onclick="jQuery('#pattern_explainer').hide();" style="float:right;"></div></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="align-right"><b>$T('sort-title'):</b></td>
-                            <td>%sn</td>
-                            <td>$T('movie-sp-name') / $T('show-sp-name') ($T('case-adjusted'))</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%s.n</td>
-                            <td>$T('movie-dot-name') / $T('show-dot-name') ($T('case-adjusted'))</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%s_n</td>
-                            <td>$T('movie-us-name') / $T('show-us-name') ($T('case-adjusted'))</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('sort-title'):</b></td>
-                            <td>%title &nbsp; %t &nbsp; %sN &nbsp;</td>
-                            <td>$T('movie-sp-name') / $T('show-sp-name')</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%.title &nbsp; %.t &nbsp; %s.N &nbsp;</td>
-                            <td>$T('movie-dot-name') / $T('show-dot-name')</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%_title &nbsp; %_t &nbsp; %s_N &nbsp;</td>
-                            <td>$T('movie-us-name') / $T('show-us-name')</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('Resolution'):</b></td>
-                            <td>%r</td>
-                            <td>1080p</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('year'):</b></td>
-                            <td>%y</td>
-                            <td>2021</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('decade'):</b></td>
-                            <td>%decade</td>
-                            <td>20</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%0decade</td>
-                            <td>2020</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('month'):</b></td>
-                            <td>%m</td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%0m</td>
-                            <td>01</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('day-of-month'):</b></td>
-                            <td>%d</td>
-                            <td>2</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%0d</td>
-                            <td>02</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('show-seasonNum'):</b></td>
-                            <td>%s</td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%0s</td>
-                            <td>01</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('show-epNum'):</b></td>
-                            <td>%e</td>
-                            <td>5</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%0e</td>
-                            <td>05</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('ep-name'):</b></td>
-                            <td>%en</td>
-                            <td>$T('ep-sp-name')</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%e.n</td>
-                            <td>$T('ep-dot-name')</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>%e_n</td>
-                            <td>$T('ep-us-name')</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('extension'):</b></td>
-                            <td>%ext</td>
-                            <td>avi</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('orgFilename'):</b></td>
-                            <td>%fn</td>
-                            <td>$T('sort-File')</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('orgJobname'):</b></td>
-                            <td>%dn</td>
-                            <td>$T('orgJobname')</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('lowercase'):</b></td>
-                            <td>{$T('TEXT')}</td>
-                            <td>$T('text')</td>
-                        </tr>
-                    </tbody>
-                    <tbody>
-                        <tr>
-                            <th class="align-right"><b>$T('multiPartLabel')</b></th>
-                            <th>$T('sort-pattern')</th>
-                            <th>$T('sort-result')</th>
-                        </tr>
-                    </tbody>
-                    <tbody>
-                        <tr>
-                            <td class="align-right"><b>$T('partNumber'):</b></td>
-                            <td>%1</td>
-                            <td>1</td>
-                        </tr>
-                    </tbody>
-                    <tbody>
-                        <tr>
-                            <th class="align-right"><b>GuessIt</b></th>
-                            <th>$T('sort-pattern')</th>
-                            <th>$T('sort-result')</th>
-                        </tr>
-                    </tbody>
-                    <tbody>
-                        <tr>
-                            <td class="align-right"><b>$T('sort-guessitMeaning'):</b></td>
-                            <td>%GI&lt;$T('sort-guessitProperty')&gt;</td>
-                            <td>$T('guessit-sp-property')</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b></b></td>
-                            <td>%G.I&lt;$T('sort-guessitProperty')&gt;</td>
-                            <td>$T('guessit-dot-property')</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b></b></td>
-                            <td>%G_I&lt;$T('sort-guessitProperty')&gt;</td>
-                            <td>$T('guessit-us-property')</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right"><b>$T('Example')</b></td>
-                            <td>%GI&lt;audio_codec&gt;</td>
-                            <td>DTS</td>
-                        </tr>
-                        <tr>
-                            <td class="align-right" style="vertical-align:top;"><b>$T('Valid properties')</b></td>
-                            <td colspan=2>
-                                <!--#for $prop in $guessit_properties#-->
-                                $prop<br>
-                                <!--#end for#-->
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <!--#end if#-->
-    <!--#end for#-->
+        <!--#end for#-->
+    <!--#if $have_sorters#-->
+    </div>
+    <!--#end if#-->
 </div>
 <script type="text/javascript" src="${root}staticcfg/js/jquery-ui.min.js"></script>
 <script type="text/javascript">
@@ -333,8 +342,6 @@
         var \$preview_sort_string = \$('#field_sort_string').val();
         if(\$preview_sort_string.length > 2) {
             typewatch(function () {
-                \$('#preview').show();
-                \$('#preview_result').addClass("loading");
                 \$.ajax({
                     type: "GET",
                     url: "../../api",
@@ -355,8 +362,6 @@
                 });
             }, 500);
         }
-        else
-            \$('#preview').hide();
     }
 
     \$(document).ready(function() {
@@ -365,11 +370,52 @@
             theForm.attr("action", "delete").submit();
         });
 
-        // Make configured sorters sortable
-        \$('.padTable').sortable({
-            items: '.sorting-row',
-            containment: '.colmask',
-            axis: 'y',
+        \$('.addSorter').click(function(){
+            \$('#sorter_0').toggle();
+            // Add coloring
+            addRowColor()
+        });
+
+        \$('.showSorter').click(function () {
+            \$(this).parent().next().toggle();
+            \$(this).parent().next().next().toggle();
+            if (\$(this).text().indexOf("$T('showDetails')") > 0) {
+                \$(this).html(\$(this).html().replace("$T('showDetails')", "$T('hideDetails')"));
+            } else {
+                \$(this).html(\$(this).html().replace("$T('hideDetails')", "$T('showDetails')"));
+            }
+            // Add coloring
+            addRowColor()
+        });
+
+        // Make the configured sorters sortable
+        var hExtra = 8;
+        \$(".sortables").sortable({
+            placeholder: "sorter-placeholder",
+            axis: "y",
+            revert: 125,
+            start: function(event, ui){
+                hPlaceholder = ui.item.outerHeight();
+                ui.placeholder.height(hPlaceholder + hExtra);
+                \$('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
+            },
+            change: function(event, ui) {
+                ui.placeholder.stop().height(0).animate({
+                    height: ui.item.outerHeight() + hExtra
+                }, 250);
+                hPlaceholderAnim = parseInt(\$(".sorter-placeholder-anim").attr("data-height"));
+                \$(".sorter-placeholder-anim").stop().height(hPlaceholderAnim + hExtra).animate({
+                    height: 0
+                }, 250, function() {
+                    \$(this).remove();
+                    hPlaceholder = ui.item.outerHeight();
+                    \$('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
+                });
+            },
+            stop: function(event, ui) {
+                \$(".sorter-placeholder-anim").remove();
+            },
+            // Save the config after re-ordering
             update: function(event, ui) {
                 \$('.Sorting form.sorting-row').each(function(index, elm) {
                     // Update order of all elements

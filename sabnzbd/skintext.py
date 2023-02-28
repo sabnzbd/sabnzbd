@@ -762,6 +762,9 @@ SKIN_TEXT = {
         "Configure a new sorter, or edit/remove/reorder existing sorters below.<br>"
         "<br>Sorters are tried in order of appearance, and can be reordered by dragging and dropping. The first active sorter that meets both selection criteria (affected category and job type) is applied to a job, provided at least one file meets the minumum filesize requirement."
     ),
+    "add-sorter": TT("Add Sorter"),
+    "new-sorter": TT("New Sorter"),
+    "sort-test-data": TT("Test Data"),
     # Config->Special
     "explain-special": TT(
         "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>"
