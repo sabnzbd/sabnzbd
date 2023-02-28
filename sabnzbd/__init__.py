@@ -232,6 +232,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
 
     sabnzbd.__SHUTTING_DOWN__ = False
 
+    sys.setswitchinterval(cfg.switchinterval())
+
     # Set global database connection for Web-UI threads
     cherrypy.engine.subscribe("start_thread", get_db_connection)
 

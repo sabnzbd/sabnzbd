@@ -889,6 +889,7 @@ SPECIAL_VALUE_LIST = (
     "url_base",
     "receive_threads",
     "num_simd_decoders",
+    "switchinterval",
     "direct_unpack_threads",
     "ipv6_servers",
     "selftest_host",
