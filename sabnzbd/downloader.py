@@ -765,7 +765,7 @@ class Downloader(Thread):
             self.__check_speed()
             self.__check_assembler()
 
-    def process_nw(self, nw: NewsWrapper) -> None:
+    def process_nw(self, nw: NewsWrapper):
         """Receive data from NewsWrapper and handle response"""
         try:
             bytes_received, done = nw.recv_chunk()
