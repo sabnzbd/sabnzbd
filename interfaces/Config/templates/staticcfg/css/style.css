@@ -359,6 +359,14 @@ tr.separator {
     border-radius: 15px;
     border: 1px dashed #444;
 }
+.Sorting .glyphicon-option-vertical {
+    margin-top: 1.5em;
+    margin-right: 0.2em;
+    cursor: move;
+}
+.Sorting form:not(.sorting-row) .glyphicon-option-vertical {
+    visibility: hidden;
+}
 
 .RSS .rss-section input[type="text"] {
     max-width: 180px;
@@ -1284,6 +1292,12 @@ html[dir="rtl"] .Scheduling form[action="addSchedule"] input[type="checkbox"] {
     .Servers .server-amounts-text {
         padding: 0px 15px 10px;
         width: inherit;
+    }
+    .Sorting .glyphicon-option-vertical {
+        display: none;
+    }
+    .Sorting .sorter h3 {
+        cursor: move;
     }
 }
 

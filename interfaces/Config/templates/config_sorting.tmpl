@@ -27,9 +27,12 @@
                 <!--#if $cur == 0#-->
                 <input type="hidden" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
                 <!--#end if#-->
+                <div class="float-right">
+                    <span class="glyphicon glyphicon-option-vertical"></span>
+                </div>
                 <div class="col2">
                     <!--#if $cur == 0#-->
-                    <h3 class="align-right">$T('new-sorter') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3 class="align-center">$T('new-sorter') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <!--#else#-->
                     <h3>$slot.name  <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <div class="sorter-switch-container" class="wide">
