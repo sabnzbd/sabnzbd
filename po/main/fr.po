@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.8.0-develop\n"
+"Project-Id-Version: SABnzbd-4.0.0Alpha2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -161,11 +161,6 @@ msgstr "Redémarrage suite au plantage du postprocesseur"
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
 msgstr "Redémarrage suite au plantage du téléchargeur"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Restarting because of crashed decoder"
-msgstr "Redémarrage suite au plantage du décodeur"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -2500,10 +2495,6 @@ msgstr "Nameserver / DNS Lookup"
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
 msgstr "Vitesse de téléchargement limitée par"
-
-#: sabnzbd/skintext.py
-msgid "CPU"
-msgstr "processeur"
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
