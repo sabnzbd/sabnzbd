@@ -108,7 +108,6 @@ class BPSMeter:
         "timeline_total",
         "article_stats_tried",
         "article_stats_failed",
-        "delayed_decoder",
         "delayed_assembler",
         "day_label",
         "end_of_day",
@@ -147,7 +146,6 @@ class BPSMeter:
         self.article_stats_tried: Dict[str, Dict[str, int]] = {}
         self.article_stats_failed: Dict[str, Dict[str, int]] = {}
 
-        self.delayed_decoder: int = 0
         self.delayed_assembler: int = 0
 
         self.day_label: str = time.strftime("%Y-%m-%d")
@@ -288,7 +286,6 @@ class BPSMeter:
             self.day_total = {}
 
             # Reset delayed counters so they don't go too high
-            self.delayed_decoder = 0
             self.delayed_assembler = 0
 
             # Check end of week and end of month

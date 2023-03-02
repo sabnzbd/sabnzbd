@@ -21,15 +21,11 @@ sabnzbd.decoder - article decoder
 
 import logging
 import hashlib
-import queue
 import binascii
 from io import BytesIO
-from threading import Thread
-from typing import Tuple, List, Optional
 from zlib import crc32
 
 import sabnzbd
-import sabnzbd.cfg as cfg
 from sabnzbd.constants import SABCTOOLS_VERSION_REQUIRED
 from sabnzbd.encoding import ubtou
 from sabnzbd.nzbstuff import Article
@@ -67,183 +63,114 @@ class BadUu(Exception):
     pass
 
 
-class Decoder:
-    """Implement thread-like coordinator for the decoders"""
+def decode(article: Article, raw_data: bytearray):
+    decoded_data = None
+    nzo = article.nzf.nzo
+    art_id = article.article
 
-    def __init__(self):
-        # Initialize queue and servers
-        self.decoder_queue = queue.Queue()
+    # Keeping track
+    article_success = False
 
-        # Initialize decoders
-        decoders = cfg.num_simd_decoders()
-        logging.debug("Initializing %d decoder(s)", decoders)
-        self.decoder_workers = []
-        for _ in range(decoders):
-            self.decoder_workers.append(DecoderWorker(self.decoder_queue))
+    try:
+        if nzo.precheck:
+            raise BadYenc
 
-    def start(self):
-        for decoder_worker in self.decoder_workers:
-            decoder_worker.start()
+        if sabnzbd.LOG_ALL:
+            logging.debug("Decoding %s", art_id)
 
-    def is_alive(self) -> bool:
-        # Check all workers
-        for decoder_worker in self.decoder_workers:
-            if not decoder_worker.is_alive():
-                return False
-        return True
+        if article.nzf.type == "uu":
+            decoded_data = decode_uu(article, raw_data)
+        else:
+            decoded_data = decode_yenc(article, raw_data)
 
-    def stop(self):
-        # Put multiple to stop all decoders
-        for _ in self.decoder_workers:
-            self.decoder_queue.put((None, None, None))
+        article_success = True
 
-    def join(self):
-        # Wait for all decoders to finish
-        for decoder_worker in self.decoder_workers:
-            try:
-                decoder_worker.join()
-            except:
-                pass
+    except MemoryError:
+        logging.warning(T("Decoder failure: Out of memory"))
+        logging.info("Cache: %d, %d, %d", *sabnzbd.ArticleCache.cache_info())
+        logging.info("Traceback: ", exc_info=True)
+        sabnzbd.Downloader.pause()
 
-    def process(self, article: Article, raw_data: bytearray, raw_data_size: int):
-        sabnzbd.ArticleCache.reserve_space(raw_data_size)
-        self.decoder_queue.put((article, raw_data, raw_data_size))
+        # This article should be fetched again
+        sabnzbd.NzbQueue.reset_try_lists(article)
+        return
 
-    def queue_level(self) -> float:
-        # Return level of decoder queue. 0 = empty, >=1 = full.
-        return self.decoder_queue.qsize() / sabnzbd.ArticleCache.decoder_cache_article_limit
+    except BadData as error:
+        # Continue to the next one if we found new server
+        if search_new_server(article):
+            return
 
+        # Store data, maybe par2 can still fix it
+        decoded_data = error.data
 
-class DecoderWorker(Thread):
-    """The actual workhorse that handles decoding!"""
+    except BadUu:
+        logging.info("Badly formed uu article in %s", art_id)
 
-    def __init__(self, decoder_queue):
-        super().__init__()
-        logging.debug("Initializing decoder %s", self.name)
-        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[bytearray], Optional[int]]] = decoder_queue
+        # Try the next server
+        if search_new_server(article):
+            return
 
-    def run(self):
-        while 1:
-            # Set Article and NzbObject objects to None so references from this
-            # thread do not keep the parent objects alive (see #1628)
-            decoded_data = raw_data = article = nzo = None
-            article, raw_data, raw_data_size = self.decoder_queue.get()
-            if not article:
-                logging.debug("Shutting down decoder %s", self.name)
-                break
-
-            nzo = article.nzf.nzo
-            art_id = article.article
-
-            # Free space in the decoder-queue
-            sabnzbd.ArticleCache.free_reserved_space(raw_data_size)
-
-            # Keeping track
-            article_success = False
-
-            try:
-                if nzo.precheck:
-                    raise BadYenc
-
-                if sabnzbd.LOG_ALL:
-                    logging.debug("Decoding %s", art_id)
-
-                if article.nzf.type == "uu":
+    except (BadYenc, ValueError):
+        # Handles precheck and badly formed articles
+        if nzo.precheck and raw_data and raw_data.startswith(b"223 "):
+            # STAT was used, so we only get a status code
+            article_success = True
+        else:
+            # Try uu-decoding
+            if (not nzo.precheck) and article.nzf.type != "yenc":
+                try:
                     decoded_data = decode_uu(article, raw_data)
-                else:
-                    decoded_data = decode_yenc(article, raw_data, raw_data_size)
-
-                article_success = True
-
-            except MemoryError:
-                logging.warning(T("Decoder failure: Out of memory"))
-                logging.info("Decoder-Queue: %d", self.decoder_queue.qsize())
-                logging.info("Cache: %d, %d, %d", *sabnzbd.ArticleCache.cache_info())
-                logging.info("Traceback: ", exc_info=True)
-                sabnzbd.Downloader.pause()
-
-                # This article should be fetched again
-                sabnzbd.NzbQueue.reset_try_lists(article)
-                continue
-
-            except BadData as error:
-                # Continue to the next one if we found new server
-                if search_new_server(article):
-                    continue
-
-                # Store data, maybe par2 can still fix it
-                decoded_data = error.data
-
-            except BadUu:
-                logging.info("Badly formed uu article in %s", art_id)
-
-                # Try the next server
-                if search_new_server(article):
-                    continue
-
-            except (BadYenc, ValueError):
-                # Handles precheck and badly formed articles
-                if nzo.precheck and raw_data and raw_data.startswith(b"223 "):
-                    # STAT was used, so we only get a status code
+                    logging.debug("Found uu-encoded article %s in job %s", art_id, nzo.final_name)
                     article_success = True
-                else:
-                    # Try uu-decoding
-                    if (not nzo.precheck) and article.nzf.type != "yenc":
-                        try:
-                            decoded_data = decode_uu(article, raw_data)
-                            logging.debug("Found uu-encoded article %s in job %s", art_id, nzo.final_name)
-                            article_success = True
-                        except Exception:
-                            pass
-                    # Only bother with further checks if uu-decoding didn't work out
-                    if not article_success:
-                        # Convert the first 2000 bytes of raw socket data to article lines,
-                        # and examine the headers (for precheck) or body (for download).
-                        for line in raw_data[:2000].split(b"\r\n"):
-                            lline = line.lower()
-                            if lline.startswith(b"message-id:"):
-                                article_success = True
-                            # Look for DMCA clues (while skipping "X-" headers)
-                            if not lline.startswith(b"x-") and match_str(
-                                lline, (b"dmca", b"removed", b"cancel", b"blocked")
-                            ):
-                                article_success = False
-                                logging.info("Article removed from server (%s)", art_id)
-                                break
+                except Exception:
+                    pass
+            # Only bother with further checks if uu-decoding didn't work out
+            if not article_success:
+                # Convert the first 2000 bytes of raw socket data to article lines,
+                # and examine the headers (for precheck) or body (for download).
+                for line in raw_data[:2000].split(b"\r\n"):
+                    lline = line.lower()
+                    if lline.startswith(b"message-id:"):
+                        article_success = True
+                    # Look for DMCA clues (while skipping "X-" headers)
+                    if not lline.startswith(b"x-") and match_str(lline, (b"dmca", b"removed", b"cancel", b"blocked")):
+                        article_success = False
+                        logging.info("Article removed from server (%s)", art_id)
+                        break
 
-                # Pre-check, proper article found so just register
-                if nzo.precheck and article_success and sabnzbd.LOG_ALL:
-                    logging.debug("Server %s has article %s", article.fetcher, art_id)
-                elif not article_success:
-                    # If not pre-check, this must be a bad article
-                    if not nzo.precheck:
-                        logging.info("Badly formed yEnc article %s", art_id)
+        # Pre-check, proper article found so just register
+        if nzo.precheck and article_success and sabnzbd.LOG_ALL:
+            logging.debug("Server %s has article %s", article.fetcher, art_id)
+        elif not article_success:
+            # If not pre-check, this must be a bad article
+            if not nzo.precheck:
+                logging.info("Badly formed yEnc article %s", art_id)
 
-                    # Continue to the next one if we found new server
-                    if search_new_server(article):
-                        continue
+            # Continue to the next one if we found new server
+            if search_new_server(article):
+                return
 
-            except:
-                logging.warning(T("Unknown Error while decoding %s"), art_id)
-                logging.info("Traceback: ", exc_info=True)
+    except:
+        logging.warning(T("Unknown Error while decoding %s"), art_id)
+        logging.info("Traceback: ", exc_info=True)
 
-                # Continue to the next one if we found new server
-                if search_new_server(article):
-                    continue
+        # Continue to the next one if we found new server
+        if search_new_server(article):
+            return
 
-            if decoded_data:
-                # If the data needs to be written to disk due to full cache, this will be slow
-                # Causing the decoder-queue to fill up and delay the downloader
-                sabnzbd.ArticleCache.save_article(article, decoded_data)
-                article.decoded = True
-            elif not nzo.precheck:
-                # Nothing to save
-                article.on_disk = True
+    if decoded_data:
+        # If the data needs to be written to disk due to full cache, this will be slow
+        # Causing the decoder-queue to fill up and delay the downloader
+        sabnzbd.ArticleCache.save_article(article, decoded_data)
+        article.decoded = True
+    elif not nzo.precheck:
+        # Nothing to save
+        article.on_disk = True
 
-            sabnzbd.NzbQueue.register_article(article, article_success)
+    sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, data: bytearray, raw_data_size: int) -> bytearray:
+def decode_yenc(article: Article, data: bytearray) -> bytearray:
     # Let SABCTools do all the heavy lifting
     yenc_filename, crc_correct = sabctools.yenc_decode(data)
 

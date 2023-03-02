@@ -93,8 +93,6 @@ CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
 }
 
 # Constants affecting download performance
-MIN_DECODE_QUEUE = 10
-LIMIT_DECODE_QUEUE = 100
 MAX_ASSEMBLER_QUEUE = 10
 SOFT_QUEUE_LIMIT = 0.6
 # Percentage of cache to use before adding file to assembler
