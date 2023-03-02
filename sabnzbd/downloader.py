@@ -750,8 +750,7 @@ class Downloader(Thread):
             if self.recv_threads > 1:
                 # Submit a process_nw task to the pool for every NewWrapper which is readable
                 for selected in read:
-                    if nw := self.read_fds.get(selected):
-                        self.process_tasks.add(self.recv_pool.submit(self.process_nw, nw))
+                    self.process_tasks.add(self.recv_pool.submit(self.process_nw, self.read_fds[selected]))
 
                 # Wait for all the tasks to complete
                 concurrent.futures.wait(self.process_tasks)
@@ -760,8 +759,7 @@ class Downloader(Thread):
                 self.process_tasks.clear()
             else:
                 for selected in read:
-                    if nw := self.read_fds.get(selected):
-                        self.process_nw(nw)
+                    self.process_nw(self.read_fds[selected])
 
             self.__check_speed()
             self.__check_assembler()
