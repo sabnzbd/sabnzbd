@@ -223,7 +223,7 @@ class Server:
             self.request = True
             Thread(target=self._request_info_internal).start()
 
-    @NzbQueueLocker
+    @synchronized(DOWNLOADER_LOCK)
     def get_article(self):
         """Get article from pre-fetched and pre-fetch new ones if necessary.
         Articles that are too old for this server are immediately marked as tried"""
