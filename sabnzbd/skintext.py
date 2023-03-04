@@ -223,7 +223,6 @@ SKIN_TEXT = {
     "dashboard-IP6": TT("IPv6 address"),
     "dashboard-NameserverDNS": TT("Nameserver / DNS Lookup"),
     "dashboard-delayed": TT("Download speed limited by"),
-    "dashboard-delayed-cpu": TT("CPU"),
     "dashboard-delayed-disk": TT("Disk speed"),
     "dashboard-loadavg": TT("System load"),
     "dashboard-systemPerformance": TT("System Performance (Pystone)"),  #: Do not translate Pystone

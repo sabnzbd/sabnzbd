@@ -123,11 +123,9 @@
                                 <span data-bind="text: statusInfo.loadavg"></span>
                             </div>
                         </div>
-                        <div class="row" data-bind="visible: statusInfo.delayed_decoder() > 5 || statusInfo.delayed_assembler() > 5">
+                        <div class="row" data-bind="visible: statusInfo.delayed_assembler() > 5">
                             <div class="col-sm-6">$T('dashboard-delayed') &nbsp; </div>
                             <div class="col-sm-6">
-                                <span data-bind="visible: statusInfo.delayed_decoder() > 5">$T('dashboard-delayed-cpu')</span>
-                                <small data-bind="visible: statusInfo.delayed_decoder() > 5">(<span data-bind="text: statusInfo.delayed_decoder"></span>x)</small>
                                 <span data-bind="visible: statusInfo.delayed_assembler() > 5">$T('dashboard-delayed-disk')</span>
                                 <small data-bind="visible: statusInfo.delayed_assembler() > 5">(<span data-bind="text: statusInfo.delayed_assembler"></span>x)</small>
                             </div>

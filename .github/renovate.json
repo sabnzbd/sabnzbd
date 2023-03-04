@@ -19,7 +19,8 @@
     ]
   },
   "ignoreDeps": [
-    "jaraco.text"
+    "jaraco.text",
+    "sabctools"
   ],
   "packageRules": [
     {

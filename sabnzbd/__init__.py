@@ -123,7 +123,6 @@ import sabnzbd.utils.ssdp
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
 Assembler: sabnzbd.assembler.Assembler
-Decoder: sabnzbd.decoder.Decoder
 Downloader: sabnzbd.downloader.Downloader
 PostProcessor: sabnzbd.postproc.PostProcessor
 NzbQueue: sabnzbd.nzbqueue.NzbQueue
@@ -311,7 +310,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
     sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
     sabnzbd.Downloader = sabnzbd.downloader.Downloader(sabnzbd.BPSMeter.read() or pause_downloader)
-    sabnzbd.Decoder = sabnzbd.decoder.Decoder()
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
     sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
     sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
@@ -344,9 +342,6 @@ def start():
 
         logging.debug("Starting downloader")
         sabnzbd.Downloader.start()
-
-        logging.debug("Starting decoders")
-        sabnzbd.Decoder.start()
 
         logging.debug("Starting scheduler")
         sabnzbd.Scheduler.start()
@@ -402,11 +397,6 @@ def halt():
             sabnzbd.Downloader.join()
         except:
             pass
-
-        # Decoder handles join gracefully
-        logging.debug("Stopping decoders")
-        sabnzbd.Decoder.stop()
-        sabnzbd.Decoder.join()
 
         logging.debug("Stopping assembler")
         sabnzbd.Assembler.stop()
@@ -491,9 +481,6 @@ def check_all_tasks():
         return False
     if not sabnzbd.Downloader.is_alive():
         logging.warning(T("Restarting because of crashed downloader"))
-        return False
-    if not sabnzbd.Decoder.is_alive():
-        logging.warning(T("Restarting because of crashed decoder"))
         return False
     if not sabnzbd.Assembler.is_alive():
         logging.warning(T("Restarting because of crashed assembler"))

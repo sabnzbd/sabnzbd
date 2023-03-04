@@ -136,11 +136,6 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/__init__.py
-msgid "Restarting because of crashed decoder"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/__init__.py
 msgid "Restarting because of crashed assembler"
 msgstr ""
 
@@ -2330,10 +2325,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "CPU"
 msgstr ""
 
 #: sabnzbd/skintext.py
