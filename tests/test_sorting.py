@@ -24,7 +24,8 @@ import re
 import shutil
 import sys
 import datetime
-from random import choice, randint, sample
+from random import choice, choices, randint, sample
+from string import ascii_letters
 from unittest import mock
 
 from sabnzbd import sorting
@@ -686,7 +687,7 @@ class TestSortingSorter:
                         "No-pack"
                         + spacer
                         + random_string
-                        + os.urandom(4).hex()
+                        + "".join(choices(ascii_letters, k=randint(4, 12)))
                         + spacer
                         + "2160p-SABnzbdTeam"
                         + extension
@@ -759,7 +760,7 @@ class TestSortingSorter:
             job_name = "Simulated.Job." + job_tag + ".2160p.Web.x264-SAB"
 
             # Prep the filesystem
-            storage_dir = os.path.join(SAB_CACHE_DIR, "complete" + os.urandom(4).hex())
+            storage_dir = os.path.join(SAB_CACHE_DIR, "complete" + "".join(choices(ascii_letters, k=randint(4, 12))))
             try:
                 shutil.rmtree(storage_dir)
             except FileNotFoundError:
@@ -770,10 +771,10 @@ class TestSortingSorter:
 
             # Create "downloaded" file(s)
             all_files = []
-            fixed_random = os.urandom(8).hex()
+            fixed_random = "".join(choices(ascii_letters, k=8))
             for number in range(1, 1 + number_of_files):
                 if not generate_sequential_filenames:
-                    job_file = os.urandom(8).hex() + extension
+                    job_file = "".join(choices(ascii_letters, k=randint(4, 12))) + extension
                 else:
                     job_file = fixed_random + ".CD" + str(number) + extension
                 job_filepath = os.path.join(job_dir, job_file)
@@ -1254,7 +1255,7 @@ class TestSortingSorter:
     ):
         """Run the renamer against assorted season packs in the data dir"""
         # Mock a minimal nzo
-        job_dir = os.path.join(SAB_CACHE_DIR, os.urandom(4).hex(), job_name)
+        job_dir = os.path.join(SAB_CACHE_DIR, "".join(choices(ascii_letters, k=randint(4, 12))), job_name)
         nzo = mock.Mock()
         nzo.final_name = job_name
         nzo.download_path = job_dir
