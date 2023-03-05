@@ -32,6 +32,8 @@ import cherrypy._cpreqbody
 from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
+import sabnzbd.cfg as cfg
+from sabnzbd import filesystem
 from sabnzbd import nzbstuff
 from sabnzbd.encoding import utob, correct_unknown_encoding, correct_cherrypy_encoding
 from sabnzbd.filesystem import (
@@ -203,7 +205,10 @@ def process_nzb_archive_file(
                     logging.error(T("Cannot read %s"), name, exc_info=True)
                     zf.close()
                     return -1, []
-                name = get_filename(name)
+                if cfg.prefix_archived_nzbs_with_archive_filename():
+                    name = filesystem.setname_from_path(filename) + "_" + get_filename(name)
+                else:
+                    name = get_filename(name) 
                 if datap:
                     nzo = None
                     try:

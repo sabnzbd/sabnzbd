@@ -874,6 +874,7 @@ SPECIAL_BOOL_LIST = (
     "api_logging",
     "x_frame_options",
     "allow_old_ssl_tls",
+    "prefix_archived_nzbs_with_archive_filename",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
