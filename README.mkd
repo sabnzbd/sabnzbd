@@ -1,11 +1,12 @@
-Release Notes - SABnzbd 4.0.0 Alpha 2
+Release Notes - SABnzbd 4.0.0 Alpha 3
 =========================================================
-
-## Changes since 4.0.0 Alpha 1
-- There are now multiple settings that can tweak performance, see:
+## Changes since 4.0.0 Alpha 2
+- Combined article downloading and decoding steps.
+- There are multiple settings that can tweak performance, see:
   https://github.com/sabnzbd/sabnzbd/discussions/2474
   We are trying to find the most optimal default settings, so you
   can help us by letting us know the results on your system!
+- Replaced separate Series/Movie/Date Sorting with general Sorter.
 
 ## Changes since 3.7.2
 - In this major update we replaced a core part of Python's SSL handling
