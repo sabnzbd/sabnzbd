@@ -774,6 +774,18 @@ msgstr "[%s] הפקודה ב־build_command אינה מוגדרת."
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "לתסריט פייתון \"%s\" אין ערכת הרשאות ביצוע (+x)"
 
+#: sabnzbd/misc.py
+msgid "Series Sorting"
+msgstr "מיון סדרות"
+
+#: sabnzbd/misc.py
+msgid "Date Sorting"
+msgstr "מיון תאריכים"
+
+#: sabnzbd/misc.py
+msgid "Movie Sorting"
+msgstr "מיון סרטים"
+
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
 msgstr "מריץ תסריט"
@@ -2144,10 +2156,6 @@ msgstr "מיוחד"
 #: sabnzbd/skintext.py
 msgid "Search"
 msgstr "חיפוש"
-
-#: sabnzbd/skintext.py
-msgid "Download Dir"
-msgstr "תיקיית הורדות"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -4091,20 +4099,6 @@ msgstr "תיקייה/נתיב"
 msgid "Indexer Categories / Groups"
 msgstr "קטגוריות / קבוצות של מדדן"
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Select at least 1 category."
-msgstr "בחר קטגוריה 1 לפחות."
-
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Series Sorting"
-msgstr "מיון סדרות"
-
-#: sabnzbd/skintext.py
-msgid "Enable TV Sorting"
-msgstr "אפשר מיון טלוויזיה"
-
 #: sabnzbd/skintext.py
 msgid "Pattern Key"
 msgstr "מפתח דפוס"
@@ -4121,15 +4115,6 @@ msgstr "החל מסננים"
 msgid "Presets"
 msgstr "קדם־קביעות"
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Movie Sorting"
-msgstr "מיון סרטים"
-
-#: sabnzbd/skintext.py
-msgid "Enable Movie Sorting"
-msgstr "אפשר מיון סרטים"
-
 #: sabnzbd/skintext.py
 msgid "Affected Categories"
 msgstr "קטגוריות מושפעות"
@@ -4145,26 +4130,6 @@ msgstr "דפוס"
 #: sabnzbd/skintext.py
 msgid "Result"
 msgstr "תוצאה"
-
-#: sabnzbd/skintext.py
-msgid "1x05 Season Folder"
-msgstr "תיקיית עונה 1x05"
-
-#: sabnzbd/skintext.py
-msgid "S01E05 Season Folder"
-msgstr "תיקיית עונה S01E05"
-
-#: sabnzbd/skintext.py
-msgid "1x05 Episode Folder"
-msgstr "תיקיית פרק 1x05"
-
-#: sabnzbd/skintext.py
-msgid "S01E05 Episode Folder"
-msgstr "תיקיית פרק S01E05"
-
-#: sabnzbd/skintext.py
-msgid "Job Name as Filename"
-msgstr "שם עבודה בתור שם קובץ"
 
 #: sabnzbd/skintext.py
 msgid "Title"
@@ -4215,10 +4180,6 @@ msgid "Episode_Name"
 msgstr "שם_פרק"
 
 #: sabnzbd/skintext.py
-msgid "File Extension"
-msgstr "סיומת קובץ"
-
-#: sabnzbd/skintext.py
 msgid "Extension"
 msgstr "סיומת"
 
@@ -4259,8 +4220,8 @@ msgid "Sort String"
 msgstr "מחרוזת מיון"
 
 #: sabnzbd/skintext.py
-msgid "Multi-part label"
-msgstr "תווית מרובת־חלקים"
+msgid "Multi-part Label"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "In folders"
@@ -4270,26 +4231,13 @@ msgstr "בתיקיות"
 msgid "No folders"
 msgstr "אין תיקיות"
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Date Sorting"
-msgstr "מיון תאריכים"
+#: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr "שם עבודה בתור שם קובץ"
 
 #: sabnzbd/skintext.py
-msgid "Enable Date Sorting"
-msgstr "אפשר מיון תאריכים"
-
-#: sabnzbd/skintext.py
-msgid "Show Name folder"
-msgstr "הראה שם תיקייה"
-
-#: sabnzbd/skintext.py
-msgid "Year-Month Folders"
-msgstr "תיקיות שנה־חודש"
-
-#: sabnzbd/skintext.py
-msgid "Daily Folders"
-msgstr "תיקיות יומיות"
+msgid "Series"
+msgstr ""
 
 #. Note for title expression in Sorting that does case adjustment
 #: sabnzbd/skintext.py
@@ -4319,6 +4267,51 @@ msgstr "GuessIt.Property"
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
 msgstr "GuessIt_Property"
+
+#: sabnzbd/skintext.py
+msgid "Minimum Filesize"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Affected Job Types"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "All"
+msgstr "הכל"
+
+#: sabnzbd/skintext.py
+msgid "Series with air dates"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Movies"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Other / Unknown"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Configure a new sorter, or edit/remove/reorder existing sorters "
+"below.<br><br>Sorters are tried in order of appearance, and can be reordered"
+" by dragging and dropping. The first active sorter that meets both selection"
+" criteria (affected category and job type) is applied to a job, provided at "
+"least one file meets the minumum filesize requirement."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Add Sorter"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Remove Sorter"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Test Data"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4734,8 +4727,8 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/sorting.py
-msgid "Failed to rename: %s to %s"
-msgstr "נכשל בשינוי שם: %s אל %s"
+msgid "Failed to rename %s to %s"
+msgstr ""
 
 #. Error message
 #: sabnzbd/sorting.py

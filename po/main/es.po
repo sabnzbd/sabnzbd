@@ -804,6 +804,18 @@ msgstr ""
 "La secuencia de comandos Python \"%s\" no tiene configurado el permiso de "
 "ejecutar (+x)"
 
+#: sabnzbd/misc.py
+msgid "Series Sorting"
+msgstr "Ordenación de Series"
+
+#: sabnzbd/misc.py
+msgid "Date Sorting"
+msgstr "Ordenar por fecha"
+
+#: sabnzbd/misc.py
+msgid "Movie Sorting"
+msgstr "Clasificación de películas"
+
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
 msgstr "Ejecutando script"
@@ -2199,10 +2211,6 @@ msgstr "Especial"
 #: sabnzbd/skintext.py
 msgid "Search"
 msgstr "Buscar"
-
-#: sabnzbd/skintext.py
-msgid "Download Dir"
-msgstr "Dir de Descarga"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -4188,20 +4196,6 @@ msgstr "Directorio/Ruta"
 msgid "Indexer Categories / Groups"
 msgstr "Categorías Indexer / Grupos"
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Select at least 1 category."
-msgstr ""
-
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Series Sorting"
-msgstr "Ordenación de Series"
-
-#: sabnzbd/skintext.py
-msgid "Enable TV Sorting"
-msgstr "Habilitar la ordenación de Series de TV"
-
 #: sabnzbd/skintext.py
 msgid "Pattern Key"
 msgstr "Patrón"
@@ -4218,15 +4212,6 @@ msgstr "Aplicar filtros"
 msgid "Presets"
 msgstr "Preajustes"
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Movie Sorting"
-msgstr "Clasificación de películas"
-
-#: sabnzbd/skintext.py
-msgid "Enable Movie Sorting"
-msgstr "Habilitar Ordenado de Películas"
-
 #: sabnzbd/skintext.py
 msgid "Affected Categories"
 msgstr "Categorías Afectadas"
@@ -4242,26 +4227,6 @@ msgstr "Patrón"
 #: sabnzbd/skintext.py
 msgid "Result"
 msgstr "Resultado"
-
-#: sabnzbd/skintext.py
-msgid "1x05 Season Folder"
-msgstr "1x05 Temporada Directorio"
-
-#: sabnzbd/skintext.py
-msgid "S01E05 Season Folder"
-msgstr "S01E05 Temporada Directorio"
-
-#: sabnzbd/skintext.py
-msgid "1x05 Episode Folder"
-msgstr "1x05 Episodio Directorio"
-
-#: sabnzbd/skintext.py
-msgid "S01E05 Episode Folder"
-msgstr "S01E05 Episodio Directorio"
-
-#: sabnzbd/skintext.py
-msgid "Job Name as Filename"
-msgstr "Nombre de la tarea para el nombre de archivo"
 
 #: sabnzbd/skintext.py
 msgid "Title"
@@ -4312,10 +4277,6 @@ msgid "Episode_Name"
 msgstr "Nombre_capítulo"
 
 #: sabnzbd/skintext.py
-msgid "File Extension"
-msgstr "Extensión de archivo"
-
-#: sabnzbd/skintext.py
 msgid "Extension"
 msgstr "Extensión"
 
@@ -4356,8 +4317,8 @@ msgid "Sort String"
 msgstr "Ordenar cadena"
 
 #: sabnzbd/skintext.py
-msgid "Multi-part label"
-msgstr "Etiqueta"
+msgid "Multi-part Label"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "In folders"
@@ -4367,26 +4328,13 @@ msgstr "En directorios"
 msgid "No folders"
 msgstr "Sin Directorios"
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Date Sorting"
-msgstr "Ordenar por fecha"
+#: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr "Nombre de la tarea para el nombre de archivo"
 
 #: sabnzbd/skintext.py
-msgid "Enable Date Sorting"
-msgstr "Habilitar ordenar por fecha"
-
-#: sabnzbd/skintext.py
-msgid "Show Name folder"
-msgstr "Carpeta de la serie"
-
-#: sabnzbd/skintext.py
-msgid "Year-Month Folders"
-msgstr "Directorios Año-Mes"
-
-#: sabnzbd/skintext.py
-msgid "Daily Folders"
-msgstr "Directorios diarios"
+msgid "Series"
+msgstr ""
 
 #. Note for title expression in Sorting that does case adjustment
 #: sabnzbd/skintext.py
@@ -4415,6 +4363,51 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Minimum Filesize"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Affected Job Types"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "All"
+msgstr "Todos"
+
+#: sabnzbd/skintext.py
+msgid "Series with air dates"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Movies"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Other / Unknown"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Configure a new sorter, or edit/remove/reorder existing sorters "
+"below.<br><br>Sorters are tried in order of appearance, and can be reordered"
+" by dragging and dropping. The first active sorter that meets both selection"
+" criteria (affected category and job type) is applied to a job, provided at "
+"least one file meets the minumum filesize requirement."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Add Sorter"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Remove Sorter"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Test Data"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4835,8 +4828,8 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/sorting.py
-msgid "Failed to rename: %s to %s"
-msgstr "Error al renombrar: %s a %s"
+msgid "Failed to rename %s to %s"
+msgstr ""
 
 #. Error message
 #: sabnzbd/sorting.py
