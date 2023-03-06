@@ -262,6 +262,7 @@ configlock = OptionBool("misc", "config_lock", False)
 fixed_ports = OptionBool("misc", "fixed_ports", False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
 direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)
+sorters_converted = OptionBool("misc", "sorters_converted", False)
 
 
 ##############################################################################
@@ -415,6 +416,7 @@ api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
+enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])

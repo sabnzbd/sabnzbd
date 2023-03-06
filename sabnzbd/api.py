@@ -121,6 +121,8 @@ def _api_set_config(name, kwargs):
         kwargs["keyword"] = handle_rss_api(kwargs)
     elif kwargs.get("section") == "categories":
         kwargs["keyword"] = handle_cat_api(kwargs)
+    elif kwargs.get("section") == "sorters":
+        kwargs["keyword"] = handle_sorter_api(kwargs)
     else:
         res = config.set_config(kwargs)
         if not res:
@@ -714,11 +716,10 @@ def _api_disconnect(name, kwargs):
 
 def _api_eval_sort(name, kwargs):
     """API: evaluate sorting expression"""
-    name = kwargs.get("name", "")
-    value = kwargs.get("value", "")
-    title = kwargs.get("title")
-    multipart = kwargs.get("movieextra", "")
-    path = sabnzbd.sorting.eval_sort(value, title, name, multipart)
+    sort_string = kwargs.get("sort_string", "")
+    job_name = kwargs.get("job_name", "")
+    multipart_label = kwargs.get("multipart_label", "")
+    path = sabnzbd.sorting.eval_sort(sort_string, job_name, multipart_label)
     if path is None:
         return report(_MSG_NOT_IMPLEMENTED)
     else:
@@ -1161,6 +1162,22 @@ def handle_server_api(kwargs):
             config.ConfigServer(name, kwargs)
             old_name = None
         sabnzbd.Downloader.update_server(old_name, name)
+    return name
+
+
+def handle_sorter_api(kwargs):
+    """Special handler for API-call 'set_config' [sorters]"""
+    name = kwargs.get("keyword")
+    if not name:
+        name = kwargs.get("name")
+    if not name:
+        return None
+
+    sorter = config.get_config("sorters", name)
+    if sorter:
+        sorter.set_dict(kwargs)
+    else:
+        config.ConfigSorter(name, kwargs)
     return name
 
 
@@ -1784,7 +1801,7 @@ def plural_to_single(kw, def_kw=""):
 def del_from_section(kwargs):
     """Remove keyword in section"""
     section = kwargs.get("section", "")
-    if section in ("servers", "rss", "categories"):
+    if section in ("sorters", "servers", "rss", "categories"):
         keyword = kwargs.get("keyword")
         if keyword:
             item = config.get_config(section, keyword)
