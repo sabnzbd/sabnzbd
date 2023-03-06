@@ -2,7 +2,7 @@
 <!--#set global $help_uri="configuration/4.0/sorting"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
-<div class="padding section explain-sorting">
+<div class="padTable section explain-sorting">
     <p>$T('explain-sorting')</p>
 </div>
 <div class="colmask">
@@ -32,14 +32,14 @@
                 </div>
                 <div class="col2">
                     <!--#if $cur == 0#-->
-                    <h3 class="align-center">$T('new-sorter') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3>$T('add-sorter') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <!--#else#-->
                     <h3>$slot.name  <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <div class="sorter-switch-container" class="wide">
                         <input type="checkbox" class="toggleSorterCheckbox sorter-switch float-left" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
                         <label class="sorter-switch float-left" for="is_active">$T('enabled')</label>
                     </div>
-                    <button class="btn btn-default showSorter float-right" type="button">
+                    <button class="btn btn-default showSorter" type="button">
                         <span class="glyphicon glyphicon-pencil"></span> $T('showDetails')
                     </button>
                     <!--#end if#-->
@@ -108,14 +108,14 @@
                         <div class="field-pair no-field-pair-bg">
                             <button class="btn btn-default saveButton">
                                 <!--#if $cur == 0#-->
-                                    <span class="glyphicon glyphicon-plus"></span> $T('button-add')
+                                    <span class="glyphicon glyphicon-plus"></span> $T('add-sorter')
                                 <!--#else#-->
-                                    <span class="glyphicon glyphicon-ok"></span> $T('button-save')
+                                    <span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')
                                 <!--#end if#-->
                             </button>
                             <!--#if $cur != 0#-->
                             <button class="btn btn-default delSorter" type="button">
-                                <span class="glyphicon glyphicon-trash"></span> $T('nzo-delete')
+                                <span class="glyphicon glyphicon-trash"></span> $T('remove-sorter')
                             </button>
                             <!--#else#-->
                             <button type="button" title="$T('sort-legenda')" class="btn btn-default patternKey" onclick="jQuery('#pattern_explainer').toggle()">

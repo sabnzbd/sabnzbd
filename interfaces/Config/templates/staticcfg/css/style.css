@@ -341,7 +341,9 @@ tr.separator {
     margin-right: 0.2em;
 }
 .Sorting .sorter-switch-container {
-    margin-top: 0.2em;
+    margin: 10px 0px;
+    height: 1.5em;
+    display: block;
 }
 .Sorting .sorter-placeholder {
     position: relative;
