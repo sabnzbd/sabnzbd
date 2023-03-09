@@ -2274,13 +2274,13 @@ def analyse_show(name: str) -> Tuple[str, str, str, str, bool, str, str, str, st
         job.info.get("season_num", ""),
         job.info.get("episode_num", ""),
         job.info.get("ep_name", ""),
-        job.is_proper(),
+        str(job.is_proper()),
         job.info.get("resolution", ""),
         job.info.get("decade", ""),
         job.info.get("year", ""),
         job.info.get("month", ""),
         job.info.get("day", ""),
-        job.info.get("type", ""),
+        job.type,
     )
 
 
