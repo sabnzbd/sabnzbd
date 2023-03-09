@@ -759,7 +759,7 @@ SKIN_TEXT = {
     "guessit-type-other": TT("Other / Unknown"),
     "explain-sorting": TT(
         "Configure a new sorter, or edit/remove/reorder existing sorters below.<br>"
-        "<br>Sorters are tried in order of appearance, and can be reordered by dragging and dropping. The first active sorter that meets both selection criteria (affected category and job type) is applied to a job, provided at least one file meets the minumum filesize requirement."
+        "<br>Sorters are tried in order of appearance, and can be reordered by dragging and dropping. The first active sorter that meets both selection criteria (affected category and job type) is applied to a job, provided at least one file meets the minimum file size requirement."
     ),
     "add-sorter": TT("Add Sorter"),
     "remove-sorter": TT("Remove Sorter"),

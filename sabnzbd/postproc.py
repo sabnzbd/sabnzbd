@@ -691,13 +691,14 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
         complete_dir,
         nzo.cat,
     )
-    complete_dir = sanitize_and_trim_path(file_sorter.get_final_path())
-
-    # Sorting overrides the per-category job directory creation setting
     if file_sorter.sorter_active:
+        complete_dir = file_sorter.get_final_path()
+        # Sorting overrides the per-category job directory creation setting
         create_job_dir = True
 
-    if not create_job_dir or not file_sorter.sorter_active:
+    complete_dir = sanitize_and_trim_path(complete_dir)
+
+    if not create_job_dir:
         workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)
     else:
         workdir_complete = get_unique_dir(os.path.join(complete_dir, nzo.final_name), create_dir=True)
