@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0Alpha2\n"
+"Project-Id-Version: SABnzbd-4.0.0Alpha3\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Russian (https://www.transifex.com/sabnzbd/teams/111101/ru/)\n"
@@ -4273,7 +4273,7 @@ msgid ""
 "below.<br><br>Sorters are tried in order of appearance, and can be reordered"
 " by dragging and dropping. The first active sorter that meets both selection"
 " criteria (affected category and job type) is applied to a job, provided at "
-"least one file meets the minumum filesize requirement."
+"least one file meets the minimum file size requirement."
 msgstr ""
 
 #: sabnzbd/skintext.py
