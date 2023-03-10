@@ -7,7 +7,7 @@ on:
 jobs:
   stale:
     name: "Close stale issues"
-    if: github.repository_owner == "sabnzbd"
+    if: github.repository_owner == 'sabnzbd'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@v7
