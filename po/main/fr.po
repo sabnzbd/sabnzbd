@@ -4444,6 +4444,12 @@ msgid ""
 " criteria (affected category and job type) is applied to a job, provided at "
 "least one file meets the minimum file size requirement."
 msgstr ""
+"Configurez un nouveau trieur ou modifiez/supprimez/réordonnez les trieurs "
+"existants ci-dessous.<br><br>Les trieurs sont essayés par ordre d'apparition"
+" et peuvent être réordonnés en les faisant glisser-déposer. Le premier "
+"trieur actif qui répond aux deux critères de sélection (catégorie affectée "
+"et type de tâche) sera appliqué à une tâche, à condition qu'au moins un "
+"fichier réponde à la taille minimale requise."
 
 #: sabnzbd/skintext.py
 msgid "Add Sorter"
