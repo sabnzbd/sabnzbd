@@ -1069,24 +1069,21 @@ def cleanup_list(wdir, skip_nzb):
     """
     if cfg.cleanup_list():
         try:
-            files = os.listdir(wdir)
+            with os.scandir(wdir) as files:
+                for entry in files:
+                    if entry.is_dir():
+                        cleanup_list(entry.path, skip_nzb)
+                        cleanup_empty_directories(entry.path)
+                    else:
+                        if on_cleanup_list(entry.name, skip_nzb):
+                            try:
+                                logging.info("Removing unwanted file %s", entry.path)
+                                remove_file(entry.path)
+                            except:
+                                logging.error(T("Removing %s failed"), clip_path(entry.path))
+                                logging.info("Traceback: ", exc_info=True)
         except:
-            files = ()
-        for filename in files:
-            path = os.path.join(wdir, filename)
-            if os.path.isdir(path):
-                cleanup_list(path, skip_nzb)
-            else:
-                if on_cleanup_list(filename, skip_nzb):
-                    try:
-                        logging.info("Removing unwanted file %s", path)
-                        remove_file(path)
-                    except:
-                        logging.error(T("Removing %s failed"), clip_path(path))
-                        logging.info("Traceback: ", exc_info=True)
-        if files:
-            # If directories only contained unwanted files, remove them
-            cleanup_empty_directories(wdir)
+            logging.info("Traceback: ", exc_info=True)
 
 
 def prefix(path, pre):
