@@ -1071,17 +1071,16 @@ def cleanup_list(wdir, skip_nzb):
         try:
             with os.scandir(wdir) as files:
                 for entry in files:
-                    path = os.path.join(wdir, entry.name)
                     if entry.is_dir():
-                        cleanup_list(path, skip_nzb)
-                        cleanup_empty_directories(path)
+                        cleanup_list(entry.path, skip_nzb)
+                        cleanup_empty_directories(entry.path)
                     else:
                         if on_cleanup_list(entry.name, skip_nzb):
                             try:
-                                logging.info("Removing unwanted file %s", path)
-                                remove_file(path)
+                                logging.info("Removing unwanted file %s", entry.path)
+                                remove_file(entry.path)
                             except:
-                                logging.error(T("Removing %s failed"), clip_path(path))
+                                logging.error(T("Removing %s failed"), clip_path(entry.path))
                                 logging.info("Traceback: ", exc_info=True)
         except:
             logging.info("Traceback: ", exc_info=True)
