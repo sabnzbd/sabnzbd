@@ -30,8 +30,8 @@ class TestNZO:
         assert nzo.final_name == "test_basic_data"
         assert nzo.files
         assert nzo.files[0].filename == "testfile.rar"
-        assert nzo.bytes == 120
-        assert nzo.files[0].bytes == 120
+        assert nzo.bytes == 283
+        assert nzo.files[0].bytes == 283
 
         # work_name can be trimmed in Windows due to max-path-length
         assert "test_basic_data".startswith(nzo.work_name)

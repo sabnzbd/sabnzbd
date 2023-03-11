@@ -25,16 +25,16 @@ from flaky import flaky
 @flaky
 class TestDownloadFlow(DownloadFlowBasics):
     def test_download_basic_rar5(self):
-        self.download_nzb("basic_rar5", ["testfile.bin"])
+        self.download_nzb("basic_rar5", ["My_Test_Download.bin"])
 
     def test_download_zip(self):
-        self.download_nzb("test_zip", ["testfile.bin"])
+        self.download_nzb("test_zip", ["My_Test_Download.bin"])
 
     def test_download_7zip(self):
-        self.download_nzb("test_7zip", ["testfile.bin"])
+        self.download_nzb("test_7zip", ["My_Test_Download.bin"])
 
     def test_download_passworded(self):
-        self.download_nzb("test_passworded{{secret}}", ["testfile.bin"])
+        self.download_nzb("test_passworded{{secret}}", ["My_Test_Download.bin"])
 
     @pytest.mark.xfail(reason="Probably #1633")
     def test_download_unicode_made_on_windows(self):
@@ -42,7 +42,7 @@ class TestDownloadFlow(DownloadFlowBasics):
 
     def test_download_fully_obfuscated(self):
         # This is also covered by a unit test but added to test full flow
-        self.download_nzb("obfuscated_single_rar_set", ["100k.bin"])
+        self.download_nzb("obfuscated_single_rar_set", ["My_Test_Download.bin"])
 
     def test_download_unicode_rar(self):
-        self.download_nzb("unicode_rar", ["我喜欢编程.bin"])
+        self.download_nzb("unicode_rar", ["我喜欢编程_My_Test_Download.bin"])
