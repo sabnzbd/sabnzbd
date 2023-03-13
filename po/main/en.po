@@ -15,22 +15,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Pause low priority jobs"
+msgid "Pause low prioirty jobs"
 msgstr "Pause low priority jobs"
 
-msgid "Pause normal priority jobs"
+msgid "Pause normal prioirty jobs"
 msgstr "Pause normal priority jobs"
 
-msgid "Pause high priority jobs"
+msgid "Pause high prioirty jobs"
 msgstr "Pause high priority jobs"
 
-msgid "Resume low priority jobs"
+msgid "Resume low prioirty jobs"
 msgstr "Resume low priority jobs"
 
-msgid "Resume normal priority jobs"
+msgid "Resume normal prioirty jobs"
 msgstr "Resume normal priority jobs"
 
-msgid "Resume high priority jobs"
+msgid "Resume high prioirty jobs"
 msgstr "Resume high priority jobs"
 
 msgid ""
