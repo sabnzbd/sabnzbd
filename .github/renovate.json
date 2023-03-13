@@ -5,7 +5,7 @@
     ":disableDependencyDashboard"
   ],
   "schedule": [
-    "before 3am on Monday"
+    "before 8am on Monday"
   ],
   "ignorePaths": [
     "tests/**",
