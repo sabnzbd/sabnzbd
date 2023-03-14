@@ -52,12 +52,12 @@ SKIN_TEXT = {
     "sch-rss_scan": TT("Read RSS feeds"),  #:  #: Config->Scheduler
     "sch-remove_failed": TT("Remove failed jobs"),  #: Config->Scheduler
     "sch-remove_completed": TT("Remove completed jobs"),  #: Config->Scheduler
-    "sch-pause_all_low": TT("Pause low prioirty jobs"),  #: Config->Scheduler
-    "sch-pause_all_normal": TT("Pause normal prioirty jobs"),  #: Config->Scheduler
-    "sch-pause_all_high": TT("Pause high prioirty jobs"),  #: Config->Scheduler
-    "sch-resume_all_low": TT("Resume low prioirty jobs"),  #: Config->Scheduler
-    "sch-resume_all_normal": TT("Resume normal prioirty jobs"),  #: Config->Scheduler
-    "sch-resume_all_high": TT("Resume high prioirty jobs"),  #: Config->Scheduler
+    "sch-pause_all_low": TT("Pause low priority jobs"),  #: Config->Scheduler
+    "sch-pause_all_normal": TT("Pause normal priority jobs"),  #: Config->Scheduler
+    "sch-pause_all_high": TT("Pause high priority jobs"),  #: Config->Scheduler
+    "sch-resume_all_low": TT("Resume low priority jobs"),  #: Config->Scheduler
+    "sch-resume_all_normal": TT("Resume normal priority jobs"),  #: Config->Scheduler
+    "sch-resume_all_high": TT("Resume high priority jobs"),  #: Config->Scheduler
     "sch-enable_quota": TT("Enable quota management"),  #: Config->Scheduler
     "sch-disable_quota": TT("Disable quota management"),  #: Config->Scheduler
     "sch-pause_cat": TT("Pause jobs with category"),  #: Config->Scheduler
