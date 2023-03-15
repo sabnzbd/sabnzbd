@@ -629,10 +629,10 @@ LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
 LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
 LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
 LOG_INI_HIDE_RE = re.compile(
-    rb"(email_pwd|email_account|email_to|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
+    rb"(email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
     re.I,
 )
-LOG_HASH_RE = re.compile(rb"([a-fA-F\d]{25})", re.I)
+LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 
 
 def _api_showlog(name, kwargs):
