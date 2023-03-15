@@ -55,7 +55,7 @@ class TestNewsUnpackFunctions:
 
     def test_sevenzip(self):
         testzip = newsunpack.SevenZip("tests/data/test_7zip/testfile.7z")
-        assert testzip.namelist() == ["testfile.bin"]
+        assert testzip.namelist() == ["My_Test_Download.bin"]
         # Basic check that we can get data from the 7zip
         assert len(testzip.open(testzip.namelist()[0]).read()) == 102400
 
