@@ -1933,7 +1933,7 @@ msgstr "Reanudar trabajos de prioridad normal"
 #. Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Resume high priority jobs"
-msgstr ""
+msgstr "Reanudar trabajos de prioridad alta"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
