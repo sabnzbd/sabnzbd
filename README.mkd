@@ -1,12 +1,5 @@
-Release Notes - SABnzbd 4.0.0 Alpha 3
+Release Notes - SABnzbd 4.0.0 Beta 1
 =========================================================
-## Changes since 4.0.0 Alpha 2
-- Combined article downloading and decoding steps.
-- There are multiple settings that can tweak performance, see:
-  https://github.com/sabnzbd/sabnzbd/discussions/2474
-  We are trying to find the most optimal default settings, so you
-  can help us by letting us know the results on your system!
-- Replaced separate Series/Movie/Date Sorting with general Sorter.
 
 ## Changes since 3.7.2
 - In this major update we replaced a core part of Python's SSL handling
@@ -15,12 +8,18 @@ Release Notes - SABnzbd 4.0.0 Alpha 3
   In addition, the general connection handling was overhauled, resulting in
   performance improvements for all news servers.
   Special thanks to: mnightingale, puzzledsab and animetosho!
+- There are multiple settings that can tweak performance, see:
+  https://github.com/sabnzbd/sabnzbd/discussions/2474
+  We are trying to find the most optimal default settings, so you
+  can help us by letting us know the results on your system!
 - When adding a new news server, SSL is enabled by default.
 - File assembly performance significantly improved by relying on the
   CRC32 instead of the MD5 to perform QuickCheck of files.
 - Slowdown more gracefully when the cache fills up.
+- Replaced separate Series/Movie/Date Sorting with general Sorter.
 - HTTPS files are included in the `Backup`.
 - Improved `Watched Folder` scanning and processing.
+- `Deobfuscate final filenames` is enabled for new installations.
 - Dropped support for Python 3.7.
 
 # Bugfixes since 3.7.2
