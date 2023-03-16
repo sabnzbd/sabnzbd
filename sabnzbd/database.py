@@ -474,8 +474,8 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
 
     # Analyze series info only when job is finished
     series = ""
-    if series_info:
-        seriesname, season, episode = sabnzbd.newsunpack.analyse_show(nzo.final_name)[:3]
+    if series_info and (show_analysis := sabnzbd.newsunpack.analyse_show(nzo.final_name))["job_type"] == "tv":
+        seriesname, season, episode = (show_analysis[key] for key in ("title", "season", "episode"))
         if seriesname and season and episode:
             series = "%s/%s/%s" % (seriesname.lower(), season, episode)
 

@@ -2249,7 +2249,7 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def analyse_show(name: str) -> Tuple[str, str, str, str, bool, str, str, str, str, str, str, str, str, str]:
+def analyse_show(name: str) -> Dict[str, str]:
     """Use the Sorter to collect some basic info on series"""
     job = Sorter(
         None,
@@ -2269,19 +2269,19 @@ def analyse_show(name: str) -> Tuple[str, str, str, str, bool, str, str, str, st
         },
     )
     job.get_values()
-    return (
-        job.info.get("title", ""),
-        job.info.get("season_num", ""),
-        job.info.get("episode_num", ""),
-        job.info.get("ep_name", ""),
-        str(job.is_proper()),
-        job.info.get("resolution", ""),
-        job.info.get("decade", ""),
-        job.info.get("year", ""),
-        job.info.get("month", ""),
-        job.info.get("day", ""),
-        job.type,
-    )
+    return {
+        "title": job.info.get("title", ""),
+        "season": job.info.get("season_num", ""),
+        "episode": job.info.get("episode_num", ""),
+        "episode_name": job.info.get("ep_name", ""),
+        "is_proper": str(job.is_proper()),
+        "resolution": job.info.get("resolution", ""),
+        "decade": job.info.get("decade", ""),
+        "year": job.info.get("year", ""),
+        "month": job.info.get("month", ""),
+        "day": job.info.get("day", ""),
+        "job_type": job.type,
+    }
 
 
 def pre_queue(nzo: NzbObject, pp, cat):
@@ -2309,7 +2309,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(analyse_show(nzo.final_name_with_password))
+        command.extend(list(analyse_show(nzo.final_name_with_password).values()))
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly
