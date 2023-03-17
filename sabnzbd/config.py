@@ -138,15 +138,15 @@ class OptionNumber(Option):
         self,
         section: str,
         keyword: str,
-        default_val: Union[int, float] = 0,
-        minval: Optional[int] = None,
-        maxval: Optional[int] = None,
+        default_val: float = 0,
+        minval: Optional[float] = None,
+        maxval: Optional[float] = None,
         validation: Optional[Callable] = None,
         add: bool = True,
         protect: bool = False,
     ):
-        self.__minval: Optional[int] = minval
-        self.__maxval: Optional[int] = maxval
+        self.__minval: Optional[float] = minval
+        self.__maxval: Optional[float] = maxval
         self.__validation: Optional[Callable] = validation
         self.__int: bool = isinstance(default_val, int)
         super().__init__(section, keyword, default_val, add=add, protect=protect)
@@ -729,6 +729,7 @@ AllConfigTypes = Union[
     OptionList,
     OptionDir,
     ConfigCat,
+    ConfigSorter,
     ConfigRSS,
     ConfigServer,
 ]
