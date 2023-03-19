@@ -761,8 +761,35 @@ class Downloader(Thread):
                 for selected in read:
                     self.process_nw(self.read_fds[selected])
 
-            self.__check_speed()
-            self.__check_assembler()
+            # Check speedlimit
+            if self.bandwidth_limit and BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
+                BPSMeter.update()
+                while BPSMeter.bps > self.bandwidth_limit:
+                    time.sleep(0.01)
+                    BPSMeter.update()
+
+            # Check the Assembler queue to see if we need to delay, depending on queue size
+            if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
+                time.sleep(assembler_level - SOFT_QUEUE_LIMIT)
+                sabnzbd.BPSMeter.delayed_assembler += 1
+                logged_counter = 0
+
+                while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
+                    # Only log/update once every second, to not waste any CPU-cycles
+                    if not logged_counter % 10:
+                        # Make sure the BPS-meter is updated
+                        sabnzbd.BPSMeter.update()
+
+                        # Update who is delaying us
+                        logging.debug(
+                            "Delayed - %d seconds - Assembler queue: %d",
+                            logged_counter / 10,
+                            sabnzbd.Assembler.queue.qsize(),
+                        )
+
+                    # Wait and update the queue sizes
+                    time.sleep(0.1)
+                    logged_counter += 1
 
     def process_nw(self, nw: NewsWrapper):
         """Receive data from NewsWrapper and handle response"""
@@ -852,42 +879,6 @@ class Downloader(Thread):
                 server.busy_threads.remove(nw)
                 server.idle_threads.append(nw)
             self.remove_socket(nw)
-
-    def __check_speed(self):
-        if not self.bandwidth_limit:
-            return
-
-        BPSMeter = sabnzbd.BPSMeter
-        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
-            BPSMeter.update()
-            while BPSMeter.bps > self.bandwidth_limit:
-                time.sleep(0.01)
-                BPSMeter.update()
-
-    def __check_assembler(self):
-        """See if we need to delay because the queues are full"""
-        # Sleep for an increasing amount of time, depending on queue sizes.
-        if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
-            time.sleep(assembler_level - SOFT_QUEUE_LIMIT)
-            sabnzbd.BPSMeter.delayed_assembler += 1
-            logged_counter = 0
-
-            while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
-                # Only log/update once every second, to not waste any CPU-cycles
-                if not logged_counter % 10:
-                    # Make sure the BPS-meter is updated
-                    sabnzbd.BPSMeter.update()
-
-                    # Update who is delaying us
-                    logging.debug(
-                        "Delayed - %d seconds - Assembler queue: %d",
-                        logged_counter / 10,
-                        sabnzbd.Assembler.queue.qsize(),
-                    )
-
-                # Wait and update the queue sizes
-                time.sleep(0.1)
-                logged_counter += 1
 
     @NzbQueueLocker
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
