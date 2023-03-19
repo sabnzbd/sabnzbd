@@ -773,7 +773,8 @@ def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
     filelist = []
     for root, dirs, files in os.walk(input_dir):
         for file in files:
-            if not sabnzbd.misc.match_str(root, IGNORED_FILES_AND_FOLDERS):
+            # Ignore special folders and resources files created by macOS
+            if not sabnzbd.misc.match_str(root, IGNORED_FILES_AND_FOLDERS) and not file.startswith("._"):
                 filelist.append(os.path.join(root, file))
         if not recursive:
             break

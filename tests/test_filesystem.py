@@ -615,6 +615,16 @@ class TestListdirFull(ffs.TestCase):
         assert filesystem.listdir_full("/some/.DS_Store/", recursive=False) == []
         assert filesystem.listdir_full("/some/.DS_Store/subdir", recursive=False) == []
 
+    def test_exception_resource_files(self):
+        for file in (
+            "/rsc/base_file",
+            "/rsc/._base_file",
+            "/rsc/not._base_file",
+        ):
+            self.fs.create_file(file)
+            assert os.path.exists(file) is True
+        assert filesystem.listdir_full("/rsc") == ["/rsc/base_file", "/rsc/not._base_file"]
+
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
         # as its argument, not a file. Test anyway.
@@ -691,6 +701,16 @@ class TestListdirFullWin(ffs.TestCase):
         assert filesystem.listdir_full(r"f:\some", recursive=True) == [r"f:\some\FILE"]
         assert filesystem.listdir_full(r"f:\some\.DS_Store", recursive=True) == []
         assert filesystem.listdir_full(r"f:\some\.DS_Store\subdir", recursive=True) == []
+
+    def test_exception_resource_files(self):
+        for file in (
+            r"f:\rsc\base_file",
+            r"f:\rsc\._base_file",
+            r"f:\rsc\not._base_file",
+        ):
+            self.fs.create_file(file)
+            assert os.path.exists(file) is True
+        assert filesystem.listdir_full(r"f:\rsc") == [r"f:\rsc\base_file", r"f:\rsc\not._base_file"]
 
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
