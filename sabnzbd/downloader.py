@@ -761,13 +761,6 @@ class Downloader(Thread):
                 for selected in read:
                     self.process_nw(self.read_fds[selected])
 
-            # Check speedlimit
-            if self.bandwidth_limit and BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
-                BPSMeter.update()
-                while BPSMeter.bps > self.bandwidth_limit:
-                    time.sleep(0.01)
-                    BPSMeter.update()
-
             # Check the Assembler queue to see if we need to delay, depending on queue size
             if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
                 time.sleep((assembler_level - SOFT_QUEUE_LIMIT) / 4)
@@ -812,6 +805,15 @@ class Downloader(Thread):
             # Update statistics
             if done:
                 article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
+            # Check speedlimit
+            if (
+                self.bandwidth_limit
+                and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit
+            ):
+                sabnzbd.BPSMeter.update()
+                while sabnzbd.BPSMeter.bps > self.bandwidth_limit:
+                    time.sleep(0.01)
+                    sabnzbd.BPSMeter.update()
 
         if nw.status_code != 222 and not done:
             if not nw.connected or nw.status_code == 480:
