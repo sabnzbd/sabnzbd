@@ -588,7 +588,7 @@ def process_job(nzo: NzbObject):
                 nzo.set_unpack_info("Script", "%s%s " % (script_ret, script_line), unique=True)
 
         # Cleanup again, including NZB files
-        if all_ok:
+        if all_ok and os.path.isdir(workdir_complete):
             cleanup_list(workdir_complete, False)
 
         # Force error for empty result
