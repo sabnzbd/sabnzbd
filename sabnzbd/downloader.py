@@ -763,7 +763,7 @@ class Downloader(Thread):
 
             # Check the Assembler queue to see if we need to delay, depending on queue size
             if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
-                time.sleep((assembler_level - SOFT_QUEUE_LIMIT) / 4)
+                time.sleep(min((assembler_level - SOFT_QUEUE_LIMIT) / 4, 0.15))
                 sabnzbd.BPSMeter.delayed_assembler += 1
                 logged_counter = 0
 
