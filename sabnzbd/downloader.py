@@ -214,22 +214,14 @@ class Server:
             nw.hard_reset(send_quit=True)
         self.idle_threads = []
 
-    def request_info(self):
-        """Launch async request to resolve server address.
-        getaddrinfo() can be very slow. In some situations this can lead
-        to delayed starts and timeouts on connections.
-        Because of this, the results will be cached in the server object."""
-        if not self.request:
-            self.request = True
-            Thread(target=self._request_info_internal).start()
-
     @synchronized(DOWNLOADER_LOCK)
     def get_article(self):
         """Get article from pre-fetched and pre-fetch new ones if necessary.
         Articles that are too old for this server are immediately marked as tried"""
         if self.article_queue:
             return self.article_queue.pop(0)
-        elif self.next_article_search < time.time():
+
+        if self.next_article_search < time.time():
             # Pre-fetch new articles
             self.article_queue = sabnzbd.NzbQueue.get_articles(self, sabnzbd.Downloader.servers, _ARTICLE_PREFETCH)
             if self.article_queue:
@@ -251,6 +243,15 @@ class Server:
         for article in self.article_queue:
             sabnzbd.NzbQueue.reset_try_lists(article, remove_fetcher_from_trylist=False)
         self.article_queue = []
+
+    def request_info(self):
+        """Launch async request to resolve server address.
+        getaddrinfo() can be very slow. In some situations this can lead
+        to delayed starts and timeouts on connections.
+        Because of this, the results will be cached in the server object."""
+        if not self.request:
+            self.request = True
+            Thread(target=self._request_info_internal).start()
 
     def _request_info_internal(self):
         """Async attempt to run getaddrinfo() for specified server"""
