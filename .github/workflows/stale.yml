@@ -10,7 +10,7 @@ jobs:
     if: github.repository_owner == 'sabnzbd'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v7
+      - uses: actions/stale@v8
         with:
           days-before-stale: 21
           days-before-close: 7
