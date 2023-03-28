@@ -741,6 +741,15 @@ class TestGetUniqueDirFilename(ffs.TestCase):
             os.chdir("/")
         assert filesystem.get_unique_dir("foo/bar", n=0, create_dir=False) == "foo/bar"
 
+    def test_nonexistent_dir_without_permission(self):
+        some_dir = "/foo/bar"
+        self.fs.create_dir(some_dir)
+
+        # Remove write permission from the directory.
+        os.chmod(some_dir, 0o500)
+
+        assert filesystem.get_unique_dir(os.path.join(some_dir, "nonexistent"), create_dir=True) is False
+
     def test_creating_dir(self):
         # First call also creates the directory for us
         assert filesystem.get_unique_dir("/foo/bar", n=0, create_dir=True) == "/foo/bar"
