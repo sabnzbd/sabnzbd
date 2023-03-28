@@ -734,7 +734,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
 
 
 @synchronized(DIR_LOCK)
-def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str:
+def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
     """Determine a unique folder or filename"""
     if not check_mount(path):
         return path

@@ -743,7 +743,10 @@ class NzbObject(TryList):
         else:
             # Determine "incomplete" folder
             self.download_path = os.path.join(cfg.download_dir.get_path(), self.work_name)
-            self.download_path = long_path(get_unique_dir(self.download_path, create_dir=True))
+            self.download_path = get_unique_dir(self.download_path, create_dir=True)
+            if not self.download_path:
+                raise NzbEmpty
+            self.download_path = long_path(self.download_path)
             set_permissions(self.download_path)
 
         # Always create the admin-directory, just to be sure
