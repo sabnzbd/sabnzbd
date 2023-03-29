@@ -831,6 +831,7 @@ select {
     vertical-align:middle;
     max-width: 100%;
     min-height: 34px;
+    min-width: 55px;
     font-size: 13px;
     background-color: white;
 }
