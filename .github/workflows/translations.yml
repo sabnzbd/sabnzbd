@@ -20,9 +20,11 @@ jobs:
           python3 tools/extract_pot.py
       - name: Push/pull Transifex translations
         if: env.TX_TOKEN
+        # We sleep so all files are updated when we pull them back in
         run: |
           curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
           ./tx push --translation --source
+          sleep 10s
           ./tx pull --all --force
       - name: Compile translations to validate them
         run: |
