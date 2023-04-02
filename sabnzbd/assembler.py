@@ -160,13 +160,18 @@ class Assembler(Thread):
 
     @staticmethod
     def assemble(nzo: NzbObject, nzf: NzbFile, file_done: bool):
-        """Assemble a NZF from its table of articles
-        1) Partial write: write what we have
-        2) Nothing written before: write all
-        """
+        """Assemble a NZF from its table of articles"""
+
+        # When a file exists, we cannot use "w+b"
+        open_mode = "w+b"
+        if os.path.exists(nzf.filepath):
+            open_mode = "r+b"
 
         # We write large article-sized chunks, so we can safely skip the buffering of Python
-        with open(nzf.filepath, "ab", buffering=0) as fout:
+        with open(nzf.filepath, open_mode, buffering=0) as fout:
+            # Track position, so we can prevent a seek if writing continuous
+            file_position = 0
+
             for article in nzf.decodetable:
                 # Break if deleted during writing
                 if nzo.status is Status.DELETED:
@@ -181,19 +186,15 @@ class Assembler(Thread):
                     data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
                     if data:
+                        # Seek ahead if needed
+                        if article.data_begin > file_position:
+                            fout.seek(article.data_begin, 0)
+                        file_position = article.data_begin + article.data_size
                         fout.write(data)
                         nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
-                else:
-                    # If the article was not decoded but the file
-                    # is done, it is just a missing piece, so keep writing
-                    if file_done:
-                        continue
-                    else:
-                        # We reach an article that was not decoded
-                        break
 
         # Final steps
         if file_done:
