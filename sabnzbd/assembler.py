@@ -364,8 +364,8 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                             unwanted = somefile
                 zf.close()
                 del zf
-        except:
-            logging.info("Error during inspection of RAR-file %s", filepath)
+        except rarfile.Error as e:
+            logging.info("Error during inspection of RAR-file %s: %s", filepath, e)
             logging.debug("Traceback: ", exc_info=True)
 
     return encrypted, unwanted
