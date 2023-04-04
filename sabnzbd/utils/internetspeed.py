@@ -14,6 +14,8 @@ SIZE_URL_LIST = [
     [5, "https://sabnzbd.org/tests/internetspeed/5MB.bin"],
     [10, "https://sabnzbd.org/tests/internetspeed/10MB.bin"],
     [20, "https://sabnzbd.org/tests/internetspeed/20MB.bin"],
+    [50, "https://sabnzbd.org/tests/internetspeed/50MB.bin"],
+    [100, "https://sabnzbd.org/tests/internetspeed/100MB.bin"],
 ]
 
 
