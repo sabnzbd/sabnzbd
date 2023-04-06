@@ -300,7 +300,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver
+    __slots__ = NzbFileSaver + ("first_article",)
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -336,17 +336,16 @@ class NzbFile(TryList):
 
         self.valid: bool = bool(raw_article_db)
 
-        if self.valid and self.nzf_id:
-            # Save first article separate so we can do
-            # duplicate file detection and deobfuscate-during-download
-            first_article = self.add_article(raw_article_db.pop(0))
-            first_article.lowest_partnum = True
-            self.nzo.first_articles.append(first_article)
-            self.nzo.first_articles_count += 1
+        # Temporarily hold the first article during import
+        self.first_article: Optional[Article] = None
 
-            # Count how many bytes are available for repair
-            if sabnzbd.par2file.is_parfile(self.filename):
-                self.nzo.bytes_par2 += self.bytes
+        if self.valid and self.nzf_id:
+            # Save first article separate, so we can deobfuscate-during-download
+            # We process the first_file in nzo.add_nzf because if this NZF turns
+            # out to be a duplicate file inside the NZB, the first article would
+            # otherwise become a ghost article.
+            self.first_article = self.add_article(raw_article_db.pop(0))
+            self.first_article.lowest_partnum = True
 
             # Any articles left?
             if raw_article_db:
@@ -965,6 +964,24 @@ class NzbObject(TryList):
             self.servercount[serverid] += bytes_received
         else:
             self.servercount[serverid] = bytes_received
+
+    def add_nzf(self, nzf: NzbFile):
+        """Bookkeeping when adding new files
+        Only used during import, so not locked"""
+        self.files.append(nzf)
+        self.files_table[nzf.nzf_id] = nzf
+        self.bytes += nzf.bytes
+
+        # Only now add first article to the list
+        self.first_articles.append(nzf.first_article)
+        self.first_articles_count += 1
+        nzf.first_article = None
+
+        # Count how many bytes are available for repair
+        if sabnzbd.par2file.is_parfile(nzf.filename):
+            self.bytes_par2 += nzf.bytes
+
+        logging.info("File %s added to queue", nzf.filename)
 
     @synchronized(NZO_LOCK)
     def remove_nzf(self, nzf: NzbFile) -> bool:
