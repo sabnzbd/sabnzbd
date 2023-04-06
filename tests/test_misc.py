@@ -163,16 +163,6 @@ class TestMisc:
         assert ("[::1]", 1234) == misc.split_host("[::1]:1234")
         assert ("[2001:db8::8080]", None) == misc.split_host("[2001:db8::8080]")
 
-    @set_config({"cleanup_list": [".exe", ".nzb"]})
-    def test_on_cleanup_list(self):
-        assert misc.on_cleanup_list("test.exe")
-        assert misc.on_cleanup_list("TEST.EXE")
-        assert misc.on_cleanup_list("longExeFIlanam.EXe")
-        assert not misc.on_cleanup_list("testexe")
-        assert misc.on_cleanup_list("test.nzb")
-        assert not misc.on_cleanup_list("test.nzb", skip_nzb=True)
-        assert not misc.on_cleanup_list("test.exe.lnk")
-
     def test_format_time_string(self):
         assert "0 seconds" == misc.format_time_string(None)
         assert "0 seconds" == misc.format_time_string("Test")

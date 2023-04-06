@@ -39,7 +39,7 @@ from sabnzbd.newsunpack import (
     is_sfv_file,
 )
 from threading import Thread
-from sabnzbd.misc import on_cleanup_list, is_sample, helpful_warning
+from sabnzbd.misc import is_sample, helpful_warning
 from sabnzbd.filesystem import (
     real_path,
     get_unique_dir,
@@ -466,7 +466,7 @@ def process_job(nzo: NzbObject):
 
             if all_ok:
                 # Remove files matching the cleanup list
-                cleanup_list(tmp_workdir_complete, skip_nzb=True)
+                cleanup_list(tmp_workdir_complete, nzo.cat, True)
 
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
@@ -479,7 +479,7 @@ def process_job(nzo: NzbObject):
                     cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     # Full cleanup including nzb's
-                    cleanup_list(tmp_workdir_complete, skip_nzb=False)
+                    cleanup_list(tmp_workdir_complete, nzo.cat, False)
 
         script_output = ""
         script_ret = 0
@@ -589,7 +589,7 @@ def process_job(nzo: NzbObject):
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):
-            cleanup_list(workdir_complete, False)
+            cleanup_list(workdir_complete, nzo.cat, False)
 
         # Force error for empty result
         all_ok = all_ok and not empty
@@ -1063,19 +1063,23 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir, skip_nzb):
+def cleanup_list(wdir: str, cat: str, skip_nzb: bool):
     """Remove all files whose extension matches the cleanup list,
     optionally ignoring the nzb extension
     """
-    if cfg.cleanup_list():
+    # Get the list of extensions to be removed
+    if not (cleanup_exts := config.get_category(cat).cleanup()):
+        cleanup_exts = cfg.cleanup_list()
+
+    if cleanup_exts:
         try:
             with os.scandir(wdir) as files:
                 for entry in files:
                     if entry.is_dir():
-                        cleanup_list(entry.path, skip_nzb)
+                        cleanup_list(entry.path, cat, skip_nzb)
                         cleanup_empty_directories(entry.path)
                     else:
-                        if on_cleanup_list(entry.name, skip_nzb):
+                        if on_cleanup_list(entry.name, cleanup_exts, skip_nzb):
                             try:
                                 logging.info("Removing unwanted file %s", entry.path)
                                 remove_file(entry.path)
@@ -1084,6 +1088,23 @@ def cleanup_list(wdir, skip_nzb):
                                 logging.info("Traceback: ", exc_info=True)
         except:
             logging.info("Traceback: ", exc_info=True)
+
+
+def on_cleanup_list(filename: str, cleanup_exts: List[str], skip_nzb: bool = False) -> bool:
+    """Return True if a filename matches the clean-up list"""
+    if cleanup_exts:
+        name, ext = os.path.splitext(filename)
+        ext = ext.lstrip(".").strip().lower()
+        name = name.strip()
+
+        # If the entire filename is just an extension (e.g. ".exe"), it should be considered for removal as well
+        if not ext and name.startswith("."):
+            ext = name.lstrip(".").strip().lower()
+
+        if ext and ext in cleanup_exts and not (skip_nzb and ext == "nzb"):
+            return True
+
+    return False
 
 
 def prefix(path, pre):

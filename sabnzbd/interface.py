@@ -1787,6 +1787,7 @@ class ConfigCats:
             "dir": "",
             "newzbin": "",
             "priority": DEFAULT_PRIORITY,
+            "cleanup": "",
         }
         categories.insert(1, empty)
         conf["slotinfo"] = categories

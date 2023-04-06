@@ -11,15 +11,36 @@ tests.test_postproc- Tests of various functions in newspack, among which rar_ren
 import shutil
 from unittest import mock
 
-from sabnzbd.postproc import *
+from sabnzbd import postproc
+from sabnzbd.filesystem import globber_full
 from tests.testhelper import *
 
 
 class TestPostProc:
-    # Tests of rar_renamer() (=deobfuscate) against various input directories
+    @pytest.mark.parametrize(
+        "filename, skip_nzb, result",
+        [
+            ("test.exe", False, True),
+            ("TEST.EXE", False, True),
+            ("longExeFIlanam.EXe", False, True),
+            ("test.nzb", False, True),
+            ("testexe", False, False),
+            (".exe", True, True),
+            (".nope", True, False),
+            (".nzb", True, False),
+            ("test.nzb", True, False),
+            ("test.NzB", True, False),
+            ("test.exe.lnk", False, False),
+        ],
+    )
+    def test_on_cleanup_list(self, filename, skip_nzb, result):
+        assert postproc.on_cleanup_list(filename, ["exe", "nzb"], skip_nzb) == result
+
     def test_rar_renamer(self):
-        # Function to deobfuscate one directory with rar_renamer()
+        """Tests of rar_renamer() (=deobfuscate) against various input directories"""
+
         def deobfuscate_dir(sourcedir, expected_filename_matches):
+            """Function to deobfuscate one directory with rar_renamer()"""
             # We create a workingdir inside the sourcedir, because the filenames are really changed
             workingdir = os.path.join(sourcedir, "workingdir")
 
@@ -40,7 +61,7 @@ class TestPostProc:
             nzo = mock.Mock()
             nzo.final_name = "somedownloadname"
             nzo.download_path = workingdir
-            number_renamed_files = rar_renamer(nzo)
+            number_renamed_files = postproc.rar_renamer(nzo)
 
             # run check on the resulting files
             if expected_filename_matches:

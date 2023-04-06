@@ -519,13 +519,14 @@ class ConfigCat:
         self.dir = OptionDir(name, "dir", add=False, create=False)
         self.newzbin = OptionList(name, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
+        self.cleanup = OptionList(name, "cleanup", add=False, validation=sabnzbd.cfg.lower_case_ext)
 
         self.set_dict(values)
         add_to_database("categories", self.__name, self)
 
     def set_dict(self, values: Dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
-        for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
+        for kw in ("order", "pp", "script", "dir", "newzbin", "priority", "cleanup"):
             try:
                 value = values[kw]
                 getattr(self, kw).set(value)
@@ -542,6 +543,7 @@ class ConfigCat:
         output_dict["dir"] = self.dir()
         output_dict["newzbin"] = self.newzbin.get_string()
         output_dict["priority"] = self.priority()
+        output_dict["cleanup"] = self.cleanup.get_string()
         return output_dict
 
     def delete(self):

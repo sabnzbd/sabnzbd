@@ -19,6 +19,7 @@
                             <th>$T('mode')</th>
                             <th>$T('script')</th>
                             <th>$T('catFolderPath')</th>
+                            <th>$T('Cleanup List')</th>
                             <th colspan="2">$T('catTags')</th>
                         </tr>
                         <!--#end if#-->
@@ -75,10 +76,13 @@
                                 <!--#end if#-->
                             </td>
                             <td class="nowrap">
-                                <input type="text" name="dir" class="fileBrowserSmall" value="$slot.dir" size="20" data-initialdir="$defdir" data-title="$T('catFolderPath')" title="$T('explain-catTags2')" />
+                                <input type="text" name="dir" class="fileBrowserSmall" value="$slot.dir" size="12" data-initialdir="$defdir" data-title="$T('catFolderPath')" title="$T('explain-catTags2')" />
                             </td>
                             <td>
-                                <input type="text" name="newzbin" value="$slot.newzbin" size="20" />
+                                <input type="text" name="cleanup" value="$slot.cleanup" size="12" />
+                            </td>
+                            <td>
+                                <input type="text" name="newzbin" value="$slot.newzbin" size="12" />
                             </td>
                             <td class="nowrap">
                                 <button class="btn btn-default">

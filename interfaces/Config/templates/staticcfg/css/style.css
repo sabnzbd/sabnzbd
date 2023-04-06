@@ -891,11 +891,11 @@ input[type="checkbox"] {
 .Scheduling select,
 .Categories select,
 .RSS select {
-    min-width: 120px;
+    min-width: 100px;
 }
 
 .Categories select {
-    max-width: 150px;
+    max-width: 125px;
 }
 
 .Categories #content input {
