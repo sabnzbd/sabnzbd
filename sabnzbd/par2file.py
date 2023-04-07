@@ -202,6 +202,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                 par2info = filepar2info[fileid]
                 if not filecrc32.get(fileid) or not nr_files or not slice_size:
                     logging.debug("Missing essential information for %s", par2info)
+                    continue
 
                 # Handle also cases where slice_size is exact match for filesize
                 # We currently don't have an unittest for that!
@@ -230,7 +231,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                     duplicates16k.append(par2info.hash16k)
                     table[par2info.filename].has_duplicate = True
 
-    except:
+    except Exception as e:
         logging.info("Par2 parser crashed in file %s", fname)
         logging.debug("Traceback: ", exc_info=True)
         table = {}
