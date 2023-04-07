@@ -1067,11 +1067,7 @@ def cleanup_list(wdir: str, cat: str, skip_nzb: bool):
     """Remove all files whose extension matches the cleanup list,
     optionally ignoring the nzb extension
     """
-    # Get the list of extensions to be removed
-    if not (cleanup_exts := config.get_category(cat).cleanup()):
-        cleanup_exts = cfg.cleanup_list()
-
-    if cleanup_exts:
+    if cleanup_exts := config.get_category(cat).cleanup() or cfg.cleanup_list():
         try:
             with os.scandir(wdir) as files:
                 for entry in files:
