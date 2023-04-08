@@ -1,5 +1,10 @@
-Release Notes - SABnzbd 4.0.0 Beta 1
+Release Notes - SABnzbd 4.0.0 Beta 2
 =========================================================
+
+## Changes and bugfixes since 4.0.0 Beta 1
+- Bugfixes and minor improvements of the downloader changes.
+- Not all `.par2` files were removed after repair.
+- Ignore resource fork files created by macOS.
 
 ## Changes since 3.7.2
 - In this major update we replaced a core part of Python's SSL handling
@@ -22,7 +27,7 @@ Release Notes - SABnzbd 4.0.0 Beta 1
 - `Deobfuscate final filenames` is enabled for new installations.
 - Dropped support for Python 3.7.
 
-# Bugfixes since 3.7.2
+## Bugfixes since 3.7.2
 - Restore applying `History Retention` setting at startup.
 - Windows: Not all invalid characters were removed from filenames.
 
