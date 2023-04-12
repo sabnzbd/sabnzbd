@@ -4229,6 +4229,14 @@ msgid "Multi-part Label"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Show folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Season folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "In folders"
 msgstr "בתיקיות"
 
@@ -4300,9 +4308,9 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid ""
 "<p>Use Sorters to automatically organize your completed downloads. For "
-"example put all episodes from a series in an season specific folder. Or, put"
+"example, put all episodes from a series in a season-specific folder. Or, put"
 " movies in a folder named after the movie.</p><p>Sorters are tried in order "
-"of appearance, and can be reordered by dragging and dropping.<br/>The first "
+"of appearance and can be reordered by dragging and dropping.<br/>The first "
 "active sorter that matches both the affected category and job type is "
 "applied.</p><p>More options are available when Advanced Settings is "
 "checked.<br/>Detailed information can be found on the Wiki.</p>"
