@@ -174,15 +174,18 @@ Section "SABnzbd" SecDummy
   ; Make sure old versions are gone (reg-key already read in onInt)
   StrCmp $PREV_INST_DIR "" noPrevInstallRemove
     ${RemovePrev} "$PREV_INST_DIR"
+    Goto continueSetupAfterRemove
+
+  ;------------------------------------------------------------------
+  ; Add firewall rules for new installs
   noPrevInstallRemove:
+    liteFirewallW::AddRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
+    liteFirewallW::AddRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
+
+  continueSetupAfterRemove:
 
   ; add files / whatever that need to be installed here.
   File /r "dist\SABnzbd\*"
-
-  ;------------------------------------------------------------------
-  ; Add firewall rules
-  liteFirewallW::AddRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
-  liteFirewallW::AddRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
 
   ;------------------------------------------------------------------
   ; Add to registry
@@ -333,13 +336,16 @@ Section "un.$(MsgDelProgram)" Uninstall
   ${nsProcess::Unload}
   DetailPrint "Process Killed"
 
-
   ; add delete commands to delete whatever files/registry keys/etc you installed here.
   Delete "$INSTDIR\uninstall.exe"
   DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd"
   DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd"
 
   ${RemovePrev} "$INSTDIR"
+
+  ; Remove firewall entries
+  liteFirewallW::RemoveRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
+  liteFirewallW::RemoveRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
 
