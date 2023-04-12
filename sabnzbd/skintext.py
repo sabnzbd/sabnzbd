@@ -740,6 +740,8 @@ SKIN_TEXT = {
     "sort-File": TT("file"),
     "sortString": TT("Sort String"),
     "multiPartLabel": TT("Multi-part Label"),
+    "button-showFolder": TT("Show folder"),
+    "button-seasonFolder": TT("Season folder"),
     "button-inFolders": TT("In folders"),
     "button-noFolders": TT("No folders"),
     "button-FileLikeFolder": TT("Job Name as Filename"),
@@ -759,9 +761,9 @@ SKIN_TEXT = {
     "guessit-type-movie": TT("Movies"),
     "guessit-type-other": TT("Other / Unknown"),
     "explain-sorting": TT(
-        "<p>Use Sorters to automatically organize your completed downloads. For example put all episodes from a series "
-        "in an season specific folder. Or, put movies in a folder named after the movie.</p>"
-        "<p>Sorters are tried in order of appearance, and can be reordered by dragging and dropping.<br/>"
+        "<p>Use Sorters to automatically organize your completed downloads. For example, put all episodes from a series "
+        "in a season-specific folder. Or, put movies in a folder named after the movie.</p>"
+        "<p>Sorters are tried in order of appearance and can be reordered by dragging and dropping.<br/>"
         "The first active sorter that matches both the affected category and job type is applied.</p>"
         "<p>More options are available when Advanced Settings is checked.<br/>"
         "Detailed information can be found on the Wiki.</p>"

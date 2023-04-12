@@ -96,8 +96,13 @@ body {
 .example {
     background-color: #fefeee;
 }
+.presets strong {
+    display: inline-block;
+    width: 75px;
+}
 .presets {
     margin-bottom: -6px;
+    max-width: 60%;
 }
 .presets input {
     margin: 2px 0;

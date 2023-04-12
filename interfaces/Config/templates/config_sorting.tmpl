@@ -60,14 +60,18 @@
                             </button>
                         </div>
 
-                        <div id="presets" class="field-pair">
+                        <div class="field-pair">
                             <label class="config">$T('presetSort')</label>
-                            <div class="presets">
-                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%title (%y)/%title (%y).%ext',' CD%1');" value="$T('button-inFolders')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%title (%y).%ext',' CD%1');" value="$T('button-noFolders')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%sn season %s/episode %0e %r.%ext','');" value="$T('button-Series')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%0decade/%title (%y).%ext',' CD%1');" value="$T('decade')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%dn.%ext')" value="$T('button-FileLikeFolder')" />
+                            <div class="presets float-left">
+                                <strong>$T('button-Series'):</strong>
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%sn/%sn - S%0sE%0e - %en.%ext', '', '$T('show-dot-name')'+'.S01E01.$T('ep-dot-name').720p.DTS');" value="$T('button-showFolder')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%sn/Season %s/%sn - S%0sE%0e - %en.%ext', '', '$T('show-dot-name')'+'.S01E01.$T('ep-dot-name').720p.DTS');" value="$T('button-seasonFolder')" /><br/>
+                                <strong>$T('guessit-type-movie'):</strong>
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%title (%y)/%title (%y).%ext',' CD%1', '$T('movie-dot-name').2023.$T('movie-dot-name').1080p.DD');" value="$T('button-inFolders')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%title (%y).%ext',' CD%1', '$T('movie-dot-name').2023.$T('movie-dot-name').1080p.DD');" value="$T('button-noFolders')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%0decade/%title (%y).%ext',' CD%1', '$T('movie-dot-name').2023.$T('movie-dot-name').1080p.DD');" value="$T('decade')" /><br/>
+                                <strong>$T('cmenu-general'):</strong>
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%dn.%ext', '', '')" value="$T('button-FileLikeFolder')" />
                             </div>
                         </div>
                         <div class="field-pair advanced-settings">
@@ -337,9 +341,10 @@
     })();
 
     // Put preset values into form fields
-    function set_preset(sort_nr, sort_string, multipart_label) {
+    function set_preset(sort_nr, sort_string, multipart_label, sample_data) {
         \$('#field_sort_string_' + sort_nr).val(sort_string);
         \$('#multipart_label_' + sort_nr).val(multipart_label);
+        \$('#preview_name_' + sort_nr).val(sample_data);
         new_preview(sort_nr);
     }
 
@@ -352,7 +357,7 @@
                     type: "GET",
                     url: "../../api",
                     data: {
-                        mode:'eval_sort',
+                        mode: 'eval_sort',
                         job_name: \$('#preview_name_' + sort_nr).val(),
                         sort_string: preview_sort_string,
                         multipart_label: \$('#multipart_label_' + sort_nr).val(),
@@ -360,10 +365,10 @@
                         output: 'json'
                     },
                     success: function(data) {
-                        \$('#preview_result_' + sort_nr).removeClass("loading failure").html(data.result);
+                        \$('#preview_result_' + sort_nr).html(data.result);
                     },
                     error: function(data) {
-                        \$('#preview_result_' + sort_nr).removeClass("loading").addClass("failure").html('need more information to process');
+                        \$('#preview_result_' + sort_nr).html('$T('button-failed')');
                     }
                 });
             }, 500);
