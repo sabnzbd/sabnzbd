@@ -363,6 +363,7 @@ SKIN_TEXT = {
     "explain-complete_dir": TT(
         "Location to store finished, fully processed downloads.<br /><i>Can be overruled by user-defined categories.</i>"
     ),
+    "explain-complete_dir-sorting": TT("Use Sorting to automatically organize and rename your completed downloads."),
     "opt-complete_free": TT("Minimum Free Space for Completed Download Folder"),
     "explain-complete_free": TT("Will not work if a category folder is on a different disk."),
     "opt-fulldisk_autoresume": TT("Auto resume"),
@@ -758,8 +759,12 @@ SKIN_TEXT = {
     "guessit-type-movie": TT("Movies"),
     "guessit-type-other": TT("Other / Unknown"),
     "explain-sorting": TT(
-        "Configure a new sorter, or edit/remove/reorder existing sorters below.<br>"
-        "<br>Sorters are tried in order of appearance, and can be reordered by dragging and dropping. The first active sorter that meets both selection criteria (affected category and job type) is applied to a job, provided at least one file meets the minimum file size requirement."
+        "<p>Use Sorters to automatically organize your completed downloads. For example put all episodes from a series "
+        "in an season specific folder. Or, put movies in a folder named after the movie.</p>"
+        "<p>Sorters are tried in order of appearance, and can be reordered by dragging and dropping.<br/>"
+        "The first active sorter that matches both the affected category and job type is applied.</p>"
+        "<p>More options are available when Advanced Settings is checked.<br/>"
+        "Detailed information can be found on the Wiki.</p>"
     ),
     "add-sorter": TT("Add Sorter"),
     "remove-sorter": TT("Remove Sorter"),

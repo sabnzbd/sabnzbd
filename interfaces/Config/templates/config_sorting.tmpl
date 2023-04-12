@@ -15,6 +15,8 @@
     </div>
     <!--#for $cur, $slot in enumerate($slotinfo)#-->
     <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
+    <!--#set $selected_types = ["0"] if not len($selected_types) else $selected_types #-->
+
     <!--#if $cur == 1#-->
     <div class="sortables">
     <!--#end if#-->
@@ -34,10 +36,10 @@
                     <!--#if $cur == 0#-->
                     <h3>$T('add-sorter') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <!--#else#-->
-                    <h3>$slot.name  <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-                    <div class="sorter-switch-container" class="wide">
-                        <input type="checkbox" class="toggleSorterCheckbox sorter-switch float-left" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
-                        <label class="sorter-switch float-left" for="is_active">$T('enabled')</label>
+                    <h3>$slot.name <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <div class="sorter-switch-container wide">
+                        <input type="checkbox" class="toggleSorterCheckbox sorter-switch float-left" rel="$slot.name" name="is_active" id="is_active_$cur" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
+                        <label class="sorter-switch float-left" for="is_active_$cur">$T('enabled')</label>
                     </div>
                     <button class="btn btn-default showSorter" type="button">
                         <span class="glyphicon glyphicon-pencil"></span> $T('showDetails')
@@ -47,29 +49,30 @@
                 <div class="col1" id="sorter_$cur" <!--#if $cur != 0#-->style="display: none;"<!--#end if#-->>
                     <fieldset>
                         <div class="field-pair">
-                            <label class="config" for="displayname$cur">$T('name')</label>
-                            <input type="text" name="newname" value="$slot.name" required="required" />
+                            <label class="config" for="displayname_$cur">$T('name')</label>
+                            <input type="text" name="newname" value="$slot.name" id="displayname_$cur" required="required" />
                         </div>
                         <div class="field-pair">
-                            <label class="config" for="displayname$cur">$T('sortString')</label>
-                            <input type="text" name="sort_string" id="field_sort_string" value="$slot.sort_string" required="required" />
+                            <label class="config" for="field_sort_string_$cur">$T('sortString')</label>
+                            <input type="text" name="sort_string" id="field_sort_string_$cur" value="$slot.sort_string" required="required" />
+                            <button type="button" title="$T('sort-legenda')" class="btn btn-default patternKey" onclick="jQuery('#pattern_explainer_$cur').toggle()">
+                                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> $T('sort-legenda')
+                            </button>
                         </div>
-                        <!--#if $cur == 0#-->
-                        <!-- PRESETS -->
+
                         <div id="presets" class="field-pair">
                             <label class="config">$T('presetSort')</label>
                             <div class="presets">
-                                <input type="button" class="btn btn-default" onclick="set_preset('%title (%y)/%title (%y).%ext',' CD%1');" value="$T('button-inFolders')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset('%title (%y).%ext',' CD%1');" value="$T('button-noFolders')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset('%sn season %s/episode %0e %r.%ext','');" value="$T('button-Series')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset('%0decade/%title (%y).%ext',' CD%1');" value="$T('decade')" />
-                                <input type="button" class="btn btn-default" onclick="set_preset('%dn.%ext')" value="$T('button-FileLikeFolder')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur, '%title (%y)/%title (%y).%ext',' CD%1');" value="$T('button-inFolders')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%title (%y).%ext',' CD%1');" value="$T('button-noFolders')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%sn season %s/episode %0e %r.%ext','');" value="$T('button-Series')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%0decade/%title (%y).%ext',' CD%1');" value="$T('decade')" />
+                                <input type="button" class="btn btn-default" onclick="set_preset($cur,'%dn.%ext')" value="$T('button-FileLikeFolder')" />
                             </div>
                         </div>
-                        <!--#end if#-->
-                        <div class="field-pair">
-                            <label class="config" for="displayname$cur">$T('guessit-type')</label>
-                            <select name="sort_type" multiple="multiple" class="multiple_cats" <!--#if $cur == 0#-->id="field_sort_type"<!--#end if#-->>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="field_sort_type_$cur">$T('guessit-type')</label>
+                            <select name="sort_type" multiple="multiple" class="multiple_cats" size="5" id="field_sort_type_$cur">
                                 <option value="0" <!--#if "0" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-all')</option>
                                 <option value="1" <!--#if "1" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-tv')</option>
                                 <option value="2" <!--#if "2" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-date')</option>
@@ -78,32 +81,31 @@
                             </select>
                         </div>
                         <div class="field-pair">
-                            <label class="config" for="displayname$cur">$T('affectedCat')</label>
-                            <select name="sort_cats" multiple="multiple" class="multiple_cats" required="required">
+                            <label class="config" for="sort_cats_$cur">$T('affectedCat')</label>
+                            <select name="sort_cats" multiple="multiple" class="multiple_cats" id="sort_cats_$cur" size="$len($categories)" required="required">
                                 <!--#for $cat in $categories#-->
-                                <option value="$cat" <!--#if $cat.lower() in $slot.sort_cats then 'selected="selected"' else ""#-->>$Tspec($cat)</option>
+                                    <option value="$cat" <!--#if $cat.lower() in $slot.sort_cats then 'selected="selected"' else ""#-->>$Tspec($cat)</option>
                                 <!--#end for#-->
                             </select>
                         </div>
                         <div class="field-pair advanced-settings">
-                            <label class="config" for="displayname$cur">$T('sort-minimum-size')</label>
-                            <input type="text" name="min_size" value="$slot.min_size" size="10" required="required" />
+                            <label class="config" for="min_size_$cur">$T('sort-minimum-size')</label>
+                            <input type="text" name="min_size" value="$slot.min_size" id="min_size_$cur" size="10" required="required" />
                         </div>
                         <div class="field-pair advanced-settings">
-                            <label class="config" for="displayname$cur">$T('multiPartLabel')</label>
-                            <input type="text" name="multipart_label" id="multipart_label" value="$slot.multipart_label" size="8" />
+                            <label class="config" for="multipart_label_$cur">$T('multiPartLabel')</label>
+                            <input type="text" name="multipart_label" id="multipart_label_$cur" value="$slot.multipart_label" size="8" />
                         </div>
-                        <!--#if $cur == 0#-->
-                        <!-- PREVIEW -->
-                        <div id="preview" class="field-pair">
-                            <label class="config" for="preview_name">$T('sort-test-data')</label>
-                            <input type="text" id="preview_name" autocomplete="off" name="preview_name" placeholder="$T('orgJobname')" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
+
+                        <div id="preview$cur" class="field-pair">
+                            <label class="config" for="preview_name_$cur">$T('sort-test-data')</label>
+                            <input type="text" id="preview_name_$cur" autocomplete="off" name="preview_name" placeholder="$T('orgJobname')" /><button class="btn btn-default clearBtn" type="button"><span class="glyphicon glyphicon-remove"></span> $T('button-clear')</button>
                         </div>
                         <div class="preview field-pair">
                             <label class="config">$T('sortResult')</label>
-                            <span class="config desc path" id="preview_result"></span>
+                            <span class="config desc path" id="preview_result_$cur"></span>
                         </div>
-                        <!--#end if#-->
+
                         <!-- BUTTONS -->
                         <div class="field-pair no-field-pair-bg">
                             <button class="btn btn-default saveButton">
@@ -117,14 +119,12 @@
                             <button class="btn btn-default delSorter" type="button">
                                 <span class="glyphicon glyphicon-trash"></span> $T('remove-sorter')
                             </button>
-                            <!--#else#-->
-                            <button type="button" title="$T('sort-legenda')" class="btn btn-default patternKey" onclick="jQuery('#pattern_explainer').toggle()">
-                                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> $T('sort-legenda')
-                            </button>
                             <!--#end if#-->
                         </div>
+
                         <!-- PATTERN EXPLAINER -->
-                        <div class="Key explain-pattern" id="pattern_explainer">
+                        <div class="Key explain-pattern" id="pattern_explainer_$cur">
+                            <hr>
                             <div class="field-pair no-field-pair-bg">
                                 <label class="config">$T('sort-legenda')</label>
                                 <table class="pattern-table">
@@ -132,7 +132,7 @@
                                         <tr>
                                             <th class="align-right">$T('sort-meaning')</th>
                                             <th>$T('sort-pattern')</th>
-                                            <th>$T('sort-result')<div class="glyphicon glyphicon-remove float-right" onclick="jQuery('#pattern_explainer').hide();"></div></th>
+                                            <th>$T('sort-result')</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -262,28 +262,28 @@
                                             <td>$T('text')</td>
                                         </tr>
                                     </tbody>
-                                    <tbody>
+                                    <tbody class="advanced-settings">
                                         <tr>
                                             <th class="align-right"><b>$T('multiPartLabel')</b></th>
                                             <th>$T('sort-pattern')</th>
                                             <th>$T('sort-result')</th>
                                         </tr>
                                     </tbody>
-                                    <tbody>
+                                    <tbody class="advanced-settings">
                                         <tr>
                                             <td class="align-right"><b>$T('partNumber'):</b></td>
                                             <td>%1</td>
                                             <td>1</td>
                                         </tr>
                                     </tbody>
-                                    <tbody>
+                                    <tbody class="advanced-settings">
                                         <tr>
                                             <th class="align-right"><b>GuessIt</b></th>
                                             <th>$T('sort-pattern')</th>
                                             <th>$T('sort-result')</th>
                                         </tr>
                                     </tbody>
-                                    <tbody>
+                                    <tbody class="advanced-settings">
                                         <tr>
                                             <td class="align-right"><b>$T('sort-guessitMeaning'):</b></td>
                                             <td>%GI&lt;$T('sort-guessitProperty')&gt;</td>
@@ -337,33 +337,33 @@
     })();
 
     // Put preset values into form fields
-    function set_preset(val, val2) {
-        \$('#field_sort_string').val(val);
-        \$('#multipart_label').val(val2);
-        new_preview();
+    function set_preset(sort_nr, sort_string, multipart_label) {
+        \$('#field_sort_string_' + sort_nr).val(sort_string);
+        \$('#multipart_label_' + sort_nr).val(multipart_label);
+        new_preview(sort_nr);
     }
 
     // Handle preview
-    function new_preview() {
-        var \$preview_sort_string = \$('#field_sort_string').val();
-        if(\$preview_sort_string.length > 2) {
+    function new_preview(sort_nr) {
+        var preview_sort_string = \$('#field_sort_string_' + sort_nr).val();
+        if(preview_sort_string.length > 2) {
             typewatch(function () {
                 \$.ajax({
                     type: "GET",
                     url: "../../api",
                     data: {
                         mode:'eval_sort',
-                        job_name: \$('#preview_name').val(),
-                        sort_string: \$preview_sort_string,
-                        multipart_label: \$('#multipart_label').val(),
+                        job_name: \$('#preview_name_' + sort_nr).val(),
+                        sort_string: preview_sort_string,
+                        multipart_label: \$('#multipart_label_' + sort_nr).val(),
                         apikey: '$apikey',
                         output: 'json'
                     },
                     success: function(data) {
-                        \$('#preview_result').removeClass("loading failure").html(data.result);
+                        \$('#preview_result_' + sort_nr).removeClass("loading failure").html(data.result);
                     },
                     error: function(data) {
-                        \$('#preview_result').removeClass("loading").addClass("failure").html('need more information to process');
+                        \$('#preview_result_' + sort_nr).removeClass("loading").addClass("failure").html('need more information to process');
                     }
                 });
             }, 500);
@@ -455,9 +455,14 @@
             });
         });
 
+        <!--#for $cur, $slot in enumerate($slotinfo)#-->
         // Preview the result of the sort string against a sample jobname
-        new_preview();
-        \$('#field_sort_string, #field_sort_type, #multipart_label, #preview_name').bind("keyup focus", new_preview);
+        \$('#field_sort_string_$cur, #field_sort_type_$cur, #multipart_label_$cur, #preview_name_$cur').bind("keyup focus", function() {
+            new_preview($cur);
+        });
+        new_preview($cur);
+        <!--#end for#-->
+
         \$('.clearBtn').click(function(){
             \$(this).prev().val('').focus();
         });
