@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.0.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -2938,6 +2938,11 @@ msgstr ""
 "קטגוריות מוגדרות־משתמש.</i>"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Use Sorting to automatically organize and rename your completed downloads."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
 msgstr "שטח פנוי מזערי עבור תיקיית הורדות שלמות"
 
@@ -4294,11 +4299,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Configure a new sorter, or edit/remove/reorder existing sorters "
-"below.<br><br>Sorters are tried in order of appearance, and can be reordered"
-" by dragging and dropping. The first active sorter that meets both selection"
-" criteria (affected category and job type) is applied to a job, provided at "
-"least one file meets the minimum file size requirement."
+"<p>Use Sorters to automatically organize your completed downloads. For "
+"example put all episodes from a series in an season specific folder. Or, put"
+" movies in a folder named after the movie.</p><p>Sorters are tried in order "
+"of appearance, and can be reordered by dragging and dropping.<br/>The first "
+"active sorter that matches both the affected category and job type is "
+"applied.</p><p>More options are available when Advanced Settings is "
+"checked.<br/>Detailed information can be found on the Wiki.</p>"
 msgstr ""
 
 #: sabnzbd/skintext.py
