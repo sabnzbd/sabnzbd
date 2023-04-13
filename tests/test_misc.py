@@ -643,7 +643,7 @@ class TestMisc:
                 ("date", "Date Sorting", date_str, date_cats, date_enabled),
                 ("movie", "Movie Sorting", movie_str, movie_cats, movie_enabled),
             ):
-                if not old_str or not old_cats:
+                if not old_str or not old_cats or not old_enabled:
                     # Without these two essential variables, no new sorter config should be generated
                     assert old_name not in new_sorters.keys()
                     continue

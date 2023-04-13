@@ -1429,59 +1429,50 @@ def convert_sorter_settings():
     }
 
     With the old settings, sorting was tried in a fixed order (series first, movies last);
-    that order is retained by the conversion code."""
-    # Fetch old config
-    movie_rename_limit = cfg.movie_rename_limit()
-    episode_rename_limit = cfg.episode_rename_limit()
-    tv_sort_string = cfg.tv_sort_string()
-    tv_categories = cfg.tv_categories()
-    date_sort_string = cfg.date_sort_string()
-    date_categories = cfg.date_categories()
-    movie_sort_string = cfg.movie_sort_string()
-    movie_categories = cfg.movie_categories()
+    that order is retained by the conversion code.
+    We only convert enabled sorters."""
 
-    tv_sorter = {}
-    date_sorter = {}
-    movie_sorter = {}
+    # Keep track of order
     order = 0
 
-    if tv_sort_string and tv_categories:
+    if cfg.enable_tv_sorting() and cfg.tv_sort_string() and cfg.tv_categories():
         # Define a new sorter based on the old configuration
+        tv_sorter = {}
         tv_sorter["order"] = order
-        tv_sorter["min_size"] = episode_rename_limit
+        tv_sorter["min_size"] = cfg.episode_rename_limit()
         tv_sorter["multipart_label"] = ""  # Previously only available for movie sorting
-        tv_sorter["sort_string"] = tv_sort_string
-        tv_sorter["sort_cats"] = tv_categories
+        tv_sorter["sort_string"] = cfg.tv_sort_string()
+        tv_sorter["sort_cats"] = cfg.tv_categories()
         tv_sorter["sort_type"] = [sort_to_opts("tv")]
         tv_sorter["is_active"] = int(cfg.enable_tv_sorting())
 
         # Configure the new sorter
         logging.debug("Converted old series sorter config to '%s': %s", T("Series Sorting"), tv_sorter)
         config.ConfigSorter(T("Series Sorting"), tv_sorter)
-
-        # Bump the order
         order += 1
-    if date_sort_string and date_categories:
+
+    if cfg.enable_date_sorting() and cfg.date_sort_string() and cfg.date_categories():
+        date_sorter = {}
         date_sorter["order"] = order
-        date_sorter["min_size"] = episode_rename_limit
+        date_sorter["min_size"] = cfg.episode_rename_limit()
         date_sorter["multipart_label"] = ""  # Previously only available for movie sorting
-        date_sorter["sort_string"] = date_sort_string
-        date_sorter["sort_cats"] = date_categories
+        date_sorter["sort_string"] = cfg.date_sort_string()
+        date_sorter["sort_cats"] = cfg.date_categories()
         date_sorter["sort_type"] = [sort_to_opts("date")]
         date_sorter["is_active"] = int(cfg.enable_date_sorting())
 
         # Configure the new sorter
         logging.debug("Converted old date sorter config to '%s': %s", T("Date Sorting"), date_sorter)
         config.ConfigSorter(T("Date Sorting"), date_sorter)
-
-        # Bump the order
         order += 1
-    if movie_sort_string and movie_categories:
+
+    if cfg.enable_movie_sorting() and cfg.movie_sort_string() and cfg.movie_categories():
+        movie_sorter = {}
         movie_sorter["order"] = order
-        movie_sorter["min_size"] = movie_rename_limit
+        movie_sorter["min_size"] = cfg.movie_rename_limit()
         movie_sorter["multipart_label"] = cfg.movie_sort_extra()
-        movie_sorter["sort_string"] = movie_sort_string
-        movie_sorter["sort_cats"] = movie_categories
+        movie_sorter["sort_string"] = cfg.movie_sort_string()
+        movie_sorter["sort_cats"] = cfg.movie_categories()
         movie_sorter["sort_type"] = [sort_to_opts("movie")]
         movie_sorter["is_active"] = int(cfg.enable_movie_sorting())
 
