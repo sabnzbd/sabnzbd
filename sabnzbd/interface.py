@@ -1846,7 +1846,6 @@ class ConfigSorting:
             "multipart_label": "",
         }
         sorters.insert(0, empty)
-        conf["have_sorters"] = len(sorters) >= 1
         conf["slotinfo"] = sorters
         conf["categories"] = list_cats(False)
         conf["guessit_properties"] = tuple(

@@ -3,7 +3,7 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="padTable section explain-sorting">
-    <p>$T('explain-sorting')</p>
+    $T('explain-sorting')
 </div>
 <div class="colmask">
     <div class="padding alt section">
@@ -17,9 +17,7 @@
     <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
     <!--#set $selected_types = ["0"] if not len($selected_types) else $selected_types #-->
 
-    <!--#if $cur == 1#-->
     <div class="sortables">
-    <!--#end if#-->
         <!-- SORTER $cur -->
         <div class="section <!--#if $cur != 0#-->sorter<!--#end if#-->" id="sorter_$cur" <!--#if $cur == 0#-->style="display: none;"<!--#end if#-->>
             <form action="save_sorter" method="get" autocomplete="off" <!--#if $slot.name != ''#-->class="sorting-row"<!--#end if#-->>
@@ -27,7 +25,7 @@
                 <input type="hidden" name="order" value="$slot.order" />
                 <input type="hidden" value="$slot.name" name="name" />
                 <!--#if $cur == 0#-->
-                <input type="hidden" rel="$slot.name" name="is_active" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
+                <input type="hidden" rel="$slot.name" name="is_active" value="$slot.is_active" />
                 <!--#end if#-->
                 <div class="float-right">
                     <span class="glyphicon glyphicon-option-vertical"></span>
@@ -46,7 +44,7 @@
                     </button>
                     <!--#end if#-->
                 </div>
-                <div class="col1" id="sorter_$cur" <!--#if $cur != 0#-->style="display: none;"<!--#end if#-->>
+                <div class="col1" <!--#if $cur != 0#-->style="display: none;"<!--#end if#-->>
                     <fieldset>
                         <div class="field-pair">
                             <label class="config" for="displayname_$cur">$T('name')</label>
@@ -320,14 +318,12 @@
                                 </table>
                             </div>
                         </div>
-                    <fieldset>
+                    </fieldset>
                 </div>
             </form>
         </div>
-        <!--#end for#-->
-    <!--#if $have_sorters#-->
     </div>
-    <!--#end if#-->
+    <!--#end for#-->
 </div>
 <script type="text/javascript" src="${root}staticcfg/js/jquery-ui.min.js"></script>
 <script type="text/javascript">
@@ -402,6 +398,7 @@
         // Make the configured sorters sortable
         var hExtra = 8;
         \$(".sortables").sortable({
+            items: ".sorter",
             placeholder: "sorter-placeholder",
             axis: "y",
             revert: 125,
