@@ -5,7 +5,7 @@
 <!--#import json#-->
 <!--#import datetime#-->
 
-<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+<script type="text/javascript">
     // Define variable needed for the server-statistics
     var serverBandwithData = {}
     var serverArticleTries = {}
@@ -60,12 +60,12 @@
                     </div>
                     <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
                     <div class="field-pair">
-                        <label class="config" for="${pid}_00">$T('srv-username')</label>
-                        <input type="text" name="${pid}_00" id="${pid}_00" data-hide="username" />
+                        <label class="config" for="${pid}_000">$T('srv-username')</label>
+                        <input type="text" name="${pid}_000" id="${pid}_000" data-hide="username" />
                     </div>
                     <div class="field-pair">
-                        <label class="config" for="${pid}_01">$T('srv-password')</label>
-                        <input type="text" name="${pid}_01" id="${pid}_01" data-hide="password" />
+                        <label class="config" for="${pid}_001">$T('srv-password')</label>
+                        <input type="text" name="${pid}_001" id="${pid}_001" data-hide="password" />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="connections">$T('srv-connections')</label>
@@ -147,7 +147,7 @@
             <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="output" value="json" />
             <input type="hidden" name="server" value="$server['name']" />
-            <input type="hidden" id="ajax" name="ajax" value=1 />
+            <input type="hidden" name="ajax" value=1 />
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
@@ -225,8 +225,8 @@
                             <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
                         </div>
                         <div class="field-pair advanced-settings">
-                            <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
-                            <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$server['ssl_ciphers']" />
+                            <label class="config" for="ssl_ciphers$cur">$T('opt-ssl_ciphers')</label>
+                            <input type="text" name="ssl_ciphers" id="ssl_ciphers$cur" value="$server['ssl_ciphers']" />
                             <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
                             <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
                         </div>
