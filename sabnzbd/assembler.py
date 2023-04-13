@@ -187,14 +187,22 @@ class Assembler(Thread):
                     # Could be empty in case nzo was deleted
                     if data:
                         # Seek ahead if needed
-                        if article.data_begin > file_position:
-                            fout.seek(article.data_begin, 0)
-                        file_position = article.data_begin + article.data_size
+                        if article.data_begin != file_position:
+                            fout.seek(article.data_begin)
+                        file_position = article.data_begin + len(data)
                         fout.write(data)
                         nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
+                else:
+                    # If the article was not decoded but the file
+                    # is done, it is just a missing piece, so keep writing
+                    if file_done:
+                        continue
+                    else:
+                        # We reach an article that was not decoded
+                        break
 
         # Final steps
         if file_done:
