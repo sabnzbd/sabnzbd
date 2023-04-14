@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2023
 # Safihre <safihre@sabnzbd.org>, 2023
+# Fred L <88com88@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.0.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2023\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3028,6 +3028,8 @@ msgstr ""
 msgid ""
 "Use Sorting to automatically organize and rename your completed downloads."
 msgstr ""
+"Utilisez le tri pour organiser et renommer automatiquement vos "
+"téléchargements terminés."
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
@@ -4374,11 +4376,11 @@ msgstr "Étiquette multi-bloc"
 
 #: sabnzbd/skintext.py
 msgid "Show folder"
-msgstr ""
+msgstr "Afficher le dossier"
 
 #: sabnzbd/skintext.py
 msgid "Season folder"
-msgstr ""
+msgstr "Dossier de la saison"
 
 #: sabnzbd/skintext.py
 msgid "In folders"
@@ -4459,6 +4461,15 @@ msgid ""
 "applied.</p><p>More options are available when Advanced Settings is "
 "checked.<br/>Detailed information can be found on the Wiki.</p>"
 msgstr ""
+"<p>Utilisez les trieurs pour organiser automatiquement vos téléchargements "
+"terminés. Par exemple, placez tous les épisodes d'une série dans un dossier "
+"spécifique à la saison. Ou encore, placez les films dans un dossier portant "
+"le nom du film.</p><p>Les trieurs sont essayés par ordre d'apparition et "
+"peuvent être réorganisés par glisser-déposer.<br/>Le premier trieur actif "
+"qui correspond à la fois à la catégorie et au type de tâche concernée est "
+"appliqué.</p><p>D'autres options sont disponibles lorsque l'option "
+"Paramètres avancés est cochée.<br/>Des informations détaillées sont "
+"disponibles sur le Wiki.</p>"
 
 #: sabnzbd/skintext.py
 msgid "Add Sorter"
