@@ -63,19 +63,29 @@ RE_PARAMFINDER = re.compile(r"""(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)""")
 class Option:
     """Basic option class, basic fields"""
 
-    def __init__(self, section: str, keyword: str, default_val: Any = None, add: bool = True, protect: bool = False):
+    def __init__(
+        self,
+        section: str,
+        keyword: str,
+        default_val: Any = None,
+        add: bool = True,
+        public: bool = True,
+        protect: bool = False,
+    ):
         """Basic option
         `section`     : single section for this option
         `keyword`     : keyword in the section
         `default_val` : value returned when no value has been set
         `callback`    : procedure to call when value is successfully changed
-        `protect`     : Do not allow setting via the API (specifically set_dict)
+        `public`      : if this value should be shown in API calls
+        `protect`     : do not allow setting via the API (specifically set_dict)
         """
         self.__section = section
         self.__keyword: str = keyword
         self.__default_val: Any = default_val
         self.__value: Any = None
         self.__callback: Optional[Callable] = None
+        self.__public: bool = public
         self.__protect = protect
 
         # Add myself to the config dictionary
@@ -92,8 +102,11 @@ class Option:
     def get_string(self) -> str:
         return str(self.get())
 
-    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
-        """Return value a dictionary"""
+    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+        """Return value as a dictionary.
+        Will not show non-public options if needed for the API"""
+        if not self.__public and for_public_api:
+            return {}
         return {self.__keyword: self.get()}
 
     def set_dict(self, values: Dict[str, Any]):
@@ -143,13 +156,14 @@ class OptionNumber(Option):
         maxval: Optional[float] = None,
         validation: Optional[Callable] = None,
         add: bool = True,
+        public: bool = True,
         protect: bool = False,
     ):
         self.__minval: Optional[float] = minval
         self.__maxval: Optional[float] = maxval
         self.__validation: Optional[Callable] = validation
         self.__int: bool = isinstance(default_val, int)
-        super().__init__(section, keyword, default_val, add=add, protect=protect)
+        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
     def set(self, value: Any):
         """set new value, limited by range"""
@@ -179,8 +193,16 @@ class OptionNumber(Option):
 class OptionBool(Option):
     """Boolean option class, always returns 0 or 1."""
 
-    def __init__(self, section: str, keyword: str, default_val: bool = False, add: bool = True, protect: bool = False):
-        super().__init__(section, keyword, int(default_val), add=add, protect=protect)
+    def __init__(
+        self,
+        section: str,
+        keyword: str,
+        default_val: bool = False,
+        add: bool = True,
+        public: bool = True,
+        protect: bool = False,
+    ):
+        super().__init__(section, keyword, int(default_val), add=add, public=public, protect=protect)
 
     def set(self, value: Any):
         # Store the value as integer, easier to parse when reading the config.
@@ -204,13 +226,15 @@ class OptionDir(Option):
         validation: Optional[Callable] = None,
         writable: bool = True,
         add: bool = True,
+        public: bool = True,
+        protect: bool = False,
     ):
         self.__validation: Optional[Callable] = validation
         self.__root: str = ""  # Base directory for relative paths
         self.__apply_permissions: bool = apply_permissions
         self.__create: bool = create
         self.__writable: bool = writable
-        super().__init__(section, keyword, default_val, add=add)
+        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
     def get(self) -> str:
         """Return value, corrected for platform"""
@@ -287,12 +311,13 @@ class OptionList(Option):
         default_val: Union[str, List, None] = None,
         validation: Optional[Callable] = None,
         add: bool = True,
+        public: bool = True,
         protect: bool = False,
     ):
         self.__validation: Optional[Callable] = validation
         if default_val is None:
             default_val = []
-        super().__init__(section, keyword, default_val, add=add, protect=protect)
+        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
     def set(self, value: Union[str, List]) -> Optional[str]:
         """Set the list given a comma-separated string or a list"""
@@ -333,11 +358,12 @@ class OptionStr(Option):
         validation: Optional[Callable] = None,
         add: bool = True,
         strip: bool = True,
+        public: bool = True,
         protect: bool = False,
     ):
         self.__validation: Optional[Callable] = validation
         self.__strip: bool = strip
-        super().__init__(section, keyword, default_val, add=add, protect=protect)
+        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
     def get_float(self) -> float:
         """Return value converted to a float, allowing KMGT notation"""
@@ -381,9 +407,9 @@ class OptionPassword(Option):
             return "*" * 10
         return ""
 
-    def get_dict(self, safe: bool = False) -> Dict[str, str]:
+    def get_dict(self, for_public_api: bool = False) -> Dict[str, str]:
         """Return value a dictionary"""
-        if safe:
+        if for_public_api:
             return {self.keyword: self.get_stars()}
         else:
             return {self.keyword: self.get()}
@@ -468,7 +494,7 @@ class ConfigServer:
         if not self.displayname():
             self.displayname.set(self.__name)
 
-    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -477,7 +503,7 @@ class ConfigServer:
         output_dict["port"] = self.port()
         output_dict["timeout"] = self.timeout()
         output_dict["username"] = self.username()
-        if safe:
+        if for_public_api:
             output_dict["password"] = self.password.get_stars()
         else:
             output_dict["password"] = self.password()
@@ -532,7 +558,7 @@ class ConfigCat:
             except KeyError:
                 continue
 
-    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -576,7 +602,7 @@ class ConfigSorter:
             except KeyError:
                 continue
 
-    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -637,7 +663,7 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def get_dict(self, safe: bool = False) -> Dict[str, str]:
+    def get_dict(self, for_public_api: bool = False) -> Dict[str, str]:
         """Return filter list as a dictionary with keys 'filter[0-9]+'"""
         output_dict = {}
         for n, rss_filter in enumerate(self.get()):
@@ -689,7 +715,7 @@ class ConfigRSS:
                 continue
         self.filters.set_dict(values)
 
-    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -793,7 +819,7 @@ def get_dconfig(section, keyword, nested=False):
             item = CFG_DATABASE[section][keyword]
         except KeyError:
             return False, {}
-        data = item.get_dict(safe=True)
+        data = item.get_dict(for_public_api=True)
         if not nested:
             if section in ("sorters", "servers", "categories", "rss"):
                 data = {section: [data]}

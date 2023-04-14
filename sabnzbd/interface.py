@@ -1081,7 +1081,7 @@ class ConfigServer:
             % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
         )
         for svr in server_names:
-            new.append(servers[svr].get_dict(safe=True))
+            new.append(servers[svr].get_dict(for_public_api=True))
             t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
             if t:
                 new[-1]["amounts"] = (

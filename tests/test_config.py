@@ -40,6 +40,43 @@ from sabnzbd import filesystem
 DEF_CHAIN_FILE = "server.chain"
 
 
+class TestOptions:
+    test_section = "test_section"
+    test_keyword = "test_keyword"
+
+    def test_base_option(self):
+        test_option = config.Option(self.test_section, self.test_keyword)
+        assert test_option.section == self.test_section
+        assert test_option.keyword == self.test_keyword
+        assert test_option.section in config.CFG_DATABASE
+        assert test_option.keyword in config.CFG_DATABASE[test_option.section]
+        assert config.CFG_DATABASE[test_option.section][test_option.keyword] == test_option
+        # Reset database
+        config.CFG_DATABASE = {}
+
+    @pytest.mark.xfail(reason="These tests should be added")
+    def test_all(self):
+        # Need to add tests for all the relevant options
+        raise NotImplemented
+
+    def test_non_public(self):
+        test_option = config.Option(self.test_section, self.test_keyword, public=True)
+        assert test_option.get_dict() == {self.test_keyword: None}
+        assert test_option.get_dict(for_public_api=False) == {self.test_keyword: None}
+
+        test_option = config.Option(self.test_section, self.test_keyword, public=False)
+        assert test_option.get_dict() == {self.test_keyword: None}
+        assert test_option.get_dict(for_public_api=True) == {}
+
+        # Password is special when using for_public_api
+        test_option = config.OptionPassword(self.test_section, self.test_keyword, default_val="test_password")
+        assert test_option.get_dict() == {self.test_keyword: "test_password"}
+        assert test_option.get_dict(for_public_api=True) == {self.test_keyword: "**********"}
+
+        # Reset database
+        config.CFG_DATABASE = {}
+
+
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestConfig:
     @staticmethod

@@ -259,10 +259,10 @@ configlock = OptionBool("misc", "config_lock", False)
 ##############################################################################
 # One time trackers
 ##############################################################################
-fixed_ports = OptionBool("misc", "fixed_ports", False)
+fixed_ports = OptionBool("misc", "fixed_ports", False, public=False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
-direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)
-sorters_converted = OptionBool("misc", "sorters_converted", False)
+direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False, public=False)
+sorters_converted = OptionBool("misc", "sorters_converted", False, public=False)
 
 
 ##############################################################################
@@ -362,20 +362,20 @@ quota_resume = OptionBool("misc", "quota_resume", False)
 quota_period = OptionStr("misc", "quota_period", "m")
 
 ##############################################################################
-# Config - Sorting
+# Config - Sorting (OLD SORTER)
 ##############################################################################
-enable_tv_sorting = OptionBool("misc", "enable_tv_sorting", False)
-tv_sort_string = OptionStr("misc", "tv_sort_string")
-tv_categories = OptionList("misc", "tv_categories", ["tv"])
+enable_tv_sorting = OptionBool("misc", "enable_tv_sorting", False, public=False)
+tv_sort_string = OptionStr("misc", "tv_sort_string", public=False)
+tv_categories = OptionList("misc", "tv_categories", ["tv"], public=False)
 
-enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False)
-movie_sort_string = OptionStr("misc", "movie_sort_string")
-movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False)
-movie_categories = OptionList("misc", "movie_categories", ["movies"])
+enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False, public=False)
+movie_sort_string = OptionStr("misc", "movie_sort_string", public=False)
+movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False, public=False)
+movie_categories = OptionList("misc", "movie_categories", ["movies"], public=False)
 
-enable_date_sorting = OptionBool("misc", "enable_date_sorting", False)
-date_sort_string = OptionStr("misc", "date_sort_string")
-date_categories = OptionList("misc", "date_categories", ["tv"])
+enable_date_sorting = OptionBool("misc", "enable_date_sorting", False, public=False)
+date_sort_string = OptionStr("misc", "date_sort_string", public=False)
+date_categories = OptionList("misc", "date_categories", ["tv"], public=False)
 
 ##############################################################################
 # Config - Scheduling and RSS
