@@ -157,7 +157,18 @@ class TryList:
 ##############################################################################
 # Article
 ##############################################################################
-ArticleSaver = ("article", "art_id", "bytes", "lowest_partnum", "decoded", "on_disk", "nzf", "crc32")
+ArticleSaver = (
+    "article",
+    "art_id",
+    "bytes",
+    "lowest_partnum",
+    "decoded",
+    "data_begin",
+    "data_size",
+    "on_disk",
+    "nzf",
+    "crc32",
+)
 
 
 class Article(TryList):
@@ -176,6 +187,8 @@ class Article(TryList):
         self.fetcher_priority: int = 0
         self.tries: int = 0  # Try count
         self.decoded: bool = False
+        self.data_begin: Optional[int] = None
+        self.data_size: Optional[int] = None
         self.on_disk: bool = False
         self.crc32: Optional[int] = None
         self.nzf: NzbFile = nzf
