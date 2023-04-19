@@ -792,8 +792,7 @@ class Downloader(Thread):
         except ssl.SSLWantReadError:
             return
         except:
-            with DOWNLOADER_LOCK:
-                self.__reset_nw(nw, "server closed connection", wait=False)
+            self.__reset_nw(nw, "server closed connection", wait=False)
             return
 
         article = nw.article
@@ -883,7 +882,7 @@ class Downloader(Thread):
                 server.idle_threads.append(nw)
             self.remove_socket(nw)
 
-    @NzbQueueLocker
+    @synchronized(DOWNLOADER_LOCK)
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
         server = nw.server
         try:
@@ -965,6 +964,7 @@ class Downloader(Thread):
             self.__reset_nw(nw, retry_article=False)
         return True
 
+    @synchronized(DOWNLOADER_LOCK)
     def __reset_nw(
         self,
         nw: NewsWrapper,
