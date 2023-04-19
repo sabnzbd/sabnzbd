@@ -772,7 +772,7 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Series Sorting"
 msgstr "Sarjojen lajittelu"
 
@@ -780,7 +780,7 @@ msgstr "Sarjojen lajittelu"
 msgid "Date Sorting"
 msgstr "Päivämäärän lajittelu"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Movie Sorting"
 msgstr ""
 
@@ -3730,6 +3730,10 @@ msgstr "Lue syöte"
 msgid "Force Download"
 msgstr "Pakota lataus"
 
+#: sabnzbd/skintext.py
+msgid "Apply filters"
+msgstr ""
+
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
@@ -4107,10 +4111,6 @@ msgid "Clear"
 msgstr "Tyhjennä"
 
 #: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "Esiasetukset"
 
@@ -4320,6 +4320,22 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Quick start"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all episodes in the \"tv\" category to a show-specific "
+"folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all movies in the \"movies\" category to a movie-specific "
+"folder"
 msgstr ""
 
 #: sabnzbd/skintext.py

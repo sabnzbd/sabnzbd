@@ -807,7 +807,7 @@ msgstr "[%s] Het commando in build_command is ongedefinieerd"
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Python-script '%s' heeft geen uitvoerpermissie (+x)"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Series Sorting"
 msgstr "Serie sorteren"
 
@@ -815,7 +815,7 @@ msgstr "Serie sorteren"
 msgid "Date Sorting"
 msgstr "Datum sorteren"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Movie Sorting"
 msgstr "Film sorteren"
 
@@ -3831,6 +3831,10 @@ msgstr "Uitlezen"
 msgid "Force Download"
 msgstr "Forceer download"
 
+#: sabnzbd/skintext.py
+msgid "Apply filters"
+msgstr "Filters toepassen"
+
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
@@ -4214,10 +4218,6 @@ msgid "Clear"
 msgstr "Wissen"
 
 #: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "Filters toepassen"
-
-#: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "Standaardinstellingen"
 
@@ -4427,6 +4427,22 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Quick start"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all episodes in the \"tv\" category to a show-specific "
+"folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all movies in the \"movies\" category to a movie-specific "
+"folder"
 msgstr ""
 
 #: sabnzbd/skintext.py

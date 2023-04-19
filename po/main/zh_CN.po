@@ -759,7 +759,7 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Series Sorting"
 msgstr "TV 排序"
 
@@ -767,7 +767,7 @@ msgstr "TV 排序"
 msgid "Date Sorting"
 msgstr "日期排序"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Movie Sorting"
 msgstr "电影排序"
 
@@ -3645,6 +3645,10 @@ msgstr "读取 Feed"
 msgid "Force Download"
 msgstr "强制下载"
 
+#: sabnzbd/skintext.py
+msgid "Apply filters"
+msgstr "应用过滤器"
+
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
@@ -4018,10 +4022,6 @@ msgid "Clear"
 msgstr "清除"
 
 #: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "应用过滤器"
-
-#: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "预设"
 
@@ -4231,6 +4231,22 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Quick start"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all episodes in the \"tv\" category to a show-specific "
+"folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all movies in the \"movies\" category to a movie-specific "
+"folder"
 msgstr ""
 
 #: sabnzbd/skintext.py

@@ -817,7 +817,7 @@ msgstr "[%s] Der Befehl in build_command ist nicht definiert."
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Dem Pythonskript \"%s\" fehlen die Ausführungsrechte (+x)"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Series Sorting"
 msgstr "Sortieren von TV-Serien"
 
@@ -825,7 +825,7 @@ msgstr "Sortieren von TV-Serien"
 msgid "Date Sorting"
 msgstr "Sortieren nach Datum"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Movie Sorting"
 msgstr "Film Sortierung"
 
@@ -3878,6 +3878,10 @@ msgstr "Feed lesen"
 msgid "Force Download"
 msgstr "Download erzwingen"
 
+#: sabnzbd/skintext.py
+msgid "Apply filters"
+msgstr "Filter übernehmen"
+
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
@@ -4262,10 +4266,6 @@ msgid "Clear"
 msgstr "Löschen"
 
 #: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "Filter übernehmen"
-
-#: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "Voreinstellungen"
 
@@ -4475,6 +4475,22 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Quick start"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all episodes in the \"tv\" category to a show-specific "
+"folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all movies in the \"movies\" category to a movie-specific "
+"folder"
 msgstr ""
 
 #: sabnzbd/skintext.py

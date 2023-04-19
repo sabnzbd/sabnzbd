@@ -790,7 +790,7 @@ msgstr "[%s] Comanda din build_command este nedefinită."
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Scriptul Python „%s” nu are permisiuni de executare (+x)"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Series Sorting"
 msgstr "Sortare Seriale"
 
@@ -798,7 +798,7 @@ msgstr "Sortare Seriale"
 msgid "Date Sorting"
 msgstr "Sortare Dată"
 
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Movie Sorting"
 msgstr ""
 
@@ -3747,6 +3747,10 @@ msgstr "Citeşte Flux"
 msgid "Force Download"
 msgstr "Descărcare Forţată"
 
+#: sabnzbd/skintext.py
+msgid "Apply filters"
+msgstr ""
+
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
@@ -4119,10 +4123,6 @@ msgid "Clear"
 msgstr "Şterge"
 
 #: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Presets"
 msgstr "Presetări"
 
@@ -4332,6 +4332,22 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Quick start"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all episodes in the \"tv\" category to a show-specific "
+"folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all movies in the \"movies\" category to a movie-specific "
+"folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
