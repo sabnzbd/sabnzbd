@@ -374,6 +374,9 @@ tr.separator {
 .Sorting form:not(.sorting-row) .glyphicon-option-vertical {
     visibility: hidden;
 }
+.Sorting .sorting-quick-setup {
+    padding: 1.5em 2em 3em
+}
 
 .RSS .rss-section input[type="text"] {
     max-width: 180px;

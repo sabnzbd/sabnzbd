@@ -614,6 +614,7 @@ SKIN_TEXT = {
     "addMultipleFeeds": TT("Seperate multiple URLs by a comma"),  #: Config->RSS, placeholder (cannot be too long)
     "button-preFeed": TT("Read Feed"),  #: Config->RSS button
     "button-forceFeed": TT("Force Download"),  #: Config->RSS button
+    "button-evalFeed": TT("Apply filters"),
     "rss-edit": TT("Edit"),  #: Config->RSS edit button
     "rss-nextscan": TT("Next scan at"),  #: Config->RSS when will be the next RSS scan
     "rss-order": TT("Order"),  #: Config->RSS table column header
@@ -710,7 +711,8 @@ SKIN_TEXT = {
     # Config->Sorting
     "sort-legenda": TT("Pattern Key"),
     "button-clear": TT("Clear"),
-    "button-evalFeed": TT("Apply filters"),
+    "movieSort": TT("Movie Sorting"),
+    "seriesSort": TT("Series Sorting"),
     "presetSort": TT("Presets"),
     "affectedCat": TT("Affected Categories"),
     "sort-meaning": TT("Meaning"),
@@ -771,6 +773,13 @@ SKIN_TEXT = {
     "add-sorter": TT("Add Sorter"),
     "remove-sorter": TT("Remove Sorter"),
     "sort-test-data": TT("Test Data"),
+    "sort-quick-add": TT("Quick start"),
+    "sort-quick-add-series": TT(
+        'Move and rename all episodes in the "tv" category to a show-specific folder'
+    ),  #: Do not translate "tv"!
+    "sort-quick-add-movies": TT(
+        'Move and rename all movies in the "movies" category to a movie-specific folder'
+    ),  #: Do not translate "movies"!
     # Config->Special
     "explain-special": TT(
         "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>"

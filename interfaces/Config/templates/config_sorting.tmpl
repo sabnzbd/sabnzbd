@@ -3,6 +3,7 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="padTable section explain-sorting">
+    <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
     $T('explain-sorting')
 </div>
 <div class="colmask">
@@ -20,7 +21,7 @@
     <div class="sortables">
         <!-- SORTER $cur -->
         <div class="section <!--#if $cur != 0#-->sorter<!--#end if#-->" id="sorter_$cur" <!--#if $cur == 0#-->style="display: none;"<!--#end if#-->>
-            <form action="save_sorter" method="get" autocomplete="off" <!--#if $slot.name != ''#-->class="sorting-row"<!--#end if#-->>
+            <form action="save_sorter" method="post" autocomplete="off" <!--#if $cur != 0#-->class="sorting-row"<!--#end if#-->>
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="order" value="$slot.order" />
                 <input type="hidden" value="$slot.name" name="name" />
@@ -44,6 +45,24 @@
                     </button>
                     <!--#end if#-->
                 </div>
+                <!--#if $cur != 0#-->
+                <div class="col1">
+                    <fieldset>
+                        <div class="field-pair">
+                            <label class="config" for="field_sort_string_display_$cur">$T('sortString')</label>
+                            <input type="text" name="sort_string_display" id="field_sort_string_display_$cur" value="$slot.sort_string" disabled />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="sort_cats_display_$cur">$T('affectedCat')</label>
+                            <select name="sort_cats_display" multiple="multiple" class="multiple_cats" id="sort_cats_display_$cur" size="$len($categories)" disabled>
+                                <!--#for $cat in $categories#-->
+                                    <option value="$cat" <!--#if $cat.lower() in $slot.sort_cats then 'selected="selected"' else ""#-->>$Tspec($cat)</option>
+                                <!--#end for#-->
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <!--#end if#-->
                 <div class="col1" <!--#if $cur != 0#-->style="display: none;"<!--#end if#-->>
                     <fieldset>
                         <div class="field-pair">
@@ -53,7 +72,7 @@
                         <div class="field-pair">
                             <label class="config" for="field_sort_string_$cur">$T('sortString')</label>
                             <input type="text" name="sort_string" id="field_sort_string_$cur" value="$slot.sort_string" required="required" />
-                            <button type="button" title="$T('sort-legenda')" class="btn btn-default patternKey" onclick="jQuery('#pattern_explainer_$cur').toggle()">
+                            <button type="button" title="$T('sort-legenda')" class="btn btn-default patternKey" onclick="jQuery('#pattern_explainer_$cur').toggle(); window.scrollBy(0, 500);">
                                 <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> $T('sort-legenda')
                             </button>
                         </div>
@@ -324,6 +343,50 @@
         </div>
     </div>
     <!--#end for#-->
+    <!--#if len($slotinfo) == 1 and ("tv" in $categories or "movies" in $categories)#-->
+    <div class="section align-center alt sorting-quick-setup">
+        <h3>$T('sort-quick-add'):</h3>
+        <!--#if "tv" in $categories#-->
+        <form action="save_sorter" method="post" autocomplete="off">
+            <input type="hidden" name="apikey" value="$apikey" />
+            <input type="hidden" name="order" value="0" />
+            <input type="hidden" name="is_active" value="1" />
+            <input type="hidden" name="name" value="">
+            <input type="hidden" name="newname" value="$T('seriesSort')">
+            <input type="hidden" name="sort_string" value="%sn/%sn - S%0sE%0e - %en.%ext">
+            <input type="hidden" name="sort_cats" value="tv">
+            <input type="hidden" name="sort_type" value="1">
+
+            <p>
+                <button class="btn btn-default saveButton">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    $T('sort-quick-add-series')
+                </button>
+            </p>
+        </form>
+        <!--#end if#-->
+        <!--#if "movies" in $categories#-->
+        <form action="save_sorter" method="post" autocomplete="off">
+            <input type="hidden" name="apikey" value="$apikey" />
+            <input type="hidden" name="order" value="0" />
+            <input type="hidden" name="is_active" value="1" />
+            <input type="hidden" name="name" value="">
+            <input type="hidden" name="newname" value="$T('movieSort')">
+            <input type="hidden" name="sort_string" value="%title (%y)/%title (%y).%ext">
+            <input type="hidden" name="sort_cats" value="movies">
+            <input type="hidden" name="sort_type" value="3">
+            <input type="hidden" name="multipart_label" value="CD%1">
+
+            <p>
+                <button class="btn btn-default saveButton">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    $T('sort-quick-add-movies')
+                </button>
+            </p>
+        </form>
+        <!--#end if#-->
+    </div>
+    <!--#end if#-->
 </div>
 <script type="text/javascript" src="${root}staticcfg/js/jquery-ui.min.js"></script>
 <script type="text/javascript">

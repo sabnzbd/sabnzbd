@@ -3,13 +3,14 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 <div class="colmask">
     <div class="section">
-        <div class="padTable"> <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+        <div class="padTable">
+            <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-catTags2')<br/>$T('explain-catTags')</p>
             <hr>
             <h5 class="darkred"><strong>$T('explain-relFolder'):</strong> <span class="path">$defdir</span></h5>
             <!--#for $cur, $slot in enumerate($slotinfo)#-->
                 <!--#set $cansort = $slot.name != '*' and $slot.name != ''#-->
-                <form action="save" method="get" <!--#if $cansort#-->class="sorting-row"<!--#end if#-->>
+                <form action="save" method="post" <!--#if $cansort#-->class="sorting-row"<!--#end if#-->>
                     <table class="catTable">
                         <!--#if $cur == 0#-->
                         <tr>
