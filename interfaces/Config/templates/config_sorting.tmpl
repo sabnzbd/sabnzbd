@@ -14,11 +14,11 @@
         </label>
         <div class="advanced-buttonSeperator"></div>
     </div>
-    <!--#for $cur, $slot in enumerate($slotinfo)#-->
-    <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
-    <!--#set $selected_types = ["0"] if not len($selected_types) else $selected_types #-->
 
     <div class="sortables">
+        <!--#for $cur, $slot in enumerate($slotinfo)#-->
+        <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
+        <!--#set $selected_types = ["0"] if not len($selected_types) else $selected_types #-->
         <!-- SORTER $cur -->
         <div class="section <!--#if $cur != 0#-->sorter<!--#end if#-->" id="sorter_$cur" <!--#if $cur == 0#-->style="display: none;"<!--#end if#-->>
             <form action="save_sorter" method="post" autocomplete="off" <!--#if $cur != 0#-->class="sorting-row"<!--#end if#-->>
@@ -341,8 +341,9 @@
                 </div>
             </form>
         </div>
+        <!--#end for#-->
     </div>
-    <!--#end for#-->
+
     <!--#if len($slotinfo) == 1 and ("tv" in $categories or "movies" in $categories)#-->
     <div class="section align-center alt sorting-quick-setup">
         <h3>$T('sort-quick-add'):</h3>
