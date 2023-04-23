@@ -378,6 +378,30 @@ tr.separator {
     padding: 1.5em 2em 3em
 }
 
+/* hacks for multiselect  */
+.overflow {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+}
+div.btn-group.open input[type='checkbox'] {
+    top: 0px !important;
+    margin-left: -22px !important;
+}
+div.btn-group.open label {
+    padding-left: 30px !important;
+    padding-bottom: 5px !important;
+}
+/* hack for outdated multiselect */
+.multiselect.dropdown-toggle {
+    text-align: left;
+}
+.multiselect.disabled {
+    text-align: left !important;
+    color: #000 !important;
+    cursor: not-allowed !important;
+}
+
+
 .RSS .rss-section input[type="text"] {
     max-width: 180px;
 }
@@ -799,7 +823,8 @@ input[type=radio] {
 }
 
 input[type="button"],
-input[type="submit"] {
+input[type="submit"],
+.multiselect.disabled {
     color: #333;
     display:inline-block;
     padding:6px 12px;
@@ -875,7 +900,8 @@ select {
 }
 
 input[disabled],
-select[disabled] {
+select[disabled],
+.multiselect.disabled {
     background-color: #eee;
 }
 

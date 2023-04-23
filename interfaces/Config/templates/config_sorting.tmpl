@@ -101,7 +101,7 @@
                                 <option value="4" <!--#if "4" in $selected_types then 'selected="selected"' else ""#-->>$T('guessit-type-other')</option>
                             </select>
                         </div>
-                        <div class="field-pair">
+                        <div class="field-pair overflow">
                             <label class="config" for="sort_cats_$cur">$T('affectedCat')</label>
                             <select name="sort_cats" multiple="multiple" class="multiple_cats" id="sort_cats_$cur" size="$len($categories)" required="required">
                                 <!--#for $cat in $categories#-->
@@ -436,6 +436,14 @@
     }
 
     \$(document).ready(function() {
+
+        \$("[name='sort_cats'], [name='sort_cats_display']").multiselect( {
+            buttonTextAlignment: 'left',
+            maxHeight: 180,
+            widthSynchronizationMode: 'ifPopupIsSmaller',
+            buttonWidth: '160px'
+        });
+
         \$('.delSorter').click(function() {
             var theForm = \$(this).closest("form");
             theForm.attr("action", "delete").submit();
@@ -472,6 +480,7 @@
                 ui.placeholder.height(hPlaceholder + hExtra);
                 \$('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
             },
+            cancel: ".pattern-table",
             change: function(event, ui) {
                 ui.placeholder.stop().height(0).animate({
                     height: ui.item.outerHeight() + hExtra
