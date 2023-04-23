@@ -29,6 +29,9 @@
   <url type="help">https://sabnzbd.org/wiki/</url>
   <url type="faq">https://sabnzbd.org/wiki/faq</url>
   <url type="contact">https://sabnzbd.org/live-chat.html</url>
+  <releases>
+    <release version="3.7.2" date="2023-02-05" type="stable"></release>
+  </releases>
   <launchable type="desktop-id">sabnzbd.desktop</launchable>
   <provides>
     <mediatype>application/x-nzb</mediatype>
