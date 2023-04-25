@@ -4748,6 +4748,10 @@ msgid "Keyboard shortcuts"
 msgstr "Tastaturkürzel"
 
 #: sabnzbd/skintext.py
+msgid "Shift+Arrow key: Browse Queue and History pages"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Wie lange oder bis wann möchtest du pausieren? (in Englisch!)"
 
