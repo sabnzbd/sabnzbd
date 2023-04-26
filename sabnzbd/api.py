@@ -1570,7 +1570,7 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
-        header["helpuri"] = "https://sabnzbd.org/wiki/"
+        header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
 
         header["pid"] = os.getpid()
         header["active_lang"] = cfg.language()
