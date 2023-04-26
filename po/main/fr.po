@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2023\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -4748,6 +4748,7 @@ msgstr "Raccourcis clavier"
 #: sabnzbd/skintext.py
 msgid "Shift+Arrow key: Browse Queue and History pages"
 msgstr ""
+"Maj+flèche : parcourir les pages de la file d'attente et de l'historique"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
