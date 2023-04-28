@@ -89,6 +89,23 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("$mft") == "$mft"
         assert filesystem.sanitize_filename("a$mft") == "a$mft"
 
+    @set_platform("win32")
+    def test_file_illegal_chars_win32(self):
+        assert filesystem.sanitize_filename("test" + filesystem.CH_ILLEGAL_WIN + "aftertest") == (
+            "test" + filesystem.CH_LEGAL_WIN + "aftertest"
+        )
+        assert (
+            filesystem.sanitize_filename("test" + chr(0) + chr(1) + chr(15) + chr(31) + "aftertest")
+            == "test____aftertest"
+        )
+
+    @set_platform("win32")
+    def test_folder_illegal_chars_win32(self):
+        assert (
+            filesystem.sanitize_foldername("test" + chr(0) + chr(9) + chr(13) + chr(31) + "aftertest")
+            == "test____aftertest"
+        )
+
     @set_platform("linux")
     def test_file_illegal_chars_linux(self):
         assert filesystem.sanitize_filename("test/aftertest") == "test+aftertest"
@@ -598,6 +615,16 @@ class TestListdirFull(ffs.TestCase):
         assert filesystem.listdir_full("/some/.DS_Store/", recursive=False) == []
         assert filesystem.listdir_full("/some/.DS_Store/subdir", recursive=False) == []
 
+    def test_exception_resource_files(self):
+        for file in (
+            "/rsc/base_file",
+            "/rsc/._base_file",
+            "/rsc/not._base_file",
+        ):
+            self.fs.create_file(file)
+            assert os.path.exists(file) is True
+        assert filesystem.listdir_full("/rsc") == ["/rsc/base_file", "/rsc/not._base_file"]
+
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
         # as its argument, not a file. Test anyway.
@@ -675,6 +702,16 @@ class TestListdirFullWin(ffs.TestCase):
         assert filesystem.listdir_full(r"f:\some\.DS_Store", recursive=True) == []
         assert filesystem.listdir_full(r"f:\some\.DS_Store\subdir", recursive=True) == []
 
+    def test_exception_resource_files(self):
+        for file in (
+            r"f:\rsc\base_file",
+            r"f:\rsc\._base_file",
+            r"f:\rsc\not._base_file",
+        ):
+            self.fs.create_file(file)
+            assert os.path.exists(file) is True
+        assert filesystem.listdir_full(r"f:\rsc") == [r"f:\rsc\base_file", r"f:\rsc\not._base_file"]
+
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
         # as its argument, not a file. Test anyway.
@@ -703,6 +740,15 @@ class TestGetUniqueDirFilename(ffs.TestCase):
         if self.fs.cwd != "/":
             os.chdir("/")
         assert filesystem.get_unique_dir("foo/bar", n=0, create_dir=False) == "foo/bar"
+
+    def test_nonexistent_dir_without_permission(self):
+        some_dir = "/foo/bar"
+        self.fs.create_dir(some_dir)
+
+        # Remove write permission from the directory.
+        os.chmod(some_dir, 0o500)
+
+        assert filesystem.get_unique_dir(os.path.join(some_dir, "nonexistent"), create_dir=True) is False
 
     def test_creating_dir(self):
         # First call also creates the directory for us

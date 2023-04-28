@@ -70,7 +70,15 @@ import sabnzbd.newsunpack
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.getperformance import getcpu
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import DEF_STD_CONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
+from sabnzbd.constants import (
+    DEF_STD_CONFIG,
+    DEFAULT_PRIORITY,
+    CHEETAH_DIRECTIVES,
+    EXCLUDED_GUESSIT_PROPERTIES,
+    DEF_HTTPS_CERT_FILE,
+    DEF_SORTER_RENAME_SIZE,
+    GUESSIT_SORT_TYPES,
+)
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
@@ -420,7 +428,7 @@ class MainPage:
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
 
             info["cpumodel"] = getcpu()
-            info["cpusimd"] = sabnzbd.decoder.SABYENC_SIMD
+            info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
@@ -519,7 +527,7 @@ class Wizard:
             info["username"] = ""
             info["password"] = ""
             info["connections"] = ""
-            info["ssl"] = 0
+            info["ssl"] = 1
             info["ssl_verify"] = 2
         else:
             # Sort servers to get the first enabled one
@@ -676,7 +684,7 @@ class ConfigPage:
 
         conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        conf["have_sabyenc"] = sabnzbd.decoder.SABYENC_ENABLED
+        conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
         conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
@@ -868,19 +876,19 @@ SPECIAL_BOOL_LIST = (
     "api_logging",
     "x_frame_options",
     "allow_old_ssl_tls",
+    "enable_season_sorting",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
     "size_limit",
-    "movie_rename_limit",
-    "episode_rename_limit",
     "nomedia_marker",
     "max_url_retries",
     "req_completion_rate",
     "wait_ext_drive",
     "max_foldername_length",
     "url_base",
-    "num_simd_decoders",
+    "receive_threads",
+    "switchinterval",
     "direct_unpack_threads",
     "ipv6_servers",
     "selftest_host",
@@ -979,6 +987,7 @@ class ConfigGeneral:
 
         conf["language"] = cfg.language()
         conf["lang_list"] = list_languages()
+        conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
 
         for kw in GENERAL_LIST:
             conf[kw] = config.get_config("misc", kw)()
@@ -1072,7 +1081,7 @@ class ConfigServer:
             % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
         )
         for svr in server_names:
-            new.append(servers[svr].get_dict(safe=True))
+            new.append(servers[svr].get_dict(for_public_api=True))
             t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
             if t:
                 new[-1]["amounts"] = (
@@ -1816,20 +1825,6 @@ class ConfigCats:
 
 
 ##############################################################################
-SORT_LIST = (
-    "enable_tv_sorting",
-    "tv_sort_string",
-    "tv_categories",
-    "enable_movie_sorting",
-    "movie_sort_string",
-    "movie_sort_extra",
-    "enable_date_sorting",
-    "date_sort_string",
-    "movie_categories",
-    "date_categories",
-)
-
-
 class ConfigSorting:
     def __init__(self, root):
         self.__root = root
@@ -1837,14 +1832,26 @@ class ConfigSorting:
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["complete_dir"] = cfg.complete_dir.get_clipped_path()
 
-        for kw in SORT_LIST:
-            conf[kw] = config.get_config("misc", kw)()
+        sorters = config.get_ordered_sorters()
+        # Add empty sorter entry, used as a template at the top of the page
+        empty = {
+            "is_active": "1",
+            "name": "",
+            "order": len(sorters),  # Last in line
+            "min_size": DEF_SORTER_RENAME_SIZE,
+            "sort_string": "",
+            "sort_cats": "",
+            "sort_type": "0,",
+            "multipart_label": "",
+        }
+        sorters.insert(0, empty)
+        conf["slotinfo"] = sorters
         conf["categories"] = list_cats(False)
         conf["guessit_properties"] = tuple(
             prop for prop in guessit_properties().keys() if prop not in EXCLUDED_GUESSIT_PROPERTIES
         )
+        conf["sort_types"] = GUESSIT_SORT_TYPES
 
         return template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_sorting.tmpl"),
@@ -1852,15 +1859,39 @@ class ConfigSorting:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSorting(self, **kwargs):
-        for kw in SORT_LIST:
-            item = config.get_config("misc", kw)
-            value = kwargs.get(kw)
-            msg = item.set(value)
-            if msg:
-                return badParameterResponse(msg)
+    def delete(self, **kwargs):
+        kwargs["section"] = "sorters"
+        kwargs["keyword"] = kwargs.get("name")
+        del_from_section(kwargs)
+        raise Raiser(self.__root)
+
+    @secured_expose(check_api_key=True, check_configlock=True)
+    def save_sorter(self, **kwargs):
+        name = kwargs.get("name", "*")
+        newname = kwargs.get("newname", "")
+        newname = config.clean_section_name(newname)
+
+        if name == "*":
+            newname = name
+        if newname:
+            # Delete current one and replace with new one
+            if name:
+                config.delete("sorters", name)
+            config.ConfigSorter(newname, kwargs)
 
         config.save_config()
+        raise Raiser(self.__root)
+
+    @secured_expose(check_api_key=True, check_configlock=True)
+    def toggle_sorter(self, **kwargs):
+        """Toggle is_active flag of a sorter"""
+        try:
+            sorter = config.get_sorters()[kwargs.get("sorter")]
+            sorter.is_active.set(not sorter.is_active())
+            config.save_config()
+        except Exception:
+            pass
+
         raise Raiser(self.__root)
 
 

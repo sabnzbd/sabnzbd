@@ -1,5 +1,5 @@
 <!--#set global $pane="Email"#-->
-<!--#set global $help_uri="configuration/3.7/notifications"#-->
+<!--#set global $help_uri="configuration/4.0/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#def show_notify_checkboxes($section_label)#-->
@@ -17,7 +17,7 @@
     <div class="col2-cats" <!--#if int($getVar($section_label + '_enable')) > 0 then '' else 'style="display:none"'#-->>
         <hr>
         <b>$T('affectedCat')</b><br/>
-        <select name="${section_label}_cats" multiple="multiple" class="multiple_cats">
+        <select name="${section_label}_cats" multiple="multiple" class="multiple_cats" size="$len($categories)">
             <!--#for $ct in $categories#-->
                 <option value="$ct" <!--#if $ct in $getVar($section_label + '_cats') then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
             <!--#end for#-->
@@ -36,7 +36,7 @@
             <h3>$T('cmenu-email') <a href="$helpuri$help_uri#toc0" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <div class="col2-cats" <!--#if int($email_endjob) > 0 then '' else 'style="display:none"'#-->>
                 <b>$T('affectedCat')</b><br/>
-                <select name="email_cats" multiple="multiple" class="multiple_cats">
+                <select name="email_cats" multiple="multiple" class="multiple_cats" size="$len($categories)">
                     <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $email_cats then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
                     <!--#end for#-->

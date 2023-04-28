@@ -34,10 +34,10 @@ class TestVersion:
     def test_sabnzbd_version_match(self):
         assert sabnzbd.__version__ == pkginfo.Develop(".").version
 
-    def test_sabyenc3_version_match(self):
+    def test_sabctools_version_match(self):
         with open("requirements.txt", "r") as reqs:
-            req_version = next(req for req in pkg_resources.parse_requirements(reqs) if req.project_name == "sabyenc3")
-            assert sabnzbd.constants.SABYENC_VERSION_REQUIRED == req_version.specs[0][1]
+            req_version = next(req for req in pkg_resources.parse_requirements(reqs) if req.project_name == "sabctools")
+            assert sabnzbd.constants.SABCTOOLS_VERSION_REQUIRED == req_version.specs[0][1]
 
 
 class TestSkintext:
@@ -66,6 +66,7 @@ class TestSkintext:
         assert not not_found
 
 
+@pytest.mark.skipif(os.environ.get("GITHUB_REF_NAME", "") != "develop", reason="Only check on develop branch")
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestWiki:
     def test_added_wiki_entries(self):

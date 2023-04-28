@@ -123,7 +123,6 @@ import sabnzbd.utils.ssdp
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
 Assembler: sabnzbd.assembler.Assembler
-Decoder: sabnzbd.decoder.Decoder
 Downloader: sabnzbd.downloader.Downloader
 PostProcessor: sabnzbd.postproc.PostProcessor
 NzbQueue: sabnzbd.nzbqueue.NzbQueue
@@ -162,7 +161,7 @@ WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 
 CERTIFICATE_VALIDATION = True
-NO_DOWNLOADING = False  # When essentials are missing (SABYenc/par2/unrar)
+NO_DOWNLOADING = False  # When essentials are missing (SABCTools/par2/unrar)
 
 WEB_DIR = None
 WEB_DIR_CONFIG = None
@@ -189,6 +188,9 @@ PYSTONE_SCORE = 0
 DOWNLOAD_DIR_SPEED = 0
 COMPLETE_DIR_SPEED = 0
 INTERNET_BANDWIDTH = 0
+
+# Record of HTTPS config files at startup
+CONFIG_BACKUP_HTTPS_OK = []
 
 # Rendering of original command line arguments in Config
 CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
@@ -228,6 +230,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         return False
 
     sabnzbd.__SHUTTING_DOWN__ = False
+
+    sys.setswitchinterval(cfg.switchinterval())
 
     # Set global database connection for Web-UI threads
     cherrypy.engine.subscribe("start_thread", get_db_connection)
@@ -287,6 +291,11 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     elif cfg.auto_sort() == "1":
         cfg.auto_sort.set("avg_age asc")
 
+    # Convert old series/date/movie sorters
+    if not cfg.sorters_converted():
+        misc.convert_sorter_settings()
+        cfg.sorters_converted.set(True)
+
     # Add hostname to the whitelist
     if not cfg.host_whitelist():
         cfg.host_whitelist.set(socket.gethostname())
@@ -301,7 +310,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
     sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
     sabnzbd.Downloader = sabnzbd.downloader.Downloader(sabnzbd.BPSMeter.read() or pause_downloader)
-    sabnzbd.Decoder = sabnzbd.decoder.Decoder()
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
     sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
     sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
@@ -334,9 +342,6 @@ def start():
 
         logging.debug("Starting downloader")
         sabnzbd.Downloader.start()
-
-        logging.debug("Starting decoders")
-        sabnzbd.Decoder.start()
 
         logging.debug("Starting scheduler")
         sabnzbd.Scheduler.start()
@@ -392,11 +397,6 @@ def halt():
             sabnzbd.Downloader.join()
         except:
             pass
-
-        # Decoder handles join gracefully
-        logging.debug("Stopping decoders")
-        sabnzbd.Decoder.stop()
-        sabnzbd.Decoder.join()
 
         logging.debug("Stopping assembler")
         sabnzbd.Assembler.stop()
@@ -481,9 +481,6 @@ def check_all_tasks():
         return False
     if not sabnzbd.Downloader.is_alive():
         logging.warning(T("Restarting because of crashed downloader"))
-        return False
-    if not sabnzbd.Decoder.is_alive():
-        logging.warning(T("Restarting because of crashed decoder"))
         return False
     if not sabnzbd.Assembler.is_alive():
         logging.warning(T("Restarting because of crashed assembler"))

@@ -61,11 +61,12 @@ from sabnzbd.filesystem import (
     build_filelists,
     get_filename,
     SEVENMULTI_RE,
+    is_size,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
+from sabnzbd.sorting import Sorter
 
 # Regex globals
 RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
@@ -1975,7 +1976,7 @@ def rar_sort(a: str, b: str) -> int:
 
 
 def quick_check_set(setname: str, nzo: NzbObject) -> bool:
-    """Check all on-the-fly md5sums of a set"""
+    """Check all on-the-fly crc32s of a set"""
     par2pack = nzo.par2packs.get(setname)
     if par2pack is None:
         return False
@@ -1997,7 +1998,11 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if (nzf.md5sum is not None) and nzf.md5sum == par2info.filehash:
+                if (
+                    nzf.crc32 is not None
+                    and nzf.crc32 == par2info.filehash
+                    and is_size(nzf.filepath, par2info.filesize)
+                ):
                     logging.debug("Quick-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -2010,7 +2015,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 break
 
             # Now let's do obfuscation check
-            if nzf.md5sum == par2info.filehash:
+            if nzf.crc32 is not None and nzf.crc32 == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
@@ -2155,9 +2160,10 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
     verifytotal = len(nzo.finished_files)
     verifynum = 0
     for nzf in nzf_list:
-        verifynum += 1
-        nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
-        calculated_crc32[nzf.filename] = crc_calculate(os.path.join(nzo.download_path, nzf.filename))
+        if nzf.crc32 is not None:
+            verifynum += 1
+            nzo.set_action_line(T("Verifying"), "%02d/%02d" % (verifynum, verifytotal))
+            calculated_crc32[nzf.filename] = b"%08x" % (nzf.crc32 & 0xFFFFFFFF)
 
     sfv_parse_results = {}
     nzo.set_action_line(T("Trying SFV verification"), "...")
@@ -2176,7 +2182,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
-                if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
+                if calculated_crc32.get(nzf.filename, "") == sfv_parse_results[file]:
                     logging.debug("SFV-check of file %s OK", file)
                     result &= True
                 elif file_to_ignore:
@@ -2189,7 +2195,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
                 break
 
             # Now lets do obfuscation check
-            if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
+            if calculated_crc32.get(nzf.filename, "") == sfv_parse_results[file]:
                 try:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
                     renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
@@ -2205,7 +2211,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
         if not found:
             if file_to_ignore:
                 # We don't care about these files
-                logging.debug("SVF-check ignoring missing file %s", file)
+                logging.debug("SFV-check ignoring missing file %s", file)
                 continue
 
             logging.info("Cannot SFV-check missing file %s!", file)
@@ -2234,18 +2240,6 @@ def parse_sfv(sfv_filename):
     return results
 
 
-def crc_calculate(path):
-    """Calculate crc32 of the given file"""
-    crc = 0
-    with open(path, "rb") as fp:
-        while 1:
-            data = fp.read(4096)
-            if not data:
-                break
-            crc = zlib.crc32(data, crc)
-    return b"%08x" % (crc & 0xFFFFFFFF)
-
-
 def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Optional[float] = None) -> str:
     """Calculate time left based on current progress, if it is taking more than 10 seconds"""
     if not time_used:
@@ -2255,18 +2249,39 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def analyse_show(name: str) -> Tuple[str, str, str, str, bool]:
-    """Do a quick SeasonSort check and return basic facts"""
-    job = SeriesSorter(None, name, None, None, force=True)
-    if job.matched:
-        job.get_values()
-    return (
-        job.info.get("title", ""),
-        job.info.get("season_num", ""),
-        job.info.get("episode_num", ""),
-        job.info.get("ep_name", ""),
-        job.is_proper(),
+def analyse_show(name: str) -> Dict[str, str]:
+    """Use the Sorter to collect some basic info on series"""
+    job = Sorter(
+        None,
+        name,
+        None,
+        None,
+        force=True,
+        sorter_config={
+            "name": "newsunpack__analyse_show",
+            "order": 0,
+            "min_size": -1,
+            "multipart_label": "",
+            "sort_string": "",
+            "sort_cats": [],  # Categories and types are ignored when using the force
+            "sort_type": [],
+            "is_active": 1,
+        },
     )
+    job.get_values()
+    return {
+        "title": job.info.get("title", ""),
+        "season": job.info.get("season_num", ""),
+        "episode": job.info.get("episode_num", ""),
+        "episode_name": job.info.get("ep_name", ""),
+        "is_proper": str(job.is_proper()),
+        "resolution": job.info.get("resolution", ""),
+        "decade": job.info.get("decade", ""),
+        "year": job.info.get("year", ""),
+        "month": job.info.get("month", ""),
+        "day": job.info.get("day", ""),
+        "job_type": job.type,
+    }
 
 
 def pre_queue(nzo: NzbObject, pp, cat):
@@ -2294,7 +2309,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(analyse_show(nzo.final_name_with_password)[:4])
+        command.extend(list(analyse_show(nzo.final_name_with_password).values()))
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly
@@ -2304,6 +2319,13 @@ def pre_queue(nzo: NzbObject, pp, cat):
             "show_season": command[9],
             "show_episode": command[10],
             "show_episode_name": command[11],
+            "proper": command[12],
+            "resolution": command[13],
+            "decade": command[14],
+            "year": command[15],
+            "month": command[16],
+            "day": command[17],
+            "type": command[18],
         }
 
         try:

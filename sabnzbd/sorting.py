@@ -33,13 +33,20 @@ from sabnzbd.filesystem import (
     cleanup_empty_directories,
     get_unique_filename,
     get_ext,
+    globber,
     renamer,
     sanitize_foldername,
     clip_path,
 )
+import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES, IGNORED_MOVIE_FOLDERS
-from sabnzbd.misc import is_sample
+from sabnzbd.constants import (
+    EXCLUDED_GUESSIT_PROPERTIES,
+    IGNORED_MOVIE_FOLDERS,
+    GUESSIT_PART_INDICATORS,
+    GUESSIT_SORT_TYPES,
+)
+from sabnzbd.misc import is_sample, from_units, sort_to_opts
 from sabnzbd.nzbstuff import NzbObject, scan_password
 
 # Do not rename .vob files as they are usually DVD's
@@ -56,8 +63,8 @@ RE_GI = re.compile(r"(%G([._]?)I<([\w]+)>)")  # %GI<property>, %G.I<property>, o
 logging.getLogger("rebulk").setLevel(logging.WARNING)
 
 
-class BaseSorter:
-    """Common methods for Sorter classes"""
+class Sorter:
+    """Generic Sorter class"""
 
     def __init__(
         self,
@@ -65,44 +72,143 @@ class BaseSorter:
         job_name: str,
         path: str,
         cat: str,
-        sort_string: str,
-        cats: str,
-        guess: Optional[MatchesDict],
         force: Optional[bool] = False,
+        sorter_config: Optional[dict] = None,
     ):
-        self.matched = False
+        self.sorter_active = False
         self.original_job_name = job_name
         self.original_path = path
         self.nzo = nzo
         self.cat = cat
-        self.filename_set = ""
-        self.fname = ""  # Value for %fn substitution in folders
-        self.rename_files = False
-        self.info = {}
-        self.type = None
-        self.guess = guess
+        self.sorter_config = sorter_config
         self.force = force
-        self.sort_string = sort_string
-        self.cats = cats
+        self.filename_set = ""
+        self.rename_files = False
+        self.rename_limit = -1
+        self.info = {}
+        self.type = None  # tv, date, movie, unknown
+        self.guess = None
+        self.sort_string = None
+        self.multipart_label = None
+        self.is_season_pack = False
+        self.season_pack_setname = ""
 
-        # Check categories and do the guessing work, if necessary
-        self.match()
+        # If a sorter configuration is passed as an argument, only use that one
+        sorters = [self.sorter_config] if self.sorter_config else config.get_ordered_sorters()
 
-    def match(self):
-        """Implemented by child classes"""
-        pass
+        # Figure out which sorter should be applied (if any)
+        for sorter in sorters:
+            # Check for category match (or forced)
+            if self.force or (
+                sorter["is_active"]
+                and sorter["sort_string"]
+                and sorter["sort_cats"]
+                and self.cat
+                and self.cat.lower() in [cat.lower() for cat in sorter["sort_cats"]]
+            ):
+                # Let guessit do its thing, and set the job type
+                if not self.guess:
+                    self.guess = guess_what(self.original_job_name)
+
+                    # Set the detected job type
+                    if self.guess["type"] == "episode":
+                        self.type = "date" if self.guess.get("date") else "tv"
+                    else:
+                        self.type = self.guess["type"]  # movie, other
+
+                # Check if the sorter should be applied to the guessed type (or forced)
+                if (
+                    not self.force
+                    and sorter["sort_type"]
+                    and not any(sort_to_opts(t) in sorter["sort_type"] for t in (self.type, "all"))
+                ):
+                    # Sorter is restricted to some other content type(s)
+                    logging.debug(
+                        "Guessed type %s of job %s doesn't match sorter %s (%s)",
+                        self.type,
+                        self.original_job_name,
+                        sorter["name"],
+                        ", ".join({GUESSIT_SORT_TYPES[t] for t in sorter["sort_type"]}),
+                    )
+                    # Move on to the next candidate
+                    continue
+
+                # Bingo!
+                logging.debug(
+                    "Matched sorter %s to job %s (forced: %s, custom: %s)",
+                    sorter["name"],
+                    self.original_job_name,
+                    self.force,
+                    bool(self.sorter_config),
+                )
+                self.sorter_active = True
+                self.sort_string = sorter["sort_string"]
+                self.multipart_label = sorter["multipart_label"]
+                self.rename_limit = int(from_units(sorter["min_size"]))
+
+                # Check for season pack indicators
+                if (
+                    self.type == "tv"
+                    and cfg.enable_season_sorting()
+                    and self.guess.get("season")
+                    and not isinstance(self.guess.get("season"), list)  # No support for multi-season packs (yet)
+                    and ((not self.guess.get("episode")) or isinstance(self.guess.get("episode"), list))
+                ):
+                    # The jobname indicates a season pack, i.e. guessit found a single season number but:
+                    # either no episodes at all ("S01"), or multiple episodes ("S01E01-02-03")
+                    self.is_season_pack = True
+                    logging.debug("Activated season pack handling for job %s", self.original_job_name)
+
+                # Don't consider any further sorters
+                break
+        else:
+            logging.debug("No matching sorter found for job %s", self.original_job_name)
 
     def get_values(self):
-        """Implemented by child classes"""
-        pass
+        self.get_year()
+        self.get_names()
+        self.get_resolution()
+        self.get_seasons()
+        self.get_episodes()
+        self.get_showdescriptions()
+        self.get_date()
+
+    def format_series_numbers(self, numbers: Union[int, List[int]], info_name: str):
+        """Format the numbers in both plain and alternative (zero-padded) format and set as showinfo"""
+        # Guessit returns multiple episodes or seasons as a list of integers, single values as int
+        if isinstance(numbers, int):
+            self.info[info_name] = str(numbers)  # 1
+            self.info[info_name + "_alt"] = str(numbers).rjust(2, "0")  # 01
+        else:
+            self.info[info_name] = "-".join([str(num) for num in numbers])  # 1-2-3
+            self.info[info_name + "_alt"] = "-".join([str(num).rjust(2, "0") for num in numbers])  # 01-02-03
+
+    def get_date(self):
+        """Get month and day"""
+        self.info["month"] = self.info["day"] = self.info["month_two"] = self.info["day_two"] = ""
+
+        try:
+            self.info["month"] = str(self.guess.get("date").month)
+            self.info["day"] = str(self.guess.get("date").day)
+            # Zero-padded versions of the same
+            if self.info["month"]:
+                self.info["month_two"] = self.info["month"].rjust(2, "0")
+            if self.info["day"]:
+                self.info["day_two"] = self.info["day"].rjust(2, "0")
+        except AttributeError:
+            pass
+
+    def get_episodes(self):
+        """Fetch the guessed episode number(s)"""
+        self.format_series_numbers(self.guess.get("episode", ""), "episode_num")
 
     def get_final_path(self) -> str:
-        if self.matched:
+        if self.sorter_active:
             # Construct the final path
             self.get_values()
             return os.path.join(self.original_path, self.construct_path())
         else:
-            # Error Sorting
+            # No matching sorter found
             return os.path.join(self.original_path, self.original_job_name)
 
     def get_names(self):
@@ -117,6 +223,10 @@ class BaseSorter:
 
     def get_resolution(self):
         self.info["resolution"] = self.guess.get("screen_size", "")
+
+    def get_seasons(self):
+        """Fetch the guessed season number(s)"""
+        self.format_series_numbers(self.guess.get("season", ""), "season_num")
 
     def get_showdescriptions(self):
         """Get the show descriptions based on metadata, guessit and jobname"""
@@ -135,7 +245,7 @@ class BaseSorter:
                 # Try extracting the year from the guessed date instead
                 try:
                     year = self.guess.get("date").year or ""
-                except:
+                except Exception:
                     pass
         self.info["year"] = str(year)
         self.info["decade"] = ""
@@ -150,6 +260,9 @@ class BaseSorter:
     def is_proper(self):
         """Determine if the release is tagged 'Proper'. Note that guessit also sets this for similar
         tags such as 'Real' and 'Repack', saving us the trouble of checking for additional keywords."""
+        if not self.guess:
+            return False
+
         other = self.guess.get("other", "")
         if isinstance(other, list):
             return "Proper" in other
@@ -158,15 +271,36 @@ class BaseSorter:
 
     def construct_path(self) -> str:
         """Map all markers and replace the sort string with real values"""
-        sorter = self.sort_string
+        sort_string = self.sort_string
         mapping = []
 
-        if ends_in_file(sorter):
+        if ends_in_file(sort_string):
             extension = True
-            if sorter.endswith(".%ext"):
-                sorter = sorter[:-5]  # Strip '.%ext' off the end; other %ext may remain in sorter
+            if sort_string.endswith(".%ext"):
+                sort_string = sort_string[:-5]  # Strip '.%ext' off the end; other %ext may remain in sort_string
+            if self.is_season_pack:
+                # Create a record of the filename part of the sort_string
+                _, self.season_pack_setname = os.path.split(sort_string)
+                if not any(
+                    substring in self.season_pack_setname
+                    for substring in ("%e", "%0e", "%GI<episode>", "%G.I<episode>", "%G_I<episode>")
+                ):
+                    # Cancel season pack handling if the sort string for the filename lacks episode mapping
+                    self.is_season_pack = False
+                    logging.debug(
+                        "Cancelled season pack handling for job %s: no episode mapper in season pack setname %s",
+                        self.original_job_name,
+                        self.season_pack_setname,
+                    )
         else:
             extension = False
+            if self.is_season_pack:
+                self.is_season_pack = False
+                logging.debug(
+                    "Cancelled season pack handling for job %s: sort string %s does not rename files",
+                    self.original_job_name,
+                    sort_string,
+                )
 
         # Title
         mapping.append(("%title", self.info["title"]))
@@ -199,54 +333,62 @@ class BaseSorter:
         mapping.append(("%decade", self.info["decade"]))
         mapping.append(("%0decade", self.info["decade_two"]))
 
-        # Handle some type-specific mappings
-        if self.type in ("tv", "date"):
-            # Episode name
-            mapping.append(("%en", self.info["ep_name"]))
-            mapping.append(("%e.n", self.info["ep_name_two"]))
-            mapping.append(("%e_n", self.info["ep_name_three"]))
+        # Episode name
+        mapping.append(("%en", self.info["ep_name"]))
+        mapping.append(("%e.n", self.info["ep_name_two"]))
+        mapping.append(("%e_n", self.info["ep_name_three"]))
 
-            # Legacy %desc
-            if self.type == "date" and self.info.get("ep_name"):
-                # For date, %desc was no longer listed but still supported in the backend. For tv,
-                # it was invalid and %en (etc.) used instead. For backward compatibility, map %desc
-                # to %en for 'date' only and remove for 'tv'.
-                mapping.append(("%desc", self.info["ep_name"]))
-            else:
-                mapping.append(("%desc", ""))
+        # Legacy %desc
+        if self.type == "date" and self.info.get("ep_name"):
+            # For date, %desc was no longer listed but still supported in the backend. For tv,
+            # it was invalid and %en (etc.) used instead. For backward compatibility, map %desc
+            # to %en for 'date' only and remove for 'tv' and other types.
+            mapping.append(("%desc", self.info["ep_name"]))
+        else:
+            mapping.append(("%desc", ""))
 
-            if self.type == "tv":
-                # Season number
-                mapping.append(("%s", self.info["season_num"]))
-                mapping.append(("%0s", self.info["season_num_alt"]))
+        # Season number
+        mapping.append(("%s", self.info["season_num"]))
+        mapping.append(("%0s", self.info["season_num_alt"]))
 
-                # Episode number; note this must come after the %en variants
-                mapping.append(("%e", self.info["episode_num"]))
-                mapping.append(("%0e", self.info["episode_num_alt"]))
+        # Month
+        mapping.append(("%m", self.info["month"]))
+        mapping.append(("%0m", self.info["month_two"]))
 
-            if self.type == "date":
-                # Month
-                mapping.append(("%m", self.info["month"]))
-                mapping.append(("%0m", self.info["month_two"]))
-
-                # Day
-                mapping.append(("%d", self.info["day"]))
-                mapping.append(("%0d", self.info["day_two"]))
+        # Day
+        mapping.append(("%d", self.info["day"]))
+        mapping.append(("%0d", self.info["day_two"]))
 
         # Handle generic guessit markers
-        for marker, spacer, guess_property in re.findall(RE_GI, sorter):
-            value = self.guess.get(guess_property, "") if self.guess else ""
-            # Guessit returns a list for some properties in case they have multiple entries/values
-            if isinstance(value, list):
-                value = "-".join([str(v) for v in value])  # Format as value1-value2
-            else:
-                value = str(value)
-            if spacer:
-                value = value.replace(" ", spacer)
-            mapping.append((marker, value))
+        for marker, spacer, guess_property in re.findall(RE_GI, sort_string):
+            # Keep the episode property around until after the season pack handling, same as %e and %0e
+            if guess_property != "episode":
+                value = self.guess.get(guess_property, "") if self.guess else ""
+                # Guessit returns a list for some properties in case they have multiple entries/values
+                if isinstance(value, list):
+                    value = "-".join([str(v) for v in value])  # Format as value1-value2
+                else:
+                    value = str(value)
+                if spacer:
+                    value = value.replace(" ", spacer)
+                mapping.append((marker, value))
+
+        # Create a record of the season pack setname before the episode number markers are added to the mapping
+        if self.is_season_pack:
+            self.season_pack_setname = path_subst(self.season_pack_setname, mapping)
+            for key, name in REPLACE_AFTER.items():
+                self.season_pack_setname = self.season_pack_setname.replace(key, name)
+
+        # Episode numbers; note these must come last (after both the %en variants and setting self.season_pack_setname)
+        mapping.append(("%e", self.info["episode_num"]))
+        mapping.append(("%0e", self.info["episode_num_alt"]))
+        # Map the GI episode property to episode_num; their formatting is identical for every spacer option
+        mapping.append(("%GI<episode>", self.info["episode_num"]))
+        mapping.append(("%G.I<episode>", self.info["episode_num"]))
+        mapping.append(("%G_I<episode>", self.info["episode_num"]))
 
         # Replace elements
-        path = path_subst(sorter, mapping)
+        path = path_subst(sort_string, mapping)
 
         for key, name in REPLACE_AFTER.items():
             path = path.replace(key, name)
@@ -262,290 +404,176 @@ class BaseSorter:
             path, self.filename_set = os.path.split(path)
             self.rename_files = True
 
+        # Avoid turning the path absolute on *nix (e.g. sort_string '%r/...' with an empty mapping for %r)
+        if path.startswith(os.path.sep) and not sort_string.startswith(os.path.sep):
+            path = path.lstrip(os.path.sep)
+
         # The normpath function translates "" to "." which results in an incorrect path
         return os.path.normpath(path) if path else path
 
-    def rename(self, files: List[str], current_path: str, min_size: int) -> Tuple[str, bool]:
-        largest = (None, None, 0)
+    def _rename_season_pack(self, files: List[str], base_path: str, all_job_files: List[str] = []) -> bool:
+        success = False
+        for f in files:
+            f_name, f_ext = os.path.splitext(f)
+            if f_episode := guessit.api.guessit(f_name).get("episode"):
+                # Insert formatted episode number(s) into self.info
+                self.format_series_numbers(f_episode, "episode_num")
 
-        def to_filepath(file, current_path):
-            if is_full_path(file):
-                filepath = os.path.normpath(file)
+                # Build the new filename from self.season_pack_setname, filling in the remaining markers
+                f_name_new = path_subst(
+                    self.season_pack_setname,
+                    [
+                        ("%e", self.info["episode_num"]),
+                        ("%GI<episode>", self.info["episode_num"]),
+                        ("%G.I<episode>", self.info["episode_num"]),
+                        ("%G_I<episode>", self.info["episode_num"]),
+                        ("%0e", self.info["episode_num_alt"]),
+                        ("%fn", f_name),
+                        ("%ext", f_ext.lstrip(".")),
+                    ],
+                )
+                f_new = f_name_new + f_ext
+
+                try:
+                    logging.debug("Renaming season pack file %s to %s", f, f_new)
+                    renamer(self._to_filepath(f, base_path), f_new_path := self._to_filepath(f_new, base_path))
+                    success = True
+                except Exception:
+                    logging.error("Failed to rename file %s to %s in season pack %s", f, f_new, self.original_job_name)
+                    logging.info("Traceback: ", exc_info=True)
+                    # Move on to the next file
+                    continue
+
+                # Rename similar files and move to base_path
+                for sim_f in globber(base_path, f_name + "*"):
+                    # Only take into consideration:
+                    # * existing files (but not directories),
+                    # * that were created as part of this job,
+                    # * and didn't qualify for processing in the own right.
+                    if os.path.isfile(os.path.join(base_path, sim_f)) and sim_f in all_job_files and not sim_f in files:
+                        sim_f_new = os.path.basename(sim_f).replace(f_name, f_name_new, 1)
+                        logging.debug("Renaming %s to %s (alongside season pack file %s)", sim_f, sim_f_new, f)
+                        try:
+                            renamer(self._to_filepath(sim_f, base_path), self._to_filepath(sim_f_new, base_path))
+                        except Exception:
+                            logging.error(
+                                "Failed to rename similar file %s to %s (alongside %s in season pack %s)",
+                                sim_f,
+                                sim_f_new,
+                                f,
+                                self.original_job_name,
+                            )
+                            logging.info("Traceback: ", exc_info=True)
             else:
-                filepath = os.path.normpath(os.path.join(current_path, file))
-            return filepath
+                logging.debug(
+                    "Failed to get episode info from filename %s in season pack %s", f, self.original_job_name
+                )
+        return success
 
-        # Create a generator of filepaths, ignore samples and excluded files
-        filepaths = (
-            (file, to_filepath(file, current_path))
-            for file in files
-            if not is_sample(file) and get_ext(file) not in EXCLUDED_FILE_EXTS
+    def _rename_sequential(self, sequential_files: List[str], base_path: str) -> bool:
+        success = False
+        for index, f in sequential_files.items():
+            filepath = self._to_filepath(f, base_path)
+            f_name, f_ext = os.path.splitext(os.path.split(f)[1])
+            new_filepath = os.path.join(
+                base_path,
+                path_subst(
+                    self.filename_set + self.multipart_label,
+                    [("%1", str(index)), ("%fn", f_name), ("%ext", f_ext.lstrip("."))],
+                )
+                + f_ext,
+            )
+            try:
+                logging.debug("Renaming %s to %s", filepath, new_filepath)
+                renamer(filepath, new_filepath)
+                success = True
+                rename_similar(base_path, f_ext, self.filename_set, [new_filepath])
+            except Exception:
+                logging.error(T("Failed to rename %s to %s"), clip_path(filepath), clip_path(new_filepath))
+                logging.info("Traceback: ", exc_info=True)
+        return success
+
+    def _to_filepath(self, f: str, base_path: str) -> str:
+        if not is_full_path(f):
+            f = os.path.join(base_path, f)
+        return os.path.normpath(f)
+
+    def _filter_files(self, f: str, base_path: str) -> bool:
+        filepath = self._to_filepath(f, base_path)
+        return (
+            not is_sample(f)
+            and get_ext(f) not in EXCLUDED_FILE_EXTS
+            and os.path.exists(filepath)
+            and os.stat(filepath).st_size >= self.rename_limit
         )
 
+    def rename(self, files: List[str], base_path: str) -> Tuple[str, bool]:
+        if not self.rename_files:
+            return base_path, True
+
+        # Log the minimum filesize for renaming
+        if self.rename_limit > 0:
+            logging.debug("Minimum filesize for renaming set to %s bytes", self.rename_limit)
+
+        # Store the list of all files for later use
+        all_files = files
+
+        # Filter files to remove nonexistent, undersized, samples, and excluded extensions
+        files = [f for f in files if self._filter_files(f, base_path)]
+
+        if len(files) == 0:
+            logging.debug("No files left to rename after applying filter")
+            return move_to_parent_directory(base_path)
+
+        # Check for season packs or sequential filenames and handle their renaming separately;
+        # if neither applies or succeeds, fall back to going with the single largest file instead.
+        if len(files) > 1:
+            # Season packs handling
+            if self.is_season_pack:
+                logging.debug("Trying to rename season pack files %s", files)
+                if self._rename_season_pack(files, base_path, all_files):
+                    cleanup_empty_directories(base_path)
+                    return move_to_parent_directory(base_path)
+                else:
+                    logging.debug("Season pack sorting didn´t rename any files")
+
+            # Try generic sequential files handling
+            if self.multipart_label and (sequential_files := check_for_multiple(files)):
+                logging.debug("Trying to rename sequential files %s", sequential_files)
+                if self._rename_sequential(sequential_files, base_path):
+                    cleanup_empty_directories(base_path)
+                    return move_to_parent_directory(base_path)
+                else:
+                    logging.debug("Sequential file handling didn't rename any files")
+
         # Find the largest file
-        for file, fp in filepaths:
-            # Skip any file that no longer exists (e.g. extension on the cleanup list)
-            if not os.path.exists(fp):
-                continue
-            size = os.stat(fp).st_size
-            f_file, f_fp, f_size = largest
-            if size > f_size:
-                largest = (file, fp, size)
+        largest_file = {"name": None, "size": 0}
+        for f in files:
+            f_size = os.stat(self._to_filepath(f, base_path)).st_size
+            if f_size > largest_file.get("size"):
+                largest_file.update({"name": f, "size": f_size})
 
-        file, filepath, size = largest
+        # Rename it
+        f_name, f_ext = os.path.splitext(largest_file.get("name"))
+        filepath = self._to_filepath(largest_file.get("name"), base_path)
+        new_filepath = os.path.join(
+            base_path, path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext
+        )
+        if not os.path.exists(new_filepath):
+            renamed_files = []
+            try:
+                logging.debug("Renaming %s to %s", filepath, new_filepath)
+                renamer(filepath, new_filepath)
+                renamed_files.append(new_filepath)
+            except Exception:
+                logging.error(T("Failed to rename %s to %s"), clip_path(base_path), clip_path(new_filepath))
+                logging.info("Traceback: ", exc_info=True)
 
-        if filepath and size > min_size:
-            self.fname, ext = os.path.splitext(os.path.split(file)[1])
-            newpath = os.path.join(
-                current_path, self.filename_set.replace("%fn", self.fname).replace("%ext", ext.lstrip(".")) + ext
-            )
-            if not os.path.exists(newpath):
-                try:
-                    logging.debug("Rename: %s to %s", filepath, newpath)
-                    renamer(filepath, newpath)
-                except:
-                    logging.error(T("Failed to rename: %s to %s"), clip_path(current_path), clip_path(newpath))
-                    logging.info("Traceback: ", exc_info=True)
-                rename_similar(current_path, ext, self.filename_set)
+            rename_similar(base_path, f_ext, self.filename_set, renamed_files)
         else:
-            logging.debug("Nothing to rename, %s", files)
+            logging.debug("Cannot rename %s, new path %s already exists.", largest_file.get("name"), new_filepath)
 
-        return move_to_parent_directory(current_path)
-
-
-class Sorter:
-    """Generic Sorter"""
-
-    def __init__(self, nzo: Optional[NzbObject], cat: str):
-        self.sorter: Optional[BaseSorter] = None
-        self.sorter_active = False
-        self.nzo = nzo
-        self.cat = cat
-
-    def detect(self, job_name: str, complete_dir: str) -> str:
-        """Detect the sorting type"""
-        guess = guess_what(job_name)
-
-        if guess["type"] == "episode":
-            if "date" in guess:
-                self.sorter = DateSorter(self.nzo, job_name, complete_dir, self.cat, guess)
-            else:
-                self.sorter = SeriesSorter(self.nzo, job_name, complete_dir, self.cat, guess)
-        elif guess["type"] == "movie":
-            self.sorter = MovieSorter(self.nzo, job_name, complete_dir, self.cat, guess)
-
-        if self.sorter and self.sorter.matched:
-            self.sorter_active = True
-
-        return self.sorter.get_final_path() if self.sorter_active else complete_dir
-
-
-class SeriesSorter(BaseSorter):
-    """Methods for Series Sorting"""
-
-    def __init__(
-        self,
-        nzo: Optional[NzbObject],
-        job_name: str,
-        path: Optional[str],
-        cat: Optional[str],
-        guess: Optional[MatchesDict] = None,
-        force: Optional[bool] = False,
-    ):
-        super().__init__(nzo, job_name, path, cat, cfg.tv_sort_string(), cfg.tv_categories(), guess, force)
-
-    def match(self):
-        """Try to guess series info if config and category sort out or force is set"""
-        if self.force or (cfg.enable_tv_sorting() and cfg.tv_sort_string() and self.cat.lower() in self.cats):
-            if not self.guess:
-                self.guess = guess_what(self.original_job_name, sort_type="episode")
-            if self.guess.get("type") == "episode" and "date" not in self.guess:
-                logging.debug("Using tv sorter for %s", self.original_job_name)
-                self.matched = True
-                self.type = "tv"
-
-        # Require at least 1 category, this was not enforced before 3.4.0
-        if cfg.enable_tv_sorting() and not self.cats:
-            logging.warning("%s: %s", T("Series Sorting"), T("Select at least 1 category."))
-
-    def get_values(self):
-        """Collect all values needed for path replacement"""
-        self.get_year()
-        self.get_names()
-        self.get_seasons()
-        self.get_episodes()
-        self.get_showdescriptions()
-        self.get_resolution()
-
-    def format_series_numbers(self, numbers: Union[int, List[int]], info_name: str):
-        """Format the numbers in both plain and alternative (zero-padded) format and set as showinfo"""
-        # Guessit returns multiple episodes or seasons as a list of integers, single values as int
-        if isinstance(numbers, int):
-            self.info[info_name] = str(numbers)  # 1
-            self.info[info_name + "_alt"] = str(numbers).rjust(2, "0")  # 01
-        else:
-            self.info[info_name] = "-".join([str(num) for num in numbers])  # 1-2-3
-            self.info[info_name + "_alt"] = "-".join([str(num).rjust(2, "0") for num in numbers])  # 01-02-03
-
-    def get_seasons(self):
-        """Fetch the guessed season number(s)"""
-        self.format_series_numbers(self.guess.get("season", ""), "season_num")
-
-    def get_episodes(self):
-        """Fetch the guessed episode number(s)"""
-        self.format_series_numbers(self.guess.get("episode", ""), "episode_num")
-
-    def rename(self, files: List[str], current_path: str, min_size: int = -1) -> Tuple[str, bool]:
-        """Rename for Series"""
-        if min_size < 0:
-            min_size = cfg.episode_rename_limit.get_int()
-        if not self.rename_files:
-            return move_to_parent_directory(current_path)
-        else:
-            logging.debug("Renaming series file(s)")
-            return super().rename(files, current_path, min_size)
-
-
-class MovieSorter(BaseSorter):
-    """Methods for Movie Sorting"""
-
-    def __init__(
-        self,
-        nzo: Optional[NzbObject],
-        job_name: str,
-        path: str,
-        cat: str,
-        guess: Optional[MatchesDict] = None,
-        force: Optional[bool] = False,
-    ):
-        self.extra = cfg.movie_sort_extra()
-
-        super().__init__(nzo, job_name, path, cat, cfg.movie_sort_string(), cfg.movie_categories(), guess, force)
-
-    def match(self):
-        """Try to guess movie info if config and category sort out or force is set"""
-        if self.force or (cfg.enable_movie_sorting() and self.sort_string and self.cat.lower() in self.cats):
-            if not self.guess:
-                self.guess = guess_what(self.original_job_name, sort_type="movie")
-            if self.guess.get("type") == "movie":
-                logging.debug("Using movie sorter for %s", self.original_job_name)
-                self.matched = True
-                self.type = "movie"
-
-        # Require at least 1 category, this was not enforced before 3.4.0
-        if cfg.enable_movie_sorting() and not self.cats:
-            logging.warning("%s: %s", T("Movie Sorting"), T("Select at least 1 category."))
-
-    def get_values(self):
-        """Collect all values needed for path replacement"""
-        self.get_year()
-        self.get_resolution()
-        self.get_names()
-
-    def rename(self, files, current_path, min_size: int = -1) -> Tuple[str, bool]:
-        """Rename for movie files"""
-        if min_size < 0:
-            min_size = cfg.movie_rename_limit.get_int()
-
-        if not self.rename_files:
-            return move_to_parent_directory(current_path)
-
-        logging.debug("Renaming movie file(s)")
-
-        def filter_files(f, current_path):
-            filepath = os.path.normpath(f) if is_full_path(f) else os.path.normpath(os.path.join(current_path, f))
-            if os.path.exists(filepath):
-                if os.stat(filepath).st_size >= min_size and not is_sample(f) and get_ext(f) not in EXCLUDED_FILE_EXTS:
-                    return True
-            return False
-
-        # Filter samples and anything nonexistent or below the size limit
-        files = [f for f in files if filter_files(f, current_path)]
-
-        # Single movie file
-        if len(files) == 1:
-            return super().rename(files, current_path, min_size)
-
-        # Multiple files, check for sequential filenames
-        elif files and self.extra:
-            matched_files = check_for_multiple(files)
-            if matched_files:
-                logging.debug("Renaming sequential files %s", matched_files)
-                renamed = list(matched_files.values())
-                for index, file in matched_files.items():
-                    filepath = os.path.join(current_path, file)
-                    renamed.append(filepath)
-                    self.fname, ext = os.path.splitext(os.path.split(file)[1])
-                    name = (self.filename_set + self.extra).replace("%1", str(index)).replace(
-                        "%fn", self.fname
-                    ).replace("%ext", ext.lstrip(".")) + ext
-                    newpath = os.path.join(current_path, name)
-                    try:
-                        logging.debug("Rename: %s to %s", filepath, newpath)
-                        renamer(filepath, newpath)
-                    except:
-                        logging.error(T("Failed to rename: %s to %s"), clip_path(filepath), clip_path(newpath))
-                        logging.info("Traceback: ", exc_info=True)
-                rename_similar(current_path, ext, self.filename_set, renamed)
-            else:
-                logging.debug("No sequential files in %s", files)
-
-        return move_to_parent_directory(current_path)
-
-
-class DateSorter(BaseSorter):
-    """Methods for Date Sorting"""
-
-    def __init__(
-        self,
-        nzo: Optional[NzbObject],
-        job_name: str,
-        path: str,
-        cat: str,
-        guess: Optional[MatchesDict] = None,
-        force: Optional[bool] = False,
-    ):
-        super().__init__(nzo, job_name, path, cat, cfg.date_sort_string(), cfg.date_categories(), guess, force)
-
-    def match(self):
-        """Checks the category for a match, if so set self.matched to true"""
-        if self.force or (cfg.enable_date_sorting() and self.sort_string and self.cat.lower() in self.cats):
-            if not self.guess:
-                self.guess = guess_what(self.original_job_name, sort_type="episode")
-            if self.guess.get("type") == "episode" and "date" in self.guess:
-                logging.debug("Using date sorter for %s", self.original_job_name)
-                self.matched = True
-                self.type = "date"
-
-        # Require at least 1 category, this was not enforced before 3.4.0
-        if cfg.enable_date_sorting() and not self.cats:
-            logging.warning("%s: %s", T("Date Sorting"), T("Select at least 1 category."))
-
-    def get_date(self):
-        """Get month and day"""
-        self.info["month"] = str(self.guess.get("date").month)
-        self.info["day"] = str(self.guess.get("date").day)
-        # Zero-padded versions of the same
-        self.info["month_two"] = self.info["month"].rjust(2, "0")
-        self.info["day_two"] = self.info["day"].rjust(2, "0")
-
-    def get_values(self):
-        """Collect all values needed for path replacement"""
-        self.get_year()
-        self.get_date()
-        self.get_resolution()
-        self.get_names()
-        self.get_showdescriptions()
-
-    def rename(self, files: List[str], current_path: str, min_size: int = -1) -> Tuple[str, bool]:
-        """Renaming Date file"""
-        if min_size < 0:
-            min_size = cfg.episode_rename_limit.get_int()
-        if not self.rename_files:
-            return move_to_parent_directory(current_path)
-        else:
-            logging.debug("Renaming date file(s)")
-            return super().rename(files, current_path, min_size)
+        return move_to_parent_directory(base_path)
 
 
 def ends_in_file(path: str) -> bool:
@@ -627,6 +655,9 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
             or not any(
                 [key in guess for key in ("year", "screen_size", "video_codec")]
             )  # No typical movie properties set
+            or (
+                name.lower().startswith("http://") and name.lower().endswith(".nzb") and guess.get("container" == "nzb")
+            )  # URL to an nzb file, can happen when pre-queue script rejects a job
         ):
             guess["type"] = "unknown"
 
@@ -759,8 +790,11 @@ def strip_path_elements(path: str) -> str:
 
     path_elements = path.strip("/").split("/")
     # Insert an empty element to prevent loss, if path starts with a slash
-    if not is_unc and path.strip()[0] in "/":
-        path_elements.insert(0, "")
+    try:
+        if not is_unc and path.strip()[0] in "/":
+            path_elements.insert(0, "")
+    except IndexError:
+        pass
 
     # For Windows, also remove leading and trailing dots: it cannot handle trailing dots, and
     # leading dots carry no significance like on macOS, Linux, etc.
@@ -813,94 +847,85 @@ def is_full_path(file: str) -> bool:
     return file.startswith("/") or (sabnzbd.WIN32 and (file.startswith("\\") or file[1:3] == ":\\"))
 
 
-def eval_sort(sort_type: str, expression: str, name: str = None, multipart: str = "") -> Optional[str]:
-    """Preview a sort expression, to be used by API"""
+def eval_sort(sort_string: str, job_name: str, multipart_label: str = "") -> Optional[str]:
+    """Preview results for a given jobname and sort_string"""
+    job_name = sanitize_foldername(job_name)
+    if not job_name or not sort_string:
+        return None
+
+    # Fire up a dummy Sorter with settings and jobname from the preview
+    sorter = Sorter(
+        None,
+        job_name,
+        "",
+        None,
+        force=True,
+        sorter_config={
+            "name": "config__eval_sort",
+            "order": 0,
+            "min_size": -1,
+            "multipart_label": multipart_label,
+            "sort_string": sort_string,
+            "sort_cats": [],  # Don't bother with categories or types, ignored with force=True
+            "sort_type": [],
+            "is_active": True,
+        },
+    )
+    sorted_path = os.path.normpath(os.path.join(sorter.get_final_path(), sorter.filename_set))
+    if not sorted_path:
+        return None
+
+    # Append a (placeholder) filename, multipart label, and extension or slash
     from sabnzbd.api import Ttemplate
 
-    path = ""
-    name = sanitize_foldername(name)
-    if sort_type == "series":
-        name = name or ("%s S01E05 - %s [DTS]" % (Ttemplate("show-name"), Ttemplate("ep-name")))
-        sorter = SeriesSorter(None, name, path, "tv", force=True)
-    elif sort_type == "movie":
-        name = name or (Ttemplate("movie-sp-name") + " (2009)")
-        sorter = MovieSorter(None, name, path, "tv", force=True)
-    elif sort_type == "date":
-        name = name or (Ttemplate("show-name") + " 2009-01-02")
-        sorter = DateSorter(None, name, path, "tv", force=True)
+    original_filename = Ttemplate("orgFilename")
+
+    if "%fn" in sorted_path:
+        sorted_path = sorted_path.replace("%fn", original_filename)
+    if multipart_label:
+        sorted_path = sorted_path.replace("%1", multipart_label.replace("%1", "1"))
+    if sorter.rename_files:
+        sorted_path += ".ext"
     else:
-        return None
-    sorter.sort_string = expression
-    path = os.path.normpath(os.path.join(sorter.get_final_path(), sorter.filename_set))
-    fname = Ttemplate("orgFilename")
-    fpath = path
-    if sort_type == "movie" and "%1" in multipart:
-        fname = fname + multipart.replace("%1", "1")
-        fpath = fpath + multipart.replace("%1", "1")
-    if "%fn" in path:
-        path = path.replace("%fn", fname + ".ext")
-    else:
-        if sorter.rename_files:
-            path = fpath + ".ext"
-        else:
-            path += "\\" if sabnzbd.WIN32 else "/"
-    return path
+        sorted_path += "\\" if sabnzbd.WIN32 else "/"
+
+    return sorted_path
 
 
 def check_for_multiple(files: List[str]) -> Optional[Dict[str, str]]:
-    """Return list of files that looks like a multi-part post"""
-    RE_MULTIPLE = (
-        re.compile(r"cd\W?(\d+)\W?", re.I),  # .cd1.mkv
-        re.compile(r"\w\W?([\w\d])[{}]*$", re.I),  # blah1.mkv blaha.mkv
-        re.compile(r"\w\W([\w\d])\W", re.I),  # blah-1-ok.mkv blah-a-ok.mkv
-    )
-    for regex in RE_MULTIPLE:
-        matched_files = check_for_sequence(regex, files)
-        if matched_files:
-            return matched_files
-    return None
+    """Return a dictionary of a single set of files that look like parts of
+    a multi-part post. Takes a limited set of indicators from guessit into
+    consideration and only accepts numerical sequences. The files argument
+    is expected to be a list of basenames, not full paths."""
+    candidates = {}
+    wanted_title = None
+    wanted_indicators = GUESSIT_PART_INDICATORS
 
+    for f in files:
+        # Add a prefix to make guessit hit on indicators at the start of filenames as well
+        guess = guessit.api.guessit("PREFIX " + f)
 
-def check_for_sequence(regex, files: List[str]) -> Dict[str, str]:
-    """Return list of files that looks like a sequence"""
-    matches = {}
-    prefix = None
-    # Build a dictionary of matches with keys based on the matches, e.g. {1:'blah-part1.mkv'}
-    for _file in files:
-        name, ext = os.path.splitext(_file)
-        match1 = regex.search(name)
-        if match1:
-            if not prefix or prefix == name[: match1.start()]:
-                matches[match1.group(1)] = name + ext
-                prefix = name[: match1.start()]
+        # Ignore filenames without part indicators
+        if "title" in guess and any(key in guess for key in GUESSIT_PART_INDICATORS):
+            # Create a record of the first title found
+            if not wanted_title:
+                wanted_title = guess["title"]
 
-    # Don't do anything if only one or no files matched
-    if len(list(matches)) < 2:
-        return {}
+            # Take only files with a matching title into consideration
+            if wanted_title == guess["title"]:
+                for indicator in wanted_indicators:
+                    if value := guess.get(indicator):
+                        if isinstance(value, int) and value not in candidates.keys():
+                            # Store the candidate
+                            candidates[value] = f  # e.g. { int(1): str('filename part 1.txt') }
+                            # Lock down the indicator, akin to the title
+                            if len(wanted_indicators) > 1:
+                                wanted_indicators = (indicator,)
+                            break
 
-    key_prev = 0
-    passed = True
-
-    # Check the dictionary to see if the keys form an alphanumeric sequence
-    for akey in sorted(matches):
-        if akey.isdigit():
-            key = int(akey)
-        elif akey in ascii_lowercase:
-            key = ascii_lowercase.find(akey) + 1
-        else:
-            passed = False
-
-        if passed:
-            if not key_prev:
-                key_prev = key
-            else:
-                if key_prev + 1 == key:
-                    key_prev = key
-                else:
-                    passed = False
-        if passed:
-            # convert {'b':'filename-b.mkv'} to {'2', 'filename-b.mkv'}
-            item = matches.pop(akey)
-            matches[str(key)] = item
-
-    return matches if passed else {}
+    # Verify the candidates form a numerical sequence:
+    if len(candidates) < 2 or sorted(candidates) != list(range(min(candidates), max(candidates) + 1)):
+        return None
+    else:
+        # Return sequential files with the integer dictionary keys converted to strings
+        return {str(key): value for key, value in candidates.items()}

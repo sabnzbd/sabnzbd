@@ -449,7 +449,6 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                     logging.info("Skipping duplicate article (%s)", article_id)
                             elif segment_size <= 0 or segment_size >= 2**23:
                                 # Perform sanity check (not negative, 0 or larger than 8MB) on article size
-                                # We use this value later to allocate memory in cache and sabyenc
                                 logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
                                 nzo.increase_bad_articles_counter("bad_articles")
                                 bad_articles = True
@@ -469,14 +468,12 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 # Check if we already have this exact NZF (see custom eq-checks)
                 if nzf in nzo.files:
                     logging.info("File %s occurred twice in NZB, skipping", nzf.filename)
+                    remove_data(nzf.nzf_id, nzo.admin_path)
                     continue
 
                 # Add valid NZF's
                 if file_name and nzf.valid and nzf.nzf_id:
-                    logging.info("File %s added to queue", nzf.filename)
-                    nzo.files.append(nzf)
-                    nzo.files_table[nzf.nzf_id] = nzf
-                    nzo.bytes += nzf.bytes
+                    nzo.add_nzf(nzf)
                     valid_files += 1
                     avg_age_sum += file_timestamp
                 else:

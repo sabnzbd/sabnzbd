@@ -40,7 +40,14 @@ from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict
 
 import sabnzbd
 import sabnzbd.getipaddress
-from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX, REPAIR_REQUEST
+from sabnzbd.constants import (
+    DEFAULT_PRIORITY,
+    MEBI,
+    DEF_ARTICLE_CACHE_DEFAULT,
+    DEF_ARTICLE_CACHE_MAX,
+    REPAIR_REQUEST,
+    GUESSIT_SORT_TYPES,
+)
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
@@ -238,6 +245,16 @@ def opts_to_pp(repair: bool, unpack: bool, delete: bool) -> int:
     if repair:
         return 1
     return 0
+
+
+def sort_to_opts(sort_type: str) -> int:
+    """Convert a guessed sort_type to its integer equivalent"""
+    for k, v in GUESSIT_SORT_TYPES.items():
+        if v == sort_type:
+            return k
+    else:
+        logging.debug("Invalid sort_type %s, pretending a match to 0 ('all')", sort_type)
+        return 0
 
 
 _wildcard_to_regex = {
@@ -1058,20 +1075,6 @@ def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
     return None
 
 
-def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
-    """Format raw NNTP bytes data for display"""
-    if isinstance(text, list):
-        text = text[0]
-
-    # Only need to split if it was raw data
-    # Sometimes (failed login) we put our own texts
-    if not isinstance(text, bytes):
-        return text
-    else:
-        lines = text.split(b"\r\n")
-        return ubtou(lines[0])
-
-
 def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclude_items: Tuple[str, ...] = ()):
     """Recursively update the input_dict in-place with html-safe values"""
     if isinstance(input_dict_or_list, (dict, list)):
@@ -1391,3 +1394,88 @@ def history_updated():
     # Never go over the limit
     if sabnzbd.LAST_HISTORY_UPDATE + 1 >= sys.maxsize:
         sabnzbd.LAST_HISTORY_UPDATE = 1
+
+
+def convert_sorter_settings():
+    """Convert older tv/movie/date sorter settings to the new universal sorter
+
+    The old settings used:
+    -enable_tv_sorting = OptionBool("misc", "enable_tv_sorting", False)
+    -tv_sort_string = OptionStr("misc", "tv_sort_string")
+    -tv_categories = OptionList("misc", "tv_categories", ["tv"])
+
+    -enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False)
+    -movie_sort_string = OptionStr("misc", "movie_sort_string")
+    -movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False)
+    -movie_categories = OptionList("misc", "movie_categories", ["movies"])
+
+    -enable_date_sorting = OptionBool("misc", "enable_date_sorting", False)
+    -date_sort_string = OptionStr("misc", "date_sort_string")
+    -date_categories = OptionList("misc", "date_categories", ["tv"])
+
+    -movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
+    -episode_rename_limit = OptionStr("misc", "episode_rename_limit", "20M")
+
+    The new settings define a sorter as follows (cf. class config.ConfigSorter):
+    name: str {
+        name: str
+        order: int
+        min_size: Union[str|int] = "50M"
+        multipart_label: Optional[str] = ""
+        sort_string: str
+        sort_cats: List[str]
+        sort_type: List[int]
+        is_active: bool = 1
+    }
+
+    With the old settings, sorting was tried in a fixed order (series first, movies last);
+    that order is retained by the conversion code.
+    We only convert enabled sorters."""
+
+    # Keep track of order
+    order = 0
+
+    if cfg.enable_tv_sorting() and cfg.tv_sort_string() and cfg.tv_categories():
+        # Define a new sorter based on the old configuration
+        tv_sorter = {}
+        tv_sorter["order"] = order
+        tv_sorter["min_size"] = cfg.episode_rename_limit()
+        tv_sorter["multipart_label"] = ""  # Previously only available for movie sorting
+        tv_sorter["sort_string"] = cfg.tv_sort_string()
+        tv_sorter["sort_cats"] = cfg.tv_categories()
+        tv_sorter["sort_type"] = [sort_to_opts("tv")]
+        tv_sorter["is_active"] = int(cfg.enable_tv_sorting())
+
+        # Configure the new sorter
+        logging.debug("Converted old series sorter config to '%s': %s", T("Series Sorting"), tv_sorter)
+        config.ConfigSorter(T("Series Sorting"), tv_sorter)
+        order += 1
+
+    if cfg.enable_date_sorting() and cfg.date_sort_string() and cfg.date_categories():
+        date_sorter = {}
+        date_sorter["order"] = order
+        date_sorter["min_size"] = cfg.episode_rename_limit()
+        date_sorter["multipart_label"] = ""  # Previously only available for movie sorting
+        date_sorter["sort_string"] = cfg.date_sort_string()
+        date_sorter["sort_cats"] = cfg.date_categories()
+        date_sorter["sort_type"] = [sort_to_opts("date")]
+        date_sorter["is_active"] = int(cfg.enable_date_sorting())
+
+        # Configure the new sorter
+        logging.debug("Converted old date sorter config to '%s': %s", T("Date Sorting"), date_sorter)
+        config.ConfigSorter(T("Date Sorting"), date_sorter)
+        order += 1
+
+    if cfg.enable_movie_sorting() and cfg.movie_sort_string() and cfg.movie_categories():
+        movie_sorter = {}
+        movie_sorter["order"] = order
+        movie_sorter["min_size"] = cfg.movie_rename_limit()
+        movie_sorter["multipart_label"] = cfg.movie_sort_extra()
+        movie_sorter["sort_string"] = cfg.movie_sort_string()
+        movie_sorter["sort_cats"] = cfg.movie_categories()
+        movie_sorter["sort_type"] = [sort_to_opts("movie")]
+        movie_sorter["is_active"] = int(cfg.enable_movie_sorting())
+
+        # Configure the new sorter
+        logging.debug("Converted old movie sorter config to '%s': %s", T("Movie Sorting"), movie_sorter)
+        config.ConfigSorter(T("Movie Sorting"), movie_sorter)

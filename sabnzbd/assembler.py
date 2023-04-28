@@ -24,7 +24,6 @@ import queue
 import logging
 import re
 from threading import Thread
-import hashlib
 import ctypes
 from typing import Tuple, Optional, List
 
@@ -56,11 +55,8 @@ class Assembler(Thread):
     def process(self, nzo: NzbObject, nzf: Optional[NzbFile] = None, file_done: Optional[bool] = None):
         self.queue.put((nzo, nzf, file_done))
 
-    def queue_full(self):
-        return self.queue.qsize() >= MAX_ASSEMBLER_QUEUE
-
-    def partial_nzf_in_queue(self, nzf: NzbFile):
-        return (nzf.nzo, nzf, False) in self.queue.queue
+    def queue_level(self) -> float:
+        return self.queue.qsize() / MAX_ASSEMBLER_QUEUE
 
     def run(self):
         while 1:
@@ -78,9 +74,7 @@ class Assembler(Thread):
                     self.diskspace_check(nzo, nzf)
 
                 # Prepare filepath
-                filepath = nzf.prepare_filepath()
-
-                if filepath:
+                if filepath := nzf.prepare_filepath():
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
@@ -170,9 +164,6 @@ class Assembler(Thread):
         1) Partial write: write what we have
         2) Nothing written before: write all
         """
-        # New hash-object needed?
-        if not nzf.md5:
-            nzf.md5 = hashlib.md5()
 
         # We write large article-sized chunks, so we can safely skip the buffering of Python
         with open(nzf.filepath, "ab", buffering=0) as fout:
@@ -191,7 +182,7 @@ class Assembler(Thread):
                     # Could be empty in case nzo was deleted
                     if data:
                         fout.write(data)
-                        nzf.md5.update(data)
+                        nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
                         logging.info("No data found when trying to write %s", article)
@@ -207,7 +198,7 @@ class Assembler(Thread):
         # Final steps
         if file_done:
             set_permissions(nzf.filepath)
-            nzf.md5sum = nzf.md5.digest()
+            nzf.assembled = True
 
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
@@ -373,8 +364,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                             unwanted = somefile
                 zf.close()
                 del zf
-        except:
-            logging.info("Error during inspection of RAR-file %s", filepath)
-            logging.debug("Traceback: ", exc_info=True)
+        except rarfile.Error as e:
+            logging.info("Error during inspection of RAR-file %s: %s", filepath, e)
 
     return encrypted, unwanted

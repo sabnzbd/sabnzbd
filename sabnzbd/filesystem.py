@@ -67,8 +67,7 @@ def is_listed_ext(ext: str, ext_list: list) -> bool:
     thus return false for extensions such as 'r007' despite the substring match on 'r00').
     """
     for item in ext_list:
-        RE_EXT = sabnzbd.misc.convert_filter(item)
-        if RE_EXT:
+        if RE_EXT := sabnzbd.misc.convert_filter(item):
             try:
                 if len(RE_EXT.match(ext).group()) == len(ext):
                     return True
@@ -119,6 +118,14 @@ def is_writable(path: str) -> bool:
         return bool(os.stat(path).st_mode & stat.S_IWUSR)
     else:
         return True
+
+
+def is_size(filepath: str, size: int) -> bool:
+    """Return True if filepath exists and is specified size"""
+    try:
+        return os.path.getsize(filepath) == size
+    except:
+        return False
 
 
 _DEVICES = (
@@ -177,10 +184,13 @@ def has_win_device(filename: str) -> bool:
     return False
 
 
-CH_ILLEGAL = "/"
-CH_LEGAL = "+"
-CH_ILLEGAL_WIN = '\\/<>?*|"\t:'
-CH_LEGAL_WIN = "++{}!@#'+-"
+CH_ILLEGAL = "\0/"
+CH_LEGAL = "_+"
+CH_ILLEGAL_WIN = '\\/<>?*|":'
+CH_LEGAL_WIN = "++{}!@#'-"
+for i in range(1, 32):
+    CH_ILLEGAL_WIN += chr(i)
+    CH_LEGAL_WIN += "_"
 
 
 def sanitize_filename(name: str) -> str:
@@ -614,8 +624,7 @@ def set_chmod(path: str, permissions: int, allow_failures: bool = False):
 def set_permissions(path: str, recursive: bool = True):
     """Give folder tree and its files their proper permissions"""
     if not sabnzbd.WIN32:
-        custom_permissions = sabnzbd.cfg.permissions()
-        if custom_permissions:
+        if custom_permissions := sabnzbd.cfg.permissions():
             # If user set permissions, parse them
             custom_permissions = int(custom_permissions, 8)
 
@@ -725,7 +734,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
 
 
 @synchronized(DIR_LOCK)
-def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str:
+def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
     """Determine a unique folder or filename"""
     if not check_mount(path):
         return path
@@ -764,7 +773,8 @@ def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
     filelist = []
     for root, dirs, files in os.walk(input_dir):
         for file in files:
-            if not sabnzbd.misc.match_str(root, IGNORED_FILES_AND_FOLDERS):
+            # Ignore special folders and resources files created by macOS
+            if not sabnzbd.misc.match_str(root, IGNORED_FILES_AND_FOLDERS) and not file.startswith("._"):
                 filelist.append(os.path.join(root, file))
         if not recursive:
             break
@@ -1212,8 +1222,7 @@ def backup_exists(filename: str) -> bool:
 
 def backup_nzb(nzb_path: str):
     """Backup NZB file, return path to nzb if it was saved"""
-    nzb_backup_dir = sabnzbd.cfg.nzb_backup_dir.get_path()
-    if nzb_backup_dir:
+    if nzb_backup_dir := sabnzbd.cfg.nzb_backup_dir.get_path():
         logging.debug("Saving copy of %s in %s", get_filename(nzb_path), nzb_backup_dir)
         shutil.copy(nzb_path, nzb_backup_dir)
 

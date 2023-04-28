@@ -52,12 +52,12 @@ SKIN_TEXT = {
     "sch-rss_scan": TT("Read RSS feeds"),  #:  #: Config->Scheduler
     "sch-remove_failed": TT("Remove failed jobs"),  #: Config->Scheduler
     "sch-remove_completed": TT("Remove completed jobs"),  #: Config->Scheduler
-    "sch-pause_all_low": TT("Pause low prioirty jobs"),  #: Config->Scheduler
-    "sch-pause_all_normal": TT("Pause normal prioirty jobs"),  #: Config->Scheduler
-    "sch-pause_all_high": TT("Pause high prioirty jobs"),  #: Config->Scheduler
-    "sch-resume_all_low": TT("Resume low prioirty jobs"),  #: Config->Scheduler
-    "sch-resume_all_normal": TT("Resume normal prioirty jobs"),  #: Config->Scheduler
-    "sch-resume_all_high": TT("Resume high prioirty jobs"),  #: Config->Scheduler
+    "sch-pause_all_low": TT("Pause low priority jobs"),  #: Config->Scheduler
+    "sch-pause_all_normal": TT("Pause normal priority jobs"),  #: Config->Scheduler
+    "sch-pause_all_high": TT("Pause high priority jobs"),  #: Config->Scheduler
+    "sch-resume_all_low": TT("Resume low priority jobs"),  #: Config->Scheduler
+    "sch-resume_all_normal": TT("Resume normal priority jobs"),  #: Config->Scheduler
+    "sch-resume_all_high": TT("Resume high priority jobs"),  #: Config->Scheduler
     "sch-enable_quota": TT("Enable quota management"),  #: Config->Scheduler
     "sch-disable_quota": TT("Disable quota management"),  #: Config->Scheduler
     "sch-pause_cat": TT("Pause jobs with category"),  #: Config->Scheduler
@@ -140,8 +140,6 @@ SKIN_TEXT = {
     "cmenu-sorting": TT("Sorting"),  #: Main menu item
     "cmenu-special": TT("Special"),  #: Main menu item
     "cmenu-search": TT("Search"),  #: Main menu item
-    # Footer
-    "ft-download": TT("Download Dir"),  # Used in Footer
     # Main page
     "shutdownOK?": TT("Are you sure you want to shutdown SABnzbd?"),
     "link-pause": TT("Pause"),  #: Pause downloading
@@ -225,7 +223,6 @@ SKIN_TEXT = {
     "dashboard-IP6": TT("IPv6 address"),
     "dashboard-NameserverDNS": TT("Nameserver / DNS Lookup"),
     "dashboard-delayed": TT("Download speed limited by"),
-    "dashboard-delayed-cpu": TT("CPU"),
     "dashboard-delayed-disk": TT("Disk speed"),
     "dashboard-loadavg": TT("System load"),
     "dashboard-systemPerformance": TT("System Performance (Pystone)"),  #: Do not translate Pystone
@@ -366,6 +363,7 @@ SKIN_TEXT = {
     "explain-complete_dir": TT(
         "Location to store finished, fully processed downloads.<br /><i>Can be overruled by user-defined categories.</i>"
     ),
+    "explain-complete_dir-sorting": TT("Use Sorting to automatically organize and rename your completed downloads."),
     "opt-complete_free": TT("Minimum Free Space for Completed Download Folder"),
     "explain-complete_free": TT("Will not work if a category folder is on a different disk."),
     "opt-fulldisk_autoresume": TT("Auto resume"),
@@ -616,6 +614,7 @@ SKIN_TEXT = {
     "addMultipleFeeds": TT("Seperate multiple URLs by a comma"),  #: Config->RSS, placeholder (cannot be too long)
     "button-preFeed": TT("Read Feed"),  #: Config->RSS button
     "button-forceFeed": TT("Force Download"),  #: Config->RSS button
+    "button-evalFeed": TT("Apply filters"),
     "rss-edit": TT("Edit"),  #: Config->RSS edit button
     "rss-nextscan": TT("Next scan at"),  #: Config->RSS when will be the next RSS scan
     "rss-order": TT("Order"),  #: Config->RSS table column header
@@ -710,29 +709,19 @@ SKIN_TEXT = {
     "catFolderPath": TT("Folder/Path"),
     "catTags": TT("Indexer Categories / Groups"),
     # Config->Sorting
-    "selectOneCat": TT("Select at least 1 category."),
-    "seriesSorting": TT("Series Sorting"),
-    "opt-tvsort": TT("Enable TV Sorting"),
     "sort-legenda": TT("Pattern Key"),
     "button-clear": TT("Clear"),
-    "button-evalFeed": TT("Apply filters"),
-    "presetSort": TT("Presets"),
     "movieSort": TT("Movie Sorting"),
-    "opt-movieSort": TT("Enable Movie Sorting"),
+    "seriesSort": TT("Series Sorting"),
+    "presetSort": TT("Presets"),
     "affectedCat": TT("Affected Categories"),
     "sort-meaning": TT("Meaning"),
     "sort-pattern": TT("Pattern"),
     "sort-result": TT("Result"),
-    "button-Season1x05": TT("1x05 Season Folder"),
-    "button-SeasonS01E05": TT("S01E05 Season Folder"),
-    "button-Ep1x05": TT("1x05 Episode Folder"),
-    "button-EpS01E05": TT("S01E05 Episode Folder"),
-    "button-FileLikeFolder": TT("Job Name as Filename"),
     "sort-title": TT("Title"),
     "movie-sp-name": TT("Movie Name"),
     "movie-dot-name": TT("Movie.Name"),
     "movie-us-name": TT("Movie_Name"),
-    "show-name": TT("Show Name"),
     "show-sp-name": TT("Show Name"),
     "show-dot-name": TT("Show.Name"),
     "show-us-name": TT("Show_Name"),
@@ -742,7 +731,6 @@ SKIN_TEXT = {
     "ep-sp-name": TT("Episode Name"),
     "ep-dot-name": TT("Episode.Name"),
     "ep-us-name": TT("Episode_Name"),
-    "fileExt": TT("File Extension"),
     "extension": TT("Extension"),
     "partNumber": TT("Part Number"),
     "decade": TT("Decade"),
@@ -753,14 +741,13 @@ SKIN_TEXT = {
     "text": TT("text"),
     "sort-File": TT("file"),
     "sortString": TT("Sort String"),
-    "multiPartLabel": TT("Multi-part label"),
+    "multiPartLabel": TT("Multi-part Label"),
+    "button-showFolder": TT("Show folder"),
+    "button-seasonFolder": TT("Season folder"),
     "button-inFolders": TT("In folders"),
     "button-noFolders": TT("No folders"),
-    "dateSorting": TT("Date Sorting"),
-    "opt-dateSort": TT("Enable Date Sorting"),
-    "button-ShowNameF": TT("Show Name folder"),
-    "button-YMF": TT("Year-Month Folders"),
-    "button-DailyF": TT("Daily Folders"),
+    "button-FileLikeFolder": TT("Job Name as Filename"),
+    "button-Series": TT("Series"),
     "case-adjusted": TT("case-adjusted"),  #: Note for title expression in Sorting that does case adjustment
     "sortResult": TT("Processed Result"),
     "sort-guessitMeaning": TT("Any property"),
@@ -768,6 +755,31 @@ SKIN_TEXT = {
     "guessit-sp-property": TT("GuessIt Property"),
     "guessit-dot-property": TT("GuessIt.Property"),
     "guessit-us-property": TT("GuessIt_Property"),
+    "sort-minimum-size": TT("Minimum Filesize"),
+    "guessit-type": TT("Affected Job Types"),
+    "guessit-type-all": TT("All"),
+    "guessit-type-tv": TT("Series"),
+    "guessit-type-date": TT("Series with air dates"),
+    "guessit-type-movie": TT("Movies"),
+    "guessit-type-other": TT("Other / Unknown"),
+    "explain-sorting": TT(
+        "<p>Use Sorters to automatically organize your completed downloads. For example, put all episodes from a series "
+        "in a season-specific folder. Or, put movies in a folder named after the movie.</p>"
+        "<p>Sorters are tried in order of appearance and can be reordered by dragging and dropping.<br/>"
+        "The first active sorter that matches both the affected category and job type is applied.</p>"
+        "<p>More options are available when Advanced Settings is checked.<br/>"
+        "Detailed information can be found on the Wiki.</p>"
+    ),
+    "add-sorter": TT("Add Sorter"),
+    "remove-sorter": TT("Remove Sorter"),
+    "sort-test-data": TT("Test Data"),
+    "sort-quick-add": TT("Quick start"),
+    "sort-quick-add-series": TT(
+        'Move and rename all episodes in the "tv" category to a show-specific folder'
+    ),  #: Do not translate "tv"!
+    "sort-quick-add-movies": TT(
+        'Move and rename all movies in the "movies" category to a movie-specific folder'
+    ),  #: Do not translate "movies"!
     # Config->Special
     "explain-special": TT(
         "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>"
@@ -857,6 +869,7 @@ SKIN_TEXT = {
     "Glitter-confirmDeleteQueue": TT("Confirm Queue Deletions"),
     "Glitter-confirmDeleteHistory": TT("Confirm History Deletions"),
     "Glitter-keyboardShortcuts": TT("Keyboard shortcuts"),
+    "Glitter-keyboardShortcuts-arrows": TT("Shift+Arrow key: Browse Queue and History pages"),
     "Glitter-pausePrompt": TT("How long or untill when do you want to pause? (in English!)"),
     "Glitter-pausePromptFail": TT("Sorry, we could not interpret that. Try again."),
     "Glitter-pauseFor": TT("Pause for..."),

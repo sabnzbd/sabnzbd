@@ -49,16 +49,10 @@ RENAMES_FILE = "__renames__"
 ATTRIB_FILE = "SABnzbd_attrib"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABYENC_VERSION_REQUIRED = "5.4.4"
+SABCTOOLS_VERSION_REQUIRED = "7.0.1"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
-
-CONFIG_BACKUP_FILES = [
-    BYTES_FILE_NAME,
-    RSS_FILE_NAME,
-    DB_HISTORY_NAME,
-]
 
 DEF_DOWNLOAD_DIR = os.path.normpath("Downloads/incomplete")
 DEF_COMPLETE_DIR = os.path.normpath("Downloads/complete")
@@ -82,14 +76,29 @@ DEF_ARTICLE_CACHE_DEFAULT = "500M"
 DEF_ARTICLE_CACHE_MAX = "1G"
 DEF_TIMEOUT = 60
 DEF_SCANRATE = 5
+DEF_HTTPS_CERT_FILE = "server.cert"
+DEF_HTTPS_KEY_FILE = "server.key"
+DEF_SORTER_RENAME_SIZE = "50M"
 MAX_WARNINGS = 20
 MAX_BAD_ARTICLES = 5
 
+CONFIG_BACKUP_FILES = [
+    BYTES_FILE_NAME,
+    RSS_FILE_NAME,
+    DB_HISTORY_NAME,
+]
+CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
+    DEF_HTTPS_CERT_FILE: "https_cert",
+    DEF_HTTPS_KEY_FILE: "https_key",
+    "server.chain": "https_chain",
+}
+
 # Constants affecting download performance
-MIN_DECODE_QUEUE = 10
-LIMIT_DECODE_QUEUE = 100
-DIRECT_WRITE_TRIGGER = 35
-MAX_ASSEMBLER_QUEUE = 5
+MAX_ASSEMBLER_QUEUE = 12
+SOFT_QUEUE_LIMIT = 0.5
+# Percentage of cache to use before adding file to assembler
+ASSEMBLER_WRITE_THRESHOLD = 5
+NNTP_BUFFER_SIZE = int(800 * KIBI)
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2
@@ -131,6 +140,8 @@ IGNORED_MOVIE_FOLDERS = ("video_ts", "audio_ts", "bdmv")
 EXCLUDED_GUESSIT_PROPERTIES = [
     "part",
 ]
+GUESSIT_PART_INDICATORS = ("cd", "part")
+GUESSIT_SORT_TYPES = {0: "all", 1: "tv", 2: "date", 3: "movie", 4: "unknown"}
 
 
 class Status:

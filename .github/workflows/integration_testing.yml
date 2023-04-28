@@ -20,18 +20,18 @@ jobs:
             builder/SABnzbd.spec
             tests
             --line-length=120
-            --target-version=py37
+            --target-version=py38
             --check
             --diff
 
   test:
     name: Test ${{ matrix.name }} - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
         os: [ubuntu-20.04]
         include:
           - name: macOS
@@ -63,7 +63,7 @@ jobs:
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python --version
-        pip install --upgrade pip wheel
+        python -m pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd

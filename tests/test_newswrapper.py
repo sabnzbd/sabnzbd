@@ -39,8 +39,7 @@ TEST_DATA = b"connection_test"
 
 
 def socket_test_server(ssl_context: ssl.SSLContext):
-    """Support function that starts a mini-server, as
-    socket.create_server is not supported on Python 3.7"""
+    """Support function that starts a mini-server"""
     # Allow reuse of the address, because our CI is too fast for the socket closing
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

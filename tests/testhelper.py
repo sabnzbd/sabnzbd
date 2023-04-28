@@ -22,7 +22,7 @@ import io
 import os
 import time
 from http.client import RemoteDisconnected
-from typing import BinaryIO, Optional, Dict
+from typing import BinaryIO, Optional, Dict, List
 
 import pytest
 from random import choice, randint
@@ -35,12 +35,14 @@ from string import ascii_lowercase, digits
 from unittest import mock
 from urllib3.exceptions import ProtocolError
 import xmltodict
+import functools
 
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import (
     DB_HISTORY_NAME,
     DEF_ADMIN_DIR,
+    DEF_INI_FILE,
     DEFAULT_PRIORITY,
     FORCE_PRIORITY,
     HIGH_PRIORITY,
@@ -52,6 +54,7 @@ from sabnzbd.constants import (
 )
 import sabnzbd.database as db
 from sabnzbd.misc import pp_to_opts
+import sabnzbd.filesystem as filesystem
 
 import tests.sabnews
 
@@ -71,6 +74,7 @@ def set_config(settings_dict):
     """Change config-values on the fly, per test"""
 
     def set_config_decorator(func):
+        @functools.wraps(func)
         def wrapper_func(*args, **kwargs):
             # Setting up as requested
             for item, val in settings_dict.items():
@@ -267,3 +271,106 @@ class SABnzbdBaseTest:
                 pass
         else:
             raise e
+
+
+class DownloadFlowBasics(SABnzbdBaseTest):
+    def is_server_configured(self):
+        """Check if the wizard was already performed.
+        If not: run the wizard!
+        """
+        with open(os.path.join(SAB_CACHE_DIR, DEF_INI_FILE), "r") as config_file:
+            if f"[[{SAB_NEWSSERVER_HOST}]]" not in config_file.read():
+                self.start_wizard()
+
+    def start_wizard(self):
+        # Language-selection
+        self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
+        self.selenium_wrapper(self.driver.find_element, By.ID, "en").click()
+        self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "button.btn.btn-default").click()
+
+        # Fill server-info
+        self.no_page_crash()
+        host_inp = self.selenium_wrapper(self.driver.find_element, By.NAME, "host")
+        host_inp.clear()
+        host_inp.send_keys(SAB_NEWSSERVER_HOST)
+
+        # Disable SSL for testing
+        self.selenium_wrapper(self.driver.find_element, By.NAME, "ssl").click()
+
+        # This will fail if the translations failed to compile!
+        self.selenium_wrapper(self.driver.find_element, By.PARTIAL_LINK_TEXT, "Advanced Settings").click()
+
+        # Change port
+        port_inp = self.selenium_wrapper(self.driver.find_element, By.NAME, "port")
+        port_inp.clear()
+        port_inp.send_keys(SAB_NEWSSERVER_PORT)
+
+        # Test server-check
+        self.selenium_wrapper(self.driver.find_element, By.ID, "serverTest").click()
+        self.wait_for_ajax()
+        assert "Connection Successful" in self.selenium_wrapper(self.driver.find_element, By.ID, "serverResponse").text
+
+        # Final page done
+        self.selenium_wrapper(self.driver.find_element, By.ID, "next-button").click()
+        self.no_page_crash()
+        check_result = self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "quoteBlock").text
+        assert "http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT) in check_result
+
+        # Go to SAB!
+        self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, ".btn.btn-success").click()
+        self.no_page_crash()
+
+    def download_nzb(self, nzb_dir: str, file_output: List[str], dir_name_as_job_name: bool = False):
+        # Verify if the server was setup before we start
+        self.is_server_configured()
+
+        # Create NZB
+        nzb_path = create_nzb(nzb_dir)
+
+        # Add NZB
+        if dir_name_as_job_name:
+            test_job_name = nzb_dir
+        else:
+            test_job_name = "testfile_%s" % time.time()
+        api_result = get_api_result("addlocalfile", extra_arguments={"name": nzb_path, "nzbname": test_job_name})
+        assert api_result["status"]
+
+        # Remove NZB-file
+        os.remove(nzb_path)
+
+        # See how it's doing
+        self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
+
+        # We wait for 20 seconds to let it complete
+        for _ in range(20):
+            try:
+                # Locate status of our job
+                status_text = self.driver.find_element(
+                    By.XPATH,
+                    (
+                        '//div[@id="history-tab"]//tr[td/div/span[contains(text(), "%s")]]/td[contains(@class, "status")]'
+                        % test_job_name
+                    ),
+                ).text
+                # Always sleep to give it some time
+                time.sleep(1)
+                if status_text == "Completed":
+                    break
+            except WebDriverException:
+                time.sleep(1)
+        else:
+            pytest.fail("Download did not complete")
+
+        # Verify all files in the expected file_output are present among the completed files.
+        # Sometimes par2 can also be included, but we accept that. For example when small
+        # par2 files get assembled in after the download already finished (see #1509)
+        completed_files = filesystem.globber(os.path.join(SAB_COMPLETE_DIR, test_job_name), "*")
+        for filename in file_output:
+            assert filename in completed_files
+
+        # Verify if the garbage collection works (see #1628)
+        # We need to give it a second to calm down and clear the variables
+        time.sleep(2)
+        gc_results = get_api_result("gc_stats")["value"]
+        if gc_results:
+            pytest.fail(f"Objects were left in memory after the job finished! {gc_results}")

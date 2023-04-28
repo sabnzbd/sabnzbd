@@ -47,6 +47,8 @@ from sabnzbd.constants import (
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
     DEF_STD_WEB_COLOR,
+    DEF_HTTPS_CERT_FILE,
+    DEF_HTTPS_KEY_FILE,
 )
 
 
@@ -257,10 +259,10 @@ configlock = OptionBool("misc", "config_lock", False)
 ##############################################################################
 # One time trackers
 ##############################################################################
-fixed_ports = OptionBool("misc", "fixed_ports", False)
-sched_converted = OptionBool("misc", "sched_converted", False)
+fixed_ports = OptionBool("misc", "fixed_ports", False, public=False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
-direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)
+direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False, public=False)
+sorters_converted = OptionBool("misc", "sorters_converted", False, public=False)
 
 
 ##############################################################################
@@ -279,8 +281,8 @@ bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
 web_dir = OptionStr("misc", "web_dir", DEF_STD_WEB_DIR)
 web_color = OptionStr("misc", "web_color", DEF_STD_WEB_COLOR)
-https_cert = OptionDir("misc", "https_cert", "server.cert", create=False)
-https_key = OptionDir("misc", "https_key", "server.key", create=False)
+https_cert = OptionDir("misc", "https_cert", DEF_HTTPS_CERT_FILE, create=False)
+https_key = OptionDir("misc", "https_key", DEF_HTTPS_KEY_FILE, create=False)
 https_chain = OptionDir("misc", "https_chain", create=False)
 enable_https = OptionBool("misc", "enable_https", False)
 # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
@@ -335,7 +337,7 @@ no_series_dupes = OptionNumber("misc", "no_series_dupes", 0)
 series_propercheck = OptionBool("misc", "series_propercheck", True)
 pause_on_pwrar = OptionNumber("misc", "pause_on_pwrar", 1)
 ignore_samples = OptionBool("misc", "ignore_samples", False)
-deobfuscate_final_filenames = OptionBool("misc", "deobfuscate_final_filenames", False)
+deobfuscate_final_filenames = OptionBool("misc", "deobfuscate_final_filenames", True)
 auto_sort = OptionStr("misc", "auto_sort")
 direct_unpack = OptionBool("misc", "direct_unpack", False)
 propagation_delay = OptionNumber("misc", "propagation_delay", 0)
@@ -360,20 +362,20 @@ quota_resume = OptionBool("misc", "quota_resume", False)
 quota_period = OptionStr("misc", "quota_period", "m")
 
 ##############################################################################
-# Config - Sorting
+# Config - Sorting (OLD SORTER)
 ##############################################################################
-enable_tv_sorting = OptionBool("misc", "enable_tv_sorting", False)
-tv_sort_string = OptionStr("misc", "tv_sort_string")
-tv_categories = OptionList("misc", "tv_categories", ["tv"])
+enable_tv_sorting = OptionBool("misc", "enable_tv_sorting", False, public=False)
+tv_sort_string = OptionStr("misc", "tv_sort_string", public=False)
+tv_categories = OptionList("misc", "tv_categories", ["tv"], public=False)
 
-enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False)
-movie_sort_string = OptionStr("misc", "movie_sort_string")
-movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False)
-movie_categories = OptionList("misc", "movie_categories", ["movies"])
+enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False, public=False)
+movie_sort_string = OptionStr("misc", "movie_sort_string", public=False)
+movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False, public=False)
+movie_categories = OptionList("misc", "movie_categories", ["movies"], public=False)
 
-enable_date_sorting = OptionBool("misc", "enable_date_sorting", False)
-date_sort_string = OptionStr("misc", "date_sort_string")
-date_categories = OptionList("misc", "date_categories", ["tv"])
+enable_date_sorting = OptionBool("misc", "enable_date_sorting", False, public=False)
+date_sort_string = OptionStr("misc", "date_sort_string", public=False)
+date_categories = OptionList("misc", "date_categories", ["tv"], public=False)
 
 ##############################################################################
 # Config - Scheduling and RSS
@@ -414,6 +416,7 @@ api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
+enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
@@ -434,7 +437,8 @@ host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
-num_simd_decoders = OptionNumber("misc", "num_simd_decoders", 2, minval=1)
+receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
+switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 

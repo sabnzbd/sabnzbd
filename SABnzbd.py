@@ -17,8 +17,8 @@
 
 import sys
 
-if sys.hexversion < 0x03070000:
-    print("Sorry, requires Python 3.7 or above")
+if sys.hexversion < 0x03080000:
+    print("Sorry, requires Python 3.8 or above")
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
@@ -40,6 +40,7 @@ import gc
 from typing import List, Dict, Any
 
 try:
+    import sabctools
     import Cheetah
     import feedparser
     import configobj
@@ -76,6 +77,7 @@ from sabnzbd.constants import (
     DEF_LOG_FILE,
     DEF_STD_CONFIG,
     DEF_LOG_CHERRY,
+    CONFIG_BACKUP_HTTPS,
 )
 import sabnzbd.newsunpack
 from sabnzbd.misc import (
@@ -398,15 +400,13 @@ def get_user_profile_paths():
         return
 
     elif sabnzbd.MACOS:
-        home = os.environ.get("HOME")
-        if home:
+        if home := os.environ.get("HOME"):
             sabnzbd.DIR_LCLDATA = "%s/Library/Application Support/SABnzbd" % home
             sabnzbd.DIR_HOME = home
             return
     else:
         # Unix/Linux
-        home = os.environ.get("HOME")
-        if home:
+        if home := os.environ.get("HOME"):
             sabnzbd.DIR_LCLDATA = "%s/.%s" % (home, DEF_WORKDIR)
             sabnzbd.DIR_HOME = home
             return
@@ -418,25 +418,26 @@ def get_user_profile_paths():
 
 def print_modules():
     """Log all detected optional or external modules"""
-    if sabnzbd.decoder.SABYENC_ENABLED:
-        # Yes, we have SABYenc, and it's the correct version, so it's enabled
-        logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
-        logging.info("SABYenc module is using SIMD set: %s", sabnzbd.decoder.SABYENC_SIMD)
+    if sabnzbd.decoder.SABCTOOLS_ENABLED:
+        # Yes, we have SABCTools, and it's the correct version, so it's enabled
+        logging.info("SABCTools module (v%s)... found!", sabnzbd.decoder.SABCTOOLS_VERSION)
+        logging.info("SABCTools module is using SIMD set: %s", sabnzbd.decoder.SABCTOOLS_SIMD)
+        logging.info("SABCTools module is linked to OpenSSL: %s", sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED)
+
+        # Check if we managed to link, warning for now
+        if not sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED:
+            logging.warning(
+                "Could not link to OpenSSL library, please report here: "
+                "https://github.com/sabnzbd/sabnzbd/issues/2421"
+            )
     else:
-        # Something wrong with SABYenc, so let's determine and print what:
-        if sabnzbd.decoder.SABYENC_VERSION:
-            # We have a VERSION, thus a SABYenc module, but it's not the correct version
-            logging.error(
-                T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"),
-                sabnzbd.decoder.SABYENC_VERSION,
-                sabnzbd.constants.SABYENC_VERSION_REQUIRED,
-            )
-        else:
-            # No SABYenc module at all
-            logging.error(
-                T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"),
-                sabnzbd.constants.SABYENC_VERSION_REQUIRED,
-            )
+        # Wrong SABCTools version, if it was fully missing it would fail to start due to check at the very top
+        logging.error(
+            T("SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"),
+            sabnzbd.decoder.SABCTOOLS_VERSION,
+            sabnzbd.constants.SABCTOOLS_VERSION_REQUIRED,
+        )
+
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
 
@@ -1443,6 +1444,12 @@ def main():
         # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
         abort_and_show_error(browserhost, cherryport)
+
+    # Create a record of the active cert/key/chain files, for use with config.create_config_backup()
+    if enable_https:
+        for setting in CONFIG_BACKUP_HTTPS.values():
+            if full_path := getattr(sabnzbd.cfg, setting).get_path():
+                sabnzbd.CONFIG_BACKUP_HTTPS_OK.append(full_path)
 
     if sabnzbd.WIN32:
         if enable_https:

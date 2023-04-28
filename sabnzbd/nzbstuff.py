@@ -30,6 +30,7 @@ from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO
 
 # SABnzbd modules
 import sabnzbd
+import sabctools
 from sabnzbd.constants import (
     GIGI,
     ATTRIB_FILE,
@@ -156,7 +157,18 @@ class TryList:
 ##############################################################################
 # Article
 ##############################################################################
-ArticleSaver = ("article", "art_id", "bytes", "lowest_partnum", "decoded", "on_disk", "nzf")
+ArticleSaver = (
+    "article",
+    "art_id",
+    "bytes",
+    "lowest_partnum",
+    "decoded",
+    "data_begin",
+    "data_size",
+    "on_disk",
+    "nzf",
+    "crc32",
+)
 
 
 class Article(TryList):
@@ -175,7 +187,10 @@ class Article(TryList):
         self.fetcher_priority: int = 0
         self.tries: int = 0  # Try count
         self.decoded: bool = False
+        self.data_begin: Optional[int] = None
+        self.data_size: Optional[int] = None
         self.on_disk: bool = False
+        self.crc32: Optional[int] = None
         self.nzf: NzbFile = nzf
 
     def reset_try_list(self):
@@ -288,7 +303,8 @@ NzbFileSaver = (
     "deleted",
     "valid",
     "import_finished",
-    "md5sum",
+    "crc32",
+    "assembled",
     "md5of16k",
 )
 
@@ -297,7 +313,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("md5",)
+    __slots__ = NzbFileSaver + ("first_article",)
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -327,23 +343,22 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
 
-        self.md5 = None
-        self.md5sum: Optional[bytes] = None
+        self.crc32: Optional[int] = 0
+        self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
 
         self.valid: bool = bool(raw_article_db)
 
-        if self.valid and self.nzf_id:
-            # Save first article separate so we can do
-            # duplicate file detection and deobfuscate-during-download
-            first_article = self.add_article(raw_article_db.pop(0))
-            first_article.lowest_partnum = True
-            self.nzo.first_articles.append(first_article)
-            self.nzo.first_articles_count += 1
+        # Temporarily hold the first article during import
+        self.first_article: Optional[Article] = None
 
-            # Count how many bytes are available for repair
-            if sabnzbd.par2file.is_parfile(self.filename):
-                self.nzo.bytes_par2 += self.bytes
+        if self.valid and self.nzf_id:
+            # Save first article separate, so we can deobfuscate-during-download
+            # We process the first_file in nzo.add_nzf because if this NZF turns
+            # out to be a duplicate file inside the NZB, the first article would
+            # otherwise become a ghost article.
+            self.first_article = self.add_article(raw_article_db.pop(0))
+            self.first_article.lowest_partnum = True
 
             # Any articles left?
             if raw_article_db:
@@ -393,6 +408,12 @@ class NzbFile(TryList):
         self.setname = setname
         self.vol = vol
         self.blocks = int_conv(blocks)
+
+    def update_crc32(self, crc32: Optional[int], length: int) -> None:
+        if self.crc32 is None or crc32 is None:
+            self.crc32 = None
+        else:
+            self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
     def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
         """Get next articles to be downloaded"""
@@ -455,9 +476,6 @@ class NzbFile(TryList):
         # Convert 2.x.x jobs
         if isinstance(self.decodetable, dict):
             self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable)]
-
-        # Set non-transferable values
-        self.md5 = None
 
     def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the number bytes and first article
@@ -737,7 +755,10 @@ class NzbObject(TryList):
         else:
             # Determine "incomplete" folder
             self.download_path = os.path.join(cfg.download_dir.get_path(), self.work_name)
-            self.download_path = long_path(get_unique_dir(self.download_path, create_dir=True))
+            self.download_path = get_unique_dir(self.download_path, create_dir=True)
+            if not self.download_path:
+                raise NzbEmpty
+            self.download_path = long_path(self.download_path)
             set_permissions(self.download_path)
 
         # Always create the admin-directory, just to be sure
@@ -956,6 +977,24 @@ class NzbObject(TryList):
             self.servercount[serverid] += bytes_received
         else:
             self.servercount[serverid] = bytes_received
+
+    def add_nzf(self, nzf: NzbFile):
+        """Bookkeeping when adding new files
+        Only used during import, so not locked"""
+        self.files.append(nzf)
+        self.files_table[nzf.nzf_id] = nzf
+        self.bytes += nzf.bytes
+
+        # Only now add first article to the list
+        self.first_articles.append(nzf.first_article)
+        self.first_articles_count += 1
+        nzf.first_article = None
+
+        # Count how many bytes are available for repair
+        if sabnzbd.par2file.is_parfile(nzf.filename):
+            self.bytes_par2 += nzf.bytes
+
+        logging.info("File %s added to queue", nzf.filename)
 
     @synchronized(NZO_LOCK)
     def remove_nzf(self, nzf: NzbFile) -> bool:
@@ -1934,7 +1973,10 @@ class NzbObject(TryList):
 
             # Dupe check off nzb filename
             if not res and no_series_dupes:
-                series, season, episode, _, is_proper = sabnzbd.newsunpack.analyse_show(self.final_name)
+                show_analysis = sabnzbd.newsunpack.analyse_show(self.final_name)
+                series, season, episode, is_proper = (
+                    show_analysis[key] for key in ("title", "season", "episode", "is_proper")
+                )
                 if is_proper and series_propercheck:
                     logging.debug("Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found")
                 else:

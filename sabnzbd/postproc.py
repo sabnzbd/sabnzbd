@@ -502,7 +502,7 @@ def process_job(nzo: NzbObject):
                     )
                     logging.info("Traceback: ", exc_info=True)
                     # Better disable sorting because filenames are all off now
-                    file_sorter.sorter_active = None
+                    file_sorter.sorter_active = False
 
             if empty:
                 job_result = -1
@@ -515,7 +515,7 @@ def process_job(nzo: NzbObject):
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sorter_active:
                 if newfiles:
-                    workdir_complete, ok = file_sorter.sorter.rename(newfiles, workdir_complete)
+                    workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         nzo.fail_msg = T("Failed to move files")
@@ -534,8 +534,7 @@ def process_job(nzo: NzbObject):
                     deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
 
                 # Run the user script
-                script_path = make_script_path(script)
-                if script_path:
+                if script_path := make_script_path(script):
                     # Set the current nzo status to "Ext Script...". Used in History
                     nzo.status = Status.RUNNING
                     nzo.set_action_line(T("Running script"), script)
@@ -543,10 +542,9 @@ def process_job(nzo: NzbObject):
                     script_log, script_ret = external_processing(
                         script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
                     )
-                    script_line = get_last_line(script_log)
                     if script_log:
                         script_output = nzo.nzo_id
-                    if script_line:
+                    if script_line := get_last_line(script_log):
                         nzo.set_unpack_info("Script", script_line, unique=True)
                     else:
                         nzo.set_unpack_info("Script", T("Ran %s") % script, unique=True)
@@ -590,7 +588,7 @@ def process_job(nzo: NzbObject):
                 nzo.set_unpack_info("Script", "%s%s " % (script_ret, script_line), unique=True)
 
         # Cleanup again, including NZB files
-        if all_ok:
+        if all_ok and os.path.isdir(workdir_complete):
             cleanup_list(workdir_complete, False)
 
         # Force error for empty result
@@ -670,32 +668,37 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
     """
-    one_folder = False
+    create_job_dir = True
     marker_file = None
 
     # Determine category directory
     catdir = config.get_category(nzo.cat).dir()
     if not catdir:
-        # If none defined, check Default category directory
+        # Fall back to Default if undefined at category-level
         catdir = config.get_category().dir()
 
-    # Check if it should have a directory
+    # Check whether the creation of job directories has been disabled
     if catdir.endswith("*"):
-        catdir = catdir.strip("*")
-        one_folder = True
+        catdir = catdir[:-1]
+        create_job_dir = False
 
-    complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
-    complete_dir = long_path(complete_dir)
+    complete_dir = long_path(real_path(cfg.complete_dir.get_path(), catdir))
 
-    # TV/Movie/Date Renaming code part 1 - detect and construct paths
-    file_sorter = Sorter(nzo, nzo.cat)
-    complete_dir = file_sorter.detect(nzo.final_name, complete_dir)
+    # Initialize the sorter and let it construct a path for the Complete directory
+    file_sorter = Sorter(
+        nzo,
+        nzo.final_name,
+        complete_dir,
+        nzo.cat,
+    )
     if file_sorter.sorter_active:
-        one_folder = False
+        complete_dir = file_sorter.get_final_path()
+        # Sorting overrides the per-category job directory creation setting
+        create_job_dir = True
 
     complete_dir = sanitize_and_trim_path(complete_dir)
 
-    if one_folder:
+    if not create_job_dir:
         workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)
     else:
         workdir_complete = get_unique_dir(os.path.join(complete_dir, nzo.final_name), create_dir=True)
@@ -705,7 +708,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
         logging.error(T("Cannot create final folder %s") % os.path.join(complete_dir, nzo.final_name))
         raise IOError
 
-    if cfg.folder_rename() and not one_folder:
+    if create_job_dir and cfg.folder_rename():
         prefixed_path = prefix(workdir_complete, "_UNPACK_")
         tmp_workdir_complete = get_unique_dir(prefix(workdir_complete, "_UNPACK_"), create_dir=False)
 
@@ -720,7 +723,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     else:
         tmp_workdir_complete = workdir_complete
 
-    return tmp_workdir_complete, workdir_complete, file_sorter, one_folder, marker_file
+    return tmp_workdir_complete, workdir_complete, file_sorter, not create_job_dir, marker_file
 
 
 def parring(nzo: NzbObject):
@@ -911,7 +914,7 @@ def rar_renamer(nzo: NzbObject) -> int:
         file_to_check = os.path.join(nzo.download_path, file_to_check)
 
         # We only want files:
-        if not (os.path.isfile(file_to_check)):
+        if not os.path.isfile(file_to_check):
             continue
 
         if rarfile.is_rarfile(file_to_check):
@@ -1066,24 +1069,21 @@ def cleanup_list(wdir, skip_nzb):
     """
     if cfg.cleanup_list():
         try:
-            files = os.listdir(wdir)
+            with os.scandir(wdir) as files:
+                for entry in files:
+                    if entry.is_dir():
+                        cleanup_list(entry.path, skip_nzb)
+                        cleanup_empty_directories(entry.path)
+                    else:
+                        if on_cleanup_list(entry.name, skip_nzb):
+                            try:
+                                logging.info("Removing unwanted file %s", entry.path)
+                                remove_file(entry.path)
+                            except:
+                                logging.error(T("Removing %s failed"), clip_path(entry.path))
+                                logging.info("Traceback: ", exc_info=True)
         except:
-            files = ()
-        for filename in files:
-            path = os.path.join(wdir, filename)
-            if os.path.isdir(path):
-                cleanup_list(path, skip_nzb)
-            else:
-                if on_cleanup_list(filename, skip_nzb):
-                    try:
-                        logging.info("Removing unwanted file %s", path)
-                        remove_file(path)
-                    except:
-                        logging.error(T("Removing %s failed"), clip_path(path))
-                        logging.info("Traceback: ", exc_info=True)
-        if files:
-            # If directories only contained unwanted files, remove them
-            cleanup_empty_directories(wdir)
+            logging.info("Traceback: ", exc_info=True)
 
 
 def prefix(path, pre):
@@ -1211,8 +1211,7 @@ def rename_and_collapse_folder(oldpath, newpath, files):
 
 def set_marker(folder: str) -> Optional[str]:
     """Set marker file and return name"""
-    name = cfg.marker_file()
-    if name:
+    if name := cfg.marker_file():
         path = os.path.join(folder, name)
         logging.debug("Create marker file %s", path)
         try:

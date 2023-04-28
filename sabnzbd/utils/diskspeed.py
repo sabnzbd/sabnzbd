@@ -9,7 +9,6 @@ import logging
 import time
 
 _DUMP_DATA_SIZE = 10 * 1024 * 1024
-_DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)
 
 
 def diskspeedmeasure(dirname: str) -> float:
@@ -18,6 +17,7 @@ def diskspeedmeasure(dirname: str) -> float:
     Then divide bytes written by time passed
     In case of problems (ie non-writable dir or file), return 0.0
     """
+    dump_data = os.urandom(_DUMP_DATA_SIZE)
     start = time.time()
     maxtime = 0.5  # sec
     total_written = 0
@@ -34,7 +34,7 @@ def diskspeedmeasure(dirname: str) -> float:
         total_time = 0.0
         while total_time < maxtime:
             start = time.time()
-            os.write(fp_testfile, _DUMP_DATA)
+            os.write(fp_testfile, dump_data)
             os.fsync(fp_testfile)
             total_time += time.time() - start
             total_written += _DUMP_DATA_SIZE

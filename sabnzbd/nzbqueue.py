@@ -47,7 +47,6 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
     Status,
     IGNORED_FILES_AND_FOLDERS,
-    DIRECT_WRITE_TRIGGER,
 )
 
 import sabnzbd.cfg as cfg
@@ -584,7 +583,8 @@ class NzbQueue:
             logging.info("Sorting by average date... (reversed: %s)", reverse)
             sort_function = lambda nzo: nzo.avg_date
         elif field == "remaining":
-            logging.debug("Sorting by percentage downloaded...")
+            if self.__nzo_list:
+                logging.debug("Sorting by percentage downloaded...")
             sort_function = lambda nzo: nzo.remaining / nzo.bytes if nzo.bytes else 1
         else:
             logging.debug("Sort: %s not recognized", field)
@@ -755,14 +755,14 @@ class NzbQueue:
 
         # Write data if file is done or at trigger time
         # Skip if the file is already queued, since all available articles will then be written
-        if file_done or (
-            articles_left
-            and (articles_left % DIRECT_WRITE_TRIGGER) == 0
-            and not sabnzbd.Assembler.partial_nzf_in_queue(nzf)
+        if (
+            file_done
+            or (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
+            or (articles_left and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0)
         ):
             if not nzo.precheck:
                 # Only start decoding if we have a filename and type
-                # The type is only set if sabyenc could decode the article
+                # The type is only set if sabctools could decode the article
                 if nzf.filename and nzf.type:
                     sabnzbd.Assembler.process(nzo, nzf, file_done)
                 elif nzf.filename.lower().endswith(".par2"):

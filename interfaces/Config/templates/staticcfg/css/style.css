@@ -96,8 +96,13 @@ body {
 .example {
     background-color: #fefeee;
 }
+.presets strong {
+    display: inline-block;
+    width: 75px;
+}
 .presets {
     margin-bottom: -6px;
+    max-width: 60%;
 }
 .presets input {
     margin: 2px 0;
@@ -326,6 +331,53 @@ tr.separator {
     margin: 5px;
 }
 
+.Sorting .explain-sorting {
+    background-color: #fff;
+    color: #000;
+}
+.Sorting .explain-pattern {
+    border: none;
+    width: 100%;
+}
+.Sorting .pattern-table {
+    border:1px solid #ccc;
+}
+.Sorting .sorter-switch {
+    margin-right: 0.2em;
+}
+.Sorting .sorter-switch-container {
+    margin: 10px 0px;
+    height: 1.5em;
+    display: block;
+}
+.Sorting .sorter-placeholder {
+    position: relative;
+}
+.Sorting .sorter-placeholder:after {
+    content: "\e034";
+    font-family: "Glyphicons Halflings";
+    background: unset;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    border-radius: 15px;
+    border: 1px dashed #444;
+}
+.Sorting .glyphicon-option-vertical {
+    margin-top: 1.5em;
+    margin-right: 0.2em;
+    cursor: move;
+}
+.Sorting form:not(.sorting-row) .glyphicon-option-vertical {
+    visibility: hidden;
+}
+.Sorting .sorting-quick-setup {
+    padding: 1.5em 2em 3em
+}
+
 .RSS .rss-section input[type="text"] {
     max-width: 180px;
 }
@@ -420,6 +472,9 @@ tr.separator {
 }
 .align-center {
     text-align: center;
+}
+.valign-top {
+    vertical-align: top;
 }
 .nowrap {
     white-space: nowrap;
@@ -784,6 +839,7 @@ select {
     vertical-align:middle;
     max-width: 100%;
     min-height: 34px;
+    min-width: 55px;
     font-size: 13px;
     background-color: white;
 }
@@ -1247,6 +1303,12 @@ html[dir="rtl"] .Scheduling form[action="addSchedule"] input[type="checkbox"] {
     .Servers .server-amounts-text {
         padding: 0px 15px 10px;
         width: inherit;
+    }
+    .Sorting .glyphicon-option-vertical {
+        display: none;
+    }
+    .Sorting .sorter h3 {
+        cursor: move;
     }
 }
 

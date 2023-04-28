@@ -1,5 +1,5 @@
 <!--#set global $pane="General"#-->
-<!--#set global $help_uri="configuration/3.7/general"#-->
+<!--#set global $help_uri="configuration/4.0/general"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -375,7 +375,7 @@
     })
 
     // Only allow re-generate if default certs
-    if(\$('#https_cert').val() != 'server.cert') {
+    if(\$('#https_cert').val() != '$def_https_cert_file') {
         \$('.generate_cert').attr('disabled', 'disabled')
     }
 

@@ -1,60 +1,29 @@
-Release Notes - SABnzbd 3.7.2
+Release Notes - SABnzbd 4.0.0
 =========================================================
 
-## Bugfixes and changes since 3.7.1
-- Ignore permissions inside archives during unpacking by UnRar.
-- Improvements to connection error messages.
-- Apply other changes only after updating the `Category` in multi-edit.
-- Categories were not sorted correctly in dropdowns.
-- Prevent crash when `Automatically sort queue` was enabled.
-- Apply `History Retention` setting during startup.
-- Tweaks to download performance.
-- Linux: Update appstream metadata.
+## Changes since 3.7.2
+- In this major update we optimized a core part of the SSL handling.
+  This results in large performance increases when downloading from news
+  servers with SSL enabled. In addition, the general connection handling
+  was improved, resulting in performance improvements for all news servers.
+  Special thanks to: mnightingale, puzzledsab and animetosho!
+- There are multiple settings that can tweak performance, see:
+  https://github.com/sabnzbd/sabnzbd/discussions/2474
+- When adding a new news server, SSL is enabled by default.
+- File assembly performance significantly improved by relying on the
+  CRC32 instead of the MD5 to perform QuickCheck of files.
+- Slowdown more gracefully when the cache fills up.
+- Replaced separate Series/Movie/Date Sorting with general Sorter.
+- HTTPS files are included in the `Backup`.
+- Improved `Watched Folder` scanning and processing.
+- Ignore resource fork files created by macOS.
+- `Deobfuscate final filenames` is enabled for new installations.
+- Dropped support for Python 3.7.
 
-## Bugfixes and changes since 3.7.0
-- Minor improvements in download performance.
-- Scripts set `On queue finish` are no longer persistent by default.
-- Improved `Test Server` to handle more failure cases.
-- Priority list in `Add NZB`-window was missing `Paused` priority.
-- Keyboard shortcuts did not work if not in Tabbed-mode.
-- Keyboard shortcut `S` did not reload status information.
-- In `history` API-call the `stage_log` could be empty.
-- Using the `-` character broke the queue/history search.
-- Improved detection and handling of stuck jobs.
-
-## Changes since 3.6.1
-- The queue and history can be filtered using keywords:
-  `cat` and `priority`. For example: `show name cat:tv`.
-- Use shortcut `shift + arrow-key` to navigate the queue/history pages.
-- The backup is now created in a local folder for security.
-- Recurring backups can be configured using the scheduler.
-- Improvements to Deobfuscate Final Filenames.
-- RSS overview shows the rule that accepted the job.
-- Added option to sort the queue by `% downloaded`.
-- Added option to replace underscores with dots in folder names.
-- SABnzbd Host input will be validated before being applied.
-- Moved system load information from the main page to the Status window.
-- Console logging is now written to `stdout` instead of `stderr`.
-- Removed Special settings `enable_meta`, `disable_key`,
-  `replace_illegal`, `osx_speed` and `show_sysload`.
-- Merged Special settings `win_menu` and `osx_menu` into `tray_icon`.
-- macOS/Windows: Use Python 3.11, slightly boosting overall performance.
-- macOS/Windows: Updated UnRar to 6.12.
-- Windows: Updated MultiPar to 1.3.2.5.
-
-# API changes since 3.6.1
-- Minor improvements in API performance.
-- Removed fields `scripts` and `categories` from `queue` API call.
-- Moved `loadavg` from `queue` to `status` API call.
-
-# Bugfixes since 3.6.1
-- Free Space Detection was too strict when using Direct Unpack.
-- File uploads with special characters would be parsed incorrectly.
-- Passwords from NZB meta-data were tried multiple times.
-- Passwords were not always supplied to the pre-queue script.
-- RSS-feed names were not sanitized when renamed.
-- Make sure short-dates are detected as `YY-MM-DD` in Sorting.
-- Show the custom job name in History when the NZB could not be fetched.
+## Bugfixes since 3.7.2
+- Restore applying `History Retention` setting at startup.
+- Windows: Not all invalid characters were removed from filenames.
+- Windows: Firewall rules were not removed by uninstaller.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x

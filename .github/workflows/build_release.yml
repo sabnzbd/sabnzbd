@@ -32,7 +32,7 @@ jobs:
       if: steps.cache-virtualenv-64bit.outputs.cache-hit != 'true'
       run: |
         python --version
-        pip install --upgrade pip wheel
+        python -m pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
     - name: Build Windows standalone binary and installer (64bit)
@@ -87,7 +87,7 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.11.1"
+      PYTHON_VERSION: "3.11.3"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64

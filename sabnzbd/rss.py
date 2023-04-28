@@ -308,7 +308,8 @@ class RSSReader:
                     myPrio = defPrio
                     n = 0
                     if ("F" in reTypes or "S" in reTypes) and (not season or not episode):
-                        season, episode = sabnzbd.newsunpack.analyse_show(title)[1:3]
+                        show_analysis = sabnzbd.newsunpack.analyse_show(title)
+                        season, episode = show_analysis["season"], show_analysis["episode"]
 
                     # Match against all filters until an positive or negative match
                     logging.debug("Size %s", size)

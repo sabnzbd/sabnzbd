@@ -121,6 +121,8 @@ def _api_set_config(name, kwargs):
         kwargs["keyword"] = handle_rss_api(kwargs)
     elif kwargs.get("section") == "categories":
         kwargs["keyword"] = handle_cat_api(kwargs)
+    elif kwargs.get("section") == "sorters":
+        kwargs["keyword"] = handle_sorter_api(kwargs)
     else:
         res = config.set_config(kwargs)
         if not res:
@@ -627,10 +629,10 @@ LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
 LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
 LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
 LOG_INI_HIDE_RE = re.compile(
-    rb"(email_pwd|email_account|email_to|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
+    rb"(email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
     re.I,
 )
-LOG_HASH_RE = re.compile(rb"([a-fA-F\d]{25})", re.I)
+LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 
 
 def _api_showlog(name, kwargs):
@@ -714,11 +716,10 @@ def _api_disconnect(name, kwargs):
 
 def _api_eval_sort(name, kwargs):
     """API: evaluate sorting expression"""
-    name = kwargs.get("name", "")
-    value = kwargs.get("value", "")
-    title = kwargs.get("title")
-    multipart = kwargs.get("movieextra", "")
-    path = sabnzbd.sorting.eval_sort(value, title, name, multipart)
+    sort_string = kwargs.get("sort_string", "")
+    job_name = kwargs.get("job_name", "")
+    multipart_label = kwargs.get("multipart_label", "")
+    path = sabnzbd.sorting.eval_sort(sort_string, job_name, multipart_label)
     if path is None:
         return report(_MSG_NOT_IMPLEMENTED)
     else:
@@ -1164,6 +1165,22 @@ def handle_server_api(kwargs):
     return name
 
 
+def handle_sorter_api(kwargs):
+    """Special handler for API-call 'set_config' [sorters]"""
+    name = kwargs.get("keyword")
+    if not name:
+        name = kwargs.get("name")
+    if not name:
+        return None
+
+    sorter = config.get_config("sorters", name)
+    if sorter:
+        sorter.set_dict(kwargs)
+    else:
+        config.ConfigSorter(name, kwargs)
+    return name
+
+
 def handle_rss_api(kwargs):
     """Special handler for API-call 'set_config' [rss]"""
     name = kwargs.get("keyword")
@@ -1243,7 +1260,6 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.INTERNET_BANDWIDTH = round(internetspeed_future.result(), 1)
 
     # How often did we delay?
-    info["delayed_decoder"] = sabnzbd.BPSMeter.delayed_decoder
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
 
     # Dashboard: Speed and load of System
@@ -1785,7 +1801,7 @@ def plural_to_single(kw, def_kw=""):
 def del_from_section(kwargs):
     """Remove keyword in section"""
     section = kwargs.get("section", "")
-    if section in ("servers", "rss", "categories"):
+    if section in ("sorters", "servers", "rss", "categories"):
         keyword = kwargs.get("keyword")
         if keyword:
             item = config.get_config(section, keyword)

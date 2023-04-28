@@ -1,17 +1,17 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
 # Pavel C <quoing_transifex@mess.cz>, 2021
 # Safihre <safihre@sabnzbd.org>, 2023
-#
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.8.0-develop\n"
+"Project-Id-Version: SABnzbd-4.0.0RC1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2022\n"
-"Language-Team: Czech (https://www.transifex.com/sabnzbd/teams/111101/cs/)\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Language-Team: Czech (https://app.transifex.com/sabnzbd/teams/111101/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -40,16 +40,10 @@ msgstr "Šablona pro web nebyla nalezena: %s, zkouším standardní šablonu"
 
 #. Error message
 #: SABnzbd.py
-msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
-msgstr ""
-"SABYenc vypnut: Nenalezena správná verze! (Nalezena v%s, očekávána v%s)"
-
-#. Error message
-#: SABnzbd.py
 msgid ""
-"SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
+"SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
-"Modul SABYenc... nebyl nalezen! Očekávána v%s - https://sabnzbd.org/sabyenc"
+"SABCTools vypnut: Nenalezena správná verze! (Nalezena v%s, očekávána v%s)"
 
 #. Error message
 #: SABnzbd.py
@@ -156,11 +150,6 @@ msgstr "Restartuji protože postprocessor selhal"
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
 msgstr "Restartuji protože selhal downloader"
-
-#. Warning message
-#: sabnzbd/__init__.py
-msgid "Restarting because of crashed decoder"
-msgstr "Restartuji protože selhal decoder"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -645,7 +634,7 @@ msgstr ""
 "Nesprávný API klíč, použijte api klíč z Nastavení->Obecné ve vašem programu "
 "třetí strany:"
 
-#: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
 msgstr "Přihlášené selhalo, zkontrolujte jméno a heslo."
 
@@ -780,6 +769,18 @@ msgstr ""
 #: sabnzbd/misc.py
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Python skript \"%s\" nemá nastaveno právo spuštění (+x)"
+
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Series Sorting"
+msgstr ""
+
+#: sabnzbd/misc.py
+msgid "Date Sorting"
+msgstr ""
+
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Movie Sorting"
+msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -1819,32 +1820,32 @@ msgstr "Odstranit dokončené úkoly"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
-msgid "Pause low prioirty jobs"
+msgid "Pause low priority jobs"
 msgstr "Pozastavit úkoly s nízkou prioritou"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
-msgid "Pause normal prioirty jobs"
+msgid "Pause normal priority jobs"
 msgstr "Pozastavit úkoly s normální prioritou"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
-msgid "Pause high prioirty jobs"
+msgid "Pause high priority jobs"
 msgstr "Pozastavit úkoly s vysokou prioritou"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
-msgid "Resume low prioirty jobs"
+msgid "Resume low priority jobs"
 msgstr ""
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
-msgid "Resume normal prioirty jobs"
+msgid "Resume normal priority jobs"
 msgstr ""
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
-msgid "Resume high prioirty jobs"
+msgid "Resume high priority jobs"
 msgstr "Obnovit úkoly s vysokou prioritou"
 
 #. Config->Scheduler
@@ -2123,10 +2124,6 @@ msgstr "Speciální"
 #: sabnzbd/skintext.py
 msgid "Search"
 msgstr "Vyhledávání"
-
-#: sabnzbd/skintext.py
-msgid "Download Dir"
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
@@ -2412,10 +2409,6 @@ msgstr "DNS server / DNS dotazy"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "CPU"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -2877,6 +2870,11 @@ msgstr ""
 msgid ""
 "Location to store finished, fully processed downloads.<br /><i>Can be "
 "overruled by user-defined categories.</i>"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Use Sorting to automatically organize and rename your completed downloads."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3635,6 +3633,10 @@ msgstr ""
 msgid "Force Download"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "Apply filters"
+msgstr ""
+
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
@@ -3997,20 +3999,6 @@ msgstr ""
 msgid "Indexer Categories / Groups"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Select at least 1 category."
-msgstr ""
-
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Series Sorting"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable TV Sorting"
-msgstr ""
-
 #: sabnzbd/skintext.py
 msgid "Pattern Key"
 msgstr ""
@@ -4020,20 +4008,7 @@ msgid "Clear"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Presets"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Movie Sorting"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Movie Sorting"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4050,26 +4025,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Result"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "1x05 Season Folder"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "S01E05 Season Folder"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "1x05 Episode Folder"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "S01E05 Episode Folder"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Job Name as Filename"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4121,10 +4076,6 @@ msgid "Episode_Name"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "File Extension"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Extension"
 msgstr ""
 
@@ -4165,7 +4116,15 @@ msgid "Sort String"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Multi-part label"
+msgid "Multi-part Label"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Show folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Season folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4176,25 +4135,12 @@ msgstr ""
 msgid "No folders"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/skintext.py, sabnzbd/sorting.py
-msgid "Date Sorting"
+#: sabnzbd/skintext.py
+msgid "Job Name as Filename"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Enable Date Sorting"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Show Name folder"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Year-Month Folders"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Daily Folders"
+msgid "Series"
 msgstr ""
 
 #. Note for title expression in Sorting that does case adjustment
@@ -4224,6 +4170,69 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Minimum Filesize"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Affected Job Types"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "All"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Series with air dates"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Movies"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Other / Unknown"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"<p>Use Sorters to automatically organize your completed downloads. For "
+"example, put all episodes from a series in a season-specific folder. Or, put"
+" movies in a folder named after the movie.</p><p>Sorters are tried in order "
+"of appearance and can be reordered by dragging and dropping.<br/>The first "
+"active sorter that matches both the affected category and job type is "
+"applied.</p><p>More options are available when Advanced Settings is "
+"checked.<br/>Detailed information can be found on the Wiki.</p>"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Add Sorter"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Remove Sorter"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Test Data"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Quick start"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all episodes in the \"tv\" category to a show-specific "
+"folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all movies in the \"movies\" category to a movie-specific "
+"folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4460,6 +4469,10 @@ msgid "Keyboard shortcuts"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Shift+Arrow key: Browse Queue and History pages"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr ""
 
@@ -4627,8 +4640,8 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/sorting.py
-msgid "Failed to rename: %s to %s"
-msgstr "Nezdařilo se přejmenovat: %s na %s"
+msgid "Failed to rename %s to %s"
+msgstr ""
 
 #. Error message
 #: sabnzbd/sorting.py
