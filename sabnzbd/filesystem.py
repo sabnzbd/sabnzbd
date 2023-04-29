@@ -1287,7 +1287,7 @@ def directory_is_writable(test_dir: str) -> bool:
     if directory_is_writable_with_file(test_dir, "A" * 245 + str(random.randrange(10000, 99999))):
         logging.debug("OK: I can write a long filename  to %s", test_dir)
     else:
-        sabnzbd.misc.helpful_warning("Cannot write a long filename to %s", test_dir)
+        sabnzbd.misc.helpful_warning(T("Cannot write a long filename to %s. This can cause problems."), test_dir)
         allgood = False
 
     # unicode in filename
