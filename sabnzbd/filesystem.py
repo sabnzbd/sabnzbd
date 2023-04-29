@@ -1284,8 +1284,7 @@ def directory_is_writable(test_dir: str) -> bool:
     allgood = True  # default return value
 
     # long filename; normal filesystems accept 255 byte filenames
-    longname = "A" * 245 + str(random.randrange(10000, 99999))
-    if directory_is_writable_with_file(test_dir, longname):
+    if directory_is_writable_with_file(test_dir, "A" * 245 + str(random.randrange(10000, 99999))):
         logging.debug("OK: I can write a long filename  to %s", test_dir)
     else:
         sabnzbd.misc.helpful_warning("Cannot write a long filename to %s", test_dir)
