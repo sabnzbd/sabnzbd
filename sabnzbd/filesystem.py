@@ -1284,17 +1284,12 @@ def directory_is_writable(test_dir: str) -> bool:
     allgood = True  # default return value
 
     # long filename; normal filesystems accept 255 byte filenames
-    if directory_is_writable_with_file(test_dir, "A" * 245 + str(random.randrange(10000, 99999))):
-        logging.debug("OK: I can write a long filename  to %s", test_dir)
-    else:
+    if not directory_is_writable_with_file(test_dir, "A" * 245 + str(random.randrange(10000, 99999))):
         sabnzbd.misc.helpful_warning(T("Cannot write a long filename to %s. This can cause problems."), test_dir)
         allgood = False
 
     # unicode in filename
-    # Note: 4 byte per char
-    if directory_is_writable_with_file(test_dir, "🚀" * 20):
-        logging.debug("OK: I can write a unicode filename to %s", test_dir)
-    else:
+    if not directory_is_writable_with_file(test_dir, "🚀" * 20):
         sabnzbd.misc.helpful_warning(T("Cannot write a unicode filename to %s. This can cause problems."), test_dir)
         allgood = False
 
