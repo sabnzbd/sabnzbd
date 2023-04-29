@@ -1295,7 +1295,7 @@ def directory_is_writable(test_dir: str) -> bool:
     if directory_is_writable_with_file(test_dir, "🚀" * 20):
         logging.debug("OK: I can write a unicode filename to %s", test_dir)
     else:
-        sabnzbd.misc.helpful_warning("Cannot write a unicode filename to %s", test_dir)
+        sabnzbd.misc.helpful_warning(T("Cannot write a unicode filename to %s. This can cause problems."), test_dir)
         allgood = False
 
     # if not on Windows, check strange characters
