@@ -1,9 +1,9 @@
 <!--#set global $pane="Sorting"#-->
-<!--#set global $help_uri="configuration/4.0/sorting"#-->
+<!--#set global $help_uri = $confighelpuri + "sorting"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="padTable section explain-sorting">
-    <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+    <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
     $T('explain-sorting')
 </div>
 <div class="colmask">
@@ -14,11 +14,11 @@
         </label>
         <div class="advanced-buttonSeperator"></div>
     </div>
-    <!--#for $cur, $slot in enumerate($slotinfo)#-->
-    <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
-    <!--#set $selected_types = ["0"] if not len($selected_types) else $selected_types #-->
 
     <div class="sortables">
+        <!--#for $cur, $slot in enumerate($slotinfo)#-->
+        <!--#set $selected_types = [$str(entry) for entry in $slot.sort_type]#-->
+        <!--#set $selected_types = ["0"] if not len($selected_types) else $selected_types #-->
         <!-- SORTER $cur -->
         <div class="section <!--#if $cur != 0#-->sorter<!--#end if#-->" id="sorter_$cur" <!--#if $cur == 0#-->style="display: none;"<!--#end if#-->>
             <form action="save_sorter" method="post" autocomplete="off" <!--#if $cur != 0#-->class="sorting-row"<!--#end if#-->>
@@ -33,9 +33,9 @@
                 </div>
                 <div class="col2">
                     <!--#if $cur == 0#-->
-                    <h3>$T('add-sorter') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3>$T('add-sorter') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <!--#else#-->
-                    <h3>$slot.name <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3>$slot.name <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <div class="sorter-switch-container wide">
                         <input type="checkbox" class="toggleSorterCheckbox sorter-switch float-left" rel="$slot.name" name="is_active" id="is_active_$cur" value="$slot.is_active" <!--#if $slot.is_active != 0 then 'checked="checked"' else ""#--> />
                         <label class="sorter-switch float-left" for="is_active_$cur">$T('enabled')</label>
@@ -341,8 +341,9 @@
                 </div>
             </form>
         </div>
+        <!--#end for#-->
     </div>
-    <!--#end for#-->
+
     <!--#if len($slotinfo) == 1 and ("tv" in $categories or "movies" in $categories)#-->
     <div class="section align-center alt sorting-quick-setup">
         <h3>$T('sort-quick-add'):</h3>

@@ -1,5 +1,5 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/4.0/servers"#-->
+<!--#set global $help_uri = $confighelpuri + "servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#import json#-->
@@ -29,7 +29,7 @@
     </div>
     <div class="section" id="addServerContent" style="display: none;">
         <div class="col2">
-            <h3>$T('addServer') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('addServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div>
         <div class="col1">
             <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
@@ -96,7 +96,7 @@
                         <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
                         <input type="text" name="ssl_ciphers" id="ssl_ciphers" />
                         <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
-                        <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
+                        <a href="https://sabnzbd.org/wiki/advanced/ssl-ciphers" target="_blank">https://sabnzbd.org/wiki/advanced/ssl-ciphers</a></span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="send_group">$T('srv-send_group')</label>
@@ -151,7 +151,7 @@
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
-                    <h3 title="$server['displayname']">$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3 title="$server['displayname']">$server['displayname'] <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <!--#if int($server['enable']) != 0 #-->
                         <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
                             <!--#set $cur_prio_color = $cur_prio_color+1 #-->
@@ -228,7 +228,7 @@
                             <label class="config" for="ssl_ciphers$cur">$T('opt-ssl_ciphers')</label>
                             <input type="text" name="ssl_ciphers" id="ssl_ciphers$cur" value="$server['ssl_ciphers']" />
                             <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
-                            <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
+                            <a href="https://sabnzbd.org/wiki/advanced/ssl-ciphers" target="_blank">https://sabnzbd.org/wiki/advanced/ssl-ciphers</a></span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="required$cur">$T('srv-required')</label>
