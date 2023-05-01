@@ -32,22 +32,29 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-architecture: [ "x64" ]
         os: [ubuntu-20.04]
         include:
           - name: macOS
             os: macos-latest
             python-version: "3.11"
+            python-architecture: "x64"
           - name: Windows
             os: windows-latest
             python-version: "3.11"
+            python-architecture: "x64"
+          - name: Windows (32bit and legacy)
+            os: windows-latest
+            python-version: "3.8"
+            python-architecture: "x86"
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }} ${{ matrix.python-architecture }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-        architecture: "x64"
+        architecture:  ${{ matrix.python-architecture }}
     - name: Install system dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar p7zip-full par2
@@ -55,7 +62,7 @@ jobs:
       uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv
       with:
-        custom_cache_key_element: "ci"
+        custom_cache_key_element: ci-${{ matrix.python-architecture }}
         requirement_files: |
           **/requirements.txt
           PKG-INFO
