@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-sabctools==7.0.1
+sabctools==7.0.2
 cheetah3==3.2.6.post1
 cffi==1.15.1
 pycparser==2.21
