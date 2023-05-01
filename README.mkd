@@ -1,5 +1,8 @@
-Release Notes - SABnzbd 4.0.0
+Release Notes - SABnzbd 4.0.1
 =========================================================
+
+## Bugfixes since 4.0.0
+- Windows: Prevent fatal crash on 32bit Windows.
 
 ## Changes since 3.7.2
 - In this major update we optimized a core part of the SSL handling.
