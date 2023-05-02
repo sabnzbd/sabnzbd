@@ -25,12 +25,14 @@ import tempfile
 import time
 import shutil
 import subprocess
+import json
 import tarfile
 import urllib.request
 import urllib.error
 import configobj
 import pkginfo
 import github
+import praw
 from typing import List
 
 
@@ -646,6 +648,42 @@ if __name__ == "__main__":
                     body="Automated update of release files",
                     head=RELEASE_VERSION,
                 )
+
+            # Only with GitHub success we proceed to Reddit
+            if reddit_token := os.environ.get("REDDIT_TOKEN", ""):
+                # Token format (without whitespace):
+                # {
+                #     "client_id":"XXX",
+                #     "client_secret":"XXX",
+                #     "user_agent":"SABnzbd release script",
+                #     "username":"Safihre",
+                #     "password":"XXX"
+                # }
+                credentials = json.loads(reddit_token)
+                reddit = praw.Reddit(**credentials)
+
+                subreddit_sabnzbd = reddit.subreddit("sabnzbd")
+                subreddit_usenet = reddit.subreddit("usenet")
+
+                # Read the release notes
+                with open(RELEASE_README, "r") as readme_file:
+                    readme_lines = readme_file.readlines()
+
+                # Use the header in the readme as title
+                title = readme_lines[0]
+                release_notes_text = "".join(readme_lines[3:])
+
+                # Post always to r/SABnzbd
+                print("Posting release notes to Reddit: r/sabnzbd")
+                submission = subreddit_sabnzbd.submit(title, selftext=release_notes_text)
+
+                # Only stable releases to r/usenet
+                if not prerelease:
+                    print("Cross-posting release notes to Reddit: r/usenet")
+                    submission.crosspost(subreddit_usenet)
+            else:
+                print("Missing REDDIT_TOKEN")
+
         else:
             print("To push release to GitHub, first tag the commit.")
             print("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")
