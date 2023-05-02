@@ -641,7 +641,7 @@ if __name__ == "__main__":
                 # Create pull-request
                 print("Creating pull request in sabnzbd/sabnzbd.github.io for the update")
                 gh_repo_web.create_pull(
-                    title=RELEASE_VERSION,
+                    title="Release %s" % RELEASE_VERSION,
                     base="master",
                     body="Automated update of release files",
                     head=RELEASE_VERSION,
