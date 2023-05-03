@@ -225,7 +225,6 @@ if __name__ == "__main__":
         delete_files_glob("dist/SABnzbd/ucrtbase.dll")
 
         # Remove other files we don't need
-        delete_files_glob("dist/SABnzbd/PKG-INFO")
         delete_files_glob("dist/SABnzbd/win32ui.pyd")
         delete_files_glob("dist/SABnzbd/winxpgui.pyd")
 

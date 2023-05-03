@@ -24,9 +24,7 @@ jobs:
       with:
         custom_virtualenv_dir: "venv64"
         custom_cache_key_element: "release"
-        requirement_files: |
-          **/requirements.txt
-          PKG-INFO
+        requirement_files:  "**/requirements.txt"
     - name: Install Python dependencies (64bit)
       if: steps.cache-virtualenv-64bit.outputs.cache-hit != 'true'
       run: |
@@ -57,9 +55,7 @@ jobs:
       with:
         custom_virtualenv_dir: "venv32"
         custom_cache_key_element: "release"
-        requirement_files: |
-          **/requirements.txt
-          PKG-INFO
+        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies (32bit and legacy)
       if: steps.cache-virtualenv-32bit.outputs.cache-hit != 'true'
       run: |
@@ -109,9 +105,7 @@ jobs:
       id: cache-virtualenv
       with:
         custom_cache_key_element: "release"
-        requirement_files: |
-          **/requirements.txt
-          PKG-INFO
+        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies
       # We have to manually take a few steps:
       # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we

@@ -48,7 +48,6 @@ EXTRA_FILES = [
     "GPL3.txt",
     "COPYRIGHT.txt",
     "ISSUES.txt",
-    "PKG-INFO",
 ]
 EXTRA_FOLDERS = [
     "scripts/",

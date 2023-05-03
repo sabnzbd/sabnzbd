@@ -33,6 +33,7 @@ jobs:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         python-architecture: ["x64"]
+        name: ["Linux"]
         os: [ubuntu-20.04]
         include:
           - name: macOS
@@ -43,7 +44,7 @@ jobs:
             os: windows-latest
             python-version: "3.11"
             python-architecture: "x64"
-          - name: Windows (32bit and legacy)
+          - name: Windows (32bit)
             os: windows-latest
             python-version: "3.8"
             python-architecture: "x86"
@@ -63,9 +64,7 @@ jobs:
       id: cache-virtualenv
       with:
         custom_cache_key_element: ci-${{ matrix.python-architecture }}
-        requirement_files: |
-          **/requirements.txt
-          PKG-INFO
+        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
