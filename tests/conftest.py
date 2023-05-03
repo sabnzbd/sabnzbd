@@ -67,7 +67,7 @@ def run_sabnzbd(clean_cache_dir, request):
             get_url_result("shutdown", SAB_HOST, SAB_PORT)
         except requests.ConnectionError:
             sabnzbd_process.kill()
-            sabnzbd_process.communicate(timeout=10)
+            sabnzbd_process.communicate(timeout=30)
         except Exception as err:
             warn("Failed to shutdown the sabnzbd process: %s" % err)
 
@@ -109,7 +109,7 @@ def run_sabnzbd(clean_cache_dir, request):
     )
 
     # Wait for SAB to respond
-    for _ in range(10):
+    for _ in range(30):
         try:
             get_url_result()
             # Woohoo, we're up!
