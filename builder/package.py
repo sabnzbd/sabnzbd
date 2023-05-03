@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import glob
-import hashlib
 import platform
 import re
 import sys
@@ -25,43 +24,26 @@ import tempfile
 import time
 import shutil
 import subprocess
-import json
 import tarfile
 import urllib.request
 import urllib.error
 import configobj
-import pkginfo
-import github
-import praw
 from typing import List
 
-
-VERSION_FILE = "sabnzbd/version.py"
-SPEC_FILE = "SABnzbd.spec"
-
-# Also modify these in "SABnzbd.spec"!
-extra_files = [
-    "README.mkd",
-    "INSTALL.txt",
-    "LICENSE.txt",
-    "GPL2.txt",
-    "GPL3.txt",
-    "COPYRIGHT.txt",
-    "ISSUES.txt",
-    "PKG-INFO",
-]
-
-extra_folders = [
-    "scripts/",
-    "licenses/",
-    "locale/",
-    "email/",
-    "interfaces/Glitter/",
-    "interfaces/wizard/",
-    "interfaces/Config/",
-    "scripts/",
-    "icons/",
-]
+from constants import (
+    RELEASE_VERSION,
+    VERSION_FILE,
+    RELEASE_README,
+    RELEASE_NAME,
+    RELEASE_BINARY_32,
+    RELEASE_BINARY_64,
+    RELEASE_INSTALLER,
+    ON_GITHUB_ACTIONS,
+    RELEASE_THIS,
+    RELEASE_SRC,
+    EXTRA_FILES,
+    EXTRA_FOLDERS,
+)
 
 
 # Support functions
@@ -124,6 +106,8 @@ def patch_version_file(release_name):
 
 def test_sab_binary(binary_path: str):
     """Wrapper to have a simple start-up test for the binary"""
+    # Only needed when building release
+
     with tempfile.TemporaryDirectory() as config_dir:
         sabnzbd_process = subprocess.Popen(
             [binary_path, "--browser", "0", "--logging", "2", "--config", config_dir],
@@ -187,31 +171,14 @@ if __name__ == "__main__":
     if not os.path.exists("builder"):
         raise FileNotFoundError("Run from the main SABnzbd source folder: python builder/package.py")
 
-    # Extract version info
-    RELEASE_VERSION = pkginfo.Develop(".").version
-
     # Check if we have the needed certificates
     try:
         import certifi
     except ImportError:
         raise FileNotFoundError("Need certifi module")
 
-    # Define release name
-    RELEASE_NAME = "SABnzbd-%s" % RELEASE_VERSION
-    RELEASE_TITLE = "SABnzbd %s" % RELEASE_VERSION
-    RELEASE_SRC = RELEASE_NAME + "-src.tar.gz"
-    RELEASE_BINARY_32 = RELEASE_NAME + "-win32-bin.zip"
-    RELEASE_BINARY_64 = RELEASE_NAME + "-win64-bin.zip"
-    RELEASE_INSTALLER = RELEASE_NAME + "-win-setup.exe"
-    RELEASE_MACOS = RELEASE_NAME + "-osx.dmg"
-    RELEASE_README = "README.mkd"
-
     # Patch release file
     patch_version_file(RELEASE_VERSION)
-
-    # To draft a release or not to draft a release?
-    ON_GITHUB_ACTIONS = os.environ.get("CI", False)
-    RELEASE_THIS = "refs/tags/" in os.environ.get("GITHUB_REF", "")
 
     # Rename release notes file
     safe_remove("README.txt")
@@ -231,7 +198,7 @@ if __name__ == "__main__":
     safe_remove(RELEASE_NAME)
 
     # Copy the specification
-    shutil.copyfile("builder/%s" % SPEC_FILE, SPEC_FILE)
+    shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
 
     if "binary" in sys.argv or "installer" in sys.argv:
         # Must be run on Windows
@@ -437,15 +404,15 @@ if __name__ == "__main__":
         safe_remove(RELEASE_SRC)
 
         # Add extra files and folders need for source dist
-        extra_folders.extend(["sabnzbd/", "po/", "linux/", "tools/", "tests/"])
-        extra_files.extend(["SABnzbd.py", "requirements.txt"])
+        EXTRA_FOLDERS.extend(["sabnzbd/", "po/", "linux/", "tools/", "tests/"])
+        EXTRA_FILES.extend(["SABnzbd.py", "requirements.txt"])
 
         # Copy all folders and files to the new folder
-        for source_folder in extra_folders:
+        for source_folder in EXTRA_FOLDERS:
             shutil.copytree(source_folder, os.path.join(src_folder, source_folder), dirs_exist_ok=True)
 
         # Copy all files
-        for source_file in extra_files:
+        for source_file in EXTRA_FILES:
             shutil.copyfile(source_file, os.path.join(src_folder, source_file))
 
         # Make sure all line-endings are correct
@@ -484,209 +451,6 @@ if __name__ == "__main__":
 
         # Remove source folder
         safe_remove(src_folder)
-
-        # Calculate hashes for Synology release
-        with open(RELEASE_SRC, "rb") as inp_file:
-            source_data = inp_file.read()
-
-        print("----")
-        print(RELEASE_SRC, "SHA1", hashlib.sha1(source_data).hexdigest())
-        print(RELEASE_SRC, "SHA256", hashlib.sha256(source_data).hexdigest())
-        print(RELEASE_SRC, "MD5", hashlib.md5(source_data).hexdigest())
-        print("----")
-
-    # Release to github
-    if "release" in sys.argv:
-        # Check if tagged as release and check for token
-        gh_token = os.environ.get("AUTOMATION_GITHUB_TOKEN", "")
-        if RELEASE_THIS and gh_token:
-            gh_obj = github.Github(gh_token)
-            gh_repo = gh_obj.get_repo("sabnzbd/sabnzbd")
-
-            # Read the release notes
-            with open(RELEASE_README, "r") as readme_file:
-                readme_data = readme_file.read()
-
-            # Pre-releases are longer than 6 characters (e.g. 3.1.0Beta1 vs 3.1.0, but also 3.0.11)
-            prerelease = len(RELEASE_VERSION) > 5
-
-            # We have to manually check if we already created this release
-            for release in gh_repo.get_releases():
-                if release.tag_name == RELEASE_VERSION:
-                    gh_release = release
-                    print("Found existing release %s" % gh_release.title)
-                    break
-            else:
-                # Did not find it, so create the release, use the GitHub tag we got as input
-                print("Creating GitHub release SABnzbd %s" % RELEASE_VERSION)
-                gh_release = gh_repo.create_git_release(
-                    tag=RELEASE_VERSION,
-                    name=RELEASE_TITLE,
-                    message=readme_data,
-                    draft=True,
-                    prerelease=prerelease,
-                )
-
-            # Fetch existing assets, as overwriting is not allowed by GitHub
-            gh_assets = gh_release.get_assets()
-
-            # Upload the assets
-            files_to_check = (
-                RELEASE_SRC,
-                RELEASE_BINARY_32,
-                RELEASE_BINARY_64,
-                RELEASE_INSTALLER,
-                RELEASE_MACOS,
-                RELEASE_README,
-            )
-            for file_to_check in files_to_check:
-                if os.path.exists(file_to_check):
-                    # Check if this file was previously uploaded
-                    if gh_assets.totalCount:
-                        for gh_asset in gh_assets:
-                            if gh_asset.name == file_to_check:
-                                print("Removing existing asset %s " % gh_asset.name)
-                                gh_asset.delete_asset()
-                    # Upload the new one
-                    print("Uploading %s to release %s" % (file_to_check, gh_release.title))
-                    gh_release.upload_asset(file_to_check)
-
-            # Check if we now have all files
-            gh_new_assets = gh_release.get_assets()
-            if gh_new_assets.totalCount:
-                all_assets = [gh_asset.name for gh_asset in gh_new_assets]
-
-                # Check if we have all files, using set-comparison
-                if set(files_to_check) == set(all_assets):
-                    print("All assets present, releasing %s" % RELEASE_VERSION)
-                    # Publish release
-                    gh_release.update_release(
-                        tag_name=RELEASE_VERSION,
-                        name=RELEASE_TITLE,
-                        message=readme_data,
-                        draft=False,
-                        prerelease=prerelease,
-                    )
-
-            # Update the website
-            gh_repo_web = gh_obj.get_repo("sabnzbd/sabnzbd.github.io")
-            # Check if the branch already exists, only create one if it doesn't
-            skip_website_update = False
-            try:
-                gh_repo_web.get_branch(RELEASE_VERSION)
-                print("Branch %s on sabnzbd/sabnzbd.github.io already exists, skipping update" % RELEASE_VERSION)
-                skip_website_update = True
-            except github.GithubException:
-                # Create a new branch to have the changes
-                sb = gh_repo_web.get_branch("master")
-                print("Creating branch %s on sabnzbd/sabnzbd.github.io" % RELEASE_VERSION)
-                new_branch = gh_repo_web.create_git_ref(ref="refs/heads/" + RELEASE_VERSION, sha=sb.commit.sha)
-
-            # Update the files
-            if not skip_website_update:
-                # We need bytes version to interact with GitHub
-                RELEASE_VERSION_BYTES = RELEASE_VERSION.encode()
-
-                # Get all the version files
-                latest_txt = gh_repo_web.get_contents("latest.txt")
-                latest_txt_items = latest_txt.decoded_content.split()
-                new_latest_txt_items = latest_txt_items[:2]
-                config_yml = gh_repo_web.get_contents("_config.yml")
-                if prerelease:
-                    # If it's a pre-release, we append to current version in latest.txt
-                    new_latest_txt_items.extend([RELEASE_VERSION_BYTES, latest_txt_items[1]])
-                    # And replace in _config.yml
-                    new_config_yml = re.sub(
-                        b"latest_testing: '[^']*'",
-                        b"latest_testing: '%s'" % RELEASE_VERSION_BYTES,
-                        config_yml.decoded_content,
-                    )
-                else:
-                    # New stable release, replace the version
-                    new_latest_txt_items[0] = RELEASE_VERSION_BYTES
-                    # And replace in _config.yml
-                    new_config_yml = re.sub(
-                        b"latest_testing: '[^']*'",
-                        b"latest_testing: ''",
-                        config_yml.decoded_content,
-                    )
-                    new_config_yml = re.sub(
-                        b"latest_stable: '[^']*'",
-                        b"latest_stable: '%s'" % RELEASE_VERSION_BYTES,
-                        new_config_yml,
-                    )
-                    # Also update the wiki-settings, these only use x.x notation
-                    new_config_yml = re.sub(
-                        b"wiki_version: '[^']*'",
-                        b"wiki_version: '%s'" % RELEASE_VERSION_BYTES[:3],
-                        new_config_yml,
-                    )
-
-                # Update the files
-                print("Updating latest.txt")
-                gh_repo_web.update_file(
-                    "latest.txt",
-                    "Release %s: latest.txt" % RELEASE_VERSION,
-                    b"\n".join(new_latest_txt_items),
-                    latest_txt.sha,
-                    RELEASE_VERSION,
-                )
-                print("Updating _config.yml")
-                gh_repo_web.update_file(
-                    "_config.yml",
-                    "Release %s: _config.yml" % RELEASE_VERSION,
-                    new_config_yml,
-                    config_yml.sha,
-                    RELEASE_VERSION,
-                )
-
-                # Create pull-request
-                print("Creating pull request in sabnzbd/sabnzbd.github.io for the update")
-                gh_repo_web.create_pull(
-                    title="Release %s" % RELEASE_VERSION,
-                    base="master",
-                    body="Automated update of release files",
-                    head=RELEASE_VERSION,
-                )
-
-            # Only with GitHub success we proceed to Reddit
-            if reddit_token := os.environ.get("REDDIT_TOKEN", ""):
-                # Token format (without whitespace):
-                # {
-                #     "client_id":"XXX",
-                #     "client_secret":"XXX",
-                #     "user_agent":"SABnzbd release script",
-                #     "username":"Safihre",
-                #     "password":"XXX"
-                # }
-                credentials = json.loads(reddit_token)
-                reddit = praw.Reddit(**credentials)
-
-                subreddit_sabnzbd = reddit.subreddit("sabnzbd")
-                subreddit_usenet = reddit.subreddit("usenet")
-
-                # Read the release notes
-                with open(RELEASE_README, "r") as readme_file:
-                    readme_lines = readme_file.readlines()
-
-                # Use the header in the readme as title
-                title = readme_lines[0]
-                release_notes_text = "".join(readme_lines[3:])
-
-                # Post always to r/SABnzbd
-                print("Posting release notes to Reddit: r/sabnzbd")
-                submission = subreddit_sabnzbd.submit(title, selftext=release_notes_text)
-
-                # Only stable releases to r/usenet
-                if not prerelease:
-                    print("Cross-posting release notes to Reddit: r/usenet")
-                    submission.crosspost(subreddit_usenet)
-            else:
-                print("Missing REDDIT_TOKEN")
-
-        else:
-            print("To push release to GitHub, first tag the commit.")
-            print("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")
 
     # Reset!
     run_git_command(["reset", "--hard"])
