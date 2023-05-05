@@ -64,6 +64,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
     directory_is_writable,
+    test_filesystem_capabilities,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import Sorter
@@ -231,8 +232,10 @@ class PostProcessor(Thread):
         else:
             logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
 
-        directory_is_writable(sabnzbd.cfg.download_dir.get_path())
-        directory_is_writable(sabnzbd.cfg.complete_dir.get_path())
+        if directory_is_writable(sabnzbd.cfg.download_dir.get_path()):
+            test_filesystem_capabilities(sabnzbd.cfg.download_dir.get_path())
+        if directory_is_writable(sabnzbd.cfg.complete_dir.get_path()):
+            test_filesystem_capabilities(sabnzbd.cfg.complete_dir.get_path())
 
         # Do an extra purge of the history on startup to ensure timely removal on systems that
         # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight

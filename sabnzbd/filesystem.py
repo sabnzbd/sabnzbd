@@ -1279,9 +1279,15 @@ def directory_is_writable(test_dir: str) -> bool:
     if not directory_is_writable_with_file(test_dir, "sab_test.txt"):
         sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads."), test_dir)
         return False
+    return True
 
-    # basic writing OK, so let's check further
-    allgood = True  # default return value
+
+def test_filesystem_capabilities(test_dir: str) -> bool:
+    """Checks if we can write long and unicode filenames to the given directory.
+    If not on Windows, also check for special chars like \ and :
+    Returns True if all OK, otherwise False"""
+
+    allgood = True  # default return value: all OK
 
     # long filename; normal filesystems accept 255 byte filenames
     if not directory_is_writable_with_file(test_dir, "A" * 245 + str(random.randrange(10000, 99999))):
@@ -1293,7 +1299,7 @@ def directory_is_writable(test_dir: str) -> bool:
         sabnzbd.misc.helpful_warning(T("Cannot write a unicode filename to %s. This can cause problems."), test_dir)
         allgood = False
 
-    # if not on Windows, check strange characters
+    # if not on Windows, check special chars like \ and :
     if not sabnzbd.WIN32 and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
         sabnzbd.misc.helpful_warning(
             T("%s is not writable with special character filenames. This can cause problems."), test_dir
