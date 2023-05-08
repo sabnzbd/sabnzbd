@@ -21,6 +21,7 @@ tests.test_dirscanner - Testing functions in dirscanner.py
 
 import pyfakefs.fake_filesystem_unittest as ffs
 
+from sabnzbd.nzbparser import AddNzbFileResult
 from tests.testhelper import *
 
 # Set the global uid for fake filesystems to a non-root user;
@@ -70,7 +71,7 @@ class TestDirScanner:
         ],
     )
     async def test_adds_valid_nzbs(self, mock_sleep, fs, mocker, path, catdir):
-        mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(-1, []))
+        mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
         fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), contents="FAKEFILE")
@@ -97,7 +98,7 @@ class TestDirScanner:
         ],
     )
     async def test_ignores_empty_files(self, mock_sleep, fs, mocker, path):
-        mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(-1, []))
+        mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
         fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path))
@@ -118,7 +119,7 @@ class TestDirScanner:
         ],
     )
     async def test_ignores_non_nzbs(self, mock_sleep, fs, mocker, path):
-        mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(-1, []))
+        mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
         fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path), contents="FAKEFILE")

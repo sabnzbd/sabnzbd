@@ -29,6 +29,8 @@ import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any
 
+from sabnzbd.nzbparser import AddNzbFileResult
+
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
 try:
@@ -305,7 +307,7 @@ def _api_addfile(name, kwargs):
             nzbname=kwargs.get("nzbname"),
             password=kwargs.get("password"),
         )
-        return report(keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
+        return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
     else:
         return report(_MSG_NO_VALUE)
 
@@ -350,7 +352,7 @@ def _api_addlocalfile(name, kwargs):
                     nzbname=kwargs.get("nzbname"),
                     password=kwargs.get("password"),
                 )
-                return report(keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
+                return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
             else:
                 logging.info('API-call addlocalfile: "%s" is not a supported file', name)
                 return report(_MSG_NO_FILE)

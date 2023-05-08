@@ -28,6 +28,8 @@ import xml.etree.ElementTree
 import datetime
 import zipfile
 import tempfile
+from enum import Enum, auto
+
 import cherrypy._cpreqbody
 from typing import Optional, Dict, Any, Union, List, Tuple
 
@@ -45,6 +47,13 @@ from sabnzbd.filesystem import (
 from sabnzbd.misc import name_to_cat
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES
 from sabnzbd.utils import rarfile
+
+
+class AddNzbFileResult(Enum):
+    RETRY = auto()
+    ERROR = auto()
+    OK = auto()
+    NO_FILES_FOUND = auto()
 
 
 def add_nzbfile(
@@ -158,11 +167,9 @@ def process_nzb_archive_file(
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
-) -> Tuple[int, List[str]]:
+) -> Tuple[AddNzbFileResult, List[str]]:
     """Analyse archive and create job(s).
     Accepts archive files with ONLY nzb/nfo/folder files in it.
-    returns (status, nzo_ids)
-        status: -2==Error/retry, -1==Error, 0==OK, 1==No files found
     """
     nzo_ids = []
     if catdir is None:
@@ -178,21 +185,21 @@ def process_nzb_archive_file(
             zf = sabnzbd.newsunpack.SevenZip(path)
         else:
             logging.info("File %s is not a supported archive!", filename)
-            return -1, []
+            return AddNzbFileResult.ERROR, []
     except:
         logging.info(T("Cannot read %s"), path, exc_info=True)
-        return -2, []
+        return AddNzbFileResult.RETRY, []
 
-    status = 1
+    status: AddNzbFileResult = AddNzbFileResult.NO_FILES_FOUND
     names = zf.namelist()
     nzbcount = 0
     for name in names:
         name = name.lower()
         if name.endswith(".nzb"):
-            status = 0
+            status = AddNzbFileResult.OK
             nzbcount += 1
 
-    if status == 0:
+    if status == AddNzbFileResult.OK:
         if nzbcount != 1:
             nzbname = None
         for name in names:
@@ -202,7 +209,7 @@ def process_nzb_archive_file(
                 except OSError:
                     logging.error(T("Cannot read %s"), name, exc_info=True)
                     zf.close()
-                    return -1, []
+                    return AddNzbFileResult.ERROR, []
                 name = get_filename(name)
                 if datap:
                     nzo = None
@@ -254,7 +261,7 @@ def process_nzb_archive_file(
 
     # If all were rejected/empty/etc, update status
     if not nzo_ids:
-        status = 1
+        status = AddNzbFileResult.NO_FILES_FOUND
 
     return status, nzo_ids
 
@@ -275,11 +282,9 @@ def process_single_nzb(
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
-) -> Tuple[int, List[str]]:
+) -> Tuple[AddNzbFileResult, List[str]]:
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
-    returns (status, nzo_ids)
-        status: -2==Error/retry, -1==Error, 0==OK
     """
     if catdir is None:
         catdir = cat
@@ -302,7 +307,7 @@ def process_single_nzb(
     except OSError:
         logging.warning(T("Cannot read %s"), clip_path(path))
         logging.info("Traceback: ", exc_info=True)
-        return -2, []
+        return AddNzbFileResult.RETRY, []
 
     if filename:
         filename, cat = name_to_cat(filename, catdir)
@@ -312,7 +317,7 @@ def process_single_nzb(
             nzbname = get_filename(filename)
 
     # Parse the data
-    result = 0
+    result: AddNzbFileResult = AddNzbFileResult.OK
     nzo = None
     nzo_ids = []
     try:
@@ -334,7 +339,7 @@ def process_single_nzb(
             nzo.password = password
     except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
         # Empty or fully rejected
-        result = -1
+        result = AddNzbFileResult.ERROR
         pass
     except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
         # Duplicate or unwanted extension that was failed to history
@@ -342,7 +347,7 @@ def process_single_nzb(
     except:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
-        result = -1
+        result = AddNzbFileResult.ERROR
     finally:
         nzb_fp.close()
 

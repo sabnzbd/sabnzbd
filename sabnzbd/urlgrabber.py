@@ -40,6 +40,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
+from sabnzbd.nzbparser import AddNzbFileResult
 from sabnzbd.nzbstuff import NzbObject
 
 
@@ -255,14 +256,13 @@ class URLGrabber(Thread):
                         password=future_nzo.password,
                         nzo_id=future_nzo.nzo_id,
                     )
-                    # -2==Error/retry, -1==Error, 0==OK, 1==Empty
-                    if res == -2:
+                    if res is AddNzbFileResult.RETRY:
                         logging.info("Incomplete NZB, retry after 5 min %s", url)
                         self.add(url, future_nzo, when=300)
-                    elif res == -1:
+                    elif res is AddNzbFileResult.ERROR:
                         # Error already thrown
                         self.fail_to_history(future_nzo, url)
-                    elif res == 1:
+                    elif res is AddNzbFileResult.NO_FILES_FOUND:
                         # No NZB-files inside archive
                         self.fail_to_history(future_nzo, url, T("Empty NZB file %s") % filename)
                 else:

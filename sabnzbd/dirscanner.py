@@ -30,6 +30,7 @@ from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
 import sabnzbd.filesystem as filesystem
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+from sabnzbd.nzbparser import AddNzbFileResult
 
 DIR_SCANNER_LOCK = threading.RLock()
 VALID_EXTENSIONS = set(VALID_NZB_FILES + VALID_ARCHIVES)
@@ -205,10 +206,10 @@ class DirScanner(threading.Thread):
 
         # Add the NZB's
         res, _ = sabnzbd.nzbparser.add_nzbfile(path, catdir=catdir, keep=False)
-        if res < 0:
+        if res is AddNzbFileResult.RETRY or res is AddNzbFileResult.ERROR:
             # Retry later, for example when we can't read the file
             self.suspected[path] = stat_tuple
-        elif res == 0:
+        elif res is AddNzbFileResult.OK:
             self.error_reported = False
         else:
             self.ignored[path] = 1
