@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -608,14 +608,24 @@ msgstr "Încărcarea %s nereuşită"
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid ""
-"%s is not writable with special character filenames. This can cause "
-"problems."
+msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
 msgstr ""
 
 #: sabnzbd/interface.py

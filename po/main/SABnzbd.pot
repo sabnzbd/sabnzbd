@@ -555,12 +555,22 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s is not writable with special character filenames. This can cause problems."
+msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable with special character filenames. This can cause problems."
 msgstr ""
 
 #: sabnzbd/interface.py
