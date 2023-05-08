@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.1.0-develop\n"
@@ -2932,10 +2932,9 @@ msgstr "监视文件夹"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
+"Folder to monitor for .nzb files."
 msgstr ""
-"要监视 .nzb 文件的文件夹。<br /><i>会同时扫描 .zip .rar 及 .tar.gz 压缩文件中的 .nzb 文件。</i>"
+"要监视 .nzb 文件的文件夹。"
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"

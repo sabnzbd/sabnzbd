@@ -58,7 +58,7 @@
                 <div class="field-pair">
                     <label class="config" for="dirscan_dir">$T('opt-dirscan_dir')</label>
                     <input type="text" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir" data-initialdir="$my_home" />
-                    <span class="desc">$T('explain-dirscan_dir')</span>
+                    <span class="desc">$T('explain-dirscan_dir').replace(".nzb", $file_exts)</span>
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="dirscan_speed">$T('opt-dirscan_speed')</label>

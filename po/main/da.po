@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.1.0-develop\n"
@@ -2982,11 +2982,9 @@ msgstr "Overvåget Mappe"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
+"Folder to monitor for .nzb files."
 msgstr ""
-"Mappe til at gennemsøge for. Nzb filer.<br /><i>Skanner også for .zip .rar "
-"og .tar.gz arkiver efter .nzb filer.</i>"
+"Mappe til at gennemsøge for .nzb filer."
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"
