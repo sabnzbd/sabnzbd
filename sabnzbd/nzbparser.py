@@ -337,10 +337,12 @@ def process_single_nzb(
         )
         if not nzo.password:
             nzo.password = password
-    except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
-        # Empty or fully rejected
+    except sabnzbd.nzbstuff.NzbEmpty:
+        # Malformed or might not be an NZB file
+        result = AddNzbFileResult.NO_FILES_FOUND
+    except sabnzbd.nzbstuff.NzbRejected:
+        # Rejected as duplicate or by pre-queue script
         result = AddNzbFileResult.ERROR
-        pass
     except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
         # Duplicate or unwanted extension that was failed to history
         nzo_ids.append(err.nzo_id)
@@ -355,7 +357,7 @@ def process_single_nzb(
         nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
 
     try:
-        if not keep:
+        if not keep and result in {AddNzbFileResult.ERROR, AddNzbFileResult.OK}:
             remove_file(path)
     except OSError:
         # Job was still added to the queue, so throw error but don't report failed add
