@@ -1194,8 +1194,14 @@ class TestUnwantedExtensions:
 
 class TestDirectoryWriting:
     # very basic test of directory_is_writable()
+    # let's test on the tempdir provided by the OS:
     def test_directory_is_writable(self):
-        # let's test on the tempdir provided by the OS:
-        # on Windows, only basic writing testing will be done, and should succeed
-        # on non-Windows, assuming tempdir is not on FAT, full test should happen, and succeed
+        # verify directory is writable at all
         assert filesystem.directory_is_writable(tempfile.gettempdir())
+
+
+class FilesystemCapabilities:
+    def test_filesystem_capabilities(self):
+        # test the filesystem is capable of long and unicode filenames
+        # any modern filesystem (ext3, ext4, ntfs, modern FAT) should succeed
+        assert filesystem.check_filesystem_capabilities(tempfile.gettempdir())
