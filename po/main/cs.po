@@ -1,11 +1,11 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
 # Pavel C <quoing_transifex@mess.cz>, 2021
 # Safihre <safihre@sabnzbd.org>, 2023
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.1.0-develop\n"
@@ -2922,8 +2922,7 @@ msgid "Watched Folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files."
+msgid "Folder to monitor for .nzb files."
 msgstr ""
 
 #: sabnzbd/skintext.py
