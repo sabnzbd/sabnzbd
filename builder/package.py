@@ -118,7 +118,7 @@ def test_sab_binary(binary_path: str):
 
         # Wait for SAB to respond
         base_url = "http://127.0.0.1:8080/"
-        for _ in range(10):
+        for _ in range(30):
             try:
                 urllib.request.urlopen(base_url, timeout=1).read()
                 break
