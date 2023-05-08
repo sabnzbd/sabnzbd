@@ -1282,7 +1282,7 @@ def directory_is_writable(test_dir: str) -> bool:
     return True
 
 
-def filesystem_capabilities(test_dir: str) -> bool:
+def check_filesystem_capabilities(test_dir: str) -> bool:
     """Checks if we can write long and unicode filenames to the given directory.
     If not on Windows, also check for special chars like \ and :
     Returns True if all OK, otherwise False"""

@@ -1204,4 +1204,4 @@ class FilesystemCapabilities:
     def test_filesystem_capabilities(self):
         # test the filesystem is capable of long and unicode filenames
         # any modern filesystem (ext3, ext4, ntfs, modern FAT) should succeed
-        assert filesystem.filesystem_capabilities(tempfile.gettempdir())
+        assert filesystem.check_filesystem_capabilities(tempfile.gettempdir())
