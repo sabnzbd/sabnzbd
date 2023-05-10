@@ -582,11 +582,6 @@ class Downloader(Thread):
         BPSMeter.update()
         next_bpsmeter_update = 0
 
-        # Debugging code for v4 test release
-        sleep_count_start: float = time.time()
-        sleep_count: int = 0
-        time_slept: float = 0
-
         # Check server expiration dates
         check_server_expiration()
 
@@ -618,10 +613,9 @@ class Downloader(Thread):
 
                     if server.restart:
                         if not server.busy_threads:
-                            newid = server.newid
                             server.stop()
                             self.servers.remove(server)
-                            if newid:
+                            if newid := server.newid:
                                 self.init_server(None, newid)
                             self.server_restarts -= 1
                             # Have to leave this loop, because we removed element
@@ -699,35 +693,14 @@ class Downloader(Thread):
                 # If less data than possible was received then it should be ok to sleep a bit
                 if self.sleep_time:
                     if self.last_max_chunk_size > self.max_chunk_size:
-                        logging.debug("New max_chunk_size %d -> %d", self.max_chunk_size, self.last_max_chunk_size)
                         self.max_chunk_size = self.last_max_chunk_size
                     elif self.last_max_chunk_size < self.max_chunk_size / 3:
-                        time_before = time.time()
                         time.sleep(self.sleep_time)
                         now = time.time()
-                        # Debugging code for v4 test release
-                        if now - time_before > self.sleep_time + 0.02:
-                            logging.debug("Slept %.5f seconds, sleep_time = %s", now - time_before, self.sleep_time)
-                        time_slept += now - time_before
-                        sleep_count += 1
-                        if sleep_count_start + 20 < now:
-                            if sleep_count > 21:
-                                logging.debug(
-                                    "Slept %d times for an average of %.5f seconds the last %.2f seconds. sleep_time = %s",
-                                    sleep_count,
-                                    time_slept / sleep_count,
-                                    now - sleep_count_start,
-                                    self.sleep_time,
-                                )
-                            sleep_count_start = now
-                            sleep_count = 0
-                            time_slept = 0
-
                     self.last_max_chunk_size = 0
 
                 # Use select to find sockets ready for reading/writing
-                readkeys = self.read_fds.keys()
-                if readkeys:
+                if readkeys := self.read_fds.keys():
                     read, _, _ = select.select(readkeys, (), (), 1.0)
                 else:
                     read = []
