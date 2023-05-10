@@ -271,6 +271,11 @@ msgid "Error: Queue not empty, cannot change folder."
 msgstr ""
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid "Do not use a folder in the application folder as your Scripts Folder, it might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr ""
@@ -404,6 +409,11 @@ msgstr ""
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
 msgstr ""
 
 #: sabnzbd/downloader.py

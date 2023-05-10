@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2023
 # Safihre <safihre@sabnzbd.org>, 2023
+# Fred L <88com88@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2023\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -318,6 +318,13 @@ msgstr ""
 "Erreur : La file d'attente n'est pas vide, impossible de changer le dossier."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr "Configuration verrouillée, impossible de sauvegarder les paramètres"
@@ -462,6 +469,11 @@ msgstr "Il n'y a aucun serveur actif !"
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -635,11 +647,15 @@ msgstr "%s n'est pas du tout inscriptible. Les téléchargements sont bloqués."
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
 msgstr ""
+"Impossible d'écrire un nom de fichier long dans %s. Cela peut causer des "
+"problèmes."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
 msgstr ""
+"Impossible d'écrire un nom de fichier unicode dans %s. Cela peut causer des "
+"problèmes."
 
 #. Warning message
 #: sabnzbd/filesystem.py
