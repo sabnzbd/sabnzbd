@@ -472,6 +472,7 @@
                 ui.placeholder.height(hPlaceholder + hExtra);
                 \$('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
             },
+            cancel: ".pattern-table",
             change: function(event, ui) {
                 ui.placeholder.stop().height(0).animate({
                     height: ui.item.outerHeight() + hExtra
