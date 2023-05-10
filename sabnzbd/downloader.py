@@ -871,7 +871,12 @@ class Downloader(Thread):
             nw.soft_reset()
 
             # Request a new article immediately if possible
-            if nw.connected and server.active and not (self.paused or self.shutdown or self.paused_for_postproc):
+            if (
+                nw.connected
+                and server.active
+                and not server.restart
+                and not (self.paused or self.shutdown or self.paused_for_postproc)
+            ):
                 nw.article = server.get_article()
                 if nw.article:
                     self.__request_article(nw)
