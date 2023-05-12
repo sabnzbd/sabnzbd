@@ -26,11 +26,10 @@ import threading
 from typing import Generator, Set, Optional, Tuple
 
 import sabnzbd
-from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
+from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES, AddNzbFileResult
 import sabnzbd.filesystem as filesystem
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.nzbparser import AddNzbFileResult
 
 DIR_SCANNER_LOCK = threading.RLock()
 VALID_EXTENSIONS = set(VALID_NZB_FILES + VALID_ARCHIVES)

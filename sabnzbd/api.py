@@ -29,8 +29,6 @@ import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any
 
-from sabnzbd.nzbparser import AddNzbFileResult
-
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
 try:
@@ -52,6 +50,7 @@ from sabnzbd.constants import (
     KIBI,
     MEBI,
     GIGI,
+    AddNzbFileResult,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg

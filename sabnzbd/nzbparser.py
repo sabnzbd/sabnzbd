@@ -28,7 +28,6 @@ import xml.etree.ElementTree
 import datetime
 import zipfile
 import tempfile
-from enum import Enum, auto
 
 import cherrypy._cpreqbody
 from typing import Optional, Dict, Any, Union, List, Tuple
@@ -45,15 +44,8 @@ from sabnzbd.filesystem import (
     remove_data,
 )
 from sabnzbd.misc import name_to_cat
-from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES
+from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES, AddNzbFileResult
 from sabnzbd.utils import rarfile
-
-
-class AddNzbFileResult(Enum):
-    RETRY = auto()
-    ERROR = auto()
-    OK = auto()
-    NO_FILES_FOUND = auto()
 
 
 def add_nzbfile(
