@@ -20,7 +20,8 @@ import logging
 import datetime
 import ctypes.util
 import time
-import ssl
+import socket
+from typing import Optional
 
 import cherrypy
 import platform
@@ -150,6 +151,7 @@ LOGFILE = None
 WEBLOGFILE = None
 GUIHANDLER = None
 LOG_ALL = False
+WEB_SERVER: Optional[sabnzbd.interface.ThreadedServer] = None
 WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 
@@ -418,7 +420,7 @@ def shutdown_program():
     if not sabnzbd.SABSTOP:
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
-        sabnzbd.interface.WEB_SERVER.stop()
+        sabnzbd.WEB_SERVER.stop()
         sabnzbd.SABSTOP = True
         notify_shutdown_loop()
 

@@ -38,7 +38,7 @@ from xml.sax.saxutils import escape
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse
+from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response
 from starlette.middleware import Middleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.routing import Mount, Route
@@ -413,10 +413,9 @@ async def main_index(request: Request):
 
         info["have_rss_defined"] = bool(config.get_rss())
         info["have_watched_dir"] = bool(cfg.dirscan_dir())
-
-            info["cpumodel"] = get_cpu_name()
-            info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
-            info["platform"] = sabnzbd.PLATFORM
+        info["cpumodel"] = get_cpu_name()
+        info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
+        info["docker"] = "Docker" if sabnzbd.DOCKER else ""
 
         # Have logout only with HTML and if inet=5, only when we are external
         info["have_logout"] = (
@@ -447,20 +446,11 @@ async def shutdown(request: Request):
     sabnzbd.shutdown_program()
     return T("SABnzbd shutdown finished")
 
-    @secured_expose
-    def scriptlog(self, **kwargs):
-        """Needed for all skins, URL is fixed due to postproc"""
-        # No session key check, due to fixed URLs
-        if name := kwargs.get("name"):
-            history_db = sabnzbd.get_db_connection()
-            return ShowString(history_db.get_name(name), history_db.get_script_log(name))
-        else:
-            raise Raiser(self.__root)
 
 @secured_expose(route="/api", check_api_key=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
-    return JSONResponse(api_handler(request.query_params))
+    return api_handler(request.query_params)
 
 
 @secured_expose(route="/scriptlog")
@@ -518,7 +508,6 @@ async def one(request: Request):
         cfg.language.set(request.query_params.get("lang"))
 
     info = build_header(sabnzbd.WIZARD_DIR)
-    info["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
     # Just in case, add server
     servers = config.get_servers()
@@ -682,12 +671,9 @@ async def config_general_index(request: Request):
     conf["cmdline"] = sabnzbd.CMDLINE
     conf["build"] = sabnzbd.__baseline__[:7]
 
-    conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
     conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
     conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
-    conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
 
-    conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
     conf["ssl_version"] = ssl.OPENSSL_VERSION
 
     return template_filtered_response(
@@ -2223,9 +2209,6 @@ class ThreadedServer(uvicorn.Server):
     def stop(self):
         self.should_exit = True
         self.thread.join()
-
-
-WEB_SERVER: Optional[ThreadedServer] = None
 
 
 INTERFACE_ROUTES.extend(
