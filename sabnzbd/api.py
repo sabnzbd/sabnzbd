@@ -30,6 +30,8 @@ import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any, Union
 
+from starlette.responses import Response
+
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
 
@@ -1085,7 +1087,7 @@ def api_level(mode: str, name: str) -> int:
     return 4
 
 
-def report(error: Optional[str] = None, keyword: str = "value", data: Optional[Any] = None) -> bytes:
+def report(error: Optional[str] = None, keyword: str = "value", data: Optional[Any] = None) -> Response:
     """Report message in json, xml or plain text
     If error is set, only a status/error report is made.
     If no error and no data, only a status report is made.
@@ -1105,7 +1107,7 @@ def report(error: Optional[str] = None, keyword: str = "value", data: Optional[A
             status_str = xmlmaker.run(keyword, data)
         response = '<?xml version="1.0" encoding="UTF-8" ?>\n%s\n' % status_str
     else:
-        content = "application/json;charset=UTF-8"
+        content = "application/json; charset=utf-8"
         if error:
             info = {"status": False, "error": error}
         elif data is None:
@@ -1118,9 +1120,7 @@ def report(error: Optional[str] = None, keyword: str = "value", data: Optional[A
 
         response = utob(json.dumps(info))
 
-    cherrypy.response.headers["Content-Type"] = content
-    cherrypy.response.headers["Pragma"] = "no-cache"
-    return response
+    return Response(response, media_type=content)
 
 
 class XmlOutputFactory:
