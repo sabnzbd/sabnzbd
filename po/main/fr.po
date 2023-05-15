@@ -323,6 +323,8 @@ msgid ""
 "Do not use a folder in the application folder as your Scripts Folder, it "
 "might be emptied during updates."
 msgstr ""
+"N'utilisez pas un dossier à l'intérieur du dossier de l'application pour y "
+"stocker les scripts, il pourrait être vidé lors des mises à jour."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -473,7 +475,7 @@ msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
-msgstr ""
+msgstr "Erreur fatale dans le Téléchargeur"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
