@@ -162,3 +162,10 @@ class Status:
     VERIFYING = "Verifying"  # PP: Job is being verified (by par2)
     DELETED = "Deleted"  # Q:  Job has been deleted (and is almost gone)
     PROP = "Propagating"  # Q:  Delayed download
+
+
+class AddNzbFileResult:
+    RETRY = "Retry"  # File could not be read
+    ERROR = "Error"  # Rejected as duplicate, by pre-queue script or other failure to process file
+    OK = "OK"  # Added to queue
+    NO_FILES_FOUND = "No files found"  # Malformed or might not be an NZB file
