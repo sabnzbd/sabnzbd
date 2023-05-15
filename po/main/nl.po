@@ -725,11 +725,11 @@ msgstr "Feed"
 
 #: sabnzbd/interface.py
 msgid "Daily"
-msgstr "dagelijks"
+msgstr "Dagelijks"
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Monday"
-msgstr "maandag"
+msgstr "Maandag"
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Tuesday"
