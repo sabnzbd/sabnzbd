@@ -1434,10 +1434,6 @@ msgid "Ran %s"
 msgstr ""
 
 #: sabnzbd/postproc.py
-msgid "Script exit code is %s"
-msgstr ""
-
-#: sabnzbd/postproc.py
 msgid "Exit(%s) %s"
 msgstr ""
 

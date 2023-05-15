@@ -556,7 +556,7 @@ def process_job(nzo: NzbObject):
                     if script_ret and cfg.script_can_fail():
                         script_error = True
                         all_ok = False
-                        nzo.fail_msg = T("Script exit code is %s") % script_ret
+                        nzo.fail_msg = T("Exit(%s) %s") % (script_ret, script_line or "")
 
         # Email the results
         if not nzb_list and cfg.email_endjob():
