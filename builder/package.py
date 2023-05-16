@@ -106,8 +106,6 @@ def patch_version_file(release_name):
 
 def test_sab_binary(binary_path: str):
     """Wrapper to have a simple start-up test for the binary"""
-    # Only needed when building release
-
     with tempfile.TemporaryDirectory() as config_dir:
         sabnzbd_process = subprocess.Popen(
             [binary_path, "--browser", "0", "--logging", "2", "--config", config_dir],
@@ -125,6 +123,9 @@ def test_sab_binary(binary_path: str):
             except:
                 time.sleep(1)
         else:
+            # Print console output and give some time to print
+            print(sabnzbd_process.stdout.read())
+            time.sleep(1)
             raise urllib.error.URLError("Could not connect to SABnzbd")
 
         # Open a number of API calls and pages, to see if we are really up
@@ -159,7 +160,7 @@ def test_sab_binary(binary_path: str):
             print(log_file.read())
 
         # So we have time to print the file before the directory is removed
-        time.sleep(1)
+        time.sleep(5)
 
 
 if __name__ == "__main__":

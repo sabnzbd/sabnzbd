@@ -27,11 +27,12 @@ jobs:
         requirement_files:  "**/requirements.txt"
     - name: Install Python dependencies (64bit)
       if: steps.cache-virtualenv-64bit.outputs.cache-hit != 'true'
+      # Without dependencies to make sure everything is covered in the requirements.txt
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt
-        pip install --upgrade -r builder/requirements.txt
+        pip install --upgrade -r requirements.txt --no-dependencies
+        pip install --upgrade -r builder/requirements.txt --no-dependencies
     - name: Build Windows standalone binary and installer (64bit)
       run: python builder/package.py installer
     - name: Upload Windows standalone binary (64bit)
@@ -58,9 +59,10 @@ jobs:
         requirement_files: "**/requirements.txt"
     - name: Install Python dependencies (32bit and legacy)
       if: steps.cache-virtualenv-32bit.outputs.cache-hit != 'true'
+      # We do not care about the extra dependencies for the legacy build
       run: |
         python --version
-        pip install --upgrade pip wheel
+        python -m pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
     - name: Build Windows standalone binary (32bit and legacy)
@@ -111,7 +113,8 @@ jobs:
       # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
       #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
       #     https://github.com/pyca/cryptography/issues/5918
-      # 2.  We need to build the PyInstaller bootloader:
+      # 2.  Due to PyObjC we cannot run pip on the main requirements without installing dependencies
+      # 3.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
@@ -124,7 +127,7 @@ jobs:
         pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest .
         pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
 
-        PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
+        PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
       env:
