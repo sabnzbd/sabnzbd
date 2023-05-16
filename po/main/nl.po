@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Rik Brouwer, 2022
+# Robert Lampe, 2023
 # Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
@@ -4403,7 +4404,7 @@ msgstr "GuessIt_Eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "Minimum Filesize"
-msgstr ""
+msgstr "Minimale bestandsgrootte"
 
 #: sabnzbd/skintext.py
 msgid "Affected Job Types"
