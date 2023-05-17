@@ -226,13 +226,9 @@ def external_processing(
         sabnzbd.PostProcessor.external_process = p
 
         # Follow the output, so we can abort it
-        proc = p.stdout
-        if p.stdin:
-            p.stdin.close()
-
         lines = []
         while 1:
-            line = platform_btou(proc.readline())
+            line = platform_btou(p.stdout.readline())
             if not line:
                 break
             line = line.strip()
@@ -724,10 +720,6 @@ def rar_extract_core(
     p = build_and_run_command(command, windows_unrar_command=True)
     sabnzbd.PostProcessor.external_process = p
 
-    proc = p.stdout
-    if p.stdin:
-        p.stdin.close()
-
     nzo.set_action_line(T("Unpacking"), "00/%02d" % numrars)
 
     # Loop over the output from rar!
@@ -739,7 +731,7 @@ def rar_extract_core(
     lines = []
 
     while 1:
-        line = platform_btou(proc.readline())
+        line = platform_btou(p.stdout.readline())
         if not line:
             break
 
@@ -788,7 +780,7 @@ def rar_extract_core(
             fail = 1
 
         elif line.startswith("Cannot create"):
-            line2 = platform_btou(proc.readline())
+            line2 = platform_btou(p.stdout.readline())
             if "must not exceed 260" in line2:
                 msg = "%s: %s" % (T("Unpacking failed, path is too long"), line[13:])
             else:
@@ -844,14 +836,14 @@ def rar_extract_core(
                 extracted.append(real_path(extraction_path, unpacked_file))
 
         if fail:
-            if proc:
-                proc.close()
+            if p.stdout:
+                p.stdout.close()
             p.wait()
             logging.debug("UNRAR output %s", "\n".join(lines))
             return fail, [], []
 
-    if proc:
-        proc.close()
+    if p.stdout:
+        p.stdout.close()
     p.wait()
 
     # Which files did we use to extract this?
@@ -1258,10 +1250,6 @@ def par2cmdline_verify(
     # Run the external command
     p = build_and_run_command(command)
     sabnzbd.PostProcessor.external_process = p
-    proc = p.stdout
-
-    if p.stdin:
-        p.stdin.close()
 
     # Set up our variables
     lines = []
@@ -1283,7 +1271,7 @@ def par2cmdline_verify(
 
     # Loop over the output, whee
     while 1:
-        char = platform_btou(proc.read(1))
+        char = platform_btou(p.stdout.read(1))
         if not char:
             break
 
@@ -1552,9 +1540,6 @@ def multipar_verify(
     # Run MultiPar
     p = build_and_run_command(command)
     sabnzbd.PostProcessor.external_process = p
-    proc = p.stdout
-    if p.stdin:
-        p.stdin.close()
 
     # Set up our variables
     lines = []
@@ -1578,7 +1563,7 @@ def multipar_verify(
 
     # Loop over the output, whee
     while 1:
-        char = proc.read(1)
+        char = p.stdout.read(1)
         if not char:
             break
 
