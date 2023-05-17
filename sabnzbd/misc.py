@@ -50,7 +50,7 @@ from sabnzbd.constants import (
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import ubtou, platform_btou
+from sabnzbd.encoding import ubtou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file, is_valid_script
 
 if sabnzbd.WIN32:
@@ -1110,7 +1110,7 @@ def list2cmdline_unrar(lst: List[str]) -> str:
     return " ".join(nlst)
 
 
-def build_and_run_command(command: List[str], windows_unrar_command: bool = False, **kwargs):
+def build_and_run_command(command: List[str], windows_unrar_command: bool = False, text_mode: bool = True, **kwargs):
     """Builds and then runs command with necessary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
@@ -1161,6 +1161,12 @@ def build_and_run_command(command: List[str], windows_unrar_command: bool = Fals
         "startupinfo": startupinfo,
         "creationflags": creationflags,
     }
+
+    # In text mode we ignore errors
+    if text_mode:
+        # We default to utf8, and hope for the best
+        popen_kwargs.update({"text": True, "encoding": "utf8", "errors": "replace"})
+
     # Update with the supplied ones
     popen_kwargs.update(kwargs)
 
@@ -1173,7 +1179,7 @@ def build_and_run_command(command: List[str], windows_unrar_command: bool = Fals
 def run_command(cmd: List[str], **kwargs):
     """Run simple external command and return output as a string."""
     with build_and_run_command(cmd, **kwargs) as p:
-        txt = platform_btou(p.stdout.read())
+        txt = p.stdout.read()
         p.wait()
     return txt
 

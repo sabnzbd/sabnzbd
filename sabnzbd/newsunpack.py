@@ -25,14 +25,13 @@ import re
 import subprocess
 import logging
 import time
-import zlib
 import io
 import shutil
 import functools
 from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union
 
 import sabnzbd
-from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
+from sabnzbd.encoding import correct_unknown_encoding, ubtou
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import (
     format_time_string,
@@ -228,7 +227,7 @@ def external_processing(
         # Follow the output, so we can abort it
         lines = []
         while 1:
-            line = platform_btou(p.stdout.readline())
+            line = p.stdout.readline()
             if not line:
                 break
             line = line.strip()
@@ -687,7 +686,6 @@ def rar_extract_core(
 
     elif RAR_PROBLEM:
         # Use only oldest options, specifically no "-or" or "-scf"
-        # Luckily platform_btou has a fallback for non-UTF-8
         command = [
             RAR_COMMAND,
             action,
@@ -731,7 +729,7 @@ def rar_extract_core(
     lines = []
 
     while 1:
-        line = platform_btou(p.stdout.readline())
+        line = p.stdout.readline()
         if not line:
             break
 
@@ -780,7 +778,7 @@ def rar_extract_core(
             fail = 1
 
         elif line.startswith("Cannot create"):
-            line2 = platform_btou(p.stdout.readline())
+            line2 = p.stdout.readline()
             if "must not exceed 260" in line2:
                 msg = "%s: %s" % (T("Unpacking failed, path is too long"), line[13:])
             else:
@@ -929,10 +927,8 @@ def unzip_core(zipfile, extraction_path, one_folder):
         command.insert(3, "-j")  # Unpack without folders
 
     p = build_and_run_command(command)
-    output = platform_btou(p.stdout.read())
-    ret = p.wait()
-    logging.debug("unzip output: \n%s", output)
-    return ret
+    logging.debug("unzip output: \n%s", p.stdout.read())
+    return p.wait()
 
 
 ##############################################################################
@@ -1047,7 +1043,7 @@ def seven_extract_core(
     command = [SEVENZIP_COMMAND, method, "-y", overwrite, case, password, "-o%s" % extraction_path, seven_path]
     p = build_and_run_command(command)
     sabnzbd.PostProcessor.external_process = p
-    output = platform_btou(p.stdout.read())
+    output = p.stdout.read()
     logging.debug("7za output: %s", output)
 
     # ret contains the 7z/7za exit code: 0 = Normal, 1 = Warning, 2 = Fatal error, etc
@@ -1271,7 +1267,7 @@ def par2cmdline_verify(
 
     # Loop over the output, whee
     while 1:
-        char = platform_btou(p.stdout.read(1))
+        char = p.stdout.read(1)
         if not char:
             break
 
@@ -1546,7 +1542,7 @@ def multipar_verify(
     renames = {}
     reconstructed = []
 
-    linebuf = b""
+    linebuf = ""
     finished = False
     readd = False
 
@@ -1568,12 +1564,12 @@ def multipar_verify(
             break
 
         # Line not complete yet
-        if char not in (b"\n", b"\r"):
+        if char not in ("\n", "\r"):
             linebuf += char
             continue
 
-        line = ubtou(linebuf).strip()
-        linebuf = b""
+        line = linebuf.strip()
+        linebuf = ""
 
         # Skip empty lines
         if line == "":
@@ -2319,7 +2315,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
             logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
             return values
 
-        output = platform_btou(p.stdout.read())
+        output = p.stdout.read()
         ret = p.wait()
         logging.info("Pre-queue script returned %s and output=\n%s", ret, output)
         if ret == 0:
@@ -2387,7 +2383,7 @@ class SevenZip:
         """Read named file from 7Zip and return data"""
         command = [SEVENZIP_COMMAND, "e", "-p", "-y", "-so", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
-        with build_and_run_command(command, stderr=subprocess.DEVNULL) as p:
+        with build_and_run_command(command, text_mode=False, stderr=subprocess.DEVNULL) as p:
             data = io.BytesIO(p.stdout.read())
             p.wait()
         return data
