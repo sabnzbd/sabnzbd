@@ -577,18 +577,18 @@ def process_job(nzo: NzbObject):
         if script_output:
             # Can do this only now, otherwise it would show up in the email
             if script_ret:
-                script_ret = "Exit(%s) " % script_ret
+                script_msg = T("Exit(%s) %s") % (script_ret, script_line)
             else:
-                script_ret = ""
+                script_msg = script_line
             if len(script_log.rstrip().split("\n")) > 1:
                 nzo.set_unpack_info(
                     "Script",
-                    '%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, script_output, T("More")),
+                    '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_msg, script_output, T("More")),
                     unique=True,
                 )
             else:
                 # No '(more)' button needed
-                nzo.set_unpack_info("Script", "%s%s " % (script_ret, script_line), unique=True)
+                nzo.set_unpack_info("Script", "%s " % script_msg, unique=True)
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):

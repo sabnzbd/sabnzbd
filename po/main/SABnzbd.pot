@@ -1437,6 +1437,10 @@ msgstr ""
 msgid "Script exit code is %s"
 msgstr ""
 
+#: sabnzbd/postproc.py
+msgid "Exit(%s) %s"
+msgstr ""
+
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"
 msgstr ""
