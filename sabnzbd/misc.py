@@ -1158,6 +1158,7 @@ def build_and_run_command(command: List[str], windows_unrar_command: bool = Fals
     popen_kwargs = {
         "stdout": subprocess.PIPE,
         "stderr": subprocess.STDOUT,
+        "bufsize": 0,
         "startupinfo": startupinfo,
         "creationflags": creationflags,
     }
