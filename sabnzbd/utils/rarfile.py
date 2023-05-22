@@ -1132,7 +1132,9 @@ class CommonParser(object):
 
             # now read actual header
             return self._parse_block_header(fd)
-        except struct.error:
+        except:
+            # SABnzbd-edit:
+            # Catch all errors
             self._set_error("Broken header in RAR file")
             return None
 
