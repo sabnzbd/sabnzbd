@@ -50,6 +50,7 @@ from sabnzbd.constants import (
     KIBI,
     MEBI,
     GIGI,
+    AddNzbFileResult,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -305,7 +306,7 @@ def _api_addfile(name, kwargs):
             nzbname=kwargs.get("nzbname"),
             password=kwargs.get("password"),
         )
-        return report(keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
+        return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
     else:
         return report(_MSG_NO_VALUE)
 
@@ -350,7 +351,7 @@ def _api_addlocalfile(name, kwargs):
                     nzbname=kwargs.get("nzbname"),
                     password=kwargs.get("password"),
                 )
-                return report(keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
+                return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
             else:
                 logging.info('API-call addlocalfile: "%s" is not a supported file', name)
                 return report(_MSG_NO_FILE)
@@ -1570,7 +1571,7 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
-        header["helpuri"] = "https://sabnzbd.org/wiki/"
+        header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
 
         header["pid"] = os.getpid()
         header["active_lang"] = cfg.language()

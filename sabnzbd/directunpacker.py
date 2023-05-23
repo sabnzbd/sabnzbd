@@ -439,7 +439,9 @@ class DirectUnpacker(threading.Thread):
         self.cur_volume = 1
 
         # Need to disable buffer to have direct feedback
-        self.active_instance = build_and_run_command(command, windows_unrar_command=True, bufsize=0)
+        self.active_instance = build_and_run_command(
+            command, windows_unrar_command=True, text_mode=False, stdin=subprocess.PIPE
+        )
 
         # Add to runners
         ACTIVE_UNPACKERS.append(self)

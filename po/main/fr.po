@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2023\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -318,6 +318,15 @@ msgstr ""
 "Erreur : La file d'attente n'est pas vide, impossible de changer le dossier."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+"N'utilisez pas un dossier à l'intérieur du dossier de l'application pour y "
+"stocker les scripts, il pourrait être vidé lors des mises à jour."
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr "Configuration verrouillée, impossible de sauvegarder les paramètres"
@@ -462,6 +471,11 @@ msgstr "Il n'y a aucun serveur actif !"
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr "Erreur fatale dans le Téléchargeur"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -628,17 +642,31 @@ msgstr "Echec du chargement de %s"
 
 #. Warning message
 #: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr "%s n'est pas du tout inscriptible. Les téléchargements sont bloqués."
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+"Impossible d'écrire un nom de fichier long dans %s. Cela peut causer des "
+"problèmes."
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+"Impossible d'écrire un nom de fichier unicode dans %s. Cela peut causer des "
+"problèmes."
+
+#. Warning message
+#: sabnzbd/filesystem.py
 msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
 "Le fichier %s n'est pas inscriptible à cause des caractères spéciaux dans le"
 " nom. Cela peut causer des problèmes."
-
-#. Warning message
-#: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
-msgstr "%s n'est pas du tout inscriptible. Les téléchargements sont bloqués."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -3073,12 +3101,8 @@ msgid "Watched Folder"
 msgstr "Dossier à surveiller"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
-msgstr ""
-"Dossier d'import automatique des fichiers .nzb.<br /><i>Prends en compte "
-"également les nzb contenus dans les fichiers .zip, .rar et .tar.gz.</i>"
+msgid "Folder to monitor for .nzb files."
+msgstr "Dossier d'import automatique des fichiers .nzb."
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"
@@ -4748,6 +4772,7 @@ msgstr "Raccourcis clavier"
 #: sabnzbd/skintext.py
 msgid "Shift+Arrow key: Browse Queue and History pages"
 msgstr ""
+"Maj+flèche : parcourir les pages de la file d'attente et de l'historique"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"

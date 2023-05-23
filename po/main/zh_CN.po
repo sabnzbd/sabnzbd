@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -288,6 +288,13 @@ msgid "Error: Queue not empty, cannot change folder."
 msgstr "错误: 队列非空，无法变更文件夹。"
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr ""
@@ -425,6 +432,11 @@ msgstr ""
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "无法初始化 %s@%s，原因为: %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -587,14 +599,24 @@ msgstr "加载 %s 失败"
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid ""
-"%s is not writable with special character filenames. This can cause "
-"problems."
+msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -2921,11 +2943,8 @@ msgid "Watched Folder"
 msgstr "监视文件夹"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
-msgstr ""
-"要监视 .nzb 文件的文件夹。<br /><i>会同时扫描 .zip .rar 及 .tar.gz 压缩文件中的 .nzb 文件。</i>"
+msgid "Folder to monitor for .nzb files."
+msgstr "要监视 .nzb 文件的文件夹。"
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"

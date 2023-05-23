@@ -19,25 +19,18 @@
 tests.test_consistency - Keep things consistent
 """
 
-import os
 import re
-import pkg_resources
 
 import sabnzbd
-import pkginfo
 import lxml.html
 from sabnzbd.skintext import SKIN_TEXT
 from tests.testhelper import *
 
 
 class TestVersion:
-    def test_sabnzbd_version_match(self):
-        assert sabnzbd.__version__ == pkginfo.Develop(".").version
-
     def test_sabctools_version_match(self):
         with open("requirements.txt", "r") as reqs:
-            req_version = next(req for req in pkg_resources.parse_requirements(reqs) if req.project_name == "sabctools")
-            assert sabnzbd.constants.SABCTOOLS_VERSION_REQUIRED == req_version.specs[0][1]
+            assert f"sabctools=={sabnzbd.constants.SABCTOOLS_VERSION_REQUIRED}" in reqs.read()
 
 
 class TestSkintext:
@@ -66,7 +59,7 @@ class TestSkintext:
         assert not not_found
 
 
-@pytest.mark.skipif(os.environ.get("GITHUB_REF_NAME", "") != "develop", reason="Only check on develop branch")
+# @pytest.mark.skipif(os.environ.get("GITHUB_REF_NAME", "") != "develop", reason="Only check on develop branch")
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestWiki:
     def test_added_wiki_entries(self):
@@ -84,7 +77,7 @@ class TestWiki:
             config_labels = [label for label in config_labels if label]
 
             # Parse the version info to get the right Wiki version
-            version = re.search(r"(\d+\.\d+)\.(\d+)([a-zA-Z]*)(\d*)", pkginfo.Develop(".").version).group(1)
+            version = re.search(r"(\d+\.\d+)\.(\d+)([a-zA-Z]*)(\d*)", sabnzbd.__version__).group(1)
             wiki_tree = lxml.html.fromstring(
                 requests.get("https://sabnzbd.org/wiki/configuration/%s/%s" % (version, url)).content
             )

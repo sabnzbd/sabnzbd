@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Swedish (https://app.transifex.com/sabnzbd/teams/111101/sv/)\n"
@@ -290,6 +290,13 @@ msgid "Error: Queue not empty, cannot change folder."
 msgstr "Fel: Kön är inte tom, kan inte byta mapp."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr ""
@@ -428,6 +435,11 @@ msgstr ""
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Misslyckades att initiera %s@%s med orsak %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -590,14 +602,24 @@ msgstr "Laddning av %s misslyckades"
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid ""
-"%s is not writable with special character filenames. This can cause "
-"problems."
+msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -2961,12 +2983,8 @@ msgid "Watched Folder"
 msgstr "Övervakad Mapp"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
-msgstr ""
-"Mapp som igenomsöks automatiskt efter .nzb filer.<br /><i>Skannar även "
-"igenom .zip .rar och .tar.gz arkiv efter .nzb filer.</i>"
+msgid "Folder to monitor for .nzb files."
+msgstr "Mapp som igenomsöks automatiskt efter .nzb filer."
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"

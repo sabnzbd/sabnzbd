@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 # Setting PYTHONNODEBUGRANGES reduces binary size
 env:
-  AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
   PYTHONNODEBUGRANGES: 1
 
 jobs:
@@ -25,16 +24,15 @@ jobs:
       with:
         custom_virtualenv_dir: "venv64"
         custom_cache_key_element: "release"
-        requirement_files: |
-          **/requirements.txt
-          PKG-INFO
+        requirement_files:  "**/requirements.txt"
     - name: Install Python dependencies (64bit)
       if: steps.cache-virtualenv-64bit.outputs.cache-hit != 'true'
+      # Without dependencies to make sure everything is covered in the requirements.txt
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt
-        pip install --upgrade -r builder/requirements.txt
+        pip install --upgrade -r requirements.txt --no-dependencies
+        pip install --upgrade -r builder/requirements.txt --no-dependencies
     - name: Build Windows standalone binary and installer (64bit)
       run: python builder/package.py installer
     - name: Upload Windows standalone binary (64bit)
@@ -58,14 +56,13 @@ jobs:
       with:
         custom_virtualenv_dir: "venv32"
         custom_cache_key_element: "release"
-        requirement_files: |
-          **/requirements.txt
-          PKG-INFO
+        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies (32bit and legacy)
       if: steps.cache-virtualenv-32bit.outputs.cache-hit != 'true'
+      # We do not care about the extra dependencies for the legacy build
       run: |
         python --version
-        pip install --upgrade pip wheel
+        python -m pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
     - name: Build Windows standalone binary (32bit and legacy)
@@ -75,9 +72,6 @@ jobs:
       with:
         path: "*-win32-bin.zip"
         name: Windows Windows standalone binary (32bit and legacy)
-    - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN && startsWith(github.ref, 'refs/tags/')
-      run: python builder/package.py release
 
   build_macos:
     name: Build macOS binary
@@ -113,15 +107,14 @@ jobs:
       id: cache-virtualenv
       with:
         custom_cache_key_element: "release"
-        requirement_files: |
-          **/requirements.txt
-          PKG-INFO
+        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies
       # We have to manually take a few steps:
       # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
       #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
       #     https://github.com/pyca/cryptography/issues/5918
-      # 2.  We need to build the PyInstaller bootloader:
+      # 2.  Due to PyObjC we cannot run pip on the main requirements without installing dependencies
+      # 3.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
@@ -134,7 +127,7 @@ jobs:
         pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest .
         pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
 
-        PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
+        PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
       env:
@@ -171,23 +164,34 @@ jobs:
       with:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
-    - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN && startsWith(github.ref, 'refs/tags/')
-      run: python3 builder/package.py release
 
-  release_snap:
-    name: Release Snap
+  release:
+    name: Publish Release
     runs-on: ubuntu-latest
+    needs: [build_windows, build_macos]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-    env:
-      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.x"
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: dist
+      - name: Move all artifacts to main folder
+        run: find dist -type f -exec mv {} . \;
+      - name: Prepare official release
+        env:
+          AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+          REDDIT_TOKEN: ${{ secrets.REDDIT_TOKEN }}
+        run: |
+          pip3 install -r builder/release-requirements.txt
+          python3 builder/release.py
       - name: Release latest available Snap
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
         run: |
           sudo snap install snapcraft --classic
           python3 snap/local/release_snap.py

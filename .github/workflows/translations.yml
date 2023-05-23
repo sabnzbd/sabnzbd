@@ -20,11 +20,11 @@ jobs:
           python3 tools/extract_pot.py
       - name: Push/pull Transifex translations
         if: env.TX_TOKEN
-        # We sleep so all files are updated when we pull them back in
+        # Add --translation to the push command in order to update Transifex using local translation edits
+        # However, this prevents modifying existing translations in Transifex as they will be overwritten by the push! 
         run: |
           curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
-          ./tx push --translation --source
-          sleep 10s
+          ./tx push --source
           ./tx pull --all --force
       - name: Compile translations to validate them
         run: |
@@ -33,7 +33,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         if: env.TX_TOKEN
         with:
-          commit_message: | 
+          commit_message: |
             Update translatable texts
             [skip ci]
           commit_user_name: SABnzbd Automation

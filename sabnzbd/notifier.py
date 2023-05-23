@@ -31,7 +31,7 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import platform_btou, utob
+from sabnzbd.encoding import utob
 from sabnzbd.filesystem import make_script_path
 from sabnzbd.misc import build_and_run_command
 from sabnzbd.newsunpack import create_env
@@ -366,7 +366,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
             output = None
             try:
                 p = build_and_run_command([script_path, gtype, title, msg] + nscript_parameters, env=create_env())
-                output = platform_btou(p.stdout.read())
+                output = p.stdout.read()
                 ret = p.wait()
             except:
                 logging.info("Failed script %s, Traceback: ", script, exc_info=True)

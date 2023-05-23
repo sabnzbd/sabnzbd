@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os
-import pkginfo
+from constants import RELEASE_VERSION
 
 
 # We need to call dmgbuild from command-line, so here we can setup how
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     # Extract version info and set DMG path
     # Create sub-folder to upload later
-    release = pkginfo.Develop(".").version
+    release = RELEASE_VERSION
     prod = "SABnzbd-" + release
     fileDmg = prod + "-osx.dmg"
 

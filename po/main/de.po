@@ -11,14 +11,14 @@
 # Simon W., 2021
 # Nils Briggen, 2022
 # reloxx13 <reloxx@interia.pl>, 2022
-# Safihre <safihre@sabnzbd.org>, 2023
 # kameb, 2023
+# Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: kameb, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -321,6 +321,13 @@ msgstr ""
 "ist."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr ""
@@ -467,6 +474,11 @@ msgstr "Es gibt keine aktiven Server!"
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Fehler %s@%s zu initialisieren, aus folgendem Grund: %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -633,17 +645,27 @@ msgstr "Fehler beim Laden von %s"
 
 #. Warning message
 #: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr "%s ist nicht beschreibbar. Downloads sind dadurch blockiert."
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
 msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
 "Dateinamen mit Umlaute können nicht in %s gespeichert werden. Dies kann zu "
 "Problemen führen."
-
-#. Warning message
-#: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
-msgstr "%s ist nicht beschreibbar. Downloads sind dadurch blockiert."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -3080,12 +3102,8 @@ msgid "Watched Folder"
 msgstr "Überwachter Ordner"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
-msgstr ""
-"Ordner, der auf neue NZB-Dateien überwacht werden soll.<br /><i>Erkennt auch"
-" ZIP-, RAR- und TAR.GZ-Archive mit NZB-Dateien.</i>"
+msgid "Folder to monitor for .nzb files."
+msgstr "Ordner, der auf neue .nzb Dateien überwacht werden soll."
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"

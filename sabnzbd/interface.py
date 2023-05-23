@@ -78,6 +78,8 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_SORTER_RENAME_SIZE,
     GUESSIT_SORT_TYPES,
+    VALID_NZB_FILES,
+    VALID_ARCHIVES,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -724,6 +726,8 @@ class ConfigFolders:
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+
+        conf["file_exts"] = ", ".join(VALID_NZB_FILES + VALID_ARCHIVES)
 
         for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
             conf[kw] = config.get_config("misc", kw)()

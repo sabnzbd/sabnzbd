@@ -20,6 +20,7 @@ sabnzbd.cfg - Configuration Parameters
 """
 
 import logging
+import os
 import re
 import argparse
 import socket
@@ -50,6 +51,7 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
 )
+from sabnzbd.filesystem import long_path
 
 
 ##############################################################################
@@ -231,6 +233,18 @@ def validate_safedir(root, value, default):
         return T("Error: Queue not empty, cannot change folder."), None
 
 
+def validate_scriptdir_not_appdir(root, value, default):
+    """Warn users to not use the Program Files folder for their scripts"""
+    if value and long_path(os.path.join(root, value)).startswith(long_path(sabnzbd.DIR_PROG)):
+        # Warn, but do not block
+        sabnzbd.misc.helpful_warning(
+            T(
+                "Do not use a folder in the application folder as your Scripts Folder, it might be emptied during updates."
+            )
+        )
+    return None, value
+
+
 def validate_notempty(root, value, default):
     """If value is empty, return default"""
     if value:
@@ -304,7 +318,7 @@ complete_dir = OptionDir(
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
-script_dir = OptionDir("misc", "script_dir", writable=False)
+script_dir = OptionDir("misc", "script_dir", writable=False, validation=validate_scriptdir_not_appdir)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
 backup_dir = OptionDir("misc", "backup_dir")
