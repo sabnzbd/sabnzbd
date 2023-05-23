@@ -53,6 +53,10 @@ class SABnzbdDelegate(NSObject):
     history_db = None
 
     def awakeFromNib(self):
+        # Wait for SABnzbd to be ready, otherwise tray_icon might not be read from config yet
+        while not sabnzbd.WEBUI_READY and not sabnzbd.SABSTOP:
+            time.sleep(0.5)
+
         # Do we want the menu
         if sabnzbd.cfg.tray_icon():
             # Status Bar initialize
@@ -83,10 +87,6 @@ class SABnzbdDelegate(NSObject):
         self.status_item.setHighlightMode_(1)
         self.status_item.setToolTip_("SABnzbd")
         self.status_item.setEnabled_(YES)
-
-        # Wait for translated texts to be loaded
-        while not sabnzbd.WEBUI_READY and not sabnzbd.SABSTOP:
-            time.sleep(0.5)
 
         # Variables
         self.state = "Idle"
