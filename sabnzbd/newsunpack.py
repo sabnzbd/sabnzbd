@@ -220,6 +220,10 @@ def external_processing(
         "orig_nzb_gz": clip_path(nzb_paths[0]) if nzb_paths else "",
     }
 
+    # Make sure that if we run a Python script it's output is unbuffered, so we can show it to the user
+    if extern_proc.endswith(".py"):
+        extra_env_fields["pythonunbuffered"] = True
+
     try:
         p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
         sabnzbd.PostProcessor.external_process = p
