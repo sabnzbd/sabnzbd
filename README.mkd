@@ -1,8 +1,15 @@
-Release Notes - SABnzbd 4.0.1
+Release Notes - SABnzbd 4.0.2 Release Candidate 1
 =========================================================
 
-## Bugfixes since 4.0.0
-- Windows: Prevent fatal crash on 32bit Windows.
+## Bugfixes and changes since 4.0.1
+- Disabling a server during download did not stop it from downloading.
+- Prevent crash during Deobfuscate on non-unique paths.
+- Files that could not be parsed were removed from the `Watched Folder`.
+- Warn if file system does not support unicode or long filenames.
+- Warn if `Scripts Folder` is inside application directory.
+- Prevent output buffering of Python post-processing scripts.
+- The `PKG-INFO` file was removed from the `src` release.
+- macOS: Tray icon could not be disabled.
 
 ## Changes since 3.7.2
 - In this major update we optimized a core part of the SSL handling.
