@@ -1505,12 +1505,12 @@ msgid "Running user script %s"
 msgstr "Spouštím uživatelský skript %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "Spuštěno %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Navratový kód skriptu je %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "Spuštěno %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

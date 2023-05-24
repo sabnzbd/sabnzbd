@@ -1529,12 +1529,12 @@ msgid "Running user script %s"
 msgstr "Kör användarskript %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "Körde %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Skriptets utgångskod är %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "Körde %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"
