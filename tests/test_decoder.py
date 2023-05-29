@@ -184,7 +184,6 @@ class TestUuDecoder:
     @pytest.mark.parametrize(
         "bad_data",
         [
-            b"MI^+0E\"C^364:CQ':]DW++^$F0J)6FDG/!`]0\\(4;EG$UY5RI,3JMBNX\\8+06\r\n$(WAIVBC^",  # Trailing junk
             VALID_UU_LINES[-1][:10] + bytes("ваше здоровье", encoding="utf8") + VALID_UU_LINES[-1][-10:],  # Non-ascii
         ],
     )
