@@ -350,10 +350,10 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     """Run user's notification script"""
     if test:
         script = test.get("nscript_script")
-        env = {"notification_parameters": test.get("nscript_parameters")}
+        env_params = {"notification_parameters": test.get("nscript_parameters")}
     else:
         script = sabnzbd.cfg.nscript_script()
-        env = {"notification_parameters": sabnzbd.cfg.nscript_parameters()}
+        env_params = {"notification_parameters": sabnzbd.cfg.nscript_parameters()}
 
     if not script:
         return T("Cannot send, missing required data")
@@ -365,17 +365,18 @@ def send_nscript(title, msg, gtype, force=False, test=None):
             ret = -1
             output = None
             try:
-                p = build_and_run_command([script_path, gtype, title, msg], env=create_env(extra_env_fields=env))
+                p = build_and_run_command([script_path, gtype, title, msg], env=create_env(extra_env_fields=env_params))
                 output = p.stdout.read()
                 ret = p.wait()
             except:
-                logging.info("Failed script %s, Traceback: ", script, exc_info=True)
+                logging.info("Failed to run script %s", script, exc_info=True)
 
             if ret:
                 logging.error(T('Script returned exit code %s and output "%s"'), ret, output)
                 return T('Script returned exit code %s and output "%s"') % (ret, output)
             else:
                 logging.info("Successfully executed notification script %s", script_path)
+                logging.debug("Script output: %s", output)
         else:
             return T('Notification script "%s" does not exist') % script_path
     return ""
