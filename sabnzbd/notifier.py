@@ -350,11 +350,11 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     """Run user's notification script"""
     if test:
         script = test.get("nscript_script")
-        nscript_parameters = test.get("nscript_parameters")
+        env = {"notification_parameters": test.get("nscript_parameters")}
     else:
         script = sabnzbd.cfg.nscript_script()
-        nscript_parameters = sabnzbd.cfg.nscript_parameters()
-    nscript_parameters = nscript_parameters.split()
+        env = {"notification_parameters": sabnzbd.cfg.nscript_parameters()}
+
     if not script:
         return T("Cannot send, missing required data")
     title = "SABnzbd: " + T(NOTIFICATION.get(gtype, "other"))
@@ -365,7 +365,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
             ret = -1
             output = None
             try:
-                p = build_and_run_command([script_path, gtype, title, msg] + nscript_parameters, env=create_env())
+                p = build_and_run_command([script_path, gtype, title, msg], env=create_env(extra_env_fields=env))
                 output = p.stdout.read()
                 ret = p.wait()
             except:
