@@ -205,7 +205,7 @@ if RELEASE_THIS and gh_token:
 
         # Merge pull-request
         print("Merging pull request in sabnzbd/sabnzbd.github.io for the update")
-        update_pr.merge(method="squash")
+        update_pr.merge(merge_method="squash")
 
     # Only with GitHub success we proceed to Reddit
     if reddit_token := os.environ.get("REDDIT_TOKEN", ""):
