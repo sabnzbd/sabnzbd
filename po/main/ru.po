@@ -1531,12 +1531,12 @@ msgid "Running user script %s"
 msgstr "Запуск пользовательского сценария %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "Запущено %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr ""
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "Запущено %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

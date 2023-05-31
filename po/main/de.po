@@ -1603,12 +1603,12 @@ msgid "Running user script %s"
 msgstr "Ausführen des Benutzer-Skripts %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "%s ausgeführt"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Exit-Code des Skripts ist %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "%s ausgeführt"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

@@ -1908,9 +1908,6 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
             del env["PYTHONPATH"]
         if "PYTHONHOME" in env:
             del env["PYTHONHOME"]
-    elif not nzo:
-        # No modification
-        return None
 
     return env
 

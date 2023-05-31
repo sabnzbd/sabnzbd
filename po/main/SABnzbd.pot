@@ -1430,11 +1430,11 @@ msgid "Running user script %s"
 msgstr ""
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
+msgid "Script exit code is %s"
 msgstr ""
 
 #: sabnzbd/postproc.py
-msgid "Script exit code is %s"
+msgid "Ran %s"
 msgstr ""
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py

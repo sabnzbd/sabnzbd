@@ -1523,12 +1523,12 @@ msgid "Running user script %s"
 msgstr "Покретање скрипта %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "%s покренуто"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Kod prekida skripte je %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "%s покренуто"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

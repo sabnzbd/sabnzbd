@@ -1530,12 +1530,12 @@ msgid "Running user script %s"
 msgstr "Ajetaan käyttäjän skripti %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "Ajettiin %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Skriptin lopetuskoodi on %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "Ajettiin %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

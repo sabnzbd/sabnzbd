@@ -1516,12 +1516,12 @@ msgid "Running user script %s"
 msgstr "正在执行用户脚本 %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "执行 %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "脚本退出代码为 %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "执行 %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

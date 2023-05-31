@@ -196,12 +196,16 @@ if RELEASE_THIS and gh_token:
 
         # Create pull-request
         print("Creating pull request in sabnzbd/sabnzbd.github.io for the update")
-        gh_repo_web.create_pull(
+        update_pr = gh_repo_web.create_pull(
             title="Release %s" % RELEASE_VERSION,
             base="master",
             body="Automated update of release files",
             head=RELEASE_VERSION,
         )
+
+        # Merge pull-request
+        print("Merging pull request in sabnzbd/sabnzbd.github.io for the update")
+        update_pr.merge(method="squash")
 
     # Only with GitHub success we proceed to Reddit
     if reddit_token := os.environ.get("REDDIT_TOKEN", ""):

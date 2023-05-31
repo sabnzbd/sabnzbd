@@ -1577,12 +1577,12 @@ msgid "Running user script %s"
 msgstr "Gebruiker script %s loopt"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "%s is klaar"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Exit code van het script is %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "%s is klaar"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

@@ -1562,12 +1562,12 @@ msgid "Running user script %s"
 msgstr "Rulare script utilizator %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "Durată %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Codul de ieșire a scriptului este %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "Durată %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

@@ -1537,12 +1537,12 @@ msgid "Running user script %s"
 msgstr "מריץ תסריט משתמש %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "הריץ את %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "קוד יציאת תסריט הוא %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "הריץ את %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"

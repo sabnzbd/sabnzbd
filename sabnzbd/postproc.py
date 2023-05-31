@@ -484,7 +484,6 @@ def process_job(nzo: NzbObject):
                     # Full cleanup including nzb's
                     cleanup_list(tmp_workdir_complete, skip_nzb=False)
 
-        script_output = ""
         script_ret = 0
         script_error = False
         if not nzb_list:
@@ -545,18 +544,23 @@ def process_job(nzo: NzbObject):
                     script_log, script_ret = external_processing(
                         script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
                     )
-                    if script_log:
-                        script_output = nzo.nzo_id
-                    if script_line := get_last_line(script_log):
-                        nzo.set_unpack_info("Script", script_line, unique=True)
-                    else:
-                        nzo.set_unpack_info("Script", T("Ran %s") % script, unique=True)
+
+                    # Format output depending on return status
+                    script_line = get_last_line(script_log)
+                    if script_ret:
+                        if script_line:
+                            script_line = "Exit(%s): %s " % (script_ret, script_line)
+                        else:
+                            script_line = T("Script exit code is %s") % script_ret
+                    elif not script_line:
+                        script_line = T("Ran %s") % script
+                    nzo.set_unpack_info("Script", script_line, unique=True)
 
                     # Maybe bad script result should fail job
                     if script_ret and cfg.script_can_fail():
                         script_error = True
                         all_ok = False
-                        nzo.fail_msg = T("Script exit code is %s") % script_ret
+                        nzo.fail_msg = script_line
 
         # Email the results
         if not nzb_list and cfg.email_endjob():
@@ -574,21 +578,13 @@ def process_job(nzo: NzbObject):
                     script_ret,
                 )
 
-        if script_output:
+        if script_log and len(script_log.rstrip().split("\n")) > 1:
             # Can do this only now, otherwise it would show up in the email
-            if script_ret:
-                script_ret = "Exit(%s) " % script_ret
-            else:
-                script_ret = ""
-            if len(script_log.rstrip().split("\n")) > 1:
-                nzo.set_unpack_info(
-                    "Script",
-                    '%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, script_output, T("More")),
-                    unique=True,
-                )
-            else:
-                # No '(more)' button needed
-                nzo.set_unpack_info("Script", "%s%s " % (script_ret, script_line), unique=True)
+            nzo.set_unpack_info(
+                "Script",
+                '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_line, nzo.nzo_id, T("More")),
+                unique=True,
+            )
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):
