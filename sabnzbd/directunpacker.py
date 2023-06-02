@@ -251,7 +251,7 @@ class DirectUnpacker(threading.Thread):
                     extracted = []
 
                     # Are there more files left?
-                    while not self.removed_from_queue and not self.next_sets:
+                    while not self.nzo.removed_from_queue and not self.next_sets:
                         with self.next_file_lock:
                             self.next_file_lock.wait()
 
