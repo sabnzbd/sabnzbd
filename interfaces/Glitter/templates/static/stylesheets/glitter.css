@@ -494,6 +494,10 @@ tbody>tr>td:last-child {
     background-color: #d9534f !important;
 }
 
+.history-queue-swicher .badge-info {
+    background-color: #58A9FA !important;
+}
+
 .history-queue-swicher .badge {
     margin-left: 4px;
 }

@@ -13,6 +13,7 @@ function HistoryListModel(parent) {
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
     self.totalItems = ko.observable(0);
+    self.ppItems = ko.observable(0);
     self.pagination = new paginationModel(self);
 
     // Download history info
@@ -93,6 +94,7 @@ function HistoryListModel(parent) {
             History information
         ***/
         self.totalItems(data.noofslots);
+        self.ppItems(data.ppslots)
         self.downloadedToday(data.day_size);
         self.downloadedWeek(data.week_size);
         self.downloadedMonth(data.month_size);

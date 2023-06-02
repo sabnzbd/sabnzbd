@@ -533,7 +533,7 @@ def _api_history(name, kwargs):
             to_units(week),
             to_units(day),
         )
-        history["slots"], history["noofslots"] = build_history(
+        history["slots"], history["ppslots"], history["noofslots"] = build_history(
             start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, nzo_ids=nzo_ids
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
@@ -1627,7 +1627,7 @@ def build_history(
     failed_only: int = 0,
     categories: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
-) -> Tuple[Dict[str, Any], int]:
+) -> Tuple[Dict[str, Any], int, int]:
     """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
@@ -1717,11 +1717,11 @@ def build_history(
     if close_db:
         history_db.close()
 
-    return items, total_items
+    return items, postproc_queue_size, total_items
 
 
 def get_active_history(queue, items):
-    """Get the currently in progress and active history queue."""
+    """Get the jobs currently in progress and active history queue."""
     for nzo in queue:
         item = {}
         (
