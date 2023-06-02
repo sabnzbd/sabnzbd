@@ -432,7 +432,7 @@ class Sorter:
                         ("%ext", f_ext.lstrip(".")),
                     ],
                 )
-                f_new = f_name_new + f_ext
+                f_new = to_lowercase(f_name_new + f_ext)
 
                 try:
                     logging.debug("Renaming season pack file %s to %s", f, f_new)
