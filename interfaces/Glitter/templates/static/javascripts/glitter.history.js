@@ -110,6 +110,8 @@ function HistoryListModel(parent) {
                 value: newValue
             })
         }
+        // Update pagination and counters
+        self.parent.refresh(true)
     });
 
     // Retry a job
