@@ -156,7 +156,6 @@ LOGFILE = None
 WEBLOGFILE = None
 GUIHANDLER = None
 LOG_ALL = False
-AMBI_LOCALHOST = False
 WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 

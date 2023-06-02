@@ -629,10 +629,6 @@ def get_webhost(cherryhost, cherryport, https_port):
             except socket.error:
                 cherryhost = cherryhost.strip("[]")
 
-    if ipv6 and ipv4 and not is_localhost(browserhost):
-        sabnzbd.AMBI_LOCALHOST = True
-        logging.info("IPV6 has priority on this system, potential Firefox issue")
-
     if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 

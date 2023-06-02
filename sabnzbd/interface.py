@@ -1164,17 +1164,6 @@ def unique_svr_name(server):
     return new_name
 
 
-def check_server(host, port, ajax):
-    """Check if server address resolves properly"""
-    if host.lower() == "localhost" and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse(T("Warning: LOCALHOST is ambiguous, use numerical IP-address."), ajax)
-
-    if get_server_addrinfo(host, int_conv(port)):
-        return ""
-    else:
-        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
-
-
 def handle_server(kwargs, root=None, new_svr=False):
     """Internal server handler"""
     ajax = kwargs.get("ajax")
@@ -1194,9 +1183,8 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        msg = check_server(host, port, ajax)
-        if msg:
-            return msg
+        if not get_server_addrinfo(host, int_conv(port)):
+            return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
     # Default server name is just the host name
     server = host
