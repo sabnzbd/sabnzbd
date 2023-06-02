@@ -29,6 +29,7 @@ stages:
           day_size: !re_match "[0-9][0-9.]*.?(\ [A-Z])?"
           slots: []
           noofslots: 0
+          ppslots: 0
           last_history_update: !anyint
           version: "{SAB_VERSION}"
 
@@ -58,7 +59,7 @@ stages:
         extra_kwargs:
           # Verify response with a regex using positive looksaheads so
           # parameters match regardless of their order of appearance
-          expression: "^{{(?=.*'noofslots': 0)(?=.*'last_history_update': [0-9]+)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': \\[\\])(?=.*'version': '{SAB_VERSION}').*}}$"
+          expression: "^{{(?=.*'noofslots': 0)(?=.*'ppslots': 0)(?=.*'last_history_update': [0-9]+)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': \\[\\])(?=.*'version': '{SAB_VERSION}').*}}$"
           # minor api bug: text output appends a space to integer only values in *_size, e.g. 'day_size': '0 '
 
 
@@ -95,6 +96,7 @@ stages:
             <day_size>!anystr</day_size>
             <slots></slots>
             <noofslots>0</noofslots>
+            <ppslots>0</ppslots>
             <last_history_update>!anyint</last_history_update>
             <version>!anystr</version>
             </history>
