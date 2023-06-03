@@ -617,7 +617,7 @@ class TestSortingSorter:
         [
             ("%sn s%0se%0e.%ext", True),  # %0e marker
             ("%sn s%se%e.%ext", True),  # %e marker
-            ("%sn s%se%e.%ext", True),  # Same with lowercasing; test for issue #2578
+            ("{%sn }s%se%e.%ext", True),  # Same with lowercasing; test for issue #2578
             ("%sn.%ext", False),  # No episode marker
             ("%sn_%0se%0e", False),  # No extension marker
             ("%r/%sn s%0se%0e.%ext", True),  # %0e marker, with dir in sort string
