@@ -617,10 +617,12 @@ class TestSortingSorter:
         [
             ("%sn s%0se%0e.%ext", True),  # %0e marker
             ("%sn s%se%e.%ext", True),  # %e marker
+            ("{%sn }s%se%e.%ext", True),  # Same with lowercasing; test for issue #2578
             ("%sn.%ext", False),  # No episode marker
             ("%sn_%0se%0e", False),  # No extension marker
             ("%r/%sn s%0se%0e.%ext", True),  # %0e marker, with dir in sort string
             ("%r/%sn s%se%e.%ext", True),  # %e marker, with dir in sort string
+            ("%r/{%sn} s%se%e.%ext", True),  # Same with lowercasing; test for issue #2578
             ("%r/%sn.%ext", False),  # No episode marker, with dir in sort string
             ("%r/%sn_%0se%0e", False),  # No extension marker, with dir in sort string
         ],
@@ -717,7 +719,11 @@ class TestSortingSorter:
                             # Also do a basic filename check
                             for root, dirs, files in os.walk(base_dir):
                                 for filename in files:
-                                    assert re.fullmatch(r"Pack Renamer s23e0?\d.*" + extension, filename)
+                                    if "{" in sort_string:
+                                        # Lowercasing marker in sort string, expect lowercase results
+                                        assert re.fullmatch(r"pack renamer s23e0?\d.*" + extension, filename)
+                                    else:
+                                        assert re.fullmatch(r"Pack Renamer s23e0?\d.*" + extension, filename)
                         else:
                             # No season pack renaming should happen, verify original files are still in place
                             assert os.path.exists(os.path.join(base_dir, f))

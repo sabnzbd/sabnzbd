@@ -432,7 +432,7 @@ class Sorter:
                         ("%ext", f_ext.lstrip(".")),
                     ],
                 )
-                f_new = f_name_new + f_ext
+                f_new = to_lowercase(f_name_new + f_ext)
 
                 try:
                     logging.debug("Renaming season pack file %s to %s", f, f_new)
@@ -477,11 +477,13 @@ class Sorter:
             f_name, f_ext = os.path.splitext(os.path.split(f)[1])
             new_filepath = os.path.join(
                 base_path,
-                path_subst(
-                    self.filename_set + self.multipart_label,
-                    [("%1", str(index)), ("%fn", f_name), ("%ext", f_ext.lstrip("."))],
-                )
-                + f_ext,
+                to_lowercase(
+                    path_subst(
+                        self.filename_set + self.multipart_label,
+                        [("%1", str(index)), ("%fn", f_name), ("%ext", f_ext.lstrip("."))],
+                    )
+                    + f_ext,
+                ),
             )
             try:
                 logging.debug("Renaming %s to %s", filepath, new_filepath)
@@ -557,7 +559,8 @@ class Sorter:
         f_name, f_ext = os.path.splitext(largest_file.get("name"))
         filepath = self._to_filepath(largest_file.get("name"), base_path)
         new_filepath = os.path.join(
-            base_path, path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext
+            base_path,
+            to_lowercase(path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext),
         )
         if not os.path.exists(new_filepath):
             renamed_files = []
