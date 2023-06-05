@@ -66,7 +66,7 @@ class DirScanner(threading.Thread):
 
         self.loop: Optional[asyncio.AbstractEventLoop] = None
         self.scanner_task: Optional[asyncio.Task] = None
-        self.lock = asyncio.Lock()  # Prevents concurrent scans
+        self.lock: Optional[asyncio.Lock] = None  # Prevents concurrent scans
         self.error_reported = False  # Prevents multiple reporting of missing watched folder
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
@@ -110,7 +110,9 @@ class DirScanner(threading.Thread):
         """Start the scanner"""
         logging.info("Dirscanner starting up")
 
+        # On Python 3.8 we first need an event loop before we can create a lock
         self.loop = asyncio.new_event_loop()
+        self.lock = asyncio.Lock()
 
         try:
             self.start_scanner()
