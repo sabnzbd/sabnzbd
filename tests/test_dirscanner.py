@@ -78,7 +78,6 @@ class TestDirScanner:
         fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), contents="FAKEFILE")
 
         scanner = sabnzbd.dirscanner.DirScanner()
-        scanner.lock = asyncio.Lock()
 
         await scanner.scan_async(scanner.dirscan_dir)
 
@@ -106,7 +105,6 @@ class TestDirScanner:
         fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path))
 
         scanner = sabnzbd.dirscanner.DirScanner()
-        scanner.lock = asyncio.Lock()
 
         await scanner.scan_async(scanner.dirscan_dir)
 
@@ -128,7 +126,6 @@ class TestDirScanner:
         fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path), contents="FAKEFILE")
 
         scanner = sabnzbd.dirscanner.DirScanner()
-        scanner.lock = asyncio.Lock()
 
         await scanner.scan_async(scanner.dirscan_dir)
 
