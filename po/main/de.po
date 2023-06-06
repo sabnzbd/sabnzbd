@@ -3660,26 +3660,6 @@ msgstr ""
 "Job abbrechen falls während des Downloads klar wird, dass zuviele Daten "
 "fehlen"
 
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr "Auswahl der Server-IP-Adresse"
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr "Erste IP-Adresse"
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr "Zufällig ausgewählte IP-Adresse"
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr "Schnellste IP-Adresse, IPv6 bevorzugt"
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr "Nützlich, wenn ein Newsserver mehr als eine IPv4/IPv6-Adresse hat"
-
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"

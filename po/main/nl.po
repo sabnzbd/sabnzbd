@@ -3609,26 +3609,6 @@ msgstr ""
 "Als tijdens het downloaden duidelijk wordt dat te veel data ontbreekt, breek"
 " dan de download af"
 
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr "Server IP adres selectie"
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr "Eerste IP adres"
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr "willekeurig geselecteerd IP adres"
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr "Snelste IP adres, voorkeur voor IPv6"
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr "Nuttig wanneer een server meer dan één IPv4 of IPv6-adres heeft"
-
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"

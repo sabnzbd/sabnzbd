@@ -3514,26 +3514,6 @@ msgstr ""
 "Når under download det bliver klart, at for meget data mangler, afbryd "
 "jobbet"
 
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr "Nyttigt, hvis en newsserver har mere end én IPv4/IPv6-adresse"
-
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"

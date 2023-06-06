@@ -3425,26 +3425,6 @@ msgid ""
 "the job"
 msgstr ""
 
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr "Výběr IP adresy serveru"
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr "Náhodně vybraná IP adresa"
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr "Nejrychlejší IP adresa, preferuj IPv6"
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr ""
-
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"

@@ -3610,27 +3610,6 @@ msgstr ""
 "Cuando este bajando, si es claro que mucha data esta faltando, aborte el "
 "trabajo."
 
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr "Selección de la dirección IP del servidor"
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr "Primera dirección IP"
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr "Dirección IP seleccionada aleatoriamente"
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr "Dirección IP más rápida, con preferencia IPv6"
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr ""
-"Útil si un servidor de noticias tiene más de una dirección IPv4 / IPv6"
-
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"
