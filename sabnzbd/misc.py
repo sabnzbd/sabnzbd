@@ -790,10 +790,9 @@ def format_time_string(seconds: float) -> str:
 def int_conv(value: Any) -> int:
     """Safe conversion to int (can handle None)"""
     try:
-        value = int(value)
+        return int(value)
     except:
-        value = 0
-    return value
+        return 0
 
 
 def create_https_certificates(ssl_cert, ssl_key):
@@ -1016,38 +1015,15 @@ def ip_extract() -> List[str]:
 
 
 def get_server_addrinfo(host: str, port: int) -> socket.getaddrinfo:
-    """Return processed getaddrinfo()"""
+    """Return getaddrinfo() based on user settings"""
     try:
-        int(port)
-    except:
-        port = 119
-    opt = sabnzbd.cfg.ipv6_servers()
-    """ ... with the following meaning for 'opt':
-    Control the use of IPv6 Usenet server addresses. Meaning:
-    0 = don't use
-    1 = use when available and reachable (DEFAULT)
-    2 = force usage (when SABnzbd's detection fails)
-    """
-    try:
-        # Standard IPV4 or IPV6
-        ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
-        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
-            # IPv6 forced by user, or IPv6 allowed and reachable, or IPv6 allowed and loadbalancing-with-IPv6 activated
-            # So return all IP addresses, no matter IPv4 or IPv6:
-            return ips
+        if cfg.ipv6_servers():
+            # Standard IPV4 or IPV6
+            return socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
         else:
-            # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
-            return [ip for ip in ips if ":" not in ip[4][0]]
+            # Only IPv4
+            return socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
     except:
-        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
-            try:
-                # Try IPV6 explicitly
-                return socket.getaddrinfo(
-                    host, port, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME
-                )
-            except:
-                # Nothing found!
-                pass
         return []
 
 

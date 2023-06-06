@@ -563,11 +563,8 @@ class Downloader(Thread):
         sabnzbd.decoder.decode(article, raw_data)
 
     def run(self):
-        # First check IPv6 connectivity
-        sabnzbd.EXTERNAL_IPV6 = sabnzbd.misc.test_ipv6()
-        logging.debug("External IPv6 test result: %s", sabnzbd.EXTERNAL_IPV6)
-
-        logging.debug("switchinterval = %s", sys.getswitchinterval())
+        # Log IPv6 connectivity
+        sabnzbd.misc.test_ipv6()
 
         # Then we check SSL certificate checking
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
