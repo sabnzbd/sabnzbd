@@ -563,10 +563,7 @@ class Downloader(Thread):
         sabnzbd.decoder.decode(article, raw_data)
 
     def run(self):
-        # Log IPv6 connectivity
-        sabnzbd.misc.test_ipv6()
-
-        # Then we check SSL certificate checking
+        # Verify SSL certificate checking
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
 

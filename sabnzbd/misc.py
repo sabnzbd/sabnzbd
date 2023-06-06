@@ -1199,34 +1199,6 @@ def set_https_verification(value):
     return prev
 
 
-def test_ipv6():
-    """Check if external IPv6 addresses are reachable"""
-    if not cfg.selftest_host():
-        # User disabled the test, assume active IPv6
-        return True
-    try:
-        info = sabnzbd.getipaddress.addresslookup6(cfg.selftest_host())
-    except:
-        logging.debug(
-            "Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0]
-        )
-        return False
-
-    try:
-        af, socktype, proto, canonname, sa = info[0]
-        with socket.socket(af, socktype, proto) as sock:
-            sock.settimeout(2)  # 2 second timeout
-            sock.connect(sa[0:2])
-        logging.debug("Test IPv6: IPv6 test successful. Enabling IPv6")
-        return True
-    except socket.error:
-        logging.debug("Test IPv6: Cannot reach IPv6 test host. Disabling IPv6")
-        return False
-    except:
-        logging.debug("Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s", sys.exc_info()[0])
-        return False
-
-
 def test_cert_checking():
     """Test quality of certificate validation"""
     # User disabled the test, assume proper SSL certificates
