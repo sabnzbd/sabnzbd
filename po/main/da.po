@@ -684,10 +684,6 @@ msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "Advarsel: Localhost er tvetydig, bruge numerisk IP-adresse."
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradressen \"%s:%s\" er ikke gyldigt."
 

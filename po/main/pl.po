@@ -676,10 +676,6 @@ msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "Uwaga: LOCALHOST jest niejednoznaczne, użyj adresu IP."
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Nieprawidłowy adres serwera \"%s:%s\"."
 

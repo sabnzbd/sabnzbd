@@ -681,10 +681,6 @@ msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "Varoitus: LOCALHOST on hämärä, käytä numeerista IP-osoitetta."
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Palvelimen osoite \"%s:%s\" ei ole kelvollinen."
 

@@ -712,10 +712,6 @@ msgid "Invalid backup archive"
 msgstr "Ongeldig backup bestand"
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "Let op: LOCALHOST is niet eenduidig, gebruik een numeriek IP-adres."
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradres \"%s:%s\" is niet geldig."
 
