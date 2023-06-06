@@ -19,15 +19,6 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
-                        <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
-                        <select name="load_balancing" id="load_balancing">
-                            <option value="0" <!--#if $load_balancing == 0 then 'selected="selected"' else ""#--> >$T('no-load-balancing')</option>
-                            <option value="1" <!--#if $load_balancing == 1 then 'selected="selected"' else ""#--> >$T('load-balancing')</option>
-                            <option value="2" <!--#if $load_balancing == 2 then 'selected="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
-                        </select>
-                        <span class="desc">$T('explain-load_balancing')</span>
-                    </div>
-                    <div class="field-pair">
                         <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
                         <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />
                         <span class="desc">$T('explain-max_art_tries')</span>

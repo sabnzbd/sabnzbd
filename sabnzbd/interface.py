@@ -786,7 +786,6 @@ SWITCH_LIST = (
     "sfv_check",
     "deobfuscate_final_filenames",
     "folder_rename",
-    "load_balancing",
     "quota_size",
     "quota_day",
     "quota_resume",

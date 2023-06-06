@@ -539,11 +539,6 @@ SKIN_TEXT = {
     "explain-fail_hopeless_jobs": TT(
         "When during download it becomes clear that too much data is missing, abort the job"
     ),
-    "opt-load_balancing": TT("Server IP address selection"),
-    "no-load-balancing": TT("First IP address"),
-    "load-balancing": TT("Randomly selected IP address"),
-    "load-balancing-happy-eyeballs": TT("Quickest IP address, preferring IPv6"),
-    "explain-load_balancing": TT("Useful if a newsserver has more than one IPv4/IPv6 address"),
     # Config->Server
     "addServer": TT("Add Server"),  #: Caption
     "srv-displayname": TT("Server description"),  #: User defined name for server

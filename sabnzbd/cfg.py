@@ -332,7 +332,6 @@ log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_notempty)
 # Config - Switches
 ##############################################################################
 max_art_tries = OptionNumber("misc", "max_art_tries", 3, minval=2)
-load_balancing = OptionNumber("misc", "load_balancing", 2)
 top_only = OptionBool("misc", "top_only", False)
 sfv_check = OptionBool("misc", "sfv_check", True)
 script_can_fail = OptionBool("misc", "script_can_fail", False)

@@ -169,11 +169,8 @@ class Server:
 
     @property
     def hostip(self) -> str:
-        """In case a server still has active connections, we use the same IP again
-        If new connection then based on value of load_balancing() and self.info:
-        0 - return the first entry, so all threads use the same IP
-        1 - and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
-        2 - and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
+        """In case a server still has active connections, we use the same IP again.
+        If new connection then use happyeyeballs if there are multiple options.
         In case of problems: return the host name itself
         """
         # Check if already a successful ongoing connection
@@ -183,22 +180,17 @@ class Server:
             return self.busy_threads[0].nntp.host
 
         # Determine IP
-        ip = self.host
+        ip = None
         if self.info:
-            # Check this first so we can fall back to default method if it returns None.
-            if len(self.info) > 1 and cfg.load_balancing() == 2:
-                # RFC6555 / Happy Eyeballs:
+            # RFC6555 / Happy Eyeballs in case of multiple options
+            if len(self.info) > 1:
                 ip = happyeyeballs(self.host, port=self.port)
-                if not ip:
-                    # nothing returned, so there was a connection problem
-                    logging.debug("%s: No successful IP connection was possible using happyeyeballs", self.host)
-            if not ip or cfg.load_balancing() == 0 or len(self.info) == 1:
-                # Just return the first one, so all next threads use the same IP
+
+            # Just 1 IP found, or problem with happyeyeballs, return first one
+            if not ip:
                 ip = self.info[0][4][0]
-            elif cfg.load_balancing() == 1:
-                # Return a random entry from the possible IPs
-                rnd = random.randint(0, len(self.info) - 1)
-                ip = self.info[rnd][4][0]
+        else:
+            ip = self.host
         logging.debug("%s: Connecting to address %s", self.host, ip)
         return ip
 
