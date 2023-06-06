@@ -27,6 +27,7 @@ from threading import Thread
 import ctypes
 from typing import Tuple, Optional, List
 
+import sabctools
 import sabnzbd
 from sabnzbd.misc import get_all_passwords, match_str
 from sabnzbd.filesystem import (
@@ -160,13 +161,21 @@ class Assembler(Thread):
 
     @staticmethod
     def assemble(nzo: NzbObject, nzf: NzbFile, file_done: bool):
-        """Assemble a NZF from its table of articles
-        1) Partial write: write what we have
-        2) Nothing written before: write all
-        """
+        """Assemble a NZF from its table of articles"""
+
+        # When a file exists, we cannot use "w+b"
+        if os.path.exists(nzf.filepath):
+            open_mode = "r+b"
+            file_sparse = True
+        else:
+            open_mode = "w+b"
+            file_sparse = False
 
         # We write large article-sized chunks, so we can safely skip the buffering of Python
-        with open(nzf.filepath, "ab", buffering=0) as fout:
+        with open(nzf.filepath, open_mode, buffering=0) as fout:
+            # Track position, so we can prevent a seek if writing continuous
+            file_position = 0
+
             for article in nzf.decodetable:
                 # Break if deleted during writing
                 if nzo.status is Status.DELETED:
@@ -178,9 +187,25 @@ class Assembler(Thread):
 
                 # Write all decoded articles
                 if article.decoded:
+                    # On first write try to make the file sparse
+                    if not file_sparse and article.file_size is not None and article.file_size > 0:
+                        file_sparse = True
+                        try:
+                            sabctools.sparse(fout, article.file_size)
+                        except:
+                            logging.debug("Failed to make %s sparse with length %d", nzf.filepath, article.file_size)
+                            logging.debug("Traceback: ", exc_info=True)
+
                     data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
                     if data:
+                        if article.data_begin is not None:
+                            # Seek ahead if needed
+                            if article.data_begin != file_position:
+                                fout.seek(article.data_begin)
+                            file_position = article.data_begin + len(data)
+                        else:
+                            fout.seek(0, os.SEEK_END)
                         fout.write(data)
                         nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
