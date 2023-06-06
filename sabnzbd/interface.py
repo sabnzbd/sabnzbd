@@ -851,6 +851,7 @@ SPECIAL_BOOL_LIST = (
     "start_paused",
     "preserve_paused_state",
     "no_penalties",
+    "ipv6_servers",
     "fast_fail",
     "overwrite_files",
     "enable_par_cleanup",
@@ -893,7 +894,6 @@ SPECIAL_VALUE_LIST = (
     "receive_threads",
     "switchinterval",
     "direct_unpack_threads",
-    "ipv6_servers",
     "selftest_host",
     "ssdp_broadcast_interval",
 )
