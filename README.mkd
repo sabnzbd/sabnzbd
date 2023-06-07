@@ -1,22 +1,23 @@
-Release Notes - SABnzbd 4.0.2 Release Candidate 2
+Release Notes - SABnzbd 4.0.2
 =========================================================
 
-## Bugfixes and changes since 4.0.2 Release Candidate 1
+## Breaking change
 - The `Parameters` setting of a `Notification Script` is now passed as
   environment variable `SAB_NOTIFICATION_PARAMETERS` instead of as a
   command-line parameter. This prevents the possibility of remote code
   execution on systems exposed to the internet without a username/password.
-- Correctly decode partially malformed UUencoded posts.
-- Show last line of post-processing script output even if it failed.
+  If you use `nzb-notify` you need to update it to the latest version.
 
 ## Bugfixes and changes since 4.0.1
 - Disabling a server during download did not stop it from downloading.
+- Show last line of post-processing script output even if it failed.
 - Prevent crash during Deobfuscate on non-unique paths.
 - Files that could not be parsed were removed from the `Watched Folder`.
 - Warn if the file system does not support unicode or long filenames.
 - Warn if `Scripts Folder` is inside the application directory.
 - Prevent output buffering of Python post-processing scripts.
 - The `PKG-INFO` file was removed from the `src` release.
+- Correctly decode partially malformed UUencoded posts.
 - macOS: Tray icon could not be disabled.
 
 ## Changes since 3.7.2
