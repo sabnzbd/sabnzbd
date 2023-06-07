@@ -2,42 +2,16 @@
 import os
 import re
 import sys
-import pkginfo
 
 from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
+from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION
+
 # Add extra files in the PyInstaller-spec
 extra_pyinstaller_files = []
-
-# Also modify these in "package.py"!
-extra_files = [
-    "README.txt",
-    "INSTALL.txt",
-    "LICENSE.txt",
-    "GPL2.txt",
-    "GPL3.txt",
-    "COPYRIGHT.txt",
-    "ISSUES.txt",
-    "PKG-INFO",
-]
-
-extra_folders = [
-    "scripts/",
-    "licenses/",
-    "locale/",
-    "email/",
-    "interfaces/Glitter/",
-    "interfaces/wizard/",
-    "interfaces/Config/",
-    "scripts/",
-    "icons/",
-]
-
-# Get the version
-RELEASE_VERSION = pkginfo.Develop(".").version
 
 # Add hidden imports
 extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
@@ -48,7 +22,7 @@ extra_hiddenimports.extend(collect_submodules("guessit.data"))
 if sys.platform == "darwin":
     extra_hiddenimports.extend(["objc", "PyObjCTools"])
     # macOS folders
-    extra_folders += ["osx/par2/", "osx/unrar/", "osx/7zip/"]
+    EXTRA_FOLDERS += ["osx/par2/", "osx/unrar/", "osx/7zip/"]
     # Add NZB-icon file
     extra_pyinstaller_files.append(("builder/osx/image/nzbfile.icns", "."))
     # Version information is set differently on macOS
@@ -67,8 +41,8 @@ else:
 
     # Windows
     extra_hiddenimports.append("win32timezone")
-    extra_folders += ["win/multipar/", "win/unrar/", "win/7zip/"]
-    extra_files += ["portable.cmd"]
+    EXTRA_FOLDERS += ["win/multipar/", "win/unrar/", "win/7zip/"]
+    EXTRA_FILES += ["portable.cmd"]
 
     # Parse the version info
     version_regexed = re.search(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)", RELEASE_VERSION)
@@ -109,9 +83,9 @@ else:
     )
 
 # Process the extra-files and folders
-for file_item in extra_files:
+for file_item in EXTRA_FILES:
     extra_pyinstaller_files.append((file_item, "."))
-for folder_item in extra_folders:
+for folder_item in EXTRA_FOLDERS:
     extra_pyinstaller_files.append((folder_item, folder_item))
 
 # Add babelfish data files

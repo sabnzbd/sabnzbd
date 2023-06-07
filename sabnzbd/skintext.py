@@ -375,9 +375,7 @@ SKIN_TEXT = {
         'Set permissions pattern for completed files/folders.<br /><i>In octal notation. For example: "755" or "777"</i>'
     ),
     "opt-dirscan_dir": TT("Watched Folder"),
-    "explain-dirscan_dir": TT(
-        "Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz archives for .nzb files.</i>"
-    ),
+    "explain-dirscan_dir": TT("Folder to monitor for .nzb files."),
     "opt-dirscan_speed": TT("Watched Folder Scan Speed"),
     "explain-dirscan_speed": TT("Number of seconds between scans for .nzb files."),
     "opt-script_dir": TT("Scripts Folder"),

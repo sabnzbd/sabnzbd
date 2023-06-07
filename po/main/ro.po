@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -303,6 +303,13 @@ msgid "Error: Queue not empty, cannot change folder."
 msgstr "Eroare: Coada nu este goală, nu pot schimba dosar."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr "Configurație blocată, nu pot salva setările"
@@ -446,6 +453,11 @@ msgstr ""
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Nu am putu inițializa %s@%s din cauza următorului motiv: %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -608,14 +620,24 @@ msgstr "Încărcarea %s nereuşită"
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid ""
-"%s is not writable with special character filenames. This can cause "
-"problems."
+msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -1540,12 +1562,12 @@ msgid "Running user script %s"
 msgstr "Rulare script utilizator %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "Durată %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Codul de ieșire a scriptului este %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "Durată %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"
@@ -2995,12 +3017,8 @@ msgid "Watched Folder"
 msgstr "Dosar Monitorizat"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
-msgstr ""
-"Dosar pentru supraveghere fişiere .nzb.<br /><i>Scanează de asemenea şi "
-"arhivele .zip .rar .tar.gz de fişiere .nzb.</i>"
+msgid "Folder to monitor for .nzb files."
+msgstr "Dosar pentru supraveghere fişiere .nzb."
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"

@@ -15,6 +15,7 @@
     "fileMatch": [
       "requirements.txt",
       "builder/requirements.txt",
+      "builder/release-requirements.txt",
       "builder/osx/requirements.txt"
     ]
   },

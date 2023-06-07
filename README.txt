@@ -1,37 +1,21 @@
-Release Notes - SABnzbd 4.0.2
+Release Notes - SABnzbd 4.0.0 Release Candidate 2
 =========================================================
 
-## Breaking change
-- The `Parameters` setting of a `Notification Script` is now passed as
-  environment variable `SAB_NOTIFICATION_PARAMETERS` instead of as a
-  command-line parameter. This prevents the possibility of remote code
-  execution on systems exposed to the internet without a username/password.
-  If you use `nzb-notify` you need to update it to the latest version.
-
-## Bugfixes and changes since 4.0.1
-- Disabling a server during download did not stop it from downloading.
-- Show last line of post-processing script output even if it failed.
-- Prevent crash during Deobfuscate on non-unique paths.
-- Files that could not be parsed were removed from the `Watched Folder`.
-- Warn if the file system does not support unicode or long filenames.
-- Warn if `Scripts Folder` is inside the application directory.
-- Prevent output buffering of Python post-processing scripts.
-- The `PKG-INFO` file was removed from the `src` release.
-- Correctly decode partially malformed UUencoded posts.
-- macOS: Tray icon could not be disabled.
-
 ## Changes since 3.7.2
-- In this major update we optimized a core part of the SSL handling.
-  This results in large performance increase when downloading from news
-  servers with SSL enabled. In addition, the general connection handling
-  was improved, resulting in performance improvements for all news servers.
+- In this major update we replaced a core part of Python's SSL handling
+  with our own improved version. This results in large performance increases
+  when downloading from news servers with SSL enabled.
+  In addition, the general connection handling was overhauled, resulting in
+  performance improvements for all news servers.
   Special thanks to: mnightingale, puzzledsab and animetosho!
 - There are multiple settings that can tweak performance, see:
   https://github.com/sabnzbd/sabnzbd/discussions/2474
+  We are trying to find the most optimal default settings, so you
+  can help us by letting us know the results on your system!
 - When adding a new news server, SSL is enabled by default.
 - File assembly performance significantly improved by relying on the
   CRC32 instead of the MD5 to perform QuickCheck of files.
-- Slow down more gracefully when the cache fills up.
+- Slowdown more gracefully when the cache fills up.
 - Replaced separate Series/Movie/Date Sorting with general Sorter.
 - HTTPS files are included in the `Backup`.
 - Improved `Watched Folder` scanning and processing.

@@ -427,7 +427,8 @@ def print_modules():
         logging.info("SABCTools module is linked to OpenSSL: %s", sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED)
 
         # Check if we managed to link, warning for now
-        if not sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED:
+        # It won't work on OpenSSL < 1.1.1 anyway, so we skip the check there
+        if not sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED and ssl.OPENSSL_VERSION_INFO >= (1, 1, 1):
             logging.warning(
                 "Could not link to OpenSSL library, please report here: "
                 "https://github.com/sabnzbd/sabnzbd/issues/2421"

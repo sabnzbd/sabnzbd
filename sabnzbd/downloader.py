@@ -582,208 +582,185 @@ class Downloader(Thread):
         BPSMeter.update()
         next_bpsmeter_update = 0
 
-        # Debugging code for v4 test release
-        sleep_count_start: float = time.time()
-        sleep_count: int = 0
-        time_slept: float = 0
-
         # Check server expiration dates
         check_server_expiration()
 
-        while 1:
-            now = time.time()
+        # Catch all errors, just in case
+        try:
+            while 1:
+                now = time.time()
 
-            # Set Article to None so references from this
-            # thread do not keep the parent objects alive (see #1628)
-            article = None
+                # Set Article to None so references from this
+                # thread do not keep the parent objects alive (see #1628)
+                article = None
 
-            for server in self.servers:
-                # Skip this server if there's no point searching for new stuff to do
-                if not server.busy_threads and server.next_article_search > now:
-                    continue
-
-                if server.next_busy_threads_check < now:
-                    server.next_busy_threads_check = now + _SERVER_CHECK_DELAY
-                    for nw in server.busy_threads[:]:
-                        if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
-                            if nw.nntp and nw.nntp.error_msg:
-                                # Already showed error
-                                self.__reset_nw(nw)
-                            else:
-                                self.__reset_nw(nw, "timed out", warn=True)
-                            server.bad_cons += 1
-                            self.maybe_block_server(server)
-
-                if server.restart:
-                    if not server.busy_threads:
-                        newid = server.newid
-                        server.stop()
-                        self.servers.remove(server)
-                        if newid:
-                            self.init_server(None, newid)
-                        self.server_restarts -= 1
-                        # Have to leave this loop, because we removed element
-                        break
-                    else:
-                        # Restart pending, don't add new articles
+                for server in self.servers:
+                    # Skip this server if there's no point searching for new stuff to do
+                    if not server.busy_threads and server.next_article_search > now:
                         continue
 
-                if (
-                    not server.idle_threads
-                    or self.no_active_jobs()
-                    or self.shutdown
-                    or self.paused_for_postproc
-                    or not server.active
-                ):
+                    if server.next_busy_threads_check < now:
+                        server.next_busy_threads_check = now + _SERVER_CHECK_DELAY
+                        for nw in server.busy_threads[:]:
+                            if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
+                                if nw.nntp and nw.nntp.error_msg:
+                                    # Already showed error
+                                    self.__reset_nw(nw)
+                                else:
+                                    self.__reset_nw(nw, "timed out", warn=True)
+                                server.bad_cons += 1
+                                self.maybe_block_server(server)
+
+                    if server.restart:
+                        if not server.busy_threads:
+                            server.stop()
+                            self.servers.remove(server)
+                            if newid := server.newid:
+                                self.init_server(None, newid)
+                            self.server_restarts -= 1
+                            # Have to leave this loop, because we removed element
+                            break
+                        else:
+                            # Restart pending, don't add new articles
+                            continue
+
+                    if (
+                        not server.idle_threads
+                        or self.no_active_jobs()
+                        or self.shutdown
+                        or self.paused_for_postproc
+                        or not server.active
+                    ):
+                        continue
+
+                    for nw in server.idle_threads[:]:
+                        if nw.timeout:
+                            if now < nw.timeout:
+                                continue
+                            else:
+                                nw.timeout = None
+
+                        if not server.info:
+                            # Only request info if there's stuff in the queue
+                            if not sabnzbd.NzbQueue.is_empty():
+                                self.maybe_block_server(server)
+                                server.request_info()
+                            break
+
+                        nw.article = server.get_article()
+                        if not nw.article:
+                            break
+
+                        server.idle_threads.remove(nw)
+                        server.busy_threads.append(nw)
+
+                        if nw.connected:
+                            self.__request_article(nw)
+                        else:
+                            try:
+                                logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
+                                nw.init_connect()
+                            except:
+                                logging.error(
+                                    T("Failed to initialize %s@%s with reason: %s"),
+                                    nw.thrdnum,
+                                    server.host,
+                                    sys.exc_info()[1],
+                                )
+                                self.__reset_nw(nw, "failed to initialize", warn=True)
+
+                if self.force_disconnect or self.shutdown:
+                    for server in self.servers:
+                        for nw in server.idle_threads + server.busy_threads:
+                            # Send goodbye if we have open socket
+                            if nw.nntp:
+                                self.__reset_nw(
+                                    nw, "forcing disconnect", wait=False, count_article_try=False, send_quit=True
+                                )
+                        # Make sure server address resolution is refreshed
+                        server.info = None
+                        server.reset_article_queue()
+                    self.force_disconnect = False
+
+                    # Make sure we update the stats
+                    BPSMeter.update()
+
+                    # Exit-point
+                    if self.shutdown:
+                        logging.info("Shutting down")
+                        break
+
+                # If less data than possible was received then it should be ok to sleep a bit
+                if self.sleep_time:
+                    if self.last_max_chunk_size > self.max_chunk_size:
+                        self.max_chunk_size = self.last_max_chunk_size
+                    elif self.last_max_chunk_size < self.max_chunk_size / 3:
+                        time.sleep(self.sleep_time)
+                        now = time.time()
+                    self.last_max_chunk_size = 0
+
+                # Use select to find sockets ready for reading/writing
+                if readkeys := self.read_fds.keys():
+                    read, _, _ = select.select(readkeys, (), (), 1.0)
+                else:
+                    read = []
+                    BPSMeter.reset()
+                    time.sleep(1.0)
+                    self.max_chunk_size = _DEFAULT_CHUNK_SIZE
+                    with DOWNLOADER_CV:
+                        while (
+                            (sabnzbd.NzbQueue.is_empty() or self.no_active_jobs() or self.paused_for_postproc)
+                            and not self.shutdown
+                            and not self.force_disconnect
+                            and not self.server_restarts
+                        ):
+                            DOWNLOADER_CV.wait()
+
+                if now > next_bpsmeter_update:
+                    BPSMeter.update()
+                    next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
+
+                if not read:
                     continue
 
-                for nw in server.idle_threads[:]:
-                    if nw.timeout:
-                        if now < nw.timeout:
-                            continue
-                        else:
-                            nw.timeout = None
+                if self.recv_threads > 1:
+                    # Submit a process_nw task to the pool for every NewWrapper which is readable
+                    for selected in read:
+                        self.process_tasks.add(self.recv_pool.submit(self.process_nw, self.read_fds[selected]))
 
-                    if not server.info:
-                        # Only request info if there's stuff in the queue
-                        if not sabnzbd.NzbQueue.is_empty():
-                            self.maybe_block_server(server)
-                            server.request_info()
-                        break
+                    # Wait for all the tasks to complete
+                    concurrent.futures.wait(self.process_tasks)
 
-                    nw.article = server.get_article()
-                    if not nw.article:
-                        break
+                    # Clear task list
+                    self.process_tasks.clear()
+                else:
+                    for selected in read:
+                        self.process_nw(self.read_fds[selected])
 
-                    server.idle_threads.remove(nw)
-                    server.busy_threads.append(nw)
+                # Check the Assembler queue to see if we need to delay, depending on queue size
+                if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
+                    time.sleep(min((assembler_level - SOFT_QUEUE_LIMIT) / 4, 0.15))
+                    sabnzbd.BPSMeter.delayed_assembler += 1
+                    logged_counter = 0
 
-                    if nw.connected:
-                        self.__request_article(nw)
-                    else:
-                        try:
-                            logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
-                            nw.init_connect()
-                        except:
-                            logging.error(
-                                T("Failed to initialize %s@%s with reason: %s"),
-                                nw.thrdnum,
-                                server.host,
-                                sys.exc_info()[1],
-                            )
-                            self.__reset_nw(nw, "failed to initialize", warn=True)
+                    while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
+                        # Only log/update once every second, to not waste any CPU-cycles
+                        if not logged_counter % 10:
+                            # Make sure the BPS-meter is updated
+                            sabnzbd.BPSMeter.update()
 
-            if self.force_disconnect or self.shutdown:
-                for server in self.servers:
-                    for nw in server.idle_threads + server.busy_threads:
-                        # Send goodbye if we have open socket
-                        if nw.nntp:
-                            self.__reset_nw(
-                                nw, "forcing disconnect", wait=False, count_article_try=False, send_quit=True
-                            )
-                    # Make sure server address resolution is refreshed
-                    server.info = None
-                    server.reset_article_queue()
-                self.force_disconnect = False
-
-                # Make sure we update the stats
-                BPSMeter.update()
-
-                # Exit-point
-                if self.shutdown:
-                    logging.info("Shutting down")
-                    break
-
-            # If less data than possible was received then it should be ok to sleep a bit
-            if self.sleep_time:
-                if self.last_max_chunk_size > self.max_chunk_size:
-                    logging.debug("New max_chunk_size %d -> %d", self.max_chunk_size, self.last_max_chunk_size)
-                    self.max_chunk_size = self.last_max_chunk_size
-                elif self.last_max_chunk_size < self.max_chunk_size / 3:
-                    time_before = time.time()
-                    time.sleep(self.sleep_time)
-                    now = time.time()
-                    # Debugging code for v4 test release
-                    if now - time_before > self.sleep_time + 0.02:
-                        logging.debug("Slept %.5f seconds, sleep_time = %s", now - time_before, self.sleep_time)
-                    time_slept += now - time_before
-                    sleep_count += 1
-                    if sleep_count_start + 20 < now:
-                        if sleep_count > 21:
+                            # Update who is delaying us
                             logging.debug(
-                                "Slept %d times for an average of %.5f seconds the last %.2f seconds. sleep_time = %s",
-                                sleep_count,
-                                time_slept / sleep_count,
-                                now - sleep_count_start,
-                                self.sleep_time,
+                                "Delayed - %d seconds - Assembler queue: %d",
+                                logged_counter / 10,
+                                sabnzbd.Assembler.queue.qsize(),
                             )
-                        sleep_count_start = now
-                        sleep_count = 0
-                        time_slept = 0
 
-                self.last_max_chunk_size = 0
-
-            # Use select to find sockets ready for reading/writing
-            readkeys = self.read_fds.keys()
-            if readkeys:
-                read, _, _ = select.select(readkeys, (), (), 1.0)
-            else:
-                read = []
-                BPSMeter.reset()
-                time.sleep(1.0)
-                self.max_chunk_size = _DEFAULT_CHUNK_SIZE
-                with DOWNLOADER_CV:
-                    while (
-                        (sabnzbd.NzbQueue.is_empty() or self.no_active_jobs() or self.paused_for_postproc)
-                        and not self.shutdown
-                        and not self.force_disconnect
-                        and not self.server_restarts
-                    ):
-                        DOWNLOADER_CV.wait()
-
-            if now > next_bpsmeter_update:
-                BPSMeter.update()
-                next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
-
-            if not read:
-                continue
-
-            if self.recv_threads > 1:
-                # Submit a process_nw task to the pool for every NewWrapper which is readable
-                for selected in read:
-                    self.process_tasks.add(self.recv_pool.submit(self.process_nw, self.read_fds[selected]))
-
-                # Wait for all the tasks to complete
-                concurrent.futures.wait(self.process_tasks)
-
-                # Clear task list
-                self.process_tasks.clear()
-            else:
-                for selected in read:
-                    self.process_nw(self.read_fds[selected])
-
-            # Check the Assembler queue to see if we need to delay, depending on queue size
-            if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
-                time.sleep(min((assembler_level - SOFT_QUEUE_LIMIT) / 4, 0.15))
-                sabnzbd.BPSMeter.delayed_assembler += 1
-                logged_counter = 0
-
-                while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
-                    # Only log/update once every second, to not waste any CPU-cycles
-                    if not logged_counter % 10:
-                        # Make sure the BPS-meter is updated
-                        sabnzbd.BPSMeter.update()
-
-                        # Update who is delaying us
-                        logging.debug(
-                            "Delayed - %d seconds - Assembler queue: %d",
-                            logged_counter / 10,
-                            sabnzbd.Assembler.queue.qsize(),
-                        )
-
-                    # Wait and update the queue sizes
-                    time.sleep(0.1)
-                    logged_counter += 1
+                        # Wait and update the queue sizes
+                        time.sleep(0.1)
+                        logged_counter += 1
+        except:
+            logging.error(T("Fatal error in Downloader"), exc_info=True)
 
     def process_nw(self, nw: NewsWrapper):
         """Receive data from NewsWrapper and handle response"""
@@ -871,7 +848,12 @@ class Downloader(Thread):
             nw.soft_reset()
 
             # Request a new article immediately if possible
-            if nw.connected and server.active and not (self.paused or self.shutdown or self.paused_for_postproc):
+            if (
+                nw.connected
+                and server.active
+                and not server.restart
+                and not (self.paused or self.shutdown or self.paused_for_postproc)
+            ):
                 nw.article = server.get_article()
                 if nw.article:
                     self.__request_article(nw)

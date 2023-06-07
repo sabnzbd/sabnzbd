@@ -33,6 +33,7 @@ import logging
 import os
 import re
 
+import sabnzbd
 from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
@@ -223,8 +224,8 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
     # Can't be imported directly due to circular import
     nzo: sabnzbd.nzbstuff.NzbObject
 
-    # to be sure, only keep really existing files:
-    filelist = [f for f in filelist if os.path.isfile(f)]
+    # to be sure, only keep really existing files and remove any duplicates:
+    filelist = set(f for f in filelist if os.path.isfile(f))
 
     # Do not deobfuscate/rename anything if there is a typical DVD or Bluray directory:
     ignored_movie_folders_with_dir_sep = tuple(os.path.sep + f + os.path.sep for f in IGNORED_MOVIE_FOLDERS)

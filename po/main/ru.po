@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Russian (https://app.transifex.com/sabnzbd/teams/111101/ru/)\n"
@@ -292,6 +292,13 @@ msgid "Error: Queue not empty, cannot change folder."
 msgstr "Ошибка: очередь не пустая, папку нельзя изменить."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr ""
@@ -428,6 +435,11 @@ msgstr ""
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
 msgstr ""
 
 #: sabnzbd/downloader.py
@@ -591,14 +603,24 @@ msgstr "Ошибка загрузки %s"
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid ""
-"%s is not writable with special character filenames. This can cause "
-"problems."
+msgid "%s is not writable at all. This blocks downloads."
 msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -1509,12 +1531,12 @@ msgid "Running user script %s"
 msgstr "Запуск пользовательского сценария %s"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "Запущено %s"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr ""
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "Запущено %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"
@@ -2964,12 +2986,8 @@ msgid "Watched Folder"
 msgstr "Наблюдаемая папка"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
-msgstr ""
-"Папка для поиска NZB-файлов.<br /><i>NZB-файлы также ищутся в архивах ZIP, "
-"RAR и TAR.GZ.</i>"
+msgid "Folder to monitor for .nzb files."
+msgstr "Папка для поиска NZB-файлов."
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"

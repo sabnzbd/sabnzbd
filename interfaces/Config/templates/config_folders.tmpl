@@ -1,5 +1,5 @@
 <!--#set global $pane="Folders"#-->
-<!--#set global $help_uri="configuration/4.0/folders"#-->
+<!--#set global $help_uri = $confighelpuri + "folders"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -14,7 +14,7 @@
     <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section">
         <div class="col2">
-            <h3>$T('userFolders') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('userFolders') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <p>$T('explain-folderConfig')</p>
         </div><!-- /col2 -->
         <div class="col1">
@@ -58,7 +58,7 @@
                 <div class="field-pair">
                     <label class="config" for="dirscan_dir">$T('opt-dirscan_dir')</label>
                     <input type="text" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir" data-initialdir="$my_home" />
-                    <span class="desc">$T('explain-dirscan_dir')</span>
+                    <span class="desc">$T('explain-dirscan_dir').replace(".nzb", $file_exts)</span>
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="dirscan_speed">$T('opt-dirscan_speed')</label>
@@ -91,7 +91,7 @@
     </div><!-- /section -->
     <div class="section advanced-settings">
         <div class="col2">
-            <h3>$T('systemFolders') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <h3>$T('systemFolders') <a href="$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <p>$T('explain-folderConfig')</p>
         </div><!-- /col2 -->
         <div class="col1">

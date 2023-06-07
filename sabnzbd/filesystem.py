@@ -31,6 +31,7 @@ import time
 import fnmatch
 import stat
 import ctypes
+import random
 from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
@@ -1272,15 +1273,37 @@ def directory_is_writable_with_file(mydir, myfilename):
 
 
 def directory_is_writable(test_dir: str) -> bool:
-    """Checks if dir is writable at all, and (on non-Windows), writable with special chars.
+    """Checks if dir is writable at all, with long filenames, with unicode,
+    and (on non-Windows), writable with special chars.
     Returns True if all OK, otherwise False"""
-    if directory_is_writable_with_file(test_dir, "sab_test.txt"):
-        if not sabnzbd.WIN32 and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
-            sabnzbd.misc.helpful_warning(
-                T("%s is not writable with special character filenames. This can cause problems."), test_dir
-            )
-            return False
-    else:
+    if not directory_is_writable_with_file(test_dir, "sab_test.txt"):
         sabnzbd.misc.helpful_warning(T("%s is not writable at all. This blocks downloads."), test_dir)
         return False
     return True
+
+
+def check_filesystem_capabilities(test_dir: str) -> bool:
+    """Checks if we can write long and unicode filenames to the given directory.
+    If not on Windows, also check for special chars like \ and :
+    Returns True if all OK, otherwise False"""
+
+    allgood = True  # default return value: all OK
+
+    # long filename; normal filesystems accept 255 byte filenames
+    if not directory_is_writable_with_file(test_dir, "A" * 245 + str(random.randrange(10000, 99999))):
+        sabnzbd.misc.helpful_warning(T("Cannot write a long filename to %s. This can cause problems."), test_dir)
+        allgood = False
+
+    # unicode in filename
+    if not directory_is_writable_with_file(test_dir, "🚀" * 20):
+        sabnzbd.misc.helpful_warning(T("Cannot write a unicode filename to %s. This can cause problems."), test_dir)
+        allgood = False
+
+    # if not on Windows, check special chars like \ and :
+    if not sabnzbd.WIN32 and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
+        sabnzbd.misc.helpful_warning(
+            T("%s is not writable with special character filenames. This can cause problems."), test_dir
+        )
+        allgood = False
+
+    return allgood

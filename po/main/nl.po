@@ -4,11 +4,12 @@
 # 
 # Translators:
 # Rik Brouwer, 2022
+# Robert Lampe, 2023
 # Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.0.0RC1\n"
+"Project-Id-Version: SABnzbd-4.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -309,6 +310,13 @@ msgid "Error: Queue not empty, cannot change folder."
 msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr "Configuratie geblokkeerd, kan instellingen niet opslaan"
@@ -456,6 +464,11 @@ msgstr "Er zijn geen actieve servers!"
 #: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -620,19 +633,29 @@ msgstr "Inlezen van %s mislukt"
 
 #. Warning message
 #: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr ""
+"Het is niet mogelijk bestanden te schrijven in %s. Hierdoor kan er niet "
+"gedownload worden."
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/filesystem.py
 msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
 "Het is niet mogelijk bestanden met speciale tekens op te slaan in %s. Dit "
 "geeft mogelijk problemen bij het verwerken van downloads."
-
-#. Warning message
-#: sabnzbd/filesystem.py
-msgid "%s is not writable at all. This blocks downloads."
-msgstr ""
-"Het is niet mogelijk bestanden te schrijven in %s. Hierdoor kan er niet "
-"gedownload worden."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -703,11 +726,11 @@ msgstr "Feed"
 
 #: sabnzbd/interface.py
 msgid "Daily"
-msgstr "dagelijks"
+msgstr "Dagelijks"
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Monday"
-msgstr "maandag"
+msgstr "Maandag"
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Tuesday"
@@ -1554,12 +1577,12 @@ msgid "Running user script %s"
 msgstr "Gebruiker script %s loopt"
 
 #: sabnzbd/postproc.py
-msgid "Ran %s"
-msgstr "%s is klaar"
-
-#: sabnzbd/postproc.py
 msgid "Script exit code is %s"
 msgstr "Exit code van het script is %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "%s is klaar"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"
@@ -3036,12 +3059,9 @@ msgid "Watched Folder"
 msgstr "Bewaakte map"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
-"archives for .nzb files.</i>"
+msgid "Folder to monitor for .nzb files."
 msgstr ""
-".NZB en .ZIP-bestanden in deze map worden automatisch toegevoegd aan de "
-"wachtrij."
+".nzb bestanden in deze map worden automatisch toegevoegd aan de wachtrij."
 
 #: sabnzbd/skintext.py
 msgid "Watched Folder Scan Speed"
@@ -4384,7 +4404,7 @@ msgstr "GuessIt_Eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "Minimum Filesize"
-msgstr ""
+msgstr "Minimale bestandsgrootte"
 
 #: sabnzbd/skintext.py
 msgid "Affected Job Types"

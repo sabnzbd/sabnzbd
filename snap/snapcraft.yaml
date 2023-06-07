@@ -30,7 +30,7 @@ parts:
     stage-packages: [python3-dev, libdb5.3, unrar, p7zip-full, par2]
     build-packages: [pkg-config, libffi-dev, python3-dev, libssl-dev, cargo]
     override-build: |
-      snapcraftctl set-version $(grep -oP '(?<=^Version: ).*' PKG-INFO)
+      snapcraftctl set-version $(grep -o -P '(?<=__version__ = ").*(?=")' sabnzbd/version.py)
       snapcraftctl build
       python3 tools/make_mo.py
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt

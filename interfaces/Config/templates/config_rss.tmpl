@@ -1,12 +1,12 @@
 <!--#set global $pane="RSS"#-->
-<!--#set global $help_uri="configuration/4.0/rss"#-->
+<!--#set global $help_uri = $confighelpuri + "rss"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 <!--#import html#-->
 <div class="colmask">
     <!--#if not $active_feed#-->
     <div class="section">
         <div class="padTable">
-            <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
             <form action="add_rss_feed" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
@@ -105,7 +105,7 @@
     <!--#set $feed = html.unescape($active_feed)#-->
     <div class="section rss-section">
         <div class="padTable">
-            <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <h2 class="nomargin activeRSS">
                 <a href="${root}config/rss/">$T('cmenu-rss')</a> &raquo;
                 $active_feed
