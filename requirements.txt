@@ -17,7 +17,7 @@ jaraco.context==4.3.0
 more-itertools==9.1.0
 zc.lockfile==3.0.post1
 python-dateutil==2.8.2
-tempora==5.2.2
+tempora==5.3.0
 pytz==2023.3
 sgmllib3k==1.0.0
 portend==3.1.0
@@ -34,13 +34,13 @@ cryptography==41.0.1
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.7.0
+ujson==5.8.0
 
 # Windows system integration
 pywin32==306; sys_platform == 'win32'
 
 # macOS system calls
-pyobjc==9.1.1; sys_platform == 'darwin'
+pyobjc==9.2; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
