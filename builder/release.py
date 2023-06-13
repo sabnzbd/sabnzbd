@@ -227,18 +227,30 @@ if RELEASE_THIS and gh_token:
         with open(RELEASE_README, "r") as readme_file:
             readme_lines = readme_file.readlines()
 
+        # Put the download link after the title
+        readme_lines[2] = "## https://sabnzbd.org/downloads"
+
         # Use the header in the readme as title
         title = readme_lines[0]
         release_notes_text = "".join(readme_lines[3:])
 
-        # Post always to r/SABnzbd
-        print("Posting release notes to Reddit: r/sabnzbd")
-        submission = subreddit_sabnzbd.submit(title, selftext=release_notes_text)
+        # Only stable releases to r/usenet
+        if not prerelease:
+            print("Posting release notes to Reddit: r/usenet")
+            submission = subreddit_usenet.submit(title, selftext=release_notes_text)
+
+            # Cross-post to r/SABnzbd
+            print("Cross-posting release notes to Reddit: r/sabnzbd")
+            submission.crosspost(subreddit_sabnzbd)
+        else:
+            # Post always to r/SABnzbd
+            print("Posting release notes to Reddit: r/sabnzbd")
+            subreddit_sabnzbd.submit(title, selftext=release_notes_text)
 
         # Only stable releases to r/usenet
         if not prerelease:
-            print("Cross-posting release notes to Reddit: r/usenet")
-            submission.crosspost(subreddit_usenet)
+            print("Posting release notes to Reddit: r/usenet")
+            subreddit_usenet.submit(title, selftext=release_notes_text)
     else:
         print("Missing REDDIT_TOKEN")
 
