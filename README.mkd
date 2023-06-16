@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 4.0.2
+Release Notes - SABnzbd 4.0.3 Beta 1
 =========================================================
+
+## Bugfixes and changes since 4.0.2
+- Direct Unpack could get stuck.
+- Sorters could not be modified.
+- Season Sorting did not respect desired capitalization.
+- Windows: Windows Service would fail to start on legacy release.
+- macOS: Failed to launch on macOS Sonoma Beta.
 
 ## Breaking change
 - The `Parameters` setting of a `Notification Script` is now passed as
