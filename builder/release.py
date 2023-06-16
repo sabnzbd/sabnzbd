@@ -232,7 +232,7 @@ if RELEASE_THIS and gh_token:
 
         # Use the header in the readme as title
         title = readme_lines[0]
-        release_notes_text = "".join(readme_lines[3:])
+        release_notes_text = "".join(readme_lines[2:])
 
         # Only stable releases to r/usenet
         if not prerelease:
