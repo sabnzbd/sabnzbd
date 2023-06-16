@@ -25,7 +25,6 @@ import logging
 from math import ceil
 from threading import Thread, RLock
 import socket
-import random
 import sys
 import ssl
 from typing import List, Dict, Optional, Union, Set
@@ -405,10 +404,12 @@ class Downloader(Thread):
             # Sort the servers for performance
             self.servers.sort(key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
 
+    @synchronized(DOWNLOADER_LOCK)
     def add_socket(self, fileno: int, nw: NewsWrapper):
         """Add a socket ready to be used to the list to be watched"""
         self.read_fds[fileno] = nw
 
+    @synchronized(DOWNLOADER_LOCK)
     def remove_socket(self, nw: NewsWrapper):
         """Remove a socket to be watched"""
         if nw.nntp:
@@ -862,7 +863,7 @@ class Downloader(Thread):
             with DOWNLOADER_LOCK:
                 server.busy_threads.remove(nw)
                 server.idle_threads.append(nw)
-            self.remove_socket(nw)
+                self.remove_socket(nw)
 
     @synchronized(DOWNLOADER_LOCK)
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
