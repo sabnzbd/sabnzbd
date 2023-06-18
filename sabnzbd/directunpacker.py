@@ -282,14 +282,13 @@ class DirectUnpacker(threading.Thread):
                     filename = re.search(RAR_EXTRACTFROM_RE, linebuf_encoded).group(1)
                     if filename not in rarfiles:
                         rarfiles.append(filename)
-                else:
+                elif m := re.search(RAR_EXTRACTED_RE, linebuf_encoded):
                     # List files we extracted
-                    if m := re.search(RAR_EXTRACTED_RE, linebuf_encoded):
-                        # In case of flat-unpack, UnRar still prints the whole path (?!)
-                        unpacked_file = m.group(2)
-                        if cfg.flat_unpack():
-                            unpacked_file = os.path.basename(unpacked_file)
-                        extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
+                    # In case of flat-unpack, UnRar still prints the whole path (?!)
+                    unpacked_file = m.group(2)
+                    if cfg.flat_unpack():
+                        unpacked_file = os.path.basename(unpacked_file)
+                    extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
 
             if linebuf.endswith(b"[C]ontinue, [Q]uit "):
                 # Stop timer
@@ -538,8 +537,7 @@ def analyze_rar_filename(filename):
     """Extract volume number and setname from rar-filenames
     Both ".part01.rar" and ".r01"
     """
-    m = RAR_NR.search(filename)
-    if m:
+    if m := RAR_NR.search(filename):
         if m.group(4):
             # Special since starts with ".rar", ".r00"
             return m.group(1), int_conv(m.group(4)) + 2

@@ -516,11 +516,9 @@ class BPSMeter:
             # Pattern = <day#> <hh:mm>
             # The <day> and <hh:mm> part can both be optional
             txt = cfg.quota_day().lower()
-            m = RE_DAY.search(txt)
-            if m:
+            if m := RE_DAY.search(txt):
                 self.q_day = int(m.group(1))
-            m = RE_HHMM.search(txt)
-            if m:
+            if m := RE_HHMM.search(txt):
                 self.q_hour = int(m.group(1))
                 self.q_minute = int(m.group(2))
             if self.q_period == "w":

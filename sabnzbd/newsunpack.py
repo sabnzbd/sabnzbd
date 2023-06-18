@@ -828,14 +828,12 @@ def rar_extract_core(
             nzo.set_unpack_info("Unpack", msg, setname)
             fail = 3
 
-        else:
-            m = re.search(RAR_EXTRACTED_RE, line)
-            if m:
-                # In case of flat-unpack, UnRar still prints the whole path (?!)
-                unpacked_file = m.group(2)
-                if cfg.flat_unpack():
-                    unpacked_file = os.path.basename(unpacked_file)
-                extracted.append(real_path(extraction_path, unpacked_file))
+        elif m := re.search(RAR_EXTRACTED_RE, line):
+            # In case of flat-unpack, UnRar still prints the whole path (?!)
+            unpacked_file = m.group(2)
+            if cfg.flat_unpack():
+                unpacked_file = os.path.basename(unpacked_file)
+            extracted.append(real_path(extraction_path, unpacked_file))
 
         if fail:
             if p.stdout:
@@ -1431,16 +1429,14 @@ def par2cmdline_verify(
             if in_extra_files:
                 if "is a match for" in line or line.find("data blocks from") > 0:
                     # Baldy named ones
-                    m_rename = PAR2_IS_MATCH_FOR_RE.search(line)
-                    if m_rename:
+                    if m_rename := PAR2_IS_MATCH_FOR_RE.search(line):
                         old_name = m_rename.group(1)
                         new_name = m_rename.group(2)
                         logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                         renames[new_name] = old_name
 
                     # Obfuscated and also damaged
-                    m_block = PAR2_BLOCK_FOUND_RE.search(line)
-                    if m_block:
+                    if m_block := PAR2_BLOCK_FOUND_RE.search(line):
                         workdir = os.path.split(parfile)[0]
                         old_name = m_block.group(1)
                         new_name = m_block.group(2)
@@ -1466,8 +1462,7 @@ def par2cmdline_verify(
 
             elif not in_verify:
                 # Total number to verify
-                m = re.match(r"There are (\d+) recoverable files", line)
-                if m:
+                if m := re.match(r"There are (\d+) recoverable files", line):
                     verifytotal = int(m.group(1))
 
                 if line.startswith("Verifying source files:"):
@@ -1643,8 +1638,7 @@ def multipar_verify(
             misnamed_files = True
         elif misnamed_files and "Found" in line:
             # First it reports the current filename
-            m = PAR2_FILENAME_RE.search(line)
-            if m:
+            if m := PAR2_FILENAME_RE.search(line):
                 verifynum += 1
                 nzo.set_action_line(T("Checking extra files"), "%02d/%02d" % (verifynum, verifyextratotal))
                 old_name = m.group(1)
@@ -1668,8 +1662,7 @@ def multipar_verify(
             in_check = True
             nzo.status = Status.VERIFYING
         elif in_check:
-            m = PAR2_FILENAME_RE.search(line)
-            if m:
+            if m := PAR2_FILENAME_RE.search(line):
                 # Only increase counter if it was really the detection line
                 if line.startswith("= ") or "%" not in line:
                     verifynum += 1
@@ -1695,8 +1688,7 @@ def multipar_verify(
             in_verify = True
             verifynum = 0
         elif in_verify:
-            m = PAR2_FILENAME_RE.search(line)
-            if m:
+            if m := PAR2_FILENAME_RE.search(line):
                 # It prints the filename couple of times, so we save it to check
                 nzo.status = Status.VERIFYING
                 if line.split()[1] in ("Damaged", "Found"):
@@ -2046,8 +2038,8 @@ def unrar_check(rar: str) -> Tuple[int, bool]:
         except:
             return version, original
         original = "Alexander Roshal" in version
-        m = re.search(r"RAR\s(\d+)\.(\d+)", version)
-        if m:
+
+        if m := re.search(r"RAR\s(\d+)\.(\d+)", version):
             version = int(m.group(1)) * 100 + int(m.group(2))
         else:
             version = 0
@@ -2372,8 +2364,7 @@ class SevenZip:
         output = run_command(command)
 
         for line in output.split("\n"):
-            m = SEVENZIP_PATH_RE.search(line)
-            if m:
+            if m := SEVENZIP_PATH_RE.search(line):
                 names.append(m.group(1).strip("\r"))
         if names:
             # Remove name of archive itself

@@ -231,8 +231,7 @@ def patch_nsis():
     with open(NSIS, "r") as src:
         new = []
         for line in src:
-            m = RE_NSIS.search(line)
-            if m:
+            if m := RE_NSIS.search(line):
                 leader = m.group(1)
                 item = m.group(2)
                 rest = m.group(3)

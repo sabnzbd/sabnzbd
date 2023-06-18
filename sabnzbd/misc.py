@@ -396,8 +396,7 @@ def convert_version(text):
     """Convert version string to numerical value and a testversion indicator"""
     version = 0
     test = True
-    m = RE_VERSION.search(ubtou(text))
-    if m:
+    if m := RE_VERSION.search(ubtou(text)):
         version = int(m.group(1)) * 1000000 + int(m.group(2)) * 10000 + int(m.group(3)) * 100
         try:
             if m.group(4).lower() == "rc":
@@ -525,8 +524,8 @@ def from_units(val: str) -> float:
     val = str(val).strip().upper()
     if val == "-1":
         return float(val)
-    m = RE_UNITS.search(val)
-    if m:
+
+    if m := RE_UNITS.search(val):
         if m.group(2):
             val = float(m.group(1))
             unit = m.group(2)

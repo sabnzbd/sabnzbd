@@ -86,8 +86,7 @@ def get_context(ctx_line):
     newlines = []
     contexts = []
     for item in ctx_line[2:].strip().split():
-        m = RE_LINE.search(item)
-        if m:
+        if m := RE_LINE.search(item):
             line_src = m.group(1)
             number = m.group(2)
         else:
@@ -96,8 +95,7 @@ def get_context(ctx_line):
 
         srcline = get_a_line(line_src, int(number)).strip("\r\n")
         context = ""
-        m = RE_CONTEXT.search(srcline)
-        if m:
+        if m := RE_CONTEXT.search(srcline):
             # Context was defined in the source file
             context = m.group(1)
         else:

@@ -74,8 +74,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
     """
     name = name.strip()
     vol = block = 0
-    m = PROBABLY_PAR2_RE.search(name)
-    if m:
+    if m := PROBABLY_PAR2_RE.search(name):
         setname = m.group(1)
         vol = m.group(2)
         block = m.group(3)
