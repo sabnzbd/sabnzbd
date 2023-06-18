@@ -251,11 +251,19 @@ class DirectUnpacker(threading.Thread):
                     extracted = []
 
                     # Are there more files left?
-                    while not self.removed_from_queue and not self.next_sets:
+                    while not self.nzo.removed_from_queue and not self.next_sets:
+                        logging.debug("Direct Unpack for %s waiting for more sets", self.nzo.final_name)
                         with self.next_file_lock:
                             self.next_file_lock.wait()
 
                     # Is there another set to do?
+                    logging.debug(
+                        "Direct Unpack for %s continuing: killed=%s, cur_setname=%s, next_sets=%s",
+                        self.nzo.final_name,
+                        self.killed,
+                        self.cur_setname,
+                        self.next_sets,
+                    )
                     if self.next_sets:
                         # Start new instance
                         nzf = self.next_sets.pop(0)
@@ -276,8 +284,7 @@ class DirectUnpacker(threading.Thread):
                         rarfiles.append(filename)
                 else:
                     # List files we extracted
-                    m = re.search(RAR_EXTRACTED_RE, linebuf_encoded)
-                    if m:
+                    if m := re.search(RAR_EXTRACTED_RE, linebuf_encoded):
                         # In case of flat-unpack, UnRar still prints the whole path (?!)
                         unpacked_file = m.group(2)
                         if cfg.flat_unpack():
@@ -337,6 +344,7 @@ class DirectUnpacker(threading.Thread):
         self.reset_active()
         if self in ACTIVE_UNPACKERS:
             ACTIVE_UNPACKERS.remove(self)
+        logging.debug("Closing DirectUnpack for %s", self.nzo.final_name)
 
         # Set the thread to killed so it never gets restarted by accident
         self.killed = True
