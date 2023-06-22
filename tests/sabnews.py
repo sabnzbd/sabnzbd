@@ -152,7 +152,7 @@ def create_nzb(nzb_file=None, nzb_dir=None, metadata=None):
         # List all files
         files_for_nzb = [os.path.join(nzb_dir, fl) for fl in os.listdir(nzb_dir)]
         files_for_nzb = [fl for fl in files_for_nzb if os.path.isfile(fl)]
-        output_file = os.path.join(nzb_dir, os.path.basename(os.path.normpath(nzb_dir)) + ".nzb")
+        output_file = os.path.join(nzb_dir, os.path.normpath(os.path.basename(nzb_dir)) + ".nzb")
 
     if nzb_file:
         if not os.path.exists(nzb_file) or not os.path.isfile(nzb_file):

@@ -329,7 +329,7 @@ class DownloadFlowBasics(SABnzbdBaseTest):
 
         # Add NZB
         if dir_name_as_job_name:
-            test_job_name = nzb_dir
+            test_job_name = os.path.basename(nzb_dir)
         else:
             test_job_name = "testfile_%s" % time.time()
         api_result = get_api_result("addlocalfile", extra_arguments={"name": nzb_path, "nzbname": test_job_name})

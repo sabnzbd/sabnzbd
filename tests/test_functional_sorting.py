@@ -18,6 +18,7 @@
 """
 tests.test_functional_sorting - Test downloads with season sorting and sequential files
 """
+import os
 from tests.testhelper import *
 from flaky import flaky
 import sabnzbd.config as config
@@ -55,7 +56,7 @@ class TestDownloadSorting(DownloadFlowBasics):
     )
     def test_download_season_sorting(self, test_data_dir, result):
         """Test season pack sorting"""
-        self.download_nzb(test_data_dir, result, True)
+        self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
 
     @pytest.mark.parametrize(
         "test_data_dir, result",
@@ -72,7 +73,7 @@ class TestDownloadSorting(DownloadFlowBasics):
     )
     def test_download_sequential(self, test_data_dir, result):
         """Test sequential file handling"""
-        self.download_nzb(test_data_dir, result, True)
+        self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
 
     @pytest.mark.parametrize(
         "test_data_dir, result",
@@ -97,4 +98,4 @@ class TestDownloadSorting(DownloadFlowBasics):
     )
     def test_download_sorting_single(self, test_data_dir, result):
         """Test single episode file handling"""
-        self.download_nzb(test_data_dir, result, True)
+        self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
