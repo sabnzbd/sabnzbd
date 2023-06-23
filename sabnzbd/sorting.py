@@ -414,7 +414,7 @@ class Sorter:
     def _rename_season_pack(self, files: List[str], base_path: str, all_job_files: List[str] = []) -> bool:
         success = False
         for f in files:
-            f_name, f_ext = os.path.splitext(f)
+            f_name, f_ext = os.path.splitext(os.path.basename(f))
             if f_episode := guessit.api.guessit(f_name).get("episode"):
                 # Insert formatted episode number(s) into self.info
                 self.format_series_numbers(f_episode, "episode_num")
@@ -511,7 +511,7 @@ class Sorter:
 
     def rename(self, files: List[str], base_path: str) -> Tuple[str, bool]:
         if not self.rename_files:
-            return base_path, True
+            return move_to_parent_directory(base_path)
 
         # Log the minimum filesize for renaming
         if self.rename_limit > 0:
@@ -558,9 +558,11 @@ class Sorter:
         # Rename it
         f_name, f_ext = os.path.splitext(largest_file.get("name"))
         filepath = self._to_filepath(largest_file.get("name"), base_path)
-        new_filepath = os.path.join(
-            base_path,
-            to_lowercase(path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext),
+        new_filepath = get_unique_filename(
+            os.path.join(
+                base_path,
+                to_lowercase(path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext),
+            )
         )
         if not os.path.exists(new_filepath):
             renamed_files = []
