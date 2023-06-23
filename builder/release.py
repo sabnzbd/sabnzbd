@@ -233,7 +233,7 @@ if RELEASE_THIS and gh_token:
             readme_lines = readme_file.readlines()
 
         # Put the download link after the title
-        readme_lines[2] = "## https://sabnzbd.org/downloads"
+        readme_lines[2] = "## https://sabnzbd.org/downloads\n"
 
         # Use the header in the readme as title
         title = readme_lines[0]
