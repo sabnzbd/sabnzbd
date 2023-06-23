@@ -18,6 +18,7 @@
 """
 tests.test_functional_sorting - Test downloads with season sorting and sequential files
 """
+import os
 from tests.testhelper import *
 from flaky import flaky
 import sabnzbd.config as config
@@ -55,7 +56,7 @@ class TestDownloadSorting(DownloadFlowBasics):
     )
     def test_download_season_sorting(self, test_data_dir, result):
         """Test season pack sorting"""
-        self.download_nzb(test_data_dir, result, True)
+        self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
 
     @pytest.mark.parametrize(
         "test_data_dir, result",
@@ -72,4 +73,29 @@ class TestDownloadSorting(DownloadFlowBasics):
     )
     def test_download_sequential(self, test_data_dir, result):
         """Test sequential file handling"""
-        self.download_nzb(test_data_dir, result, True)
+        self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
+
+    @pytest.mark.parametrize(
+        "test_data_dir, result",
+        [
+            (
+                "SINGLE_sort_s23e06_480i-SABnzbd",
+                ["Single.Sort.S23E06.mov"],
+            ),  # Single episode, no other files
+            (
+                "SINGLE_sort_s23e06_480i-SABnzbd",
+                ["Single.Sort.S23E06.1.mov"],
+            ),  # Repeat to verify a unique filename is applied
+            (
+                "single-ep_sort_s06e66_4k_uhd-SABnzbd",
+                ["Single-Ep.Sort.S06E66." + ext for ext in ("avi", "srt")],
+            ),  # Single episode with associated smaller file
+            (
+                "single-ep_sort_s06e66_4k_uhd-SABnzbd",
+                ["Single-Ep.Sort.S06E66.1." + ext for ext in ("avi", "srt")],
+            ),  # Repeat to verify unique filenames are applied
+        ],
+    )
+    def test_download_sorting_single(self, test_data_dir, result):
+        """Test single episode file handling"""
+        self.download_nzb(os.path.join("sorting", test_data_dir), result, True)
