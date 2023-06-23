@@ -1,10 +1,12 @@
-Release Notes - SABnzbd 4.0.3 Beta 1
+Release Notes - SABnzbd 4.0.3 Release Candidate 1
 =========================================================
 
 ## Bugfixes and changes since 4.0.2
 - Direct Unpack could get stuck.
 - Sorters could not be modified.
 - Season Sorting did not respect desired capitalization.
+- Crashes could occur in the `Downloader` on timeouts.
+- Prevent extra job directory in case of folder-only Sorting.
 - Windows: Windows Service would fail to start on legacy release.
 - macOS: Failed to launch on macOS Sonoma Beta.
 
