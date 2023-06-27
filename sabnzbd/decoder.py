@@ -287,6 +287,10 @@ def decode_uu(article: Article, raw_data: bytearray) -> bytes:
             if line in (b"`", b"end", b"."):
                 break
 
+            # Remove dot stuffing
+            if line.startswith(b".."):
+                line = line[1:]
+
             try:
                 decoded_line = binascii.a2b_uu(line)
             except binascii.Error as msg:
