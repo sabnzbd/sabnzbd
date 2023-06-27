@@ -32,7 +32,7 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WIN32 = WIN64 = MACOS = MACOSARM64 = FOUNDATION = DOCKER = False
+WIN32 = WIN64 = MACOS = MACOSARM64 = FOUNDATION = False
 KERNEL32 = LIBC = MACOSLIBC = None
 
 if os.name == "nt":
@@ -48,12 +48,8 @@ elif os.name == "posix":
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
 
-    # Check if running in a Docker container
-    try:
-        with open("/proc/1/cgroup", "rt") as ifh:
-            DOCKER = ":/docker/" in ifh.read()
-    except:
-        pass
+    # Check if running in a Docker container. Note: fake-able, but good enough for normal setups
+    DOCKER = os.path.exists('/.dockerenv')
 
     # See if we have the GNU glibc malloc_trim() memory release function
     try:
