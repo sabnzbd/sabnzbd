@@ -255,7 +255,7 @@ function QueueListModel(parent) {
         // Reset form and remove all checked ones
         $form[0].reset();
         self.multiEditItems.removeAll();
-        $('.delete input[name="multiedit"], #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
+        $('.queue-table input[name="multiedit"], .queue #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
 
         // Is the multi-edit in view?
         if(($form.offset().top + $form.outerHeight(true)) > ($(window).scrollTop()+$(window).height())) {
@@ -285,7 +285,7 @@ function QueueListModel(parent) {
         }
 
         // Update check-all buton state
-        setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
+        setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
         return true;
     }
 
@@ -296,7 +296,7 @@ function QueueListModel(parent) {
 
         // We need to re-evaltuate the state of this check-all
         // Otherwise the 'inderterminate' will be overwritten by the click event!
-        setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
+        setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
 
         // Now we can check what happend
         // For when some are checked, or all are checked (but not partly)
@@ -328,7 +328,7 @@ function QueueListModel(parent) {
             self.doMultiEditUpdate()
         }
         // Set state of all the check-all's
-        setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
+        setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
         return true;
     }
 
@@ -447,7 +447,7 @@ function QueueListModel(parent) {
             })
 
             // Update check-all buton state
-            setCheckAllState('#multiedit-checkall', '.queue-table input[name="multiedit"]')
+            setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
         }, 100)
     }, null, "arrayChange")
 }

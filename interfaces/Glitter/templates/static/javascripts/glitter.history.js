@@ -264,7 +264,7 @@ function HistoryListModel(parent) {
     self.showMultiEdit = function() {
         self.isMultiEditing(!self.isMultiEditing())
         self.multiEditItems.removeAll();
-        $('.delete input[name="multiedit"], #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
+        $('.history-table input[name="multiedit"], #history-options #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
     }
 
     // Add to the list
