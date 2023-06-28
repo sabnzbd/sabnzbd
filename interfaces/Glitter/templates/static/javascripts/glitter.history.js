@@ -15,6 +15,8 @@ function HistoryListModel(parent) {
     self.totalItems = ko.observable(0);
     self.ppItems = ko.observable(0);
     self.pagination = new paginationModel(self);
+    self.isMultiEditing = ko.observable(false).extend({ persist: 'historyIsMultiEditing' });
+    self.multiEditItems = ko.observableArray([]);
 
     // Download history info
     self.downloadedToday = ko.observable();
@@ -257,6 +259,89 @@ function HistoryListModel(parent) {
             $("#modal-purge-history").modal('hide');
         });
     };
+
+    // Show the input checkbox
+    self.showMultiEdit = function() {
+        self.isMultiEditing(!self.isMultiEditing())
+        self.multiEditItems.removeAll();
+        $('.delete input[name="multiedit"], #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
+    }
+
+    // Add to the list
+    self.addMultiEdit = function(item, event) {
+        if(event.shiftKey) {
+            checkShiftRange('.history-table input[name="multiedit"]');
+        }
+
+        if(event.currentTarget.checked) {
+            self.multiEditItems.push(item);
+        } else {
+            self.multiEditItems.remove(function(inList) { return inList.nzo_id == item.nzo_id; })
+        }
+
+        setCheckAllState('#history-options #multiedit-checkall', '.history-table input[name="multiedit"]')
+        return true;
+    }
+
+
+    // Check all
+    self.checkAllJobs = function(item, event) {
+        var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
+
+        setCheckAllState('#history-options #multiedit-checkall', '.history-table input[name="multiedit"]')
+
+        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
+            var allActive = allChecks.filter(":checked")
+            // First remove the from the list
+            if(allActive.length == self.multiEditItems().length) {
+                self.multiEditItems.removeAll();
+                allActive.prop('checked', false)
+            } else {
+                allActive.each(function() {
+                    var item = ko.dataFor(this)
+                    self.multiEditItems.remove(function(inList) { return inList.nzo_id == item.nzo_id; })
+                    this.checked = false;
+                })
+            }
+        } else {
+            allChecks.prop('checked', true)
+            allChecks.each(function() { self.multiEditItems.push(ko.dataFor(this)) })
+            event.target.checked = true
+        }
+
+        setCheckAllState('#history-options #multiedit-checkall', '.history-table input[name="multiedit"]')
+        return true;
+    }
+
+    // Delete all selected
+    self.doMultiDelete = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        if(!self.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDown)) {
+            var strIDs = '';
+            $.each(self.multiEditItems(), function() {
+                strIDs = strIDs + this.nzo_id + ',';
+            })
+
+            showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
+
+            callAPI({
+                mode: 'history',
+                name: 'delete',
+                del_files: 1,
+                value: strIDs
+            }).then(function(response) {
+                if(response.status) {
+                    // Make sure the history doesnt flicker and then fade-out
+                    self.isLoading(true)
+                    self.parent.refresh()
+                    self.multiEditItems.removeAll();
+                    hideNotification()
+                }
+            })
+        }
+    }
 }
 
 /**

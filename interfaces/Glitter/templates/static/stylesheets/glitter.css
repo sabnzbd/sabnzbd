@@ -990,8 +990,17 @@ tr.queue-item>td:first-child>a {
     position: relative;
 }
 
-.history h2 {
+.history-header {
     clear: left;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-header a {
+    align-self: center;
+    margin-right: 2px;
+    font-size: 12px;
 }
 
 .history-table {
@@ -1088,6 +1097,18 @@ tr.queue-item>td:first-child>a {
     line-height: 1.428571429;
     display: inline-block;
 }
+
+#history-options div {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+#history-options input[name="multieditCheckAll"] {
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    margin-left: 8px;
+} 
 
 #history-options .hover-button span {
     top: 2px;
