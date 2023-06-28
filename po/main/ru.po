@@ -3228,14 +3228,6 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Переименовывать папки"
 

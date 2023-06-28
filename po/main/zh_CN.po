@@ -3178,14 +3178,6 @@ msgid ""
 msgstr "用户脚本返回非零的退出代码时，对应的任务将被标记为失败。"
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "失败时，尝试备用 NZB"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr "部分服务器在下载失败时可提供备用 NZB 文件。"
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "启用文件夹重命名"
 

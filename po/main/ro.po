@@ -3263,14 +3263,6 @@ msgstr ""
 " sarcina v fi marcată ca fiind nereușită."
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "La eroare, încearcă NZB alternativ"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr "Unele server oferă o alternativă dacă un NZB eșuează."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Activează redenumire dosar"
 

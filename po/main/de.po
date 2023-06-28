@@ -3368,16 +3368,6 @@ msgstr ""
 "der Auftrag als fehlgeschlagen markiert."
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Nach einem Fehler ein alternatives NZB laden"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Manche Server stellen ein alternatives NZB zur Verfügung, falls ein Download"
-" fehlschlägt."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Ordner-Umbenennung aktivieren"
 

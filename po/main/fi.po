@@ -3245,15 +3245,6 @@ msgstr ""
 " epäonnistuneeksi."
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Epäonnistuessa, kokeile vaihtoehtoista NZB:tä"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Jotkin palvelimet tarjoavat vaihtoehtoisen NZB:n kun lataus epäonnistuu."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Kansion uudelleennimeäminen käytössä"
 

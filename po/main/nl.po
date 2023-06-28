@@ -3325,15 +3325,6 @@ msgstr ""
 "afgekeurd."
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Bij mislukte download: probeer alternatieve NZB"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Sommige indexers hebben een alternatieve NZB wanneer een download mislukt"
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Gebruik tijdelijke mapnamen"
 

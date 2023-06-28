@@ -3217,14 +3217,6 @@ msgstr ""
 "neuspešan"
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "U slučaju neuspeha, pokušaj sa alternativnim NZB-om"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr "Neki serveri nude alternativni NZB pri neuspešnom preuzimanju"
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Упали преименовање фасцикле"
 

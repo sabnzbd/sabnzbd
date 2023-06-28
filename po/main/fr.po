@@ -3367,16 +3367,6 @@ msgstr ""
 "la tâche sera signalée comme échouée."
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "En cas d'échec, essayer avec un NZB alternatif"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Certains serveurs proposent un NZB alternatif lorsqu'un téléchargement "
-"échoue."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Activer le renommage du dossier"
 

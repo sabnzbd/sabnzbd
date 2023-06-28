@@ -3015,14 +3015,6 @@ msgid "When the user script returns a non-zero exit code, the job will be flagge
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr ""
 

@@ -3234,16 +3234,6 @@ msgstr ""
 "oznaczone jako nieudane"
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Użyj alternatywnego NZB w razie niepowodzenia"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Niektóre serwery udostępniają alternatywne NZB, kiedy pobieranie kończy się "
-"niepowodzeniem"
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Włącz zmianę nazw katalogów"
 

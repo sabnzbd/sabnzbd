@@ -3226,14 +3226,6 @@ msgstr ""
 " som mislykket."
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Når den feiler, prøv alternativ NZB-fil"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr "Noen servere vil gi en alternativ NZB når en nedlasting mislykkes."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Aktiver omdøping av mappe"
 

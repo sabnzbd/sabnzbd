@@ -3236,15 +3236,6 @@ msgstr ""
 " trabalho será marcado como falho"
 
 #: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Em caso de falha, tente um NZB alternativo"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Alguns servidores fornecem um NZB alternativo quando um download falha."
-
-#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Habilitar renomeação de pasta"
 
