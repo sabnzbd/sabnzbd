@@ -365,8 +365,11 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         # Sometimes par2 can also be included, but we accept that. For example when small
         # par2 files get assembled in after the download already finished (see #1509)
         completed_files = filesystem.globber(os.path.join(SAB_COMPLETE_DIR, test_job_name), "*")
-        for filename in file_output:
-            assert filename in completed_files
+        try:
+            for filename in file_output:
+                assert filename in completed_files
+        except AssertionError:
+            pytest.fail("Expected filename %s not found in completed_files %s" % (filename, completed_files))
 
         # Verify if the garbage collection works (see #1628)
         # We need to give it a second to calm down and clear the variables
