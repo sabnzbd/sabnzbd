@@ -448,8 +448,6 @@ SKIN_TEXT = {
     "explain-script_can_fail": TT(
         "When the user script returns a non-zero exit code, the job will be flagged as failed."
     ),
-    "opt-new_nzb_on_failure": TT("On failure, try alternative NZB"),
-    "explain-new_nzb_on_failure": TT("Some servers provide an alternative NZB when a download fails."),
     "opt-folder_rename": TT("Enable folder rename"),
     "explain-folder_rename": TT(
         "Use temporary names during post processing. Disable when your system doesn't handle that properly."
