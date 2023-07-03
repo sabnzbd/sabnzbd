@@ -364,9 +364,19 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         # Verify all files in the expected file_output are present among the completed files.
         # Sometimes par2 can also be included, but we accept that. For example when small
         # par2 files get assembled in after the download already finished (see #1509)
-        completed_files = filesystem.globber(os.path.join(SAB_COMPLETE_DIR, test_job_name), "*")
-        for filename in file_output:
-            assert filename in completed_files
+        for _ in range(10):
+            completed_files = filesystem.globber(os.path.join(SAB_COMPLETE_DIR, test_job_name), "*")
+            try:
+                for filename in file_output:
+                    assert filename in completed_files
+                # All filenames found
+                break
+            except AssertionError:
+                print("Expected filename %s not found in completed_files %s" % (filename, completed_files))
+                # Wait a sec before trying again with a fresh list of completed files
+                time.sleep(1)
+        else:
+            pytest.fail("Time ran out waiting for expected filenames to show up")
 
         # Verify if the garbage collection works (see #1628)
         # We need to give it a second to calm down and clear the variables
