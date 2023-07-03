@@ -48,12 +48,8 @@ elif os.name == "posix":
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
 
-    # Check if running in a Docker container
-    try:
-        with open("/proc/1/cgroup", "rt") as ifh:
-            DOCKER = ":/docker/" in ifh.read()
-    except:
-        pass
+    # Check if running in a Docker container. Note: fake-able, but good enough for normal setups
+    DOCKER = os.path.exists("/.dockerenv")
 
     # See if we have the GNU glibc malloc_trim() memory release function
     try:
