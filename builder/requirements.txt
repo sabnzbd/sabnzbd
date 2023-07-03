@@ -1,7 +1,7 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 pyinstaller==5.13.0
-pyinstaller-hooks-contrib==2023.3
+pyinstaller-hooks-contrib==2023.4
 altgraph==0.17.3
 wrapt==1.15.0
 setuptools==68.0.0
@@ -13,7 +13,7 @@ orjson==3.9.1; python_version > '3.8'
 
 # For the Windows build
 pefile==2023.2.7; sys_platform == 'win32'
-pywin32-ctypes==0.2.1; sys_platform == 'win32'
+pywin32-ctypes==0.2.2; sys_platform == 'win32'
 
 # For the macOS build
 dmgbuild==1.6.1; sys_platform == 'darwin'
