@@ -32,7 +32,7 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WIN32 = WIN64 = MACOS = MACOSARM64 = FOUNDATION = False
+WIN32 = WIN64 = MACOS = MACOSARM64 = FOUNDATION = DOCKER = False
 KERNEL32 = LIBC = MACOSLIBC = None
 
 if os.name == "nt":
@@ -49,7 +49,7 @@ elif os.name == "posix":
     os.umask(ORG_UMASK)
 
     # Check if running in a Docker container. Note: fake-able, but good enough for normal setups
-    DOCKER = os.path.exists('/.dockerenv')
+    DOCKER = os.path.exists("/.dockerenv")
 
     # See if we have the GNU glibc malloc_trim() memory release function
     try:
