@@ -49,6 +49,7 @@ from sabnzbd.misc import (
     is_ipv6_addr,
     get_server_addrinfo,
     is_lan_addr,
+    is_local_addr,
     is_loopback_addr,
     ip_in_subnet,
     helpful_warning,
@@ -206,15 +207,14 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
 
     remote_ip = cherrypy.request.remote.ip
 
-    # Check for localhost
-    if is_loopback_addr(remote_ip):
-        return True
+    # Check if the client IP is a loopback address or considered local
+    is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
-    if not cfg.local_ranges():
-        # No local ranges defined, allow all private addresses by default
-        is_allowed = is_lan_addr(remote_ip)
-    else:
-        is_allowed = any(ip_in_subnet(remote_ip, r) for r in cfg.local_ranges())
+    # Never check the XFF header unless access would have been granted based on the remote IP alone!
+    if is_allowed and cfg.verify_xff_header() and (xff_header := cherrypy.request.headers.get("X-Forwarded-For")):
+        xff_ips = [ip.strip() for ip in xff_header.split(",")]
+        if not (is_allowed := all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)):
+            logging.debug("Denying access based on X-Forwarded-For header '%s'", xff_header)
 
     if not is_allowed and warn_user:
         log_warning_and_ip(T("Refused connection from:"))
@@ -881,6 +881,7 @@ SPECIAL_BOOL_LIST = (
     "x_frame_options",
     "allow_old_ssl_tls",
     "enable_season_sorting",
+    "verify_xff_header",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
