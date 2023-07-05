@@ -983,6 +983,15 @@ def is_lan_addr(ip: str) -> bool:
         return False
 
 
+def is_local_addr(ip: str) -> bool:
+    """Determine if an IP address is to be considered local, i.e. it's part of a subnet in
+    local_ranges, if defined, or in private address space reserved for local area networks."""
+    if local_ranges := cfg.local_ranges():
+        return any(ip_in_subnet(ip, local_range) for local_range in local_ranges)
+    else:
+        return is_lan_addr(ip)
+
+
 def ip_extract() -> List[str]:
     """Return list of IP addresses of this system"""
     ips = []
