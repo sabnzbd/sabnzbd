@@ -213,7 +213,8 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     # Never check the XFF header unless access would have been granted based on the remote IP alone!
     if is_allowed and cfg.verify_xff_header() and (xff_header := cherrypy.request.headers.get("X-Forwarded-For")):
         xff_ips = [ip.strip() for ip in xff_header.split(",")]
-        if not (is_allowed := all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)):
+        is_allowed = all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)
+        if not is_allowed:
             logging.debug("Denying access based on X-Forwarded-For header '%s'", xff_header)
 
     if not is_allowed and warn_user:
