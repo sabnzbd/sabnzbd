@@ -18,6 +18,7 @@
 """
 tests.test_dirscanner - Testing functions in dirscanner.py
 """
+import asyncio
 
 import pyfakefs.fake_filesystem_unittest as ffs
 

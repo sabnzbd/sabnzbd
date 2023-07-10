@@ -19,14 +19,40 @@
 sabnzbd.osxmenu - macOS Top Menu
 """
 
-from Foundation import *
-from AppKit import *
-from objc import YES, NO
-
 import os
 import sys
 import time
 import logging
+from objc import YES, NO
+from Foundation import (
+    NSObject,
+    NSDate,
+    NSTimer,
+    NSRunLoop,
+    NSDefaultRunLoopMode,
+    NSColor,
+    NSFont,
+    NSImage,
+    NSAttributedString,
+)
+from AppKit import (
+    NSStatusBar,
+    NSMenu,
+    NSMenuItem,
+    NSAlternateKeyMask,
+    NSTerminateNow,
+    NSEventTrackingRunLoopMode,
+    NSVariableStatusItemLength,
+    NSForegroundColorAttributeName,
+    NSFontAttributeName,
+    NSOnState,
+    NSOffState,
+    NSBaselineOffsetAttributeName,
+    NSParagraphStyleAttributeName,
+    NSMutableParagraphStyle,
+    NSParagraphStyle,
+    NSCenterTextAlignment,
+)
 
 import sabnzbd
 import sabnzbd.cfg
@@ -315,7 +341,7 @@ class SABnzbdDelegate(NSObject):
                             },
                         )
                         menu_history_item.setAttributedTitle_(jobfailed)
-                    menu_history_item.setRepresentedObject_("%s" % history["storage"])
+                    menu_history_item.setRepresentedObject_(history["storage"])
                     self.menu_history.addItem_(menu_history_item)
             else:
                 menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T("Empty"), "", "")

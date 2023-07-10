@@ -1,6 +1,6 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-pyinstaller==5.11.0
+pyinstaller==5.12.0
 pyinstaller-hooks-contrib==2023.3
 altgraph==0.17.3
 wrapt==1.15.0
@@ -9,7 +9,7 @@ certifi
 
 # orjson does not support 32bit Windows, exclude it based on Python-version
 # This way we also test ujson on Python 3.8 in the CI-tests
-orjson==3.8.14; python_version > '3.8'
+orjson==3.9.1; python_version > '3.8'
 
 # For the Windows build
 pefile==2023.2.7; sys_platform == 'win32'

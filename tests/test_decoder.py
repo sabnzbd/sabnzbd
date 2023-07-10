@@ -29,12 +29,23 @@ import sabnzbd.decoder as decoder
 from sabnzbd.nzbstuff import Article
 
 
+def uu(data: bytes):
+    """Uuencode data and insert a period if necessary"""
+    line = binascii.b2a_uu(data).rstrip(b"\n")
+
+    # Dot stuffing
+    if line.startswith(b"."):
+        return b"." + line
+
+    return line
+
+
 LINES_DATA = [os.urandom(45) for _ in range(32)]
-VALID_UU_LINES = [binascii.b2a_uu(data).rstrip(b"\n") for data in LINES_DATA]
+VALID_UU_LINES = [uu(data) for data in LINES_DATA]
 
 END_DATA = os.urandom(randint(1, 45))
 VALID_UU_END = [
-    binascii.b2a_uu(END_DATA).rstrip(b"\n"),
+    uu(END_DATA),
     b"`",
     b"end",
 ]
@@ -48,6 +59,7 @@ class TestUuDecoder:
         insert_excess_empty_lines: bool = False,
         insert_headers: bool = False,
         insert_end: bool = True,
+        insert_dot_stuffing_line: bool = False,
         begin_line: bytes = b"begin 644 My Favorite Open Source Movie.mkv",
     ):
         """Generate message parts. Part may be one of 'begin', 'middle', or 'end' for multipart
@@ -88,6 +100,10 @@ class TestUuDecoder:
             size = randint(4, len(VALID_UU_LINES) - 1)
             data.extend(VALID_UU_LINES[:size])
             result.extend(LINES_DATA[:size])
+
+            if insert_dot_stuffing_line:
+                data.append(uu(b"\0" * 14))
+                result.append(b"\0" * 14)
 
         if part in ("end", "single"):
             if insert_end:
@@ -148,6 +164,7 @@ class TestUuDecoder:
     @pytest.mark.parametrize("insert_excess_empty_lines", [True, False])
     @pytest.mark.parametrize("insert_headers", [True, False])
     @pytest.mark.parametrize("insert_end", [True, False])
+    @pytest.mark.parametrize("insert_dot_stuffing_line", [True, False])
     @pytest.mark.parametrize(
         "begin_line",
         [
@@ -157,11 +174,25 @@ class TestUuDecoder:
             b"begin 0755 shell.sh",
         ],
     )
-    def test_singlepart(self, insert_empty_line, insert_excess_empty_lines, insert_headers, insert_end, begin_line):
+    def test_singlepart(
+        self,
+        insert_empty_line,
+        insert_excess_empty_lines,
+        insert_headers,
+        insert_end,
+        insert_dot_stuffing_line,
+        begin_line,
+    ):
         """Test variations of a sane single part nzf with proper uu-encoded data"""
         # Generate a singlepart message
         article, raw_data, expected_result = self._generate_msg_part(
-            "single", insert_empty_line, insert_excess_empty_lines, insert_headers, insert_end, begin_line
+            "single",
+            insert_empty_line,
+            insert_excess_empty_lines,
+            insert_headers,
+            insert_end,
+            insert_dot_stuffing_line,
+            begin_line,
         )
         assert decoder.decode_uu(article, raw_data) == expected_result
         assert article.nzf.filename_checked

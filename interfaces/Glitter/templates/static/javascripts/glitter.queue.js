@@ -159,6 +159,8 @@ function QueueListModel(parent) {
                 value: newValue
             })
         }
+        // Update pagination and counters
+        self.parent.refresh(true)
     });
 
     // Do we show search box. So it doesn't dissapear when nothing is found

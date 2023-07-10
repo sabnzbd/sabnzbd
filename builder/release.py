@@ -19,12 +19,15 @@ import hashlib
 import json
 import os
 import re
+import shutil
+import xml.etree.ElementTree as ET
 
 import github
 import praw
 
 from constants import (
     RELEASE_VERSION,
+    PRERELEASE,
     RELEASE_SRC,
     RELEASE_BINARY_32,
     RELEASE_BINARY_64,
@@ -33,6 +36,7 @@ from constants import (
     RELEASE_README,
     RELEASE_THIS,
     RELEASE_TITLE,
+    APPDATA_FILE,
 )
 
 # Verify we have all assets
@@ -48,6 +52,11 @@ for file_to_check in files_to_check:
     if not os.path.exists(file_to_check):
         raise RuntimeError("Not all release files are present!")
 print("All release files are present")
+
+# Verify that appdata file is updated
+if not PRERELEASE:
+    if not isinstance(ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION}']"), ET.Element):
+        raise RuntimeError(f"Could not find {RELEASE_VERSION} in {APPDATA_FILE}")
 
 # Calculate hashes for Synology release
 with open(RELEASE_SRC, "rb") as inp_file:
@@ -69,9 +78,6 @@ if RELEASE_THIS and gh_token:
     with open(RELEASE_README, "r") as readme_file:
         readme_data = readme_file.read()
 
-    # Pre-releases are longer than 6 characters (e.g. 3.1.0Beta1 vs 3.1.0, but also 3.0.11)
-    prerelease = len(RELEASE_VERSION) > 5
-
     # We have to manually check if we already created this release
     for release in gh_repo.get_releases():
         if release.tag_name == RELEASE_VERSION:
@@ -86,7 +92,7 @@ if RELEASE_THIS and gh_token:
             name=RELEASE_TITLE,
             message=readme_data,
             draft=True,
-            prerelease=prerelease,
+            prerelease=PRERELEASE,
         )
 
     # Fetch existing assets, as overwriting is not allowed by GitHub
@@ -119,7 +125,7 @@ if RELEASE_THIS and gh_token:
                 name=RELEASE_TITLE,
                 message=readme_data,
                 draft=False,
-                prerelease=prerelease,
+                prerelease=PRERELEASE,
             )
 
     # Update the website
@@ -146,7 +152,7 @@ if RELEASE_THIS and gh_token:
         latest_txt_items = latest_txt.decoded_content.split()
         new_latest_txt_items = latest_txt_items[:2]
         config_yml = gh_repo_web.get_contents("_config.yml")
-        if prerelease:
+        if PRERELEASE:
             # If it's a pre-release, we append to current version in latest.txt
             new_latest_txt_items.extend([RELEASE_VERSION_BYTES, latest_txt_items[1]])
             # And replace in _config.yml
@@ -227,18 +233,30 @@ if RELEASE_THIS and gh_token:
         with open(RELEASE_README, "r") as readme_file:
             readme_lines = readme_file.readlines()
 
+        # Put the download link after the title
+        readme_lines[2] = "## https://sabnzbd.org/downloads\n"
+
         # Use the header in the readme as title
         title = readme_lines[0]
-        release_notes_text = "".join(readme_lines[3:])
-
-        # Post always to r/SABnzbd
-        print("Posting release notes to Reddit: r/sabnzbd")
-        submission = subreddit_sabnzbd.submit(title, selftext=release_notes_text)
+        release_notes_text = "".join(readme_lines[2:])
 
         # Only stable releases to r/usenet
-        if not prerelease:
-            print("Cross-posting release notes to Reddit: r/usenet")
-            submission.crosspost(subreddit_usenet)
+        if not PRERELEASE:
+            print("Posting release notes to Reddit: r/usenet")
+            submission = subreddit_usenet.submit(title, selftext=release_notes_text)
+
+            # Cross-post to r/SABnzbd
+            print("Cross-posting release notes to Reddit: r/sabnzbd")
+            submission.crosspost(subreddit_sabnzbd)
+        else:
+            # Post always to r/SABnzbd
+            print("Posting release notes to Reddit: r/sabnzbd")
+            subreddit_sabnzbd.submit(title, selftext=release_notes_text)
+
+        # Only stable releases to r/usenet
+        if not PRERELEASE:
+            print("Posting release notes to Reddit: r/usenet")
+            subreddit_usenet.submit(title, selftext=release_notes_text)
     else:
         print("Missing REDDIT_TOKEN")
 

@@ -66,7 +66,7 @@ class DirScanner(threading.Thread):
 
         self.loop: Optional[asyncio.AbstractEventLoop] = None
         self.scanner_task: Optional[asyncio.Task] = None
-        self.lock = asyncio.Lock()  # Prevents concurrent scans
+        self.lock: Optional[asyncio.Lock] = None  # Prevents concurrent scans
         self.error_reported = False  # Prevents multiple reporting of missing watched folder
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
@@ -109,7 +109,6 @@ class DirScanner(threading.Thread):
     def run(self):
         """Start the scanner"""
         logging.info("Dirscanner starting up")
-
         self.loop = asyncio.new_event_loop()
 
         try:
@@ -184,7 +183,6 @@ class DirScanner(threading.Thread):
 
     async def when_stable_add_nzbfile(self, path: str, catdir: Optional[str], stat_tuple: os.stat_result):
         """Try and import the NZB but wait until the attributes are stable for 1 second, but give up after 3 sec"""
-
         logging.info("Trying to import %s", path)
 
         # Wait until the attributes are stable for 1 second, but give up after 3 sec
@@ -225,6 +223,11 @@ class DirScanner(threading.Thread):
 
     async def scan_async(self, dirscan_dir: str):
         """Do one scan of the watched folder"""
+        # On Python 3.8 we first need an event loop before we can create a asyncio.Lock
+        if not self.lock:
+            with DIR_SCANNER_LOCK:
+                self.lock = asyncio.Lock()
+
         async with self.lock:
             if sabnzbd.PAUSED_ALL:
                 return

@@ -19,6 +19,7 @@ import os
 
 # Constants
 VERSION_FILE = "sabnzbd/version.py"
+APPDATA_FILE = "linux/org.sabnzbd.sabnzbd.appdata.xml"
 
 # To draft a release or not to draft a release?
 ON_GITHUB_ACTIONS = os.environ.get("CI", False)
@@ -28,6 +29,9 @@ RELEASE_THIS = "refs/tags/" in os.environ.get("GITHUB_REF", "")
 with open(VERSION_FILE) as version_file:
     exec(version_file.read())
 RELEASE_VERSION = __version__
+
+# Pre-releases are longer than 6 characters (e.g. 3.1.0Beta1 vs 3.1.0, but also 3.0.11)
+PRERELEASE = len(RELEASE_VERSION) > 5
 
 # Define release name
 RELEASE_NAME = "SABnzbd-%s" % RELEASE_VERSION
@@ -41,7 +45,8 @@ RELEASE_README = "README.mkd"
 
 # Used in package.py and SABnzbd.spec
 EXTRA_FILES = [
-    "README.mkd",
+    RELEASE_README,
+    "README.txt",
     "INSTALL.txt",
     "LICENSE.txt",
     "GPL2.txt",
