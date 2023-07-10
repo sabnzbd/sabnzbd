@@ -19,7 +19,7 @@ import hashlib
 import json
 import os
 import re
-import xml.etree.ElementTree
+import xml.etree.ElementTree as ET
 
 import github
 import praw
@@ -54,7 +54,7 @@ print("All release files are present")
 
 # Verify that appdata file is updated
 if not PRERELEASE:
-    if not xml.etree.ElementTree.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION}']"):
+    if not isinstance(ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION}']"), ET.Element):
         raise RuntimeError(f"Could not find {RELEASE_VERSION} in {APPDATA_FILE}")
 
 # Calculate hashes for Synology release
