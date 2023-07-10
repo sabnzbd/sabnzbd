@@ -253,10 +253,6 @@ if RELEASE_THIS and gh_token:
             print("Posting release notes to Reddit: r/sabnzbd")
             subreddit_sabnzbd.submit(title, selftext=release_notes_text)
 
-        # Only stable releases to r/usenet
-        if not PRERELEASE:
-            print("Posting release notes to Reddit: r/usenet")
-            subreddit_usenet.submit(title, selftext=release_notes_text)
     else:
         print("Missing REDDIT_TOKEN")
 
