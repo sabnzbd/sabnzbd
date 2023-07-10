@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.0.3 Release Candidate 1
+Release Notes - SABnzbd 4.0.3
 =========================================================
 
 ## Bugfixes and changes since 4.0.2
@@ -7,10 +7,11 @@ Release Notes - SABnzbd 4.0.3 Release Candidate 1
 - Season Sorting did not respect desired capitalization.
 - Crashes could occur in the `Downloader` on timeouts.
 - Prevent extra job directory in case of folder-only Sorting.
+- UUencoded articles could fail to decode.
 - Windows: Windows Service would fail to start on legacy release.
 - macOS: Failed to launch on macOS Sonoma Beta.
 
-## Breaking change
+## Breaking change in 4.0.1
 - The `Parameters` setting of a `Notification Script` is now passed as
   environment variable `SAB_NOTIFICATION_PARAMETERS` instead of as a
   command-line parameter. This prevents the possibility of remote code
