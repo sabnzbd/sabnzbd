@@ -12,7 +12,7 @@ cherrypy==18.8.0
 jaraco.functools==3.8.0
 jaraco.collections==4.3.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
-jaraco.classes==3.2.3
+jaraco.classes==3.3.0
 jaraco.context==4.3.0
 more-itertools==9.1.0
 zc.lockfile==3.0.post1
