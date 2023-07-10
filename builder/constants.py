@@ -45,7 +45,8 @@ RELEASE_README = "README.mkd"
 
 # Used in package.py and SABnzbd.spec
 EXTRA_FILES = [
-    "README.mkd",
+    RELEASE_README,
+    "README.txt",
     "INSTALL.txt",
     "LICENSE.txt",
     "GPL2.txt",
