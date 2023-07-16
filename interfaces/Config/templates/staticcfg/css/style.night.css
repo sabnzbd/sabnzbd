@@ -1,0 +1,212 @@
+body {
+  background-color: #262626;
+}
+
+.colmask {
+  border: 1px solid #555555;
+  background-color: #303030;
+}
+
+.advanced-button,
+.advanced-buttonSeperator,
+.modal-header,
+.navbar-default,
+ul.tabs a.active {
+  background-color: #555555 !important;
+}
+
+#addFeed,
+#addFeedContent,
+.section {
+  border-bottom: 1px solid #555555;
+}
+
+.col2 h3 {
+  background: none repeat scroll 0 0 #555555;
+  color: #FFF;
+}
+
+.alt,
+.even,
+.infoTableSeperator.alt,
+.Key tr:nth-child(odd),
+.navbar-default .navbar-nav>.open>a,
+.navbar-default .navbar-nav>.open>a:focus,
+.navbar-default .navbar-nav>.open>a:hover,
+.navbar-default .navbar-nav>li>a.active,
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-logo:hover,
+.server-disabled,
+.tab-content .catTable tr:hover td,
+.tab-pane tr:nth-child(odd),
+ul.tabs a:hover {
+  background-color: #444444 !important;
+}
+
+.multioperations-selector,
+.pagination li.active span,
+.pagination li span:hover,
+.table>tbody>tr:nth-child(odd),
+.table-striped>tbody>tr:nth-child(odd),
+.dropdown-menu .divider,
+.history-queue-swicher .badge,
+ul.tabs li.active a,
+.dropdown-menu {
+  background-color: #444444 !important;
+  color: #EBEBEB !important;
+}
+
+.btn-default,
+.btn-default.disabled:active,
+.btn-default.disabled:focus,
+.btn-default.disabled:hover,
+.Categories form.sorting-row:nth-child(2n-1) tr,
+.form-control[disabled],
+.input-group-addon,
+.input-group-addon,
+.main-content .btn-default,
+.modal-body .btn-default,
+.modal-footer .btn-default,
+.pagination li span,
+.pagination>.disabled>span,
+.pagination>.disabled>span:hover,
+.search-box input,
+.select,
+.Sorting .explain-sorting,
+.table-striped>tbody>tr:nth-child(even),
+.table>tbody>tr:nth-child(even),
+.table th,
+input,
+input.form-control,
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"],
+textarea,
+select {
+  background-color: #555555 !important;
+  color: #EBEBEB !important;
+}
+
+input[type="date"]:hover,
+input[type="datetime"]:hover,
+input[type="datetime-local"]:hover,
+input[type="email"]:hover,
+input[type="month"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover,
+input[type="search"]:hover,
+input[type="tel"]:hover,
+input[type="text"]:hover,
+input[type="time"]:hover,
+input[type="url"]:hover,
+input[type="week"]:hover,
+textarea:hover,
+select:hover {
+  background-color: #707070 !important;
+}
+
+.btn-default:hover {
+  background-color: #707070 !important;
+  color: #D9D9D9 !important;
+}
+
+.btn-default:focus,
+input[type="date"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="email"]:focus,
+input[type="month"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="text"]:focus,
+input[type="time"]:focus,
+input[type="url"]:focus,
+input[type="week"]:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+  outline: initial !important;
+}
+
+.infoTableSeperator {
+  border-top: 1px solid #555555;
+}
+
+.modal-backdrop {
+  background-color: #262626 !important;
+}
+
+.tab-content .catTable tbody {
+  border: 1px solid #555555 !important;
+}
+
+ul.tabs a {
+  border: 1px solid #555555 !important;
+  color: white !important;
+}
+
+.Categories form:first-of-type tr:last-of-type,
+.default,
+.dropdown-menu>li>a:focus,
+.dropdown-menu>li>a:hover {
+  background-color: #696969;
+}
+
+.activeRSS,
+.activeRSS a,
+.activeRSS a:visited,
+.glyphicon,
+#content,
+a,
+a:active,
+a:hover,
+a:focus,
+.path,
+.Servers .ct-label,
+.btn-default,
+.time,
+.navbar-default .navbar-nav>li>a,
+.feed-row td,
+#search-dropdown .dropdown-header {
+  color: #EBEBEB !important;
+}
+
+.Servers .ct-series-a .ct-line,
+.Servers .ct-series-a .ct-point {
+  stroke: #EBEBEB;
+}
+
+.col2 p,
+.col2-cats {
+  color: #AAA;
+}
+
+#content>div.colmask>div:nth-child(3) {
+  border-bottom: 1px solid #555555 !important;
+}
+
+/* Placeholders - Will not work if grouped! */
+::-webkit-input-placeholder {
+  color: #EBEBEB !important;
+}
+
+::-moz-placeholder {
+  color: #EBEBEB !important;
+  opacity: 1 !important;
+}
+
+:-ms-input-placeholder {
+  color: #EBEBEB !important;
+}
