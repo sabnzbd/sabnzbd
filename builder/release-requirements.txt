@@ -1,2 +1,2 @@
 PyGithub==1.59.0
-praw==7.7.0
+praw==7.7.1
