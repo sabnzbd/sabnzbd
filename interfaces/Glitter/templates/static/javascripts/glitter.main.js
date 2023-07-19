@@ -133,6 +133,100 @@ function ViewModel() {
         return parseInt(self.nrWarnings()) + self.allMessages().length;
     })
 
+    self.updateCheckAllButtonState = function(section) {
+        setCheckAllState('.multioperations-selector #multiedit-checkall', `.${section}-table input[name="multiedit"]`)
+    }
+
+    // Add queue or history item to multi-edit list
+    self.addMultiEdit = function(item, event) {
+        // The parent model is either the queue or history
+        const model = this.parent;
+        const section = model.queueItems ? 'queue' : 'history';
+
+        if(event.shiftKey) {
+            checkShiftRange(`.${section}-table input[name="multiedit"]`);
+        }
+
+        if(event.currentTarget.checked) {
+            model.multiEditItems.push(item);
+
+            // History is not editable
+            // Only the queue will fire the multi-edit update
+            model.doMultiEditUpdate?.();
+        } else {
+            model.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+        }
+
+        self.updateCheckAllButtonState(section);
+        return true;
+    }
+    
+    // Check all queue or history items
+    self.checkAllJobs = function(item, event) {
+        const section = event.currentTarget.closest('.multioperations-selector').id === 'history-options' ? 'history' : 'queue';
+        const model = section === 'history' ? self.history : self.queue;
+
+        const allChecks = $(`.${section}-table input[name="multiedit"]`).filter(':not(:disabled):visible');
+
+        self.updateCheckAllButtonState(section);
+
+        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
+            const allActive = allChecks.filter(":checked")
+            if(allActive.length === model.multiEditItems().length) {
+                model.multiEditItems.removeAll();
+                allActive.prop('checked', false)
+            } else {
+                allActive.each(function() {
+                    var item = ko.dataFor(this)
+                    model.multiEditItems.remove(function(inList) { return inList.id === item.id; })
+                    this.checked = false;
+                })
+            }
+        } else {
+            allChecks.prop('checked', true)
+            allChecks.each(function() { model.multiEditItems.push(ko.dataFor(this)) })
+            event.target.checked = true
+
+            model.multiEditUpdate?.();
+        }
+
+        self.updateCheckAllButtonState(section);
+        return true;
+    }
+
+    // Delete all selected queue or history items
+    self.doMultiDelete = function(item, event) {
+        const section = event.currentTarget.closest('.multioperations-selector').id === 'history-options' ? 'history' : 'queue';
+        const model = section === 'history' ? self.history : self.queue;
+
+        // Anything selected?
+        if(model.multiEditItems().length < 1) return;
+
+        if(!self.confirmDeleteHistory() || confirm(glitterTranslate.removeDown)) {
+            let strIDs = '';
+            $.each(model.multiEditItems(), function() {
+                strIDs = strIDs + this.id + ',';
+            })
+
+            showNotification('.main-notification-box-removing-multiple', 0, model.multiEditItems().length)
+
+            callAPI({
+                mode: section,
+                name: 'delete',
+                del_files: 1,
+                value: strIDs
+            }).then(function(response) {
+                if(response.status) {
+                    // Make sure the history doesnt flicker and then fade-out
+                    model.isLoading(true)
+                    model.multiEditItems.removeAll();
+                    self.refresh()
+                    hideNotification()
+                }
+            })
+        }
+    }
+
     // Update main queue
     self.updateQueue = function(response) {
         // Block in case off dragging

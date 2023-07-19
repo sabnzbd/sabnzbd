@@ -1,10 +1,9 @@
 <div class="history" id="history-tab" data-bind="visible: hasHistory() || displayTabbed()" style="display: none">
-    <div class="history-header">
-        <h2>$T('menu-history')</h2>
-        <a href="#" data-bind="click: history.showMultiEdit">
-            <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
-        </a>
-    </div>
+    <h2>$T('menu-history')</h2>
+    <!-- style binding prevents the queue multi-edit form from overlapping this button -->
+    <a href="#" data-bind="click: history.showMultiEdit, style: { top: queue.isMultiEditing() && !displayTabbed() ? '106px' : '10px' }"> 
+        <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
+    </a>
     <table class="table table-hover history-table paginated">
         <thead>
             <tr>
@@ -61,7 +60,7 @@
                 <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }" onclick="showDetails(this)"></td>
                 <td class="delete">
                     <label data-bind="visible: parent.isMultiEditing()">
-                        <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.addMultiEdit, attr: { 'id': 'multiedit_' + nzo_id } " />
+                        <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
                     </label>
                     <div class="dropdown" data-bind="visible: !parent.isMultiEditing()">
                         <a href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">
@@ -136,11 +135,11 @@
         <div data-bind="visible: history.isMultiEditing()">
             <span class="label label-default" data-bind="text: history.multiEditItems().length">0</span>
             <label for="multiedit-checkall">
-                <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" title="$T('Glitter-checkAll')" data-bind="click: history.checkAllJobs" data-tooltip="true" data-placement="top" />
+                <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall" title="$T('Glitter-checkAll')" data-bind="click: checkAllJobs" data-tooltip="true" data-placement="top" />
             </label>
         </div>
 
-        <a href="#" class="hover-button" data-bind="visible: history.isMultiEditing(), click: history.doMultiDelete">
+        <a href="#" class="hover-button" data-bind="visible: history.isMultiEditing(), click: doMultiDelete">
             <span class="glyphicon glyphicon-trash"></span>
         </a>
         <a href="#modal-purge-history" class="hover-button" title="$T('purgeHist')" data-bind="visible: !history.isMultiEditing()" data-toggle="modal" data-tooltip="true" data-placement="left">

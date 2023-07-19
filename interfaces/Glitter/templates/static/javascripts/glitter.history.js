@@ -36,14 +36,14 @@ function HistoryListModel(parent) {
             History list functions per item
         ***/
         var itemIds = $.map(self.historyItems(), function(i) {
-            return i.historyStatus.nzo_id();
+            return i.historyStatus.id();
         });
 
         // For new items
         var newItems = [];
         $.each(data.slots, function(index, slot) {
             var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) {
-                return i.historyStatus.nzo_id() == slot.nzo_id;
+                return i.historyStatus.id() == slot.id;
             });
             // Set index in the results
             slot.index = index
@@ -51,7 +51,7 @@ function HistoryListModel(parent) {
             // Update or add?
             if(existingItem) {
                 existingItem.updateFromData(slot);
-                itemIds.splice(itemIds.indexOf(slot.nzo_id), 1);
+                itemIds.splice(itemIds.indexOf(slot.id), 1);
             } else {
                 // Add history item
                 newItems.push(new HistoryModel(self, slot));
@@ -68,7 +68,7 @@ function HistoryListModel(parent) {
             $.each(itemIds, function() {
                 var id = this.toString();
                 self.historyItems.remove(ko.utils.arrayFirst(self.historyItems(), function(i) {
-                    return i.historyStatus.nzo_id() == id;
+                    return i.historyStatus.id() == id;
                 }));
             });
         }
@@ -82,7 +82,7 @@ function HistoryListModel(parent) {
             if(self.parent.queue.multiEditItems().length > 0) {
                 $.each(newItems, function() {
                     var currentItem = this;
-                    self.parent.queue.multiEditItems.remove(function(inList) { return inList.id == currentItem.nzo_id; })
+                    self.parent.queue.multiEditItems.remove(function(inList) { return inList.id == currentItem.id; })
                 })
             }
         }
@@ -230,7 +230,7 @@ function HistoryListModel(parent) {
             $.each(self.historyItems(), function(index) {
                 // Only append when it's a download that can be deleted
                 if(!this.processingDownload() && !this.processingWaiting()) {
-                    strIDs = strIDs + this.nzo_id + ',';
+                    strIDs = strIDs + this.id + ',';
                 }
             })
             // Send the command
@@ -266,82 +266,6 @@ function HistoryListModel(parent) {
         self.multiEditItems.removeAll();
         $('.history-table input[name="multiedit"], #history-options #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
     }
-
-    // Add to the list
-    self.addMultiEdit = function(item, event) {
-        if(event.shiftKey) {
-            checkShiftRange('.history-table input[name="multiedit"]');
-        }
-
-        if(event.currentTarget.checked) {
-            self.multiEditItems.push(item);
-        } else {
-            self.multiEditItems.remove(function(inList) { return inList.nzo_id == item.nzo_id; })
-        }
-
-        setCheckAllState('#history-options #multiedit-checkall', '.history-table input[name="multiedit"]')
-        return true;
-    }
-
-
-    // Check all
-    self.checkAllJobs = function(item, event) {
-        var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
-
-        setCheckAllState('#history-options #multiedit-checkall', '.history-table input[name="multiedit"]')
-
-        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
-            var allActive = allChecks.filter(":checked")
-            // First remove the from the list
-            if(allActive.length == self.multiEditItems().length) {
-                self.multiEditItems.removeAll();
-                allActive.prop('checked', false)
-            } else {
-                allActive.each(function() {
-                    var item = ko.dataFor(this)
-                    self.multiEditItems.remove(function(inList) { return inList.nzo_id == item.nzo_id; })
-                    this.checked = false;
-                })
-            }
-        } else {
-            allChecks.prop('checked', true)
-            allChecks.each(function() { self.multiEditItems.push(ko.dataFor(this)) })
-            event.target.checked = true
-        }
-
-        setCheckAllState('#history-options #multiedit-checkall', '.history-table input[name="multiedit"]')
-        return true;
-    }
-
-    // Delete all selected
-    self.doMultiDelete = function() {
-        // Anything selected?
-        if(self.multiEditItems().length < 1) return;
-
-        if(!self.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDown)) {
-            var strIDs = '';
-            $.each(self.multiEditItems(), function() {
-                strIDs = strIDs + this.nzo_id + ',';
-            })
-
-            showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
-
-            callAPI({
-                mode: 'history',
-                name: 'delete',
-                del_files: 1,
-                value: strIDs
-            }).then(function(response) {
-                if(response.status) {
-                    // Make sure the history doesnt flicker and then fade-out
-                    self.isLoading(true)
-                    self.parent.refresh()
-                    self.multiEditItems.removeAll();
-                    hideNotification()
-                }
-            })
-        }
-    }
 }
 
 /**
@@ -355,7 +279,7 @@ function HistoryModel(parent, data) {
     // If we update the full set every time it uses lot of CPU
     // The Status/Actionline/scriptline/completed we do update every time
     // When clicked on the more-info button we load the rest again
-    self.nzo_id = data.nzo_id;
+    self.id = data.nzo_id;
     self.index = data.index;
     self.updateAllHistory = false;
     self.hasDropdown = ko.observable(false);
@@ -464,7 +388,7 @@ function HistoryModel(parent, data) {
     // Re-try button
     self.retry = function() {
         // Set JOB-id
-        $('#modal-retry-job input[name="retry_job_id"]').val(self.nzo_id)
+        $('#modal-retry-job input[name="retry_job_id"]').val(self.id)
         // Set password
         $('#retry_job_password').val(self.historyStatus.password())
         // Open modal
@@ -516,7 +440,7 @@ function HistoryModel(parent, data) {
             if(item.processingDownload() == 2) {
                 callAPI({
                     mode: 'cancel_pp',
-                    value: self.nzo_id
+                    value: self.id
                 })
                 // All we can do is wait
             } else {
@@ -525,7 +449,7 @@ function HistoryModel(parent, data) {
                     mode: 'history',
                     name: 'delete',
                     del_files: 1,
-                    value: self.nzo_id
+                    value: self.id
                 }).then(function(response) {
                     if(response.status) {
                         // Make sure no flickering (if there are more items left) and then remove

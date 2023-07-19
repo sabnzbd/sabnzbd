@@ -266,72 +266,6 @@ function QueueListModel(parent) {
         }
     }
 
-    // Add to the list
-    self.addMultiEdit = function(item, event) {
-        // Is it a shift-click?
-        if(event.shiftKey) {
-            checkShiftRange('.queue-table input[name="multiedit"]');
-        }
-
-        // Add or remove from the list?
-        if(event.currentTarget.checked) {
-            // Add item
-            self.multiEditItems.push(item);
-            // Update them all
-            self.doMultiEditUpdate();
-        } else {
-            // Go over them all to know which one to remove
-            self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
-        }
-
-        // Update check-all buton state
-        setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
-        return true;
-    }
-
-    // Check all
-    self.checkAllJobs = function(item, event) {
-        // Get which ones we care about
-        var allChecks = $('.queue-table input[name="multiedit"]').filter(':not(:disabled):visible');
-
-        // We need to re-evaltuate the state of this check-all
-        // Otherwise the 'inderterminate' will be overwritten by the click event!
-        setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
-
-        // Now we can check what happend
-        // For when some are checked, or all are checked (but not partly)
-        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
-            var allActive = allChecks.filter(":checked")
-            // First remove the from the list
-            if(allActive.length == self.multiEditItems().length) {
-                // Just remove all
-                self.multiEditItems.removeAll();
-                // Remove the check
-                allActive.prop('checked', false)
-            } else {
-                // Remove them seperate
-                allActive.each(function() {
-                    // Go over them all to know which one to remove
-                    var item = ko.dataFor(this)
-                    self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
-                    // Remove the check of this one
-                    this.checked = false;
-                })
-            }
-        } else {
-            // None are checked, so check and add them all
-            allChecks.prop('checked', true)
-            allChecks.each(function() { self.multiEditItems.push(ko.dataFor(this)) })
-            event.target.checked = true
-
-            // Now we fire the update
-            self.doMultiEditUpdate()
-        }
-        // Set state of all the check-all's
-        setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
-        return true;
-    }
-
     // Do the actual multi-update immediatly
     self.doMultiEditUpdate = function() {
         // Anything selected?
@@ -400,42 +334,6 @@ function QueueListModel(parent) {
             nonCatUpdates()
         }
 
-    }
-
-    // Selete all selected
-    self.doMultiDelete = function() {
-        // Anything selected?
-        if(self.multiEditItems().length < 1) return;
-
-        // Need confirm
-        if(!self.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
-            // List all the ID's
-            var strIDs = '';
-            $.each(self.multiEditItems(), function(index) {
-                strIDs = strIDs + this.id + ',';
-            })
-
-            // Show notification
-            showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
-
-            // Remove
-            callAPI({
-                mode: 'queue',
-                name: 'delete',
-                del_files: 1,
-                value: strIDs
-            }).then(function(response) {
-                if(response.status) {
-                    // Make sure the queue doesnt flicker and then fade-out
-                    self.isLoading(true)
-                    self.parent.refresh()
-                    // Empty it
-                    self.multiEditItems.removeAll();
-                    // Hide notification
-                    hideNotification()
-                }
-            })
-        }
     }
 
     // On change of page we need to check all those that were in the list!

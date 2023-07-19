@@ -990,17 +990,16 @@ tr.queue-item>td:first-child>a {
     position: relative;
 }
 
-.history-header {
+.history h2 {
     clear: left;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
 }
 
-.history-header a {
-    align-self: center;
+.history h2 + a {
     margin-right: 2px;
     font-size: 12px;
+    position: absolute;
+    right: 0;
+    top: 10px;
 }
 
 .history-table {
