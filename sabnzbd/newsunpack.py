@@ -2248,7 +2248,7 @@ def analyse_show(name: str) -> Dict[str, str]:
         "season": job.info.get("season_num", ""),
         "episode": job.info.get("episode_num", ""),
         "episode_name": job.info.get("ep_name", ""),
-        "is_proper": str(job.is_proper()),
+        "is_proper": job.is_proper(),
         "resolution": job.info.get("resolution", ""),
         "decade": job.info.get("decade", ""),
         "year": job.info.get("year", ""),
