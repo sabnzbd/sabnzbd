@@ -43,7 +43,7 @@ function HistoryListModel(parent) {
         var newItems = [];
         $.each(data.slots, function(index, slot) {
             var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) {
-                return i.historyStatus.nzo_id() == slot.id;
+                return i.historyStatus.nzo_id() == slot.nzo_id;
             });
             // Set index in the results
             slot.index = index
@@ -51,7 +51,7 @@ function HistoryListModel(parent) {
             // Update or add?
             if(existingItem) {
                 existingItem.updateFromData(slot);
-                itemIds.splice(itemIds.indexOf(slot.id), 1);
+                itemIds.splice(itemIds.indexOf(slot.nzo_id), 1);
             } else {
                 // Add history item
                 newItems.push(new HistoryModel(self, slot));

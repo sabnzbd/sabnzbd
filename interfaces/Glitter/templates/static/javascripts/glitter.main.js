@@ -219,8 +219,8 @@ function ViewModel() {
                 if(response.status) {
                     // Make sure the history doesnt flicker and then fade-out
                     model.isLoading(true)
-                    model.multiEditItems.removeAll();
                     self.refresh()
+                    model.multiEditItems.removeAll();
                     hideNotification()
                 }
             })

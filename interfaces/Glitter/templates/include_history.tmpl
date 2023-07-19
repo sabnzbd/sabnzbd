@@ -1,9 +1,10 @@
 <div class="history" id="history-tab" data-bind="visible: hasHistory() || displayTabbed()" style="display: none">
-    <h2>$T('menu-history')</h2>
-    <!-- style binding prevents the queue multi-edit form from overlapping this button -->
-    <a href="#" data-bind="click: history.showMultiEdit, style: { top: queue.isMultiEditing() && !displayTabbed() ? '106px' : '10px' }"> 
-        <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
-    </a>
+    <div class="history-header">
+        <h2>$T('menu-history')</h2>
+        <a href="#" data-bind="click: history.showMultiEdit">
+            <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
+        </a>
+    </div>
     <table class="table table-hover history-table paginated">
         <thead>
             <tr>
