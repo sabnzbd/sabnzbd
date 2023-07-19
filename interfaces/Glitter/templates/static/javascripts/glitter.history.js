@@ -36,14 +36,14 @@ function HistoryListModel(parent) {
             History list functions per item
         ***/
         var itemIds = $.map(self.historyItems(), function(i) {
-            return i.historyStatus.id();
+            return i.historyStatus.nzo_id();
         });
 
         // For new items
         var newItems = [];
         $.each(data.slots, function(index, slot) {
             var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) {
-                return i.historyStatus.id() == slot.id;
+                return i.historyStatus.nzo_id() == slot.id;
             });
             // Set index in the results
             slot.index = index
@@ -68,7 +68,7 @@ function HistoryListModel(parent) {
             $.each(itemIds, function() {
                 var id = this.toString();
                 self.historyItems.remove(ko.utils.arrayFirst(self.historyItems(), function(i) {
-                    return i.historyStatus.id() == id;
+                    return i.historyStatus.nzo_id() == id;
                 }));
             });
         }
