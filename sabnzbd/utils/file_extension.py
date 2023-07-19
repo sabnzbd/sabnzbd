@@ -214,6 +214,7 @@ DOWNLOAD_EXT = (
     "m2ts",
     "m3u",
     "m4a",
+    "m4b",
     "mkv",
     "mp3",
     "mp4",
