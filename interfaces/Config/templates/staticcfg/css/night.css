@@ -1,0 +1,213 @@
+body {
+    background-color: #262626 !important;
+    color: #EBEBEB !important;
+}
+
+.btn {
+    box-shadow: 1px 1px 1px rgba(255, 255, 255, .1) !important;
+}
+
+.btn-default,
+input,
+textarea {
+    border-color: #252525 !important;
+}
+
+#addFeed,
+#addFeedContent,
+.section {
+    border-bottom: 1px solid #555555;
+}
+
+.col2 p,
+.col2-cats {
+    color: #AAA;
+}
+
+.col2 h3 {
+    background: none repeat scroll 0 0 #555555;
+}
+
+.alt,
+.catTable,
+.dropdown-menu,
+.dropdown-menu .divider,
+.even,
+.infoTableSeperator.alt,
+.Key tr:nth-child(odd),
+.language:hover,
+.navbar-default .navbar-nav>.open>a,
+.navbar-default .navbar-nav>.open>a:focus,
+.navbar-default .navbar-nav>.open>a:hover,
+.navbar-default .navbar-nav>li>a.active,
+.navbar-default .navbar-nav>li>a:hover,
+.navbar-logo:hover,
+.modal-content,
+.quoteBlock,
+.selected,
+.server-disabled,
+#serverResponse,
+.table>tbody>tr:nth-child(odd),
+.table-striped>tbody>tr:nth-child(odd),
+ul.tabs li.active a,
+select:hover {
+    background-color: #444444 !important;
+    color: #EBEBEB !important;
+}
+
+.success,
+.correct {
+    border: 2px solid #00cc22 !important;
+}
+
+.failed,
+.required-star,
+.error-text {
+    color: #ff3333 !important;
+}
+
+.unselected,
+.selected {
+    border: 1px solid #EBEBEB !important;
+    color: #EBEBEB !important;
+}
+
+.incorrect {
+    border: 2px solid #ff3333 !important;
+}
+
+.disabled-text {
+    color: #777 !important;
+}
+
+#rightGreyText,
+small {
+    color: #c7c7c7 !important;
+}
+
+.Categories form.sorting-row:nth-child(2n-1) tr,
+.advanced-button,
+.advanced-buttonSeperator,
+.btn,
+.btn-default.disabled:active,
+.btn-default.disabled:focus,
+.btn-default.disabled:hover,
+.container,
+.form-control[disabled],
+.input-group-addon,
+#inner,
+.modal-header,
+.navbar-default,
+.search-box input,
+.select,
+.Sorting .explain-sorting,
+.table-striped>tbody>tr:nth-child(even),
+.table>tbody>tr:nth-child(even),
+textarea,
+ul.tabs a.active,
+input,
+select {
+    background-color: #555555 !important;
+    color: #EBEBEB !important;
+}
+
+.btn:hover,
+.btn-default:hover,
+input:hover,
+textarea:hover,
+select:hover {
+    background-color: #707070 !important;
+    color: #D9D9D9 !important;
+}
+
+.btn-default:focus,
+.form-control:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #707070 !important;
+    outline: initial !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
+}
+
+.modal-backdrop {
+    background-color: #262626 !important;
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.infoTableSeperator,
+.modal-footer,
+.data-row,
+hr {
+    border-top: 1px solid #555555;
+}
+
+.tab-content .catTable tbody,
+ul.tabs a,
+.colmask,
+#subscriptions,
+.RSS form[action="add_rss_feed"] tr:nth-child(even),
+.Config .table {
+    border: 1px solid #555555 !important;
+}
+
+.Categories form:first-of-type tr:last-of-type,
+.default,
+.dropdown-menu>li>a:focus,
+.dropdown-menu>li>a:hover {
+    background-color: #696969;
+}
+
+.activeRSS,
+.activeRSS a,
+.activeRSS a:visited,
+.btn-default,
+.checkbox label,
+.feed-row td,
+.glyphicon,
+.help-block,
+#content,
+.navbar-default .navbar-nav>li>a,
+.path,
+.Servers .ct-label,
+.time,
+#search-dropdown .dropdown-header,
+a,
+a:active,
+a:focus,
+a:hover,
+ul.tabs a {
+    color: #EBEBEB !important;
+}
+
+#content {
+    background-color: unset !important;
+}
+
+#content>div.colmask>div:nth-child(3) {
+    border-bottom: 1px solid #555555 !important;
+}
+
+.Servers .ct-series-a .ct-line,
+.Servers .ct-series-a .ct-point {
+    stroke: #EBEBEB;
+}
+
+.colmask {
+    background-color: #303030;
+}
+
+/* Placeholders - Will not work if grouped! */
+::-webkit-input-placeholder {
+    color: #EBEBEB !important;
+}
+
+::-moz-placeholder {
+    color: #EBEBEB !important;
+    opacity: 1 !important;
+}
+
+:-ms-input-placeholder {
+    color: #EBEBEB !important;
+}
