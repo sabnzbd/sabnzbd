@@ -1994,7 +1994,8 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
                     # Note: file can and is allowed to be in a subdirectory.
-                    # Subdirectories in par2 always contain "/", not "\"
+                    # Subdirectories in par2 always contain "/", not "\" so we need to normalize
+                    file = os.path.normpath(file)
                     renamer(
                         os.path.join(nzo.download_path, nzf.filename),
                         os.path.join(nzo.download_path, file),
