@@ -1,7 +1,6 @@
 #
 # SABnzbd Translation Template file EMAIL
 # Copyright 2007-2023 The SABnzbd-Team
-#   team@sabnzbd.org
 #
 msgid ""
 msgstr ""
