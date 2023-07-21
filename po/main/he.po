@@ -1,5 +1,6 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
+#   team@sabnzbd.org
 # 
 # Translators:
 # ION, 2022
