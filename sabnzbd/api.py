@@ -625,12 +625,10 @@ def _api_warnings(name, kwargs):
     return report(keyword="warnings", data=sabnzbd.GUIHANDLER.content())
 
 
-LOG_API_RE = re.compile(rb"(apikey|api)([=:])[\w]+", re.I)
-LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
-LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
-LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
+LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password)': '(.*?)'", re.I)
 LOG_INI_HIDE_RE = re.compile(
-    rb"(email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
+    rb"(apikey|api|user|username|password|email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey"
+    rb"|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=.*",
     re.I,
 )
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
@@ -649,17 +647,13 @@ def _api_showlog(name, kwargs):
         log_data += f.read()
 
     # We need to remove all passwords/usernames/api-keys
-    log_data = LOG_API_RE.sub(b"apikey=<APIKEY>", log_data)
-    log_data = LOG_API_JSON_RE.sub(b"'apikey':<APIKEY>'", log_data)
-    log_data = LOG_USER_RE.sub(b"\\g<1>=<USER>", log_data)
-    log_data = LOG_PASS_RE.sub(b"password=<PASSWORD>", log_data)
+    log_data = LOG_JSON_RE.sub(b"'REMOVED': '<REMOVED>'", log_data)
     log_data = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", log_data)
     log_data = LOG_HASH_RE.sub(b"<HASH>", log_data)
 
     # Try to replace the username
     try:
-        cur_user = getpass.getuser()
-        if cur_user:
+        if cur_user := getpass.getuser():
             log_data = log_data.replace(utob(cur_user), b"<USERNAME>")
     except:
         pass
