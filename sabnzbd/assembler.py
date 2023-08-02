@@ -207,6 +207,8 @@ class Assembler(Thread):
                         else:
                             fout.seek(0, os.SEEK_END)
 
+                        # In raw/non-buffered mode fout.write may not write everything requested:
+                        # https://docs.python.org/3/library/io.html?highlight=write#io.RawIOBase.write
                         written = 0
                         while written < len(data):
                             written += fout.write(data[written:])
