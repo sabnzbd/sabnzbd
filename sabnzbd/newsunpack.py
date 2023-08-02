@@ -1022,7 +1022,7 @@ def seven_extract_core(
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
     start = time.time()
-    if one_folder:
+    if one_folder or cfg.flat_unpack():
         method = "e"  # Unpack without folders
     else:
         method = "x"  # Unpack with folders
