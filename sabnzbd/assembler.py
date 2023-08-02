@@ -206,7 +206,11 @@ class Assembler(Thread):
                             file_position = article.data_begin + len(data)
                         else:
                             fout.seek(0, os.SEEK_END)
-                        fout.write(data)
+
+                        written = 0
+                        while written < len(data):
+                            written += fout.write(data[written:])
+
                         nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
