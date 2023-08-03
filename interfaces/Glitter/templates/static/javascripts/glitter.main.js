@@ -134,7 +134,7 @@ function ViewModel() {
     })
 
     self.updateCheckAllButtonState = function(section) {
-        setCheckAllState('.multioperations-selector #multiedit-checkall', `.${section}-table input[name="multiedit"]`)
+        setCheckAllState(`[data-section="${section}"] #multiedit-checkall`, `.${section}-table input[name="multiedit"]`)
     }
 
     // Add queue or history item to multi-edit list
