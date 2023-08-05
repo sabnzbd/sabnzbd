@@ -243,4 +243,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
             old_name = md5of16k.pop(hash16k)
             logging.debug("Par2-16k signature of %s not unique, discarding", old_name)
 
+    # Sort table by filename
+    table = {filename: table[filename] for filename in sorted(table.keys())}
+
     return set_id, table
