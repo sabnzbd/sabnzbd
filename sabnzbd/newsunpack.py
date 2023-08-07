@@ -28,7 +28,7 @@ import time
 import io
 import shutil
 import functools
-from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union
+from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union, Set
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
@@ -65,6 +65,7 @@ from sabnzbd.filesystem import (
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
+from sabnzbd.par2file import FilePar2Info
 from sabnzbd.sorting import Sorter
 
 # Regex globals
@@ -1960,6 +1961,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     result = True
     nzf_list = nzo.finished_files
     renames = {}
+    found_paths: Set[str] = set()
 
     # Files to ignore
     ignore_ext = cfg.quick_check_ext_ignore()
@@ -1972,6 +1974,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
+                found_paths.add(nzf.filepath)
                 if (
                     nzf.crc32 is not None
                     and nzf.crc32 == par2info.filehash
@@ -1989,7 +1992,12 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 break
 
             # Now let's do obfuscation check
-            if nzf.crc32 is not None and nzf.crc32 == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
+            if (
+                nzf.filepath not in found_paths
+                and nzf.crc32 is not None
+                and nzf.crc32 == par2info.filehash
+                and is_size(nzf.filepath, par2info.filesize)
+            ):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
@@ -2005,6 +2013,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     nzf.filename = file
                     result &= True
                     found = True
+                    found_paths.add(nzf.filepath)
                     break
                 except IOError:
                     # Renamed failed for some reason, probably already done
