@@ -34,6 +34,9 @@
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css?v=$version" />
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/chartist.min.css" />
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?v=$version" />
+    <!--#if $color_scheme not in ('Light', '') #-->
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/night.css?v=$version" media="(prefers-color-scheme: dark)"/>
+    <!--#end if#-->
 
     <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico?v=$version" />
 

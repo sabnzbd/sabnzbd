@@ -177,8 +177,8 @@ input[type="checkbox"]+.desc {
     background-color: #F8F8F8;
 }
 .field-pair:last-child,
-.no-field-pair-bg {
-    background-color: transparent;
+.field-pair.no-field-pair-bg {
+    background-color: transparent !important;
 }
 .alt,
 .infoTableSeperator.alt {

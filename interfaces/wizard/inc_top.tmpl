@@ -5,6 +5,9 @@
         <title>$T('wizard-quickstart')</title>
         <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css?v=$version"/>
         <link rel="stylesheet" type="text/css" href="static/style.css?v=$version"/>
+        <!--#if $color_scheme not in ('Light', '') #-->
+        <link rel="stylesheet" type="text/css" href="../staticcfg/css/night.css?v=$version" media="(prefers-color-scheme: dark)"/>
+        <!--#end if#-->
         <link rel="shortcut icon" href="../staticcfg/ico/favicon.ico?v=$version" />
         <script type="text/javascript" src="../staticcfg/js/jquery-3.5.1.min.js?v=$version"></script>
         <script type="text/javascript" src="../staticcfg/bootstrap/js/bootstrap.min.js?v=$version"></script>
