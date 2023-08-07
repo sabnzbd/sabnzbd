@@ -1,5 +1,5 @@
 body {
-    background-color: #262626 !important;
+    background-color: black;
     color: #EBEBEB !important;
 }
 
@@ -10,7 +10,10 @@ body {
 .btn,
 .btn-default,
 input,
-textarea {
+select,
+textarea,
+.advanced-button,
+.list-group-item  {
     border-color: #252525 !important;
 }
 
@@ -29,12 +32,10 @@ textarea {
     background: none repeat scroll 0 0 #555555;
 }
 
-.alt,
 .catTable,
 .dropdown-menu,
 .dropdown-menu .divider,
 .even,
-.infoTableSeperator.alt,
 .Key tr:nth-child(odd),
 .language:hover,
 .navbar-default .navbar-nav>.open>a,
@@ -43,7 +44,6 @@ textarea {
 .navbar-default .navbar-nav>li>a.active,
 .navbar-default .navbar-nav>li>a:hover,
 .navbar-logo:hover,
-.modal-content,
 .quoteBlock,
 .selected,
 .server-disabled,
@@ -89,6 +89,8 @@ small {
 .Categories form.sorting-row:nth-child(2n-1) tr,
 .advanced-button,
 .advanced-buttonSeperator,
+.alt,
+.infoTableSeperator.alt,
 .btn,
 .btn-default.disabled:active,
 .btn-default.disabled:focus,
@@ -97,7 +99,6 @@ small {
 .form-control[disabled],
 .input-group-addon,
 #inner,
-.modal-header,
 .navbar-default,
 .search-box input,
 .select,
@@ -106,6 +107,7 @@ small {
 .table>tbody>tr:nth-child(even),
 textarea,
 ul.tabs a.active,
+.list-group-item,
 input,
 select {
     background-color: #555555 !important;
@@ -116,9 +118,10 @@ select {
 .btn-default:hover,
 input:hover,
 textarea:hover,
-select:hover {
-    background-color: #707070 !important;
-    color: #D9D9D9 !important;
+select:hover,
+.list-group-item:hover {
+    background-color: #666 !important;
+    color: #EBEBEB !important;
 }
 
 .btn-default:focus,
@@ -197,6 +200,24 @@ ul.tabs a {
 
 .colmask {
     background-color: #303030;
+}
+
+.modal-header {
+    background-color: #3C3C3C;
+}
+
+.modal-content,
+.modal-body,
+.modal-footer {
+    background-color: #727272;
+}
+
+.rss-icon-svg {
+    fill: white;
+}
+
+.rss-symbol {
+    fill: #555555;
 }
 
 /* Placeholders - Will not work if grouped! */
