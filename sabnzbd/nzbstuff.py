@@ -2147,22 +2147,18 @@ def scan_password(name: str) -> Tuple[str, Optional[str]]:
 
 def name_extractor(subject: str) -> str:
     """Try to extract a file name from a subject line, return `subject` if in doubt"""
-    result = subject
     # Filename nicely wrapped in quotes
     for name in re.findall(RE_SUBJECT_FILENAME_QUOTES, subject):
-        name = name.strip(' "')
-        if name:
-            result = name
+        if name := name.strip(' "'):
+            return name
 
     # Found nothing? Try a basic filename-like search
-    if result == subject:
-        for name in re.findall(RE_SUBJECT_BASIC_FILENAME, subject):
-            name = name.strip()
-            if name:
-                result = name
+    for name in re.findall(RE_SUBJECT_BASIC_FILENAME, subject):
+        if name := name.strip():
+            return name
 
     # Return the subject
-    return result
+    return subject
 
 
 def matcher(pattern, txt):
