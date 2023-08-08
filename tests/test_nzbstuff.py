@@ -180,12 +180,17 @@ class TestNZBStuffHelpers:
             ("Bla [Now it's done.123nonsense]", "Bla [Now it's done.123nonsense]"),
             (
                 '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
-                '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
+                # '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
+                '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv',
             ),
             (
                 "[PRiVATE]-[WtFnZb]-[219]-[1/series.name.s01e01.1080p.web.h264-group.mkv] - "
                 " yEnc (1/[PRiVATE] \\c2b510b594\\::686ea969999193.155368eba4965e56a8cd263382e012.f2712fdc::/97bd201cf931/) 1 (1/0)",
                 "series.name.s01e01.1080p.web.h264-group.mkv",
+            ),
+            (
+                "[PRiVATE]-[WtFnZb]-[/More.Bla.S02E01.1080p.WEB.h264-EDITH[eztv.re].mkv-WtF[nZb]/More.Bla.S02E01.1080p.WEB.h264-EDITH.mkv]-[1/2] - &quot;&quot; yEnc  2990558544 (1/4173)",
+                'More.Bla.S02E01.1080p.WEB.h264-EDITH.mkv'
             ),
         ],
     )

@@ -94,6 +94,9 @@ from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
 RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
 # Otherwise something that looks like a filename
 RE_SUBJECT_BASIC_FILENAME = re.compile(r"([\w\-+()'\s.,]+\.[A-Za-z0-9]{2,4})[^A-Za-z0-9]")
+# and otherwise: allow square brackets [ and ]
+RE_SUBJECT_BASIC_FILENAME_ALLOWSQUAREBRACKETS = re.compile(r"([\w\-+()'\s.,\[\]]+\.[A-Za-z0-9]{2,4})[^A-Za-z0-9]")
+
 RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
 
 
@@ -2150,12 +2153,25 @@ def name_extractor(subject: str) -> str:
     # Filename nicely wrapped in quotes
     for name in re.findall(RE_SUBJECT_FILENAME_QUOTES, subject):
         if name := name.strip(' "'):
+            # OK, done
             return name
 
     # Found nothing? Try a basic filename-like search
+
+    # to do: clean up!
+    '''
     for name in re.findall(RE_SUBJECT_BASIC_FILENAME, subject):
         if name := name.strip():
             return name
+    '''
+    if result:= re.findall(RE_SUBJECT_BASIC_FILENAME, subject):
+        result = result[-1].strip().lstrip()
+        if len(result) >= 8:
+            return result
+
+    result2 = re.findall(RE_SUBJECT_BASIC_FILENAME_ALLOWSQUAREBRACKETS, subject) # might be longer, but better
+    if result2 and len(result2[-1]) >= 8:
+        return result2[-1].strip().lstrip()
 
     # Return the subject
     return subject
