@@ -1023,6 +1023,12 @@ input[type="checkbox"] {
     margin: 10px 0px;
 }
 
+.Servers iframe {
+    width: 100%;
+    height: 325px;
+    border: 0;
+}
+
 .Servers .col2 .label {
     margin-top: 8px;
     font-size: 0.85em;

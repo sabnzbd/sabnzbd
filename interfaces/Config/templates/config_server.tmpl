@@ -10,6 +10,9 @@
     var serverBandwithData = {}
     var serverArticleTries = {}
     var serverArticleFailed = {}
+
+    // Keep track of all used hostnames
+    var hostnames = ""
 </script>
 
 <div class="colmask">
@@ -30,6 +33,8 @@
     <div class="section" id="addServerContent" style="display: none;">
         <div class="col2">
             <h3>$T('addServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+
+            <iframe></iframe>
         </div>
         <div class="col1">
             <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
@@ -301,6 +306,7 @@
                             serverBandwithData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
                             serverArticleTries[${cur}] = <!--#echo json.dumps($server['amounts'][5])#-->
                             serverArticleFailed[${cur}] = <!--#echo json.dumps($server['amounts'][6])#-->
+                            hostnames += ",$server['host']"
                         </script>
                     <!--#end if#-->
                 </div>
@@ -507,6 +513,9 @@
             \$('#addServerContent').show();
             // Add coloring
             addRowColor()
+            // Show text-ad
+            // NOTE: The hash-part cannot be seen by the server, so we don't know which hostnames you use!
+            \$(".Servers iframe").attr("src", "https://sabnzbd.org/servers#$active_lang" + hostnames)
         });
 
         \$('[name="ssl"]').click(function() {
