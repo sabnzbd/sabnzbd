@@ -3051,6 +3051,10 @@ msgstr ""
 "SABnzbd-а!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr "Фасцикла копије .нзб"
 

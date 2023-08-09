@@ -3071,6 +3071,10 @@ msgstr ""
 "Placering af logfiler for SABnzbd.<br /><i>Kræver genstart af SABnzbd!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr ".nzb Backup mappe"
 

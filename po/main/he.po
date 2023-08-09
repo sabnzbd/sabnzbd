@@ -3082,6 +3082,10 @@ msgstr ""
 "מיקום של קבצי יומן עבור SABnzbd.<br /><i>דורש הפעלה מחדש של SABnzbd!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr "תיקיית גיבוי .nzb"
 

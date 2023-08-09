@@ -3186,6 +3186,10 @@ msgstr ""
 "!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr "Dossier de sauvegarde des fichiers .nzb"
 

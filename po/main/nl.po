@@ -3144,6 +3144,10 @@ msgstr ""
 "herstart</i>."
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr "Map voor het bewaren van NZB-bestanden"
 

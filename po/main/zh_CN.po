@@ -3016,6 +3016,10 @@ msgid ""
 msgstr "SABnzbd 日志文件的位置。<br /><i>需要重启 SABnzbd 才能生效!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr ".nzb 备份文件夹"
 
