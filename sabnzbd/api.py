@@ -68,7 +68,7 @@ from sabnzbd.misc import (
     opts_to_pp,
     format_time_left,
 )
-from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
+from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup, active_socks5_proxy
@@ -907,6 +907,11 @@ def _api_config_create_backup(kwargs):
     return report(data={"result": bool(backup_file), "message": backup_file})
 
 
+def _api_config_purge_log_files(kwargs):
+    purge_log_files()
+    return report()
+
+
 def _api_config_undefined(kwargs):
     return report(_MSG_NOT_IMPLEMENTED)
 
@@ -1021,6 +1026,7 @@ _api_config_table = {
     "regenerate_certs": (_api_config_regenerate_certs, 3),
     "test_server": (_api_config_test_server, 3),
     "create_backup": (_api_config_create_backup, 3),
+    "purge_log_files": (_api_config_purge_log_files, 3),
 }
 
 

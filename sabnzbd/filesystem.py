@@ -23,6 +23,7 @@ import os
 import pickle
 import sys
 import logging
+import logging.handlers
 import re
 import shutil
 import tempfile
@@ -42,7 +43,7 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS
+from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS, DEF_LOG_FILE
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
 
@@ -1254,6 +1255,20 @@ def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
         logging.info("Skipping existing file %s", full_nzb_path)
 
     return full_nzb_path
+
+
+def purge_log_files():
+    """Purge all existing log files"""
+    # First we need to do a rollover
+    for handler in logging.root.manager.root.handlers:
+        if isinstance(handler, logging.handlers.RotatingFileHandler):
+            # Only if we have a FilderHandler we can rollover and delete older ones
+            logging.debug("Purging log files")
+            handler.doRollover()
+
+            # Keep sabnzbd.log but remove all older ones
+            remove_all(sabnzbd.cfg.log_dir.get_path(), pattern=DEF_LOG_FILE + ".*", keep_folder=True)
+            logging.debug("Finished puring log files")
 
 
 def directory_is_writable_with_file(mydir, myfilename):

@@ -398,6 +398,7 @@ SKIN_TEXT = {
     "explain-admin_dir2": TT("<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"),
     "opt-log_dir": TT("Log Folder"),
     "explain-log_dir": TT("Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"),
+    "purge_log_files": TT("Purge Logs"),
     "opt-nzb_backup_dir": TT(".nzb Backup Folder"),
     "explain-nzb_backup_dir": TT("Location where .nzb files will be stored."),
     "base-folder": TT("Default Base Folder"),
