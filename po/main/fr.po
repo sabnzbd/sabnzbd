@@ -3187,7 +3187,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Purge Logs"
-msgstr ""
+msgstr "Purger les logs"
 
 #: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
