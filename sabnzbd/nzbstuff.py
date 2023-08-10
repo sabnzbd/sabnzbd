@@ -122,7 +122,7 @@ class TryList:
         """Check if all servers have been tried"""
         with TRYLIST_LOCK:
             for server in servers:
-                if not server in self.try_list:
+                if server not in self.try_list:
                     return False
         return True
 
@@ -421,8 +421,7 @@ class NzbFile(TryList):
         """Get next articles to be downloaded"""
         articles = []
         for article in self.articles:
-            article = article.get_article(server, servers)
-            if article:
+            if article := article.get_article(server, servers):
                 articles.append(article)
                 if len(articles) >= fetch_limit:
                     return articles
@@ -809,15 +808,13 @@ class NzbObject(TryList):
 
         if cat is None:
             for metacat in self.meta.get("category", ()):
-                metacat = cat_convert(metacat)
-                if metacat:
+                if metacat := cat_convert(metacat):
                     cat = metacat
                     break
 
         if cat is None:
             for grp in self.groups:
-                cat = cat_convert(grp)
-                if cat:
+                if cat := cat_convert(grp):
                     break
 
         # Pickup backed-up attributes when re-using
@@ -1278,8 +1275,7 @@ class NzbObject(TryList):
         existing_files = globber(wdir, "*.*")
 
         # Substitute renamed files
-        renames = sabnzbd.filesystem.load_data(RENAMES_FILE, self.admin_path, remove=True)
-        if renames:
+        if renames := sabnzbd.filesystem.load_data(RENAMES_FILE, self.admin_path, remove=True):
             for name in renames:
                 if name in existing_files or renames[name] in existing_files:
                     if name in existing_files:
@@ -1667,8 +1663,7 @@ class NzbObject(TryList):
                             else:
                                 break
 
-                        articles = nzf.get_articles(server, servers, fetch_limit)
-                        if articles:
+                        if articles := nzf.get_articles(server, servers, fetch_limit):
                             break
 
         # Remove all files for which admin could not be read

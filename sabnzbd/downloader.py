@@ -766,7 +766,8 @@ class Downloader(Thread):
             sabnzbd.BPSMeter.update(server.id, bytes_received)
             if bytes_received > self.last_max_chunk_size:
                 self.last_max_chunk_size = bytes_received
-            # Update statistics
+            # Update statistics only when we fetched a whole article
+            # The side effect is that we don't count things like article-not-available messages
             if done:
                 article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
             # Check speedlimit

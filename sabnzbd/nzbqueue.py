@@ -727,8 +727,7 @@ class NzbQueue:
                     or (nzo.avg_stamp + propagation_delay) < time.time()
                 ):
                     if not nzo.server_in_try_list(server):
-                        articles = nzo.get_articles(server, servers, fetch_limit)
-                        if articles:
+                        if articles := nzo.get_articles(server, servers, fetch_limit):
                             return articles
                     # Stop after first job that wasn't paused/propagating/etc
                     if self.__top_only:
