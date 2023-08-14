@@ -55,7 +55,7 @@ Specific guides to install from source are available for Windows and macOS:
 Only Python 3.8 and above is supported.
 
 On Linux systems you need to install:
-    par2 unrar unzip python3-setuptools python3-pip
+    par2 unrar python3-setuptools python3-pip
 
 On non-X86 platforms, for which PyPI does not provide all pre-compiled packages,
 you also need to install these development libraries (exact names might differ per platform):

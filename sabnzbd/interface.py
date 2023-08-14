@@ -685,9 +685,7 @@ class ConfigPage:
         conf["cmdline"] = sabnzbd.CMDLINE
         conf["build"] = sabnzbd.__baseline__[:7]
 
-        conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
         conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
@@ -861,7 +859,6 @@ SPECIAL_BOOL_LIST = (
     "helpful_warnings",
     "ampm",
     "enable_unrar",
-    "enable_unzip",
     "enable_7zip",
     "enable_filejoin",
     "enable_tsjoin",

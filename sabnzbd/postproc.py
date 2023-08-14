@@ -766,7 +766,7 @@ def parring(nzo: NzbObject):
         # This can happen even if par2 is present, it is always performed
         # so that in the next section the try_rar_check can be used if no
         # par2 check was performed in the previous part
-        _, _, rars, _, _ = build_filelists(nzo.download_path, check_rar=False)
+        _, rars, _, _ = build_filelists(nzo.download_path, check_rar=False)
         if not rars:
             # Returns number of renamed RAR's
             rar_renamer(nzo)
@@ -786,7 +786,7 @@ def parring(nzo: NzbObject):
             # If no luck with SFV, do RAR-check
             if sfv_check_result is None and cfg.enable_unrar():
                 # Check for RAR's with a sensible extension
-                _, _, rars, _, _ = build_filelists(nzo.download_path, check_rar=False)
+                _, rars, _, _ = build_filelists(nzo.download_path, check_rar=False)
                 if rars:
                     par_error = not try_rar_check(nzo, rars)
 

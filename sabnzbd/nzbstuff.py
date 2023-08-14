@@ -703,9 +703,9 @@ class NzbObject(TryList):
             if self.precheck:
                 self.status = Status.CHECKING
 
-        # Store one line responses for filejoin/par2/unrar/unzip here for history display
+        # Store one line responses for filejoin/par2/unrar here for history display
         self.action_line = ""
-        # Store the results from various filejoin/par2/unrar/unzip stages
+        # Store the results from various filejoin/par2/unrar stages
         self.unpack_info: Dict[str, List[str]] = {}
         # Stores one line containing the last failure
         self.fail_msg = ""

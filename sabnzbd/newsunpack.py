@@ -84,7 +84,6 @@ PAR2_COMMAND = None
 MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
-ZIP_COMMAND = None
 SEVENZIP_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
@@ -140,8 +139,6 @@ def find_programs(curdir: str):
             )
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path("nice")
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path("ionice")
-        if not sabnzbd.newsunpack.ZIP_COMMAND:
-            sabnzbd.newsunpack.ZIP_COMMAND = find_on_path("unzip")
         if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
             sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7za")  # 7za = 7z stand-alone executable
         if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
@@ -254,7 +251,6 @@ def unpacker(
     workdir_complete: str,
     one_folder: bool,
     joinables: List[str] = [],
-    zips: List[str] = [],
     rars: List[str] = [],
     sevens: List[str] = [],
     ts: List[str] = [],
@@ -268,11 +264,9 @@ def unpacker(
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(nzo.download_path)
+        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path)
     else:
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(
-            nzo.download_path, workdir_complete, check_both=nzo.delete
-        )
+        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path, workdir_complete, check_both=nzo.delete)
 
     force_rerun = False
     newfiles = []
@@ -306,18 +300,6 @@ def unpacker(
                 newfiles.extend(newf)
             logging.info("7za finished on %s", nzo.download_path)
 
-    if cfg.enable_unzip():
-        new_zips = [zipfile for zipfile in xzips if zipfile not in zips]
-        if new_zips:
-            logging.info("Unzip starting on %s", nzo.download_path)
-            if SEVENZIP_COMMAND:
-                error, newf = unseven(nzo, workdir_complete, one_folder, new_zips)
-            else:
-                error, newf = unzip(nzo, workdir_complete, one_folder, new_zips)
-            if newf:
-                newfiles.extend(newf)
-            logging.info("Unzip finished on %s", nzo.download_path)
-
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
         if new_ts:
@@ -348,10 +330,10 @@ def unpacker(
     if rerun and nzo.delete and depth == 1 and any(build_filelists(nzo.download_path)):
         force_rerun = True
         # Clear lists to force re-scan of files
-        xjoinables, xzips, xrars, xsevens, xts = ([], [], [], [], [])
+        xjoinables, xrars, xsevens, xts = ([], [], [], [])
 
     if rerun and (cfg.enable_recursive() or new_ts or new_joins or force_rerun):
-        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xzips, xrars, xsevens, xts, depth)
+        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xrars, xsevens, xts, depth)
         if z:
             error = z
         if y:
@@ -859,97 +841,12 @@ def rar_extract_core(
 
 
 ##############################################################################
-# (Un)Zip Functions
-##############################################################################
-def unzip(nzo: NzbObject, workdir_complete: str, one_folder: bool, zips: List[str]):
-    """Unpack multiple sets 'zips' of ZIP files from 'download_path' to 'workdir_complete.
-    When 'delete' is ste, originals will be deleted.
-    """
-
-    try:
-        i = 0
-        unzip_failed = False
-        tms = time.time()
-
-        # For file-bookkeeping
-        orig_dir_content = listdir_full(workdir_complete)
-
-        for _zip in zips:
-            logging.info("Starting extract on zipfile: %s ", _zip)
-            nzo.set_action_line(T("Unpacking"), "%s" % setname_from_path(_zip))
-
-            if workdir_complete and _zip.startswith(nzo.download_path):
-                extraction_path = workdir_complete
-            else:
-                extraction_path = os.path.split(_zip)[0]
-
-            if unzip_core(_zip, extraction_path, one_folder):
-                unzip_failed = True
-            else:
-                i += 1
-
-        msg = T("%s files in %s") % (str(i), format_time_string(time.time() - tms))
-        nzo.set_unpack_info("Unpack", msg)
-
-        # What's new? Use symmetric difference
-        new_files = list(set(orig_dir_content) ^ set(listdir_full(workdir_complete)))
-
-        # Delete the old files if we have to
-        if nzo.delete and not unzip_failed:
-            i = 0
-
-            for _zip in zips:
-                try:
-                    remove_file(_zip)
-                    i += 1
-                except OSError:
-                    logging.warning(T("Deleting %s failed!"), _zip)
-
-                brokenzip = "%s.1" % _zip
-
-                if os.path.exists(brokenzip):
-                    try:
-                        remove_file(brokenzip)
-                        i += 1
-                    except OSError:
-                        logging.warning(T("Deleting %s failed!"), brokenzip)
-
-        return unzip_failed, new_files
-    except:
-        msg = sys.exc_info()[1]
-        nzo.fail_msg = T("Unpacking failed, %s") % msg
-        logging.error(T('Error "%s" while running unzip() on %s'), msg, nzo.final_name)
-        return True, []
-
-
-def unzip_core(zipfile, extraction_path, one_folder):
-    """Unzip single zip set 'zipfile' to 'extraction_path'"""
-    command = ["%s" % ZIP_COMMAND, "-o", "-Pnone", "%s" % clip_path(zipfile), "-d%s" % extraction_path]
-
-    if one_folder or cfg.flat_unpack():
-        command.insert(3, "-j")  # Unpack without folders
-
-    p = build_and_run_command(command)
-    logging.debug("unzip output: \n%s", p.stdout.read())
-    return p.wait()
-
-
-##############################################################################
 # 7Zip Functions
 ##############################################################################
 def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: List[str]):
     """Unpack multiple sets '7z' of 7Zip files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
-    # Before we start, make sure the 7z binary SEVENZIP_COMMAND is defined
-    if not SEVENZIP_COMMAND:
-        msg = T('No 7za binary found, cannot unpack "%s"') % nzo.final_name
-        logging.error(msg)
-        nzo.fail_msg = msg
-        nzo.status = Status.FAILED
-        nzo.set_unpack_info("Unpack", msg)
-        return 1, []
-
     unseven_failed = False
     new_files = []
 
@@ -1134,7 +1031,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             nzo.set_action_line(T("Repair"), T("Starting Repair"))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, _, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
+            joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2cmdline on the other platforms
             if sabnzbd.WIN32:
@@ -1879,7 +1776,6 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
             "par2_command": sabnzbd.newsunpack.PAR2_COMMAND,
             "multipar_command": sabnzbd.newsunpack.MULTIPAR_COMMAND,
             "rar_command": sabnzbd.newsunpack.RAR_COMMAND,
-            "zip_command": sabnzbd.newsunpack.ZIP_COMMAND,
             "7zip_command": sabnzbd.newsunpack.SEVENZIP_COMMAND,
             "version": sabnzbd.__version__,
         }

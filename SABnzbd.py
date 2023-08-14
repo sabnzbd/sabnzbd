@@ -470,18 +470,12 @@ def print_modules():
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
 
-    # If available, we prefer 7zip over unzip
     if sabnzbd.newsunpack.SEVENZIP_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVENZIP_COMMAND)
         if not (sabnzbd.WIN32 or sabnzbd.MACOS):
             logging.info("7za binary version %s", sabnzbd.newsunpack.SEVENZIP_VERSION)
     else:
-        logging.info(T("7za binary... NOT found!"))
-
-        if sabnzbd.newsunpack.ZIP_COMMAND:
-            logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
-        else:
-            logging.info(T("unzip binary... NOT found!"))
+        logging.warning(T("7za binary... NOT found!"))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:

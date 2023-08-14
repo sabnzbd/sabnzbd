@@ -457,22 +457,21 @@ def check_mount(path: str) -> bool:
     return not m
 
 
-RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
+RAR_RE = re.compile(r"\.(part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
 SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
-ZIP_RE = re.compile(r"\.(zip$)", re.I)
-SEVENZIP_RE = re.compile(r"\.7z$", re.I)
+SEVENZIP_RE = re.compile(r"\.(zip|7z)$", re.I)
 SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)
 TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
 
 
 def build_filelists(
     workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
-) -> Tuple[List[str], List[str], List[str], List[str], List[str]]:
+) -> Tuple[List[str], List[str], List[str], List[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
     """
-    sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
+    sevens, joinables, rars, ts, filelist = ([], [], [], [], [])
 
     if workdir_complete:
         filelist.extend(listdir_full(workdir_complete))
@@ -488,14 +487,11 @@ def build_filelists(
 
         # Run through all the checks
         if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
-            # 7zip
+            # 7zip or zip files
             sevens.append(file)
         elif SPLITFILE_RE.search(file) and not file_is_rar:
             # Joinables, optional with RAR check
             joinables.append(file)
-        elif ZIP_RE.search(file):
-            # ZIP files
-            zips.append(file)
         elif RAR_RE.search(file):
             # RAR files
             rars.append(file)
@@ -504,12 +500,11 @@ def build_filelists(
             ts.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
-    logging.debug("build_filelists(): zips: %s", zips)
     logging.debug("build_filelists(): rars: %s", rars)
     logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
 
-    return joinables, zips, rars, sevens, ts
+    return joinables, rars, sevens, ts
 
 
 def safe_fnmatch(f: str, pattern: str) -> bool:
