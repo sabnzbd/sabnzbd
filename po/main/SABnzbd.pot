@@ -52,12 +52,9 @@ msgstr ""
 msgid "unrar binary... NOT found"
 msgstr ""
 
+#. Warning message
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
-msgstr ""
-
-#: SABnzbd.py
-msgid "unzip binary... NOT found!"
 msgstr ""
 
 #. Error message
@@ -833,19 +830,6 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "%s files in %s"
-msgstr ""
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Error \"%s\" while running unzip() on %s"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "No 7za binary found, cannot unpack \"%s\""
 msgstr ""
 
 #: sabnzbd/newsunpack.py
@@ -2422,14 +2406,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "When your IP address changes or SABnzbd is restarted the session will expire."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Unzip"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable 7zip"
 msgstr ""
 
 #: sabnzbd/skintext.py

@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0-develop\n"
+"Project-Id-Version: SABnzbd-4.1.0Alpha1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Norwegian Bokmål (https://app.transifex.com/sabnzbd/teams/111101/nb/)\n"
@@ -58,13 +58,10 @@ msgstr "Din Unrar-versjon er %s, vi anbefaler versjon %s eller høyere. <br />"
 msgid "unrar binary... NOT found"
 msgstr "unrar-binærfil... IKKE funnet!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
 msgstr "7za-binærfil... IKKE funnet!"
-
-#: SABnzbd.py
-msgid "unzip binary... NOT found!"
-msgstr "unzip-binærfil... IKKE funnet!"
 
 #. Error message
 #: SABnzbd.py
@@ -886,19 +883,6 @@ msgstr "Ubrukelig RAR-fil"
 
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "%s files in %s"
-msgstr "%s filer på %s"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Error \"%s\" while running unzip() on %s"
-msgstr "Feil \"%s\" under kjøring av unzip() på %s"
-
-#: sabnzbd/newsunpack.py
-msgid "No 7za binary found, cannot unpack \"%s\""
 msgstr ""
 
 #: sabnzbd/newsunpack.py
@@ -2543,14 +2527,6 @@ msgid ""
 "When your IP address changes or SABnzbd is restarted the session will "
 "expire."
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Enable Unzip"
-msgstr "Aktiver Unzip"
-
-#: sabnzbd/skintext.py
-msgid "Enable 7zip"
-msgstr "Aktiver 7zip"
 
 #: sabnzbd/skintext.py
 msgid "Multicore Par2"
