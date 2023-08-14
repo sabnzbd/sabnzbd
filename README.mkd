@@ -1,32 +1,27 @@
-Release Notes - SABnzbd 4.0.0 Release Candidate 2
+Release Notes - SABnzbd 4.1.0 Alpha 1
 =========================================================
 
-## Changes since 3.7.2
-- In this major update we replaced a core part of Python's SSL handling
-  with our own improved version. This results in large performance increases
-  when downloading from news servers with SSL enabled.
-  In addition, the general connection handling was overhauled, resulting in
-  performance improvements for all news servers.
-  Special thanks to: mnightingale, puzzledsab and animetosho!
-- There are multiple settings that can tweak performance, see:
-  https://github.com/sabnzbd/sabnzbd/discussions/2474
-  We are trying to find the most optimal default settings, so you
-  can help us by letting us know the results on your system!
-- When adding a new news server, SSL is enabled by default.
-- File assembly performance significantly improved by relying on the
-  CRC32 instead of the MD5 to perform QuickCheck of files.
-- Slowdown more gracefully when the cache fills up.
-- Replaced separate Series/Movie/Date Sorting with general Sorter.
-- HTTPS files are included in the `Backup`.
-- Improved `Watched Folder` scanning and processing.
-- Ignore resource fork files created by macOS.
-- `Deobfuscate final filenames` is enabled for new installations.
-- Dropped support for Python 3.7.
+## Changes since 4.0.3
+- Added a dark mode for the Config, Login, and Wizard.
+- Added multi-select to the History.
+- Show the number of items in post-processing when in Tabbed mode.
+- Added option `verify_xff_header` to include `X-Forwarded-For` when
+  validating if connections should be accepted when using a proxy.
+- Added option to purge log files from the Folders Config page.
+- Moved `Server IP address selection` and `On failure, try
+  alternative NZB` to Special settings.
+- Sparse files will be used if available on the system.
+- Special setting `ipv6_servers` changed to on/off.
+- Windows/macOS: Updated 7Zip to 23.01 and UnRar to 6.23
 
-## Bugfixes since 3.7.2
-- Restore applying `History Retention` setting at startup.
-- Windows: Not all invalid characters were removed from filenames.
-- Windows: Firewall rules were not removed by uninstaller.
+## Bugfixes since 4.0.3
+- Series duplicate detection did not detect duplicates.
+- Sorting would append `.1` to some filenames.
+- Not all API-keys were removed during log-sanitization.
+- In certain situations, not all data would be written to disk.
+- QuickCheck could wrongly rename files with identical content.
+
+
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x
