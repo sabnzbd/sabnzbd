@@ -7,7 +7,10 @@ body {
     border-radius: 0 !important;
 }
 
-.btn, .btn:hover, .btn:active, .btn:focus {
+.btn,
+.btn:hover,
+.btn:active,
+.btn:focus {
     box-shadow: 1px 1px 1px rgba(0,0,0,.1) !important;
     background-color: white !important;
 }

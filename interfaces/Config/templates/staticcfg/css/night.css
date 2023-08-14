@@ -3,11 +3,21 @@ body {
     color: #EBEBEB !important;
 }
 
+a,
+a:hover,
+a:focus,
+a:visited,
+#content a,
+#content a:active,
+#content a:visited {
+    color: #63a7e1;
+}
+
 .btn {
     box-shadow: 1px 1px 1px rgba(255, 255, 255, .1) !important;
 }
 
-.btn,
+.btn:not(.btn-danger),
 .btn-default,
 input,
 select,
@@ -51,12 +61,12 @@ textarea,
 .table>tbody>tr:nth-child(odd),
 .table-striped>tbody>tr:nth-child(odd),
 ul.tabs li.active a,
+select[disabled],
 select:hover {
     background-color: #444444 !important;
     color: #EBEBEB !important;
 }
 
-.success,
 .correct {
     border: 2px solid #00cc22 !important;
 }
@@ -91,11 +101,10 @@ small {
 .advanced-buttonSeperator,
 .alt,
 .infoTableSeperator.alt,
-.btn,
+.btn:not(.btn-danger),
 .btn-default.disabled:active,
 .btn-default.disabled:focus,
 .btn-default.disabled:hover,
-.container,
 .form-control[disabled],
 .input-group-addon,
 #inner,
@@ -105,23 +114,61 @@ small {
 .Sorting .explain-sorting,
 .table-striped>tbody>tr:nth-child(even),
 .table>tbody>tr:nth-child(even),
+.tab-pane tr:nth-child(odd),
 textarea,
 ul.tabs a.active,
-.list-group-item,
-input,
+a.list-group-item,
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="date"],
+input[type="number"],
+input[type="password"],
+input[disabled],
+textarea,
 select {
-    background-color: #555555 !important;
-    color: #EBEBEB !important;
+    background-color: #555555;
+    color: #EBEBEB;
 }
 
-.btn:hover,
+.btn:hover:not(.btn-danger),
 .btn-default:hover,
+.tab-content .catTable tr:hover td,
 input:hover,
 textarea:hover,
+.list-group-item:hover,
 select:hover,
-.list-group-item:hover {
-    background-color: #666 !important;
-    color: #EBEBEB !important;
+textarea:hover,
+input[type="date"]:hover,
+input[type="datetime"]:hover,
+input[type="datetime-local"]:hover,
+input[type="email"]:hover,
+input[type="month"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover,
+input[type="search"]:hover,
+input[type="tel"]:hover,
+input[type="text"]:hover,
+input[type="time"]:hover,
+input[type="url"]:hover,
+input[type="week"]:hover,
+textarea:focus,
+select:focus,
+input[type="date"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="email"]:focus,
+input[type="month"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="text"]:focus,
+input[type="time"]:focus,
+input[type="url"]:focus,
+input[type="week"]:focus {
+    background-color: #666;
+    color: #EBEBEB;
 }
 
 .btn-default:focus,
@@ -138,13 +185,24 @@ select:focus {
     background-color: #262626 !important;
 }
 
+.Key tr {
+    border: none;
+}
+
 .table>tbody>tr>td,
 .table>tbody>tr>th,
 .infoTableSeperator,
 .modal-footer,
-.data-row,
+.data-row {
+    border-top: 1px solid #555555;
+}
+
 hr {
     border-top: 1px solid #555555;
+}
+
+.btn-danger {
+    border-color: #7b2b28;
 }
 
 .tab-content .catTable tbody,
@@ -169,22 +227,20 @@ ul.tabs a,
 .btn-default,
 .checkbox label,
 .feed-row td,
-.glyphicon,
 .help-block,
 #content,
 .navbar-default .navbar-nav>li>a,
+.navbar-default .navbar-nav>li>a>.glyphicon,
 .path,
 .Servers .ct-label,
 .time,
+.main-restarting.in,
 #search-dropdown .dropdown-header,
-a,
-a:active,
-a:focus,
-a:hover,
 ul.tabs a {
-    color: #EBEBEB !important;
+    color: #EBEBEB;
 }
 
+.container,
 #content {
     background-color: unset !important;
 }
@@ -198,6 +254,7 @@ ul.tabs a {
     stroke: #EBEBEB;
 }
 
+#inner,
 .colmask {
     background-color: #303030;
 }
@@ -210,6 +267,10 @@ ul.tabs a {
 .modal-body,
 .modal-footer {
     background-color: #727272;
+}
+
+.form-signin .btn.btn-default {
+    color: black;
 }
 
 .rss-icon-svg {
