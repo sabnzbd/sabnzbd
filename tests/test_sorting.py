@@ -449,6 +449,74 @@ class TestSortingFunctions:
             assert (return_path) == base_dir + "\\TEST"
             assert (return_status) is True
 
+    @pytest.mark.parametrize(
+        "sort_string, result",
+        [  # Results defined as None indicate no changes are expected to the sort string
+            ("{foo.bar/blabla.ext}", "{foo.bar}/{blabla.ext}"),
+            ("{foo.bar/blabla.ext", "{foo.bar}/{blabla.ext"),
+            ("foo.bar-blabla.ext}", None),  # No directory separator
+            ("{foo.bar-blabla.ext}", None),
+            ("{foo.bar-blabla.ext", None),
+            ("foo.bar/blabla.ext}", None),  # No {
+            ("foo.bar/blabla}.ext", None),
+            ("foo.{bar/bla}bla.ext", "foo.{bar}/{bla}bla.ext"),
+            ("foo{.bar/blabla.ext", "foo{.bar}/{blabla.ext"),
+            ("{foo.bar/{blabla.ext}", "{foo.bar}/{{blabla.ext}"),  # Mismatch between { and }
+            ("{{{foo.bar/{blabla.ext}", "{{{foo.bar}}}/{{{{blabla.ext}"),
+            ("{foo}}.bar/{blabla.ext}", "{foo}}.bar/{blabla.ext}"),  # Negative depth
+            ("{foo}}}.{bar/{blabla.ext}", "{foo}}}.{bar}/{{blabla.ext}"),
+            ("{foo.bar}/{blabla.ext}", None),  # Formatting already fine
+            ("foo.{{bar}}/{bla{bla}.ext}", None),
+        ],
+    )
+    @pytest.mark.parametrize("platform", ["linux", "macos", "win32"])
+    def test_preserve_lowercasing_pattern(self, sort_string, result, platform):
+        result = result or sort_string
+
+        @set_platform(platform)
+        def _func():
+            # Unix directory separators always yield the same result, regardless of platform
+            assert sorting.preserve_lowercasing_pattern(sort_string) == result
+
+            # Create a version of the sort string with windows directory separators
+            sort_win = sort_string.replace("/", "\\")
+            if platform == "win32":
+                assert sorting.preserve_lowercasing_pattern(sort_win) == result.replace("/", "\\")
+            else:
+                # On unix, the windows sort string is returned unchanged for lack of a directory separator
+                assert sorting.preserve_lowercasing_pattern(sort_win) == sort_win
+
+            # Prepend an extra directory separator to the sort string
+            assert sorting.preserve_lowercasing_pattern("/" + sort_string) == "/" + result
+            assert sorting.preserve_lowercasing_pattern("\\" + sort_string) == "\\" + result
+
+            # Same with a windows flavoured sort string
+            if platform == "win32":
+                assert sorting.preserve_lowercasing_pattern("/" + sort_win) == "/" + result.replace("/", "\\")
+                assert sorting.preserve_lowercasing_pattern("\\" + sort_win) == "\\" + result.replace("/", "\\")
+            else:
+                assert sorting.preserve_lowercasing_pattern("/" + sort_win) == "/" + sort_win
+                assert sorting.preserve_lowercasing_pattern("\\" + sort_win) == "\\" + sort_win
+
+            # Remove all directory separators...
+            sort_no_dirsep = sort_string.replace("/", "")
+            assert sorting.preserve_lowercasing_pattern(sort_no_dirsep) == sort_no_dirsep
+            assert sorting.preserve_lowercasing_pattern(sort_no_dirsep) == sort_no_dirsep
+            # ...except the prepended one
+            assert sorting.preserve_lowercasing_pattern("/" + sort_no_dirsep) == "/" + sort_no_dirsep
+            assert sorting.preserve_lowercasing_pattern("\\" + sort_no_dirsep) == "\\" + sort_no_dirsep
+
+            # Append an extra directory separator to the sort string
+            assert sorting.preserve_lowercasing_pattern(sort_string + "/") == sort_string + "/"
+            if platform == "win32":
+                # With a directory separator at the end, all sort strings are returned unchanged on windows...
+                assert sorting.preserve_lowercasing_pattern(sort_string + "\\") == sort_string + "\\"
+            else:
+                # ...while as far as unix is concerned, nothing changed in term of directory separators
+                assert sorting.preserve_lowercasing_pattern(sort_string + "\\") == result + "\\"
+
+        _func()
+
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestSortingSorter:
@@ -625,6 +693,7 @@ class TestSortingSorter:
             ("%r/{%sn} s%se%e.%ext", True),  # Same with lowercasing; test for issue #2578
             ("%r/%sn.%ext", False),  # No episode marker, with dir in sort string
             ("%r/%sn_%0se%0e", False),  # No extension marker, with dir in sort string
+            ("{%r/%sn} s%se%e.%ext", True),  # Lowercasing across the last directory separator; test for issue #2657
         ],
     )
     @pytest.mark.parametrize("generate_season_pack", [True, False])

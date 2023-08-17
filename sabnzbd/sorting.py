@@ -280,7 +280,7 @@ class Sorter:
                 sort_string = sort_string[:-5]  # Strip '.%ext' off the end; other %ext may remain in sort_string
             if self.is_season_pack:
                 # Create a record of the filename part of the sort_string
-                _, self.season_pack_setname = os.path.split(sort_string)
+                _, self.season_pack_setname = os.path.split(preserve_lowercasing_pattern(sort_string))
                 if not any(
                     substring in self.season_pack_setname
                     for substring in ("%e", "%0e", "%GI<episode>", "%G.I<episode>", "%G_I<episode>")
@@ -932,3 +932,35 @@ def check_for_multiple(files: List[str]) -> Optional[Dict[str, str]]:
     else:
         # Return sequential files with the integer dictionary keys converted to strings
         return {str(key): value for key, value in candidates.items()}
+
+
+def preserve_lowercasing_pattern(sort_string: str) -> str:
+    """Format the sort string so that splitting into directory and filename parts doesn't break lowercasing"""
+    if (
+        not sort_string
+        or not "{" in sort_string
+        or sort_string[-1:] == "/"
+        or (sabnzbd.WIN32 and sort_string[-1:] == "\\")
+    ):
+        # No changes needed
+        return sort_string
+
+    # Locate the last directory separator
+    pos = max(sort_string.rfind(sep) for sep in ("/\\" if sabnzbd.WIN32 else "/"))
+    if pos <= 0:
+        # Directory separator missing or at the very start of the string
+        return sort_string
+
+    # Calculate the depth of the lowercasing pattern at that position
+    depth = 0
+    for char in sort_string[:pos]:
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth = max(0, depth - 1)
+
+    if depth > 0:
+        # Insert lowercasing markers around the directory separator
+        sort_string = sort_string[:pos] + "}" * depth + sort_string[pos] + "{" * depth + sort_string[pos + 1 :]
+
+    return sort_string
