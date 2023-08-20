@@ -142,6 +142,8 @@
                     url: "../../api",
                     data: {mode: 'config', name: 'purge_log_files', output: 'json', apikey: \$('#apikey').val()}
                 })
+            } else {
+                return false;
             }
         })
     })
