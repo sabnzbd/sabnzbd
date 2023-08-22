@@ -3,13 +3,8 @@ body {
     color: #EBEBEB !important;
 }
 
-a,
-a:hover,
-a:focus,
-a:visited,
-#content a,
-#content a:active,
-#content a:visited {
+a:not(.btn),
+#content a:not(.btn) {
     color: #63a7e1;
 }
 
@@ -105,6 +100,8 @@ small {
 .btn-default.disabled:active,
 .btn-default.disabled:focus,
 .btn-default.disabled:hover,
+a.btn.btn-default,
+select.form-control,
 .form-control[disabled],
 .input-group-addon,
 #inner,
@@ -236,7 +233,13 @@ ul.tabs a,
 .time,
 .main-restarting.in,
 #search-dropdown .dropdown-header,
-ul.tabs a {
+ul.tabs a,
+#content a.wizard-advanced-settings,
+#content .quoteBlock a,
+#content a.main-helplink,
+#content .col2 h3 a,
+.text-center a,
+.text-center a:hover {
     color: #EBEBEB;
 }
 

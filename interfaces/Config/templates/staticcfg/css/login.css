@@ -41,7 +41,7 @@ body {
 }
 
 .text-center a:hover {
-    color: black !important;
+    color: black;
 }
 
 .form-signin .alert {
