@@ -235,7 +235,8 @@ def validate_safedir(root, value, default):
 
 def validate_scriptdir_not_appdir(root, value, default):
     """Warn users to not use the Program Files folder for their scripts"""
-    if value and long_path(os.path.join(root, value)).startswith(long_path(sabnzbd.DIR_PROG)):
+    # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
+    if value and long_path(os.path.join(root, value)).startswith(long_path(sabnzbd.DIR_PROG) + os.pathsep):
         # Warn, but do not block
         sabnzbd.misc.helpful_warning(
             T(
