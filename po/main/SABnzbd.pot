@@ -2409,6 +2409,10 @@ msgid "When your IP address changes or SABnzbd is restarted the session will exp
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr ""
 

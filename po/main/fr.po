@@ -2,14 +2,14 @@
 # Copyright 2007-2023 The SABnzbd-Team
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2023
 # Fred L <88com88@gmail.com>, 2023
+# Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.1.0Alpha1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Fred L <88com88@gmail.com>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2610,6 +2610,10 @@ msgid ""
 msgstr ""
 "La session expirera quand votre adresse IP changera ou quand SABnzbd sera "
 "redémarré."
+
+#: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "Activer 7zip"
 
 #: sabnzbd/skintext.py
 msgid "Multicore Par2"

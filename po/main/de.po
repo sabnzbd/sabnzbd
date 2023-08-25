@@ -2614,6 +2614,10 @@ msgstr ""
 "Session ungültig"
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "7zip aktivieren"
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr "Multicore Par2"
 

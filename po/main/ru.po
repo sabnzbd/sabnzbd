@@ -2531,6 +2531,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr ""
 

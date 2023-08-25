@@ -2586,6 +2586,10 @@ msgstr ""
 "verlopen."
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "7Zip toestaan"
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr "Multicore Par2"
 

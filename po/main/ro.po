@@ -2567,6 +2567,10 @@ msgstr ""
 "dumneavoastră va expira."
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "Activează  7zip"
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr ""
 

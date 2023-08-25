@@ -2539,6 +2539,10 @@ msgstr ""
 "Når din IP-adresse ændres eller SABnzbd genstarter, udløber sessionen."
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "Aktivere 7zip"
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr ""
 

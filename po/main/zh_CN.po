@@ -2510,6 +2510,10 @@ msgid ""
 msgstr "每当您的 IP 地址发生变化，或当 SABnzbd 重启，登录会话将自动过期。"
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "启用 7zip"
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr ""
 

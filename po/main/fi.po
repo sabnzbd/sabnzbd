@@ -2535,6 +2535,10 @@ msgstr ""
 "Istunto vanhenee kun IP-osoite vaihtuu tai SABnzbd käynnistetään uudelleen."
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "7zip käytössä"
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr ""
 

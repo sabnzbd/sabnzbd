@@ -2599,6 +2599,10 @@ msgid ""
 msgstr "Cuando tu dirección IP cambie o reinicies SABnzbd, la sesión caduca."
 
 #: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "Habilitar 7zip"
+
+#: sabnzbd/skintext.py
 msgid "Multicore Par2"
 msgstr "Multicore Par2"
 

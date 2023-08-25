@@ -2,14 +2,14 @@
 # Copyright 2007-2023 The SABnzbd-Team
 # 
 # Translators:
-# Pavel C <quoing_transifex@mess.cz>, 2021
 # Safihre <safihre@sabnzbd.org>, 2023
+# Pavel C <quoing_transifex@mess.cz>, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.1.0Alpha1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2023\n"
 "Language-Team: Czech (https://app.transifex.com/sabnzbd/teams/111101/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2496,6 +2496,10 @@ msgid ""
 "When your IP address changes or SABnzbd is restarted the session will "
 "expire."
 msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "Povolit 7zip"
 
 #: sabnzbd/skintext.py
 msgid "Multicore Par2"
