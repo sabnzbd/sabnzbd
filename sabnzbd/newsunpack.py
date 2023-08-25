@@ -291,7 +291,7 @@ def unpacker(
                 newfiles.extend(newf)
             logging.info("Unrar finished on %s", nzo.download_path)
 
-    if cfg.enable_7zip():
+    if cfg.enable_7zip() and SEVENZIP_COMMAND:
         new_sevens = [seven for seven in xsevens if seven not in sevens]
         if new_sevens:
             logging.info("7za starting on %s", nzo.download_path)
