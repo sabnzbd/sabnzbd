@@ -178,11 +178,10 @@ class Assembler(Thread):
 
                 # Write all decoded articles
                 if article.decoded:
-                    data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
-                    if data:
+                    if data := sabnzbd.ArticleCache.load_article(article):
                         written = fout.write(data)
-                        
+
                         # In raw/non-buffered mode fout.write may not write everything requested:
                         # https://docs.python.org/3/library/io.html?highlight=write#io.RawIOBase.write
                         while written < len(data):
