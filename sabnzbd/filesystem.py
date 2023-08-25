@@ -849,9 +849,13 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
     Optionally allows the creation of local directories if they don't exist yet
     Returns new filename (which could be changed due to sanitize_filename) on success"""
-    # Sanitize last part of new name
+    # Sanitize last part of new name, just to be sure
     path, name = os.path.split(new)
-    new = os.path.join(path, sanitize_filename(name))
+    if os.path.isdir(old):
+        name = sanitize_foldername(name)
+    else:
+        name = sanitize_filename(name)
+    new = os.path.join(path, name)
 
     # Skip if nothing changes
     if old == new:
