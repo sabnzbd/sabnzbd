@@ -272,6 +272,10 @@ ul.tabs a,
     background-color: #727272;
 }
 
+#modal_qr .modal-body {
+    background-color: #EBEBEB;
+}
+
 .form-signin .btn.btn-default {
     color: black;
 }
@@ -296,4 +300,21 @@ ul.tabs a,
 
 :-ms-input-placeholder {
     color: #EBEBEB !important;
+}
+
+.tooltip-inner {
+    background-color: #E4E4E4 !important;
+    color: #000 !important;
+}
+/* for login */
+.tooltip.bottom .tooltip-arrow {
+    border-bottom-color: #E4E4E4 !important;
+}
+/* config>general - host-warning */
+.tooltip.top .tooltip-arrow {
+    border-top-color: #E4E4E4 !important;
+}
+
+.Special .glyphicon-asterisk {
+    color: #E4E4E4 !important;
 }
