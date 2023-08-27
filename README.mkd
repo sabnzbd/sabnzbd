@@ -10,18 +10,20 @@ Release Notes - SABnzbd 4.1.0 Alpha 1
 - Added option to purge log files from the Folders Config page.
 - Moved `Server IP address selection` and `On failure, try
   alternative NZB` to Special settings.
-- Sparse files will be used if available on the system.
 - Special setting `ipv6_servers` changed to on/off.
-- Windows/macOS: Updated 7Zip to 23.01 and UnRar to 6.23
+- Only use 7zip to unpack zip files.
+- Windows/macOS: Updated Python to 3.11.5, 7Zip to 23.01 and
+  UnRar to 6.23. All these updates include security fixes.
 
 ## Bugfixes since 4.0.3
 - Series duplicate detection did not detect duplicates.
 - Sorting would append `.1` to some filenames.
 - Not all API-keys were removed during log-sanitization.
 - In certain situations, not all data would be written to disk.
+- Folder names could be sanitized too eagerly.
+- Some articles would fail to decode.
 - QuickCheck could wrongly rename files with identical content.
-
-
+- Warning about `Scripts Folder` location was triggered incorrectly.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x
