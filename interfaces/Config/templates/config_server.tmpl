@@ -77,7 +77,7 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="connections">$T('srv-connections')</label>
-                        <input type="number" name="connections" id="connections" min="1" max="1000" value="8" required />
+                        <input type="number" name="connections" id="connections" min="1" max="500" value="8" required />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="priority">$T('srv-priority')</label>
@@ -208,7 +208,7 @@
                         </div>
                         <div class="field-pair">
                             <label class="config" for="connections$cur">$T('srv-connections')</label>
-                            <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="1000" required />
+                            <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="500" required />
                         </div>
                         <div class="field-pair">
                             <label class="config" for="priority$cur">$T('srv-priority')</label>

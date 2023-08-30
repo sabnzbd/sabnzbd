@@ -437,7 +437,7 @@ class ConfigServer:
         self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
         self.username = OptionStr(name, "username", add=False)
         self.password = OptionPassword(name, "password", add=False)
-        self.connections = OptionNumber(name, "connections", 1, 0, 1000, add=False)
+        self.connections = OptionNumber(name, "connections", 1, 0, 500, add=False)
         self.ssl = OptionBool(name, "ssl", False, add=False)
         # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.ssl_verify = OptionNumber(name, "ssl_verify", 2, add=False)
