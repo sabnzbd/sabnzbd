@@ -289,9 +289,8 @@ def sanitize_foldername(name: str) -> str:
     # And finally, make sure it doesn't end in a dot or a space
     # This is invalid on Windows and can cause trouble for some other tools
     if name != "." and name != "..":
-        # This would be perfect for := operator in Python 3.8+
-        while len(name.strip().rstrip(".")) < len(name):
-            name = name.strip().rstrip(".")
+        while len(name) > len(name := name.strip().rstrip(".")):
+            continue
 
     # Just to be sure we don't return nothing
     if not name:
