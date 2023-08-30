@@ -25,11 +25,6 @@ Release Notes - SABnzbd 4.1.0 Beta 1
 - QuickCheck could wrongly rename files with identical content.
 - Warning about `Scripts Folder` location was triggered incorrectly.
 
-## Upgrade notices
-- The download statistics file `totals10.sab` is updated in 3.2.x
-  version. If you downgrade to 3.1.x or lower, detailed download
-  statistics will be lost.
-
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
 
