@@ -70,14 +70,14 @@
     <script type="text/javascript" src="${root}staticcfg/js/script.js?v=$version"></script>
     <script type="text/javascript">
         // Set default functions for the autocomplete everywhere
-        \$.extend(\$.fn.typeahead.defaults, {
+        jQuery.extend(jQuery.fn.typeahead.defaults, {
             source: function (query, process) {
                 // If there's no separator, it must be a relative path
                 if(query.split(folderSeperator).length < 2 && this.\$element.data('initialdir')) {
                     query  = this.\$element.data('initialdir') + folderSeperator + query;
                 }
                 // Get info from the API
-                return \$.get(folderBrowseUrl + '&compact=1&term=' + query, function (data) {
+                return jQuery.get(folderBrowseUrl + '&compact=1&term=' + query, function (data) {
                     return process(data);
                 });
             },

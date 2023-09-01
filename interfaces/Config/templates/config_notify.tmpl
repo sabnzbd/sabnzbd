@@ -367,24 +367,24 @@
 </div><!-- /colmask -->
 
 <script type="text/javascript">
-\$(document).ready(function(){
+jQuery(document).ready(function(){
     // Expand on enable
-    \$('.col2 input[name$="enable"]').change(function() {
+    jQuery('.col2 input[name$="enable"]').change(function() {
         if(this.checked) {
-            \$(this).parents('.section').find('.col1').show()
-            \$(this).parents('.col2').find('.col2-cats').show()
+            jQuery(this).parents('.section').find('.col1').show()
+            jQuery(this).parents('.col2').find('.col2-cats').show()
         } else {
-            \$(this).parents('.section').find('.col1').hide()
-            \$(this).parents('.col2').find('.col2-cats').hide()
+            jQuery(this).parents('.section').find('.col1').hide()
+            jQuery(this).parents('.col2').find('.col2-cats').hide()
         }
-        \$('form').submit()
+        jQuery('form').submit()
         addRowColor()
     })
-    \$('#email_endjob').change(function() {
-        if(\$(this).val() > 0) {
-            \$(this).parents('.section').find('.col2-cats').show()
+    jQuery('#email_endjob').change(function() {
+        if(jQuery(this).val() > 0) {
+            jQuery(this).parents('.section').find('.col2-cats').show()
         } else {
-            \$(this).parents('.section').find('.col2-cats').hide()
+            jQuery(this).parents('.section').find('.col2-cats').hide()
         }
     })
 
@@ -393,27 +393,27 @@
     **/
     function testNotification(buttonObj) {
         // Confirm?
-        if(\$(buttonObj).attr('rel')) {
-            if(!confirm(\$(buttonObj).attr('rel'))) return false;
+        if(jQuery(buttonObj).attr('rel')) {
+            if(!confirm(jQuery(buttonObj).attr('rel'))) return false;
         }
         // Disable button and get the data
-        \$(buttonObj).attr("disabled", "disabled")
-        \$(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
+        jQuery(buttonObj).attr("disabled", "disabled")
+        jQuery(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
         var data = { mode: buttonObj.id, apikey: '$apikey', output: 'json' };
-        \$(buttonObj).parents('.section').extractFormDataTo(data);
+        jQuery(buttonObj).parents('.section').extractFormDataTo(data);
 
         // Clear up the box
-        resultBox = \$(buttonObj).parents('.section').find('.result-box .alert');
+        resultBox = jQuery(buttonObj).parents('.section').find('.result-box .alert');
 
         // Get the request
-        \$.ajax({
+        jQuery.ajax({
             type: "GET",
             url: "../../api",
             data: data
         }).then(function(data) {
             // Remove disabled and make the box
-            \$(buttonObj).removeAttr("disabled")
-            \$(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
+            jQuery(buttonObj).removeAttr("disabled")
+            jQuery(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
             resultBox.removeClass('alert-success alert-danger').show()
             if(data.status) {
                 resultBox.addClass('alert-success')
@@ -426,7 +426,7 @@
             }
         })
     }
-    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_osd, #test_nscript').click(function () {
+    jQuery('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_osd, #test_nscript').click(function () {
         testNotification(this)
     })
 });

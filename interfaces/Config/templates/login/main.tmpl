@@ -50,14 +50,14 @@
         </div>
         <script type="text/javascript">
             // Tooltip
-            \$('[data-toggle="tooltip"]').tooltip()
+            jQuery('[data-toggle="tooltip"]').tooltip()
             // Try-catch in case somebody disabled localstorage
             try {
                 // Set what was done previously
-                \$('input[type="checkbox"]').prop('checked', localStorage.getItem("remember_me") === 'true')
+                jQuery('input[type="checkbox"]').prop('checked', localStorage.getItem("remember_me") === 'true')
                 // Store if we change something
-                \$('input[type="checkbox"]').on('change', function() {
-                    localStorage.setItem("remember_me", \$(this).is(':checked'));
+                jQuery('input[type="checkbox"]').on('change', function() {
+                    localStorage.setItem("remember_me", jQuery(this).is(':checked'));
                 })
             } catch(err) { }
         </script>

@@ -133,14 +133,14 @@
 <script type="text/javascript">
     jQuery(document).ready(function() {
         // Add autocomplete and file-browser
-        \$('.col1 input[name$="_dir"]').typeahead().fileBrowser();
+        jQuery('.col1 input[name$="_dir"]').typeahead().fileBrowser();
 
-        \$('#purge_log_files').click(function () {
+        jQuery('#purge_log_files').click(function () {
             if ( confirm("$T('confirm')") ) {
                 $.ajax({
                     type: "POST",
                     url: "../../api",
-                    data: {mode: 'config', name: 'purge_log_files', output: 'json', apikey: \$('#apikey').val()}
+                    data: {mode: 'config', name: 'purge_log_files', output: 'json', apikey: jQuery('#apikey').val()}
                 })
             } else {
                 return false;

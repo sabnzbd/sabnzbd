@@ -402,53 +402,53 @@
 
     // Put preset values into form fields
     function set_preset(sort_nr, sort_string, multipart_label, sample_data) {
-        \$('#field_sort_string_' + sort_nr).val(sort_string);
-        \$('#multipart_label_' + sort_nr).val(multipart_label);
-        \$('#preview_name_' + sort_nr).val(sample_data);
+        jQuery('#field_sort_string_' + sort_nr).val(sort_string);
+        jQuery('#multipart_label_' + sort_nr).val(multipart_label);
+        jQuery('#preview_name_' + sort_nr).val(sample_data);
         new_preview(sort_nr);
     }
 
     // Handle preview
     function new_preview(sort_nr) {
-        var preview_sort_string = \$('#field_sort_string_' + sort_nr).val();
+        var preview_sort_string = jQuery('#field_sort_string_' + sort_nr).val();
         if(preview_sort_string.length > 2) {
             typewatch(function () {
-                \$.ajax({
+                jQuery.ajax({
                     type: "GET",
                     url: "../../api",
                     data: {
                         mode: 'eval_sort',
-                        job_name: \$('#preview_name_' + sort_nr).val(),
+                        job_name: jQuery('#preview_name_' + sort_nr).val(),
                         sort_string: preview_sort_string,
-                        multipart_label: \$('#multipart_label_' + sort_nr).val(),
+                        multipart_label: jQuery('#multipart_label_' + sort_nr).val(),
                         apikey: '$apikey',
                         output: 'json'
                     },
                     success: function(data) {
-                        \$('#preview_result_' + sort_nr).html(data.result);
+                        jQuery('#preview_result_' + sort_nr).html(data.result);
                     },
                     error: function(data) {
-                        \$('#preview_result_' + sort_nr).html('$T('button-failed')');
+                        jQuery('#preview_result_' + sort_nr).html('$T('button-failed')');
                     }
                 });
             }, 500);
         }
     }
 
-    \$(document).ready(function() {
-        \$('.delSorter').click(function() {
-            var theForm = \$(this).closest("form");
+    jQuery(document).ready(function() {
+        jQuery('.delSorter').click(function() {
+            var theForm = jQuery(this).closest("form");
             theForm.attr("action", "delete").submit();
         });
 
-        \$('.addSorter').click(function(){
-            \$('#sorter_0').toggle();
+        jQuery('.addSorter').click(function(){
+            jQuery('#sorter_0').toggle();
             // Add coloring
             addRowColor()
         });
 
-        \$('.showSorter').click(function () {
-            var theParent = \$(this).closest("form")
+        jQuery('.showSorter').click(function () {
+            var theParent = jQuery(this).closest("form")
             var theSwitch = theParent.find("button.showSorter")
             theParent.find(".col1").toggle();
             if (theSwitch.text().indexOf("$T('showDetails')") > 0) {
@@ -462,7 +462,7 @@
 
         // Make the configured sorters sortable
         var hExtra = 8;
-        \$(".sortables").sortable({
+        jQuery(".sortables").sortable({
             items: ".sorter",
             placeholder: "sorter-placeholder",
             axis: "y",
@@ -470,35 +470,35 @@
             start: function(event, ui){
                 hPlaceholder = ui.item.outerHeight();
                 ui.placeholder.height(hPlaceholder + hExtra);
-                \$('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
+                jQuery('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
             },
             cancel: "input,textarea,button,select,option,.pattern-table",
             change: function(event, ui) {
                 ui.placeholder.stop().height(0).animate({
                     height: ui.item.outerHeight() + hExtra
                 }, 250);
-                hPlaceholderAnim = parseInt(\$(".sorter-placeholder-anim").attr("data-height"));
-                \$(".sorter-placeholder-anim").stop().height(hPlaceholderAnim + hExtra).animate({
+                hPlaceholderAnim = parseInt(jQuery(".sorter-placeholder-anim").attr("data-height"));
+                jQuery(".sorter-placeholder-anim").stop().height(hPlaceholderAnim + hExtra).animate({
                     height: 0
                 }, 250, function() {
-                    \$(this).remove();
+                    jQuery(this).remove();
                     hPlaceholder = ui.item.outerHeight();
-                    \$('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
+                    jQuery('<div class="sorter-placeholder-anim" data-height="' + hPlaceholder + '"></div>').insertAfter(ui.placeholder);
                 });
             },
             stop: function(event, ui) {
-                \$(".sorter-placeholder-anim").remove();
+                jQuery(".sorter-placeholder-anim").remove();
             },
             // Save the config after re-ordering
             update: function(event, ui) {
-                \$('.Sorting form.sorting-row').each(function(index, elm) {
+                jQuery('.Sorting form.sorting-row').each(function(index, elm) {
                     // Update order of all elements
                     if(index != elm.order.value) {
                         elm.order.value = index
                         // Submit changed order
                         var data = {}
-                        \$(elm).extractFormDataTo(data);
-                        \$.ajax({
+                        jQuery(elm).extractFormDataTo(data);
+                        jQuery.ajax({
                             type: "GET",
                             url: window.location.pathname + 'save_sorter',
                             data: data,
@@ -510,9 +510,9 @@
         })
 
         // On|Off switch for a configured sorter
-        \$('.toggleSorterCheckbox').click(function(){
-            var whichSorter = \$(this).attr("rel");
-            \$.ajax({
+        jQuery('.toggleSorterCheckbox').click(function(){
+            var whichSorter = jQuery(this).attr("rel");
+            jQuery.ajax({
                 type: "POST",
                 url: "toggle_sorter",
                 data: {sorter: whichSorter, apikey: "$apikey" }
@@ -525,14 +525,14 @@
 
         <!--#for $cur, $slot in enumerate($slotinfo)#-->
         // Preview the result of the sort string against a sample jobname
-        \$('#field_sort_string_$cur, #field_sort_type_$cur, #multipart_label_$cur, #preview_name_$cur').bind("keyup focus", function() {
+        jQuery('#field_sort_string_$cur, #field_sort_type_$cur, #multipart_label_$cur, #preview_name_$cur').bind("keyup focus", function() {
             new_preview($cur);
         });
         new_preview($cur);
         <!--#end for#-->
 
-        \$('.clearBtn').click(function(){
-            \$(this).prev().val('').focus();
+        jQuery('.clearBtn').click(function(){
+            jQuery(this).prev().val('').focus();
         });
     });
 </script>
