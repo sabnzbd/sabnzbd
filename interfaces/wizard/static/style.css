@@ -171,10 +171,10 @@ label {
 * {
     border-radius: 0 !important;
 }
-#content a,
-#content a:hover,
-#content a:active,
-#content a:visited,
+a,
+a:hover,
+a:active,
+a:visited,
 #serverResponse {
     color: #555;
 }

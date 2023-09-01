@@ -3,8 +3,7 @@ body {
     color: #EBEBEB !important;
 }
 
-a:not(.btn),
-#content a:not(.btn) {
+a:not(.btn) {
     color: #63a7e1;
 }
 
@@ -115,6 +114,7 @@ select.form-control,
 textarea,
 ul.tabs a.active,
 a.list-group-item,
+.dropdown-menu>li>a,
 input[type="text"],
 input[type="email"],
 input[type="url"],
@@ -133,7 +133,7 @@ select {
 .tab-content .catTable tr:hover td,
 input:hover,
 textarea:hover,
-.list-group-item:hover,
+a.list-group-item:hover,
 select:hover,
 textarea:hover,
 input[type="date"]:hover,
@@ -234,10 +234,10 @@ ul.tabs a,
 .main-restarting.in,
 #search-dropdown .dropdown-header,
 ul.tabs a,
-#content a.wizard-advanced-settings,
-#content .quoteBlock a,
-#content a.main-helplink,
-#content .col2 h3 a,
+a.wizard-advanced-settings,
+.quoteBlock a,
+a.main-helplink,
+col2 h3 a,
 .text-center a,
 .text-center a:hover {
     color: #EBEBEB;
