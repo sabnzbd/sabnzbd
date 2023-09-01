@@ -610,7 +610,7 @@
         // Show text-ad if there is space
         if((\$("body").width() - \$("#content").width())/2 > (\$('.Servers .server-frame iframe').width() + 40)) {
             // Do not show if dismissed previously
-            if(localStorage.getItem("server-frame-hide") === null) {
+            if(localStorage.getItem("server-frame-hide-$version") === null) {
                 // Let the page on the server tell us if we need to show
                 function receiveMessage(event) {
                     // Check origin of message for security reasons
@@ -618,13 +618,14 @@
                         if(event.data == 'show_server') {
                             \$('.Servers .server-frame').show()
                             \$('.Servers .server-frame a').click(function () {
-                                localStorage.setItem("server-frame-hide", "hide")
+                                localStorage.setItem("server-frame-hide-$version", "hide")
                                 \$('.Servers .server-frame').hide()
                             })
                         }
                         if(event.data == 'hide_server') {
-                            // Don't load anymore
-                            localStorage.setItem("server-frame-hide", "hide")
+                            // Hide and don't load anymore untill the next release
+                            \$('.Servers .server-frame').hide()
+                            localStorage.setItem("server-frame-hide-$version", "hide")
                         }
                     }
                 }
