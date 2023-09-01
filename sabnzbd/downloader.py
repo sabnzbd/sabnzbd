@@ -30,6 +30,7 @@ import ssl
 from typing import List, Dict, Optional, Union, Set
 import concurrent
 from concurrent.futures import ThreadPoolExecutor, Future
+from random import sample
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -688,6 +689,9 @@ class Downloader(Thread):
 
                 # Use select to find sockets ready for reading/writing
                 if readkeys := self.read_fds.keys():
+                    if sabnzbd.WIN32 and len(readkeys) > 512:
+                        # Avoid exceeding winsock's FD_SETSIZE when calling select, see issue #2667
+                        readkeys = sample(readkeys, 512)
                     read, _, _ = select.select(readkeys, (), (), 1.0)
                 else:
                     read = []
