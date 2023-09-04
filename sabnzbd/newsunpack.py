@@ -117,10 +117,12 @@ def find_programs(curdir: str):
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
             # 64 bit versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/x64/par2.exe")
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j64.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/x64/UnRAR.exe")
         else:
             # 32 bit versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
         # We just use the 32 bit version
@@ -1034,7 +1036,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2cmdline on the other platforms
-            if sabnzbd.WIN32:
+            if cfg.enable_multipar() and sabnzbd.WIN32:
                 finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
                 finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)

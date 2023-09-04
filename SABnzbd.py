@@ -448,7 +448,8 @@ def print_modules():
 
     if sabnzbd.WIN32 and sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
-    elif sabnzbd.newsunpack.PAR2_COMMAND:
+
+    if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
         logging.error(T("par2 binary... NOT found!"))

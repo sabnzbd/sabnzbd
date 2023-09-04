@@ -241,7 +241,8 @@ if __name__ == "__main__":
             run_external_command([sys.executable, "tools/make_mo.py", "nsis"])
 
             # Remove 32bit external executables
-            delete_files_glob("dist/SABnzbd/win/par2/multipar/par2j.exe")
+            delete_files_glob("dist/SABnzbd/win/par2/par2.exe")
+            delete_files_glob("dist/SABnzbd/win/multipar/par2j.exe")
             delete_files_glob("dist/SABnzbd/win/unrar/UnRAR.exe")
 
             # Run NSIS to build installer
