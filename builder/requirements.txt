@@ -1,7 +1,7 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-pyinstaller==5.13.0
-pyinstaller-hooks-contrib==2023.7
+pyinstaller==5.13.2
+pyinstaller-hooks-contrib==2023.8
 altgraph==0.17.3
 wrapt==1.15.0
 setuptools==68.1.2
