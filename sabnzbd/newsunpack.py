@@ -139,10 +139,26 @@ def find_programs(curdir: str):
             )
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path("nice")
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path("ionice")
+
+        # p7zip is the old Linux port of 7-Zip, now unmaintained.
+        # Therefore the official filenames are different for Linux:
+        #
+        # 7zz  (7-Zip) - full version of 7-Zip that supports all formats.
+        # 7zzs (7-Zip) - full version of 7-Zip that supports all formats (static linked).
+        #
+        # 7z   (p7zip) - older linux port that requires 7z.so shared library, supports all formats via 7z.so.
+        # 7za  (p7zip) - older linux port that supports some main formats:
+        #                  7z, xz, lzma, zip, bzip2, gzip, tar, cab, ppmd and split.
+
         if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
-            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7za")  # 7za = 7z stand-alone executable
-        if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
-            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7z")
+            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path(
+                (
+                    "7zz",
+                    "7zzs",
+                    "7za",
+                    "7z",
+                )
+            )
 
     if not (sabnzbd.WIN32 or sabnzbd.MACOS):
         # Run check on rar version
