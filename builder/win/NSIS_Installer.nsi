@@ -66,6 +66,9 @@ Unicode true
   RequestExecutionLevel admin
   FileErrorText "If you have no admin rights, try to install into a user directory."
 
+;------------------------------------------------------------------
+; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
+  SetShellVarContext all
 
 ;------------------------------------------------------------------
 ;Variables
