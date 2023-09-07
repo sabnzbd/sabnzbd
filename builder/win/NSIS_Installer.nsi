@@ -67,10 +67,6 @@ Unicode true
   FileErrorText "If you have no admin rights, try to install into a user directory."
 
 ;------------------------------------------------------------------
-; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
-  SetShellVarContext all
-
-;------------------------------------------------------------------
 ;Variables
   Var MUI_TEMP
   Var STARTMENU_FOLDER
@@ -209,6 +205,10 @@ Section "SABnzbd" SecDummy
   ; write out uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
+  ;------------------------------------------------------------------
+  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
+    SetShellVarContext all
+
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     ;Create shortcuts
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
@@ -220,6 +220,10 @@ Section "SABnzbd" SecDummy
 SectionEnd ; end of default section
 
 Section $(MsgIcon) desktop
+  ;------------------------------------------------------------------
+  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
+    SetShellVarContext all
+
   CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
 SectionEnd ; end of desktop icon section
 
@@ -229,6 +233,10 @@ Section $(MsgAssoc) assoc
 SectionEnd ; end of file association section
 
 Section /o $(MsgRunAtStart) startup
+  ;------------------------------------------------------------------
+  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
+    SetShellVarContext all
+
   CreateShortCut "$SMPROGRAMS\Startup\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe" "-b0"
 SectionEnd ;
 
@@ -249,6 +257,10 @@ Function .onInit
       ExecShell "open" "https://sabnzbd.org/downloads"
       Abort
   ${EndIf}
+
+  ;------------------------------------------------------------------
+  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
+    SetShellVarContext all
 
   ;------------------------------------------------------------------
   ; Change settings based on if SAB was already installed
@@ -326,6 +338,10 @@ FunctionEnd
 ; This is instead of us trying to run SAB from the installer
 ;
 Function .onInstSuccess
+  ;------------------------------------------------------------------
+  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
+    SetShellVarContext all
+
   ExecShell "open" "$SMPROGRAMS\$STARTMENU_FOLDER"
 FunctionEnd
 
@@ -349,6 +365,10 @@ Section "un.$(MsgDelProgram)" Uninstall
   ; Remove firewall entries
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
+
+  ;------------------------------------------------------------------
+  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
+    SetShellVarContext all
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
 
