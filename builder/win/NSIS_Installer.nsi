@@ -32,7 +32,7 @@ Unicode true
 
 ;------------------------------------------------------------------
 ;
-; Marco for removing existing and the current installation
+; Macro for removing existing and the current installation
 ; It shared by the installer and the uninstaller.
 ;
 !define RemovePrev "!insertmacro RemovePrev"
@@ -266,7 +266,7 @@ Function .onInit
   ; Change settings based on if SAB was already installed
   ReadRegStr $PREV_INST_DIR HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" ""
   StrCmp $PREV_INST_DIR "" noPrevInstall
-    ; We want to use the user's costom dir if he used one
+    ; We want to use the user's custom dir if he used one
     StrCmp $PREV_INST_DIR "$PROGRAMFILES\SABnzbd" noSpecialDir
       StrCmp $PREV_INST_DIR "$PROGRAMFILES64\SABnzbd" noSpecialDir
         ; Set what the user had before
