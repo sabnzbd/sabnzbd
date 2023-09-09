@@ -168,6 +168,7 @@ Unicode true
 Section "SABnzbd" SecDummy
 
   SetOutPath "$INSTDIR"
+  SetShellVarContext all
 
   ;------------------------------------------------------------------
   ; Make sure old versions are gone (reg-key already read in onInt)
@@ -205,10 +206,6 @@ Section "SABnzbd" SecDummy
   ; write out uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-  ;------------------------------------------------------------------
-  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
-    SetShellVarContext all
-
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     ;Create shortcuts
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
@@ -220,10 +217,6 @@ Section "SABnzbd" SecDummy
 SectionEnd ; end of default section
 
 Section $(MsgIcon) desktop
-  ;------------------------------------------------------------------
-  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
-    SetShellVarContext all
-
   CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
 SectionEnd ; end of desktop icon section
 
@@ -233,10 +226,6 @@ Section $(MsgAssoc) assoc
 SectionEnd ; end of file association section
 
 Section /o $(MsgRunAtStart) startup
-  ;------------------------------------------------------------------
-  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
-    SetShellVarContext all
-
   CreateShortCut "$SMPROGRAMS\Startup\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe" "-b0"
 SectionEnd ;
 
@@ -259,10 +248,6 @@ Function .onInit
   ${EndIf}
 
   ;------------------------------------------------------------------
-  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
-    SetShellVarContext all
-
-  ;------------------------------------------------------------------
   ; Change settings based on if SAB was already installed
   ReadRegStr $PREV_INST_DIR HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" ""
   StrCmp $PREV_INST_DIR "" noPrevInstall
@@ -275,10 +260,18 @@ Function .onInit
 
     ;------------------------------------------------------------------
     ; Check what the user has currently set for install options
+    SetShellVarContext current
+    IfFileExists "$SMPROGRAMS\Startup\SABnzbd.lnk" 0 endCheckStartup
+      SectionSetFlags ${startup} 1
+    SetShellVarContext all
     IfFileExists "$SMPROGRAMS\Startup\SABnzbd.lnk" 0 endCheckStartup
       SectionSetFlags ${startup} 1
     endCheckStartup:
 
+    SetShellVarContext current
+    IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
+      SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
+    SetShellVarContext all
     IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
       SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
     endCheckDesktop:
@@ -338,10 +331,6 @@ FunctionEnd
 ; This is instead of us trying to run SAB from the installer
 ;
 Function .onInstSuccess
-  ;------------------------------------------------------------------
-  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
-    SetShellVarContext all
-
   ExecShell "open" "$SMPROGRAMS\$STARTMENU_FOLDER"
 FunctionEnd
 
@@ -366,9 +355,21 @@ Section "un.$(MsgDelProgram)" Uninstall
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
 
-  ;------------------------------------------------------------------
-  ; Makes sure shell folders (e.g. $SMPROGRAMS and $DESKTOP) use the "all users" location
-    SetShellVarContext all
+  SetShellVarContext all
+
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
+  RMDir  "$SMPROGRAMS\$MUI_TEMP"
+
+  Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
+
+  Delete "$DESKTOP\SABnzbd.lnk"
+
+  SetShellVarContext current
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
 
