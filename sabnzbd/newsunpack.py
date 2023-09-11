@@ -117,10 +117,12 @@ def find_programs(curdir: str):
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
             # 64 bit versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/x64/par2.exe")
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j64.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/x64/UnRAR.exe")
         else:
             # 32 bit versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
         # We just use the 32 bit version
@@ -1050,7 +1052,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2cmdline on the other platforms
-            if sabnzbd.WIN32:
+            if cfg.enable_multipar() and sabnzbd.WIN32:
                 finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
                 finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
@@ -1123,10 +1125,13 @@ def par2cmdline_verify(
     nzo.status = Status.VERIFYING
     start = time.time()
 
+    # Long-path notation isn't supported by par2cmdline
+    if sabnzbd.WIN32:
+        parfile = clip_path(parfile)
+
     # Build command and add extra options
     command = [str(PAR2_COMMAND), "r", parfile]
-    options = cfg.par_option().strip().split()
-    if options:
+    if options := cfg.par_option().strip().split():
         for option in options:
             command.insert(2, option)
 
@@ -1139,7 +1144,7 @@ def par2cmdline_verify(
         # Normal case, everything is named after set
         wildcard = setname + "*"
 
-    if sabnzbd.MACOS:
+    if sabnzbd.MACOS or sabnzbd.WIN32:
         command.append(os.path.join(parfolder, wildcard))
     else:
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
@@ -1148,16 +1153,14 @@ def par2cmdline_verify(
 
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
-    # Only if we're not doing multicore
-    if not sabnzbd.MACOS:
-        par2text = run_command([command[0], "-h"])
-        if "No data skipping" in par2text:
-            logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
-            command.insert(2, "-N")
-        if "Set the basepath" in par2text:
-            logging.info("Detected par2cmdline version that needs basepath, adding -B<path> parameter")
-            command.insert(2, "-B")
-            command.insert(3, parfolder)
+    par2text = run_command([command[0], "-h"])
+    if "No data skipping" in par2text:
+        logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
+        command.insert(2, "-N")
+    if "Set the basepath" in par2text:
+        logging.info("Detected par2cmdline version that needs basepath, adding -B<path> parameter")
+        command.insert(2, "-B")
+        command.insert(3, parfolder)
 
     # Run the external command
     p = build_and_run_command(command)

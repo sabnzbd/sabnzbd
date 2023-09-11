@@ -858,6 +858,7 @@ SPECIAL_BOOL_LIST = (
     "api_warnings",
     "helpful_warnings",
     "ampm",
+    "enable_multipar",
     "enable_unrar",
     "enable_7zip",
     "enable_filejoin",
