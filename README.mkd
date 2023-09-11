@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.1.0 Beta 1
+Release Notes - SABnzbd 4.1.0 Release Candidate 1
 =========================================================
 
 ## Changes since 4.0.3
@@ -12,6 +12,12 @@ Release Notes - SABnzbd 4.1.0 Beta 1
   alternative NZB` to Special settings.
 - Special setting `ipv6_servers` changed to on/off.
 - Only use 7zip to unpack zip files.
+- Windows: Added option `enable_multipar` to use par2cmdline-turbo
+  instead of Multipar for verification and repair. It is faster,
+  but on Windows it can fail on special (UTF8) filenames.
+- macOS: Switched to par2cmdline-turbo for verification and repair.
+- Linux: Detect more recent versions of 7zip.
+- Windows: Use `All Users` locations during installtion of shortcuts.
 - Windows/macOS: Updated Python to 3.11.5, 7Zip to 23.01 and
   UnRar to 6.23. All these updates include security fixes.
 
