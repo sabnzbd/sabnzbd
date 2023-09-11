@@ -32,7 +32,7 @@ Unicode true
 
 ;------------------------------------------------------------------
 ;
-; Marco for removing existing and the current installation
+; Macro for removing existing and the current installation
 ; It shared by the installer and the uninstaller.
 ;
 !define RemovePrev "!insertmacro RemovePrev"
@@ -65,7 +65,6 @@ Unicode true
 ; Vista/Win7 redirects $SMPROGRAMS to all users without this
   RequestExecutionLevel admin
   FileErrorText "If you have no admin rights, try to install into a user directory."
-
 
 ;------------------------------------------------------------------
 ;Variables
@@ -169,6 +168,7 @@ Unicode true
 Section "SABnzbd" SecDummy
 
   SetOutPath "$INSTDIR"
+  SetShellVarContext all
 
   ;------------------------------------------------------------------
   ; Make sure old versions are gone (reg-key already read in onInt)
@@ -251,7 +251,7 @@ Function .onInit
   ; Change settings based on if SAB was already installed
   ReadRegStr $PREV_INST_DIR HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" ""
   StrCmp $PREV_INST_DIR "" noPrevInstall
-    ; We want to use the user's costom dir if he used one
+    ; We want to use the user's custom dir if he used one
     StrCmp $PREV_INST_DIR "$PROGRAMFILES\SABnzbd" noSpecialDir
       StrCmp $PREV_INST_DIR "$PROGRAMFILES64\SABnzbd" noSpecialDir
         ; Set what the user had before
@@ -260,10 +260,18 @@ Function .onInit
 
     ;------------------------------------------------------------------
     ; Check what the user has currently set for install options
+    SetShellVarContext current
+    IfFileExists "$SMPROGRAMS\Startup\SABnzbd.lnk" 0 endCheckStartup
+      SectionSetFlags ${startup} 1
+    SetShellVarContext all
     IfFileExists "$SMPROGRAMS\Startup\SABnzbd.lnk" 0 endCheckStartup
       SectionSetFlags ${startup} 1
     endCheckStartup:
 
+    SetShellVarContext current
+    IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
+      SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
+    SetShellVarContext all
     IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
       SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
     endCheckDesktop:
@@ -346,6 +354,22 @@ Section "un.$(MsgDelProgram)" Uninstall
   ; Remove firewall entries
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
+
+  SetShellVarContext all
+
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
+  RMDir  "$SMPROGRAMS\$MUI_TEMP"
+
+  Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
+
+  Delete "$DESKTOP\SABnzbd.lnk"
+
+  SetShellVarContext current
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
 
