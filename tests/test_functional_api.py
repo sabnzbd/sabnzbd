@@ -350,12 +350,11 @@ class TestOtherApi(ApiTestFunctions):
     @pytest.mark.parametrize("set_watched_dir", [False, True])
     def test_api_watched_now(self, set_watched_dir):
         value = SAB_CACHE_DIR if set_watched_dir else ""
-        assert (
-            self._get_api_json(
-                mode="set_config", extra_args={"section": "misc", "keyword": "dirscan_dir", "value": value}
-            )["config"]["misc"]["dirscan_dir"]
-            == value
-        )
+        api_output = self._get_api_json(
+            mode="set_config", extra_args={"section": "misc", "keyword": "dirscan_dir", "value": value}
+        )["config"]["misc"]["dirscan_dir"]
+        print("Debug: ", api_output)
+        assert api_output == value
 
         # Returns True even when no watched dir is set...
         assert self._get_api_json("watched_now")["status"] is True  # is set_watched_dir
