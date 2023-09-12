@@ -157,10 +157,13 @@ def test_sab_binary(binary_path: str):
 
         # Print logs for verification
         with open(os.path.join(config_dir, "logs", "sabnzbd.log"), "r") as log_file:
-            print(log_file.read())
+            # Wait after printing so the output is nicely displayed in case of problems
+            print(log_text := log_file.read())
+            time.sleep(5)
 
-        # So we have time to print the file before the directory is removed
-        time.sleep(5)
+            # Make sure no extra errors/warnings were reported
+            if "ERROR" in log_text or "WARNING" in log_text:
+                raise RuntimeError("Warning or error reported during execution")
 
 
 if __name__ == "__main__":
