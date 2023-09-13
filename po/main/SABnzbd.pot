@@ -2413,15 +2413,11 @@ msgid "Enable 7zip"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Multicore Par2"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server's identity using its certificates is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates are required."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Speed up repairs by installing multicore Par2, it is available for many platforms."
+msgid "Speed up repairs by installing par2cmdline-turbo, it is available for many platforms."
 msgstr ""
 
 #: sabnzbd/skintext.py

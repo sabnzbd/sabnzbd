@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0Alpha1\n"
+"Project-Id-Version: SABnzbd-4.1.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Russian (https://app.transifex.com/sabnzbd/teams/111101/ru/)\n"
@@ -2535,10 +2535,6 @@ msgid "Enable 7zip"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Multicore Par2"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid ""
 "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will"
 " be encrypted, however, validating a server's identity using its "
@@ -2548,7 +2544,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Speed up repairs by installing multicore Par2, it is available for many "
+"Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
 
