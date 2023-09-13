@@ -686,7 +686,7 @@ class ConfigPage:
         conf["build"] = sabnzbd.__baseline__[:7]
 
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
+        conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
         conf["ssl_version"] = ssl.OPENSSL_VERSION

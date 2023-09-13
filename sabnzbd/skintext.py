@@ -252,11 +252,10 @@ SKIN_TEXT = {
     "confirmWithoutSavingPrompt": TT("Changes have not been saved, and will be lost."),
     "explain-sessionExpire": TT("When your IP address changes or SABnzbd is restarted the session will expire."),
     "opt-enable_7zip": TT("Enable 7zip"),
-    "opt-multicore-par2": TT("Multicore Par2"),
     "explain-nosslcontext": TT(
         "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server's identity using its certificates is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates are required."
     ),
-    "explain-getpar2mt": TT("Speed up repairs by installing multicore Par2, it is available for many platforms."),
+    "explain-getpar2turbo": TT("Speed up repairs by installing par2cmdline-turbo, it is available for many platforms."),
     "version": TT("Version"),
     "uptime": TT("Uptime"),
     "backup": TT("Backup"),  #: Indicates that server is Backup server in Status page

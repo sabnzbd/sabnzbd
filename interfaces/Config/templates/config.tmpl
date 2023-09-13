@@ -43,13 +43,13 @@
                 <!--#end if#-->
                 <!--#if not $windows and not $macos#-->
                 <tr>
-                    <th scope="row">$T('opt-multicore-par2')</th>
+                    <th scope="row">Par2cmdline-turbo:</th>
                     <td>
-                        <!--#if $have_mt_par2#-->
+                        <!--#if $have_par2_turbo#-->
                         <span class="glyphicon glyphicon-ok"></span>
                         <!--#else#-->
-                        <span class="label label-warning">$T('notAvailable')</span> $T('explain-getpar2mt')
-                        <a href="https://sabnzbd.org/wiki/installation/multicore-par2" target="_blank">https://sabnzbd.org/wiki/installation/multicore-par2</a>
+                        <span class="label label-warning">$T('notAvailable')</span> $T('explain-getpar2turbo')<br>
+                        <a href="https://sabnzbd.org/wiki/installation/par2cmdline-turbo" target="_blank">https://sabnzbd.org/wiki/installation/par2cmdline-turbo</a>
                         <!--#end if#-->
                     </td>
                 </tr>

@@ -87,7 +87,7 @@ NICE_COMMAND = None
 SEVENZIP_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
-PAR2_MT = True
+PAR2_TURBO = True
 RAR_VERSION = 0
 SEVENZIP_VERSION = ""
 
@@ -172,7 +172,7 @@ def find_programs(curdir: str):
         sabnzbd.newsunpack.SEVENZIP_VERSION = sevenzip_check(sabnzbd.newsunpack.SEVENZIP_COMMAND)
 
         # Run check on par2-multicore
-        sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
+        sabnzbd.newsunpack.PAR2_TURBO = par2_turbo_check(sabnzbd.newsunpack.PAR2_COMMAND)
 
     # Set the path for rarfile
     rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
@@ -1983,12 +1983,10 @@ def sevenzip_check(sevenzip: str) -> str:
     return ""
 
 
-def par2_mt_check(par2_path: str) -> bool:
-    """Detect if we have multicore par2 variants"""
+def par2_turbo_check(par2_path: str) -> bool:
+    """Detect if we have the turbo par2 variant"""
     try:
-        par2_version = run_command([par2_path, "-h"])
-        # Look for a threads option
-        if "-t<" in par2_version:
+        if "par2cmdline-turbo" in run_command([par2_path, "-h"]):
             return True
     except:
         pass
