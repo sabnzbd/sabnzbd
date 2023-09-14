@@ -1986,7 +1986,7 @@ def sevenzip_check(sevenzip: str) -> str:
 def par2_turbo_check(par2_path: str) -> bool:
     """Detect if we have the turbo par2 variant"""
     try:
-        if "par2cmdline-turbo" in run_command([par2_path, "-h"]):
+        if "par2cmdline-turbo" in run_command([par2_path, "-V"]):
             return True
     except:
         pass
