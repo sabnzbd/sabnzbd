@@ -608,7 +608,7 @@
         });
 
         // Show text-ad if there is space
-        if((jQuery("body").width() - jQuery("#content").width())/2 > (jQuery('.Servers .server-frame iframe').width() + 40)) {
+        if((jQuery("body").width() - jQuery("#content").width())/2 > (jQuery('.Servers .server-frame').width() + 40)) {
             // Do not show if dismissed previously
             if(localStorage.getItem("server-frame-hide-$version") === null) {
                 // Let the page on the server tell us if we need to show
