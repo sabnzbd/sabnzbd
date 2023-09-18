@@ -48,6 +48,3 @@
   You can make SABnzbd wait for a mount of the "temporary download folder" by setting
   Config->Special->wait_for_dfolder to 1.
   SABnzbd will appear to hang until the drive is mounted.
-
-- If the queue is paused but one or more jobs have the Force priority, SABnzbd might still
-  download some data from other jobs in the queue if active servers have unused connections.

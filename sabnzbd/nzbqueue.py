@@ -719,7 +719,9 @@ class NzbQueue:
         propagation_delay = float(cfg.propagation_delay() * 60)
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
-            if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == FORCE_PRIORITY:
+            if (
+                nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.Downloader.paused
+            ) or nzo.priority == FORCE_PRIORITY:
                 # Check if past propagation delay, or forced
                 if (
                     not propagation_delay
