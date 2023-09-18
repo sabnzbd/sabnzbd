@@ -4,7 +4,7 @@ pyinstaller==5.13.2
 pyinstaller-hooks-contrib==2023.8
 altgraph==0.17.3
 wrapt==1.15.0
-setuptools==68.2.0
+setuptools==68.2.2
 certifi
 
 # orjson does not support 32bit Windows, exclude it based on Python-version
