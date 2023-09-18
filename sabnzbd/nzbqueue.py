@@ -718,22 +718,19 @@ class NzbQueue:
         # Pre-calculate propagation delay
         propagation_delay = float(cfg.propagation_delay() * 60)
         for nzo in self.__nzo_list:
-            # Not when queue paused and not a forced item
+            # Not when queue paused, individually paused, or when waiting for propagation
+            # Force items will always download
             if (
-                nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.Downloader.paused
+                not sabnzbd.Downloader.paused
+                and nzo.status not in (Status.PAUSED, Status.GRABBING)
+                and (not propagation_delay or (nzo.avg_stamp + propagation_delay) < time.time())
             ) or nzo.priority == FORCE_PRIORITY:
-                # Check if past propagation delay, or forced
-                if (
-                    not propagation_delay
-                    or nzo.priority == FORCE_PRIORITY
-                    or (nzo.avg_stamp + propagation_delay) < time.time()
-                ):
-                    if not nzo.server_in_try_list(server):
-                        if articles := nzo.get_articles(server, servers, fetch_limit):
-                            return articles
-                    # Stop after first job that wasn't paused/propagating/etc
-                    if self.__top_only:
-                        return []
+                if not nzo.server_in_try_list(server):
+                    if articles := nzo.get_articles(server, servers, fetch_limit):
+                        return articles
+                # Stop after first job that wasn't paused/propagating/etc
+                if self.__top_only:
+                    return []
         return []
 
     def register_article(self, article: Article, success: bool = True):
