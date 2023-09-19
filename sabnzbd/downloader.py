@@ -540,7 +540,8 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[bytearray] = None):
+    @staticmethod
+    def decode(article, raw_data: Optional[bytearray] = None):
         """Decode article"""
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
