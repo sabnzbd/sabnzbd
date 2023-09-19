@@ -1,4 +1,4 @@
-name: "Close stale issues"
+name: "Close and lock old issues"
 on:
   schedule:
     - cron: "30 1 * * *"
@@ -20,3 +20,14 @@ jobs:
             recent activity. It will be closed if no further activity occurs. Thank you
             for your contributions.
           exempt-issue-labels: "Feature request, Work in progress, Bug"
+
+  lock:
+    name: "Lock old issues"
+    if: github.repository_owner == 'sabnzbd'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@v4
+        with:
+          log-output: true
+          issue-inactive-days: 60
+          pr-inactive-days: 60
