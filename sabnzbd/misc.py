@@ -137,25 +137,18 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
         d = "d"
         h = "h"
         m = "m"
+
     try:
-        now = datetime.datetime.now()
-        # age = str(now - date).split(".")[0] #old calc_age
-
-        # time difference
-        dage = now - date
-        seconds = dage.seconds
-        # only one value should be returned
-        # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
-        if dage.days:
-            age = "%d%s" % (dage.days, d)
-        elif int(seconds / 3600):
-            age = "%d%s" % (seconds / 3600, h)
+        # Return time difference in human-readable format
+        date_diff = datetime.datetime.now() - date
+        if date_diff.days:
+            return "%d%s" % (date_diff.days, d)
+        elif int(date_diff.seconds / 3600):
+            return "%d%s" % (date_diff.seconds / 3600, h)
         else:
-            age = "%d%s" % (seconds / 60, m)
+            return "%d%s" % (date_diff.seconds / 60, m)
     except:
-        age = "-"
-
-    return age
+        return "-"
 
 
 def safe_lower(txt: Any) -> str:
