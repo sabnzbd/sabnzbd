@@ -26,7 +26,7 @@ import time
 import logging
 import ssl
 import sabctools
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import sabnzbd
 import sabnzbd.cfg
@@ -322,7 +322,7 @@ class NNTP:
                 self.nw.server.ssl_context.verify_mode = ssl.CERT_NONE
 
         # Create socket and store fileno of the socket
-        self.sock = socket.socket(af, socktype, proto)
+        self.sock: Union[socket.socket, ssl.SSLSocket] = socket.socket(af, socktype, proto)
         self.fileno: int = self.sock.fileno()
 
         # Open the connection in a separate thread due to avoid blocking

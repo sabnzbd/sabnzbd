@@ -142,9 +142,9 @@ class Server:
         self.username: Optional[str] = username
         self.password: Optional[str] = password
 
-        self.busy_threads: List[NewsWrapper] = []
+        self.busy_threads: Set[NewsWrapper] = set()
         self.next_busy_threads_check: float = 0
-        self.idle_threads: List[NewsWrapper] = []
+        self.idle_threads: Set[NewsWrapper] = set()
         self.next_article_search: float = 0
         self.active: bool = True
         self.bad_cons: int = 0
@@ -161,7 +161,7 @@ class Server:
         if threads:
             # Initialize threads
             for i in range(threads):
-                self.idle_threads.append(NewsWrapper(self, i + 1))
+                self.idle_threads.add(NewsWrapper(self, i + 1))
 
             # Tell the BPSMeter about this server
             sabnzbd.BPSMeter.init_server_stats(self.id)
@@ -173,10 +173,12 @@ class Server:
         In case of problems: return the host name itself
         """
         # Check if already a successful ongoing connection
-        if self.busy_threads and self.busy_threads[0].nntp:
-            # Re-use that IP
-            logging.debug("%s: Re-using address %s", self.host, self.busy_threads[0].nntp.host)
-            return self.busy_threads[0].nntp.host
+        if self.busy_threads:
+            active_thread = next(iter(self.busy_threads))
+            if active_thread.nntp:
+                # Re-use that IP
+                logging.debug("%s: Re-using address %s", self.host, active_thread.nntp.host)
+                return active_thread.nntp.host
 
         # Determine IP
         ip = None
@@ -203,7 +205,7 @@ class Server:
         for nw in self.idle_threads:
             sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset(send_quit=True)
-        self.idle_threads = []
+        self.idle_threads = set()
 
     @synchronized(DOWNLOADER_LOCK)
     def get_article(self):
@@ -534,7 +536,7 @@ class Downloader(Thread):
             self.plan_server(server, _PENALTY_TIMEOUT)
 
             # Remove all connections to server
-            for nw in server.idle_threads + server.busy_threads:
+            for nw in server.idle_threads | server.busy_threads:
                 self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, retry_article=False, send_quit=False)
 
             # Make sure server address resolution is refreshed
@@ -589,7 +591,7 @@ class Downloader(Thread):
 
                     if server.next_busy_threads_check < now:
                         server.next_busy_threads_check = now + _SERVER_CHECK_DELAY
-                        for nw in server.busy_threads[:]:
+                        for nw in server.busy_threads.copy():
                             if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                                 if nw.nntp and nw.nntp.error_msg:
                                     # Already showed error
@@ -621,7 +623,7 @@ class Downloader(Thread):
                     ):
                         continue
 
-                    for nw in server.idle_threads[:]:
+                    for nw in server.idle_threads.copy():
                         if nw.timeout:
                             if now < nw.timeout:
                                 continue
@@ -640,7 +642,7 @@ class Downloader(Thread):
                             break
 
                         server.idle_threads.remove(nw)
-                        server.busy_threads.append(nw)
+                        server.busy_threads.add(nw)
 
                         if nw.connected:
                             self.__request_article(nw)
@@ -659,7 +661,7 @@ class Downloader(Thread):
 
                 if self.force_disconnect or self.shutdown:
                     for server in self.servers:
-                        for nw in server.idle_threads + server.busy_threads:
+                        for nw in server.idle_threads | server.busy_threads:
                             # Send goodbye if we have open socket
                             if nw.nntp:
                                 self.__reset_nw(
@@ -850,7 +852,7 @@ class Downloader(Thread):
 
             with DOWNLOADER_LOCK:
                 server.busy_threads.remove(nw)
-                server.idle_threads.append(nw)
+                server.idle_threads.add(nw)
                 self.remove_socket(nw)
 
     @synchronized(DOWNLOADER_LOCK)
@@ -954,10 +956,8 @@ class Downloader(Thread):
             logging.debug("Thread %s@%s: %s", nw.thrdnum, nw.server.host, reset_msg)
 
         # Make sure this NewsWrapper is in the idle threads
-        if nw in nw.server.busy_threads:
-            nw.server.busy_threads.remove(nw)
-        if nw not in nw.server.idle_threads:
-            nw.server.idle_threads.append(nw)
+        nw.server.busy_threads.discard(nw)
+        nw.server.idle_threads.add(nw)
 
         # Make sure it is not in the readable sockets
         self.remove_socket(nw)

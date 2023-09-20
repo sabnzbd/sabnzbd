@@ -1289,9 +1289,9 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["servers"] = []
     # Servers-list could be modified during iteration, so we need a copy
     for server in sabnzbd.Downloader.servers[:]:
-        connected = sum(nw.connected for nw in server.idle_threads[:])
+        connected = sum(nw.connected for nw in server.idle_threads.copy())
         serverconnections = []
-        for nw in server.busy_threads[:]:
+        for nw in server.busy_threads.copy():
             if nw.connected:
                 connected += 1
             if nw.article:
