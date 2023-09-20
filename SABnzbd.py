@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import yappi
 
+yappi.set_clock_type("cpu")
 import sys
 
 # Trick to show a better message on older Python
@@ -1536,7 +1538,7 @@ def main():
                 "SABnzbd %s" % sabnzbd.__version__,
                 ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
             )
-
+    yappi.start(builtins=True)
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
@@ -1611,6 +1613,9 @@ def main():
             else:
                 # CherryPy has special logic to include interpreter options such as "-OO"
                 cherrypy.engine._do_execv()
+
+    stats = yappi.get_func_stats()
+    stats.save("../test.pstat", type="pstat")
 
     # Send our final goodbyes!
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")
