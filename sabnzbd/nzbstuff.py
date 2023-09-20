@@ -686,7 +686,7 @@ class NzbObject(TryList):
 
         self.first_articles: List[Article] = []
         self.first_articles_count = 0
-        self.saved_articles: List[Article] = []
+        self.saved_articles: Set[Article] = set()
 
         self.nzo_id: Optional[str] = None
 
@@ -1256,17 +1256,6 @@ class NzbObject(TryList):
 
         # Check if there are any files left here, so the check is inside the NZO_LOCK
         return articles_left, file_done, not self.files
-
-    def add_saved_article(self, article: Article):
-        self.saved_articles.append(article)
-
-    def remove_saved_article(self, article: Article):
-        try:
-            self.saved_articles.remove(article)
-        except ValueError:
-            # Due to racing conditions, it could already be removed
-            logging.debug("Failed to remove %s from saved articles, probably already deleted", article)
-            pass
 
     def check_existing_files(self, wdir: str):
         """Check if downloaded files already exits, for these set NZF to complete"""
@@ -2044,6 +2033,9 @@ class NzbObject(TryList):
             self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
         if self.par2packs is None:
             self.par2packs = {}
+        if not isinstance(self.saved_articles, set):
+            # Converted from list to set
+            self.saved_articles = set(self.saved_articles)
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)

@@ -91,7 +91,7 @@ class ArticleCache:
             return
 
         # Register article for bookkeeping in case the job is deleted
-        nzo.add_saved_article(article)
+        nzo.saved_articles.add(article)
 
         if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
             # Write the first-fetched articles to temporary file unless downloading
@@ -133,7 +133,7 @@ class ArticleCache:
             data = sabnzbd.filesystem.load_data(
                 article.art_id, nzo.admin_path, remove=True, do_pickle=False, silent=True
             )
-        nzo.remove_saved_article(article)
+        nzo.saved_articles.discard(article)
         return data
 
     def flush_articles(self):
