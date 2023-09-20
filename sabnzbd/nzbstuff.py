@@ -26,7 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO
+from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO, Set
 
 # SABnzbd modules
 import sabnzbd
@@ -111,7 +111,8 @@ class TryList:
     __slots__ = ("try_list",)
 
     def __init__(self):
-        self.try_list: List[Server] = []
+        # Sets are faster than lists
+        self.try_list: Set[Server] = set()
 
     def server_in_try_list(self, server: Server) -> bool:
         """Return whether specified server has been tried"""
@@ -129,26 +130,26 @@ class TryList:
     def add_to_try_list(self, server: Server):
         """Register server as having been tried already"""
         with TRYLIST_LOCK:
-            if server not in self.try_list:
-                self.try_list.append(server)
+            # Sets cannot contain duplicate items
+            self.try_list.add(server)
 
     def remove_from_try_list(self, server: Server):
         """Remove server from list of tried servers"""
         with TRYLIST_LOCK:
-            if server in self.try_list:
-                self.try_list.remove(server)
+            # Discard does not require the item to be present
+            self.try_list.discard(server)
 
     def reset_try_list(self):
         """Clean the list"""
         with TRYLIST_LOCK:
-            self.try_list = []
+            self.try_list = set()
 
     def __getstate__(self):
         """Save the servers"""
-        return [server.id for server in self.try_list]
+        return set(server.id for server in self.try_list)
 
     def __setstate__(self, servers_ids: List[str]):
-        self.try_list = []
+        self.try_list = set()
         for server in sabnzbd.Downloader.servers:
             if server.id in servers_ids:
                 self.add_to_try_list(server)
