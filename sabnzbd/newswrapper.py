@@ -231,10 +231,6 @@ class NewsWrapper:
         self.data = new_buffer
         self.data_view = memoryview(self.data)
 
-    def get_data_buffer(self) -> bytearray:
-        """Get a copy of the data buffer in a new bytes object"""
-        return bytearray(self.data_view[: self.data_position])
-
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
         """Destroy and restart"""
         if self.nntp:

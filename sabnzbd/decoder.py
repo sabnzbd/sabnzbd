@@ -63,7 +63,7 @@ class BadUu(Exception):
     pass
 
 
-def decode(article: Article, raw_data: bytearray):
+def decode(article: Article, data_view: memoryview):
     decoded_data = None
     nzo = article.nzf.nzo
     art_id = article.article
@@ -81,7 +81,7 @@ def decode(article: Article, raw_data: bytearray):
         if article.nzf.type == "uu":
             decoded_data = decode_uu(article, raw_data)
         else:
-            decoded_data = decode_yenc(article, raw_data)
+            decoded_data = decode_yenc(article, data_view)
 
         article_success = True
 
@@ -112,7 +112,7 @@ def decode(article: Article, raw_data: bytearray):
 
     except (BadYenc, ValueError):
         # Handles precheck and badly formed articles
-        if nzo.precheck and raw_data and raw_data.startswith(b"223 "):
+        if nzo.precheck and raw_data and data_view.startswith(b"223 "):
             # STAT was used, so we only get a status code
             article_success = True
         else:
@@ -170,9 +170,16 @@ def decode(article: Article, raw_data: bytearray):
     sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, data: bytearray) -> bytearray:
+def decode_yenc(article: Article, data_view: memoryview) -> bytearray:
     # Let SABCTools do all the heavy lifting
-    yenc_filename, article.file_size, article.data_begin, article.data_size, crc_correct = sabctools.yenc_decode(data)
+    (
+        decoded_data,
+        yenc_filename,
+        article.file_size,
+        article.data_begin,
+        article.data_size,
+        crc_correct,
+    ) = sabctools.yenc_decode(data_view)
 
     nzf = article.nzf
     # Assume it is yenc
@@ -182,7 +189,7 @@ def decode_yenc(article: Article, data: bytearray) -> bytearray:
     if not nzf.filename_checked and yenc_filename:
         # Set the md5-of-16k if this is the first article
         if article.lowest_partnum:
-            nzf.md5of16k = hashlib.md5(data[:16384]).digest()
+            nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
 
         # Try the rename, even if it's not the first article
         # For example when the first article was missing
@@ -191,11 +198,11 @@ def decode_yenc(article: Article, data: bytearray) -> bytearray:
     # CRC check
     if crc_correct is None:
         logging.info("CRC Error in %s", article.article)
-        raise BadData(data)
+        raise BadData(decoded_data)
 
     article.crc32 = crc_correct
 
-    return data
+    return decoded_data
 
 
 def decode_uu(article: Article, raw_data: bytearray) -> bytes:

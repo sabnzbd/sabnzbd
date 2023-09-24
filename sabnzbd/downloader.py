@@ -543,20 +543,20 @@ class Downloader(Thread):
             server.info = None
 
     @staticmethod
-    def decode(article, raw_data: Optional[bytearray] = None):
+    def decode(article, data_view: Optional[memoryview] = None):
         """Decode article"""
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
         # Handle broken articles directly
-        if not raw_data:
+        if not data_view:
             if not article.search_new_server():
                 sabnzbd.NzbQueue.register_article(article, success=False)
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
             return
 
         # Decode and send to article cache
-        sabnzbd.decoder.decode(article, raw_data)
+        sabnzbd.decoder.decode(article, data_view)
 
     def run(self):
         # Verify SSL certificate checking
@@ -830,7 +830,7 @@ class Downloader(Thread):
             server.errormsg = server.warning = ""
 
             # Decode
-            self.decode(article, nw.get_data_buffer())
+            self.decode(article, nw.data_view[: nw.data_position])
 
             if sabnzbd.LOG_ALL:
                 logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
