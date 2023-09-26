@@ -30,6 +30,7 @@
   <url type="faq">https://sabnzbd.org/wiki/faq</url>
   <url type="contact">https://sabnzbd.org/live-chat.html</url>
   <releases>
+    <release version="4.1.0" date="2023-09-26" type="stable"/>
     <release version="4.0.3" date="2023-06-16" type="stable"/>
     <release version="4.0.2" date="2023-06-09" type="stable"/>
     <release version="4.0.1" date="2023-05-01" type="stable"/>
