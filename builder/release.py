@@ -239,19 +239,24 @@ if RELEASE_THIS and gh_token:
         # Use the header in the readme as title
         title = readme_lines[0]
         release_notes_text = "".join(readme_lines[2:])
+        print("Posting release notes to Reddit")
 
         # Only stable releases to r/usenet
         if not PRERELEASE:
-            print("Posting release notes to Reddit: r/usenet")
-            submission = subreddit_usenet.submit(title, selftext=release_notes_text)
+            # Get correct flair-id (required by r/usenet)
+            for flair in subreddit_usenet.flair.link_templates.user_selectable():
+                if flair["flair_text"] == "News":
+                    print("Posting to r/usenet")
+                    submission = subreddit_usenet.submit(
+                        title, selftext=release_notes_text, flair_id=flair["flair_template_id"]
+                    )
+                    break
+            else:
+                raise ValueError("Could not locate flair_text for posting to r/usenet")
 
-            # Cross-post to r/SABnzbd
-            print("Cross-posting release notes to Reddit: r/sabnzbd")
-            submission.crosspost(subreddit_sabnzbd)
-        else:
-            # Post always to r/SABnzbd
-            print("Posting release notes to Reddit: r/sabnzbd")
-            subreddit_sabnzbd.submit(title, selftext=release_notes_text)
+        # Post always to r/SABnzbd
+        print("Posting to r/sabnzbd")
+        subreddit_sabnzbd.submit(title, selftext=release_notes_text)
 
     else:
         print("Missing REDDIT_TOKEN")
