@@ -10,7 +10,15 @@
     var serverBandwithData = {}
     var serverArticleTries = {}
     var serverArticleFailed = {}
+
+    // Keep track of all used hostnames
+    var hostnames = ""
 </script>
+
+<div class="server-frame">
+    <a href="#">&times;</a>
+    <iframe></iframe>
+</div>
 
 <div class="colmask">
     <div class="padding alt section">
@@ -69,7 +77,7 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="connections">$T('srv-connections')</label>
-                        <input type="number" name="connections" id="connections" min="1" max="1000" value="8" required />
+                        <input type="number" name="connections" id="connections" min="1" max="500" value="8" required />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="priority">$T('srv-priority')</label>
@@ -200,7 +208,7 @@
                         </div>
                         <div class="field-pair">
                             <label class="config" for="connections$cur">$T('srv-connections')</label>
-                            <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="1000" required />
+                            <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="500" required />
                         </div>
                         <div class="field-pair">
                             <label class="config" for="priority$cur">$T('srv-priority')</label>
@@ -301,6 +309,9 @@
                             serverBandwithData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
                             serverArticleTries[${cur}] = <!--#echo json.dumps($server['amounts'][5])#-->
                             serverArticleFailed[${cur}] = <!--#echo json.dumps($server['amounts'][6])#-->
+                            <!--#if int($server['enable']) != 0#-->
+                            hostnames += ",$server['host']"
+                            <!--#end if#-->
                         </script>
                     <!--#end if#-->
                 </div>
@@ -338,8 +349,8 @@
 
     function showCharts() {
         // Get the constants
-        const startDate = new Date(\$('#chart-start').val())
-        const endDate = new Date(\$('#chart-end').val())
+        const startDate = new Date(jQuery('#chart-start').val())
+        const endDate = new Date(jQuery('#chart-end').val())
         const oneDay = 24 * 60 * 60 * 1000
         const nrDays = Math.round((endDate-startDate)/oneDay)
 
@@ -350,8 +361,8 @@
         var maxBandwith = 0
 
         // For each chart
-        \$('.server-chart').each(function(j, elemn) {
-            const server_id = \$(elemn).data('serverid')
+        jQuery('.server-chart').each(function(j, elemn) {
+            const server_id = jQuery(elemn).data('serverid')
             var totalBandwithThisRange = 0
             var totalArticlesTriedThisRange = 0
             var totalArticlesFailedThisRange = 0
@@ -394,7 +405,7 @@
             }
 
             // Update the text value
-            \$('#server-bandwith-value-' + server_id).text(filesize(totalBandwithThisRange, {round: 1}))
+            jQuery('#server-bandwith-value-' + server_id).text(filesize(totalBandwithThisRange, {round: 1}))
 
             // Calculate article success ratio, if available
             var articleRatio = Math.round(100 * (1 - totalArticlesFailedThisRange/totalArticlesTriedThisRange))
@@ -402,17 +413,17 @@
             // If values were missing
             if(!isNaN(articleRatio)) {
                 // Use filesize to convert to unit-display
-                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', filesize(totalArticlesTriedThisRange, {unix: true, round: 0, spacer: "", base: 1})))
+                jQuery('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', filesize(totalArticlesTriedThisRange, {unix: true, round: 0, spacer: "", base: 1})))
                 // If we have a low value, we link them to the website
-                if(articleRatio > 60) \$('#server-article-not-complete-' + server_id).hide()
+                if(articleRatio > 60) jQuery('#server-article-not-complete-' + server_id).hide()
             } else {
-                \$('#server-article-value-' + server_id).text('$T("notAvailable")')
-                \$('#server-article-not-complete-' + server_id).hide()
+                jQuery('#server-article-value-' + server_id).text('$T("notAvailable")')
+                jQuery('#server-article-not-complete-' + server_id).hide()
             }
 
             // Save bandwidth data in a very ugly way, but we need to do this
             // so we can calculate the maximum Y-axis for all graphs
-            \$(elemn).data("chart-data", data)
+            jQuery(elemn).data("chart-data", data)
         })
 
         // Set the maximum
@@ -420,11 +431,11 @@
         chartOptions.axisY.low = 0
 
         // Update all the axis with the largest value and draw the graph
-        \$('.server-chart').each(function(j, elemn) {
-            const server_id = \$(elemn).data('serverid')
+        jQuery('.server-chart').each(function(j, elemn) {
+            const server_id = jQuery(elemn).data('serverid')
 
             // Show the chart
-            chart = new Chartist.Line('#server-chart-'+server_id, \$(elemn).data("chart-data"), chartOptions)
+            chart = new Chartist.Line('#server-chart-'+server_id, jQuery(elemn).data("chart-data"), chartOptions)
             chart.on('created', function(context) {
                 // Make sure to add this as the first child so it's at the bottom
                 context.svg.elem('rect', {
@@ -436,15 +447,15 @@
                     stroke: '#b9b9b9',
                     'stroke-width': '1px'
                 }, '', context.svg, true)
-                \$('#server-chart-'+server_id+' .ct-label.ct-vertical').each(function(index, elmn) {
+                jQuery('#server-chart-'+server_id+' .ct-label.ct-vertical').each(function(index, elmn) {
                     elmn.innerHTML = filesize(elmn.innerHTML, {round: 1}).replace(' ','')
                 })
             });
         })
 
         // Limit input to sensible values
-        \$('#chart-start').attr("max", \$('#chart-end').val())
-        \$('#chart-end').attr("min", \$('#chart-start').val())
+        jQuery('#chart-start').attr("max", jQuery('#chart-end').val())
+        jQuery('#chart-end').attr("min", jQuery('#chart-start').val())
     }
 
     // Need to mitigate timezone effects!
@@ -457,12 +468,12 @@
     /**
         When finished loading
     **/
-    \$(document).ready(function(){
+    jQuery(document).ready(function(){
         // Exception when change of priority, reload
-        \$('input[name="priority"], input[name="displayname"]').on('change', function() {
-            \$('.fullform').submit(function() {
+        jQuery('input[name="priority"], input[name="displayname"]').on('change', function() {
+            jQuery('.fullform').submit(function() {
                 // No ajax this time
-                \$('input[name="ajax"]').val('')
+                jQuery('input[name="ajax"]').val('')
                 // Skip the fancy stuff, just submit
                 this.submit()
             })
@@ -471,7 +482,7 @@
         /**
             Update charts when changed
         **/
-        \$('#chart-start, #chart-end').on('change', function(elemn) {
+        jQuery('#chart-start, #chart-end').on('change', function(elemn) {
             showCharts()
 
             // Lets us leave (needs to be called after the change event)
@@ -486,16 +497,16 @@
         /**
             Click events
         **/
-        \$('.showserver').click(function () {
-            if(\$(this).parent().hasClass('server-disabled')) {
-                \$(this).parent().parent().toggleClass('server-disabled')
+        jQuery('.showserver').click(function () {
+            if(jQuery(this).parent().hasClass('server-disabled')) {
+                jQuery(this).parent().parent().toggleClass('server-disabled')
             }
-            \$(this).parent().next().toggle();
-            \$(this).parent().next().next().toggle();
-            if (\$(this).text().indexOf("$T('showDetails')") > 0) {
-                \$(this).html(\$(this).html().replace("$T('showDetails')", "$T('hideDetails')"));
+            jQuery(this).parent().next().toggle();
+            jQuery(this).parent().next().next().toggle();
+            if (jQuery(this).text().indexOf("$T('showDetails')") > 0) {
+                jQuery(this).html(jQuery(this).html().replace("$T('showDetails')", "$T('hideDetails')"));
             } else {
-                \$(this).html(\$(this).html().replace("$T('hideDetails')", "$T('showDetails')"));
+                jQuery(this).html(jQuery(this).html().replace("$T('hideDetails')", "$T('showDetails')"));
                 // Recalculate the charts if changed while details were open
                 showCharts()
             }
@@ -503,15 +514,15 @@
             addRowColor()
         });
 
-        \$('#addServerButton').click(function(){
-            \$('#addServerContent').show();
+        jQuery('#addServerButton').click(function(){
+            jQuery('#addServerContent').show();
             // Add coloring
             addRowColor()
         });
 
-        \$('[name="ssl"]').click(function() {
+        jQuery('[name="ssl"]').click(function() {
             // Use CSS transitions to do some highlighting
-            var portBox = \$(this).parent().parent().find('[name="port"]')
+            var portBox = jQuery(this).parent().parent().find('[name="port"]')
             if(this.checked) {
                 // Enabled SSL change port when not already a custom port
                 if(portBox.val() == '119') {
@@ -529,16 +540,16 @@
         })
 
         // Testing servers
-        \$('.testServer').click(function(event){
+        jQuery('.testServer').click(function(event){
             removeObfuscation()
-            var theButton = \$(this)
+            var theButton = jQuery(this)
             var resultBox = theButton.parents('.col1').find('.result-box .alert');
             theButton.attr("disabled", "disabled")
             theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
-            \$.ajax({
+            jQuery.ajax({
                 type: "POST",
                 url: "../../api",
-                data: "mode=config&name=test_server&" + \$(this).parents('form:first').serialize()
+                data: "mode=config&name=test_server&" + jQuery(this).parents('form:first').serialize()
             }).then(function(data) {
                 // Let's replace the link
                 msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
@@ -560,9 +571,9 @@
             });
         });
 
-        \$('.delServer').click(function(){
+        jQuery('.delServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                \$(this).parents('form:first').attr('action','delServer').submit();
+                jQuery(this).parents('form:first').attr('action','delServer').submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -571,9 +582,9 @@
             return false;
         });
 
-        \$('.clrServer').click(function(){
+        jQuery('.clrServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                \$(this).parents('form:first').attr('action','clrServer').submit();
+                jQuery(this).parents('form:first').attr('action','clrServer').submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -582,9 +593,9 @@
             return false;
         });
 
-        \$('.toggleServerCheckbox').click(function(){
-            var whichServer = \$(this).attr("name");
-            \$.ajax({
+        jQuery('.toggleServerCheckbox').click(function(){
+            var whichServer = jQuery(this).attr("name");
+            jQuery.ajax({
                 type: "POST",
                 url: "toggleServer",
                 data: {server: whichServer, apikey: "$apikey" }
@@ -595,6 +606,35 @@
                 setTimeout(function() { location.reload(); }, 100)
             });
         });
+
+        // Show text-ad if there is space
+        if((jQuery("body").width() - jQuery("#content").width())/2 > (jQuery('.Servers .server-frame').width() + 40)) {
+            // Do not show if dismissed previously
+            if(localStorage.getItem("server-frame-hide-$version") === null) {
+                // Let the page on the server tell us if we need to show
+                function receiveMessage(event) {
+                    // Check origin of message for security reasons
+                    if(event.origin === 'https://sabnzbd.org') {
+                        if(event.data == 'show_server') {
+                            jQuery('.Servers .server-frame').show()
+                            jQuery('.Servers .server-frame a').click(function () {
+                                localStorage.setItem("server-frame-hide-$version", "hide")
+                                jQuery('.Servers .server-frame').hide()
+                            })
+                        }
+                        if(event.data == 'hide_server') {
+                            // Hide and don't load anymore untill the next release
+                            jQuery('.Servers .server-frame').hide()
+                            localStorage.setItem("server-frame-hide-$version", "hide")
+                        }
+                    }
+                }
+                window.addEventListener("message", receiveMessage, false);
+
+                // NOTE: The hash-part cannot be seen by the server, so we don't know which hostnames you use!
+                jQuery('.Servers .server-frame iframe').attr("src", "https://sabnzbd.org/servers#$active_lang" + hostnames)
+            }
+        }
     });
 </script>
 

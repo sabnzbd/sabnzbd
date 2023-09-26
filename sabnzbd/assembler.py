@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -178,10 +178,15 @@ class Assembler(Thread):
 
                 # Write all decoded articles
                 if article.decoded:
-                    data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
-                    if data:
-                        fout.write(data)
+                    if data := sabnzbd.ArticleCache.load_article(article):
+                        written = fout.write(data)
+
+                        # In raw/non-buffered mode fout.write may not write everything requested:
+                        # https://docs.python.org/3/library/io.html?highlight=write#io.RawIOBase.write
+                        while written < len(data):
+                            written += fout.write(data[written:])
+
                         nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:

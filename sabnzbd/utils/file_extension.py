@@ -181,6 +181,7 @@ POPULAR_EXT = (
 DOWNLOAD_EXT = (
     "ass",
     "avi",
+    "azw3",
     "bat",
     "bdmv",
     "bin",
@@ -214,7 +215,9 @@ DOWNLOAD_EXT = (
     "m2ts",
     "m3u",
     "m4a",
+    "m4b",
     "mkv",
+    "mobi",
     "mp3",
     "mp4",
     "mpls",

@@ -1,13 +1,12 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
-#   team@sabnzbd.org
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0-develop\n"
+"Project-Id-Version: SABnzbd-4.1.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Danish (https://app.transifex.com/sabnzbd/teams/111101/da/)\n"
@@ -60,13 +59,10 @@ msgstr "Din Unrar version er %s, vi anbefaler version %s eller højere.<br />"
 msgid "unrar binary... NOT found"
 msgstr "unrar binær... IKKE fundet"
 
+#. Warning message
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
 msgstr "7za binær... IKKE fundet!"
-
-#: SABnzbd.py
-msgid "unzip binary... NOT found!"
-msgstr "unzip binær... IKKE fundet!"
 
 #. Error message
 #: SABnzbd.py
@@ -684,10 +680,6 @@ msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "Advarsel: Localhost er tvetydig, bruge numerisk IP-adresse."
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradressen \"%s:%s\" er ikke gyldigt."
 
@@ -900,19 +892,6 @@ msgstr "Ubrugelig RAR fil"
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
 msgstr "Ødelagt RAR fil"
-
-#: sabnzbd/newsunpack.py
-msgid "%s files in %s"
-msgstr "%s filer i %s"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Error \"%s\" while running unzip() on %s"
-msgstr "Fejl \"%s\" når du køre unzip() på %s"
-
-#: sabnzbd/newsunpack.py
-msgid "No 7za binary found, cannot unpack \"%s\""
-msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -2560,16 +2539,8 @@ msgstr ""
 "Når din IP-adresse ændres eller SABnzbd genstarter, udløber sessionen."
 
 #: sabnzbd/skintext.py
-msgid "Enable Unzip"
-msgstr "Aktivér Unzip"
-
-#: sabnzbd/skintext.py
 msgid "Enable 7zip"
 msgstr "Aktivere 7zip"
-
-#: sabnzbd/skintext.py
-msgid "Multicore Par2"
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2581,11 +2552,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Speed up repairs by installing multicore Par2, it is available for many "
+"Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
-"Fremskynde reparationer ved at installere multicopy Par2, det findes til "
-"mange platforme."
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -3076,6 +3045,10 @@ msgstr ""
 "Placering af logfiler for SABnzbd.<br /><i>Kræver genstart af SABnzbd!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr ".nzb Backup mappe"
 
@@ -3246,14 +3219,6 @@ msgid ""
 msgstr ""
 "Når bruger scriptet returnerer et non-zero exit code, vil jobbet blive "
 "markeret som mislykkedes."
-
-#: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Ved fejl, prøv alternativ NZB"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr "Nogle servere levere en alternativ NZB når et download mislykkes."
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3517,26 +3482,6 @@ msgid ""
 msgstr ""
 "Når under download det bliver klart, at for meget data mangler, afbryd "
 "jobbet"
-
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr "Nyttigt, hvis en newsserver har mere end én IPv4/IPv6-adresse"
 
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py

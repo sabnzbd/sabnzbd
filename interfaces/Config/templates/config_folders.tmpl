@@ -113,6 +113,7 @@
                 <div class="field-pair">
                     <label class="config" for="log_dir">$T('opt-log_dir')</label>
                     <input type="text" name="log_dir" id="log_dir" value="$log_dir" data-initialdir="$my_lcldata" />
+                    <a class="btn btn-default" id="purge_log_files" href="${root}"><span class="glyphicon glyphicon-trash"></span> $T('purge_log_files')</a>
                     <span class="desc">$T('explain-log_dir')</span>
                 </div>
                 <div class="field-pair">
@@ -132,7 +133,19 @@
 <script type="text/javascript">
     jQuery(document).ready(function() {
         // Add autocomplete and file-browser
-        \$('.col1 input[name$="_dir"]').typeahead().fileBrowser();
+        jQuery('.col1 input[name$="_dir"]').typeahead().fileBrowser();
+
+        jQuery('#purge_log_files').click(function () {
+            if ( confirm("$T('confirm')") ) {
+                $.ajax({
+                    type: "POST",
+                    url: "../../api",
+                    data: {mode: 'config', name: 'purge_log_files', output: 'json', apikey: jQuery('#apikey').val()}
+                })
+            } else {
+                return false;
+            }
+        })
     })
 </script>
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

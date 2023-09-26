@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -251,13 +251,11 @@ SKIN_TEXT = {
     ),
     "confirmWithoutSavingPrompt": TT("Changes have not been saved, and will be lost."),
     "explain-sessionExpire": TT("When your IP address changes or SABnzbd is restarted the session will expire."),
-    "opt-enable_unzip": TT("Enable Unzip"),
     "opt-enable_7zip": TT("Enable 7zip"),
-    "opt-multicore-par2": TT("Multicore Par2"),
     "explain-nosslcontext": TT(
         "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server's identity using its certificates is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates are required."
     ),
-    "explain-getpar2mt": TT("Speed up repairs by installing multicore Par2, it is available for many platforms."),
+    "explain-getpar2turbo": TT("Speed up repairs by installing par2cmdline-turbo, it is available for many platforms."),
     "version": TT("Version"),
     "uptime": TT("Uptime"),
     "backup": TT("Backup"),  #: Indicates that server is Backup server in Status page
@@ -398,6 +396,7 @@ SKIN_TEXT = {
     "explain-admin_dir2": TT("<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"),
     "opt-log_dir": TT("Log Folder"),
     "explain-log_dir": TT("Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"),
+    "purge_log_files": TT("Purge Logs"),
     "opt-nzb_backup_dir": TT(".nzb Backup Folder"),
     "explain-nzb_backup_dir": TT("Location where .nzb files will be stored."),
     "base-folder": TT("Default Base Folder"),
@@ -448,8 +447,6 @@ SKIN_TEXT = {
     "explain-script_can_fail": TT(
         "When the user script returns a non-zero exit code, the job will be flagged as failed."
     ),
-    "opt-new_nzb_on_failure": TT("On failure, try alternative NZB"),
-    "explain-new_nzb_on_failure": TT("Some servers provide an alternative NZB when a download fails."),
     "opt-folder_rename": TT("Enable folder rename"),
     "explain-folder_rename": TT(
         "Use temporary names during post processing. Disable when your system doesn't handle that properly."
@@ -539,11 +536,6 @@ SKIN_TEXT = {
     "explain-fail_hopeless_jobs": TT(
         "When during download it becomes clear that too much data is missing, abort the job"
     ),
-    "opt-load_balancing": TT("Server IP address selection"),
-    "no-load-balancing": TT("First IP address"),
-    "load-balancing": TT("Randomly selected IP address"),
-    "load-balancing-happy-eyeballs": TT("Quickest IP address, preferring IPv6"),
-    "explain-load_balancing": TT("Useful if a newsserver has more than one IPv4/IPv6 address"),
     # Config->Server
     "addServer": TT("Add Server"),  #: Caption
     "srv-displayname": TT("Server description"),  #: User defined name for server

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -137,25 +137,18 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
         d = "d"
         h = "h"
         m = "m"
+
     try:
-        now = datetime.datetime.now()
-        # age = str(now - date).split(".")[0] #old calc_age
-
-        # time difference
-        dage = now - date
-        seconds = dage.seconds
-        # only one value should be returned
-        # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
-        if dage.days:
-            age = "%d%s" % (dage.days, d)
-        elif int(seconds / 3600):
-            age = "%d%s" % (seconds / 3600, h)
+        # Return time difference in human-readable format
+        date_diff = datetime.datetime.now() - date
+        if date_diff.days:
+            return "%d%s" % (date_diff.days, d)
+        elif int(date_diff.seconds / 3600):
+            return "%d%s" % (date_diff.seconds / 3600, h)
         else:
-            age = "%d%s" % (seconds / 60, m)
+            return "%d%s" % (date_diff.seconds / 60, m)
     except:
-        age = "-"
-
-    return age
+        return "-"
 
 
 def safe_lower(txt: Any) -> str:
@@ -396,8 +389,7 @@ def convert_version(text):
     """Convert version string to numerical value and a testversion indicator"""
     version = 0
     test = True
-    m = RE_VERSION.search(ubtou(text))
-    if m:
+    if m := RE_VERSION.search(ubtou(text)):
         version = int(m.group(1)) * 1000000 + int(m.group(2)) * 10000 + int(m.group(3)) * 100
         try:
             if m.group(4).lower() == "rc":
@@ -525,8 +517,8 @@ def from_units(val: str) -> float:
     val = str(val).strip().upper()
     if val == "-1":
         return float(val)
-    m = RE_UNITS.search(val)
-    if m:
+
+    if m := RE_UNITS.search(val):
         if m.group(2):
             val = float(m.group(1))
             unit = m.group(2)
@@ -790,10 +782,9 @@ def format_time_string(seconds: float) -> str:
 def int_conv(value: Any) -> int:
     """Safe conversion to int (can handle None)"""
     try:
-        value = int(value)
+        return int(value)
     except:
-        value = 0
-    return value
+        return 0
 
 
 def create_https_certificates(ssl_cert, ssl_key):
@@ -985,6 +976,15 @@ def is_lan_addr(ip: str) -> bool:
         return False
 
 
+def is_local_addr(ip: str) -> bool:
+    """Determine if an IP address is to be considered local, i.e. it's part of a subnet in
+    local_ranges, if defined, or in private address space reserved for local area networks."""
+    if local_ranges := cfg.local_ranges():
+        return any(ip_in_subnet(ip, local_range) for local_range in local_ranges)
+    else:
+        return is_lan_addr(ip)
+
+
 def ip_extract() -> List[str]:
     """Return list of IP addresses of this system"""
     ips = []
@@ -1016,38 +1016,15 @@ def ip_extract() -> List[str]:
 
 
 def get_server_addrinfo(host: str, port: int) -> socket.getaddrinfo:
-    """Return processed getaddrinfo()"""
+    """Return getaddrinfo() based on user settings"""
     try:
-        int(port)
-    except:
-        port = 119
-    opt = sabnzbd.cfg.ipv6_servers()
-    """ ... with the following meaning for 'opt':
-    Control the use of IPv6 Usenet server addresses. Meaning:
-    0 = don't use
-    1 = use when available and reachable (DEFAULT)
-    2 = force usage (when SABnzbd's detection fails)
-    """
-    try:
-        # Standard IPV4 or IPV6
-        ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
-        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
-            # IPv6 forced by user, or IPv6 allowed and reachable, or IPv6 allowed and loadbalancing-with-IPv6 activated
-            # So return all IP addresses, no matter IPv4 or IPv6:
-            return ips
+        if cfg.ipv6_servers():
+            # Standard IPV4 or IPV6
+            return socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
         else:
-            # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
-            return [ip for ip in ips if ":" not in ip[4][0]]
+            # Only IPv4
+            return socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
     except:
-        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
-            try:
-                # Try IPV6 explicitly
-                return socket.getaddrinfo(
-                    host, port, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME
-                )
-            except:
-                # Nothing found!
-                pass
         return []
 
 
@@ -1221,34 +1198,6 @@ def set_https_verification(value):
     else:
         ssl._create_default_https_context = ssl._create_unverified_context
     return prev
-
-
-def test_ipv6():
-    """Check if external IPv6 addresses are reachable"""
-    if not cfg.selftest_host():
-        # User disabled the test, assume active IPv6
-        return True
-    try:
-        info = sabnzbd.getipaddress.addresslookup6(cfg.selftest_host())
-    except:
-        logging.debug(
-            "Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0]
-        )
-        return False
-
-    try:
-        af, socktype, proto, canonname, sa = info[0]
-        with socket.socket(af, socktype, proto) as sock:
-            sock.settimeout(2)  # 2 second timeout
-            sock.connect(sa[0:2])
-        logging.debug("Test IPv6: IPv6 test successful. Enabling IPv6")
-        return True
-    except socket.error:
-        logging.debug("Test IPv6: Cannot reach IPv6 test host. Disabling IPv6")
-        return False
-    except:
-        logging.debug("Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s", sys.exc_info()[0])
-        return False
 
 
 def test_cert_checking():

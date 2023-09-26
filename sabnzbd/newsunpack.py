@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ import time
 import io
 import shutil
 import functools
-from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union
+from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union, Set
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
@@ -65,6 +65,7 @@ from sabnzbd.filesystem import (
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
+from sabnzbd.par2file import FilePar2Info
 from sabnzbd.sorting import Sorter
 
 # Regex globals
@@ -83,11 +84,10 @@ PAR2_COMMAND = None
 MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
-ZIP_COMMAND = None
 SEVENZIP_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
-PAR2_MT = True
+PAR2_TURBO = True
 RAR_VERSION = 0
 SEVENZIP_VERSION = ""
 
@@ -105,11 +105,11 @@ def find_programs(curdir: str):
     if sabnzbd.MACOS:
         if sabnzbd.MACOSARM64:
             # M1 (ARM64) versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/arm64/par2")
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/arm64/par2-turbo")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/arm64/unrar")
         else:
             # Regular x64 versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-sl64")
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-turbo")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
         # The 7zip binary is universal2
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7zz")
@@ -117,10 +117,12 @@ def find_programs(curdir: str):
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
             # 64 bit versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/x64/par2.exe")
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j64.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/x64/UnRAR.exe")
         else:
             # 32 bit versions
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
         # We just use the 32 bit version
@@ -139,12 +141,26 @@ def find_programs(curdir: str):
             )
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path("nice")
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path("ionice")
-        if not sabnzbd.newsunpack.ZIP_COMMAND:
-            sabnzbd.newsunpack.ZIP_COMMAND = find_on_path("unzip")
+
+        # p7zip is the old Linux port of 7-Zip, now unmaintained.
+        # Therefore the official filenames are different for Linux:
+        #
+        # 7zz  (7-Zip) - full version of 7-Zip that supports all formats.
+        # 7zzs (7-Zip) - full version of 7-Zip that supports all formats (static linked).
+        #
+        # 7z   (p7zip) - older linux port that requires 7z.so shared library, supports all formats via 7z.so.
+        # 7za  (p7zip) - older linux port that supports some main formats:
+        #                  7z, xz, lzma, zip, bzip2, gzip, tar, cab, ppmd and split.
+
         if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
-            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7za")  # 7za = 7z stand-alone executable
-        if not sabnzbd.newsunpack.SEVENZIP_COMMAND:
-            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path("7z")
+            sabnzbd.newsunpack.SEVENZIP_COMMAND = find_on_path(
+                (
+                    "7zz",
+                    "7zzs",
+                    "7za",
+                    "7z",
+                )
+            )
 
     if not (sabnzbd.WIN32 or sabnzbd.MACOS):
         # Run check on rar version
@@ -156,7 +172,7 @@ def find_programs(curdir: str):
         sabnzbd.newsunpack.SEVENZIP_VERSION = sevenzip_check(sabnzbd.newsunpack.SEVENZIP_COMMAND)
 
         # Run check on par2-multicore
-        sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
+        sabnzbd.newsunpack.PAR2_TURBO = par2_turbo_check(sabnzbd.newsunpack.PAR2_COMMAND)
 
     # Set the path for rarfile
     rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
@@ -253,7 +269,6 @@ def unpacker(
     workdir_complete: str,
     one_folder: bool,
     joinables: List[str] = [],
-    zips: List[str] = [],
     rars: List[str] = [],
     sevens: List[str] = [],
     ts: List[str] = [],
@@ -267,11 +282,9 @@ def unpacker(
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(nzo.download_path)
+        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path)
     else:
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(
-            nzo.download_path, workdir_complete, check_both=nzo.delete
-        )
+        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path, workdir_complete, check_both=nzo.delete)
 
     force_rerun = False
     newfiles = []
@@ -296,7 +309,7 @@ def unpacker(
                 newfiles.extend(newf)
             logging.info("Unrar finished on %s", nzo.download_path)
 
-    if cfg.enable_7zip():
+    if cfg.enable_7zip() and SEVENZIP_COMMAND:
         new_sevens = [seven for seven in xsevens if seven not in sevens]
         if new_sevens:
             logging.info("7za starting on %s", nzo.download_path)
@@ -304,18 +317,6 @@ def unpacker(
             if newf:
                 newfiles.extend(newf)
             logging.info("7za finished on %s", nzo.download_path)
-
-    if cfg.enable_unzip():
-        new_zips = [zipfile for zipfile in xzips if zipfile not in zips]
-        if new_zips:
-            logging.info("Unzip starting on %s", nzo.download_path)
-            if SEVENZIP_COMMAND:
-                error, newf = unseven(nzo, workdir_complete, one_folder, new_zips)
-            else:
-                error, newf = unzip(nzo, workdir_complete, one_folder, new_zips)
-            if newf:
-                newfiles.extend(newf)
-            logging.info("Unzip finished on %s", nzo.download_path)
 
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
@@ -347,10 +348,10 @@ def unpacker(
     if rerun and nzo.delete and depth == 1 and any(build_filelists(nzo.download_path)):
         force_rerun = True
         # Clear lists to force re-scan of files
-        xjoinables, xzips, xrars, xsevens, xts = ([], [], [], [], [])
+        xjoinables, xrars, xsevens, xts = ([], [], [], [])
 
     if rerun and (cfg.enable_recursive() or new_ts or new_joins or force_rerun):
-        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xzips, xrars, xsevens, xts, depth)
+        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xrars, xsevens, xts, depth)
         if z:
             error = z
         if y:
@@ -828,14 +829,12 @@ def rar_extract_core(
             nzo.set_unpack_info("Unpack", msg, setname)
             fail = 3
 
-        else:
-            m = re.search(RAR_EXTRACTED_RE, line)
-            if m:
-                # In case of flat-unpack, UnRar still prints the whole path (?!)
-                unpacked_file = m.group(2)
-                if cfg.flat_unpack():
-                    unpacked_file = os.path.basename(unpacked_file)
-                extracted.append(real_path(extraction_path, unpacked_file))
+        elif m := re.search(RAR_EXTRACTED_RE, line):
+            # In case of flat-unpack, UnRar still prints the whole path (?!)
+            unpacked_file = m.group(2)
+            if cfg.flat_unpack():
+                unpacked_file = os.path.basename(unpacked_file)
+            extracted.append(real_path(extraction_path, unpacked_file))
 
         if fail:
             if p.stdout:
@@ -860,97 +859,12 @@ def rar_extract_core(
 
 
 ##############################################################################
-# (Un)Zip Functions
-##############################################################################
-def unzip(nzo: NzbObject, workdir_complete: str, one_folder: bool, zips: List[str]):
-    """Unpack multiple sets 'zips' of ZIP files from 'download_path' to 'workdir_complete.
-    When 'delete' is ste, originals will be deleted.
-    """
-
-    try:
-        i = 0
-        unzip_failed = False
-        tms = time.time()
-
-        # For file-bookkeeping
-        orig_dir_content = listdir_full(workdir_complete)
-
-        for _zip in zips:
-            logging.info("Starting extract on zipfile: %s ", _zip)
-            nzo.set_action_line(T("Unpacking"), "%s" % setname_from_path(_zip))
-
-            if workdir_complete and _zip.startswith(nzo.download_path):
-                extraction_path = workdir_complete
-            else:
-                extraction_path = os.path.split(_zip)[0]
-
-            if unzip_core(_zip, extraction_path, one_folder):
-                unzip_failed = True
-            else:
-                i += 1
-
-        msg = T("%s files in %s") % (str(i), format_time_string(time.time() - tms))
-        nzo.set_unpack_info("Unpack", msg)
-
-        # What's new? Use symmetric difference
-        new_files = list(set(orig_dir_content) ^ set(listdir_full(workdir_complete)))
-
-        # Delete the old files if we have to
-        if nzo.delete and not unzip_failed:
-            i = 0
-
-            for _zip in zips:
-                try:
-                    remove_file(_zip)
-                    i += 1
-                except OSError:
-                    logging.warning(T("Deleting %s failed!"), _zip)
-
-                brokenzip = "%s.1" % _zip
-
-                if os.path.exists(brokenzip):
-                    try:
-                        remove_file(brokenzip)
-                        i += 1
-                    except OSError:
-                        logging.warning(T("Deleting %s failed!"), brokenzip)
-
-        return unzip_failed, new_files
-    except:
-        msg = sys.exc_info()[1]
-        nzo.fail_msg = T("Unpacking failed, %s") % msg
-        logging.error(T('Error "%s" while running unzip() on %s'), msg, nzo.final_name)
-        return True, []
-
-
-def unzip_core(zipfile, extraction_path, one_folder):
-    """Unzip single zip set 'zipfile' to 'extraction_path'"""
-    command = ["%s" % ZIP_COMMAND, "-o", "-Pnone", "%s" % clip_path(zipfile), "-d%s" % extraction_path]
-
-    if one_folder or cfg.flat_unpack():
-        command.insert(3, "-j")  # Unpack without folders
-
-    p = build_and_run_command(command)
-    logging.debug("unzip output: \n%s", p.stdout.read())
-    return p.wait()
-
-
-##############################################################################
 # 7Zip Functions
 ##############################################################################
 def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: List[str]):
     """Unpack multiple sets '7z' of 7Zip files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
-    # Before we start, make sure the 7z binary SEVENZIP_COMMAND is defined
-    if not SEVENZIP_COMMAND:
-        msg = T('No 7za binary found, cannot unpack "%s"') % nzo.final_name
-        logging.error(msg)
-        nzo.fail_msg = msg
-        nzo.status = Status.FAILED
-        nzo.set_unpack_info("Unpack", msg)
-        return 1, []
-
     unseven_failed = False
     new_files = []
 
@@ -1024,7 +938,7 @@ def seven_extract_core(
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
     start = time.time()
-    if one_folder:
+    if one_folder or cfg.flat_unpack():
         method = "e"  # Unpack without folders
     else:
         method = "x"  # Unpack with folders
@@ -1135,10 +1049,10 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             nzo.set_action_line(T("Repair"), T("Starting Repair"))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, _, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
+            joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2cmdline on the other platforms
-            if sabnzbd.WIN32:
+            if cfg.enable_multipar() and sabnzbd.WIN32:
                 finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
                 finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
@@ -1211,10 +1125,13 @@ def par2cmdline_verify(
     nzo.status = Status.VERIFYING
     start = time.time()
 
+    # Long-path notation isn't supported by par2cmdline
+    if sabnzbd.WIN32:
+        parfile = clip_path(parfile)
+
     # Build command and add extra options
     command = [str(PAR2_COMMAND), "r", parfile]
-    options = cfg.par_option().strip().split()
-    if options:
+    if options := cfg.par_option().strip().split():
         for option in options:
             command.insert(2, option)
 
@@ -1227,7 +1144,7 @@ def par2cmdline_verify(
         # Normal case, everything is named after set
         wildcard = setname + "*"
 
-    if sabnzbd.MACOS:
+    if sabnzbd.MACOS or sabnzbd.WIN32:
         command.append(os.path.join(parfolder, wildcard))
     else:
         # For Unix systems, remove folders, due to bug in some par2cmdline versions
@@ -1236,16 +1153,14 @@ def par2cmdline_verify(
 
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
-    # Only if we're not doing multicore
-    if not sabnzbd.MACOS:
-        par2text = run_command([command[0], "-h"])
-        if "No data skipping" in par2text:
-            logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
-            command.insert(2, "-N")
-        if "Set the basepath" in par2text:
-            logging.info("Detected par2cmdline version that needs basepath, adding -B<path> parameter")
-            command.insert(2, "-B")
-            command.insert(3, parfolder)
+    par2text = run_command([command[0], "-h"])
+    if "No data skipping" in par2text:
+        logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
+        command.insert(2, "-N")
+    if "Set the basepath" in par2text:
+        logging.info("Detected par2cmdline version that needs basepath, adding -B<path> parameter")
+        command.insert(2, "-B")
+        command.insert(3, parfolder)
 
     # Run the external command
     p = build_and_run_command(command)
@@ -1431,16 +1346,14 @@ def par2cmdline_verify(
             if in_extra_files:
                 if "is a match for" in line or line.find("data blocks from") > 0:
                     # Baldy named ones
-                    m_rename = PAR2_IS_MATCH_FOR_RE.search(line)
-                    if m_rename:
+                    if m_rename := PAR2_IS_MATCH_FOR_RE.search(line):
                         old_name = m_rename.group(1)
                         new_name = m_rename.group(2)
                         logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                         renames[new_name] = old_name
 
                     # Obfuscated and also damaged
-                    m_block = PAR2_BLOCK_FOUND_RE.search(line)
-                    if m_block:
+                    if m_block := PAR2_BLOCK_FOUND_RE.search(line):
                         workdir = os.path.split(parfile)[0]
                         old_name = m_block.group(1)
                         new_name = m_block.group(2)
@@ -1466,8 +1379,7 @@ def par2cmdline_verify(
 
             elif not in_verify:
                 # Total number to verify
-                m = re.match(r"There are (\d+) recoverable files", line)
-                if m:
+                if m := re.match(r"There are (\d+) recoverable files", line):
                     verifytotal = int(m.group(1))
 
                 if line.startswith("Verifying source files:"):
@@ -1643,8 +1555,7 @@ def multipar_verify(
             misnamed_files = True
         elif misnamed_files and "Found" in line:
             # First it reports the current filename
-            m = PAR2_FILENAME_RE.search(line)
-            if m:
+            if m := PAR2_FILENAME_RE.search(line):
                 verifynum += 1
                 nzo.set_action_line(T("Checking extra files"), "%02d/%02d" % (verifynum, verifyextratotal))
                 old_name = m.group(1)
@@ -1668,8 +1579,7 @@ def multipar_verify(
             in_check = True
             nzo.status = Status.VERIFYING
         elif in_check:
-            m = PAR2_FILENAME_RE.search(line)
-            if m:
+            if m := PAR2_FILENAME_RE.search(line):
                 # Only increase counter if it was really the detection line
                 if line.startswith("= ") or "%" not in line:
                     verifynum += 1
@@ -1695,8 +1605,7 @@ def multipar_verify(
             in_verify = True
             verifynum = 0
         elif in_verify:
-            m = PAR2_FILENAME_RE.search(line)
-            if m:
+            if m := PAR2_FILENAME_RE.search(line):
                 # It prints the filename couple of times, so we save it to check
                 nzo.status = Status.VERIFYING
                 if line.split()[1] in ("Damaged", "Found"):
@@ -1886,7 +1795,6 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
             "par2_command": sabnzbd.newsunpack.PAR2_COMMAND,
             "multipar_command": sabnzbd.newsunpack.MULTIPAR_COMMAND,
             "rar_command": sabnzbd.newsunpack.RAR_COMMAND,
-            "zip_command": sabnzbd.newsunpack.ZIP_COMMAND,
             "7zip_command": sabnzbd.newsunpack.SEVENZIP_COMMAND,
             "version": sabnzbd.__version__,
         }
@@ -1968,6 +1876,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     result = True
     nzf_list = nzo.finished_files
     renames = {}
+    found_paths: Set[str] = set()
 
     # Files to ignore
     ignore_ext = cfg.quick_check_ext_ignore()
@@ -1980,6 +1889,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
             # Do a simple filename based check
             if file == nzf.filename:
                 found = True
+                found_paths.add(nzf.filepath)
                 if (
                     nzf.crc32 is not None
                     and nzf.crc32 == par2info.filehash
@@ -1997,12 +1907,18 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                 break
 
             # Now let's do obfuscation check
-            if nzf.crc32 is not None and nzf.crc32 == par2info.filehash and is_size(nzf.filepath, par2info.filesize):
+            if (
+                nzf.filepath not in found_paths
+                and nzf.crc32 is not None
+                and nzf.crc32 == par2info.filehash
+                and is_size(nzf.filepath, par2info.filesize)
+            ):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
                     # Note: file can and is allowed to be in a subdirectory.
-                    # Subdirectories in par2 always contain "/", not "\"
+                    # Subdirectories in par2 always contain "/", not "\" so we need to normalize
+                    file = os.path.normpath(file)
                     renamer(
                         os.path.join(nzo.download_path, nzf.filename),
                         os.path.join(nzo.download_path, file),
@@ -2012,6 +1928,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
                     nzf.filename = file
                     result &= True
                     found = True
+                    found_paths.add(nzf.filepath)
                     break
                 except IOError:
                     # Renamed failed for some reason, probably already done
@@ -2046,8 +1963,8 @@ def unrar_check(rar: str) -> Tuple[int, bool]:
         except:
             return version, original
         original = "Alexander Roshal" in version
-        m = re.search(r"RAR\s(\d+)\.(\d+)", version)
-        if m:
+
+        if m := re.search(r"RAR\s(\d+)\.(\d+)", version):
             version = int(m.group(1)) * 100 + int(m.group(2))
         else:
             version = 0
@@ -2066,12 +1983,10 @@ def sevenzip_check(sevenzip: str) -> str:
     return ""
 
 
-def par2_mt_check(par2_path: str) -> bool:
-    """Detect if we have multicore par2 variants"""
+def par2_turbo_check(par2_path: str) -> bool:
+    """Detect if we have the turbo par2 variant"""
     try:
-        par2_version = run_command([par2_path, "-h"])
-        # Look for a threads option
-        if "-t<" in par2_version:
+        if "par2cmdline-turbo" in run_command([par2_path, "-V"]):
             return True
     except:
         pass
@@ -2256,7 +2171,7 @@ def analyse_show(name: str) -> Dict[str, str]:
         "season": job.info.get("season_num", ""),
         "episode": job.info.get("episode_num", ""),
         "episode_name": job.info.get("ep_name", ""),
-        "is_proper": str(job.is_proper()),
+        "is_proper": job.is_proper(),
         "resolution": job.info.get("resolution", ""),
         "decade": job.info.get("decade", ""),
         "year": job.info.get("year", ""),
@@ -2372,8 +2287,7 @@ class SevenZip:
         output = run_command(command)
 
         for line in output.split("\n"):
-            m = SEVENZIP_PATH_RE.search(line)
-            if m:
+            if m := SEVENZIP_PATH_RE.search(line):
                 names.append(m.group(1).strip("\r"))
         if names:
             # Remove name of archive itself

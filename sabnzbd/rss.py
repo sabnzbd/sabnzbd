@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -747,8 +747,7 @@ def ep_match(season, episode, expr, title=None):
     """Return True if season, episode is at or above expected
     Optionally `title` can be matched
     """
-    m = _RE_SP.search(expr)
-    if m:
+    if m := _RE_SP.search(expr):
         # Make sure they are all integers for comparison
         req_season = int(m.group(1))
         req_episode = int(m.group(2))

@@ -1,63 +1,37 @@
-Release Notes - SABnzbd 4.0.3
+Release Notes - SABnzbd 4.1.0
 =========================================================
 
-## Bugfixes and changes since 4.0.2
-- Direct Unpack could get stuck.
-- Sorters could not be modified.
-- Season Sorting did not respect desired capitalization.
-- Crashes could occur in the `Downloader` on timeouts.
-- Prevent extra job directory in case of folder-only Sorting.
-- UUencoded articles could fail to decode.
-- Windows: Windows Service would fail to start on legacy release.
-- macOS: Failed to launch on macOS Sonoma Beta.
+## Changes since 4.0.3
+- Added a dark mode for the Config, Login, and Wizard pages.
+- Added multi-select to the History.
+- Show the number of items in post-processing when in Tabbed mode.
+- Added option `verify_xff_header` to include `X-Forwarded-For` when
+  validating if connections should be accepted when using a proxy.
+- Added option to purge log files from the Folders Config page.
+- Moved `Server IP address selection` and `On failure, try
+  alternative NZB` to Special settings.
+- Special setting `ipv6_servers` changed to on/off.
+- Only use 7zip to unpack `.zip` files.
+- Windows: Added option `enable_multipar` to use par2cmdline-turbo
+  instead of Multipar for verification and repair. It is faster,
+  but on Windows it can fail on special (UTF8) filenames.
+- macOS: Switched to par2cmdline-turbo for verification and repair.
+- Linux: Detect more recent versions of 7zip.
+- Windows: Use `All Users` locations during installation of shortcuts.
+- Windows/macOS: Updated Python to 3.11.5, 7Zip to 23.01 and
+  UnRar to 6.23. All these updates include security fixes.
 
-## Breaking change in 4.0.1
-- The `Parameters` setting of a `Notification Script` is now passed as
-  environment variable `SAB_NOTIFICATION_PARAMETERS` instead of as a
-  command-line parameter. This prevents the possibility of remote code
-  execution on systems exposed to the internet without a username/password.
-  If you use `nzb-notify` you need to update it to the latest version.
-
-## Bugfixes and changes since 4.0.1
-- Disabling a server during download did not stop it from downloading.
-- Show last line of post-processing script output even if it failed.
-- Prevent crash during Deobfuscate on non-unique paths.
-- Files that could not be parsed were removed from the `Watched Folder`.
-- Warn if the file system does not support unicode or long filenames.
-- Warn if `Scripts Folder` is inside the application directory.
-- Prevent output buffering of Python post-processing scripts.
-- The `PKG-INFO` file was removed from the `src` release.
-- Correctly decode partially malformed UUencoded posts.
-- macOS: Tray icon could not be disabled.
-
-## Changes since 3.7.2
-- In this major update we optimized a core part of the SSL handling.
-  This results in large performance increase when downloading from news
-  servers with SSL enabled. In addition, the general connection handling
-  was improved, resulting in performance improvements for all news servers.
-  Special thanks to: mnightingale, puzzledsab and animetosho!
-- There are multiple settings that can tweak performance, see:
-  https://github.com/sabnzbd/sabnzbd/discussions/2474
-- When adding a new news server, SSL is enabled by default.
-- File assembly performance significantly improved by relying on the
-  CRC32 instead of the MD5 to perform QuickCheck of files.
-- Slow down more gracefully when the cache fills up.
-- Replaced separate Series/Movie/Date Sorting with general Sorter.
-- HTTPS files are included in the `Backup`.
-- Improved `Watched Folder` scanning and processing.
-- Ignore resource fork files created by macOS.
-- `Deobfuscate final filenames` is enabled for new installations.
-- Dropped support for Python 3.7.
-
-## Bugfixes since 3.7.2
-- Restore applying `History Retention` setting at startup.
-- Windows: Not all invalid characters were removed from filenames.
-- Windows: Firewall rules were not removed by uninstaller.
-
-## Upgrade notices
-- The download statistics file `totals10.sab` is updated in 3.2.x
-  version. If you downgrade to 3.1.x or lower, detailed download
-  statistics will be lost.
+## Bugfixes since 4.0.3
+- Series duplicate detection did not detect duplicates.
+- Sorting would append `.1` to some filenames.
+- If a paused queue contained items with `Force` priority,
+  items with a lower priority would also be downloaded.
+- Not all API-keys were removed during log-sanitization.
+- In certain situations, not all data would be written to disk.
+- Folder names could be sanitized too eagerly.
+- Some articles would fail to decode.
+- QuickCheck could wrongly rename files with identical content.
+- Warning about `Scripts Folder` location was triggered incorrectly.
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
@@ -69,4 +43,4 @@ Release Notes - SABnzbd 4.0.3
   that automatically verify, repair, extract and clean up posts downloaded
   from Usenet.
 
-  (c) Copyright 2007-2023 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2023 by The SABnzbd-Team (sabnzbd.org)

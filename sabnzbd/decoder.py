@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -172,7 +172,7 @@ def decode(article: Article, raw_data: bytearray):
 
 def decode_yenc(article: Article, data: bytearray) -> bytearray:
     # Let SABCTools do all the heavy lifting
-    yenc_filename, article.data_begin, article.data_size, crc_correct = sabctools.yenc_decode(data)
+    yenc_filename, article.file_size, article.data_begin, article.data_size, crc_correct = sabctools.yenc_decode(data)
 
     nzf = article.nzf
     # Assume it is yenc

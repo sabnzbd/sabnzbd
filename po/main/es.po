@@ -1,6 +1,5 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
-#   team@sabnzbd.org
 # 
 # Translators:
 # Ester Molla Aragones <moarages@gmail.com>, 2020
@@ -9,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0-develop\n"
+"Project-Id-Version: SABnzbd-4.1.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
@@ -64,13 +63,10 @@ msgstr "Su versión UnRAR es %s, recomendamos la versión %s o superior. <br />"
 msgid "unrar binary... NOT found"
 msgstr "unrar binario... NO encontrado"
 
+#. Warning message
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
 msgstr "No se encontró el binario de 7za"
-
-#: SABnzbd.py
-msgid "unzip binary... NOT found!"
-msgstr "unzip binario... NO encontrado!"
 
 #. Error message
 #: SABnzbd.py
@@ -706,10 +702,6 @@ msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "Alerta: LOCALHOST es ambiguo, use dirección de IP numérica"
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "La dirección del servidor «%s:%s» no es válida."
 
@@ -933,19 +925,6 @@ msgstr "Archivo RAR inutilizable"
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
 msgstr "Fichero RAR corrupto"
-
-#: sabnzbd/newsunpack.py
-msgid "%s files in %s"
-msgstr "%s archivos en %s"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Error \"%s\" while running unzip() on %s"
-msgstr "Error \"%s\" al ejecutar unzip() sobre %s"
-
-#: sabnzbd/newsunpack.py
-msgid "No 7za binary found, cannot unpack \"%s\""
-msgstr "No se ha encontrado el binario 7za, no se puede descomprimir \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -2620,16 +2599,8 @@ msgid ""
 msgstr "Cuando tu dirección IP cambie o reinicies SABnzbd, la sesión caduca."
 
 #: sabnzbd/skintext.py
-msgid "Enable Unzip"
-msgstr "Habilitar Unzip"
-
-#: sabnzbd/skintext.py
 msgid "Enable 7zip"
 msgstr "Habilitar 7zip"
-
-#: sabnzbd/skintext.py
-msgid "Multicore Par2"
-msgstr "Multicore Par2"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2647,11 +2618,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Speed up repairs by installing multicore Par2, it is available for many "
+"Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
-"Agilice las reparaciones instalando multicore Par2, está disponible para "
-"muchas plataformas."
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -3157,6 +3126,10 @@ msgstr ""
 "SABnzbd!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr "Directorio de Backups de .nzbs"
 
@@ -3330,15 +3303,6 @@ msgid ""
 msgstr ""
 "Cuando la secuencia de comandos de usuario devuelve un código de salida "
 "distinto de cero, el trabajo se marca como fallido ."
-
-#: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "En caso de fallo, intentar con un NZB alternativo"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Algunos servidores ofrecen una NZB alternativa cuando falla una descarga ."
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3613,27 +3577,6 @@ msgid ""
 msgstr ""
 "Cuando este bajando, si es claro que mucha data esta faltando, aborte el "
 "trabajo."
-
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr "Selección de la dirección IP del servidor"
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr "Primera dirección IP"
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr "Dirección IP seleccionada aleatoriamente"
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr "Dirección IP más rápida, con preferencia IPv6"
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr ""
-"Útil si un servidor de noticias tiene más de una dirección IPv4 / IPv6"
 
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py

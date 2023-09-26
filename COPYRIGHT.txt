@@ -1,7 +1,7 @@
 
-(c) Copyright 2007-2023 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2023 by The SABnzbd-Team (sabnzbd.org)
 
-The SABnzbd-team is:
+The SABnzbd-Team is:
 
 Active team:
     Safihre

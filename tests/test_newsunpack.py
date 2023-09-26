@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -175,7 +175,7 @@ class TestPar2Repair:
             ]
         )
 
-        if sabnzbd.WIN32:
+        if sabnzbd.WIN32 and cfg.enable_multipar():
             # Multipar output status updates
             nzo.set_action_line.assert_has_calls(
                 [
@@ -238,7 +238,7 @@ class TestPar2Repair:
         # There are no renames in case of filejoin by par2repair!
         nzo.renamed_file.assert_not_called()
 
-        if sabnzbd.WIN32:
+        if sabnzbd.WIN32 and cfg.enable_multipar():
             # Multipar output status updates, which is limited because Multipar doesn't say much..
             nzo.set_action_line.assert_has_calls(
                 [
@@ -301,7 +301,7 @@ class TestPar2Repair:
         # All joinable files should be removed
         assert dir_contents == ["__ADMIN__", "par2test.bin"]
 
-        if sabnzbd.WIN32:
+        if sabnzbd.WIN32 and cfg.enable_multipar():
             # Multipar output status updates, which is limited because Multipar doesn't say much..
             nzo.set_action_line.assert_has_calls(
                 [

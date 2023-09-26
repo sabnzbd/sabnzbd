@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,7 +32,6 @@ HEADER = (
     r"""#
 # SABnzbd Translation Template file __TYPE__
 # Copyright 2007-2023 The SABnzbd-Team
-#   team@sabnzbd.org
 #
 msgid ""
 msgstr ""
@@ -86,8 +85,7 @@ def get_context(ctx_line):
     newlines = []
     contexts = []
     for item in ctx_line[2:].strip().split():
-        m = RE_LINE.search(item)
-        if m:
+        if m := RE_LINE.search(item):
             line_src = m.group(1)
             number = m.group(2)
         else:
@@ -96,8 +94,7 @@ def get_context(ctx_line):
 
         srcline = get_a_line(line_src, int(number)).strip("\r\n")
         context = ""
-        m = RE_CONTEXT.search(srcline)
-        if m:
+        if m := RE_CONTEXT.search(srcline):
             # Context was defined in the source file
             context = m.group(1)
         else:

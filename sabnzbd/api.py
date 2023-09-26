@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -68,7 +68,7 @@ from sabnzbd.misc import (
     opts_to_pp,
     format_time_left,
 )
-from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
+from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup, active_socks5_proxy
@@ -533,7 +533,7 @@ def _api_history(name, kwargs):
             to_units(week),
             to_units(day),
         )
-        history["slots"], history["noofslots"] = build_history(
+        history["slots"], history["ppslots"], history["noofslots"] = build_history(
             start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, nzo_ids=nzo_ids
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
@@ -625,12 +625,10 @@ def _api_warnings(name, kwargs):
     return report(keyword="warnings", data=sabnzbd.GUIHANDLER.content())
 
 
-LOG_API_RE = re.compile(rb"(apikey|api)([=:])[\w]+", re.I)
-LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
-LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
-LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
+LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password)': '(.*?)'", re.I)
 LOG_INI_HIDE_RE = re.compile(
-    rb"(email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
+    rb"(apikey|api|user|username|password|email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey"
+    rb"|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=.*",
     re.I,
 )
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
@@ -649,17 +647,13 @@ def _api_showlog(name, kwargs):
         log_data += f.read()
 
     # We need to remove all passwords/usernames/api-keys
-    log_data = LOG_API_RE.sub(b"apikey=<APIKEY>", log_data)
-    log_data = LOG_API_JSON_RE.sub(b"'apikey':<APIKEY>'", log_data)
-    log_data = LOG_USER_RE.sub(b"\\g<1>=<USER>", log_data)
-    log_data = LOG_PASS_RE.sub(b"password=<PASSWORD>", log_data)
+    log_data = LOG_JSON_RE.sub(b"'REMOVED': '<REMOVED>'", log_data)
     log_data = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", log_data)
     log_data = LOG_HASH_RE.sub(b"<HASH>", log_data)
 
     # Try to replace the username
     try:
-        cur_user = getpass.getuser()
-        if cur_user:
+        if cur_user := getpass.getuser():
             log_data = log_data.replace(utob(cur_user), b"<USERNAME>")
     except:
         pass
@@ -913,6 +907,11 @@ def _api_config_create_backup(kwargs):
     return report(data={"result": bool(backup_file), "message": backup_file})
 
 
+def _api_config_purge_log_files(kwargs):
+    purge_log_files()
+    return report()
+
+
 def _api_config_undefined(kwargs):
     return report(_MSG_NOT_IMPLEMENTED)
 
@@ -1027,6 +1026,7 @@ _api_config_table = {
     "regenerate_certs": (_api_config_regenerate_certs, 3),
     "test_server": (_api_config_test_server, 3),
     "create_backup": (_api_config_create_backup, 3),
+    "purge_log_files": (_api_config_purge_log_files, 3),
 }
 
 
@@ -1627,7 +1627,7 @@ def build_history(
     failed_only: int = 0,
     categories: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
-) -> Tuple[Dict[str, Any], int]:
+) -> Tuple[Dict[str, Any], int, int]:
     """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
@@ -1717,11 +1717,11 @@ def build_history(
     if close_db:
         history_db.close()
 
-    return items, total_items
+    return items, postproc_queue_size, total_items
 
 
 def get_active_history(queue, items):
-    """Get the currently in progress and active history queue."""
+    """Get the jobs currently in progress and active history queue."""
     for nzo in queue:
         item = {}
         (

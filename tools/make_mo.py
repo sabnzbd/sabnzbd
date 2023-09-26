@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: utf-8 -*-
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -231,8 +231,7 @@ def patch_nsis():
     with open(NSIS, "r") as src:
         new = []
         for line in src:
-            m = RE_NSIS.search(line)
-            if m:
+            if m := RE_NSIS.search(line):
                 leader = m.group(1)
                 item = m.group(2)
                 rest = m.group(3)

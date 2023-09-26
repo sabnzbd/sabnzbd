@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -235,7 +235,8 @@ def validate_safedir(root, value, default):
 
 def validate_scriptdir_not_appdir(root, value, default):
     """Warn users to not use the Program Files folder for their scripts"""
-    if value and long_path(os.path.join(root, value)).startswith(long_path(sabnzbd.DIR_PROG)):
+    # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
+    if value and long_path(os.path.join(root, value)).startswith(long_path(sabnzbd.DIR_PROG) + os.pathsep):
         # Warn, but do not block
         sabnzbd.misc.helpful_warning(
             T(
@@ -332,7 +333,6 @@ log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_notempty)
 # Config - Switches
 ##############################################################################
 max_art_tries = OptionNumber("misc", "max_art_tries", 3, minval=2)
-load_balancing = OptionNumber("misc", "load_balancing", 2)
 top_only = OptionBool("misc", "top_only", False)
 sfv_check = OptionBool("misc", "sfv_check", True)
 script_can_fail = OptionBool("misc", "script_can_fail", False)
@@ -406,8 +406,8 @@ start_paused = OptionBool("misc", "start_paused", False)
 preserve_paused_state = OptionBool("misc", "preserve_paused_state", False)
 enable_par_cleanup = OptionBool("misc", "enable_par_cleanup", True)
 process_unpacked_par2 = OptionBool("misc", "process_unpacked_par2", True)
+enable_multipar = OptionBool("misc", "enable_multipar", True)
 enable_unrar = OptionBool("misc", "enable_unrar", True)
-enable_unzip = OptionBool("misc", "enable_unzip", True)
 enable_7zip = OptionBool("misc", "enable_7zip", True)
 enable_filejoin = OptionBool("misc", "enable_filejoin", True)
 enable_tsjoin = OptionBool("misc", "enable_tsjoin", True)
@@ -431,6 +431,7 @@ no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
+verify_xff_header = OptionBool("misc", "verify_xff_header", False)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
@@ -445,7 +446,7 @@ history_limit = OptionNumber("misc", "history_limit", 10, minval=0)
 wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, minval=1, maxval=60)
 max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000)
 marker_file = OptionStr("misc", "nomedia_marker")
-ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, minval=0, maxval=2)
+ipv6_servers = OptionBool("misc", "ipv6_servers", True)
 url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)

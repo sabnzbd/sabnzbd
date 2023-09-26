@@ -264,41 +264,41 @@
 </div>
 
 <script type="text/javascript">
-\$(document).ready(function(){
+jQuery(document).ready(function(){
     // Show the message about translating when it's non-English
     function hideOrShowTranslate() {
-        if(\$('#language').val() == 'en') {
-            \$('.alert-translate').hide()
+        if(jQuery('#language').val() == 'en') {
+            jQuery('.alert-translate').hide()
         } else {
-            \$('.alert-translate').show()
+            jQuery('.alert-translate').show()
         }
     }
-    \$('#language').on('change', function() {
+    jQuery('#language').on('change', function() {
         // Show message
         hideOrShowTranslate()
         // Re-load page on submit
-        \$('.fullform').submit(function() {
+        jQuery('.fullform').submit(function() {
             // Skip the fancy stuff, just submit
             this.submit()
         })
         // No JSON response
-        \$('#ajax').val('')
+        jQuery('#ajax').val('')
     })
     hideOrShowTranslate()
 
     // Highlight in case user is not safe
     // So when exposed to internet and no password, no external limit or no username/password
-    var safeCheck = \$('#host, #inet_exposure, #${pid}_wu, #${pid}_wp')
+    var safeCheck = jQuery('#host, #inet_exposure, #${pid}_wu, #${pid}_wp')
     function checkSafety() {
-        if(\$('#host').val() != 'localhost' && \$('#host').val() != '127.0.0.1') {
+        if(jQuery('#host').val() != 'localhost' && jQuery('#host').val() != '127.0.0.1') {
             // No limitation on local-network
-            if(\$('#inet_exposure').val() > 3) {
+            if(jQuery('#inet_exposure').val() > 3) {
                 // And no username and password?
-                if(!\$('#${pid}_wu').val() || !\$('#${pid}_wp').val()) {
+                if(!jQuery('#${pid}_wu').val() || !jQuery('#${pid}_wp').val()) {
                     // Add warning icon if not there already
-                    if(!\$('.host-warning').length) {
+                    if(!jQuery('.host-warning').length) {
                         safeCheck.after('<span class="glyphicon glyphicon-alert host-warning"></span>')
-                        \$('.host-warning').tooltip({'title': '$T('checkSafety')'})
+                        jQuery('.host-warning').tooltip({'title': '$T('checkSafety')'})
                         safeCheck.addClass('host-warning-highlight')
                     }
                     return
@@ -306,57 +306,57 @@
             }
         }
         // Remove warnings
-        \$('.host-warning').remove()
+        jQuery('.host-warning').remove()
         safeCheck.removeClass('host-warning-highlight')
     }
     checkSafety()
     safeCheck.on('change', checkSafety)
 
     // Click functions
-    \$('#apikey, #nzbkey').click(function () { \$(this).select() });
+    jQuery('#apikey, #nzbkey').click(function () { jQuery(this).select() });
 
-    \$('#generate_new_apikey').click(function () {
+    jQuery('#generate_new_apikey').click(function () {
       if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
           url: "../../api",
-          data: {mode:'config', name:'set_apikey', apikey: \$('#apikey').val()},
+          data: {mode:'config', name:'set_apikey', apikey: jQuery('#apikey').val()},
           success: function(msg){
-            \$('#apikey').val(msg);
+            jQuery('#apikey').val(msg);
             document.location = document.location;
           }
         });
       }
     });
-    \$('#generate_new_nzbkey').click(function () {
+    jQuery('#generate_new_nzbkey').click(function () {
       if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
           url: "../../api",
-          data: { mode:'config', name:'set_nzbkey', apikey: \$('#apikey').val() },
+          data: { mode:'config', name:'set_nzbkey', apikey: jQuery('#apikey').val() },
           success: function(msg){
-            \$('#nzbkey').val(msg);
+            jQuery('#nzbkey').val(msg);
             document.location = document.location;
           }
         });
       }
     });
 
-    \$('.show_qrcode').click(function (e) {
+    jQuery('.show_qrcode').click(function (e) {
         // Show in modal
-        \$('#modal_qr .modal-dialog').width(330)
-        \$('#modal_qr .modal-body').html('').qrcode({
+        jQuery('#modal_qr .modal-dialog').width(330)
+        jQuery('#modal_qr .modal-body').html('').qrcode({
             "size": 280,
             "color": "#3a3",
-            "text": \$(this).attr('rel')
+            "text": jQuery(this).attr('rel')
         });
-        \$('#modal_qr').modal('show');
+        jQuery('#modal_qr').modal('show');
 
         // No save on this button click
         e.preventDefault();
     });
 
-    \$('.generate_cert').click(function(e) {
+    jQuery('.generate_cert').click(function(e) {
         if(!confirm('$T('explain-new-cert')')) {
             return;
         }
@@ -365,7 +365,7 @@
         $.ajax({
             type: "POST",
             url: "../../api",
-            data: { mode: 'config', name: 'regenerate_certs', apikey: \$('#apikey').val() },
+            data: { mode: 'config', name: 'regenerate_certs', apikey: jQuery('#apikey').val() },
             success: function(msg) {
                 do_restart()
             }
@@ -375,35 +375,35 @@
     })
 
     // Only allow re-generate if default certs
-    if(\$('#https_cert').val() != '$def_https_cert_file') {
-        \$('.generate_cert').attr('disabled', 'disabled')
+    if(jQuery('#https_cert').val() != '$def_https_cert_file') {
+        jQuery('.generate_cert').attr('disabled', 'disabled')
     }
 
     // Parse the text
-    var bandwidthLimit = \$('#bandwidth_max').val()
+    var bandwidthLimit = jQuery('#bandwidth_max').val()
     if(bandwidthLimit) {
         var bandwithLimitNumber = parseFloat(bandwidthLimit)
         var bandwithLimitText = bandwidthLimit.replace(/[^a-zA-Z]+/g, '');
         if(bandwithLimitNumber) {
-            \$('#bandwidth_max_value').val(bandwithLimitNumber)
-            \$('#bandwidth_max_dropdown').val(bandwithLimitText)
+            jQuery('#bandwidth_max_value').val(bandwithLimitNumber)
+            jQuery('#bandwidth_max_dropdown').val(bandwithLimitText)
         }
     }
 
     // Update the value
-    \$('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {
-        if(\$('#bandwidth_max_value').val()) {
-            \$('#bandwidth_max').val(\$('#bandwidth_max_value').val() + \$('#bandwidth_max_dropdown').val())
+    jQuery('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {
+        if(jQuery('#bandwidth_max_value').val()) {
+            jQuery('#bandwidth_max').val(jQuery('#bandwidth_max_value').val() + jQuery('#bandwidth_max_dropdown').val())
         } else {
-            \$('#bandwidth_max').val('')
+            jQuery('#bandwidth_max').val('')
         }
     })
 
-    \$('#create_backup').click(function () {
+    jQuery('#create_backup').click(function () {
         $.ajax({
           type: "POST",
           url: "../../api",
-          data: {mode:'config', name:'create_backup', output:'json', apikey: \$('#apikey').val()},
+          data: {mode:'config', name:'create_backup', output:'json', apikey: jQuery('#apikey').val()},
           success: function(data) {
               if(data.value.result) {
                   alert("$T('backup'):\n" + data.value.message)

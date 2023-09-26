@@ -1,13 +1,12 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
-#   team@sabnzbd.org
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0-develop\n"
+"Project-Id-Version: SABnzbd-4.1.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -58,13 +57,10 @@ msgstr "您的 UNRAR 程序版本为 %s，我们建议使用 %s 或更高版本�
 msgid "unrar binary... NOT found"
 msgstr "unrar 可执行程序... *未* 找到"
 
+#. Warning message
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
 msgstr "7za 可执行程序... *未*找到!"
-
-#: SABnzbd.py
-msgid "unzip binary... NOT found!"
-msgstr "unzip 可执行程序... *未* 找到!"
 
 #. Error message
 #: SABnzbd.py
@@ -668,10 +664,6 @@ msgid "Invalid backup archive"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "警告: LOCALHOST 太含糊，请使用数字 IP 地址。"
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "服务器地址 \"%s:%s\" 无效。"
 
@@ -884,19 +876,6 @@ msgstr "无法使用的 RAR 文件"
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
 msgstr "损坏的 RAR 文件"
-
-#: sabnzbd/newsunpack.py
-msgid "%s files in %s"
-msgstr "%s 个文件，耗时 %s"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Error \"%s\" while running unzip() on %s"
-msgstr "\"%s\" 对 %s 执行 unzip() 时出错"
-
-#: sabnzbd/newsunpack.py
-msgid "No 7za binary found, cannot unpack \"%s\""
-msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -2531,16 +2510,8 @@ msgid ""
 msgstr "每当您的 IP 地址发生变化，或当 SABnzbd 重启，登录会话将自动过期。"
 
 #: sabnzbd/skintext.py
-msgid "Enable Unzip"
-msgstr "启用 Unzip"
-
-#: sabnzbd/skintext.py
 msgid "Enable 7zip"
 msgstr "启用 7zip"
-
-#: sabnzbd/skintext.py
-msgid "Multicore Par2"
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2552,9 +2523,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Speed up repairs by installing multicore Par2, it is available for many "
+"Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
-msgstr "安装支持多核心的 Par2 以便加快修复速度，支持多平台。"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -3021,6 +2992,10 @@ msgid ""
 msgstr "SABnzbd 日志文件的位置。<br /><i>需要重启 SABnzbd 才能生效!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr ".nzb 备份文件夹"
 
@@ -3180,14 +3155,6 @@ msgid ""
 "When the user script returns a non-zero exit code, the job will be flagged "
 "as failed."
 msgstr "用户脚本返回非零的退出代码时，对应的任务将被标记为失败。"
-
-#: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "失败时，尝试备用 NZB"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr "部分服务器在下载失败时可提供备用 NZB 文件。"
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3438,26 +3405,6 @@ msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
 msgstr "下载时若发现缺失数据过多，则中止对应任务"
-
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr "如果新闻服务器有多个 IPv4/IPv6 地址将非常有用"
 
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py

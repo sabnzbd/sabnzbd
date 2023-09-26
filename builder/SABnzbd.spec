@@ -41,7 +41,7 @@ else:
 
     # Windows
     extra_hiddenimports.append("win32timezone")
-    EXTRA_FOLDERS += ["win/multipar/", "win/unrar/", "win/7zip/"]
+    EXTRA_FOLDERS += ["win/multipar/", "win/par2/", "win/unrar/", "win/7zip/"]
     EXTRA_FILES += ["portable.cmd"]
 
     # Parse the version info

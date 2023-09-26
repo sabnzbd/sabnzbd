@@ -1,5 +1,10 @@
 <div class="history" id="history-tab" data-bind="visible: hasHistory() || displayTabbed()" style="display: none">
-    <h2>$T('menu-history')</h2>
+    <div class="history-header">
+        <h2>$T('menu-history')</h2>
+        <a href="#" data-bind="click: history.showMultiEdit">
+            <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
+        </a>
+    </div>
     <table class="table table-hover history-table paginated">
         <thead>
             <tr>
@@ -55,7 +60,10 @@
                 <!-- /ko -->
                 <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }" onclick="showDetails(this)"></td>
                 <td class="delete">
-                    <div class="dropdown">
+                    <label data-bind="visible: parent.isMultiEditing()">
+                        <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
+                    </label>
+                    <div class="dropdown" data-bind="visible: !parent.isMultiEditing()">
                         <a href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">
                             <span class="caret"></span>
                         </a>
@@ -124,7 +132,20 @@
     <div class="multioperations-selector" id="history-options">
         <a href="#" class="hover-button" title="$T('link-retryAll')" data-tooltip="true" data-placement="left" data-bind="click: history.retryAllFailed"><span class="glyphicon glyphicon-repeat"></span></a>
         <a href="#" class="hover-button" title="$T('showAllHis') / $T('showFailedHis')" data-tooltip="true" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
-        <a href="#modal-purge-history" class="hover-button" title="$T('purgeHist')" data-toggle="modal" data-tooltip="true" data-placement="left"><span class="glyphicon glyphicon-trash"></span></a>
+
+        <div data-bind="visible: history.isMultiEditing()">
+            <span class="label label-default" data-bind="text: history.multiEditItems().length">0</span>
+            <label for="multiedit-checkall-history">
+                <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall-history" title="$T('Glitter-checkAll')" data-bind="click: checkAllJobs" data-tooltip="true" data-placement="top" />
+            </label>
+        </div>
+
+        <a href="#" class="hover-button" data-bind="visible: history.isMultiEditing(), click: doMultiDelete">
+            <span class="glyphicon glyphicon-trash"></span>
+        </a>
+        <a href="#modal-purge-history" class="hover-button" title="$T('purgeHist')" data-bind="visible: !history.isMultiEditing()" data-toggle="modal" data-tooltip="true" data-placement="left">
+            <span class="glyphicon glyphicon-trash"></span>
+        </a>
     </div>
 
     <div class="info-container history-info">

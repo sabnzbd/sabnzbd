@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,7 +24,6 @@ import select
 import logging
 from math import ceil
 from threading import Thread, RLock
-import random
 import socket
 import sys
 import ssl
@@ -169,11 +168,8 @@ class Server:
 
     @property
     def hostip(self) -> str:
-        """In case a server still has active connections, we use the same IP again
-        If new connection then based on value of load_balancing() and self.info:
-        0 - return the first entry, so all threads use the same IP
-        1 - and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
-        2 - and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
+        """In case a server still has active connections, we use the same IP again.
+        If new connection then use happyeyeballs if there are multiple options.
         In case of problems: return the host name itself
         """
         # Check if already a successful ongoing connection
@@ -183,22 +179,17 @@ class Server:
             return self.busy_threads[0].nntp.host
 
         # Determine IP
-        ip = self.host
+        ip = None
         if self.info:
-            # Check this first so we can fall back to default method if it returns None.
-            if len(self.info) > 1 and cfg.load_balancing() == 2:
-                # RFC6555 / Happy Eyeballs:
+            # RFC6555 / Happy Eyeballs in case of multiple options
+            if len(self.info) > 1:
                 ip = happyeyeballs(self.host, port=self.port)
-                if not ip:
-                    # nothing returned, so there was a connection problem
-                    logging.debug("%s: No successful IP connection was possible using happyeyeballs", self.host)
-            if not ip or cfg.load_balancing() == 0 or len(self.info) == 1:
-                # Just return the first one, so all next threads use the same IP
+
+            # Just 1 IP found, or problem with happyeyeballs, return first one
+            if not ip:
                 ip = self.info[0][4][0]
-            elif cfg.load_balancing() == 1:
-                # Return a random entry from the possible IPs
-                rnd = random.randint(0, len(self.info) - 1)
-                ip = self.info[rnd][4][0]
+        else:
+            ip = self.host
         logging.debug("%s: Connecting to address %s", self.host, ip)
         return ip
 
@@ -549,7 +540,8 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-    def decode(self, article, raw_data: Optional[bytearray] = None):
+    @staticmethod
+    def decode(article, raw_data: Optional[bytearray] = None):
         """Decode article"""
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
@@ -565,13 +557,7 @@ class Downloader(Thread):
         sabnzbd.decoder.decode(article, raw_data)
 
     def run(self):
-        # First check IPv6 connectivity
-        sabnzbd.EXTERNAL_IPV6 = sabnzbd.misc.test_ipv6()
-        logging.debug("External IPv6 test result: %s", sabnzbd.EXTERNAL_IPV6)
-
-        logging.debug("switchinterval = %s", sys.getswitchinterval())
-
-        # Then we check SSL certificate checking
+        # Verify SSL certificate checking
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
 
@@ -781,7 +767,8 @@ class Downloader(Thread):
             sabnzbd.BPSMeter.update(server.id, bytes_received)
             if bytes_received > self.last_max_chunk_size:
                 self.last_max_chunk_size = bytes_received
-            # Update statistics
+            # Update statistics only when we fetched a whole article
+            # The side effect is that we don't count things like article-not-available messages
             if done:
                 article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
             # Check speedlimit

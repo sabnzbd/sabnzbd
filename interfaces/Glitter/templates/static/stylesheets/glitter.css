@@ -442,7 +442,7 @@ tbody>tr>td:last-child {
 .container-tabbed #queue-tab,
 .container-tabbed #queue-tab,
 .container-tabbed #queue-messages,
-.container-tabbed .history h2,
+.container-tabbed .history-header h2,
 .container-tabbed .queue h2,
 .history-queue-swicher {
     display: none;
@@ -492,6 +492,10 @@ tbody>tr>td:last-child {
 
 .history-queue-swicher .badge-warning {
     background-color: #d9534f !important;
+}
+
+.history-queue-swicher .badge-info {
+    background-color: #58A9FA !important;
 }
 
 .history-queue-swicher .badge {
@@ -986,8 +990,27 @@ tr.queue-item>td:first-child>a {
     position: relative;
 }
 
-.history h2 {
+.history-header {
     clear: left;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-header a {
+    align-self: center;
+    margin-right: 2px;
+    font-size: 12px;
+}
+
+.container-tabbed .history-header {
+    display: inline;
+}
+
+.container-tabbed .history-header a {
+    position: absolute;
+    right: 0;
+    top: 10px;
 }
 
 .history-table {
@@ -1084,6 +1107,18 @@ tr.queue-item>td:first-child>a {
     line-height: 1.428571429;
     display: inline-block;
 }
+
+#history-options div {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+#history-options input[name="multieditCheckAll"] {
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    margin-left: 8px;
+} 
 
 #history-options .hover-button span {
     top: 2px;

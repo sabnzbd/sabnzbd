@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -558,11 +558,9 @@ class Sorter:
         # Rename it
         f_name, f_ext = os.path.splitext(largest_file.get("name"))
         filepath = self._to_filepath(largest_file.get("name"), base_path)
-        new_filepath = get_unique_filename(
-            os.path.join(
-                base_path,
-                to_lowercase(path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext),
-            )
+        new_filepath = os.path.join(
+            base_path,
+            to_lowercase(path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext),
         )
         if not os.path.exists(new_filepath):
             renamed_files = []

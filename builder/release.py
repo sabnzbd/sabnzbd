@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -253,10 +253,6 @@ if RELEASE_THIS and gh_token:
             print("Posting release notes to Reddit: r/sabnzbd")
             subreddit_sabnzbd.submit(title, selftext=release_notes_text)
 
-        # Only stable releases to r/usenet
-        if not PRERELEASE:
-            print("Posting release notes to Reddit: r/usenet")
-            subreddit_usenet.submit(title, selftext=release_notes_text)
     else:
         print("Missing REDDIT_TOKEN")
 

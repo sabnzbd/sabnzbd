@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ import os
 import pickle
 import sys
 import logging
+import logging.handlers
 import re
 import shutil
 import tempfile
@@ -42,7 +43,7 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS
+from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS, DEF_LOG_FILE
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
 
@@ -288,9 +289,8 @@ def sanitize_foldername(name: str) -> str:
     # And finally, make sure it doesn't end in a dot or a space
     # This is invalid on Windows and can cause trouble for some other tools
     if name != "." and name != "..":
-        # This would be perfect for := operator in Python 3.8+
-        while len(name.strip().rstrip(".")) < len(name):
-            name = name.strip().rstrip(".")
+        while len(name) > len(name := name.strip().rstrip(".")):
+            continue
 
     # Just to be sure we don't return nothing
     if not name:
@@ -456,22 +456,21 @@ def check_mount(path: str) -> bool:
     return not m
 
 
-RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
+RAR_RE = re.compile(r"\.(part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
 SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
-ZIP_RE = re.compile(r"\.(zip$)", re.I)
-SEVENZIP_RE = re.compile(r"\.7z$", re.I)
+SEVENZIP_RE = re.compile(r"\.(zip|7z)$", re.I)
 SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)
 TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
 
 
 def build_filelists(
     workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
-) -> Tuple[List[str], List[str], List[str], List[str], List[str]]:
+) -> Tuple[List[str], List[str], List[str], List[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
     """
-    sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
+    sevens, joinables, rars, ts, filelist = ([], [], [], [], [])
 
     if workdir_complete:
         filelist.extend(listdir_full(workdir_complete))
@@ -487,14 +486,11 @@ def build_filelists(
 
         # Run through all the checks
         if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
-            # 7zip
+            # 7zip or zip files
             sevens.append(file)
         elif SPLITFILE_RE.search(file) and not file_is_rar:
             # Joinables, optional with RAR check
             joinables.append(file)
-        elif ZIP_RE.search(file):
-            # ZIP files
-            zips.append(file)
         elif RAR_RE.search(file):
             # RAR files
             rars.append(file)
@@ -503,12 +499,11 @@ def build_filelists(
             ts.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
-    logging.debug("build_filelists(): zips: %s", zips)
     logging.debug("build_filelists(): rars: %s", rars)
     logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
 
-    return joinables, zips, rars, sevens, ts
+    return joinables, rars, sevens, ts
 
 
 def safe_fnmatch(f: str, pattern: str) -> bool:
@@ -853,9 +848,13 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
     Optionally allows the creation of local directories if they don't exist yet
     Returns new filename (which could be changed due to sanitize_filename) on success"""
-    # Sanitize last part of new name
+    # Sanitize last part of new name, just to be sure
     path, name = os.path.split(new)
-    new = os.path.join(path, sanitize_filename(name))
+    if os.path.isdir(old):
+        name = sanitize_foldername(name)
+    else:
+        name = sanitize_filename(name)
+    new = os.path.join(path, name)
 
     # Skip if nothing changes
     if old == new:
@@ -1256,6 +1255,20 @@ def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
     return full_nzb_path
 
 
+def purge_log_files():
+    """Purge all existing log files"""
+    # First we need to do a rollover
+    for handler in logging.root.manager.root.handlers:
+        if isinstance(handler, logging.handlers.RotatingFileHandler):
+            # Only if we have a FilderHandler we can rollover and delete older ones
+            logging.debug("Purging log files")
+            handler.doRollover()
+
+            # Keep sabnzbd.log but remove all older ones
+            remove_all(sabnzbd.cfg.log_dir.get_path(), pattern=DEF_LOG_FILE + ".*", keep_folder=True)
+            logging.debug("Finished puring log files")
+
+
 def directory_is_writable_with_file(mydir, myfilename):
     filename = os.path.join(mydir, myfilename)
     if os.path.exists(filename):
@@ -1284,7 +1297,7 @@ def directory_is_writable(test_dir: str) -> bool:
 
 def check_filesystem_capabilities(test_dir: str) -> bool:
     """Checks if we can write long and unicode filenames to the given directory.
-    If not on Windows, also check for special chars like \ and :
+    If not on Windows, also check for special chars like slashes and :
     Returns True if all OK, otherwise False"""
 
     allgood = True  # default return value: all OK

@@ -1,6 +1,5 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
-#   team@sabnzbd.org
 # 
 # Translators:
 # Rik Brouwer, 2022
@@ -9,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0-develop\n"
+"Project-Id-Version: SABnzbd-4.1.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -63,13 +62,10 @@ msgstr ""
 msgid "unrar binary... NOT found"
 msgstr "unrar-programma niet gevonden."
 
+#. Warning message
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
 msgstr "7za-programma niet gevonden."
-
-#: SABnzbd.py
-msgid "unzip binary... NOT found!"
-msgstr "unzip-programma niet gevonden."
 
 #. Error message
 #: SABnzbd.py
@@ -712,10 +708,6 @@ msgid "Invalid backup archive"
 msgstr "Ongeldig backup bestand"
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "Let op: LOCALHOST is niet eenduidig, gebruik een numeriek IP-adres."
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradres \"%s:%s\" is niet geldig."
 
@@ -933,19 +925,6 @@ msgstr "Onbruikbaar RAR-bestand"
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
 msgstr "Beschadigd RAR-bestand"
-
-#: sabnzbd/newsunpack.py
-msgid "%s files in %s"
-msgstr "%s bestanden in %s"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Error \"%s\" while running unzip() on %s"
-msgstr "Fout '%s' bij uitvoeren van unzip() op %s"
-
-#: sabnzbd/newsunpack.py
-msgid "No 7za binary found, cannot unpack \"%s\""
-msgstr "Geen 7za-programma gevonden, kan \"%s\" niet uitpakken"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -2607,16 +2586,8 @@ msgstr ""
 "verlopen."
 
 #: sabnzbd/skintext.py
-msgid "Enable Unzip"
-msgstr "Unzip toestaan"
-
-#: sabnzbd/skintext.py
 msgid "Enable 7zip"
 msgstr "7Zip toestaan"
-
-#: sabnzbd/skintext.py
-msgid "Multicore Par2"
-msgstr "Multicore Par2"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2632,11 +2603,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Speed up repairs by installing multicore Par2, it is available for many "
+"Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
-"Versnel reparaties door multi-core par2 te installeren. Beschikbaar voor "
-"veel besturingssystemen."
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -3149,6 +3118,10 @@ msgstr ""
 "herstart</i>."
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr "Map voor het bewaren van NZB-bestanden"
 
@@ -3327,15 +3300,6 @@ msgid ""
 msgstr ""
 "Wanneer het script een exit code anders dan 0 geeft, zal de download worden "
 "afgekeurd."
-
-#: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "Bij mislukte download: probeer alternatieve NZB"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ""
-"Sommige indexers hebben een alternatieve NZB wanneer een download mislukt"
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3612,26 +3576,6 @@ msgid ""
 msgstr ""
 "Als tijdens het downloaden duidelijk wordt dat te veel data ontbreekt, breek"
 " dan de download af"
-
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr "Server IP adres selectie"
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr "Eerste IP adres"
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr "willekeurig geselecteerd IP adres"
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr "Snelste IP adres, voorkeur voor IPv6"
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr "Nuttig wanneer een server meer dan één IPv4 of IPv6-adres heeft"
 
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py

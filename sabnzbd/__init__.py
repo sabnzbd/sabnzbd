@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -152,7 +152,6 @@ LOGFILE = None
 WEBLOGFILE = None
 GUIHANDLER = None
 LOG_ALL = False
-AMBI_LOCALHOST = False
 WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 
@@ -169,7 +168,6 @@ PAUSED_ALL = False
 TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
-EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = 1
 RESTORE_DATA = None
 

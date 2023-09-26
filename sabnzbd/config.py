@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -437,7 +437,7 @@ class ConfigServer:
         self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
         self.username = OptionStr(name, "username", add=False)
         self.password = OptionPassword(name, "password", add=False)
-        self.connections = OptionNumber(name, "connections", 1, 0, 1000, add=False)
+        self.connections = OptionNumber(name, "connections", 1, 0, 500, add=False)
         self.ssl = OptionBool(name, "ssl", False, add=False)
         # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.ssl_verify = OptionNumber(name, "ssl_verify", 2, add=False)

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -468,6 +468,70 @@ class TestMisc:
     )
     def test_is_lan_addr(self, value, result):
         assert misc.is_lan_addr(value) is result
+
+    @pytest.mark.parametrize(
+        "value, local_ranges, result",
+        [
+            ("10.11.12.13", None, True),
+            ("172.16.2.81", None, True),
+            ("192.168.255.255", None, True),
+            ("169.254.42.42", None, True),  # Link-local
+            ("fd00::ffff", None, True),  # Part of fc00::/7, IPv6 "Unique Local Addresses"
+            ("fe80::a1", None, True),  # IPv6 Link-local
+            ("::1", None, False),
+            ("localhost", None, False),
+            ("127.0.0.1", None, False),
+            ("2001:1337:babe::", None, False),
+            ("172.32.32.32", None, False),  # Near but not part of 172.16.0.0/12
+            ("100.64.0.1", None, False),  # Test net
+            ("[2001::1]", None, False),
+            ("::", None, False),
+            ("::a:b:c", None, False),
+            ("1.2.3.4", None, False),
+            ("255.255.255.255", None, False),
+            ("0.0.0.0", None, False),
+            ("127.0.0.1", None, False),
+            ("400.500.600.700", None, False),
+            ("blabla", None, False),
+            (-666, None, False),
+            ("example.org", None, False),
+            (None, None, False),
+            ("", None, False),
+            ("[1.2.3.4]", None, False),
+            ("2001:1", None, False),
+            ("2001::[2001::1]", None, False),
+            ("::ffff:192.168.1.100", None, True),
+            ("::ffff:1.1.1.1", None, False),
+            ("::ffff:127.0.0.1", None, False),
+            ("10.11.12.13", "10.0.0.0/8", True),
+            ("10.11.12.13", "12.34.56.78, 10.0.0.0/8", True),
+            ("10.11.12.13", "10.0.0.0/24", False),
+            ("172.16.2.81", "10.0.0.0/24", False),
+            ("192.168.255.255", "2001::/64", False),
+            ("2001:1337:babe::42", "2001:1337:babe::/48", True),
+            ("2001:1337:babe::11", "1002:1337:babe::/48", False),
+            ("2001:1337:babe::", "2001:1337:babe::/16", False),  # Invalid local range
+            ("2001:1337:babe::", "1002:1337:babe::/8", False),  # Idem
+            ("2001::1", "2001::/2", False),
+            ("::", "1.2.3.0/26, 9.8.7.6", False),
+            ("::a:b:c", "1.2.3.0/26, 9.8.7.6", False),
+            ("1.2.3.4", "1.2.3.0/24, 9.8.7.6", True),
+            ("1.2.3.4", "1.2.3.4/32, 9.8.7.6", True),
+            ("1.2.3.4", "9.8.7.6, 1.2.3.4/32", True),
+            ("1.2.3.4", "ffff:1234::/128, 1.2.3.4/32, 9.8.7.6", True),
+            ("ffff:1234::0", "ffff:1234::/128, 1.2.3.4/32, 9.8.7.6", True),
+            ("EEEE::ccc", "ffff:1234::/128, 1.2.3.4/32, 9.8.7.6", False),
+            ("FFFFFFFF:1234::0", "ffff:1234::/128, 1.2.3.4/32, 9.8.7.6", False),
+            ("1.2.3.4", "1.2.3.3/32, 9.8.7.6", False),
+            ("1.2.3.4", "1.2.3.5/32, 9.8.7.6", False),
+        ],
+    )
+    def test_is_local_addr(self, value, local_ranges, result):
+        @set_config({"local_ranges": local_ranges})
+        def _func():
+            assert misc.is_local_addr(value) is result
+
+        _func()
 
     @pytest.mark.parametrize(
         "ip, subnet, result",

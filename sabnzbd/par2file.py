@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -74,8 +74,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
     """
     name = name.strip()
     vol = block = 0
-    m = PROBABLY_PAR2_RE.search(name)
-    if m:
+    if m := PROBABLY_PAR2_RE.search(name):
         setname = m.group(1)
         vol = m.group(2)
         block = m.group(3)
@@ -243,5 +242,15 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
         if hash16k in md5of16k:
             old_name = md5of16k.pop(hash16k)
             logging.debug("Par2-16k signature of %s not unique, discarding", old_name)
+
+    # Sort table by filename
+    # This is necessary because of the rare case that a set contains duplicate files.
+    # The crc32 quick check loops over files in the set and considered if they match an NzbFile.
+    # For example in a set with the packets in the order 003, 004, 001, 002 with 002 and 003 being identical files:
+    # We would start with 003 and the first match would be 002, therefore rename 002 to 003 overwriting the also
+    # downloaded 003 file.
+    # Finally, we would process 002 and the first unverified path will be 003 so rename 003 back to 002.
+    # The end result is we would have moved a single file from 002 to 003 to 002 and end up missing 003.
+    table = {filename: table[filename] for filename in sorted(table.keys())}
 
     return set_id, table

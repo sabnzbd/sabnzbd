@@ -13,7 +13,10 @@ function HistoryListModel(parent) {
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
     self.totalItems = ko.observable(0);
+    self.ppItems = ko.observable(0);
     self.pagination = new paginationModel(self);
+    self.isMultiEditing = ko.observable(false).extend({ persist: 'historyIsMultiEditing' });
+    self.multiEditItems = ko.observableArray([]);
 
     // Download history info
     self.downloadedToday = ko.observable();
@@ -79,7 +82,7 @@ function HistoryListModel(parent) {
             if(self.parent.queue.multiEditItems().length > 0) {
                 $.each(newItems, function() {
                     var currentItem = this;
-                    self.parent.queue.multiEditItems.remove(function(inList) { return inList.id == currentItem.nzo_id; })
+                    self.parent.queue.multiEditItems.remove(function(inList) { return inList.id == currentItem.id; })
                 })
             }
         }
@@ -93,6 +96,7 @@ function HistoryListModel(parent) {
             History information
         ***/
         self.totalItems(data.noofslots);
+        self.ppItems(data.ppslots)
         self.downloadedToday(data.day_size);
         self.downloadedWeek(data.week_size);
         self.downloadedMonth(data.month_size);
@@ -226,7 +230,7 @@ function HistoryListModel(parent) {
             $.each(self.historyItems(), function(index) {
                 // Only append when it's a download that can be deleted
                 if(!this.processingDownload() && !this.processingWaiting()) {
-                    strIDs = strIDs + this.nzo_id + ',';
+                    strIDs = strIDs + this.id + ',';
                 }
             })
             // Send the command
@@ -255,6 +259,13 @@ function HistoryListModel(parent) {
             $("#modal-purge-history").modal('hide');
         });
     };
+
+    // Show the input checkbox
+    self.showMultiEdit = function() {
+        self.isMultiEditing(!self.isMultiEditing())
+        self.multiEditItems.removeAll();
+        $('.history-table input[name="multiedit"], #history-options #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
+    }
 }
 
 /**
@@ -268,7 +279,7 @@ function HistoryModel(parent, data) {
     // If we update the full set every time it uses lot of CPU
     // The Status/Actionline/scriptline/completed we do update every time
     // When clicked on the more-info button we load the rest again
-    self.nzo_id = data.nzo_id;
+    self.id = data.nzo_id;
     self.index = data.index;
     self.updateAllHistory = false;
     self.hasDropdown = ko.observable(false);
@@ -377,7 +388,7 @@ function HistoryModel(parent, data) {
     // Re-try button
     self.retry = function() {
         // Set JOB-id
-        $('#modal-retry-job input[name="retry_job_id"]').val(self.nzo_id)
+        $('#modal-retry-job input[name="retry_job_id"]').val(self.id)
         // Set password
         $('#retry_job_password').val(self.historyStatus.password())
         // Open modal
@@ -429,7 +440,7 @@ function HistoryModel(parent, data) {
             if(item.processingDownload() == 2) {
                 callAPI({
                     mode: 'cancel_pp',
-                    value: self.nzo_id
+                    value: self.id
                 })
                 // All we can do is wait
             } else {
@@ -438,7 +449,7 @@ function HistoryModel(parent, data) {
                     mode: 'history',
                     name: 'delete',
                     del_files: 1,
-                    value: self.nzo_id
+                    value: self.id
                 }).then(function(response) {
                     if(response.status) {
                         // Make sure no flickering (if there are more items left) and then remove

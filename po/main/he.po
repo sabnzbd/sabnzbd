@@ -1,16 +1,15 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
-#   team@sabnzbd.org
 # 
 # Translators:
-# ION, 2022
 # Safihre <safihre@sabnzbd.org>, 2023
+# ION, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0-develop\n"
+"Project-Id-Version: SABnzbd-4.1.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: ION, 2023\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -59,13 +58,10 @@ msgstr "גרסת UNRAR שלך היא %s, אנחנו ממליצים על גרסה
 msgid "unrar binary... NOT found"
 msgstr "unrar בינארי… לא נמצא!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
 msgstr "7za בינארי… לא נמצא!"
-
-#: SABnzbd.py
-msgid "unzip binary... NOT found!"
-msgstr "unzip בינארי… לא נמצא!"
 
 #. Error message
 #: SABnzbd.py
@@ -681,10 +677,6 @@ msgid "Invalid backup archive"
 msgstr "ארכיון בלתי תקף של גיבוי"
 
 #: sabnzbd/interface.py
-msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
-msgstr "אזהרה: LOCALHOST הוא דו־משמעי, השתמש בכתובת IP מספרית."
-
-#: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "כתובת השרת \"%s:%s\" אינה תקפה."
 
@@ -899,19 +891,6 @@ msgstr "קובץ RAR בלתי שמיש"
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
 msgstr "קובץ RAR פגום"
-
-#: sabnzbd/newsunpack.py
-msgid "%s files in %s"
-msgstr "%s קבצים תוך %s"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Error \"%s\" while running unzip() on %s"
-msgstr "שגיאה \"%s\" בזמן הרצת unzip() על %s"
-
-#: sabnzbd/newsunpack.py
-msgid "No 7za binary found, cannot unpack \"%s\""
-msgstr "בינארי 7za לא נמצא, לא ניתן לפרוק את \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -2562,16 +2541,8 @@ msgid ""
 msgstr "כאשר כתובת ה־IP שלך משתנה או כאשר SABnzbd מופעל מחדש, השיח יפוג."
 
 #: sabnzbd/skintext.py
-msgid "Enable Unzip"
-msgstr "אפשר חילוץ zip"
-
-#: sabnzbd/skintext.py
 msgid "Enable 7zip"
 msgstr "אפשר חילוץ 7zip"
-
-#: sabnzbd/skintext.py
-msgid "Multicore Par2"
-msgstr "Par2 מרובה ליבות"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2586,9 +2557,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Speed up repairs by installing multicore Par2, it is available for many "
+"Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
-msgstr "האץ תיקונים ע״י התקנת Par2 מרובה־ליבות, הוא זמין עבור פלטפורמות רבות."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -3087,6 +3058,10 @@ msgstr ""
 "מיקום של קבצי יומן עבור SABnzbd.<br /><i>דורש הפעלה מחדש של SABnzbd!</i>"
 
 #: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
 msgstr "תיקיית גיבוי .nzb"
 
@@ -3253,14 +3228,6 @@ msgid ""
 "as failed."
 msgstr ""
 "כאשר תסריט המשתמש מחזיר קוד יציאה בלתי אפסי, העבודה תסומן בדגל כנכשלה."
-
-#: sabnzbd/skintext.py
-msgid "On failure, try alternative NZB"
-msgstr "בכישלון, נסה NZB חלופי"
-
-#: sabnzbd/skintext.py
-msgid "Some servers provide an alternative NZB when a download fails."
-msgstr "מספר שרתים מספקים קובץ NZB חלופי כאשר הורדה נכשלת."
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3521,26 +3488,6 @@ msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
 msgstr "כאשר במהלך הורדה מתבהר שיותר מדי נתונים חסרים, בטל את העבודה"
-
-#: sabnzbd/skintext.py
-msgid "Server IP address selection"
-msgstr "בחירת כתובת IP של שרת"
-
-#: sabnzbd/skintext.py
-msgid "First IP address"
-msgstr "כתובת IP ראשונה"
-
-#: sabnzbd/skintext.py
-msgid "Randomly selected IP address"
-msgstr "כתובת IP שנבחרה באופן אקראי"
-
-#: sabnzbd/skintext.py
-msgid "Quickest IP address, preferring IPv6"
-msgstr "כתובת IP הזריזה ביותר, העדפה אל IPv6"
-
-#: sabnzbd/skintext.py
-msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
-msgstr "שימושי אם לשרת חדשות יש יותר מכתובת IPv4/IPv6 אחת"
 
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py

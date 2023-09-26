@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@ from sabnzbd.misc import (
     is_ipv6_addr,
     get_server_addrinfo,
     is_lan_addr,
+    is_local_addr,
     is_loopback_addr,
     ip_in_subnet,
     helpful_warning,
@@ -206,15 +207,15 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
 
     remote_ip = cherrypy.request.remote.ip
 
-    # Check for localhost
-    if is_loopback_addr(remote_ip):
-        return True
+    # Check if the client IP is a loopback address or considered local
+    is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
-    if not cfg.local_ranges():
-        # No local ranges defined, allow all private addresses by default
-        is_allowed = is_lan_addr(remote_ip)
-    else:
-        is_allowed = any(ip_in_subnet(remote_ip, r) for r in cfg.local_ranges())
+    # Never check the XFF header unless access would have been granted based on the remote IP alone!
+    if is_allowed and cfg.verify_xff_header() and (xff_header := cherrypy.request.headers.get("X-Forwarded-For")):
+        xff_ips = [ip.strip() for ip in xff_header.split(",")]
+        is_allowed = all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)
+        if not is_allowed:
+            logging.debug("Denying access based on X-Forwarded-For header '%s'", xff_header)
 
     if not is_allowed and warn_user:
         log_warning_and_ip(T("Refused connection from:"))
@@ -684,10 +685,8 @@ class ConfigPage:
         conf["cmdline"] = sabnzbd.CMDLINE
         conf["build"] = sabnzbd.__baseline__[:7]
 
-        conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
-        conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
+        conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
         conf["ssl_version"] = ssl.OPENSSL_VERSION
@@ -786,7 +785,6 @@ SWITCH_LIST = (
     "sfv_check",
     "deobfuscate_final_filenames",
     "folder_rename",
-    "load_balancing",
     "quota_size",
     "quota_day",
     "quota_resume",
@@ -800,7 +798,6 @@ SWITCH_LIST = (
     "no_series_dupes",
     "series_propercheck",
     "script_can_fail",
-    "new_nzb_on_failure",
     "unwanted_extensions",
     "action_on_unwanted_extensions",
     "unwanted_extensions_mode",
@@ -852,6 +849,7 @@ SPECIAL_BOOL_LIST = (
     "start_paused",
     "preserve_paused_state",
     "no_penalties",
+    "ipv6_servers",
     "fast_fail",
     "overwrite_files",
     "enable_par_cleanup",
@@ -860,8 +858,8 @@ SPECIAL_BOOL_LIST = (
     "api_warnings",
     "helpful_warnings",
     "ampm",
+    "enable_multipar",
     "enable_unrar",
-    "enable_unzip",
     "enable_7zip",
     "enable_filejoin",
     "enable_tsjoin",
@@ -872,6 +870,7 @@ SPECIAL_BOOL_LIST = (
     "ipv6_hosting",
     "keep_awake",
     "empty_postproc",
+    "new_nzb_on_failure",
     "html_login",
     "wait_for_dfolder",
     "enable_broadcast",
@@ -881,6 +880,7 @@ SPECIAL_BOOL_LIST = (
     "x_frame_options",
     "allow_old_ssl_tls",
     "enable_season_sorting",
+    "verify_xff_header",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
@@ -894,7 +894,6 @@ SPECIAL_VALUE_LIST = (
     "receive_threads",
     "switchinterval",
     "direct_unpack_threads",
-    "ipv6_servers",
     "selftest_host",
     "ssdp_broadcast_interval",
 )
@@ -1164,17 +1163,6 @@ def unique_svr_name(server):
     return new_name
 
 
-def check_server(host, port, ajax):
-    """Check if server address resolves properly"""
-    if host.lower() == "localhost" and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse(T("Warning: LOCALHOST is ambiguous, use numerical IP-address."), ajax)
-
-    if get_server_addrinfo(host, int_conv(port)):
-        return ""
-    else:
-        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
-
-
 def handle_server(kwargs, root=None, new_svr=False):
     """Internal server handler"""
     ajax = kwargs.get("ajax")
@@ -1194,9 +1182,8 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        msg = check_server(host, port, ajax)
-        if msg:
-            return msg
+        if not get_server_addrinfo(host, int_conv(port)):
+            return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
     # Default server name is just the host name
     server = host

@@ -112,32 +112,32 @@ else:
     </div><!-- /section -->
 </div><!-- /colmask -->
 <script type="text/javascript">
-    \$('#action').on('change', function() {
+    jQuery('#action').on('change', function() {
         // Set the action
-        \$('#arguments').val((\$(this).find('option:selected').data('action')))
+        jQuery('#arguments').val((jQuery(this).find('option:selected').data('action')))
 
         // Is it speedlimit?
-        if(\$(this).find('option:selected').val() == 'speedlimit') {
-            \$('#hidden_arguments').show()
-            \$('#hidden_arguments input').attr('placeholder', 'Bytes/s, "1M" = 1 MB/s, "500K" = 500 KB/s')
+        if(jQuery(this).find('option:selected').val() == 'speedlimit') {
+            jQuery('#hidden_arguments').show()
+            jQuery('#hidden_arguments input').attr('placeholder', 'Bytes/s, "1M" = 1 MB/s, "500K" = 500 KB/s')
         } else {
-            \$('#hidden_arguments').hide()
-            \$('#hidden_arguments input').attr('placeholder', '')
+            jQuery('#hidden_arguments').hide()
+            jQuery('#hidden_arguments input').attr('placeholder', '')
         }
 
         /* Arguments - since we only have speedlimit with arguments, disabled for now
-        if(\$(this).find('option:selected').data('noarg')) {
-            \$('#hidden_arguments').hide()
+        if(jQuery(this).find('option:selected').data('noarg')) {
+            jQuery('#hidden_arguments').hide()
         } else {
-            \$('#hidden_arguments').show()
+            jQuery('#hidden_arguments').show()
         }*/
     })
 
-    \$('[name="schedenabled"]').click(function() {
-        \$.ajax({
+    jQuery('[name="schedenabled"]').click(function() {
+        jQuery.ajax({
             type: "POST",
             url: "toggleSchedule",
-            data: {line: \$(this).val(), apikey: "$apikey" }
+            data: {line: jQuery(this).val(), apikey: "$apikey" }
         }).done(function() {
             // Let us leave!
             formWasSubmitted = true;

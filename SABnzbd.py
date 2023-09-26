@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -244,7 +244,7 @@ def print_version():
             """
 %s-%s
 
-Copyright (C) 2007-2023 The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2007-2023 The SABnzbd-Team (sabnzbd.org)
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -448,7 +448,8 @@ def print_modules():
 
     if sabnzbd.WIN32 and sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
-    elif sabnzbd.newsunpack.PAR2_COMMAND:
+
+    if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
         logging.error(T("par2 binary... NOT found!"))
@@ -470,18 +471,12 @@ def print_modules():
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
 
-    # If available, we prefer 7zip over unzip
     if sabnzbd.newsunpack.SEVENZIP_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVENZIP_COMMAND)
         if not (sabnzbd.WIN32 or sabnzbd.MACOS):
             logging.info("7za binary version %s", sabnzbd.newsunpack.SEVENZIP_VERSION)
     else:
-        logging.info(T("7za binary... NOT found!"))
-
-        if sabnzbd.newsunpack.ZIP_COMMAND:
-            logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
-        else:
-            logging.info(T("unzip binary... NOT found!"))
+        logging.warning(T("7za binary... NOT found!"))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
@@ -628,10 +623,6 @@ def get_webhost(cherryhost, cherryport, https_port):
                 socket.getaddrinfo(cherryhost, None)
             except socket.error:
                 cherryhost = cherryhost.strip("[]")
-
-    if ipv6 and ipv4 and not is_localhost(browserhost):
-        sabnzbd.AMBI_LOCALHOST = True
-        logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))

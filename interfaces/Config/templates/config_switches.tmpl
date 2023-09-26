@@ -19,15 +19,6 @@
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
-                        <label class="config" for="load_balancing">$T('opt-load_balancing')</label>
-                        <select name="load_balancing" id="load_balancing">
-                            <option value="0" <!--#if $load_balancing == 0 then 'selected="selected"' else ""#--> >$T('no-load-balancing')</option>
-                            <option value="1" <!--#if $load_balancing == 1 then 'selected="selected"' else ""#--> >$T('load-balancing')</option>
-                            <option value="2" <!--#if $load_balancing == 2 then 'selected="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
-                        </select>
-                        <span class="desc">$T('explain-load_balancing')</span>
-                    </div>
-                    <div class="field-pair">
                         <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
                         <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />
                         <span class="desc">$T('explain-max_art_tries')</span>
@@ -233,11 +224,6 @@
                         <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-script_can_fail')</span>
                     </div>
-                    <div class="field-pair advanced-settings">
-                        <label class="config" for="new_nzb_on_failure">$T('opt-new_nzb_on_failure')</label>
-                        <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-new_nzb_on_failure')</span>
-                    </div>
                     <div class="field-pair">
                         <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
                         <input type="checkbox" name="ignore_samples" id="ignore_samples" value="1" <!--#if int($ignore_samples) > 0 then 'checked="checked"' else ""#--> />
@@ -353,12 +339,12 @@
 </div><!-- /colmask -->
 
 <script type="text/javascript">
-\$(document).ready(function() {
-    \$('#history_retention_select, #history_retention_number').on('change', updateHistoryRetention)
+jQuery(document).ready(function() {
+    jQuery('#history_retention_select, #history_retention_number').on('change', updateHistoryRetention)
     function updateHistoryRetention() {
-        var retention_setting = \$('#history_retention')
-        var retention_select = \$('#history_retention_select').val()
-        var retention_number = \$('#history_retention_number')
+        var retention_setting = jQuery('#history_retention')
+        var retention_select = jQuery('#history_retention_select').val()
+        var retention_number = jQuery('#history_retention_number')
         // Keep all or keep none
         if(retention_select == "0" || retention_select == "-1") {
             retention_number.hide()
@@ -386,24 +372,24 @@
         }
     }
     // Set the history-retention settig
-    var retention_setting_value = \$('#history_retention').val()
+    var retention_setting_value = jQuery('#history_retention').val()
     if(parseInt(retention_setting_value) > 0) {
         // Days or number?
         if(retention_setting_value.indexOf("d") !== -1) {
-            \$('#history_retention_select').val("d")
+            jQuery('#history_retention_select').val("d")
         } else {
-            \$('#history_retention_select').val("n")
+            jQuery('#history_retention_select').val("n")
         }
-        \$('#history_retention_number').val(parseInt(retention_setting_value))
+        jQuery('#history_retention_number').val(parseInt(retention_setting_value))
     } else {
         // Keep all or keep none
-        \$('#history_retention_select').val(retention_setting_value)
-        \$('#history_retention_number').hide()
+        jQuery('#history_retention_select').val(retention_setting_value)
+        jQuery('#history_retention_number').hide()
     }
 
-    \$('.restoreDefaults').click(function(e) {
+    jQuery('.restoreDefaults').click(function(e) {
         // Get section name
-        var sectionName = \$(this).parents('.section').find('.col2 h3').text().trim()
+        var sectionName = jQuery(this).parents('.section').find('.col2 h3').text().trim()
 
         // Confirm?
         if(!confirm("$T('explain-restoreDefaults') \""+sectionName+"\"\n$T('confirm')")) return false
@@ -411,11 +397,11 @@
 
         // Need to get all the input values, so same way as saving normally
         var key_container = {}
-        \$(this).parents('.section').extractFormDataTo(key_container);
+        jQuery(this).parents('.section').extractFormDataTo(key_container);
         key_container = Object.keys(key_container)
 
         // Send request
-        \$.ajax({
+        jQuery.ajax({
             type: "GET",
             url: "../../api",
             data: "mode=set_config_default&apikey=${apikey}&output=json&keyword=" + key_container.join('&keyword=')

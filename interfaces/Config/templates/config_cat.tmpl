@@ -105,29 +105,29 @@
 </div>
 <script type="text/javascript" src="${root}staticcfg/js/jquery-ui.min.js"></script>
 <script type="text/javascript">
-    \$(document).ready(function() {
-        \$('.delCat').click(function() {
-            var theForm = \$(this).closest("form");
+    jQuery(document).ready(function() {
+        jQuery('.delCat').click(function() {
+            var theForm = jQuery(this).closest("form");
             theForm.attr("action", "delete").submit();
         });
 
         // Add autocomplete and file-browser
-        \$('.fileBrowserSmall').typeahead({appendTo: 'body'}).fileBrowser();
+        jQuery('.fileBrowserSmall').typeahead({appendTo: 'body'}).fileBrowser();
 
         // Make categories sortable
-        \$('.padTable').sortable({
+        jQuery('.padTable').sortable({
             items: '.sorting-row',
             containment: '.colmask',
             axis: 'y',
             update: function(event, ui) {
-                \$('.Categories form.sorting-row').each(function(index, elm) {
+                jQuery('.Categories form.sorting-row').each(function(index, elm) {
                     // Update order of all elements
                     if(index != elm.order.value) {
                         elm.order.value = index
                         // Submit changed order
                         var data = {}
-                        \$(elm).extractFormDataTo(data);
-                        \$.ajax({
+                        jQuery(elm).extractFormDataTo(data);
+                        jQuery.ajax({
                             type: "GET",
                             url: window.location.pathname + 'save',
                             data: data,

@@ -551,43 +551,43 @@ function urlencode(str) {
     return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
 
-\$(document).ready(function(){
-    \$('.favicon').each(function(i, theContainer) {
+jQuery(document).ready(function(){
+    jQuery('.favicon').each(function(i, theContainer) {
         // Easy favicon grabber
-        var favUrl = '//' + \$(theContainer).data('domain') + '/favicon.ico'
+        var favUrl = '//' + jQuery(theContainer).data('domain') + '/favicon.ico'
 
         // Does the image exist? Otherwise place a glyphicon
         var testFavImg = new Image();
         testFavImg.src = favUrl;
         testFavImg.onerror = function (evt){
-            \$(theContainer).append('<span class="glyphicon glyphicon-list"></span>')
+            jQuery(theContainer).append('<span class="glyphicon glyphicon-list"></span>')
         }
     })
 
-    \$('.tabs a').click(function (e) {
+    jQuery('.tabs a').click(function (e) {
         e.preventDefault()
-        \$(this).tab('show')
+        jQuery(this).tab('show')
     })
 
-    \$('.editFeed').click(function(){
-        var oldURI = \$(this).prev().val();
-        var whichFeed = \$(this).attr("rel");
+    jQuery('.editFeed').click(function(){
+        var oldURI = jQuery(this).prev().val();
+        var whichFeed = jQuery(this).attr("rel");
 
         // Fill the values
-        \$('#feed_edit_name_label').text(whichFeed)
-        \$('#feed_edit_old_name').val(whichFeed)
-        \$('#feed_edit_new_name').val(whichFeed)
-        \$('#feed_edit_url').val(oldURI)
+        jQuery('#feed_edit_name_label').text(whichFeed)
+        jQuery('#feed_edit_old_name').val(whichFeed)
+        jQuery('#feed_edit_new_name').val(whichFeed)
+        jQuery('#feed_edit_url').val(oldURI)
 
         // Show the modal
-        \$('#rss_edit_modal').modal('show');
+        jQuery('#rss_edit_modal').modal('show');
     });
 
-    \$('.delFeed').click(function(e){
+    jQuery('.delFeed').click(function(e){
         e.preventDefault();
         if ( confirm("$T('confirm')") ) {
-            var whichFeed = \$(this).attr("rel");
-            \$.ajax({
+            var whichFeed = jQuery(this).attr("rel");
+            jQuery.ajax({
                 type: "POST",
                 url: "del_rss_feed",
                 data: {feed: whichFeed, apikey: "$apikey" }
@@ -600,9 +600,9 @@ function urlencode(str) {
         }
     });
 
-    \$('.toggleFeedCheckbox').click(function(){
-        var whichFeed = \$(this).attr("rel");
-        \$.ajax({
+    jQuery('.toggleFeedCheckbox').click(function(){
+        var whichFeed = jQuery(this).attr("rel");
+        jQuery.ajax({
             type: "POST",
             url: "toggle_rss_feed",
             data: {feed: whichFeed, apikey: "$apikey" }
@@ -615,34 +615,34 @@ function urlencode(str) {
     });
 
     // Only the Accept filter needs all the options
-    \$('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
-        \$(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', \$(this).val() != "A" && \$(this).val() != "S")
+    jQuery('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
+        jQuery(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', jQuery(this).val() != "A" && jQuery(this).val() != "S")
     })
     // Trigger on-load for all
-    \$('.disabled_options_rule').find('td select:not([name="filter_type"])').attr('disabled', true)
+    jQuery('.disabled_options_rule').find('td select:not([name="filter_type"])').attr('disabled', true)
 
     function setActiveIcon(objButton) {
         // Let's make it look like things are happening!
-        \$(objButton).attr('disabled', true)
-        \$(objButton).find('span').remove()
-        \$(objButton).prepend('<span class="glyphicon glyphicon-transfer"></span>')
+        jQuery(objButton).attr('disabled', true)
+        jQuery(objButton).find('span').remove()
+        jQuery(objButton).prepend('<span class="glyphicon glyphicon-transfer"></span>')
     }
 
     // Enable sorting and set default
-    if (\$('#rss-tab-matched table').length) {
-        \$('#rss-tab-matched table').tablesort().data('tablesort').sort(\$('#rss-tab-matched th.default-sort'), 'desc');
+    if (jQuery('#rss-tab-matched table').length) {
+        jQuery('#rss-tab-matched table').tablesort().data('tablesort').sort(jQuery('#rss-tab-matched th.default-sort'), 'desc');
     }
-    if (\$('#rss-tab-not-matched table').length) {
-        \$('#rss-tab-not-matched table').tablesort().data('tablesort').sort(\$('#rss-tab-not-matched th.default-sort'), 'desc');
+    if (jQuery('#rss-tab-not-matched table').length) {
+        jQuery('#rss-tab-not-matched table').tablesort().data('tablesort').sort(jQuery('#rss-tab-not-matched th.default-sort'), 'desc');
     }
-    if (\$('#rss-tab-done table').length) {
-        \$('#rss-tab-done table').tablesort().data('tablesort').sort(\$('#rss-tab-done th.default-sort'), 'desc');
+    if (jQuery('#rss-tab-done table').length) {
+        jQuery('#rss-tab-done table').tablesort().data('tablesort').sort(jQuery('#rss-tab-done th.default-sort'), 'desc');
     }
 
-    \$('.testFeed').click(function(){
+    jQuery('.testFeed').click(function(){
         setActiveIcon(this)
-        var whichFeed = \$(this).attr("rel");
-        \$.ajax({
+        var whichFeed = jQuery(this).attr("rel");
+        jQuery.ajax({
             type: "POST",
             url: "test_rss_feed",
             data: {feed: whichFeed, apikey: "$apikey" }
@@ -654,34 +654,34 @@ function urlencode(str) {
         });
     });
 
-    \$('.cleanFeed').click(function(){
+    jQuery('.cleanFeed').click(function(){
         setActiveIcon(this)
-        var theForm = \$(this).closest("form");
+        var theForm = jQuery(this).closest("form");
         theForm.attr("action", "clean_rss_jobs").submit();
     });
 
-    \$('.evalFeed').click(function(){
+    jQuery('.evalFeed').click(function(){
         setActiveIcon(this)
-        var theForm = \$(this).closest("form");
+        var theForm = jQuery(this).closest("form");
         theForm.attr("action", "eval_rss_feed").submit();
     });
 
-    \$('.delFilter').click(function(){
-        var theForm = \$(this).closest("form");
+    jQuery('.delFilter').click(function(){
+        var theForm = jQuery(this).closest("form");
         theForm.attr("action", "del_rss_filter").submit();
     });
 
-    \$('form[action="download"]').ajaxForm({
+    jQuery('form[action="download"]').ajaxForm({
         datatype: 'json',
         beforeSubmit: function (_, form) {
-            \$(form).find('button').attr("disabled", "disabled")
+            jQuery(form).find('button').attr("disabled", "disabled")
             // Remove icon and add new one
-            \$(form).find('button span').remove()
-            \$(form).find('button').prepend('<span class="glyphicon glyphicon-transfer"></span>')
+            jQuery(form).find('button span').remove()
+            jQuery(form).find('button').prepend('<span class="glyphicon glyphicon-transfer"></span>')
         },
         success: function (_, _, _, form) {
             // Set success
-            \$(form).find('button').html('<span class="glyphicon glyphicon-ok"></span> $T('rss-added')')
+            jQuery(form).find('button').html('<span class="glyphicon glyphicon-ok"></span> $T('rss-added')')
         }
     });
 

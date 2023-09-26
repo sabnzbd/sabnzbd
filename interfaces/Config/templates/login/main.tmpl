@@ -15,6 +15,9 @@
 
     <link rel="stylesheet" type="text/css" href="../staticcfg/bootstrap/css/bootstrap.min.css?v=$version" />
     <link rel="stylesheet" type="text/css" href="../staticcfg/css/login.css?v=$version" />
+    <!--#if $color_scheme not in ('Light', '') #-->
+    <link rel="stylesheet" type="text/css" href="../staticcfg/css/${color_scheme}.css?v=$version"/>
+    <!--#end if#-->
 
     <script type="text/javascript" src="../staticcfg/js/jquery-3.5.1.min.js?v=$version"></script>
     <script type="text/javascript" src="../staticcfg/bootstrap/js/bootstrap.min.js?v=$version"></script>
@@ -47,14 +50,14 @@
         </div>
         <script type="text/javascript">
             // Tooltip
-            \$('[data-toggle="tooltip"]').tooltip()
+            jQuery('[data-toggle="tooltip"]').tooltip()
             // Try-catch in case somebody disabled localstorage
             try {
                 // Set what was done previously
-                \$('input[type="checkbox"]').prop('checked', localStorage.getItem("remember_me") === 'true')
+                jQuery('input[type="checkbox"]').prop('checked', localStorage.getItem("remember_me") === 'true')
                 // Store if we change something
-                \$('input[type="checkbox"]').on('change', function() {
-                    localStorage.setItem("remember_me", \$(this).is(':checked'));
+                jQuery('input[type="checkbox"]').on('change', function() {
+                    localStorage.setItem("remember_me", jQuery(this).is(':checked'));
                 })
             } catch(err) { }
         </script>

@@ -145,10 +145,10 @@
                         <a href="#queue-tab" data-toggle="tab">$T('menu-queue') <span class="badge" data-bind="text: queue.totalItems"></span></a>
                     </li>
                     <li>
-                        <a href="#history-tab" data-toggle="tab">$T('menu-history')<span class="badge" data-bind="text: history.totalItems"></span></a>
+                        <a href="#history-tab" data-toggle="tab">$T('menu-history') <span class="badge badge-info" data-bind="text: history.ppItems, visible: history.ppItems"></span><span class="badge" data-bind="text: history.totalItems"></span></a>
                     </li>
                     <li>
-                        <a href="#queue-messages" data-toggle="tab">$T('warnings')<span class="badge" data-bind="text: hasMessages, css: { 'badge-warning':  hasMessages() }"></span></a>
+                        <a href="#queue-messages" data-toggle="tab">$T('warnings') <span class="badge" data-bind="text: hasMessages, css: { 'badge-warning':  hasMessages() }"></span></a>
                     </li>
                 </ul>
             </div>

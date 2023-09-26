@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2017 The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -157,10 +157,13 @@ def test_sab_binary(binary_path: str):
 
         # Print logs for verification
         with open(os.path.join(config_dir, "logs", "sabnzbd.log"), "r") as log_file:
-            print(log_file.read())
+            # Wait after printing so the output is nicely displayed in case of problems
+            print(log_text := log_file.read())
+            time.sleep(5)
 
-        # So we have time to print the file before the directory is removed
-        time.sleep(5)
+            # Make sure no extra errors/warnings were reported
+            if "ERROR" in log_text or "WARNING" in log_text:
+                raise RuntimeError("Warning or error reported during execution")
 
 
 if __name__ == "__main__":
@@ -241,7 +244,8 @@ if __name__ == "__main__":
             run_external_command([sys.executable, "tools/make_mo.py", "nsis"])
 
             # Remove 32bit external executables
-            delete_files_glob("dist/SABnzbd/win/par2/multipar/par2j.exe")
+            delete_files_glob("dist/SABnzbd/win/par2/par2.exe")
+            delete_files_glob("dist/SABnzbd/win/multipar/par2j.exe")
             delete_files_glob("dist/SABnzbd/win/unrar/UnRAR.exe")
 
             # Run NSIS to build installer
@@ -279,9 +283,8 @@ if __name__ == "__main__":
         # Otherwise the signature of the main application becomes invalid
         if authority:
             files_to_sign = [
-                "osx/par2/par2-sl64",
-                "osx/par2/arm64/par2",
-                "osx/par2/arm64/libomp.dylib",
+                "osx/par2/par2-turbo",
+                "osx/par2/arm64/par2-turbo",
                 "osx/unrar/unrar",
                 "osx/unrar/arm64/unrar",
                 "osx/7zip/7zz",
