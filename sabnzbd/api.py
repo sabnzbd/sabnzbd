@@ -1571,6 +1571,7 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
+        header["web_config_override"] = cfg.web_config_override()
         header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
 
         header["pid"] = os.getpid()

@@ -270,6 +270,8 @@ SKIN_TEXT = {
     "explain-port": TT("Port SABnzbd should listen on."),
     "opt-web_dir": TT("Web Interface"),
     "explain-web_dir": TT("Choose a skin."),
+    "opt-web_config_override": TT("Web Config Override"),
+    "explain-web_config_override": TT("Force web config to use the Light theme"),
     "opt-web_username": TT("SABnzbd Username"),
     "explain-web_username": TT("Optional authentication username."),
     "opt-web_password": TT("SABnzbd Password"),

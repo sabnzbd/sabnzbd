@@ -48,6 +48,11 @@
                         </select>
                         <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url">$caller_url</a></span>
                     </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="web_config_override">$T('opt-web_config_override')</label>
+                        <input type="checkbox" name="web_config_override" id="web_config_override" value="1" <!--#if int($web_config_override) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-web_config_override')</span>
+                    </div>
                     <div class="field-pair">
                         <label class="config" for="language">$T('opt-language')</label>
                         <select name="language" id="language" class="select">

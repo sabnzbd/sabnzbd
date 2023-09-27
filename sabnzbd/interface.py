@@ -949,6 +949,7 @@ GENERAL_LIST = (
     "host",
     "port",
     "username",
+    "web_config_override",
     "language",
     "cache_limit",
     "inet_exposure",
