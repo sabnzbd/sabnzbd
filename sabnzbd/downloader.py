@@ -850,10 +850,10 @@ class Downloader(Thread):
                     self.__request_article(nw)
                     return
 
-            with DOWNLOADER_LOCK:
-                server.busy_threads.remove(nw)
-                server.idle_threads.add(nw)
-                self.remove_socket(nw)
+            # Make socket available again
+            server.busy_threads.discard(nw)
+            server.idle_threads.add(nw)
+            self.remove_socket(nw)
 
     @synchronized(DOWNLOADER_LOCK)
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
