@@ -1,0 +1,10 @@
+name: Feature request
+description: What new feature would you like to have added to SABnzbd?
+labels:
+  - Feature request
+body:
+  - type: textarea
+    attributes:
+      label: Description
+    validations:
+      required: true
