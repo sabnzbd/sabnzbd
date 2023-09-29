@@ -79,7 +79,7 @@ def decode(article: Article, data_view: memoryview):
             logging.debug("Decoding %s", art_id)
 
         if article.nzf.type == "uu":
-            decoded_data = decode_uu(article, raw_data)
+            decoded_data = decode_uu(article, bytes(data_view))
         else:
             decoded_data = decode_yenc(article, data_view)
 
@@ -112,23 +112,23 @@ def decode(article: Article, data_view: memoryview):
 
     except (BadYenc, ValueError):
         # Handles precheck and badly formed articles
-        if nzo.precheck and raw_data and data_view.startswith(b"223 "):
+        if nzo.precheck and data_view and data_view[:4] == b"223 ":
             # STAT was used, so we only get a status code
             article_success = True
         else:
             # Try uu-decoding
-            if (not nzo.precheck) and article.nzf.type != "yenc":
+            if not nzo.precheck and article.nzf.type != "yenc":
                 try:
-                    decoded_data = decode_uu(article, raw_data)
+                    decoded_data = decode_uu(article, bytes(data_view))
                     logging.debug("Found uu-encoded article %s in job %s", art_id, nzo.final_name)
                     article_success = True
-                except Exception:
+                except:
                     pass
             # Only bother with further checks if uu-decoding didn't work out
             if not article_success:
                 # Convert the first 2000 bytes of raw socket data to article lines,
                 # and examine the headers (for precheck) or body (for download).
-                for line in raw_data[:2000].split(b"\r\n"):
+                for line in bytes(data_view[:2000]).split(b"\r\n"):
                     lline = line.lower()
                     if lline.startswith(b"message-id:"):
                         article_success = True
@@ -205,7 +205,7 @@ def decode_yenc(article: Article, data_view: memoryview) -> bytearray:
     return decoded_data
 
 
-def decode_uu(article: Article, raw_data: bytearray) -> bytes:
+def decode_uu(article: Article, raw_data: bytes) -> bytes:
     """Try to uu-decode an article. The raw_data may or may not contain headers.
     If there are headers, they will be separated from the body by at least one
     empty line. In case of no headers, the first line seems to always be the nntp
@@ -229,7 +229,7 @@ def decode_uu(article: Article, raw_data: bytearray) -> bytes:
     # Try to find an empty line separating the body from headers or response
     # code and set the expected payload start to the next line.
     try:
-        uu_start = raw_data[:limit].index(bytearray(b"")) + 1
+        uu_start = raw_data[:limit].index(b"") + 1
     except ValueError:
         # No empty line, look for a response code instead
         if raw_data[0].startswith(b"222 "):
