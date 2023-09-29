@@ -391,8 +391,7 @@ class HistoryDB:
     def get_script_log(self, nzo_id):
         """Return decompressed log file"""
         data = ""
-        t = (nzo_id,)
-        if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
                 data = ubtou(zlib.decompress(self.cursor.fetchone()["script_log"]))
             except:
@@ -401,21 +400,20 @@ class HistoryDB:
 
     def get_name(self, nzo_id):
         """Return name of the job `nzo_id`"""
-        t = (nzo_id,)
         name = ""
-        if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
-                name = self.cursor.fetchone()["name"]
+                return self.cursor.fetchone()["name"]
             except TypeError:
                 # No records found
                 pass
         return name
 
-    def get_path(self, nzo_id: str):
-        """Return the `incomplete` path of the job `nzo_id` if it is still there"""
-        t = (nzo_id,)
+    def get_incomplete_path(self, nzo_id: str):
+        """Return the `incomplete` path of the job `nzo_id` if
+        the job failed and if the path is still there"""
         path = ""
-        if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT path FROM history WHERE nzo_id = ?  AND status = ?""", (nzo_id, Status.FAILED)):
             try:
                 path = self.cursor.fetchone()["path"]
             except TypeError:
@@ -427,8 +425,7 @@ class HistoryDB:
 
     def get_other(self, nzo_id):
         """Return additional data for job `nzo_id`"""
-        t = (nzo_id,)
-        if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
                 item = self.cursor.fetchone()
                 return item["report"], item["url"], item["pp"], item["script"], item["category"]

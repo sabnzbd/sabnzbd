@@ -513,12 +513,12 @@ def _api_history(name, kwargs):
         elif value:
             jobs = value.split(",")
             for job in jobs:
-                path = sabnzbd.PostProcessor.get_path(job)
-                if path:
+                if sabnzbd.PostProcessor.get_path(job):
                     sabnzbd.PostProcessor.delete(job, del_files=del_files)
                 else:
                     history_db = sabnzbd.get_db_connection()
-                    remove_all(history_db.get_path(job), recursive=True)
+                    if del_files:
+                        remove_all(history_db.get_incomplete_path(job), recursive=True)
                     history_db.remove_history(job)
             sabnzbd.misc.history_updated()
             return report()
@@ -1506,7 +1506,7 @@ def retry_job(job, new_nzb=None, password=None):
         if futuretype:
             nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat)
         else:
-            path = history_db.get_path(job)
+            path = history_db.get_incomplete_path(job)
             nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)
         if nzo_id:
             # Only remove from history if we repaired something
