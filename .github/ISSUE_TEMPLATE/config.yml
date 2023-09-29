@@ -2,7 +2,10 @@ blank_issues_enabled: false
 contact_links:
   - name: Support forum
     url: https://forums.sabnzbd.org/
-    about: Support questions can be asked on our forums or Discord server.
+    about: Support questions can be asked on our forums, Reddit or Discord server.
   - name: Discord
     url: https://discord.gg/KQzDe7fvNU
-    about: Support questions can be asked on our forums or Discord server.
+    about: Support questions can be asked on our forums, Reddit or Discord server.
+  - name: Reddit - r/sabnzbd
+    url: https://www.reddit.com/r/sabnzbd
+    about: Support questions can be asked on our forums, Reddit or Discord server.
