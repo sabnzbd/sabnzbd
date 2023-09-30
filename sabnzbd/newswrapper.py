@@ -108,7 +108,7 @@ class NewsWrapper:
             self.server.info = get_server_addrinfo(self.server.host, self.server.port)
 
         # Construct buffer and NNTP object
-        self.data = bytearray(NNTP_BUFFER_SIZE)
+        self.data = sabctools.bytearray_malloc(NNTP_BUFFER_SIZE)
         self.data_view = memoryview(self.data)
         self.reset_data_buffer()
         self.nntp = NNTP(self, self.server.hostip)
@@ -225,9 +225,9 @@ class NewsWrapper:
 
     def increase_data_buffer(self):
         """Resize the buffer in the extremely unlikely case that it overflows"""
-        new_buffer = bytearray(len(self.data) + NNTP_BUFFER_SIZE)
+        new_buffer = sabctools.bytearray_malloc(len(self.data) + NNTP_BUFFER_SIZE / 2)
         new_buffer[: len(self.data)] = self.data
-        logging.info("Increasing buffer from %d to %d for %s", len(self.data), len(new_buffer), str(self))
+        logging.info("Increased buffer from %d to %d for %s", len(self.data), len(new_buffer), str(self))
         self.data = new_buffer
         self.data_view = memoryview(self.data)
 
