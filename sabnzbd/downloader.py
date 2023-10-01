@@ -727,28 +727,7 @@ class Downloader(Thread):
                     for selected in read:
                         self.process_nw(self.read_fds[selected])
 
-                # Check the Assembler queue to see if we need to delay, depending on queue size
-                if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
-                    time.sleep(min((assembler_level - SOFT_QUEUE_LIMIT) / 4, 0.15))
-                    sabnzbd.BPSMeter.delayed_assembler += 1
-                    logged_counter = 0
-
-                    while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
-                        # Only log/update once every second, to not waste any CPU-cycles
-                        if not logged_counter % 10:
-                            # Make sure the BPS-meter is updated
-                            sabnzbd.BPSMeter.update()
-
-                            # Update who is delaying us
-                            logging.debug(
-                                "Delayed - %d seconds - Assembler queue: %d",
-                                logged_counter / 10,
-                                sabnzbd.Assembler.queue.qsize(),
-                            )
-
-                        # Wait and update the queue sizes
-                        time.sleep(0.1)
-                        logged_counter += 1
+                self.check_assembler_levels()
         except:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
@@ -854,6 +833,30 @@ class Downloader(Thread):
             server.busy_threads.discard(nw)
             server.idle_threads.add(nw)
             self.remove_socket(nw)
+
+    def check_assembler_levels(self):
+        """Check the Assembler queue to see if we need to delay, depending on queue size"""
+        if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
+            time.sleep(min((assembler_level - SOFT_QUEUE_LIMIT) / 4, 0.15))
+            sabnzbd.BPSMeter.delayed_assembler += 1
+            logged_counter = 0
+
+            while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
+                # Only log/update once every second, to not waste any CPU-cycles
+                if not logged_counter % 10:
+                    # Make sure the BPS-meter is updated
+                    sabnzbd.BPSMeter.update()
+
+                    # Update who is delaying us
+                    logging.debug(
+                        "Delayed - %d seconds - Assembler queue: %d",
+                        logged_counter / 10,
+                        sabnzbd.Assembler.queue.qsize(),
+                    )
+
+                # Wait and update the queue sizes
+                time.sleep(0.1)
+                logged_counter += 1
 
     @synchronized(DOWNLOADER_LOCK)
     def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
