@@ -230,7 +230,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                     duplicates16k.append(par2info.hash16k)
                     table[par2info.filename].has_duplicate = True
 
-    except Exception as e:
+    except:
         logging.info("Par2 parser crashed in file %s", fname)
         logging.debug("Traceback: ", exc_info=True)
         table = {}

@@ -241,7 +241,7 @@ def launch_a_browser(url, force=False):
         if url and not url.startswith("http"):
             url = "file:///%s" % url
         if webbrowser:
-            webbrowser.open(url, 2, 1)
+            webbrowser.open(url, 2, True)
         else:
             logging.info("Not showing panic message in webbrowser, no support found")
     except:

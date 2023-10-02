@@ -34,7 +34,7 @@ from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
 from sabnzbd import nzbstuff
-from sabnzbd.encoding import utob, correct_unknown_encoding, correct_cherrypy_encoding
+from sabnzbd.encoding import utob, correct_cherrypy_encoding
 from sabnzbd.filesystem import (
     get_filename,
     is_valid_script,
@@ -422,7 +422,6 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 # Get segments
                 raw_article_db = {}
                 file_bytes = 0
-                bad_articles = False
                 if element.find("segments"):
                     for segment in element.find("segments").iter("segment"):
                         try:
@@ -443,14 +442,12 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                         article_id,
                                     )
                                     nzo.increase_bad_articles_counter("duplicate_articles")
-                                    bad_articles = True
                                 else:
                                     logging.info("Skipping duplicate article (%s)", article_id)
                             elif segment_size <= 0 or segment_size >= 2**23:
                                 # Perform sanity check (not negative, 0 or larger than 8MB) on article size
                                 logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
                                 nzo.increase_bad_articles_counter("bad_articles")
-                                bad_articles = True
                             else:
                                 raw_article_db[partnum] = (article_id, segment_size)
                                 file_bytes += segment_size

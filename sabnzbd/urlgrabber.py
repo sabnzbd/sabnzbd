@@ -26,6 +26,7 @@ import logging
 import queue
 import urllib.request
 import urllib.parse
+import urllib.error
 from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
@@ -120,7 +121,7 @@ class URLGrabber(Thread):
                 logging.info("Grabbing URL %s", url)
                 try:
                     fetch_request = _build_request(url)
-                except Exception as e:
+                except (urllib.error.HTTPError, Exception) as e:
                     # Cannot list exceptions here, because of unpredictability over platforms
                     error0 = str(sys.exc_info()[0]).lower()
                     error1 = str(sys.exc_info()[1]).lower()

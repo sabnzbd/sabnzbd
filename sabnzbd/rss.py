@@ -74,8 +74,8 @@ def remove_obsolete(jobs, new_jobs):
 
 RSS_LOCK = threading.RLock()
 _RE_SP = re.compile(r"s*(\d+)[ex](\d+)", re.I)
-_RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
-_RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
+_RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
+_RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 
 
 class RSSReader:

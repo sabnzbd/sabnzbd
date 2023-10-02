@@ -24,7 +24,7 @@ import logging
 import re
 import guessit
 from rebulk.match import MatchesDict
-from string import whitespace, ascii_lowercase, punctuation
+from string import whitespace, punctuation
 from typing import Optional, Union, List, Tuple, Dict
 
 import sabnzbd
@@ -57,7 +57,10 @@ UPPERCASE = ("III", "II", "IV")
 
 REPLACE_AFTER = {"()": "", "..": ".", "__": "_", "  ": " ", " .%ext": ".%ext"}
 
-RE_GI = re.compile(r"(%G([._]?)I<([\w]+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
+RE_GI = re.compile(r"(%G([._]?)I<(\w+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
+RE_LOWERCASE = re.compile(r"{([^{]*)}")
+RE_ENDEXT = re.compile(r"\.%ext}?$", re.I)
+RE_ENDFN = re.compile(r"%fn}?$", re.I)
 
 # Prevent guessit/rebulk from spamming the log when debug logging is active in SABnzbd
 logging.getLogger("rebulk").setLevel(logging.WARNING)
@@ -231,7 +234,7 @@ class Sorter:
     def get_showdescriptions(self):
         """Get the show descriptions based on metadata, guessit and jobname"""
         self.info["ep_name"], self.info["ep_name_two"], self.info["ep_name_three"] = get_descriptions(
-            self.nzo, self.guess, self.original_job_name
+            self.nzo, self.guess
         )
 
     def get_year(self):
@@ -436,7 +439,7 @@ class Sorter:
 
                 try:
                     logging.debug("Renaming season pack file %s to %s", f, f_new)
-                    renamer(self._to_filepath(f, base_path), f_new_path := self._to_filepath(f_new, base_path))
+                    renamer(self._to_filepath(f, base_path), self._to_filepath(f_new, base_path))
                     success = True
                 except Exception:
                     logging.error("Failed to rename file %s to %s in season pack %s", f, f_new, self.original_job_name)
@@ -450,7 +453,7 @@ class Sorter:
                     # * existing files (but not directories),
                     # * that were created as part of this job,
                     # * and didn't qualify for processing in the own right.
-                    if os.path.isfile(os.path.join(base_path, sim_f)) and sim_f in all_job_files and not sim_f in files:
+                    if os.path.isfile(os.path.join(base_path, sim_f)) and sim_f in all_job_files and sim_f not in files:
                         sim_f_new = os.path.basename(sim_f).replace(f_name, f_name_new, 1)
                         logging.debug("Renaming %s to %s (alongside season pack file %s)", sim_f, sim_f_new, f)
                         try:
@@ -470,7 +473,7 @@ class Sorter:
                 )
         return success
 
-    def _rename_sequential(self, sequential_files: List[str], base_path: str) -> bool:
+    def _rename_sequential(self, sequential_files: Dict[str, str], base_path: str) -> bool:
         success = False
         for index, f in sequential_files.items():
             filepath = self._to_filepath(f, base_path)
@@ -581,8 +584,6 @@ class Sorter:
 
 def ends_in_file(path: str) -> bool:
     """Return True when path ends with '.%ext' or '%fn' while allowing for a lowercase marker"""
-    RE_ENDEXT = re.compile(r"\.%ext}?$", re.I)
-    RE_ENDFN = re.compile(r"%fn}?$", re.I)
     return bool(RE_ENDEXT.search(path) or RE_ENDFN.search(path))
 
 
@@ -744,15 +745,13 @@ def get_titles(
 
 def replace_word(word_input: str, one: str, two: str) -> str:
     """Regex replace on just words"""
-    RE_WORD = re.compile(r"\W(%s)(\W|$)" % one, re.I)
-    matches = RE_WORD.findall(word_input)
-    if matches:
+    if matches := re.findall(r"\W(%s)(\W|$)" % one, word_input, re.I):
         for _ in matches:
             word_input = word_input.replace(one, two)
     return word_input
 
 
-def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict], jobname: str) -> Tuple[str, str, str]:
+def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict]) -> Tuple[str, str, str]:
     """Try to get an episode title or similar description from the NZB metadata or jobname, e.g.
     'Download This' in Show.S01E23.Download.This.1080p.HDTV.x264 and return multiple formats"""
     ep_name = None
@@ -772,7 +771,6 @@ def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict], job
 
 def to_lowercase(path: str) -> str:
     """Lowercases any characters enclosed in {}"""
-    RE_LOWERCASE = re.compile(r"{([^{]*)}")
     while True:
         m = RE_LOWERCASE.search(path)
         if not m:

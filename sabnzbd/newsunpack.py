@@ -65,7 +65,6 @@ from sabnzbd.filesystem import (
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
-from sabnzbd.par2file import FilePar2Info
 from sabnzbd.sorting import Sorter
 
 # Regex globals

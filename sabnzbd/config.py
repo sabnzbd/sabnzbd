@@ -57,7 +57,7 @@ CFG_OBJ: configobj.ConfigObj  # Holds INI structure
 CFG_MODIFIED = False  # Signals a change in option dictionary
 # Should be reset after saving to settings file
 
-RE_PARAMFINDER = re.compile(r"""(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)""")
+RE_PARAMFINDER = re.compile(r"""'.*?'|".*?"|[^'",\s][^,]*""")
 
 
 class Option:

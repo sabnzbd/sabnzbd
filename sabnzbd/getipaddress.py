@@ -20,7 +20,6 @@ sabnzbd.getipaddress
 """
 
 import socket
-import multiprocessing.pool
 import functools
 import urllib.request
 import urllib.error
