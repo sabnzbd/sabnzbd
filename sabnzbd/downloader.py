@@ -28,8 +28,7 @@ import socket
 import sys
 import ssl
 from typing import List, Dict, Optional, Union, Set
-import concurrent
-from concurrent.futures import ThreadPoolExecutor, Future
+import queue
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -272,8 +271,6 @@ class Downloader(Thread):
         "bandwidth_limit",
         "bandwidth_perc",
         "sleep_time",
-        "recv_pool",
-        "recv_threads",
         "paused_for_postproc",
         "shutdown",
         "server_restarts",
@@ -283,7 +280,6 @@ class Downloader(Thread):
         "timers",
         "last_max_chunk_size",
         "max_chunk_size",
-        "process_tasks",
     )
 
     def __init__(self, paused=False):
@@ -309,12 +305,6 @@ class Downloader(Thread):
         # Sleep check variables
         self.last_max_chunk_size: int = 0
         self.max_chunk_size: int = _DEFAULT_CHUNK_SIZE
-
-        self.recv_threads: int = cfg.receive_threads()
-        self.recv_pool: Optional[ThreadPoolExecutor] = ThreadPoolExecutor(self.recv_threads)
-        logging.debug("Receive threads: %s", self.recv_threads)
-
-        self.process_tasks: Set[Future[NewsWrapper, int]] = set()
 
         self.paused_for_postproc: bool = False
         self.shutdown: bool = False
@@ -575,6 +565,13 @@ class Downloader(Thread):
         # Check server expiration dates
         check_server_expiration()
 
+        # Initialize queue and threads
+        process_nw_queue: queue.Queue = queue.Queue()
+        for _ in range(cfg.receive_threads()):
+            # Started as daemon, so we don't need any shutdown logic in the worker
+            # The Downloader code will make sure shutdown is handled gracefully
+            Thread(target=self.process_nw_worker, args=(process_nw_queue,), daemon=True).start()
+
         # Catch all errors, just in case
         try:
             while 1:
@@ -713,26 +710,33 @@ class Downloader(Thread):
                 if not read:
                     continue
 
-                if self.recv_threads > 1:
-                    # Submit a process_nw task to the pool for every NewWrapper which is readable
-                    for selected in read:
-                        self.process_tasks.add(self.recv_pool.submit(self.process_nw, self.read_fds[selected]))
+                # Submit a process_nw task to the pool for every NewWrapper which is readable
+                for selected in read:
+                    process_nw_queue.put(self.read_fds[selected])
+                # Wait for all the tasks to complete
+                process_nw_queue.join()
 
-                    # Wait for all the tasks to complete
-                    concurrent.futures.wait(self.process_tasks)
-
-                    # Clear task list
-                    self.process_tasks.clear()
-                else:
-                    for selected in read:
-                        self.process_nw(self.read_fds[selected])
-
+                # Check if we need to pause because the assembler is full
                 self.check_assembler_levels()
         except:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
+    def process_nw_worker(self, nw_queue: queue.Queue):
+        """Worker for the daemon thread to process results.
+        Wrapped in try/except because in case of an exception, logging
+        might get lost and the queue.join() would block forever."""
+        try:
+            logging.debug("Starting Downloader receive thread")
+            while True:
+                self.process_nw(nw_queue.get())
+                nw_queue.task_done()
+        except:
+            # We cannot break out of the Downloader from here, so just pause
+            logging.error(T("Fatal error in Downloader"), exc_info=True)
+            self.pause()
+
     def process_nw(self, nw: NewsWrapper):
-        """Receive data from NewsWrapper and handle response"""
+        """Receive data from a NewsWrapper and handle the response"""
         try:
             bytes_received, done = nw.recv_chunk()
         except ssl.SSLWantReadError:
