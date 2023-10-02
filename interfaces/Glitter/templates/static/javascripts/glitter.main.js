@@ -732,11 +732,17 @@ function ViewModel() {
             return false;
         }
 
+        // Disable the buttons to prevent multiple uploads
+        let submit_buttons = $(form).find("input[type='submit']")
+        submit_buttons.attr("disabled", true)
+
         // Upload file using the method we also use for drag-and-drop
         if ($(form.nzbFile)[0].files[0]) {
             self.addNZBFromFile($(form.nzbFile)[0].files);
             // Hide modal, upload will reset the form
             $("#modal-add-nzb").modal("hide");
+            // Re-enable the buttons
+            submit_buttons.attr("disabled", false)
         } else if ($(form.nzbURL).val()) {
             // Or add URL
             var theCall = {
@@ -760,6 +766,7 @@ function ViewModel() {
                 $("#modal-add-nzb").modal("hide");
                 form.reset()
                 $('#nzbname').val('')
+                submit_buttons.attr("disabled", false)
             });
         }
     }
