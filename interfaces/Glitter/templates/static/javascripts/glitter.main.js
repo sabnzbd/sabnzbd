@@ -90,7 +90,7 @@ function ViewModel() {
         var speedLimitNumber = Math.round(speedLimitNumberFull * 10) / 10;
 
         // Fix it for lower than 1MB/s
-        if (bandwithLimitText == 'M' && speedLimitNumber < 1) {
+        if (bandwithLimitText === 'M' && speedLimitNumber < 1) {
             bandwithLimitText = 'K';
             speedLimitNumber = Math.round(speedLimitNumberFull * 1024);
         }
@@ -154,7 +154,7 @@ function ViewModel() {
             // Only the queue will fire the multi-edit update
             model.doMultiEditUpdate?.();
         } else {
-            model.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+            model.multiEditItems.remove(function(inList) { return inList.id === item.id; })
         }
 
         self.updateCheckAllButtonState(section);
@@ -244,7 +244,7 @@ function ViewModel() {
         /***
             Possible login failure?
         ***/
-        if (response.hasOwnProperty('error') && response.error == 'Missing authentication') {
+        if (response.hasOwnProperty('error') && response.error === 'Missing authentication') {
             // Restart
             document.location = document.location;
         }
@@ -265,7 +265,7 @@ function ViewModel() {
         self.diskSpaceLeft1(response.queue.diskspace1_norm)
 
         // Same sizes? Then it's all 1 disk!
-        if (response.queue.diskspace1 != response.queue.diskspace2) {
+        if (response.queue.diskspace1 !== response.queue.diskspace2) {
             self.diskSpaceLeft2(response.queue.diskspace2_norm)
         } else {
             self.diskSpaceLeft2('')
@@ -290,7 +290,7 @@ function ViewModel() {
             Spark line
         ***/
         // Break the speed if empty queue
-        if (response.queue.sizeleft == '0 B') {
+        if (response.queue.sizeleft === '0 B') {
             response.queue.kbpersec = 0;
             response.queue.speed = '0';
         }
@@ -309,9 +309,9 @@ function ViewModel() {
         self.speedHistory.push(parseInt(response.queue.kbpersec));
 
         // Is sparkline visible? Not on small mobile devices..
-        if ($('.sparkline-container').css('display') != 'none') {
+        if ($('.sparkline-container').css('display') !== 'none') {
             // Make sparkline
-            if (self.speedHistory.length == 1) {
+            if (self.speedHistory.length === 1) {
                 // We only use speedhistory from SAB if we use global settings
                 // Otherwise SAB doesn't know the refresh rate
                 if (!self.useGlobalOptions()) {
@@ -346,7 +346,7 @@ function ViewModel() {
             Speedlimit
         ***/
         // Nothing or 0 means 100%
-        if(response.queue.speedlimit == '' || response.queue.speedlimit == '0') {
+        if(response.queue.speedlimit === '' || response.queue.speedlimit === '0') {
             self.speedLimitInt(100)
         } else {
             self.speedLimitInt(parseInt(response.queue.speedlimit));
@@ -369,7 +369,7 @@ function ViewModel() {
 
         // Paused main queue
         if (self.downloadsPaused()) {
-            if (response.queue.pause_int == '0') {
+            if (response.queue.pause_int === '0') {
                 timeString = glitterTranslate.paused;
             } else {
                 var pauseSplit = response.queue.pause_int.split(/:/);
@@ -438,7 +438,7 @@ function ViewModel() {
             .done(self.updateQueue)
             .fail(function(response) {
                 // Catch the failure of authorization error
-                if (response.status == 401) {
+                if (response.status === 401) {
                     // Stop refresh and reload
                     clearInterval(self.interval)
                     location.reload();
@@ -488,7 +488,7 @@ function ViewModel() {
                 api_request[keyword] = parsed_query[keyword]
             }
             // Special case for priority, dirty replace of string by numeric value
-            if (keyword == "priority" && api_request["priority"]) {
+            if (keyword === "priority" && api_request["priority"]) {
                 for (const prio_name in self.queue.priorityName) {
                     api_request["priority"] = api_request["priority"].replace(prio_name, self.queue.priorityName[prio_name])
 
@@ -606,7 +606,7 @@ function ViewModel() {
     // Update the warnings
     self.nrWarnings.subscribe(function(newValue) {
         // Really any change?
-        if (newValue == self.allWarnings().length) return;
+        if (newValue === self.allWarnings().length) return;
 
         // Get all warnings
         callAPI({
@@ -628,7 +628,7 @@ function ViewModel() {
                         type: glitterTranslate.status[warning.type].slice(0, -1),
                         text: convertHTMLtoText(warning.text).replace(/ /g, '\u00A0').replace(/(?:\r\n|\r|\n)/g, '<br />'),
                         timestamp: warning.time,
-                        css: (warning.type == "ERROR" ? "danger" : warning.type == "WARNING" ? "warning" : "info"),
+                        css: (warning.type === "ERROR" ? "danger" : warning.type === "WARNING" ? "warning" : "info"),
                         clear: self.clearWarnings
                     };
                     self.allWarnings.push(warningData)
@@ -648,7 +648,7 @@ function ViewModel() {
     // Clear messages
     self.clearMessages = function(whatToRemove) {
         // Remove specifc type of messages
-        self.allMessages.remove(function(item) { return item.index == whatToRemove });
+        self.allMessages.remove(function(item) { return item.index === whatToRemove });
         // Now so we don't show again today
         localStorageSetItem(whatToRemove, Date.now())
     }
@@ -659,7 +659,7 @@ function ViewModel() {
         if (!self.speedLimitInt()) return;
 
         // Update
-        if (self.speedLimitInt() != newValue) {
+        if (self.speedLimitInt() !== newValue) {
             callAPI({
                 mode: "config",
                 name: "speedlimit",
@@ -756,7 +756,7 @@ function ViewModel() {
             }
 
             // Optional, otherwise they get mis-labeled if left empty
-            if ($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
+            if ($('#modal-add-nzb select[name="Category"]').val() !== '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
             if ($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
 
             // Add
@@ -786,7 +786,7 @@ function ViewModel() {
         fileindex++
 
         // Check if it's maybe a folder, we can't handle those
-        if (!file.type && file.size % 4096 == 0) return;
+        if (!file.type && file.size % 4096 === 0) return;
 
         // Add notification
         showNotification('.main-notification-box-uploading', 0, fileindex)
@@ -802,7 +802,7 @@ function ViewModel() {
         data.append("apikey", apiKey);
 
         // Optional, otherwise they get mis-labeled if left empty
-        if ($('#modal-add-nzb select[name="Category"]').val() != '*') data.append("cat", $('#modal-add-nzb select[name="Category"]').val());
+        if ($('#modal-add-nzb select[name="Category"]').val() !== '*') data.append("cat", $('#modal-add-nzb select[name="Category"]').val());
         if ($('#modal-add-nzb select[name="Processing"]').val()) data.append("pp", $('#modal-add-nzb select[name="Processing"]').val());
 
         // Add this one
@@ -834,10 +834,10 @@ function ViewModel() {
     // Load status info
     self.loadStatusInfo = function(item, event) {
         // Full refresh? Only on click and for the status-screen
-        var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
+        var statusFullRefresh = (event !== undefined) && $('#options-status').hasClass('active');
 
         // Measure performance? Takes a while
-        var statusPerformance = (event != undefined) && $(event.currentTarget).hasClass('diskspeed-button');
+        var statusPerformance = (event !== undefined) && $(event.currentTarget).hasClass('diskspeed-button');
 
         // Make it spin if the user requested it otherwise we don't,
         // because browsers use a lot of CPU for the animation
@@ -877,7 +877,7 @@ function ViewModel() {
             }
 
             // Update the servers
-            if (self.statusInfo.servers().length != data.status.servers.length) {
+            if (self.statusInfo.servers().length !== data.status.servers.length) {
                 // Empty them, in case of update
                 self.statusInfo.servers([])
 
@@ -929,7 +929,7 @@ function ViewModel() {
         var nzbSize = $(event.target).data('size')
 
         // Maybe it was a click on the icon?
-        if (nzbSize == undefined) {
+        if (nzbSize === undefined) {
             nzbSize = $(event.target.parentElement).data('size')
         }
 
@@ -1011,7 +1011,7 @@ function ViewModel() {
         $('#options-orphans [data-tooltip="true"]').tooltip('hide')
 
         // Show notification on delete
-        if ($(htmlElement.currentTarget).data('action') == 'delete_orphan') {
+        if ($(htmlElement.currentTarget).data('action') === 'delete_orphan') {
             showNotification('.main-notification-box-removing', 1000)
         } else {
             // Adding back to queue
@@ -1225,7 +1225,7 @@ function ViewModel() {
         // Reformat and set categories
         self.queue.categoriesList($.map(response.config.categories, function(cat) {
             // Default?
-            if(cat.name == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
+            if(cat.name === '*') return { catValue: '*', catText: glitterTranslate.defaultText };
             return { catValue: cat.name, catText: cat.name };
         }))
 
@@ -1237,7 +1237,7 @@ function ViewModel() {
                 // Reformat script-list
                 self.queue.scriptsList($.map(script_response.scripts, function(script) {
                     // None?
-                    if(script == 'None') return { scriptValue: 'None', scriptText: glitterTranslate.noneText };
+                    if(script === 'None') return { scriptValue: 'None', scriptText: glitterTranslate.noneText };
                     return { scriptValue: script, scriptText: script };
                 }))
                 self.queue.scriptsListLoaded(true)
@@ -1321,7 +1321,7 @@ function ViewModel() {
         // Orphaned folders? If user clicked away we check again in 5 days
         if (self.statusInfo.folders().length >= 3 && orphanMsg) {
             // Check if not already there
-            if (!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index == 'OrphanedMsg' })) {
+            if (!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index === 'OrphanedMsg' })) {
                 self.allMessages.push({
                     index: 'OrphanedMsg',
                     type: glitterTranslate.status['INFO'],
@@ -1333,7 +1333,7 @@ function ViewModel() {
         } else {
             // Remove any message, if it was there
             self.allMessages.remove(function(item) {
-                return item.index == 'OrphanedMsg';
+                return item.index === 'OrphanedMsg';
             })
         }
     })

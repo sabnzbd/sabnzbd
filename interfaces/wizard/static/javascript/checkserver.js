@@ -56,12 +56,12 @@ $(document).ready(function() {
     $('#ssl').click(function() {
         if(this.checked) {
             // Enabled SSL change port when not already a custom port
-            if($('#port').val() == '119') {
+            if($('#port').val() === '119') {
                 $('#port').val('563')
             }
         } else {
             // Remove SSL port
-            if($('#port').val() == '563') {
+            if($('#port').val() === '563') {
                 $('#port').val('119')
             }
         }

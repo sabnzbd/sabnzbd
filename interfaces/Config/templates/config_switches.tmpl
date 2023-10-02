@@ -346,7 +346,7 @@ jQuery(document).ready(function() {
         var retention_select = jQuery('#history_retention_select').val()
         var retention_number = jQuery('#history_retention_number')
         // Keep all or keep none
-        if(retention_select == "0" || retention_select == "-1") {
+        if(retention_select === "0" || retention_select === "-1") {
             retention_number.hide()
             retention_number.val('')
             retention_number.attr('placeholder', '')

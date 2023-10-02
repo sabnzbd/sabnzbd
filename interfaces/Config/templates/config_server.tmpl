@@ -525,13 +525,13 @@
             var portBox = jQuery(this).parent().parent().find('[name="port"]')
             if(this.checked) {
                 // Enabled SSL change port when not already a custom port
-                if(portBox.val() == '119') {
+                if(portBox.val() === '119') {
                     portBox.val('563')
                     portBox.addClass('port-highlight')
                 }
             } else {
                 // Remove SSL port
-                if(portBox.val() == '563') {
+                if(portBox.val() === '563') {
                     portBox.val('119')
                     portBox.addClass('port-highlight')
                 }
@@ -615,14 +615,14 @@
                 function receiveMessage(event) {
                     // Check origin of message for security reasons
                     if(event.origin === 'https://sabnzbd.org') {
-                        if(event.data == 'show_server') {
+                        if(event.data === 'show_server') {
                             jQuery('.Servers .server-frame').show()
                             jQuery('.Servers .server-frame a').click(function () {
                                 localStorage.setItem("server-frame-hide-$version", "hide")
                                 jQuery('.Servers .server-frame').hide()
                             })
                         }
-                        if(event.data == 'hide_server') {
+                        if(event.data === 'hide_server') {
                             // Hide and don't load anymore untill the next release
                             jQuery('.Servers .server-frame').hide()
                             localStorage.setItem("server-frame-hide-$version", "hide")
