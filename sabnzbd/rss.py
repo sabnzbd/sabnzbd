@@ -27,7 +27,7 @@ import threading
 import urllib.parse
 
 import sabnzbd
-from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
+from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg

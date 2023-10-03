@@ -592,9 +592,9 @@ def _api_addurl(name, kwargs):
     password = kwargs.get("password", "")
 
     if name:
-        nzo_id = sabnzbd.urlgrabber.add_url(name, pp, script, cat, priority, nzbname, password)
         # Reporting a list of NZO's, for compatibility with other add-methods
-        return report(keyword="", data={"status": True, "nzo_ids": [nzo_id]})
+        res, nzo_ids = sabnzbd.urlgrabber.add_url(name, pp, script, cat, priority, nzbname, password)
+        return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
     else:
         logging.info("API-call addurl: no URLs received")
         return report(_MSG_NO_VALUE)
@@ -1513,7 +1513,7 @@ def retry_job(job, new_nzb=None, password=None):
         history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
-            nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat)
+            nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat, dup_check=False)
         else:
             path = history_db.get_incomplete_path(job)
             nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)

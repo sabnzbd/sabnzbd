@@ -224,9 +224,10 @@ def process_nzb_archive_file(
                     except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
                         # Empty or fully rejected
                         pass
-                    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
-                        # Duplicate or unwanted extension that was failed to history
-                        nzo_ids.append(err.nzo_id)
+                    except sabnzbd.nzbstuff.NzbRejectToHistory as err:
+                        # Duplicate or unwanted extension directed to history
+                        sabnzbd.NzbQueue.fail_to_history(err.nzo)
+                        nzo_ids.append(err.nzo.nzo_id)
                     except:
                         # Something else is wrong, show error
                         logging.error(T("Error while adding %s, removing"), name, exc_info=True)
@@ -333,9 +334,10 @@ def process_single_nzb(
     except sabnzbd.nzbstuff.NzbRejected:
         # Rejected as duplicate or by pre-queue script
         result = AddNzbFileResult.ERROR
-    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
-        # Duplicate or unwanted extension that was failed to history
-        nzo_ids.append(err.nzo_id)
+    except sabnzbd.nzbstuff.NzbRejectToHistory as err:
+        # Duplicate or unwanted extension directed to history
+        sabnzbd.NzbQueue.fail_to_history(err.nzo)
+        nzo_ids.append(err.nzo.nzo_id)
     except:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)

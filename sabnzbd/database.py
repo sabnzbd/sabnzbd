@@ -321,15 +321,13 @@ class HistoryDB:
 
         return items, total_items
 
-    def have_episode(self, series: str, season: str, episode: str) -> bool:
+    def have_episode(self, series_key: str) -> bool:
         """Check whether History contains this series episode"""
         total = 0
-        if series and season and episode:
-            pattern = "%s/%s/%s" % (series.lower(), season, episode)
-            if self.execute(
-                """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
-            ):
-                total = self.cursor.fetchone()["COUNT(*)"]
+        if self.execute(
+            """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (series_key, Status.FAILED)
+        ):
+            total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
 
     def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:

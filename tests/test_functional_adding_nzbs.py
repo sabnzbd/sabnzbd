@@ -25,7 +25,6 @@ import sys
 from random import sample
 
 from sabnzbd.constants import (
-    DUP_PRIORITY,
     PAUSED_PRIORITY,
     DEFAULT_PRIORITY,
     LOW_PRIORITY,
@@ -46,7 +45,6 @@ from tests.testhelper import *
 # Define valid options for various stages
 PRIO_OPTS_ADD = [
     DEFAULT_PRIORITY,
-    DUP_PRIORITY,
     PAUSED_PRIORITY,
     LOW_PRIORITY,
     NORMAL_PRIORITY,
@@ -56,7 +54,6 @@ PRIO_OPTS_ADD = [
 ]
 PRIO_OPTS_PREQ = [
     DEFAULT_PRIORITY,
-    DUP_PRIORITY,
     PAUSED_PRIORITY,
     LOW_PRIORITY,
     NORMAL_PRIORITY,
@@ -97,12 +94,11 @@ VALID_DEFAULT_PRIORITIES = [PAUSED_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, HIGH
 # Priorities that do *not* set a job state
 REGULAR_PRIOS = [LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY]
 # Priorities that set job states
-STATE_PRIOS = [DUP_PRIORITY, PAUSED_PRIORITY]
+STATE_PRIOS = [PAUSED_PRIORITY]
 
 # Needed for translating priority values to names
 ALL_PRIOS = {
     DEFAULT_PRIORITY: "Default",
-    DUP_PRIORITY: "Duplicate",
     PAUSED_PRIORITY: "Paused",
     LOW_PRIORITY: "Low",
     NORMAL_PRIORITY: "Normal",
@@ -395,8 +391,6 @@ class TestAddingNZBs:
         assert ALL_PRIOS.get(expected_prio) == job["priority"]
         if expected_state:
             # Also check the correct state or label was set
-            if expected_state == DUP_PRIORITY:
-                assert "DUPLICATE" in job["labels"]
             if expected_state == PAUSED_PRIORITY:
                 assert "Paused" == job["status"]
 
@@ -424,12 +418,8 @@ class TestAddingNZBs:
         [
             # Specific triggers for fixed bugs
             (-1, -2, None, None, None, None),  # State-setting priorities always fell back to Normal
-            (-1, -3, None, None, None, None),
             (1, None, -2, None, None, None),
             (2, None, None, -2, None, None),
-            (2, None, None, -3, None, None),
-            (2, -2, None, -3, None, None),
-            (0, -3, None, None, None, None),
             (0, 2, None, None, 1, None),  # Explicit priority on add was bested by implicit from pre-queue
             (1, None, None, None, -1, None),  # Category-based values from pre-queue didn't work at all
             # Checks for test code regressions
@@ -439,12 +429,9 @@ class TestAddingNZBs:
             (-2, None, -2, None, 2, None),
             (-2, None, -1, None, 1, None),
             (2, None, -1, None, -2, None),
-            (-2, -3, 1, None, None, None),
             (2, 2, None, -2, None, None),
             (2, 1, None, -2, None, None),
             (1, -2, 0, None, None, None),
-            (0, -3, None, None, 1, None),
-            (0, -1, -1, -3, 2, None),
             (0, 2, None, -2, None, -1),
             (1, -2, -100, None, None, -1),
             (1, None, None, None, None, -1),

@@ -600,6 +600,9 @@ def process_job(nzo: NzbObject) -> bool:
         # Force error for empty result
         all_ok = all_ok and not empty
 
+        # See if we need to start an alternative or remove the duplicates
+        sabnzbd.NzbQueue.handle_duplicate_alternatives(nzo, all_ok)
+
     except:
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
         logging.info("Traceback: ", exc_info=True)
