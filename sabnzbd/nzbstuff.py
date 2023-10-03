@@ -42,11 +42,11 @@ from sabnzbd.constants import (
     LOW_PRIORITY,
     DEFAULT_PRIORITY,
     PAUSED_PRIORITY,
-    DUP_PRIORITY,
     STOP_PRIORITY,
     RENAMES_FILE,
     MAX_BAD_ARTICLES,
     Status,
+    DuplicateStatus,
 )
 from sabnzbd.misc import (
     to_units,
@@ -59,6 +59,7 @@ from sabnzbd.misc import (
     caller_name,
     opts_to_pp,
     pp_to_opts,
+    duplicate_warning,
 )
 from sabnzbd.filesystem import (
     sanitize_foldername,
@@ -512,9 +513,9 @@ class NzbRejected(Exception):
     pass
 
 
-class NzbRejectedToHistory(Exception):
-    def __init__(self, nzo_id: str):
-        self.nzo_id = nzo_id
+class NzbRejectToHistory(Exception):
+    def __init__(self, nzo):
+        self.nzo: NzbObject = nzo
         super().__init__()
 
 
@@ -561,6 +562,7 @@ NzbObjectSaver = (
     "encrypted",
     "bad_articles",
     "duplicate",
+    "duplicate_series_key",
     "oversized",
     "precheck",
     "incomplete",
@@ -686,10 +688,13 @@ class NzbObject(TryList):
         self.first_articles_count = 0
         self.saved_articles: Set[Article] = set()
         self.nzo_id: Optional[str] = None
+
+        self.duplicate: Optional[str] = None
+        self.duplicate_series_key: Optional[str] = None
+
         self.futuretype = futuretype
         self.removed_from_queue = False
         self.to_be_removed = False
-        self.duplicate = False
         self.oversized = False
         self.precheck = False
         self.incomplete = False
@@ -720,18 +725,20 @@ class NzbObject(TryList):
         # Path is empty in case of a future NZB
         self.download_path = ""
 
+        # This is a slot for a future NZB, ready now
+        # It can also be a retry of a failed job with no extra NZB-file
         if nzb_fp is None and not reuse:
-            # This is a slot for a future NZB, ready now
-            # It can also be a retry of a failed job with no extra NZB-file
+            # For future NZB, check if we don't already have this in the queue or history
+            # based on the custom name supplied by the user or the RSS feed
+            if self.custom_name and dup_check:
+                self.duplicate_check()
+                self.handle_duplicate_action()
             return
 
         # Re-use existing nzo_id, when a "future" job gets it payload
         if nzo_id:
             self.nzo_id = nzo_id
             sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
-
-        # To be updated later if it's a duplicate
-        duplicate = series_duplicate = False
 
         # Apply conversion option to final folder
         if cfg.replace_spaces():
@@ -786,8 +793,8 @@ class NzbObject(TryList):
             # Check against identical checksum or series/season/episode if not repair
             # Have to check for duplicate before saving the backup, as it will
             # trigger the duplicate-detection based on the backup
-            if not reuse and dup_check and self.priority != REPAIR_PRIORITY:
-                duplicate, series_duplicate = self.has_duplicates()
+            if not reuse and dup_check and not self.duplicate and self.priority != REPAIR_PRIORITY:
+                self.duplicate_check()
 
             # Copy to backup
             backup_nzb(full_nzb_path)
@@ -846,6 +853,7 @@ class NzbObject(TryList):
                 raise NzbRejected
             if accept == 2:
                 self.fail_msg = T("Pre-queue script marked job as failed")
+                raise NzbRejectToHistory(self)
 
             # Process all options, only over-write if set by script
             # Beware that cannot do "if priority/pp", because those can
@@ -871,8 +879,7 @@ class NzbObject(TryList):
             self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
             self.set_priority(priority)
             self.repair, self.unpack, self.delete = pp_to_opts(pp)
-        else:
-            accept = 1
+   
 
         # Pause if requested by the NZB-adding or the pre-queue script
         if self.priority == PAUSED_PRIORITY:
@@ -887,42 +894,8 @@ class NzbObject(TryList):
             self.oversized = True
             self.priority = LOW_PRIORITY
 
-        # If the job is forced in any way, skip duplicate check
-        if self.priority == FORCE_PRIORITY:
-            duplicate = series_duplicate = False
-
-        # Handle duplicates
-        if duplicate and (
-            (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1)
-        ):
-            if cfg.warn_dupl_jobs():
-                logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
-            self.purge_data()
-            raise NzbRejected
-
-        if duplicate and (
-            (not series_duplicate and cfg.no_dupes() == 3) or (series_duplicate and cfg.no_series_dupes() == 3)
-        ):
-            if cfg.warn_dupl_jobs():
-                logging.warning(T('Failing duplicate NZB "%s"'), filename)
-            # Move to history, utilizing the same code as accept&fail from pre-queue script
-            self.fail_msg = T("Duplicate NZB")
-            accept = 2
-            duplicate = False
-
-        if duplicate or self.priority == DUP_PRIORITY:
-            self.duplicate = True
-            if cfg.no_dupes() == 4 or cfg.no_series_dupes() == 4:
-                if cfg.warn_dupl_jobs():
-                    logging.warning('%s: "%s"', T("Duplicate NZB"), filename)
-            else:
-                if cfg.warn_dupl_jobs():
-                    logging.warning(T('Pausing duplicate NZB "%s"'), filename)
-                self.pause()
-
-            # Only change priority if it's currently set to duplicate, otherwise keep original one
-            if self.priority == DUP_PRIORITY:
-                self.set_stateless_priority(self.cat)
+        # Take action on the duplicate status
+        self.handle_duplicate_action()
 
         # Check if there is any unwanted extension in plain sight in the NZB itself
         if cfg.action_on_unwanted_extensions():
@@ -937,7 +910,7 @@ class NzbObject(TryList):
                     if cfg.action_on_unwanted_extensions() == 2:
                         logging.debug("Unwanted extension ... aborting")
                         self.fail_msg = T("Aborted, unwanted extension detected")
-                        accept = 2
+                        raise NzbRejectToHistory(self)
 
         if reuse:
             self.check_existing_files(self.download_path)
@@ -953,14 +926,6 @@ class NzbObject(TryList):
 
         # Set nzo save-delay to minimum 120 seconds
         self.save_timeout = max(120, min(6.0 * self.bytes / GIGI, 300.0))
-
-        # In case pre-queue script or duplicate check want to move
-        # to history we first need a nzo_id by entering the NzbQueue
-        if accept == 2:
-            sabnzbd.NzbQueue.add(self, quiet=True)
-            sabnzbd.NzbQueue.end_job(self)
-            # Raise error, so it's not added
-            raise NzbRejectedToHistory(nzo_id=self.nzo_id)
 
     def update_download_stats(self, bps, serverid, bytes_received):
         if bps:
@@ -1352,7 +1317,6 @@ class NzbObject(TryList):
             LOW_PRIORITY,
             DEFAULT_PRIORITY,
             PAUSED_PRIORITY,
-            DUP_PRIORITY,
             STOP_PRIORITY,
         ):
             self.priority = value
@@ -1372,7 +1336,7 @@ class NzbObject(TryList):
 
         for cat in cat_options:
             prio = cat_to_opts(cat)[3]
-            if prio not in (DUP_PRIORITY, PAUSED_PRIORITY, FORCE_PRIORITY):
+            if prio not in (PAUSED_PRIORITY, FORCE_PRIORITY):
                 self.priority = prio
                 break
         else:
@@ -1382,8 +1346,10 @@ class NzbObject(TryList):
     def labels(self):
         """Return (translated) labels of job"""
         labels = []
-        if self.duplicate:
+        if self.duplicate in (DuplicateStatus.DUPLICATE, DuplicateStatus.SERIES_DUPLICATE):
             labels.append(T("DUPLICATE"))
+        if self.duplicate in (DuplicateStatus.DUPLICATE_ALTERNATIVE, DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE):
+            labels.append(T("ALTERNATIVE"))
         if self.encrypted > 0:
             labels.append(T("ENCRYPTED"))
         if self.oversized:
@@ -1449,7 +1415,7 @@ class NzbObject(TryList):
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
         # If user resumes after warning, reset duplicate/oversized/incomplete/unwanted indicators
-        self.duplicate = False
+        self.duplicate = None
         self.oversized = False
         self.incomplete = False
         if self.unwanted_ext:
@@ -1921,56 +1887,93 @@ class NzbObject(TryList):
             else:
                 nzf_ids.remove(nzf_id)
 
-    def has_duplicates(self) -> Tuple[bool, bool]:
-        """Return (res, series)
-        where "res" is True when this is a duplicate
-        where "series" is True when this is an episode
-        """
+    def duplicate_check(self):
+        """Set the correct duplicate status"""
+        if not cfg.no_dupes() and not cfg.no_series_dupes():
+            return
 
-        no_dupes = cfg.no_dupes()
-        no_series_dupes = cfg.no_series_dupes()
-        series_propercheck = cfg.series_propercheck()
+        # If the job is forced in any way, skip duplicate check
+        if self.priority == FORCE_PRIORITY:
+            return
 
-        # Abort if dupe check is off for both nzb and series
-        if not no_dupes and not no_series_dupes:
-            return False, False
-
-        series = False
-        res = False
+        duplicate_in_history = series_duplicate_in_history = False
+        duplicate_in_queue = series_duplicate_in_queue = False
 
         with HistoryDB() as history_db:
-            # Dupe check off nzb contents
-            if no_dupes:
-                res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
-                logging.debug(
-                    "Duplicate checked NZB in history: filename=%s, md5sum=%s, result=%s",
-                    self.filename,
-                    self.md5sum,
-                    res,
-                )
-                if not res and cfg.backup_for_duplicates():
-                    res = backup_exists(self.filename)
-                    logging.debug("Duplicate checked NZB against backup: filename=%s, result=%s", self.filename, res)
+            # Dupe check off just name or nzb contents
+            if cfg.no_dupes():
+                logging.debug("Duplicate checking NZB %s (md5sum=%s)", self.final_name, self.md5sum)
+
+                duplicate_in_history = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
+                logging.debug("Duplicate in history: %s", duplicate_in_history)
+
+                if not duplicate_in_history and cfg.backup_for_duplicates():
+                    duplicate_in_history = backup_exists(self.filename)
+                    logging.debug("Duplicate in backup (%s): %s", self.filename, duplicate_in_history)
+
+                duplicate_in_queue = sabnzbd.NzbQueue.have_name_or_md5sum(self.final_name, self.md5sum)
+                logging.debug("Duplicate in queue: %s", duplicate_in_queue)
 
             # Dupe check off nzb filename
-            if not res and no_series_dupes:
+            if not duplicate_in_history and not duplicate_in_queue and cfg.no_series_dupes():
                 show_analysis = sabnzbd.newsunpack.analyse_show(self.final_name)
                 series, season, episode, is_proper = (
                     show_analysis[key] for key in ("title", "season", "episode", "is_proper")
                 )
-                if is_proper and series_propercheck:
-                    logging.debug("Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found")
-                else:
-                    res = history_db.have_episode(series, season, episode)
-                    logging.debug(
-                        "Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s",
-                        series,
-                        season,
-                        episode,
-                        res,
-                    )
+                self.duplicate_series_key = "%s/%s/%s" % (series.lower(), season, episode)
+                logging.debug("Duplicate checking (%s): %s", self.final_name, self.duplicate_series_key)
 
-        return res, series
+                series_duplicate_in_history = history_db.have_episode(self.duplicate_series_key)
+                logging.debug("Duplicate in history: %s", series_duplicate_in_history)
+
+                series_duplicate_in_queue = sabnzbd.NzbQueue.have_episode(self.duplicate_series_key)
+                logging.debug("Duplicate in queue: %s", series_duplicate_in_queue)
+
+        # Set the correct status
+        if series_duplicate_in_queue:
+            self.duplicate = DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE
+        elif duplicate_in_queue:
+            self.duplicate = DuplicateStatus.DUPLICATE_ALTERNATIVE
+        elif series_duplicate_in_history:
+            self.duplicate = DuplicateStatus.SERIES_DUPLICATE
+        elif duplicate_in_history:
+            self.duplicate = DuplicateStatus.DUPLICATE
+
+    def handle_duplicate_action(self):
+        """Handle duplicate detection action"""
+        # If the job is set Force in any way, ignore results of duplicate check
+        if self.priority == FORCE_PRIORITY:
+            self.duplicate = None
+
+        # Take a direct action
+        #  1 = Discard
+        #  2 = Pause
+        #  3 = Fail (move to History)
+        #  4 = Tag
+        if self.duplicate in (DuplicateStatus.DUPLICATE, DuplicateStatus.SERIES_DUPLICATE):
+            series_duplicate = self.duplicate == DuplicateStatus.SERIES_DUPLICATE
+            if (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1):
+                # Discard
+                duplicate_warning(T('Ignoring duplicate NZB "%s"'), self.final_name)
+                self.purge_data()
+                raise NzbRejected
+            elif (not series_duplicate and cfg.no_dupes() == 3) or (series_duplicate and cfg.no_series_dupes() == 3):
+                # Fail (move to History)
+                duplicate_warning(T('Failing duplicate NZB "%s"'), self.final_name)
+                self.fail_msg = T("Duplicate NZB")
+                raise NzbRejectToHistory(self)
+            elif (not series_duplicate and cfg.no_dupes() == 2) or (series_duplicate and cfg.no_series_dupes() == 2):
+                # Pause
+                duplicate_warning(T('Pausing duplicate NZB "%s"'), self.final_name)
+                self.pause()
+            else:
+                # Tag job
+                duplicate_warning('%s: "%s"', T("Duplicate NZB"), self.final_name)
+
+        # In case of alternative, just pause
+        if self.duplicate in (DuplicateStatus.DUPLICATE_ALTERNATIVE, DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE):
+            logging.info("Pausing duplicate alternative %s", self.final_name)
+            self.pause()
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""

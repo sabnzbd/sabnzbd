@@ -85,7 +85,14 @@ HAVE_AMPM = bool(time.strftime("%p"))
 
 def helpful_warning(*args, **kwargs):
     """Wrapper to ignore helpful warnings if desired"""
-    if sabnzbd.cfg.helpful_warnings():
+    if cfg.helpful_warnings():
+        return logging.warning(*args, **kwargs)
+    return logging.info(*args, **kwargs)
+
+
+def duplicate_warning(*args, **kwargs):
+    """Wrapper to ignore duplicate warnings if desired"""
+    if cfg.warn_dupl_jobs():
         return logging.warning(*args, **kwargs)
     return logging.info(*args, **kwargs)
 

@@ -107,7 +107,6 @@ NORMAL_PRIORITY = 0
 LOW_PRIORITY = -1
 DEFAULT_PRIORITY = -100
 PAUSED_PRIORITY = -2
-DUP_PRIORITY = -3
 STOP_PRIORITY = -4
 
 PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
@@ -164,6 +163,13 @@ class Status:
     VERIFYING = "Verifying"  # PP: Job is being verified (by par2)
     DELETED = "Deleted"  # Q:  Job has been deleted (and is almost gone)
     PROP = "Propagating"  # Q:  Delayed download
+
+
+class DuplicateStatus:
+    DUPLICATE = "Duplicate"  # Simple duplicate
+    DUPLICATE_ALTERNATIVE = "Duplicate Alternative"  # Alternative duplicate for a job already in the queue
+    SERIES_DUPLICATE = "Series Duplicate"  # Simple Series duplicate
+    SERIES_DUPLICATE_ALTERNATIVE = "Series Duplicate"  # Alternative duplicate for a job already in the queue
 
 
 class AddNzbFileResult:

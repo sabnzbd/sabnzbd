@@ -31,7 +31,7 @@ from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
 import base64
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, List
 
 import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES, DEFAULT_PRIORITY
@@ -42,7 +42,7 @@ import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.nzbparser import AddNzbFileResult
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzbstuff import NzbObject, NzbRejected, NzbRejectToHistory
 
 
 class URLGrabber(Thread):
@@ -305,8 +305,7 @@ class URLGrabber(Thread):
         nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
 
         # Add to history and run script if desired
-        sabnzbd.NzbQueue.remove(nzo.nzo_id)
-        sabnzbd.PostProcessor.process(nzo)
+        sabnzbd.NzbQueue.fail_to_history(nzo)
 
 
 def _build_request(url: str) -> HTTPResponse:
@@ -380,24 +379,43 @@ def add_url(
     priority: Optional[Union[int, str]] = None,
     nzbname: Optional[str] = None,
     password: Optional[str] = None,
-):
+    dup_check: bool = True,
+) -> Tuple[AddNzbFileResult, List[str]]:
     """Add NZB based on a URL, attributes optional"""
     if not url.lower().startswith("http"):
-        return
-    if not pp or pp == "-1":
-        pp = None
-    if script and script.lower() == "default":
-        script = None
-    if cat and cat.lower() == "default":
-        cat = None
-    logging.info("Fetching %s", url)
+        return AddNzbFileResult.NO_FILES_FOUND, []
 
     # Generate the placeholder
+    logging.debug("Creating placeholder NZO for %s", url)
     msg = T("Trying to fetch NZB from %s") % url
-    future_nzo = sabnzbd.NzbQueue.generate_future(
-        msg, pp, script, cat, url=url, priority=priority, password=password, nzbname=nzbname
-    )
+    result: AddNzbFileResult = AddNzbFileResult.OK
+    future_nzo = None
+    nzo_ids = []
+    try:
+        future_nzo = NzbObject(
+            filename=msg,
+            pp=pp,
+            script=script,
+            futuretype=True,
+            cat=cat,
+            url=url,
+            priority=priority,
+            password=password,
+            nzbname=nzbname,
+            status=Status.GRABBING,
+            dup_check=dup_check,
+        )
+    except NzbRejected:
+        # Rejected as duplicate
+        result = AddNzbFileResult.ERROR
+    except NzbRejectToHistory as err:
+        # Duplicate directed to history
+        sabnzbd.NzbQueue.fail_to_history(err.nzo)
+        nzo_ids.append(err.nzo.nzo_id)
 
-    # Get it!
-    sabnzbd.URLGrabber.add(url, future_nzo)
-    return future_nzo.nzo_id
+    # Success
+    if future_nzo:
+        nzo_ids.append(sabnzbd.NzbQueue.add(future_nzo))
+        sabnzbd.URLGrabber.add(url, future_nzo)
+
+    return result, nzo_ids

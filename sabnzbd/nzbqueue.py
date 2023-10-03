@@ -26,8 +26,8 @@ import cherrypy._cpreqbody
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
-from sabnzbd.nzbstuff import NzbObject, Article
-from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower
+from sabnzbd.nzbstuff import NzbObject, Article, NzbRejected, NzbRejectToHistory
+from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower, duplicate_warning
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
@@ -45,6 +45,7 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
     Status,
     IGNORED_FILES_AND_FOLDERS,
+    DuplicateStatus,
 )
 
 import sabnzbd.cfg as cfg
@@ -245,26 +246,6 @@ class NzbQueue:
 
     def set_top_only(self, value):
         self.__top_only = value
-
-    def generate_future(
-        self, msg, pp=None, script=None, cat=None, url=None, priority=None, password=None, nzbname=None
-    ) -> NzbObject:
-        """Create and return a placeholder nzo object"""
-        logging.debug("Creating placeholder NZO")
-        future_nzo = NzbObject(
-            filename=msg,
-            pp=pp,
-            script=script,
-            futuretype=True,
-            cat=cat,
-            url=url,
-            priority=priority,
-            password=password,
-            nzbname=nzbname,
-            status=Status.GRABBING,
-        )
-        self.add(future_nzo)
-        return future_nzo
 
     def change_opts(self, nzo_ids: str, pp: int) -> int:
         result = 0
@@ -799,6 +780,13 @@ class NzbQueue:
                     pass
             sabnzbd.Assembler.process(nzo)
 
+    def fail_to_history(self, nzo: NzbObject):
+        """Fail to history, with all the steps in between"""
+        if not nzo.nzo_id:
+            self.add(nzo, quiet=True)
+        self.remove(nzo.nzo_id, cleanup=False)
+        sabnzbd.PostProcessor.process(nzo)
+
     def actives(self, grabs: bool = True) -> int:
         """Return amount of non-paused jobs, optionally with 'grabbing' items
         Not locked for performance, only reads the queue
@@ -955,6 +943,70 @@ class NzbQueue:
                 if nzo.futuretype and url.lower().startswith("http"):
                     lst.append((url, nzo))
         return lst
+
+    @NzbQueueLocker
+    def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
+        """Check whether this name or md5sum is already
+        in the queue or the post-processing queue"""
+        lname = name.lower()
+        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
+            if nzo.final_name.lower() == lname or nzo.md5sum == md5sum:
+                return True
+        return False
+
+    @NzbQueueLocker
+    def have_episode(self, series_key: str) -> bool:
+        """Check whether this episode of the series is already
+        in the queue or the post-processing queue"""
+        for nzo in self.__nzo_list:
+            if nzo.duplicate_series_key == series_key:
+                return True
+        return False
+
+    @NzbQueueLocker
+    def handle_duplicate_alternatives(self, finished_nzo: NzbObject, success: bool):
+        """Remove matching duplicates if the first job succeeded,
+        or start the next alternative if the job failed"""
+        if not cfg.no_dupes() and not cfg.no_series_dupes():
+            return
+
+        for nzo in self.__nzo_list[:]:
+            if nzo.duplicate and (
+                (nzo.final_name.lower() == finished_nzo.final_name.lower() or nzo.md5sum == finished_nzo.md5sum)
+                or (
+                    nzo.duplicate_series_key
+                    and finished_nzo.duplicate_series_key
+                    and nzo.duplicate_series_key == finished_nzo.duplicate_series_key
+                )
+            ):
+                # Start the next alternative
+                if not success:
+                    nzo.duplicate = None
+                    nzo.resume()
+                    return
+
+                # Take action on the alternatives to the duplicate
+                #  1 = Discard
+                #  2 = Pause
+                #  3 = Fail (move to History)
+                #  4 = Tag
+                series_duplicate = nzo.duplicate == DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE
+                if (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1):
+                    duplicate_warning(T('Ignoring duplicate NZB "%s"'), nzo.final_name)
+                    self.remove(nzo.nzo_id)
+                elif (not series_duplicate and cfg.no_dupes() == 3) or (
+                    series_duplicate and cfg.no_series_dupes() == 3
+                ):
+                    duplicate_warning(T('Failing duplicate NZB "%s"'), nzo.final_name)
+                    nzo.fail_msg = T("Duplicate NZB")
+                    self.fail_to_history(nzo)
+                else:
+                    # Action set to Pause or Tag, so only adjust the label on the first matching job
+                    if nzo.duplicate == DuplicateStatus.DUPLICATE_ALTERNATIVE:
+                        nzo.duplicate = DuplicateStatus.DUPLICATE
+                    else:
+                        nzo.duplicate = DuplicateStatus.SERIES_DUPLICATE
+                    return
 
     def __repr__(self):
         return "<NzbQueue>"
