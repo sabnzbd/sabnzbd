@@ -14,6 +14,7 @@
   "pip_requirements": {
     "fileMatch": [
       "requirements.txt",
+      "tests/requirements.txt",
       "builder/requirements.txt",
       "builder/release-requirements.txt",
       "builder/osx/requirements.txt"
