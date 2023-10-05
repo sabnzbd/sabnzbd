@@ -96,7 +96,7 @@ pyi_analysis = Analysis(
     ["SABnzbd.py"],
     datas=extra_pyinstaller_files,
     hiddenimports=extra_hiddenimports,
-    excludes=["ujson", "FixTk", "tcl", "tk", "_tkinter", "tkinter", "Tkinter"],
+    excludes=["ujson", "FixTk", "tcl", "tk", "_tkinter", "tkinter", "Tkinter", "pydoc", "pydoc_data.topics"],
 )
 
 pyz = PYZ(pyi_analysis.pure, pyi_analysis.zipped_data)

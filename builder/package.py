@@ -226,6 +226,7 @@ if __name__ == "__main__":
         # Remove unwanted DLL's
         delete_files_glob("dist/SABnzbd/api-ms-win*.dll")
         delete_files_glob("dist/SABnzbd/mfc140u.dll")
+        delete_files_glob("dist/SABnzbd/Pythonwin/mfc140u.dll")
         delete_files_glob("dist/SABnzbd/ucrtbase.dll")
 
         # Remove other files we don't need
