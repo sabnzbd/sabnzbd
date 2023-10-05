@@ -33,8 +33,8 @@ from sabnzbd.constants import (
     HIGH_PRIORITY,
     FORCE_PRIORITY,
     REPAIR_PRIORITY,
+    PP_LOOKUP,
 )
-from sabnzbd.database import _PP_LOOKUP
 
 from tests.testhelper import *
 
@@ -202,7 +202,7 @@ class TestAddingNZBs:
         category_config = {
             "section": "categories",
             "name": category_name,
-            "pp": choice(list(_PP_LOOKUP.keys())),
+            "pp": choice(list(PP_LOOKUP.keys())),
             "script": "None",
             "priority": priority if priority != None else DEFAULT_PRIORITY,
         }

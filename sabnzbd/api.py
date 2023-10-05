@@ -51,6 +51,8 @@ from sabnzbd.constants import (
     MEBI,
     GIGI,
     AddNzbFileResult,
+    PP_LOOKUP,
+    STAGES,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -72,8 +74,9 @@ from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_s
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup, active_socks5_proxy
-from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
+from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
+from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.emailer
 import sabnzbd.sorting
 
@@ -1627,7 +1630,7 @@ def build_history(
     failed_only: int = 0,
     categories: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
-) -> Tuple[Dict[str, Any], int, int]:
+) -> Tuple[List[Dict[str, Any]], int, int]:
     """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
@@ -1691,28 +1694,12 @@ def build_history(
             database_history_start, database_history_limit, search, failed_only, categories, nzo_ids
         )
 
+    # Add the postproc items to the top of the history
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
-
-    # Add the postproc items to the top of the history
-    items = get_active_history(postproc_queue, items)
-
-    # Un-reverse the queue
-    items.reverse()
-
-    for item in items:
-        item["size"] = to_units(item["bytes"], "B")
-
-        if "loaded" not in item:
-            item["loaded"] = False
-
-        path = item.get("path", "")
-        item["retry"] = int_conv(item.get("status") == Status.FAILED and path and os.path.exists(path))
-        # Retry of failed URL-fetch
-        if item["report"] == "future":
-            item["retry"] = True
-
+    add_active_history(postproc_queue, items)
     total_items += postproc_queue_size
+    items.reverse()
 
     if close_db:
         history_db.close()
@@ -1720,47 +1707,47 @@ def build_history(
     return items, postproc_queue_size, total_items
 
 
-def get_active_history(queue, items):
-    """Get the jobs currently in progress and active history queue."""
-    for nzo in queue:
-        item = {}
-        (
-            item["completed"],
-            item["name"],
-            item["nzb_name"],
-            item["category"],
-            item["pp"],
-            item["script"],
-            item["report"],
-            item["url"],
-            item["status"],
-            item["nzo_id"],
-            item["storage"],
-            item["path"],
-            item["script_log"],
-            item["script_line"],
-            item["download_time"],
-            item["postproc_time"],
-            item["stage_log"],
-            item["downloaded"],
-            item["fail_message"],
-            item["url_info"],
-            item["bytes"],
-            _,
-            _,
-            item["password"],
-        ) = build_history_info(nzo)
-        item["action_line"] = nzo.action_line
-        item = unpack_history_info(item)
+def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, Any]]):
+    """Get the active history queue and add it to the existing items list"""
+    for nzo in postproc_queue:
+        # This output has to be the same as fetch_history!
+        item = {
+            "completed": int(time.time()),
+            "name": nzo.final_name,
+            "nzb_name": nzo.filename,
+            "category": nzo.cat,
+            "pp": PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X"),
+            "script": nzo.script,
+            "report": "",
+            "url": nzo.url,
+            "status": nzo.status,
+            "nzo_id": nzo.nzo_id,
+            "storage": "",
+            "path": clip_path(nzo.download_path),
+            "script_line": "",
+            "download_time": nzo.nzo_info.get("download_time", 0),
+            "postproc_time": 0,
+            "stage_log": [],
+            "downloaded": nzo.bytes_downloaded,
+            "completeness": None,
+            "fail_message": nzo.fail_msg,
+            "url_info": nzo.nzo_info.get("details", "") or nzo.nzo_info.get("more_info", ""),
+            "bytes": nzo.bytes_downloaded,
+            "size": to_units(nzo.bytes_downloaded, "B"),
+            "meta": None,
+            "series": "",
+            "md5sum": "",
+            "password": nzo.correct_password,
+            "action_line": nzo.action_line,
+            "loaded": nzo.pp_active,
+            "retry": False,
+        }
+        # Add stage information, in the correct order
+        for stage in STAGES:
+            if stage in nzo.unpack_info:
+                item["stage_log"].append({"name": stage, "actions": nzo.unpack_info[stage]})
 
-        item["loaded"] = nzo.pp_active
-        if item["bytes"]:
-            item["size"] = to_units(item["bytes"], "B")
-        else:
-            item["size"] = ""
         items.append(item)
-
-    return items
 
 
 def calc_timeleft(bytesleft, bps):

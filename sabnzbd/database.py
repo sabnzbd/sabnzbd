@@ -27,15 +27,15 @@ import sys
 import threading
 import sqlite3
 from sqlite3 import Connection, Cursor
-from typing import Union, Dict, Optional, List, Sequence
+from typing import Optional, List, Sequence
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status, PP_LOOKUP
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
-from sabnzbd.misc import int_conv, caller_name, opts_to_pp
+from sabnzbd.misc import int_conv, caller_name, opts_to_pp, to_units
 from sabnzbd.filesystem import remove_file, clip_path
 
 DB_LOCK = threading.RLock()
@@ -388,7 +388,7 @@ class HistoryDB:
 
         return total, month, week
 
-    def get_script_log(self, nzo_id):
+    def get_script_log(self, nzo_id: str) -> str:
         """Return decompressed log file"""
         data = ""
         if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", (nzo_id,)):
@@ -443,13 +443,10 @@ class HistoryDB:
         self.close()
 
 
-_PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
-
-
 def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output="", script_line="", series_info=False):
     """Collects all the information needed for the database"""
     completed = int(time.time())
-    pp = _PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X")
+    pp = PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X")
 
     if script_output:
         # Compress the output of the script
@@ -504,13 +501,12 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
     )
 
 
-def unpack_history_info(item: Union[Dict, sqlite3.Row]):
+def unpack_history_info(item: sqlite3.Row):
     """Expands the single line stage_log from the DB
     into a python dictionary for use in the history display
     """
     # Convert result to dictionary
-    if isinstance(item, sqlite3.Row):
-        item = dict(item)
+    item = dict(item)
 
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lst = item["stage_log"]
@@ -519,7 +515,7 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
         try:
             all_stages_lines = lst.split("\r\n")
         except:
-            logging.error(T("Invalid stage logging in history for %s"), item["name"])
+            logging.warning(T("Invalid stage logging in history for %s"), item["name"])
             logging.debug("Lines: %s", lst)
             all_stages_lines = []
 
@@ -533,7 +529,7 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
             try:
                 stage["actions"] = logs.split(";")
             except:
-                logging.error(T("Invalid stage logging in history for %s"), item["name"])
+                logging.warning(T("Invalid stage logging in history for %s"), item["name"])
                 logging.debug("Logs: %s", logs)
             parsed_stage_log.append(stage)
 
@@ -543,11 +539,24 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
     else:
         item["stage_log"] = []
 
-    if item["script_log"]:
-        item["script_log"] = ""
-    # The action line is only available for items in the postproc queue
-    if "action_line" not in item:
-        item["action_line"] = ""
+    # Remove database id
+    item.pop("id")
+
+    # Human-readable size
+    item["size"] = to_units(item["bytes"], "B")
+
+    # We do not want the raw script output here
+    item.pop("script_log")
+
+    # The action line and loaded is only available for items in the postproc queue
+    item["action_line"] = ""
+    item["loaded"] = False
+
+    # Retry and retry for failed URL-fetch
+    item["retry"] = int_conv(item["status"] == Status.FAILED and item["path"] and os.path.exists(item["path"]))
+    if item["report"] == "future":
+        item["retry"] = True
+
     return item
 
 

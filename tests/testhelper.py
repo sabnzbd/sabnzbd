@@ -51,6 +51,7 @@ from sabnzbd.constants import (
     NORMAL_PRIORITY,
     REPAIR_PRIORITY,
     Status,
+    PP_LOOKUP,
 )
 import sabnzbd.database as db
 from sabnzbd.misc import pp_to_opts
@@ -215,7 +216,7 @@ class FakeHistoryDB(db.HistoryDB):
             nzo.nzo_id = "SABnzbd_nzo_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(8)))
             nzo.bytes_downloaded = randint(1024, 1024**4)
             nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(db._PP_LOOKUP.keys())))  # for "pp"
+            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
             nzo.nzo_info = {"download_time": randint(1, 10**4)}
             nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
             nzo.futuretype = False  # for "report", only True when fetching an URL

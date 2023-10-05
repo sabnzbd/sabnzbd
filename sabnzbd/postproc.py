@@ -146,7 +146,7 @@ class PostProcessor(Thread):
             logging.info("Corrupt %s file, discarding", POSTPROC_QUEUE_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
 
-    def delete(self, nzo_id, del_files=False):
+    def delete(self, nzo_id: str, del_files: bool = False):
         """Remove a job from the post processor queue"""
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
@@ -189,7 +189,7 @@ class PostProcessor(Thread):
         self.slow_queue.put(None)
         self.fast_queue.put(None)
 
-    def cancel_pp(self, nzo_id):
+    def cancel_pp(self, nzo_id: str) -> Optional[bool]:
         """Change the status, so that the PP is canceled"""
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
@@ -205,15 +205,15 @@ class PostProcessor(Thread):
                 return True
         return None
 
-    def empty(self):
+    def empty(self) -> bool:
         """Return True if pp queue is empty"""
         return self.slow_queue.empty() and self.fast_queue.empty() and not self.__busy
 
-    def get_queue(self):
+    def get_queue(self) -> List[NzbObject]:
         """Return list of NZOs that still need to be processed"""
         return [nzo for nzo in self.history_queue if nzo.work_name]
 
-    def get_path(self, nzo_id):
+    def get_path(self, nzo_id: str) -> Optional[str]:
         """Return download path for given nzo_id or None when not found"""
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
@@ -313,7 +313,7 @@ class PostProcessor(Thread):
             sabnzbd.Downloader.resume_from_postproc()
 
 
-def process_job(nzo: NzbObject):
+def process_job(nzo: NzbObject) -> bool:
     """Process one job"""
     start = time.time()
 
