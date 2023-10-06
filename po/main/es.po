@@ -363,7 +363,7 @@ msgstr "Comando SQL ha fallado, vea el registro"
 msgid "Failed to close database, see log"
 msgstr "No se pudo cerrar el base de datos, vea el registro"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Registro de etapa invalido para transferencia terminada %s"

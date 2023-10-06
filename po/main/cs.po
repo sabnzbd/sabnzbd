@@ -345,7 +345,7 @@ msgstr "Spustění SQL příkazu selhalo, zkontrolujte log"
 msgid "Failed to close database, see log"
 msgstr "Nezdařilo se uzavření databáze, zkontrolujte log"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr ""

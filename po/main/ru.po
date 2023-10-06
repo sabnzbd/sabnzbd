@@ -339,7 +339,7 @@ msgstr "Ошибка команды SQL (см. журнал)"
 msgid "Failed to close database, see log"
 msgstr "Не удалось закрыть базу данных (см. журнал)"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Недопустимый этап ведения журнала для %s"

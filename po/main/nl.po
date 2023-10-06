@@ -360,7 +360,7 @@ msgstr "SQL-commando mislukt, zie logbestand"
 msgid "Failed to close database, see log"
 msgstr "Het lukt niet om de database te sluiten, zie log"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Ongeldig loggen van fase in geschiedenis voor %s"

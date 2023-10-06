@@ -341,7 +341,7 @@ msgstr "O comando SQL falhou. Consulte o log"
 msgid "Failed to close database, see log"
 msgstr "Falha ao fechar o banco de dados. Consulte o log"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Registro inválido de etapa no histórico para %s"

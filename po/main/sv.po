@@ -338,7 +338,7 @@ msgstr "SQL Kommando misslyckades, se logg"
 msgid "Failed to close database, see log"
 msgstr "Det gick inte att stänga databasen, se logg"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Felaktig loggning i historiken av %s"

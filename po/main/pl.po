@@ -335,7 +335,7 @@ msgstr "Błąd polecenia SQL, sprawdź logi"
 msgid "Failed to close database, see log"
 msgstr "Błąd zamykania bazy danych, sprawdź logi"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Nieprawidłowy log etapu w historii dla %s"

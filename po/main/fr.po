@@ -369,7 +369,7 @@ msgstr "Echec de la commande SQL, voir le journal"
 msgid "Failed to close database, see log"
 msgstr "Impossible de fermer la base de données, voir le journal"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Étape de journalisation invalide dans l'historique pour %s"

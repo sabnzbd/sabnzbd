@@ -371,7 +371,7 @@ msgid "Failed to close database, see log"
 msgstr ""
 "Fehler beim Schliessen der Datenbank. Beachten Sie das Nachrichtenprotokoll."
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Ungültiges Stufen-Protokoll im Verlauf für %s"

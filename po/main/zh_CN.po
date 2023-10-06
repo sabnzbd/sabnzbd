@@ -335,7 +335,7 @@ msgstr "SQL 命令执行失败，参见日志"
 msgid "Failed to close database, see log"
 msgstr "无法关闭数据库，参见日志"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "%s 历史信息中 stage 日志无效"

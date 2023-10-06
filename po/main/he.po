@@ -342,7 +342,7 @@ msgstr "פקודת SQL נכשלה, ראה יומן"
 msgid "Failed to close database, see log"
 msgstr "נכשל בסגירת מסד נתונים, ראה יומן"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "רישום של אירוע בלתי תקף בהיסטוריה עבור %s"

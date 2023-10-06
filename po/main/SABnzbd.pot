@@ -316,7 +316,7 @@ msgstr ""
 msgid "Failed to close database, see log"
 msgstr ""
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr ""

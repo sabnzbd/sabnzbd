@@ -337,7 +337,7 @@ msgstr "Neuspešna SQL komanda, videti izveštaj"
 msgid "Failed to close database, see log"
 msgstr "Неуспешно затварање базе, видети извештај"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Погрешне етапе извештаја можете наћи у хронологији за %s"

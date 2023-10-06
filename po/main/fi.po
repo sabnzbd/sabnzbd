@@ -343,7 +343,7 @@ msgstr "SQL komento epäonnistui, katso loki"
 msgid "Failed to close database, see log"
 msgstr "Tietokannan sulkeminen epäonnistui, katso loki"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Virheellinen tila lokihistoriassa kohteelle %s"
