@@ -31,12 +31,13 @@ import socket
 import time
 import datetime
 import inspect
+import queue
 import ctypes
 import html
 import ipaddress
 import socks
 from threading import Thread
-from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict
+from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
 
 import sabnzbd
 import sabnzbd.getipaddress
@@ -169,6 +170,17 @@ def cmp(x, y):
     """
 
     return (x > y) - (x < y)
+
+
+class MultiAddQueue(queue.Queue):
+    def put_multiple(self, multiple_items: Collection):
+        """Take advantage of the dequeue used by Queue that has a very
+        fast extend method to add multiple items at once.
+        See: https://github.com/sabnzbd/sabnzbd/discussions/2704"""
+        with self.not_full:
+            self.queue.extend(multiple_items)
+            self.unfinished_tasks += len(multiple_items)
+            self.not_empty.notify()
 
 
 def name_to_cat(fname, cat=None):

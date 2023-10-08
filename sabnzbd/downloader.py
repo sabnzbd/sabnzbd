@@ -28,14 +28,13 @@ import socket
 import sys
 import ssl
 from typing import List, Dict, Optional, Union, Set
-import queue
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, get_server_addrinfo, helpful_warning, int_conv
+from sabnzbd.misc import from_units, get_server_addrinfo, helpful_warning, int_conv, MultiAddQueue
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 from sabnzbd.constants import SOFT_QUEUE_LIMIT
 
@@ -566,11 +565,11 @@ class Downloader(Thread):
         check_server_expiration()
 
         # Initialize queue and threads
-        process_nw_queue: queue.Queue = queue.Queue()
+        process_nw_queue = MultiAddQueue()
         for _ in range(cfg.receive_threads()):
             # Started as daemon, so we don't need any shutdown logic in the worker
             # The Downloader code will make sure shutdown is handled gracefully
-            Thread(target=self.process_nw_worker, args=(process_nw_queue,), daemon=True).start()
+            Thread(target=self.process_nw_worker, args=(self.read_fds, process_nw_queue), daemon=True).start()
 
         # Catch all errors, just in case
         try:
@@ -710,10 +709,8 @@ class Downloader(Thread):
                 if not read:
                     continue
 
-                # Submit a process_nw task to the pool for every NewWrapper which is readable
-                for selected in read:
-                    process_nw_queue.put(self.read_fds[selected])
-                # Wait for all the tasks to complete
+                # Submit all readable sockets to be processed and wait for completion
+                process_nw_queue.put_multiple(read)
                 process_nw_queue.join()
 
                 # Check if we need to pause because the assembler is full
@@ -721,14 +718,15 @@ class Downloader(Thread):
         except:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
-    def process_nw_worker(self, nw_queue: queue.Queue):
+    def process_nw_worker(self, read_fds: Dict[int, NewsWrapper], nw_queue: MultiAddQueue):
         """Worker for the daemon thread to process results.
         Wrapped in try/except because in case of an exception, logging
         might get lost and the queue.join() would block forever."""
         try:
             logging.debug("Starting Downloader receive thread")
             while True:
-                self.process_nw(nw_queue.get())
+                # The read_fds is passed by reference, so we can access its items!
+                self.process_nw(read_fds[nw_queue.get()])
                 nw_queue.task_done()
         except:
             # We cannot break out of the Downloader from here, so just pause
