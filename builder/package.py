@@ -225,13 +225,8 @@ if __name__ == "__main__":
 
         # Remove unwanted DLL's
         delete_files_glob("dist/SABnzbd/api-ms-win*.dll")
-        delete_files_glob("dist/SABnzbd/mfc140u.dll")
-        delete_files_glob("dist/SABnzbd/Pythonwin/mfc140u.dll")
         delete_files_glob("dist/SABnzbd/ucrtbase.dll")
-
-        # Remove other files we don't need
-        delete_files_glob("dist/SABnzbd/win32ui.pyd")
-        delete_files_glob("dist/SABnzbd/winxpgui.pyd")
+        safe_remove("dist/SABnzbd/Pythonwin")
 
         if "installer" in sys.argv:
             # Needs to be run on 64 bit
