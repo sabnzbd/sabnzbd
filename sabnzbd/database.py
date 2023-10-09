@@ -27,7 +27,7 @@ import sys
 import threading
 import sqlite3
 from sqlite3 import Connection, Cursor
-from typing import Optional, List, Sequence
+from typing import Optional, List, Sequence, Dict, Any, Tuple
 
 import sabnzbd
 import sabnzbd.cfg
@@ -39,27 +39,6 @@ from sabnzbd.misc import int_conv, caller_name, opts_to_pp, to_units
 from sabnzbd.filesystem import remove_file, clip_path
 
 DB_LOCK = threading.RLock()
-
-
-def convert_search(search):
-    """Convert classic wildcard to SQL wildcard"""
-    if not search:
-        # Default value
-        search = ""
-    else:
-        # Allow * for wildcard matching and space
-        search = search.replace("*", "%").replace(" ", "%")
-
-    # Allow ^ for start of string and $ for end of string
-    if search and search.startswith("^"):
-        search = search.replace("^", "")
-        search += "%"
-    elif search and search.endswith("$"):
-        search = search.replace("$", "")
-        search = "%" + search
-    else:
-        search = "%" + search + "%"
-    return search
 
 
 class HistoryDB:
@@ -277,9 +256,9 @@ class HistoryDB:
                     save=True,
                 )
 
-    def add_history_db(self, nzo, storage="", postproc_time=0, script_output="", script_line=""):
+    def add_history_db(self, nzo, storage: str, postproc_time: int, script_output: str, script_line: str):
         """Add a new job entry to the database"""
-        t = build_history_info(nzo, storage, postproc_time, script_output, script_line, series_info=True)
+        t = build_history_info(nzo, storage, postproc_time, script_output, script_line)
 
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
@@ -299,7 +278,7 @@ class HistoryDB:
         failed_only: int = 0,
         categories: Optional[List[str]] = None,
         nzo_ids: Optional[List[str]] = None,
-    ):
+    ) -> Tuple[List[Dict[str, Any]], int]:
         """Return records for specified jobs"""
         command_args = [convert_search(search)]
 
@@ -363,7 +342,7 @@ class HistoryDB:
             total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
 
-    def get_history_size(self):
+    def get_history_size(self) -> Tuple[int, int, int]:
         """Returns the total size of the history and
         amounts downloaded in the last month and week
         """
@@ -398,7 +377,7 @@ class HistoryDB:
                 pass
         return data
 
-    def get_name(self, nzo_id):
+    def get_name(self, nzo_id: str) -> str:
         """Return name of the job `nzo_id`"""
         name = ""
         if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", (nzo_id,)):
@@ -409,7 +388,7 @@ class HistoryDB:
                 pass
         return name
 
-    def get_incomplete_path(self, nzo_id: str):
+    def get_incomplete_path(self, nzo_id: str) -> str:
         """Return the `incomplete` path of the job `nzo_id` if
         the job failed and if the path is still there"""
         path = ""
@@ -421,9 +400,9 @@ class HistoryDB:
                 pass
         if os.path.exists(path):
             return path
-        return None
+        return path
 
-    def get_other(self, nzo_id):
+    def get_other(self, nzo_id: str) -> Tuple[str, str, str, str, str]:
         """Return additional data for job `nzo_id`"""
         if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
@@ -443,8 +422,30 @@ class HistoryDB:
         self.close()
 
 
-def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output="", script_line="", series_info=False):
+def convert_search(search: str) -> str:
+    """Convert classic wildcard to SQL wildcard"""
+    if not search:
+        # Default value
+        search = ""
+    else:
+        # Allow * for wildcard matching and space
+        search = search.replace("*", "%").replace(" ", "%")
+
+    # Allow ^ for start of string and $ for end of string
+    if search and search.startswith("^"):
+        search = search.replace("^", "")
+        search += "%"
+    elif search and search.endswith("$"):
+        search = search.replace("$", "")
+        search = "%" + search
+    else:
+        search = "%" + search + "%"
+    return search
+
+
+def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_output: str, script_line: str):
     """Collects all the information needed for the database"""
+    nzo: sabnzbd.nzbstuff.NzbObject
     completed = int(time.time())
     pp = PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X")
 
@@ -468,7 +469,8 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
 
     # Analyze series info only when job is finished
     series = ""
-    if series_info and (show_analysis := sabnzbd.newsunpack.analyse_show(nzo.final_name))["job_type"] == "tv":
+    show_analysis = sabnzbd.newsunpack.analyse_show(nzo.final_name)
+    if show_analysis["job_type"] == "tv":
         seriesname, season, episode = (show_analysis[key] for key in ("title", "season", "episode"))
         if seriesname and season and episode:
             series = "%s/%s/%s" % (seriesname.lower(), season, episode)
@@ -501,7 +503,7 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
     )
 
 
-def unpack_history_info(item: sqlite3.Row):
+def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
     """Expands the single line stage_log from the DB
     into a python dictionary for use in the history display
     """
