@@ -58,11 +58,15 @@ def safe_remove(path):
             os.remove(path)
 
 
-def delete_files_glob(name):
-    """Delete one file or set of files from wild-card spec"""
-    for f in glob.glob(name):
-        if os.path.exists(f):
-            os.remove(f)
+def delete_files_glob(glob_pattern: str):
+    """Delete one file or set of files from wild-card spec.
+    We expect to match at least 1 file, to force expected behavior"""
+    if files_to_remove := glob.glob(glob_pattern):
+        for path in files_to_remove:
+            if os.path.exists(path):
+                os.remove(path)
+    else:
+        raise FileNotFoundError(f"No files found that match '{glob_pattern}'")
 
 
 def run_external_command(command: List[str], print_output: bool = True):
@@ -211,8 +215,10 @@ if __name__ == "__main__":
 
         # Check what architecture we are on
         RELEASE_BINARY = RELEASE_BINARY_32
+        BUILDING_64BIT = False
         if platform.architecture()[0] == "64bit":
             RELEASE_BINARY = RELEASE_BINARY_64
+            BUILDING_64BIT = True
 
         # Remove any leftovers
         safe_remove(RELEASE_BINARY)
@@ -224,13 +230,20 @@ if __name__ == "__main__":
         safe_remove("dist/SABnzbd-console")
 
         # Remove unwanted DLL's
-        delete_files_glob("dist/SABnzbd/api-ms-win*.dll")
-        delete_files_glob("dist/SABnzbd/ucrtbase.dll")
-        safe_remove("dist/SABnzbd/Pythonwin")
+        shutil.rmtree("dist/SABnzbd/Pythonwin")
+        if BUILDING_64BIT:
+            # These are only present on 64bit (Python 3.9+)
+            delete_files_glob("dist/SABnzbd/api-ms-win*.dll")
+            delete_files_glob("dist/SABnzbd/ucrtbase.dll")
+
+            # Remove 32bit external executables
+            delete_files_glob("dist/SABnzbd/win/par2/par2.exe")
+            delete_files_glob("dist/SABnzbd/win/multipar/par2j.exe")
+            delete_files_glob("dist/SABnzbd/win/unrar/UnRAR.exe")
 
         if "installer" in sys.argv:
             # Needs to be run on 64 bit
-            if RELEASE_BINARY != RELEASE_BINARY_64:
+            if not BUILDING_64BIT:
                 raise RuntimeError("Installer should be created on 64bit Python")
 
             # Compile NSIS translations
@@ -238,11 +251,6 @@ if __name__ == "__main__":
             safe_remove("NSIS_Installer.nsi.tmp")
             shutil.copyfile("builder/win/NSIS_Installer.nsi", "NSIS_Installer.nsi")
             run_external_command([sys.executable, "tools/make_mo.py", "nsis"])
-
-            # Remove 32bit external executables
-            delete_files_glob("dist/SABnzbd/win/par2/par2.exe")
-            delete_files_glob("dist/SABnzbd/win/multipar/par2j.exe")
-            delete_files_glob("dist/SABnzbd/win/unrar/UnRAR.exe")
 
             # Run NSIS to build installer
             run_external_command(
@@ -260,7 +268,7 @@ if __name__ == "__main__":
         shutil.copytree("dist/SABnzbd", RELEASE_NAME)
 
         # Create the archive
-        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, RELEASE_NAME])
+        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, RELEASE_NAME, "-mx=9"])
 
         # Test the release, as the very last step to not mess with any release code
         test_sab_binary("dist/SABnzbd/SABnzbd.exe")
