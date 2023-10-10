@@ -61,7 +61,7 @@
                 <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }" onclick="showDetails(this)"></td>
                 <td class="delete">
                     <label data-bind="visible: parent.isMultiEditing()">
-                        <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
+                        <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
                     </label>
                     <div class="dropdown" data-bind="visible: !parent.isMultiEditing()">
                         <a href="#" data-toggle="dropdown" data-bind="click: updateAllHistoryInfo">
@@ -136,11 +136,11 @@
         <div data-bind="visible: history.isMultiEditing()">
             <span class="label label-default" data-bind="text: history.multiEditItems().length">0</span>
             <label for="multiedit-checkall-history">
-                <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall-history" title="$T('Glitter-checkAll')" data-bind="click: checkAllJobs" data-tooltip="true" data-placement="top" />
+                <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall-history" title="$T('Glitter-checkAll')" data-bind="click: history.checkAllJobs" data-tooltip="true" data-placement="top" />
             </label>
         </div>
 
-        <a href="#" class="hover-button" data-bind="visible: history.isMultiEditing(), click: doMultiDelete">
+        <a href="#" class="hover-button" data-bind="visible: history.isMultiEditing(), click: history.doMultiDelete">
             <span class="glyphicon glyphicon-trash"></span>
         </a>
         <a href="#modal-purge-history" class="hover-button" title="$T('purgeHist')" data-bind="visible: !history.isMultiEditing()" data-toggle="modal" data-tooltip="true" data-placement="left">
