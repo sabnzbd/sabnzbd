@@ -703,8 +703,10 @@ class Downloader(Thread):
                             DOWNLOADER_CV.wait()
 
                 if now > next_bpsmeter_update:
+                    # Do not update statistics and check levels every loop
                     BPSMeter.update()
                     next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
+                    self.check_assembler_levels()
 
                 if not read:
                     continue
@@ -713,8 +715,6 @@ class Downloader(Thread):
                 process_nw_queue.put_multiple(read)
                 process_nw_queue.join()
 
-                # Check if we need to pause because the assembler is full
-                self.check_assembler_levels()
         except:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
