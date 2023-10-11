@@ -471,7 +471,8 @@ class MainPage:
         """Needed for all skins, URL is fixed due to postproc"""
         # No session key check, due to fixed URLs
         if name := kwargs.get("name"):
-            return ShowString(history_db.get_name(name), sabnzbd.get_db_connection().get_script_log(name))
+            history_db = sabnzbd.get_db_connection()
+            return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root)
 
