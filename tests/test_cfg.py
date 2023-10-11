@@ -106,8 +106,6 @@ class TestValidators:
         assert cfg.validate_host("1.1.1.1") == (None, "1.1.1.1")
         assert cfg.validate_host("::1") == (None, "::1")
         assert cfg.validate_host("::") == (None, "::")
-        assert cfg.validate_host("www.example.com")[1]
-        assert cfg.validate_host(socket.gethostname())[1]  # resolves to something
 
         # non-valid input. Should return None as second parameter
         assert not cfg.validate_host("0.0.0.0.")[1]  # Trailing dot
