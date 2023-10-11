@@ -180,16 +180,19 @@ class DirectUnpacker(threading.Thread):
             with START_STOP_LOCK:
                 if not self.active_instance or not self.active_instance.stdout:
                     break
-                char = self.active_instance.stdout.read(1)
 
+                while 1:
+                    # Keep reading until reaching space or end of line
+                    # to prevent continuous locking and unlocking
+                    char = self.active_instance.stdout.read(1)
+                    linebuf += char
+
+                    if char in (b" ", b"\n", b""):
+                        break
+
+            # End of program
             if not char:
-                # End of program
                 break
-            linebuf += char
-
-            # Continue if it's not a space or end of line
-            if char not in (b" ", b"\n"):
-                continue
 
             # Handle whole lines
             if char == b"\n":
