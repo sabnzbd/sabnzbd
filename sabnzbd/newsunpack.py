@@ -737,7 +737,10 @@ def rar_extract_core(
         if not line:
             break
 
+        # Skip empty lines
         line = line.strip()
+        if not line:
+            continue
         lines.append(line)
 
         if line.startswith("Extracting from"):
@@ -839,7 +842,7 @@ def rar_extract_core(
             if p.stdout:
                 p.stdout.close()
             p.wait()
-            logging.debug("UNRAR output %s", "\n".join(lines))
+            logging.debug("UNRAR output: \n%s", "\n".join(lines))
             return fail, [], []
 
     if p.stdout:
@@ -849,7 +852,7 @@ def rar_extract_core(
     # Which files did we use to extract this?
     rarfiles = rar_volumelist(rarfile_path, password, rarfiles)
 
-    logging.debug("UNRAR output %s", "\n".join(lines))
+    logging.debug("UNRAR output: \n%s", "\n".join(lines))
     msg = T("Unpacked %s files/folders in %s") % (len(extracted), format_time_string(time.time() - start))
     nzo.set_unpack_info("Unpack", msg, setname)
     logging.info(msg)
@@ -1170,7 +1173,6 @@ def par2cmdline_verify(
     renames = {}
     reconstructed = []
 
-    linebuf = ""
     finished = False
     readd = False
 
@@ -1185,20 +1187,13 @@ def par2cmdline_verify(
 
     # Loop over the output, whee
     while 1:
-        char = p.stdout.read(1)
-        if not char:
+        line = p.stdout.readline()
+        if not line:
             break
 
-        # Line not complete yet
-        if char not in ("\n", "\r"):
-            linebuf += char
-            continue
-
-        line = linebuf.strip()
-        linebuf = ""
-
         # Skip empty lines
-        if line == "":
+        line = line.strip()
+        if not line:
             continue
 
         if not line.startswith(("Repairing:", "Scanning:", "Loading:", "Solving:", "Constructing:")):
@@ -1405,7 +1400,7 @@ def par2cmdline_verify(
     if nzo.fail_msg:
         logging.info(nzo.fail_msg)
 
-    logging.debug("PAR2 output was\n%s", "\n".join(lines))
+    logging.debug("par2cmdline output was:\n%s", "\n".join(lines))
 
     # If successful, add renamed files to the collection
     if finished and renames:
@@ -1457,7 +1452,6 @@ def multipar_verify(
     renames = {}
     reconstructed = []
 
-    linebuf = ""
     finished = False
     readd = False
 
@@ -1474,20 +1468,13 @@ def multipar_verify(
 
     # Loop over the output, whee
     while 1:
-        char = p.stdout.read(1)
-        if not char:
+        line = p.stdout.readline()
+        if not line:
             break
 
-        # Line not complete yet
-        if char not in ("\n", "\r"):
-            linebuf += char
-            continue
-
-        line = linebuf.strip()
-        linebuf = ""
-
         # Skip empty lines
-        if line == "":
+        line = line.strip()
+        if not line:
             continue
 
         # Save it all
@@ -1742,7 +1729,7 @@ def multipar_verify(
     if nzo.fail_msg:
         logging.info(nzo.fail_msg)
 
-    logging.debug("MultiPar output was\n%s", "\n".join(lines))
+    logging.debug("MultiPar output:\n%s", "\n".join(lines))
 
     # Add renamed files to the collection
     # MultiPar always automatically renames whatever it can in the 'Searching misnamed file:'-section

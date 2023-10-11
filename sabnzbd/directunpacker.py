@@ -198,8 +198,12 @@ class DirectUnpacker(threading.Thread):
             if char == b"\n":
                 # When reaching end-of-line, we can safely convert and add to the log
                 linebuf_encoded = platform_btou(linebuf.strip())
-                unrar_log.append(linebuf_encoded)
                 linebuf = b""
+
+                # Skip empty lines
+                if not linebuf_encoded:
+                    continue
+                unrar_log.append(linebuf_encoded)
 
                 # Error? Let PP-handle this job
                 if any(
