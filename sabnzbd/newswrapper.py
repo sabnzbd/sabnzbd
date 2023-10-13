@@ -21,7 +21,7 @@ sabnzbd.newswrapper
 
 import errno
 import socket
-from threading import Thread
+from threading import Thread, RLock
 import time
 import logging
 import ssl
@@ -33,6 +33,7 @@ import sabnzbd.cfg
 from sabnzbd.constants import DEF_TIMEOUT, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import utob, ubtou
 from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
+from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
@@ -231,16 +232,10 @@ class NewsWrapper:
         self.data = new_buffer
         self.data_view = memoryview(self.data)
 
-    def hard_reset(self, wait: bool = True, send_quit: bool = True):
+    def hard_reset(self, wait: bool = True):
         """Destroy and restart"""
         if self.nntp:
-            try:
-                if send_quit:
-                    self.nntp.sock.sendall(b"QUIT\r\n")
-                    time.sleep(0.01)
-                self.nntp.sock.close()
-            except:
-                pass
+            self.nntp.close(send_quit=self.connected)
             self.nntp = None
 
         # Reset all variables (including the NNTP connection)
@@ -328,6 +323,7 @@ class NNTP:
         else:
             self.connect()
 
+    @synchronized(DOWNLOADER_LOCK)
     def connect(self):
         """Start of connection, can be performed a-sync"""
         try:
@@ -395,7 +391,7 @@ class NNTP:
             raise socket.error(errno.ECONNREFUSED, str(error))
         else:
             msg = "Failed to connect: %s" % (str(error))
-            msg = "%s %s:%s (%s)" % (msg, self.nw.server.host, self.nw.server.port, self.host)
+            msg = "%s %s@%s:%s (%s)" % (msg, self.nw.thrdnum, self.nw.server.host, self.nw.server.port, self.host)
             self.error_msg = msg
             self.nw.server.next_busy_threads_check = 0
             if self.nw.server.warning == msg:
@@ -403,6 +399,16 @@ class NNTP:
             else:
                 logging.warning(msg)
             self.nw.server.warning = msg
+
+    def close(self, send_quit: bool):
+        """Safely close socket"""
+        try:
+            if send_quit:
+                self.sock.sendall(b"QUIT\r\n")
+                time.sleep(0.01)
+            self.sock.close()
+        except Exception as e:
+            logging.info("%s@%s: Failed to close socket (error=%s)", self.nw.thrdnum, self.nw.server.host, str(e))
 
     def __repr__(self):
         return "<NNTP: %s:%s>" % (self.host, self.nw.server.port)

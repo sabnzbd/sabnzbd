@@ -146,5 +146,5 @@ def test_nntp_server_dict(kwargs):
         return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
 
     # Close the connection and return result
-    nw.hard_reset(send_quit=True)
+    nw.hard_reset()
     return return_status

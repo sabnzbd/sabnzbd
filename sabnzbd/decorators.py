@@ -29,6 +29,9 @@ from threading import Lock, RLock, Condition
 NZBQUEUE_LOCK = RLock()
 DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 
+# All operations that modify downloader state need to be locked
+DOWNLOADER_LOCK = RLock()
+
 
 def synchronized(lock: Union[Lock, RLock]):
     def wrap(func: Callable):

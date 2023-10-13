@@ -30,7 +30,7 @@ import ssl
 from typing import List, Dict, Optional, Union, Set
 
 import sabnzbd
-from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
+from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWNLOADER_LOCK
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -59,7 +59,6 @@ _ARTICLE_PREFETCH = 20
 _DEFAULT_CHUNK_SIZE = 32768
 
 TIMER_LOCK = RLock()
-DOWNLOADER_LOCK = RLock()
 
 
 class Server:
@@ -202,7 +201,7 @@ class Server:
         """Remove all connections from server"""
         for nw in self.idle_threads:
             sabnzbd.Downloader.remove_socket(nw)
-            nw.hard_reset(send_quit=True)
+            nw.hard_reset()
         self.idle_threads = set()
 
     @synchronized(DOWNLOADER_LOCK)
@@ -526,7 +525,7 @@ class Downloader(Thread):
 
             # Remove all connections to server
             for nw in server.idle_threads | server.busy_threads:
-                self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, retry_article=False, send_quit=False)
+                self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, retry_article=False)
 
             # Make sure server address resolution is refreshed
             server.info = None
@@ -660,9 +659,7 @@ class Downloader(Thread):
                         for nw in server.idle_threads | server.busy_threads:
                             # Send goodbye if we have open socket
                             if nw.nntp:
-                                self.__reset_nw(
-                                    nw, "forcing disconnect", wait=False, count_article_try=False, send_quit=True
-                                )
+                                self.__reset_nw(nw, "forcing disconnect", wait=False, count_article_try=False)
                         # Make sure server address resolution is refreshed
                         server.info = None
                         server.reset_article_queue()
@@ -880,7 +877,7 @@ class Downloader(Thread):
                 errormsg = T("Too many connections to server %s [%s]") % (server.host, error.msg)
                 if server.active:
                     # Don't count this for the tries (max_art_tries) on this server
-                    self.__reset_nw(nw, send_quit=True)
+                    self.__reset_nw(nw)
                     self.plan_server(server, _PENALTY_TOOMANY)
                     server.threads -= 1
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
@@ -924,7 +921,7 @@ class Downloader(Thread):
                         if penalty and (block or server.optional):
                             self.plan_server(server, penalty)
                 # Note that the article is discard for this server if the server is not required
-                self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
+                self.__reset_nw(nw, retry_article=retry_article)
 
             # Set error for server and warn user if it was first time thrown
             if errormsg and server.active and server.errormsg != errormsg:
@@ -951,7 +948,6 @@ class Downloader(Thread):
         wait: bool = True,
         count_article_try: bool = True,
         retry_article: bool = True,
-        send_quit: bool = False,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
@@ -988,7 +984,7 @@ class Downloader(Thread):
                 nw.article.fetcher.article_queue.append(nw.article)
 
         # Reset connection object
-        nw.hard_reset(wait, send_quit=send_quit)
+        nw.hard_reset(wait)
 
         # Empty SSL info, it might change on next connect
         nw.server.ssl_info = ""
@@ -1009,11 +1005,11 @@ class Downloader(Thread):
             self.add_socket(nw.nntp.fileno, nw)
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
-            self.__reset_nw(nw, "server broke off connection", warn=True, send_quit=False)
+            self.__reset_nw(nw, "server broke off connection", warn=True)
         except:
             logging.error(T("Suspect error in downloader"))
             logging.info("Traceback: ", exc_info=True)
-            self.__reset_nw(nw, "server broke off connection", warn=True, send_quit=False)
+            self.__reset_nw(nw, "server broke off connection", warn=True)
 
     # ------------------------------------------------------------------------------
     # Timed restart of servers admin.
