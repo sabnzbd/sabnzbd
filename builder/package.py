@@ -226,9 +226,6 @@ if __name__ == "__main__":
         # Run PyInstaller and check output
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
-        shutil.copytree("dist/SABnzbd-console", "dist/SABnzbd", dirs_exist_ok=True)
-        safe_remove("dist/SABnzbd-console")
-
         # Remove unwanted DLL's
         shutil.rmtree("dist/SABnzbd/Pythonwin")
         if BUILDING_64BIT:
