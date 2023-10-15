@@ -752,26 +752,9 @@ def commandline_handler():
     serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
     upload_nzbs = []
 
-    # macOS binary: get rid of the weird -psn_0_123456 parameter
-    for arg in sys.argv:
-        if arg.startswith("-psn_"):
-            sys.argv.remove(arg)
-            break
-
-    # Ugly hack to remove the extra "SABnzbd*" parameter the Windows binary
-    # gets when it's restarted
-    if len(sys.argv) > 1 and "sabnzbd" in sys.argv[1].lower() and not sys.argv[1].startswith("-"):
-        slice_start = 2
-    else:
-        slice_start = 1
-
-    # Prepend options from env-variable to options
-    info = os.environ.get("SABnzbd", "").split()
-    info.extend(sys.argv[slice_start:])
-
     try:
         opts, args = getopt.getopt(
-            info,
+            sys.argv[1:],
             "phdvncwl:s:f:t:b:2:",
             [
                 "pause",
@@ -920,9 +903,9 @@ def main():
             if logging_level < -1 or logging_level > 2:
                 print_help()
                 exit_sab(1)
-        elif opt == "--console" or service:
-            # When installing Windows-service, we also need console output!
+        elif opt == "--console":
             console_logging = True
+            sabnzbd.RESTART_ARGS.append(opt)
         elif opt in ("-v", "--version"):
             print_version()
             exit_sab(0)
@@ -1596,9 +1579,8 @@ def main():
             if hasattr(sys, "frozen"):
                 if sabnzbd.MACOS:
                     # On macOS restart of app instead of embedded python
-                    my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
                     my_args = " ".join(sys.argv[1:])
-                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), my_name, my_args)
+                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), sys.executable, my_args)
                     logging.info("Launching: %s", cmd)
                     os.system(cmd)
                 elif sabnzbd.WIN_SERVICE:

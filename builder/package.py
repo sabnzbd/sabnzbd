@@ -58,7 +58,7 @@ def safe_remove(path):
             os.remove(path)
 
 
-def delete_files_glob(glob_pattern: str):
+def delete_files_glob(glob_pattern: str, allow_no_matches: bool = False):
     """Delete one file or set of files from wild-card spec.
     We expect to match at least 1 file, to force expected behavior"""
     if files_to_remove := glob.glob(glob_pattern):
@@ -66,7 +66,8 @@ def delete_files_glob(glob_pattern: str):
             if os.path.exists(path):
                 os.remove(path)
     else:
-        raise FileNotFoundError(f"No files found that match '{glob_pattern}'")
+        if not allow_no_matches:
+            raise FileNotFoundError(f"No files found that match '{glob_pattern}'")
 
 
 def run_external_command(command: List[str], print_output: bool = True):
@@ -230,8 +231,8 @@ if __name__ == "__main__":
         shutil.rmtree("dist/SABnzbd/Pythonwin")
         if BUILDING_64BIT:
             # These are only present on 64bit (Python 3.9+)
-            delete_files_glob("dist/SABnzbd/api-ms-win*.dll")
-            delete_files_glob("dist/SABnzbd/ucrtbase.dll")
+            delete_files_glob("dist/SABnzbd/api-ms-win*.dll", allow_no_matches=True)
+            delete_files_glob("dist/SABnzbd/ucrtbase.dll", allow_no_matches=True)
 
             # Remove 32bit external executables
             delete_files_glob("dist/SABnzbd/win/par2/par2.exe")
@@ -265,7 +266,7 @@ if __name__ == "__main__":
         shutil.copytree("dist/SABnzbd", RELEASE_NAME)
 
         # Create the archive
-        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, RELEASE_NAME, "-mx=9"])
+        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, RELEASE_NAME])
 
         # Test the release, as the very last step to not mess with any release code
         test_sab_binary("dist/SABnzbd/SABnzbd.exe")
