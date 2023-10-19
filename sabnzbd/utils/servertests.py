@@ -86,6 +86,7 @@ def test_nntp_server_dict(kwargs):
         return False, T("Invalid server details")
 
     try:
+        s.request_addrinfo_blocking()
         nw = NewsWrapper(server=s, thrdnum=-1, block=True)
         nw.init_connect()
         while not nw.connected:

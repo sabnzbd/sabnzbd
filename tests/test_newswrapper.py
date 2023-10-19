@@ -32,6 +32,7 @@ from flaky import flaky
 from tests.testhelper import *
 from sabnzbd import misc
 from sabnzbd import newswrapper
+from sabnzbd.happyeyeballs import AddrInfo
 
 TEST_HOST = "127.0.0.1"
 TEST_PORT = portend.find_available_local_port()
@@ -107,7 +108,7 @@ class TestNewsWrapper:
         nw.server = mock.Mock()
         nw.server.host = TEST_HOST
         nw.server.port = TEST_PORT
-        nw.server.info = socket.getaddrinfo(TEST_HOST, TEST_PORT, 0, socket.SOCK_STREAM)
+        nw.server.info = AddrInfo(*socket.getaddrinfo(TEST_HOST, TEST_PORT, 0, socket.SOCK_STREAM)[0])
         nw.server.timeout = 10
         nw.server.ssl = True
         nw.server.ssl_context = None
@@ -117,9 +118,9 @@ class TestNewsWrapper:
         # Do we expect failure to connect?
         if not can_connect:
             with pytest.raises(OSError):
-                newswrapper.NNTP(nw, TEST_HOST)
+                newswrapper.NNTP(nw, nw.server.info)
         else:
-            nntp = newswrapper.NNTP(nw, TEST_HOST)
+            nntp = newswrapper.NNTP(nw, nw.server.info)
             assert nntp.sock.recv(len(TEST_DATA)) == TEST_DATA
 
             # Assert SSL data

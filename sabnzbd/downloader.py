@@ -34,8 +34,8 @@ from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWN
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, get_server_addrinfo, helpful_warning, int_conv, MultiAddQueue
-from sabnzbd.utils.happyeyeballs import happyeyeballs
+from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue
+from sabnzbd.happyeyeballs import happyeyeballs, AddrInfo
 from sabnzbd.constants import SOFT_QUEUE_LIMIT
 
 
@@ -91,7 +91,7 @@ class Server:
         "bad_cons",
         "errormsg",
         "warning",
-        "info",
+        "addrinfo",
         "ssl_info",
         "request",
         "have_body",
@@ -154,7 +154,7 @@ class Server:
         self.bad_cons: int = 0
         self.errormsg: str = ""
         self.warning: str = ""
-        self.info: Optional[List] = None  # Will hold getaddrinfo() list
+        self.addrinfo: Union[AddrInfo, None, bool] = None  # Will hold fasted address information
         self.ssl_info: str = ""  # Will hold the type and cipher of SSL connection
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
@@ -169,35 +169,6 @@ class Server:
 
             # Tell the BPSMeter about this server
             sabnzbd.BPSMeter.init_server_stats(self.id)
-
-    @property
-    def hostip(self) -> str:
-        """In case a server still has active connections, we use the same IP again.
-        If new connection then use happyeyeballs if there are multiple options.
-        In case of problems: return the host name itself
-        """
-        # Check if already a successful ongoing connection
-        if self.busy_threads:
-            active_thread = next(iter(self.busy_threads))
-            if active_thread.nntp:
-                # Re-use that IP
-                logging.debug("%s: Re-using address %s", self.host, active_thread.nntp.host)
-                return active_thread.nntp.host
-
-        # Determine IP
-        ip = None
-        if self.info:
-            # RFC6555 / Happy Eyeballs in case of multiple options
-            if len(self.info) > 1:
-                ip = happyeyeballs(self.host, port=self.port)
-
-            # Just 1 IP found, or problem with happyeyeballs, return first one
-            if not ip:
-                ip = self.info[0][4][0]
-        else:
-            ip = self.host
-        logging.debug("%s: Connecting to address %s", self.host, ip)
-        return ip
 
     def deactivate(self):
         """Deactivate server and reset queued articles"""
@@ -241,22 +212,22 @@ class Server:
             sabnzbd.NzbQueue.reset_try_lists(article, remove_fetcher_from_trylist=False)
         self.article_queue = []
 
-    def request_info(self):
-        """Launch async request to resolve server address.
-        getaddrinfo() can be very slow. In some situations this can lead
-        to delayed starts and timeouts on connections.
+    def request_addrinfo(self):
+        """Launch async request to resolve server address and perform Happy Eyeballs.
+        In some situations this can be slow and result in delayed starts and timeouts on connections.
         Because of this, the results will be cached in the server object."""
         if not self.request:
             self.request = True
-            Thread(target=self._request_info_internal).start()
+            Thread(target=self.request_addrinfo_blocking).start()
 
-    def _request_info_internal(self):
-        """Async attempt to run getaddrinfo() for specified server"""
+    def request_addrinfo_blocking(self):
+        """Blocking attempt to run getaddrinfo() and Happy Eyeballs for specified server"""
         logging.debug("Retrieving server address information for %s", self.host)
-        self.info = get_server_addrinfo(self.host, self.port)
-        if not self.info:
+        self.addrinfo = happyeyeballs(self.host, self.port)
+        if not self.addrinfo:
             self.bad_cons += self.threads
-            self.info = False
+            # Notify next call to maybe_block_server
+            self.addrinfo = False
         else:
             self.bad_cons = 0
         self.request = False
@@ -504,7 +475,7 @@ class Downloader(Thread):
 
     def maybe_block_server(self, server: Server):
         # Was it resolving problem?
-        if server.info is False:
+        if server.addrinfo is False:
             # Warn about resolving issues
             errormsg = T("Cannot connect to server %s [%s]") % (server.host, T("Server name does not resolve"))
             if server.errormsg != errormsg:
@@ -535,7 +506,7 @@ class Downloader(Thread):
                 self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, retry_article=False)
 
             # Make sure server address resolution is refreshed
-            server.info = None
+            server.addrinfo = None
 
     @staticmethod
     def decode(article, data_view: Optional[memoryview] = None):
@@ -588,7 +559,7 @@ class Downloader(Thread):
 
                 for server in self.servers:
                     # Skip this server if there's no point searching for new stuff to do
-                    if server.info and not server.busy_threads and server.next_article_search > now:
+                    if server.addrinfo and not server.busy_threads and server.next_article_search > now:
                         continue
 
                     if server.next_busy_threads_check < now:
@@ -632,11 +603,11 @@ class Downloader(Thread):
                             else:
                                 nw.timeout = None
 
-                        if not server.info:
+                        if not server.addrinfo:
                             # Only request info if there's stuff in the queue
                             if not sabnzbd.NzbQueue.is_empty():
                                 self.maybe_block_server(server)
-                                server.request_info()
+                                server.request_addrinfo()
                             break
 
                         nw.article = server.get_article()
@@ -668,7 +639,7 @@ class Downloader(Thread):
                             if nw.nntp:
                                 self.__reset_nw(nw, "forcing disconnect", wait=False, count_article_try=False)
                         # Make sure server address resolution is refreshed
-                        server.info = None
+                        server.addrinfo = None
                         server.reset_article_queue()
                     self.force_disconnect = False
 

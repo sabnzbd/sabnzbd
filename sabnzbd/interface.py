@@ -47,14 +47,13 @@ from sabnzbd.misc import (
     get_base_url,
     is_ipv4_addr,
     is_ipv6_addr,
-    get_server_addrinfo,
     is_lan_addr,
     is_local_addr,
     is_loopback_addr,
-    ip_in_subnet,
     helpful_warning,
     recursive_html_escape,
 )
+from sabnzbd.happyeyeballs import happyeyeballs
 from sabnzbd.filesystem import (
     real_path,
     globber,
@@ -1181,7 +1180,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        if not get_server_addrinfo(host, int_conv(port)):
+        if not happyeyeballs(host, int_conv(port)):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
     # Default server name is just the host name
