@@ -860,7 +860,7 @@ def main():
     ipv6_hosting = None
     inet_exposure = None
 
-    service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
+    _service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
 
     for opt, arg in sab_opts:
         if opt == "--servicecall":
@@ -949,8 +949,9 @@ def main():
     sabnzbd.DIR_LANGUAGE = real_path(sabnzbd.DIR_PROG, DEF_LANGUAGE)
     org_dir = os.getcwd()
 
-    # Need console logging if requested or just running as script
-    console_logging = (console_logging or not hasattr(sys, "frozen")) and not sabnzbd.DAEMON
+    # Need console logging if requested, for SABnzbd.py and SABnzbd-console.exe
+    console_logging = console_logging or sys.executable.endswith("console.exe") or not hasattr(sys, "frozen")
+    console_logging = console_logging and not sabnzbd.DAEMON
 
     LOGLEVELS = (logging.FATAL, logging.WARNING, logging.INFO, logging.DEBUG)
 
@@ -1638,6 +1639,12 @@ if sabnzbd.WIN32:
             "You may need to login with a real user account when you need "
             "access to network shares."
         )
+
+        # Only SABnzbd-console.exe can print to the console, so the service is installed
+        # from there. But we run SABnzbd.exe so nothing is logged. Logging can cause the
+        # Windows Service to stop because the output buffers are full.
+        if hasattr(sys, "frozen"):
+            _exe_name_ = "SABnzbd.exe"
 
         def __init__(self, args):
             win32serviceutil.ServiceFramework.__init__(self, args)

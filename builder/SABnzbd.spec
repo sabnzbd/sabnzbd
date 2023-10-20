@@ -113,8 +113,7 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name="SABnzbd",
-    console=True,
-    hide_console="hide-early",
+    console=False,
     append_pkg=False,
     icon="icons/sabnzbd.ico",
     contents_directory=".",
@@ -125,6 +124,29 @@ exe = EXE(
 )
 
 coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.zipfiles, pyi_analysis.datas, name="SABnzbd")
+
+# We need to run again for the console-app
+if sys.platform == "win32":
+    # Enable console=True for this one
+    console_exe = EXE(
+        pyz,
+        pyi_analysis.scripts,
+        [],
+        exclude_binaries=True,
+        name="SABnzbd-console",
+        append_pkg=False,
+        icon="icons/sabnzbd.ico",
+        contents_directory=".",
+        version=version_info,
+    )
+
+    console_coll = COLLECT(
+        console_exe,
+        pyi_analysis.binaries,
+        pyi_analysis.zipfiles,
+        pyi_analysis.datas,
+        name="SABnzbd-console",
+    )
 
 # Build the APP on macOS
 if sys.platform == "darwin":
