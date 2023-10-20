@@ -81,25 +81,30 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
             # Only IPv4
             family = socket.AF_INET
         all_addrinfo = socket.getaddrinfo(host, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME)
+        logging.debug("Available addresses for %s (port=%d): %d", host, port, len(all_addrinfo))
 
         # Convert to AddrInfo
         all_addrinfo = [AddrInfo(*addrinfo) for addrinfo in all_addrinfo]
 
-        # Fill queue used for threads giving back the results
-        result_queue: queue.Queue[Tuple[AddrInfo, bool]] = queue.Queue()
-        for addrinfo in all_addrinfo:
-            threading.Thread(target=do_socket_connect, args=(result_queue, addrinfo), daemon=True).start()
+        # Skip speed comparison in case we only have 1 result
+        if len(all_addrinfo) > 1:
+            # Fill queue used for threads giving back the results
+            result_queue: queue.Queue[Tuple[AddrInfo, bool]] = queue.Queue()
+            for addrinfo in all_addrinfo:
+                threading.Thread(target=do_socket_connect, args=(result_queue, addrinfo), daemon=True).start()
 
-        # start reading from the Queue for message from the threads:
-        result = None
-        for _ in range(len(all_addrinfo)):
-            connect_result = result_queue.get()
-            if connect_result[1]:
-                result = connect_result[0]
-                break
+            # start reading from the Queue for message from the threads:
+            result = None
+            for _ in range(len(all_addrinfo)):
+                connect_result = result_queue.get()
+                if connect_result[1]:
+                    result = connect_result[0]
+                    break
+        else:
+            result = all_addrinfo[0]
 
-        logging.info("Quickest IP address for %s (port=%s) is %s", host, port, result.sockaddr[0])
-        logging.debug("Happy Eyeballs lookup and port connect took %s ms", int(1000 * (time.time() - start)))
+        logging.info("Quickest IP address for %s (port=%d): %s", host, port, result.sockaddr[0])
+        logging.debug("Happy Eyeballs lookup and port connect took: %d ms", int(1000 * (time.time() - start)))
         return result
     except Exception as e:
         logging.debug("Failed Happy Eyeballs lookup: %s", e)
