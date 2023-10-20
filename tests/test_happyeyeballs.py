@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_utils.test_happyeyeballs - Testing SABnzbd happyeyeballs
+tests.test_happyeyeballs - Testing SABnzbd happyeyeballs
 """
 
 from flaky import flaky
