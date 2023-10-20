@@ -136,6 +136,13 @@ class Server:
         self.retention: int = retention
         self.send_group: bool = send_group
 
+        # TODO: Remove for final release
+        if send_group:
+            helpful_warning(
+                "You have 'Send Group' enabled for %s. Could you let us know why? https://github.com/sabnzbd/sabnzbd/discussions/2715",
+                self.displayname,
+            )
+
         self.username: Optional[str] = username
         self.password: Optional[str] = password
 
