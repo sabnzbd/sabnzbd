@@ -30,7 +30,8 @@ import threading
 import time
 import logging
 import queue
-from typing import NamedTuple, Tuple, Union, Optional
+from dataclasses import dataclass
+from typing import Tuple, Union, Optional
 
 from sabnzbd import cfg as cfg
 
@@ -39,7 +40,8 @@ IP4_DELAY = 0.1
 
 
 # For typing and convenience!
-class AddrInfo(NamedTuple):
+@dataclass
+class AddrInfo:
     family: socket.AddressFamily
     type: socket.SocketKind
     proto: int
@@ -83,12 +85,18 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
 
         all_addrinfo = []
         ipv4_delay = 0
+        last_canonname = ""
         for addrinfo in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME):
             # Convert to AddrInfo
             all_addrinfo.append(addrinfo := AddrInfo(*addrinfo))
             # We only want delay for IPv4 in case we got any IPv6
             if addrinfo.family == socket.AddressFamily.AF_INET6:
                 ipv4_delay = IP4_DELAY
+            # The canonname is only reported once per alias
+            if addrinfo.canonname:
+                last_canonname = addrinfo.canonname
+            elif last_canonname:
+                addrinfo.canonname = last_canonname
         logging.debug("Available addresses for %s (port=%d): %d", host, port, len(all_addrinfo))
 
         # Fill queue used for threads that will return the results
@@ -105,7 +113,7 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
                 result = connect_result[0]
                 break
 
-        logging.info("Quickest IP address for %s (port=%d): %s", host, port, result.sockaddr[0])
+        logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.sockaddr[0], result.canonname)
         logging.debug("Happy Eyeballs lookup and port connect took: %d ms", int(1000 * (time.time() - start)))
         return result
     except Exception as e:
