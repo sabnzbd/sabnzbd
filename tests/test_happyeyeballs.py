@@ -33,12 +33,12 @@ class TestHappyEyeballs:
 
     def test_google_http(self):
         addrinfo = happyeyeballs("www.google.com", port=80)
-        assert "." in addrinfo.sockaddr[0] or ":" in addrinfo.sockaddr[0]
+        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
         assert "google" in addrinfo.canonname
 
     def test_google_https(self):
         addrinfo = happyeyeballs("www.google.com", port=443)
-        assert "." in addrinfo.sockaddr[0] or ":" in addrinfo.sockaddr[0]
+        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
         assert "google" in addrinfo.canonname
 
     def test_not_resolvable(self):
@@ -46,12 +46,12 @@ class TestHappyEyeballs:
 
     def test_ipv6_only(self):
         if addrinfo := happyeyeballs("ipv6.google.com", port=443):
-            assert ":" in addrinfo.sockaddr[0]
+            assert ":" in addrinfo.ipaddress
             assert "google" in addrinfo.canonname
 
     def test_google_unreachable_port(self):
         assert happyeyeballs("www.google.com", port=33333) is None
 
     def test_newszilla_nntp(self):
-        ip = happyeyeballs("newszilla.xs4all.nl", port=119).sockaddr[0]
+        ip = happyeyeballs("newszilla.xs4all.nl", port=119).ipaddress
         assert "." in ip or ":" in ip

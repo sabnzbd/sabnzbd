@@ -225,15 +225,20 @@
                                 </div>
                                 <div class="row" data-bind="visible: serverssl">
                                     <div class="col-sm-6">$T('srv-ssl')</div>
-                                    <div class="col-sm-6">
-                                        <span class="glyphicon glyphicon-ok"></span> <span data-bind="text: serversslinfo"></span>
+                                    <div class="col-sm-6 col-dot-overflow">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                        <span data-bind="text: serversslinfo"></span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-6"># $T('connections')</div>
                                     <div class="col-sm-6">
                                         <span data-bind="text: serverconnections().length"></span> /
-                                        <span data-bind="text: servertotalconn"></span>
+                                        <span data-bind="text: servertotalconn"></span><br>
+                                        <!-- ko if: serveripaddress() -->
+                                        <span data-bind="text: servercanonname"></span><br>
+                                        <span data-bind="text: serveripaddress"></span>
+                                        <!-- /ko -->
                                     </div>
                                 </div>
                                 <div class="row">
@@ -249,11 +254,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" data-bind="visible: !isFinite(serveractiveconn())">
+                                <div class="row" data-bind="visible: serverwarning()">
                                     <div class="col-sm-12">
                                         <div class="alert alert-warning">
                                             <span class="glyphicon glyphicon-info-sign"></span>
-                                            <span data-bind="text: serveractiveconn()"></span>
+                                            <span data-bind="text: serverwarning()"></span>
                                         </div>
                                     </div>
                                 </div>

@@ -1292,11 +1292,11 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["servers"] = []
     # Servers-list could be modified during iteration, so we need a copy
     for server in sabnzbd.Downloader.servers[:]:
-        connected = sum(nw.connected for nw in server.idle_threads.copy())
+        activeconn = sum(nw.connected for nw in server.idle_threads.copy())
         serverconnections = []
         for nw in server.busy_threads.copy():
             if nw.connected:
-                connected += 1
+                activeconn += 1
             if nw.article:
                 serverconnections.append(
                     {
@@ -1307,25 +1307,31 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
                     }
                 )
 
-        if server.warning and not (connected or server.errormsg):
-            connected = server.warning
-
-        if server.request and not server.info:
-            connected = T("Resolving address")
-
         server_info = {
             "servername": server.displayname,
-            "serveractiveconn": connected,
+            "serveractive": server.active,
+            "serveractiveconn": activeconn,
             "servertotalconn": server.threads,
             "serverconnections": serverconnections,
             "serverssl": server.ssl,
             "serversslinfo": server.ssl_info,
-            "serveractive": server.active,
+            "serveripaddress": None,
+            "servercanonname": None,
+            "serverwarning": server.warning,
             "servererror": server.errormsg,
             "serverpriority": server.priority,
             "serveroptional": server.optional,
             "serverbps": to_units(sabnzbd.BPSMeter.server_bps.get(server.id, 0)),
         }
+
+        # Only add this information if we are connected
+        if activeconn and server.addrinfo:
+            server_info["serveripaddress"] = server.addrinfo.ipaddress
+            server_info["servercanonname"] = server.addrinfo.canonname
+
+        if server.request and not server.addrinfo:
+            server_info["serverwarning"] = T("Resolving address")
+
         info["servers"].append(server_info)
 
     return info

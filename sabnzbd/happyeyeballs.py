@@ -47,6 +47,11 @@ class AddrInfo:
     proto: int
     canonname: str
     sockaddr: Union[Tuple[str, int], Tuple[str, int, int, int]]
+    ipaddress: str = ""
+
+    def __post_init__(self):
+        # For easy access
+        self.ipaddress = self.sockaddr[0]
 
 
 # Called by each thread
@@ -113,7 +118,7 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
                 result = connect_result[0]
                 break
 
-        logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.sockaddr[0], result.canonname)
+        logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.ipaddress, result.canonname)
         logging.debug("Happy Eyeballs lookup and port connect took: %d ms", int(1000 * (time.time() - start)))
         return result
     except Exception as e:
