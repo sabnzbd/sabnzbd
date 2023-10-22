@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2023 The SABnzbd-Team
-# 
+#
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
 # Pavel C <quoing_transifex@mess.cz>, 2023
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.2.0-develop\n"
@@ -166,7 +166,7 @@ msgid "Test Notification"
 msgstr "Otestovat notifikace"
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
+msgid "Resolving address"
 msgstr "Překládám adresu"
 
 #. No value, used in dropdown menus

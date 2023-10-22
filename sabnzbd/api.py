@@ -1311,7 +1311,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
             connected = server.warning
 
         if server.request and not server.info:
-            connected = T("&nbsp;Resolving address").replace("&nbsp;", "")
+            connected = T("Resolving address")
 
         server_info = {
             "servername": server.displayname,

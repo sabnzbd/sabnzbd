@@ -149,7 +149,7 @@ msgid "Test Notification"
 msgstr ""
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
+msgid "Resolving address"
 msgstr ""
 
 #. No value, used in dropdown menus
