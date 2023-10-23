@@ -274,8 +274,10 @@ def unpacker(
     depth: int = 0,
 ) -> Tuple[Union[int, bool], List[str]]:
     """Do a recursive unpack from all archives in 'download_path' to 'workdir_complete'"""
-    if depth > 5:
-        logging.warning(T("Unpack nesting too deep [%s]"), nzo.final_name)
+    if depth > 2:
+        # Prevent going to deep down the rabbit-hole
+        nzo.set_unpack_info("Unpack", T("Unpack nesting too deep [%s]") % nzo.final_name)
+        logging.info(T("Unpack nesting too deep [%s]"), nzo.final_name)
         return False, []
     depth += 1
 
