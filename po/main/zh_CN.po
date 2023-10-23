@@ -789,7 +789,6 @@ msgstr "电影排序"
 msgid "Running script"
 msgstr "正在执行脚本"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "解压嵌套层级过深 [%s]"

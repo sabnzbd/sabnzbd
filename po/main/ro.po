@@ -820,7 +820,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Rulare script"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Numărul de arhive încorporate este prea mare [%s]"

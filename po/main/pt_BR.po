@@ -801,7 +801,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Executando script"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Aninhamento de descompactação com muitos níveis [%s]"

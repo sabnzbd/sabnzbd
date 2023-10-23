@@ -797,7 +797,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Uruchamianie skryptu"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Zbyt głęboki poziom zagnieżdżenia podczas rozpakowywania [%s]"

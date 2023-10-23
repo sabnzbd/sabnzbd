@@ -851,7 +851,6 @@ msgstr "Tri des films"
 msgid "Running script"
 msgstr "Exécution du script"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Arborescence trop profonde dans le fichier compressé [%s]"

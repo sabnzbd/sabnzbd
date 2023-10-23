@@ -849,7 +849,6 @@ msgstr "Film Sortierung"
 msgid "Running script"
 msgstr "Ausführen des Skripts"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Entpacken zu tief verschachtelt [%s]"

@@ -802,7 +802,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Ajetaan skripti"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Purkaessa havaittiin liikaa pakkauskerroksia [%s]"

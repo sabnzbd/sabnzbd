@@ -834,7 +834,6 @@ msgstr "Clasificación de películas"
 msgid "Running script"
 msgstr "Ejecutando script"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr ""

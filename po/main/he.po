@@ -804,7 +804,6 @@ msgstr "מיון סרטים"
 msgid "Running script"
 msgstr "מריץ תסריט"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "פריקת קינון ארוכה מדי [%s]"

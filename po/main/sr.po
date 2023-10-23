@@ -794,7 +794,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Покретање скрипта"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Previše ugnježdenih nivoa pri raspakivanju [%s]"
