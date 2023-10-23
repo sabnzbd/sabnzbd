@@ -23,7 +23,7 @@ import time
 import select
 import logging
 from math import ceil
-from threading import Thread, RLock
+from threading import Thread, RLock, current_thread
 import socket
 import sys
 import ssl
@@ -727,7 +727,7 @@ class Downloader(Thread):
         Wrapped in try/except because in case of an exception, logging
         might get lost and the queue.join() would block forever."""
         try:
-            logging.debug("Starting Downloader receive thread")
+            logging.debug("Starting Downloader receive thread: %s", current_thread().name)
             while True:
                 # The read_fds is passed by reference, so we can access its items!
                 self.process_nw(read_fds[nw_queue.get()])
