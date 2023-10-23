@@ -8,7 +8,6 @@
     "before 8am on Monday"
   ],
   "ignorePaths": [
-    "tests/**",
     ".github/workflows/**"
   ],
   "pip_requirements": {
@@ -22,7 +21,8 @@
   },
   "ignoreDeps": [
     "jaraco.text",
-    "sabctools"
+    "sabctools",
+    "werkzeug"
   ],
   "packageRules": [
     {
