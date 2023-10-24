@@ -32,7 +32,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DEF_TIMEOUT, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import utob, ubtou
-from sabnzbd.happyeyeballs import happyeyeballs, AddrInfo
+from sabnzbd.happyeyeballs import AddrInfo
 from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 
 # Set pre-defined socket timeout
