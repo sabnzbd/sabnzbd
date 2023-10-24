@@ -783,43 +783,7 @@ function ViewModel() {
             }
 
             // Update the servers
-            if (self.statusInfo.servers().length !== data.status.servers.length) {
-                // Empty them, in case of update
-                self.statusInfo.servers([])
-
-                // Initial add
-                $.each(data.status.servers, function() {
-                    self.statusInfo.servers.push({
-                        'servername': ko.observable(this.servername),
-                        'serveroptional': ko.observable(this.serveroptional),
-                        'serverpriority': ko.observable(this.serverpriority),
-                        'servertotalconn': ko.observable(this.servertotalconn),
-                        'serverssl': ko.observable(this.serverssl),
-                        'serversslinfo': ko.observable(this.serversslinfo),
-                        'serveractiveconn': ko.observable(this.serveractiveconn),
-                        'servererror': ko.observable(this.servererror),
-                        'serveractive': ko.observable(this.serveractive),
-                        'serverconnections': ko.observableArray(this.serverconnections),
-                        'serverbps': ko.observable(this.serverbps)
-                    })
-                })
-            } else {
-                // Update
-                $.each(data.status.servers, function(index) {
-                    var activeServer = self.statusInfo.servers()[index];
-                    activeServer.servername(this.servername),
-                        activeServer.serveroptional(this.serveroptional),
-                        activeServer.serverpriority(this.serverpriority),
-                        activeServer.servertotalconn(this.servertotalconn),
-                        activeServer.serverssl(this.serverssl),
-                        activeServer.serversslinfo(this.serversslinfo),
-                        activeServer.serveractiveconn(this.serveractiveconn),
-                        activeServer.servererror(this.servererror),
-                        activeServer.serveractive(this.serveractive),
-                        activeServer.serverconnections(this.serverconnections),
-                        activeServer.serverbps(this.serverbps)
-                })
-            }
+            ko.mapping.fromJS(data.status.servers, {}, self.statusInfo.servers)
 
             // Add tooltips to possible new items
             if (!isMobile) $('#modal-options [data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })

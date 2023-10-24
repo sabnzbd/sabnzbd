@@ -109,11 +109,6 @@ import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
 import sabnzbd.notifier as notifier
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import (
-    DEFAULT_PRIORITY,
-    VALID_ARCHIVES,
-    REPAIR_REQUEST,
-)
 import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization

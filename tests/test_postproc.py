@@ -14,7 +14,7 @@ import shutil
 from unittest import mock
 
 from sabnzbd import postproc
-from sabnzbd.config import ConfigSorter, ConfigCat, read_config
+from sabnzbd.config import ConfigSorter, ConfigCat
 from sabnzbd.filesystem import globber_full, clip_path
 from sabnzbd.misc import sort_to_opts
 

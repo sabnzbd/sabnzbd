@@ -16,12 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_utils.test_happyeyeballs - Testing SABnzbd happyeyeballs
+tests.test_happyeyeballs - Testing SABnzbd happyeyeballs
 """
 
 from flaky import flaky
 
-from sabnzbd.utils.happyeyeballs import happyeyeballs
+from sabnzbd.happyeyeballs import happyeyeballs
 
 
 @flaky
@@ -32,25 +32,26 @@ class TestHappyEyeballs:
     """
 
     def test_google_http(self):
-        ip = happyeyeballs("www.google.com")
-        assert "." in ip or ":" in ip
+        addrinfo = happyeyeballs("www.google.com", port=80)
+        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
+        assert "google" in addrinfo.canonname
 
     def test_google_https(self):
-        ip = happyeyeballs("www.google.com", port=443)
-        assert "." in ip or ":" in ip
+        addrinfo = happyeyeballs("www.google.com", port=443)
+        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
+        assert "google" in addrinfo.canonname
 
     def test_not_resolvable(self):
-        ip = happyeyeballs("not.resolvable.invalid")
-        assert ip is None
+        assert happyeyeballs("not.resolvable.invalid", port=80) is None
 
     def test_ipv6_only(self):
-        ip = happyeyeballs("ipv6.google.com")
-        assert ip is None or ":" in ip
+        if addrinfo := happyeyeballs("ipv6.google.com", port=443):
+            assert ":" in addrinfo.ipaddress
+            assert "google" in addrinfo.canonname
 
     def test_google_unreachable_port(self):
-        ip = happyeyeballs("www.google.com", port=33333)
-        assert ip is None
+        assert happyeyeballs("www.google.com", port=33333) is None
 
     def test_newszilla_nntp(self):
-        ip = happyeyeballs("newszilla.xs4all.nl", port=119)
+        ip = happyeyeballs("newszilla.xs4all.nl", port=119).ipaddress
         assert "." in ip or ":" in ip

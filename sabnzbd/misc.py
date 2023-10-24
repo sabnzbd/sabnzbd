@@ -1027,19 +1027,6 @@ def ip_extract() -> List[str]:
     return ips
 
 
-def get_server_addrinfo(host: str, port: int) -> socket.getaddrinfo:
-    """Return getaddrinfo() based on user settings"""
-    try:
-        if cfg.ipv6_servers():
-            # Standard IPV4 or IPV6
-            return socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
-        else:
-            # Only IPv4
-            return socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
-    except:
-        return []
-
-
 def get_base_url(url: str) -> str:
     """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
     But also api.althub.co.za -> althub.co.za

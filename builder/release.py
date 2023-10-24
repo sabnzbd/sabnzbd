@@ -19,7 +19,6 @@ import hashlib
 import json
 import os
 import re
-import shutil
 import xml.etree.ElementTree as ET
 
 import github

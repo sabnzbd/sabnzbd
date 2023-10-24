@@ -19,7 +19,6 @@
 tests.test_cfg - Testing functions in cfg.py
 """
 import sabnzbd.cfg as cfg
-import socket
 
 
 class TestValidators:
