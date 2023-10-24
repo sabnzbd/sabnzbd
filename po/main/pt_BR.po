@@ -264,7 +264,7 @@ msgstr "%s não é um endereço de e-mail válido"
 msgid "Server address required"
 msgstr "Endereço do servidor necessário"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "Endereço do servidor inválido."
 

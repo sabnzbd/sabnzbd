@@ -275,7 +275,7 @@ msgstr "%s nu este o adresă email validă"
 msgid "Server address required"
 msgstr "Adresă server necesară"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "Adresă server invalidă"
 

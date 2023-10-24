@@ -264,7 +264,7 @@ msgstr "%s не является допустимым адресом элект�
 msgid "Server address required"
 msgstr "Требуется адрес сервера"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "Недопустимый адрес сервера."
 

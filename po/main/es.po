@@ -285,7 +285,7 @@ msgstr "%s no es una dirección de correo electrónico válida."
 msgid "Server address required"
 msgstr "Se necesita la dirección del servidor"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "Dirección del servidor no válida."
 

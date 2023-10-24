@@ -280,7 +280,7 @@ msgstr "%s is geen geldig e-mailadres"
 msgid "Server address required"
 msgstr "Serveradres verplicht"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "Ongeldige servernaam"
 

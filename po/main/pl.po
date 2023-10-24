@@ -260,7 +260,7 @@ msgstr "%s nie jest prawidłowym adresem email"
 msgid "Server address required"
 msgstr "Wymagane jest podanie adresu serwera"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "Nieprawidłowy adres serwera."
 

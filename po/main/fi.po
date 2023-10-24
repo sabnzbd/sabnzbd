@@ -268,7 +268,7 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "Virheellinen palvelimen osoite."
 

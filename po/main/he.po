@@ -266,7 +266,7 @@ msgstr "%s אינה כתובת דוא״ל תקפה"
 msgid "Server address required"
 msgstr "כתובת שרת דרושה"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Invalid server address."
 msgstr "כתובת שרת בלתי תקפה."
 
