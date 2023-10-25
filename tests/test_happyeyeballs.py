@@ -18,7 +18,8 @@
 """
 tests.test_happyeyeballs - Testing SABnzbd happyeyeballs
 """
-
+import os
+import pytest
 from flaky import flaky
 
 from sabnzbd.happyeyeballs import happyeyeballs
@@ -52,6 +53,7 @@ class TestHappyEyeballs:
     def test_google_unreachable_port(self):
         assert happyeyeballs("www.google.com", port=33333) is None
 
-    def test_newszilla_nntp(self):
-        ip = happyeyeballs("newszilla.xs4all.nl", port=119).ipaddress
+    @pytest.mark.xfail(reason="CI sometimes blocks this")
+    def test_nntp(self):
+        ip = happyeyeballs("news.newshosting.com", port=119).ipaddress
         assert "." in ip or ":" in ip
