@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple
+from typing import List, Tuple, Any, Optional, Union
 
 import sabnzbd
 from sabnzbd.config import (
@@ -51,7 +51,9 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
 )
-from sabnzbd.filesystem import long_path
+from sabnzbd.filesystem import long_path, same_directory, real_path
+
+ValidateResult = Union[Tuple[None, str], Tuple[str, None]]
 
 
 ##############################################################################
@@ -64,7 +66,7 @@ class ErrorCatchingArgumentParser(argparse.ArgumentParser):
             raise ValueError
 
 
-def clean_nice_ionice_parameters(value):
+def clean_nice_ionice_parameters(value: str) -> ValidateResult:
     """Verify that the passed parameters are not exploits"""
     if value:
         parser = ErrorCatchingArgumentParser()
@@ -87,28 +89,18 @@ def clean_nice_ionice_parameters(value):
     return None, value
 
 
-def all_lowercase(value):
-    """Lowercase everything!"""
+def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
+    """Lowercase and strip everything!"""
     if isinstance(value, list):
-        # If list, for each item
-        return None, [item.lower() for item in value]
-    return None, value.lower()
+        return None, [item.lower().strip() for item in value]
+    return None, value.lower().strip()
 
 
-def lower_case_ext(value):
+def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
     """Generate lower case extension(s), without dot"""
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
-
-
-def validate_no_unc(root, value, default):
-    """Check if path isn't a UNC path"""
-    # Only need to check the 'value' part
-    if value and not value.startswith(r"\\"):
-        return validate_notempty(root, value, default)
-    else:
-        return T('UNC path "%s" not allowed here') % value, None
 
 
 def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
@@ -195,7 +187,7 @@ def validate_host(value):
     return T("Invalid server address."), None
 
 
-def validate_script(value):
+def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
         return None, value
@@ -204,7 +196,7 @@ def validate_script(value):
     return T("%s is not a valid script") % value, None
 
 
-def validate_permissions(value: str):
+def validate_permissions(value: str) -> ValidateResult:
     """Check the permissions for correct input"""
     # Octal verification
     if not value:
@@ -225,18 +217,46 @@ def validate_permissions(value: str):
     return None, value
 
 
-def validate_safedir(root, value, default):
+def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
     """Allow only when queues are empty and no UNC"""
     if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
-        return validate_no_unc(root, value, default)
+        if value.startswith(r"\\"):
+            return T('UNC path "%s" not allowed here') % value, None
+        else:
+            return validate_default_if_empty(root, value, default)
     else:
-        return T("Error: Queue not empty, cannot change folder."), None
+        return T("Queue not empty, cannot change folder."), None
 
 
-def validate_scriptdir_not_appdir(root, value, default):
+def validate_download_vs_complete_dir(root: str, value: str, default: str):
+    """Make sure download_dir and complete_dir are not identical
+    or that download_dir is not a subfolder of complete_dir"""
+    # Check what new value we are trying to set
+    if default == DEF_COMPLETE_DIR:
+        check_download_dir = download_dir.get_path()
+        check_complete_dir = real_path(root, value)
+    elif default == DEF_DOWNLOAD_DIR:
+        check_download_dir = real_path(root, value)
+        check_complete_dir = complete_dir.get_path()
+    else:
+        raise ValueError("Validator can only be used for download_dir/complete_dir")
+
+    if same_directory(check_download_dir, check_complete_dir):
+        return (
+            T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
+            None,
+        )
+    elif default == DEF_COMPLETE_DIR:
+        # The complete_dir allows UNC
+        return validate_default_if_empty(root, value, default)
+    else:
+        return validate_safedir(root, value, default)
+
+
+def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
     """Warn users to not use the Program Files folder for their scripts"""
     # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
-    if value and long_path(os.path.join(root, value)).startswith(long_path(sabnzbd.DIR_PROG) + os.pathsep):
+    if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
         # Warn, but do not block
         sabnzbd.misc.helpful_warning(
             T(
@@ -246,7 +266,7 @@ def validate_scriptdir_not_appdir(root, value, default):
     return None, value
 
 
-def validate_notempty(root, value, default):
+def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None, str]:
     """If value is empty, return default"""
     if value:
         return None, value
@@ -311,11 +331,21 @@ socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 ##############################################################################
 permissions = OptionStr("misc", "permissions", validation=validate_permissions)
 download_dir = OptionDir(
-    "misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, apply_permissions=True, validation=validate_safedir
+    "misc",
+    "download_dir",
+    DEF_DOWNLOAD_DIR,
+    create=False,  # Flag is modified and directory is created during initialize!
+    apply_permissions=True,
+    validation=validate_download_vs_complete_dir,
 )
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
-    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_permissions=True, validation=validate_notempty
+    "misc",
+    "complete_dir",
+    DEF_COMPLETE_DIR,
+    create=False,  # Flag is modified and directory is created during initialize!
+    apply_permissions=True,
+    validation=validate_download_vs_complete_dir,
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
@@ -326,7 +356,7 @@ backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
 dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
 password_file = OptionDir("misc", "password_file", "", create=False)
-log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_notempty)
+log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_default_if_empty)
 
 
 ##############################################################################

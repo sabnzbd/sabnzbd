@@ -236,6 +236,11 @@ class OptionDir(Option):
         self.__writable: bool = writable
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
+    def create_path(self, path: Optional[str] = None):
+        if not path:
+            path = self.get()
+        return create_real_path(self.keyword, self.__root, path, self.__apply_permissions, self.__writable)
+
     def get(self) -> str:
         """Return value, corrected for platform"""
         p = super().get()
@@ -245,15 +250,12 @@ class OptionDir(Option):
             return p.replace("\\", "/") if "\\" in p else p
 
     def get_path(self) -> str:
-        """Return full absolute path"""
-        value = self.get()
+        """Return full absolute path, create it if necessary"""
         path = ""
-        if value:
+        if value := self.get():
             path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                _, path, _ = create_real_path(
-                    self.keyword, self.__root, value, self.__apply_permissions, self.__writable
-                )
+                _, path, _ = self.create_path(value)
         return path
 
     def get_clipped_path(self) -> str:
@@ -262,8 +264,7 @@ class OptionDir(Option):
 
     def test_path(self) -> bool:
         """Return True if path exists"""
-        value = self.get()
-        if value:
+        if value := self.get():
             return os.path.exists(real_path(self.__root, value))
         else:
             return False
@@ -285,9 +286,7 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, super().default)
             if not error:
                 if value and (self.__create or create):
-                    res, path, error = create_real_path(
-                        self.keyword, self.__root, value, self.__apply_permissions, self.__writable
-                    )
+                    _, path, error = self.create_path(value)
             if not error:
                 super().set(value)
         return error

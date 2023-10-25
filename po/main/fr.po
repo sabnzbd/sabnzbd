@@ -309,7 +309,7 @@ msgstr ""
 "fichiers et dossiers qu'il crée."
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr ""
 "Erreur : La file d'attente n'est pas vide, impossible de changer le dossier."
 

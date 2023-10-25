@@ -280,7 +280,7 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr "错误: 队列非空，无法变更文件夹。"
 
 #. Warning message

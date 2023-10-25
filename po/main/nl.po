@@ -302,7 +302,7 @@ msgstr ""
 "tot de aangemaakte bestanden en mappen."
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 
 #. Warning message

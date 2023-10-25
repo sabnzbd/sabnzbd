@@ -237,11 +237,11 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     if cfg.wait_for_dfolder():
         filesystem.wait_for_download_folder()
 
-    # Set the folders to be created, then the check_incomplete_vs_complete
-    # check will create them by calling get_path on them
+    # Create the folders, now that we waited for them to be available
     cfg.download_dir.set_create(True)
+    cfg.download_dir.create_path()
     cfg.complete_dir.set_create(True)
-    filesystem.check_incomplete_vs_complete()
+    cfg.complete_dir.create_path()
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)

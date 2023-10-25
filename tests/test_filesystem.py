@@ -309,56 +309,58 @@ class TestSanitizeFiles(ffs.TestCase):
                 assert not os.path.exists(file)
 
 
-class TestSameFile:
+class TestSameDirectory:
     def test_nothing_in_common_win_paths(self):
-        assert 0 == filesystem.same_file("C:\\", "D:\\")
-        assert 0 == filesystem.same_file("C:\\", "/home/test")
+        assert 0 == filesystem.same_directory("C:\\", "D:\\")
+        assert 0 == filesystem.same_directory("C:\\", "/home/test")
 
     def test_nothing_in_common_unix_paths(self):
-        assert 0 == filesystem.same_file("/home/", "/data/test")
-        assert 0 == filesystem.same_file("/test/home/test", "/home/")
-        assert 0 == filesystem.same_file("/test/../home", "/test")
-        assert 0 == filesystem.same_file("/test/./test", "/test")
+        assert 0 == filesystem.same_directory("/home/", "/data/test")
+        assert 0 == filesystem.same_directory("/test/home/test", "/home/")
+        assert 0 == filesystem.same_directory("/test/../home", "/test")
+        assert 0 == filesystem.same_directory("/test/./test", "/test")
 
     @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")
     @set_platform("linux")
     def test_posix_fun(self):
-        assert 1 == filesystem.same_file("/test", "/test")
+        assert 1 == filesystem.same_directory("/test", "/test")
         # IEEE 1003.1-2017 par. 4.13 for details
-        assert 0 == filesystem.same_file("/test", "//test")
-        assert 1 == filesystem.same_file("/test", "///test")
-        assert 1 == filesystem.same_file("/test", "/test/")
-        assert 1 == filesystem.same_file("/test", "/test//")
-        assert 1 == filesystem.same_file("/test", "/test///")
+        assert 0 == filesystem.same_directory("/test", "//test")
+        assert 1 == filesystem.same_directory("/test", "///test")
+        assert 1 == filesystem.same_directory("/test", "/test/")
+        assert 1 == filesystem.same_directory("/test", "/test//")
+        assert 1 == filesystem.same_directory("/test", "/test///")
 
     def test_same(self):
-        assert 1 == filesystem.same_file("/home/123", "/home/123")
-        assert 1 == filesystem.same_file("D:\\", "D:\\")
-        assert 1 == filesystem.same_file("/test/../test", "/test")
-        assert 1 == filesystem.same_file("test/../test", "test")
-        assert 1 == filesystem.same_file("/test/./test", "/test/test")
-        assert 1 == filesystem.same_file("./test", "test")
+        assert 1 == filesystem.same_directory("/home/123", "/home/123")
+        assert 1 == filesystem.same_directory("/test/../test", "/test")
+        assert 1 == filesystem.same_directory("test/../test", "test")
+        assert 1 == filesystem.same_directory("/test/./test", "/test/test")
+        assert 1 == filesystem.same_directory("./test", "test")
 
     def test_subfolder(self):
-        assert 2 == filesystem.same_file("\\\\?\\C:\\", "\\\\?\\C:\\Users\\")
-        assert 2 == filesystem.same_file("/home/test123", "/home/test123/sub")
-        assert 2 == filesystem.same_file("/test", "/test/./test")
-        assert 2 == filesystem.same_file("/home/../test", "/test/./test")
+        assert 2 == filesystem.same_directory("/home/test123", "/home/test123/sub")
+        assert 2 == filesystem.same_directory("/test", "/test/./test")
+        assert 2 == filesystem.same_directory("/home/../test", "/test/./test")
 
-    @set_platform("win32")
-    def test_capitalization(self):
-        # Only matters on Windows/macOS
-        assert 1 == filesystem.same_file("/HOME/123", "/home/123")
-        assert 1 == filesystem.same_file("D:\\", "d:\\")
-        assert 2 == filesystem.same_file("\\\\?\\c:\\", "\\\\?\\C:\\Users\\")
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Relies on os.sep so should only run on Windows")
+    def test_windows(self):
+        assert 1 == filesystem.same_directory("D:\\", "D:\\")
+        assert 2 == filesystem.same_directory("\\\\?\\C:\\", "\\\\?\\C:\\Users\\")
+        assert 1 == filesystem.same_directory("/HOME/123", "/home/123")
+        assert 1 == filesystem.same_directory("D:\\", "d:\\")
+        assert 2 == filesystem.same_directory("\\\\?\\c:\\", "\\\\?\\C:\\Users\\")
+
+    def test_looks_likesubfolder_but_isnt(self):
+        assert 0 == filesystem.same_directory("/mnt/sabnzbd", "/mnt/sabnzbd-data")
 
     @pytest.mark.skipif(sys.platform.startswith(("win", "darwin")), reason="Requires a case-sensitive filesystem")
     @set_platform("linux")
     def test_capitalization_linux(self):
-        assert 2 == filesystem.same_file("/home/test123", "/home/test123/sub")
-        assert 0 == filesystem.same_file("/test", "/Test")
-        assert 0 == filesystem.same_file("tesT", "Test")
-        assert 0 == filesystem.same_file("/test/../Home", "/home")
+        assert 2 == filesystem.same_directory("/home/test123", "/home/test123/sub")
+        assert 0 == filesystem.same_directory("/test", "/Test")
+        assert 0 == filesystem.same_directory("tesT", "Test")
+        assert 0 == filesystem.same_directory("/test/../Home", "/home")
 
 
 class TestClipLongPath:

@@ -282,7 +282,7 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr "Грешка: ред није празан, фасцикла се не може променити."
 
 #. Warning message

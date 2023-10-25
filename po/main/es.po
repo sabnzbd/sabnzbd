@@ -305,7 +305,7 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr "Error: Cola no esta vacía, no se puede cambiar el directorio"
 
 #. Warning message

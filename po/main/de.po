@@ -311,7 +311,7 @@ msgstr ""
 "erstellten Dateien und Ordner von SABnzbd verweigern."
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr ""
 "Fehler: Ordner kann nicht geändert werden, da die Warteschlange nicht leer "
 "ist."

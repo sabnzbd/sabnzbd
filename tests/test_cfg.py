@@ -18,6 +18,7 @@
 """
 tests.test_cfg - Testing functions in cfg.py
 """
+
 import sabnzbd.cfg as cfg
 
 
@@ -92,11 +93,22 @@ class TestValidators:
         assert cfg.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
         assert cfg.validate_single_tag(["alt.group"]) == (None, ["alt.group"])
 
+    def test_all_lowercase(self):
+        assert cfg.all_lowercase("") == (None, "")
+        assert cfg.all_lowercase("Bla") == (None, "bla")
+        assert cfg.all_lowercase(["foo", "bar"]) == (None, ["foo", "bar"])
+        assert cfg.all_lowercase(["foo ", " bar"]) == (None, ["foo", "bar"])
+
     def test_lower_case_ext(self):
         assert cfg.lower_case_ext("") == (None, "")
         assert cfg.lower_case_ext(".Bla") == (None, "bla")
         assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
+
+    def test_validate_safedir(self):
+        assert cfg.validate_safedir("", "", "def") == (None, "def")
+        assert cfg.validate_safedir("", "C:\\", "") == (None, "C:\\")
+        assert "UNC path" in cfg.validate_safedir("", "\\\\NAS\\foo", "")[0]
 
     def test_validate_host(self):
         # valid input

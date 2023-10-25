@@ -288,7 +288,7 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
 
 #. Warning message

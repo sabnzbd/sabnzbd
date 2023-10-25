@@ -290,7 +290,7 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Queue not empty, cannot change folder."
 msgstr "Chyba: Fronta nené prázdná, nelze změnit složku."
 
 #. Warning message

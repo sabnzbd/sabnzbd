@@ -411,10 +411,10 @@ def create_real_path(
         return False, path, None
 
 
-def same_file(a: str, b: str) -> int:
+def same_directory(a: str, b: str) -> int:
     """Return 0 if A and B have nothing in common
     return 1 if A and B are actually the same path
-    return 2 if B is a subfolder of A
+    return 2 if B is a sub-folder of A
     """
     if sabnzbd.WIN32 or sabnzbd.MACOS:
         a = clip_path(a.lower())
@@ -422,6 +422,13 @@ def same_file(a: str, b: str) -> int:
 
     a = os.path.normpath(os.path.abspath(a))
     b = os.path.normpath(os.path.abspath(b))
+
+    # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
+    # But only if it doesn't already end in a slash, for example C:\
+    if not a.endswith(os.sep):
+        a = a + os.sep
+    if not b.endswith(os.sep):
+        b = b + os.sep
 
     # If it's the same file, it's also a sub-folder
     is_subfolder = 0
@@ -869,11 +876,11 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
         oldpath, _ = os.path.split(old)
         # Check not outside directory
         # In case of "same_file() == 1": same directory, so nothing to do
-        if same_file(oldpath, path) == 0:
+        if same_directory(oldpath, path) == 0:
             # Outside current directory, this is most likely malicious
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go outside directory")
-        elif same_file(oldpath, path) == 2:
+        elif same_directory(oldpath, path) == 2:
             # Sub-directory, so create if does not yet exist:
             create_all_dirs(path)
 
@@ -1195,20 +1202,6 @@ def load_admin(data_id: str, remove=False, silent=False) -> Any:
     """Read data in admin folder in specified format"""
     logging.debug("[%s] Loading data for %s", sabnzbd.misc.caller_name(), data_id)
     return load_data(data_id, sabnzbd.cfg.admin_dir.get_path(), remove=remove, silent=silent)
-
-
-def check_incomplete_vs_complete():
-    """Make sure download_dir and complete_dir are not identical
-    or that download_dir is not a subfolder of complete_dir"""
-    complete = sabnzbd.cfg.complete_dir.get_path()
-    if same_file(sabnzbd.cfg.download_dir.get_path(), complete):
-        if real_path("X", sabnzbd.cfg.download_dir()) == long_path(sabnzbd.cfg.download_dir()):
-            # Abs path, so set download_dir as an abs path inside the complete_dir
-            sabnzbd.cfg.download_dir.set(os.path.join(complete, "incomplete"))
-        else:
-            sabnzbd.cfg.download_dir.set("incomplete")
-        return False
-    return True
 
 
 def wait_for_download_folder():
