@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple, Any, Optional, Union
+from typing import List, Tuple, Union
 
 import sabnzbd
 from sabnzbd.config import (
@@ -51,9 +51,11 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
 )
-from sabnzbd.filesystem import long_path, same_directory, real_path
+from sabnzbd.filesystem import same_directory, real_path
 
-ValidateResult = Union[Tuple[None, str], Tuple[str, None]]
+# Validators currently only are made for string/list-of-strings
+# and return those on success or an error message.
+ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None]]
 
 
 ##############################################################################
@@ -113,7 +115,7 @@ def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
     return None, value
 
 
-def validate_strip_right_slash(value):
+def validate_strip_right_slash(value: str) -> Tuple[None, str]:
     """Strips the right slash"""
     if value:
         return None, value.rstrip("/")
@@ -123,8 +125,7 @@ def validate_strip_right_slash(value):
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_email(value):
-    global email_endjob, email_full, email_rss
+def validate_email(value: Union[List, str]) -> ValidateResult:
     if email_endjob() or email_full() or email_rss():
         if isinstance(value, list):
             values = value
@@ -136,18 +137,16 @@ def validate_email(value):
     return None, value
 
 
-def validate_server(value):
+def validate_server(value: str) -> ValidateResult:
     """Check if server non-empty"""
-    global email_endjob, email_full, email_rss
     if value == "" and (email_endjob() or email_full() or email_rss()):
         return T("Server address required"), None
     else:
         return None, value
 
 
-def validate_host(value):
+def validate_host(value: str) -> ValidateResult:
     """Check if host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
-
     # easy: value is a plain IPv4 or IPv6 address:
     try:
         ipaddress.ip_address(value)

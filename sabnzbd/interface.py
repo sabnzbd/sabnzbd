@@ -59,7 +59,7 @@ from sabnzbd.filesystem import (
     globber,
     globber_full,
     clip_path,
-    same_file,
+    same_directory,
     setname_from_path,
 )
 from sabnzbd.encoding import xml_name, utob
@@ -179,8 +179,7 @@ def secured_expose(
 
         # Some pages need correct API key
         if check_api_key:
-            msg = check_apikey(kwargs)
-            if msg:
+            if msg := check_apikey(kwargs):
                 cherrypy.response.status = 403
                 if cfg.api_warnings():
                     return msg
@@ -737,21 +736,9 @@ class ConfigFolders:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveDirectories(self, **kwargs):
         for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-            value = kwargs.get(kw)
-            if value is not None or kw in LIST_BOOL_DIRPAGE:
-                if kw in ("complete_dir", "dirscan_dir", "backup_dir"):
-                    msg = config.get_config("misc", kw).set(value, create=True)
-                else:
-                    msg = config.get_config("misc", kw).set(value)
-                if msg:
-                    # return sabnzbd.api.report('json', error=msg)
-                    return badParameterResponse(msg, kwargs.get("ajax"))
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
+                return badParameterResponse(msg, kwargs.get("ajax"))
 
-        if not sabnzbd.filesystem.check_incomplete_vs_complete():
-            return badParameterResponse(
-                T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
-                kwargs.get("ajax"),
-            )
         config.save_config()
         if kwargs.get("ajax"):
             return sabnzbd.api.report()
@@ -831,8 +818,7 @@ class ConfigSwitches:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSwitches(self, **kwargs):
         for kw in SWITCH_LIST:
-            msg = config.get_config("misc", kw).set(kwargs.get(kw))
-            if msg:
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg, kwargs.get("ajax"))
 
         config.save_config()
@@ -932,10 +918,7 @@ class ConfigSpecial:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSpecial(self, **kwargs):
         for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
-            item = config.get_config("misc", kw)
-            value = kwargs.get(kw)
-            msg = item.set(value)
-            if msg:
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg)
 
         config.save_config()
@@ -959,6 +942,8 @@ GENERAL_LIST = (
     "socks5_proxy_url",
     "auto_browser",
     "check_new_rel",
+    "bandwidth_max",
+    "bandwidth_perc",
 )
 
 
@@ -993,8 +978,6 @@ class ConfigGeneral:
         for kw in GENERAL_LIST:
             conf[kw] = config.get_config("misc", kw)()
 
-        conf["bandwidth_max"] = cfg.bandwidth_max()
-        conf["bandwidth_perc"] = cfg.bandwidth_perc()
         conf["nzb_key"] = cfg.nzb_key()
         conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 
@@ -1007,10 +990,7 @@ class ConfigGeneral:
     def saveGeneral(self, **kwargs):
         # Handle general options
         for kw in GENERAL_LIST:
-            item = config.get_config("misc", kw)
-            value = kwargs.get(kw)
-            msg = item.set(value)
-            if msg:
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg, ajax=kwargs.get("ajax"))
 
         # Handle special options
@@ -1018,16 +998,6 @@ class ConfigGeneral:
 
         web_dir = kwargs.get("web_dir")
         change_web_dir(web_dir)
-
-        bandwidth_max = kwargs.get("bandwidth_max")
-        if bandwidth_max is not None:
-            cfg.bandwidth_max.set(bandwidth_max)
-        bandwidth_perc = kwargs.get("bandwidth_perc")
-        if bandwidth_perc is not None:
-            cfg.bandwidth_perc.set(bandwidth_perc)
-        bandwidth_perc = cfg.bandwidth_perc()
-        if bandwidth_perc and not bandwidth_max:
-            helpful_warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
 
         config.save_config()
 
@@ -1801,7 +1771,7 @@ class ConfigCats:
 
         if newname:
             # Check if this cat-dir is not sub-folder of incomplete
-            if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):
+            if same_directory(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):
                 return T("Category folder cannot be a subfolder of the Temporary Download Folder.")
 
             # Delete current one and replace with new one
@@ -2167,7 +2137,8 @@ class ConfigNotify:
     def saveNotify(self, **kwargs):
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
-                config.get_config(section, option).set(kwargs.get(option))
+                if msg := config.get_config(section, option).set(kwargs.get(option)):
+                    return badParameterResponse(msg, kwargs.get("ajax"))
         config.save_config()
         if kwargs.get("ajax"):
             return sabnzbd.api.report()
