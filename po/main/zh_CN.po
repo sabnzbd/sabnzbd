@@ -249,10 +249,6 @@ msgid "Incorrect parameter"
 msgstr "参数不正确"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "此处不允许使用 UNC 路径 \"%s\""
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s 不是有效的电子邮箱地址"
 
@@ -280,8 +276,18 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "此处不允许使用 UNC 路径 \"%s\""
+
+#: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr "错误: 队列非空，无法变更文件夹。"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -402,7 +408,7 @@ msgid "Paused"
 msgstr "已暂停"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "设置带宽限制前，您必须设置最大带宽值"
 
@@ -652,12 +658,6 @@ msgstr "身份认证失败，请检查用户名/密码。"
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "%s 中有失败的登陆请求"
-
-#: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"

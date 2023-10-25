@@ -255,10 +255,6 @@ msgid "Incorrect parameter"
 msgstr "פרמטר שגוי"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "נתיב UNC \"%s\" אינו מותר כאן"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s אינה כתובת דוא״ל תקפה"
 
@@ -287,8 +283,20 @@ msgstr ""
 "הגדרת הרשאות של %s עשויה לדחות גישה מן SABnzbd אל הקבצים והתיקיות שהוא יוצר."
 
 #: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "נתיב UNC \"%s\" אינו מותר כאן"
+
+#: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr "שגיאה: התור אינו ריק, לא ניתן לשנות תיקייה."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+"תיקיית ההורדות השלמות אינה יכולה להיות אותה תיקייה או תת־תיקייה של תיקיית "
+"ההורדות הזמניות"
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -411,7 +419,7 @@ msgid "Paused"
 msgstr "מושהה"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "אתה חייב לקבוע רוחב פס מרבי לפני שאתה קובע מגבלת רוחב פס"
 
@@ -663,14 +671,6 @@ msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "ניסיון כניסה בלתי מוצלח מן %s"
-
-#: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
-"תיקיית ההורדות השלמות אינה יכולה להיות אותה תיקייה או תת־תיקייה של תיקיית "
-"ההורדות הזמניות"
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"

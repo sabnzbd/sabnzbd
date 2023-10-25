@@ -274,10 +274,6 @@ msgid "Incorrect parameter"
 msgstr "Parámetro incorrecto"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "Ruta de acceso UNC \"%s\" no permitido aqui"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s no es una dirección de correo electrónico válida."
 
@@ -305,8 +301,18 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "Ruta de acceso UNC \"%s\" no permitido aqui"
+
+#: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr "Error: Cola no esta vacía, no se puede cambiar el directorio"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -433,7 +439,7 @@ msgid "Paused"
 msgstr "En pausa"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Debe establecer un ancho de banda máximo antes de poder establecer un límite"
@@ -690,12 +696,6 @@ msgstr "Autenticación fallida, compruebe el usuario o la contraseña."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Intento fallido de inicio de sesión desde %s"
-
-#: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"

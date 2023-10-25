@@ -257,10 +257,6 @@ msgid "Incorrect parameter"
 msgstr "Virheellinen parametri"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "TUNT polku \"%s\" ei ole sallittu"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s ei ole kelvollinen sähköpostiosoite"
 
@@ -288,8 +284,18 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "TUNT polku \"%s\" ei ole sallittu"
+
+#: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -410,7 +416,7 @@ msgid "Paused"
 msgstr "Keskeytetty"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Sinun täytyy määrittää enimmäiskaista ennen kaistarajoituksen käyttöönottoa."
@@ -664,12 +670,6 @@ msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
-msgstr ""
-
-#: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
 msgstr ""
 
 #: sabnzbd/interface.py

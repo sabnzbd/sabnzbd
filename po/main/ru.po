@@ -253,10 +253,6 @@ msgid "Incorrect parameter"
 msgstr "Неправильный параметр"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-путь «%s» здесь не допускается"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s не является допустимым адресом электронной почты"
 
@@ -284,8 +280,18 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
+msgid "UNC path \"%s\" not allowed here"
+msgstr "UNC-путь «%s» здесь не допускается"
+
+#: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr "Ошибка: очередь не пустая, папку нельзя изменить."
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -406,7 +412,7 @@ msgid "Paused"
 msgstr "Приостановлено"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 
@@ -659,12 +665,6 @@ msgstr "Ошибка проверки подлинности. Проверьте
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
-msgstr ""
-
-#: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
 msgstr ""
 
 #: sabnzbd/interface.py
