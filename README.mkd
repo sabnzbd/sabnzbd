@@ -1,16 +1,24 @@
-Release Notes - SABnzbd 4.2.0 Alpha 1
+Release Notes - SABnzbd 4.2.0 Alpha 2
 =========================================================
 
 ## Changes since 4.1.0
 - Numerous smaller performance improvements were made.
-- Windows: Removed `SABnzbd-console.exe`.
-  If you need console logging, run `SABnzbd.exe --console`.
+- Reduced recursive unpacking to 2 levels, instead of 5.
+- IPv6 addresses are preferred during server address selection.
+- Stricter check if `Complete Folder` is inside `Download Folder`.
 - Windows: Reduced size of installer.
 - Windows/macOS: Updated to Python 3.12.
 
 ## Bugfixes since 4.1.0
 - Multi-select in the queue was broken for some users.
+- Prevent crash during saving of configuration.
 - Removing a failed download from the history could break active downloads.
+
+## Upgrade notices
+- Direct upgrade is possible from version 3.0.0 and newer.
+  Upgrading from older versions will require `Queue repair`.
+- Downgrading from version 4.2.0 or newer to 3.7.2 or older will
+  require `Queue repair` due to changes in the internal data format.
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
