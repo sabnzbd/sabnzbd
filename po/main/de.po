@@ -15,7 +15,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha1\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -313,6 +313,7 @@ msgstr "UNC-Pfad \"%s\" ist hier nicht erlaubt"
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
 msgstr ""
+"Ordner kann nicht geändert werden, da die Warteschlange nicht leer ist."
 
 #: sabnzbd/cfg.py
 msgid ""

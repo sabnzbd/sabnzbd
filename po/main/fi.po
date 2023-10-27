@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha1\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Finnish (https://app.transifex.com/sabnzbd/teams/111101/fi/)\n"
@@ -289,7 +289,7 @@ msgstr "TUNT polku \"%s\" ei ole sallittu"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr ""
+msgstr "Jono ei ole tyhjä, kansiota ei voida vaihtaa."
 
 #: sabnzbd/cfg.py
 msgid ""

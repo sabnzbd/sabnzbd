@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha1\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -288,7 +288,7 @@ msgstr "נתיב UNC \"%s\" אינו מותר כאן"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr ""
+msgstr "התור אינו ריק, לא ניתן לשנות תיקייה."
 
 #: sabnzbd/cfg.py
 msgid ""

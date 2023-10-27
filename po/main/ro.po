@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha1\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -296,7 +296,7 @@ msgstr "cale UNC \"%s\" nu este premisă aici"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr ""
+msgstr "Coada nu este goală, nu pot schimba dosar."
 
 #: sabnzbd/cfg.py
 msgid ""

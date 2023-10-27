@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha1\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Swedish (https://app.transifex.com/sabnzbd/teams/111101/sv/)\n"
@@ -283,7 +283,7 @@ msgstr "UNC sökväg \"%s\" är inte tillåten här"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
-msgstr ""
+msgstr "Kön är inte tom, kan inte byta mapp."
 
 #: sabnzbd/cfg.py
 msgid ""
