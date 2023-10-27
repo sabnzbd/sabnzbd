@@ -46,8 +46,7 @@ from sabnzbd.constants import (
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
-CONFIG_LOCK = threading.Lock()
-SAVE_CONFIG_LOCK = threading.Lock()
+CONFIG_LOCK = threading.RLock()
 
 
 CFG_OBJ: configobj.ConfigObj  # Holds INI structure
@@ -782,6 +781,7 @@ def delete_from_database(section, keyword):
     CFG_MODIFIED = True
 
 
+@synchronized(CONFIG_LOCK)
 def get_dconfig(section, keyword, nested=False):
     """Return a config values dictionary,
     Single item or slices based on 'section', 'keyword'
@@ -828,6 +828,7 @@ def get_dconfig(section, keyword, nested=False):
     return True, data
 
 
+@synchronized(CONFIG_LOCK)
 def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
     """Return a config object, based on 'section', 'keyword'"""
     try:
@@ -837,6 +838,7 @@ def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
         return None
 
 
+@synchronized(CONFIG_LOCK)
 def set_config(kwargs):
     """Set a config item, using values in dictionary"""
     try:
@@ -847,6 +849,7 @@ def set_config(kwargs):
     return True
 
 
+@synchronized(CONFIG_LOCK)
 def delete(section: str, keyword: str):
     """Delete specific config item"""
     try:
@@ -861,7 +864,7 @@ def delete(section: str, keyword: str):
 # This does input and output of configuration to an INI file.
 # It translates this data structure to the config database.
 ##############################################################################
-@synchronized(SAVE_CONFIG_LOCK)
+@synchronized(CONFIG_LOCK)
 def read_config(path):
     """Read the complete INI file and check its version number
     if OK, pass values to config-database
@@ -946,7 +949,7 @@ def _read_config(path, try_backup=False):
     return True, ""
 
 
-@synchronized(SAVE_CONFIG_LOCK)
+@synchronized(CONFIG_LOCK)
 def save_config(force=False):
     """Update Setup file with current option values"""
     global CFG_OBJ, CFG_DATABASE, CFG_MODIFIED
@@ -1101,6 +1104,7 @@ def restore_config_backup(config_backup_data: bytes):
         logging.info("Traceback: ", exc_info=True)
 
 
+@synchronized(CONFIG_LOCK)
 def get_servers() -> Dict[str, ConfigServer]:
     global CFG_DATABASE
     try:
@@ -1109,6 +1113,7 @@ def get_servers() -> Dict[str, ConfigServer]:
         return {}
 
 
+@synchronized(CONFIG_LOCK)
 def get_sorters() -> Dict[str, ConfigSorter]:
     global CFG_DATABASE
     try:
@@ -1127,6 +1132,7 @@ def get_ordered_sorters() -> List[Dict]:
     return sorters
 
 
+@synchronized(CONFIG_LOCK)
 def get_categories() -> Dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
@@ -1178,6 +1184,7 @@ def get_ordered_categories() -> List[Dict]:
     return categories
 
 
+@synchronized(CONFIG_LOCK)
 def get_rss() -> Dict[str, ConfigRSS]:
     global CFG_DATABASE
     try:

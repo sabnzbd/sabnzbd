@@ -347,7 +347,6 @@ class TestOtherApi(ApiTestFunctions):
         assert self._get_api_json("pause_pp")["status"] is True
         assert self._get_api_text("resume_pp").startswith("ok")
 
-    @pytest.mark.xfail(reason="See #2685")
     @pytest.mark.parametrize("set_watched_dir", [False, True])
     def test_api_watched_now(self, set_watched_dir):
         value = SAB_CACHE_DIR if set_watched_dir else ""
