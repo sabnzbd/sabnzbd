@@ -376,10 +376,6 @@ class NzbFile(TryList):
         logging.debug("Finishing import on %s", self.filename)
         raw_article_db = sabnzbd.filesystem.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
         if raw_article_db:
-            # Convert 2.x.x jobs
-            if isinstance(raw_article_db, dict):
-                raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
-
             for raw_article in raw_article_db:
                 self.add_article(raw_article)
 
@@ -474,10 +470,6 @@ class NzbFile(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
-
-        # Convert 2.x.x jobs
-        if isinstance(self.decodetable, dict):
-            self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable)]
 
     def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the number bytes and first article
@@ -2001,27 +1993,8 @@ class NzbObject(TryList):
         self.url_tries = 0
         self.to_be_removed = False
         self.direct_unpacker = None
-        if self.meta is None:
-            self.meta = {}
-        if self.servercount is None:
-            self.servercount = {}
-        if self.md5of16k is None:
-            self.md5of16k = {}
-        if self.renames is None:
-            self.renames = {}
-        if self.bad_articles is None:
-            self.bad_articles = 0
-            self.first_articles_count = 0
-        if self.bytes_missing is None:
-            self.bytes_missing = 0
-        if self.bytes_tried is None:
-            # Fill with old info
-            self.bytes_tried = 0
-            for nzf in self.finished_files:
-                # Emulate behavior of 1.0.x
-                self.bytes_tried += nzf.bytes
-            for nzf in self.files:
-                self.bytes_tried += nzf.bytes - nzf.bytes_left
+
+        # Attributes added since 3.0.0
         if self.bytes_par2 is None:
             self.bytes_par2 = 0
             for nzf in self.files + self.finished_files:
