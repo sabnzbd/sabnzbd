@@ -103,7 +103,36 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
             elif last_canonname:
                 addrinfo.canonname = last_canonname
 
+        # let's force ipv6, if wanted and if possible
         host6 = None
+        ipv6_force = True  # todo : make it a parameter from sabnzbd.ini
+        if ipv6_force:
+            # note: the below is only working if the ipv6 variant host uses the same SSL certificate as the IPV4
+            # So that must pre-checked elsewhere
+            # only fill out ipv4-only newsserver below
+            if host == "news.eweka.nl":
+                host6 = "news6.eweka.nl"
+            elif host == "news.newshosting.com":
+                host6 = "news6.newshosting.com"
+            elif host == "news4.easynews.com":
+                host6 = "news6.easynews.com"
+            elif host == "news.frugalusenet.com":
+                host6 = "news-v6.frugalusenet.com"
+            if host6:
+                logging.debug("Found host6 %s", host6)
+
+            # now add host6 to the list to be checked
+            for addrinfo in socket.getaddrinfo(host6, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME):
+                # Convert to AddrInfo
+                all_addrinfo.append(addrinfo := AddrInfo(*addrinfo))
+                # We only want delay for IPv4 in case we got any IPv6
+                if addrinfo.family == socket.AddressFamily.AF_INET6:
+                    ipv4_delay = IP4_DELAY
+                # The canonname is only reported once per alias
+                if addrinfo.canonname:
+                    last_canonname = addrinfo.canonname
+                elif last_canonname:
+                    addrinfo.canonname = last_canonname
 
         logging.debug("Available addresses for %s (port=%d): %d", host, port, len(all_addrinfo))
 
