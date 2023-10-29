@@ -102,6 +102,9 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
                 last_canonname = addrinfo.canonname
             elif last_canonname:
                 addrinfo.canonname = last_canonname
+
+        host6 = None
+
         logging.debug("Available addresses for %s (port=%d): %d", host, port, len(all_addrinfo))
 
         # Fill queue used for threads that will return the results
