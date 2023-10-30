@@ -103,15 +103,7 @@ def test_nntp_server_dict(kwargs):
         # Trying SSL on non-SSL port?
         if match_str(str(err), ("unknown protocol", "wrong version number")):
             return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
-
         return False, str(err)
-
-    except TypeError:
-        return False, T("Invalid server address.")
-
-    except IndexError:
-        # No data was received in recv_chunk() call
-        return False, T("Server quit during login sequence.")
 
     except NNTPPermanentError:
         # Handled by the code below

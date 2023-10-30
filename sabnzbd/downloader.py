@@ -503,7 +503,7 @@ class Downloader(Thread):
 
             # Remove all connections to server
             for nw in server.idle_threads | server.busy_threads:
-                self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, retry_article=False)
+                self.__reset_nw(nw, "Forcing disconnect", warn=False, wait=False, retry_article=False)
 
             # Make sure server address resolution is refreshed
             server.addrinfo = None
@@ -570,7 +570,7 @@ class Downloader(Thread):
                                     # Already showed error
                                     self.__reset_nw(nw)
                                 else:
-                                    self.__reset_nw(nw, "timed out", warn=True)
+                                    self.__reset_nw(nw, "Timed out", warn=True)
                                 server.bad_cons += 1
                                 self.maybe_block_server(server)
 
@@ -630,14 +630,14 @@ class Downloader(Thread):
                                     server.host,
                                     sys.exc_info()[1],
                                 )
-                                self.__reset_nw(nw, "failed to initialize", warn=True)
+                                self.__reset_nw(nw, "Failed to initialize", warn=True)
 
                 if self.force_disconnect or self.shutdown:
                     for server in self.servers:
                         for nw in server.idle_threads | server.busy_threads:
                             # Send goodbye if we have open socket
                             if nw.nntp:
-                                self.__reset_nw(nw, "forcing disconnect", wait=False, count_article_try=False)
+                                self.__reset_nw(nw, "Forcing disconnect", wait=False, count_article_try=False)
                         # Make sure server address resolution is refreshed
                         server.addrinfo = None
                         server.reset_article_queue()
@@ -715,7 +715,7 @@ class Downloader(Thread):
         except ssl.SSLWantReadError:
             return
         except:
-            self.__reset_nw(nw, "server closed connection", wait=False)
+            self.__reset_nw(nw, "Server closed connection", wait=False)
             return
 
         article = nw.article
@@ -983,11 +983,11 @@ class Downloader(Thread):
             self.add_socket(nw.nntp.fileno, nw)
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
-            self.__reset_nw(nw, "server broke off connection", warn=True)
+            self.__reset_nw(nw, "Server broke off connection", warn=True)
         except:
             logging.error(T("Suspect error in downloader"))
             logging.info("Traceback: ", exc_info=True)
-            self.__reset_nw(nw, "server broke off connection", warn=True)
+            self.__reset_nw(nw, "Server broke off connection", warn=True)
 
     # ------------------------------------------------------------------------------
     # Timed restart of servers admin.

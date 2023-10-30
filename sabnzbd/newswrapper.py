@@ -199,7 +199,7 @@ class NewsWrapper:
 
         # No data received
         if bytes_recv == 0:
-            raise ConnectionError("server closed connection")
+            raise ConnectionError("Server closed connection")
 
         # Success, move timeout and internal data position
         self.timeout = time.time() + self.server.timeout
