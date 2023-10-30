@@ -45,6 +45,7 @@ class SysTrayIconThread(Thread):
         self.start()
 
     def initialize(self):
+        # Note that all functions should return True to prevent tracebacks
         message_map = {
             win32gui.RegisterWindowMessage("TaskbarCreated"): self.restart,
             win32con.WM_DESTROY: self.destroy,
@@ -161,6 +162,7 @@ class SysTrayIconThread(Thread):
 
     def restart(self, hwnd, msg, wparam, lparam):
         self.refresh_icon()
+        return True
 
     def destroy(self, hwnd, msg, wparam, lparam):
         if self.on_quit:
@@ -168,6 +170,7 @@ class SysTrayIconThread(Thread):
         nid = (self.hwnd, 0)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, nid)
         win32gui.PostQuitMessage(0)  # Terminate the app.
+        return True
 
     def notify(self, hwnd, msg, wparam, lparam):
         # Double click is actually 1 single click followed
@@ -254,8 +257,8 @@ class SysTrayIconThread(Thread):
         return hbm
 
     def command(self, hwnd, msg, wparam, lparam):
-        id = win32gui.LOWORD(wparam)
-        self.execute_menu_option(id)
+        self.execute_menu_option(win32gui.LOWORD(wparam))
+        return True
 
     def execute_menu_option(self, id):
         menu_action = self.menu_actions_by_id[id]
