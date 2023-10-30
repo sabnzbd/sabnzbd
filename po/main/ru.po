@@ -260,7 +260,7 @@ msgstr "%s не является допустимым адресом элект�
 msgid "Server address required"
 msgstr "Требуется адрес сервера"
 
-#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Недопустимый адрес сервера."
 
@@ -4763,10 +4763,6 @@ msgstr "Время ожидания истекло"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Во время входа на сервер был выполнен выход."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

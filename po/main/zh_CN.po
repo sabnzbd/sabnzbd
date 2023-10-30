@@ -256,7 +256,7 @@ msgstr "%s 不是有效的电子邮箱地址"
 msgid "Server address required"
 msgstr "服务器地址必填"
 
-#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "服务器地址无效。"
 
@@ -4690,10 +4690,6 @@ msgstr "超时"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "登录过程中服务器退出。"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

@@ -266,7 +266,7 @@ msgstr "%s er ikke en godkendt e-mail adresse"
 msgid "Server address required"
 msgstr "Kræver serveradresse"
 
-#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Ugyldig server adresse."
 
@@ -4782,10 +4782,6 @@ msgid ""
 msgstr ""
 "Ukendt SSL protokol: Prøv at deaktivere SSL eller forbinder på en anden "
 "port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Server afslut under login-sekvens."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

@@ -264,7 +264,7 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
 
-#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Virheellinen palvelimen osoite."
 
@@ -4787,10 +4787,6 @@ msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 "Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Palvelin lopetettiin kesken kirjautumisen"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

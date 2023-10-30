@@ -260,7 +260,7 @@ msgstr "%s não é um endereço de e-mail válido"
 msgid "Server address required"
 msgstr "Endereço do servidor necessário"
 
-#: sabnzbd/cfg.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Endereço do servidor inválido."
 
@@ -4767,10 +4767,6 @@ msgstr "Tempo esgotado"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Servidor parou durante a sequência de login."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."
