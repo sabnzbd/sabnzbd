@@ -19,11 +19,9 @@
 sabnzbd.happyeyeballs - Python implementation of RFC 6555 / Happy Eyeballs: find the quickest IPv4/IPv6 connection
 """
 
-# Python implementation of RFC 6555 / Happy Eyeballs: find the quickest IPv4/IPv6 connection
+# Python implementation of RFC 6555/8305 (Happy Eyeballs): find the quickest IPv4/IPv6 connection
 # See https://tools.ietf.org/html/rfc6555
-# Method: Start parallel sessions using threads, and only wait for the quickest successful socket connect
-# See https://tools.ietf.org/html/rfc6555#section-4.1
-# We do not implement caching, as the lookup result is stored in the Server object
+# See https://tools.ietf.org/html/rfc8305
 
 import socket
 import threading
@@ -32,11 +30,13 @@ import logging
 import queue
 from dataclasses import dataclass
 from typing import Tuple, Union, Optional
+from more_itertools import roundrobin
 
 from sabnzbd import cfg as cfg
 
-# We always prefer IPv6 connections
-IP4_DELAY = 0.1
+# How long to delay between connection attempts
+# The RFC suggests 250ms, but this is quite long
+CONNECTION_ATTEMPT_DELAY = 0.1
 
 # While providers are afraid to add IPv6 to their standard hostnames
 # we map a number of well known hostnames to their IPv6 alternatives.
@@ -74,16 +74,11 @@ class AddrInfo:
 
 
 # Called by each thread
-def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, ipv4_delay: int):
+def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo):
     """Connect to the ip, and put the result into the queue"""
     try:
         s = socket.socket(addrinfo.family, addrinfo.type)
         s.settimeout(3)
-
-        # Delay IPv4 connects in case we need it
-        if ipv4_delay and addrinfo.family == socket.AddressFamily.AF_INET:
-            time.sleep(ipv4_delay)
-
         try:
             s.connect(addrinfo.sockaddr)
         finally:
@@ -95,9 +90,9 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, ipv4_delay:
 
 
 def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
-    """Return the fastest result of getaddrinfo() based on RFC 6555 / Happy Eyeballs,
+    """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
-    or if no connection could be made to any of the addresses"""
+    by getaddrinfo or if no connection could be made to any of the addresses"""
     try:
         # Time how long it took us
         start = time.time()
@@ -107,14 +102,13 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
         family = socket.AF_UNSPEC
         if not cfg.ipv6_servers():
             family = socket.AF_INET
-        else:
+        elif host in IPV6_MAPPING:
             # See if we can add a IPv6 alternative
-            if host in IPV6_MAPPING:
-                check_hosts.append(IPV6_MAPPING[host])
-                logging.info("Added alternative IPv6 address: %s", IPV6_MAPPING[host])
+            check_hosts.append(IPV6_MAPPING[host])
+            logging.info("Added alternative IPv6 address: %s", IPV6_MAPPING[host])
 
-        all_addrinfo = []
-        ipv4_delay = 0
+        ipv4_addrinfo = []
+        ipv6_addrinfo = []
         last_canonname = ""
         for check_host in check_hosts:
             try:
@@ -122,35 +116,56 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
                     check_host, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME
                 ):
                     # Convert to AddrInfo
-                    all_addrinfo.append(addrinfo := AddrInfo(*addrinfo))
-                    # We only want delay for IPv4 in case we got any IPv6
-                    if addrinfo.family == socket.AddressFamily.AF_INET6:
-                        ipv4_delay = IP4_DELAY
+                    addrinfo = AddrInfo(*addrinfo)
+
                     # The canonname is only reported once per alias
                     if addrinfo.canonname:
                         last_canonname = addrinfo.canonname
                     elif last_canonname:
                         addrinfo.canonname = last_canonname
+
+                    # Put it in the right list for further processing
+                    if addrinfo.family == socket.AddressFamily.AF_INET6:
+                        ipv6_addrinfo.append(addrinfo)
+                    else:
+                        ipv4_addrinfo.append(addrinfo)
             except:
                 # Did we fail on the first getaddrinfo already?
                 # Otherwise, we failed on the IPv6 alternative address, and those failures can be ignored
-                if not all_addrinfo:
+                if not ipv4_addrinfo and not ipv6_addrinfo:
                     raise
-        logging.debug("Available addresses for %s (port=%d): %d", host, port, len(all_addrinfo))
 
-        # Fill queue used for threads that will return the results
-        # Even if there is just 1 result, we still check if we can connect
+        logging.debug(
+            "Available addresses for %s (port=%d): %d IPv4 and %d IPv6",
+            host,
+            port,
+            len(ipv4_addrinfo),
+            len(ipv6_addrinfo),
+        )
+
+        # To optimize success, the RFC states to alternate between trying the
+        # IPv6 and IPv4 results, starting with IPv6 since it is the preferred method.
         result_queue: queue.Queue[Tuple[AddrInfo, bool]] = queue.Queue()
-        for addrinfo in all_addrinfo:
-            threading.Thread(target=do_socket_connect, args=(result_queue, addrinfo, ipv4_delay), daemon=True).start()
+        result: Optional[AddrInfo] = None
+        for addrinfo in roundrobin(ipv6_addrinfo, ipv4_addrinfo):
+            threading.Thread(target=do_socket_connect, args=(result_queue, addrinfo), daemon=True).start()
 
-        # start reading from the Queue for message from the threads:
-        result = None
-        for _ in range(len(all_addrinfo)):
-            connect_result = result_queue.get()
-            if connect_result[1]:
-                result = connect_result[0]
-                break
+            try:
+                result, connect_success = result_queue.get(timeout=CONNECTION_ATTEMPT_DELAY)
+                # Return on the first successful connection
+                if connect_success:
+                    break
+                else:
+                    result = None
+                    raise ConnectionError
+            except (queue.Empty, ConnectionError):
+                # Start a thread for the next address in the list if the previous
+                # connection attempt did not complete in time or if it wasn't a success
+                continue
+
+        # Abort if we had no results
+        if not result:
+            raise ConnectionError("No addresses could be resolved")
 
         logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.ipaddress, result.canonname)
         logging.debug("Happy Eyeballs lookup and port connect took: %d ms", int(1000 * (time.time() - start)))
