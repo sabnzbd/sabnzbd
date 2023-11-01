@@ -38,6 +38,25 @@ from sabnzbd import cfg as cfg
 # We always prefer IPv6 connections
 IP4_DELAY = 0.1
 
+# While providers are afraid to add IPv6 to their standard hostnames
+# we map a number of well known hostnames to their IPv6 alternatives.
+# WARNING: Only add if the SSL-certificate allows both hostnames!
+IPV6_MAPPING = {
+    "news.eweka.nl": "news6.eweka.nl",
+    "news.xlned.com": "news6.xlned.com",
+    "news.usenet.farm": "news6.usenet.farm",
+    "news.easynews.com": "news6.easynews.com",
+    "news.tweaknews.nl": "news6.tweaknews.nl",
+    "news.tweaknews.eu": "news6.tweaknews.eu",
+    "news.astraweb.com": "news6.astraweb.com",
+    "news.pureusenet.nl": "news6.pureusenet.nl",
+    "news.sunnyusenet.com": "news6.sunnyusenet.com",
+    "news.newshosting.com": "news6.newshosting.com",
+    "news.usenetserver.com": "news6.usenetserver.com",
+    "news.frugalusenet.com": "news-v6.frugalusenet.com",
+    "eunews.frugalusenet.com": "eunews-v6.frugalusenet.com",
+}
+
 
 # For typing and convenience!
 @dataclass
@@ -84,24 +103,39 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
         start = time.time()
 
         # Get address information, by default both IPV4 and IPV6
+        check_hosts = [host]
         family = socket.AF_UNSPEC
         if not cfg.ipv6_servers():
             family = socket.AF_INET
+        else:
+            # See if we can add a IPv6 alternative
+            if host in IPV6_MAPPING:
+                check_hosts.append(IPV6_MAPPING[host])
+                logging.info("Added alternative IPv6 address: %s", IPV6_MAPPING[host])
 
         all_addrinfo = []
         ipv4_delay = 0
         last_canonname = ""
-        for addrinfo in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME):
-            # Convert to AddrInfo
-            all_addrinfo.append(addrinfo := AddrInfo(*addrinfo))
-            # We only want delay for IPv4 in case we got any IPv6
-            if addrinfo.family == socket.AddressFamily.AF_INET6:
-                ipv4_delay = IP4_DELAY
-            # The canonname is only reported once per alias
-            if addrinfo.canonname:
-                last_canonname = addrinfo.canonname
-            elif last_canonname:
-                addrinfo.canonname = last_canonname
+        for check_host in check_hosts:
+            try:
+                for addrinfo in socket.getaddrinfo(
+                    check_host, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME
+                ):
+                    # Convert to AddrInfo
+                    all_addrinfo.append(addrinfo := AddrInfo(*addrinfo))
+                    # We only want delay for IPv4 in case we got any IPv6
+                    if addrinfo.family == socket.AddressFamily.AF_INET6:
+                        ipv4_delay = IP4_DELAY
+                    # The canonname is only reported once per alias
+                    if addrinfo.canonname:
+                        last_canonname = addrinfo.canonname
+                    elif last_canonname:
+                        addrinfo.canonname = last_canonname
+            except:
+                # Did we fail on the first getaddrinfo already?
+                # Otherwise, we failed on the IPv6 alternative address, and those failures can be ignored
+                if not all_addrinfo:
+                    raise
         logging.debug("Available addresses for %s (port=%d): %d", host, port, len(all_addrinfo))
 
         # Fill queue used for threads that will return the results
