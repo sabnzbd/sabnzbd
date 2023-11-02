@@ -34,13 +34,19 @@ from more_itertools import roundrobin
 
 from sabnzbd import cfg as cfg
 
-# How long to delay between connection attempts
-# The RFC suggests 250ms, but this is quite long
-CONNECTION_ATTEMPT_DELAY = 0.1
+# How long to delay between connection attempts? The RFC suggests 250ms, but this is
+# quite long and might give us a slow host that just happened to be on top of the list.
+# The absolute minium specified in RFC 8305 is 10ms, so we use that.
+CONNECTION_ATTEMPT_DELAY = 0.01
+
+# The total time we want to wait for any result
+MAXIMUM_RESOLUTION_TIME = 3
 
 # While providers are afraid to add IPv6 to their standard hostnames
 # we map a number of well known hostnames to their IPv6 alternatives.
 # WARNING: Only add if the SSL-certificate allows both hostnames!
+# If these servers later add IPv6 to their main hostname, we might
+# try the same address multiple times during Happy Eyeballs.
 IPV6_MAPPING = {
     "news.eweka.nl": "news6.eweka.nl",
     "news.xlned.com": "news6.xlned.com",
@@ -78,15 +84,14 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo):
     """Connect to the ip, and put the result into the queue"""
     try:
         s = socket.socket(addrinfo.family, addrinfo.type)
-        s.settimeout(3)
+        s.settimeout(MAXIMUM_RESOLUTION_TIME)
         try:
             s.connect(addrinfo.sockaddr)
         finally:
             s.close()
-        result_queue.put((addrinfo, True))
+        result_queue.put(addrinfo)
     except:
-        # We got an exception, so no successful connect on IP & port:
-        result_queue.put((addrinfo, False))
+        pass
 
 
 def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
@@ -145,27 +150,27 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
 
         # To optimize success, the RFC states to alternate between trying the
         # IPv6 and IPv4 results, starting with IPv6 since it is the preferred method.
-        result_queue: queue.Queue[Tuple[AddrInfo, bool]] = queue.Queue()
+        result_queue: queue.Queue[AddrInfo] = queue.Queue()
+        addr_tried = 0
         result: Optional[AddrInfo] = None
         for addrinfo in roundrobin(ipv6_addrinfo, ipv4_addrinfo):
             threading.Thread(target=do_socket_connect, args=(result_queue, addrinfo), daemon=True).start()
-
+            addr_tried += 1
             try:
-                result, connect_success = result_queue.get(timeout=CONNECTION_ATTEMPT_DELAY)
-                # Return on the first successful connection
-                if connect_success:
-                    break
-                else:
-                    result = None
-                    raise ConnectionError
-            except (queue.Empty, ConnectionError):
+                result = result_queue.get(timeout=CONNECTION_ATTEMPT_DELAY)
+                break
+            except queue.Empty:
                 # Start a thread for the next address in the list if the previous
                 # connection attempt did not complete in time or if it wasn't a success
                 continue
 
-        # Abort if we had no results
+        # If we had no results, we might just need to give it more time
         if not result:
-            raise ConnectionError("No addresses could be resolved")
+            try:
+                # Reduce waiting time by time already spent
+                result = result_queue.get(timeout=MAXIMUM_RESOLUTION_TIME - addr_tried * CONNECTION_ATTEMPT_DELAY)
+            except queue.Empty:
+                raise ConnectionError("No addresses could be resolved")
 
         logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.ipaddress, result.canonname)
         logging.debug("Happy Eyeballs lookup and port connect took: %d ms", int(1000 * (time.time() - start)))

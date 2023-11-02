@@ -19,10 +19,13 @@
 tests.test_happyeyeballs - Testing SABnzbd happyeyeballs
 """
 import os
+import sys
+import socket
+
 import pytest
 from flaky import flaky
 
-from sabnzbd.happyeyeballs import happyeyeballs
+from sabnzbd.happyeyeballs import happyeyeballs, IPV6_MAPPING
 
 
 @flaky
@@ -57,3 +60,12 @@ class TestHappyEyeballs:
     def test_nntp(self):
         ip = happyeyeballs("news.newshosting.com", port=119).ipaddress
         assert "." in ip or ":" in ip
+
+    @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Resolves strangely on macOS CI")
+    @pytest.mark.parametrize("hostname", IPV6_MAPPING.keys())
+    def test_ipv6_mapping(self, hostname):
+        # This test will let us remove hostnames from the mapping
+        # once the providers add IPv6 to their main hostname
+        with pytest.raises(socket.gaierror):
+            # Print results for us to see the new information
+            print(socket.getaddrinfo(hostname, 119, socket.AF_INET6, socket.SOCK_STREAM))
