@@ -906,13 +906,14 @@ class Downloader(Thread):
                 server.errormsg = errormsg
                 logging.warning(errormsg)
             return False
-        except:
+        except Exception as err:
             logging.error(
                 T("Connecting %s@%s failed, message=%s"),
                 nw.thrdnum,
                 nw.server.host,
-                nw.nntp_msg,
+                err,
             )
+            logging.info("Traceback: ", exc_info=True)
             # No reset-warning needed, above logging is sufficient
             self.__reset_nw(nw, retry_article=False)
         return True
