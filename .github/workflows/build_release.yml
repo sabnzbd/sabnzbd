@@ -98,10 +98,7 @@ jobs:
       if: steps.cache-python-download.outputs.cache-hit != 'true'
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
-      run: |
-        sudo installer -pkg ~/python.pkg -target /
-        unlink /usr/local/bin/python
-        ln -s /usr/local/bin/python3 /usr/local/bin/python
+      run: sudo installer -pkg ~/python.pkg -target /
     - name: Cache Python virtualenv
       uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv
