@@ -45,8 +45,6 @@ MAXIMUM_RESOLUTION_TIME = 3
 # While providers are afraid to add IPv6 to their standard hostnames
 # we map a number of well known hostnames to their IPv6 alternatives.
 # WARNING: Only add if the SSL-certificate allows both hostnames!
-# If these servers later add IPv6 to their main hostname, we might
-# try the same address multiple times during Happy Eyeballs.
 IPV6_MAPPING = {
     "news.eweka.nl": "news6.eweka.nl",
     "news.xlned.com": "news6.xlned.com",
@@ -130,10 +128,12 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
                         addrinfo.canonname = last_canonname
 
                     # Put it in the right list for further processing
-                    if addrinfo.family == socket.AddressFamily.AF_INET6:
-                        ipv6_addrinfo.append(addrinfo)
-                    else:
-                        ipv4_addrinfo.append(addrinfo)
+                    # But prevent adding duplicate items to the lists
+                    if addrinfo not in ipv6_addrinfo and addrinfo not in ipv4_addrinfo:
+                        if addrinfo.family == socket.AddressFamily.AF_INET6:
+                            ipv6_addrinfo.append(addrinfo)
+                        else:
+                            ipv4_addrinfo.append(addrinfo)
             except:
                 # Did we fail on the first getaddrinfo already?
                 # Otherwise, we failed on the IPv6 alternative address, and those failures can be ignored
