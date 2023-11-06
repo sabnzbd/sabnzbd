@@ -29,6 +29,7 @@ from typing import Dict, Optional, Tuple
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
+from sabnzbd.filesystem import get_basename
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -80,7 +81,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
         block = m.group(3)
     else:
         # Base-par2 file
-        setname = os.path.splitext(name)[0].strip()
+        setname = get_basename(name).strip()
         # Could not parse the filename, need deep inspection
         # We already know it's a par2 from the is_parfile
         if filepath:

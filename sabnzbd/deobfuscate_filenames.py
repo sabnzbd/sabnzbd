@@ -34,7 +34,7 @@ import os
 import re
 
 import sabnzbd
-from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
+from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, get_basename
 from sabnzbd.par2file import is_parfile, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
 from sabnzbd.misc import match_str
@@ -299,7 +299,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
     nr_files_renamed += 1
 
     # Now find other files with the same basename in filelist, and rename them in the same way:
-    basedirfile, _ = os.path.splitext(biggest_file)  # something like "/home/this/myiso"
+    basedirfile = get_basename(biggest_file)  # something like "/home/this/myiso"
     for otherfile in filelist:
         if otherfile.startswith(basedirfile) and os.path.isfile(otherfile):
             # yes, same basedirfile, only different ending

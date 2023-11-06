@@ -63,6 +63,11 @@ def get_ext(filename: str) -> str:
         return ""
 
 
+def get_basename(filename: str) -> str:
+    """Shorthand for getting the basename of a filename"""
+    return os.path.splitext(filename)[0]
+
+
 def is_listed_ext(ext: str, ext_list: list) -> bool:
     """Check if the extension is listed. In case of a regexp the entire extension must be matched;
     partial matches aren't accepted (e.g. 'r[0-9]{2}' will be treated the same as '^r[0-9]{2}$' and
@@ -111,7 +116,7 @@ def get_filename(path: str) -> str:
 
 def setname_from_path(path: str) -> str:
     """Get the setname from a path"""
-    return os.path.splitext(os.path.basename(path))[0]
+    return get_basename(os.path.basename(path))
 
 
 def is_writable(path: str) -> bool:
@@ -574,7 +579,7 @@ def list_scripts(default: bool = False, none: bool = True) -> List[str]:
                 if (
                     (
                         sabnzbd.WIN32
-                        and os.path.splitext(script)[1].lower() in PATHEXT
+                        and get_ext(script) in PATHEXT
                         and not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN
                     )
                     or script.endswith(".py")

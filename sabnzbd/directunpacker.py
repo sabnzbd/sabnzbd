@@ -30,7 +30,7 @@ from typing import Optional, Dict, List, Tuple
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
-from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file
+from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file, get_basename
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
@@ -552,7 +552,7 @@ def analyze_rar_filename(filename):
     else:
         # Detect if first of "rxx" set
         if filename.endswith(".rar"):
-            return os.path.splitext(filename)[0], 1
+            return get_basename(filename), 1
     return None, None
 
 

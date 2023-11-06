@@ -79,6 +79,7 @@ from sabnzbd.filesystem import (
     is_valid_script,
     has_unwanted_extension,
     create_all_dirs,
+    get_basename,
 )
 from sabnzbd.par2file import FilePar2Info
 from sabnzbd.decorators import synchronized

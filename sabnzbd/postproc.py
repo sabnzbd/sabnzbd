@@ -718,7 +718,8 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
 
         # Is the unique path different? Then we also need to modify the final path
         if prefixed_path != tmp_workdir_complete:
-            workdir_complete = workdir_complete + os.path.splitext(tmp_workdir_complete)[1]
+            # The unique path adds an "extension"
+            workdir_complete = workdir_complete + get_ext(tmp_workdir_complete)
     else:
         tmp_workdir_complete = workdir_complete
 

@@ -36,6 +36,7 @@ from sabnzbd.filesystem import (
     diskspace,
     get_filename,
     has_unwanted_extension,
+    get_basename,
 )
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
@@ -249,7 +250,7 @@ SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
 def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
     """Return True if this is likely to be a cloaked encrypted post"""
-    fname = os.path.splitext(get_filename(path.lower()))[0]
+    fname = get_basename(get_filename(path.lower()))
     for name in names:
         name = get_filename(name.lower())
         name, ext = os.path.splitext(name)

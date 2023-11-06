@@ -61,6 +61,7 @@ from sabnzbd.filesystem import (
     get_filename,
     SEVENMULTI_RE,
     is_size,
+    get_basename,
 )
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
@@ -511,7 +512,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: Li
         rar_set = setname_from_path(rar)
         if RAR_V3_RE.search(rar_set):
             # Remove the ".partXX" part
-            rar_set = os.path.splitext(rar_set)[0]
+            rar_set = get_basename(rar_set)
         if rar_set not in rar_sets:
             rar_sets[rar_set] = []
         rar_sets[rar_set].append(rar)
@@ -878,7 +879,7 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: Lis
         setname = setname_from_path(seven)
         if SEVENMULTI_RE.search(setname):
             # Remove the ".001" part
-            setname = os.path.splitext(setname)[0]
+            setname = get_basename(setname)
         if setname not in seven_sets:
             seven_sets[setname] = []
         seven_sets[setname].append(seven)
@@ -1090,7 +1091,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
 
             # Remove extra files created during repair and par2 base files
             for path in new_dir_content:
-                if os.path.splitext(path)[1] == ".1" and path not in old_dir_content:
+                if get_ext(path) == ".1" and path not in old_dir_content:
                     deletables.append(os.path.join(nzo.download_path, path))
             deletables.append(os.path.join(nzo.download_path, setname + ".par2"))
             deletables.append(os.path.join(nzo.download_path, setname + ".PAR2"))
