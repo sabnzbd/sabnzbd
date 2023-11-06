@@ -2077,18 +2077,13 @@ def scan_password(name: str) -> Tuple[str, Optional[str]]:
     slash = name.find("/")
 
     # Look for name/password, but make sure that '/' comes before any {{
-    if 0 < slash < braces and "password=" not in name:
+    if 0 < slash < braces:
         # Is it maybe in 'name / password' notation?
         if slash == name.find(" / ") + 1 and name[: slash - 1].strip(". "):
             # Remove the extra space after name and before password
             return name[: slash - 1].strip(". "), name[slash + 2 :]
         if name[:slash].strip(". "):
             return name[:slash].strip(". "), name[slash + 1 :]
-
-    # Look for "name password=password"
-    pw = name.find("password=")
-    if pw > 0 and name[:pw].strip(". "):
-        return name[:pw].strip(". "), name[pw + 9 :]
 
     # Look for name{{password}}
     if braces < len(name):
