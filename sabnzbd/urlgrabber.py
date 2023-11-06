@@ -207,14 +207,6 @@ class URLGrabber(Thread):
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find("&nzbname=") + 9 :]
 
-                pp = future_nzo.pp
-                script = future_nzo.script
-                cat = future_nzo.cat
-                if (cat is None or cat == "*") and category:
-                    cat = misc.cat_convert(category)
-                priority = future_nzo.priority
-                nzbname = future_nzo.custom_name
-
                 # process data
                 if not data:
                     try:
@@ -246,11 +238,11 @@ class URLGrabber(Thread):
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
                     res, _ = sabnzbd.nzbparser.add_nzbfile(
                         path,
-                        pp=pp,
-                        script=script,
-                        cat=cat,
-                        priority=priority,
-                        nzbname=nzbname,
+                        pp=future_nzo.pp,
+                        script=future_nzo.script,
+                        cat=future_nzo.cat,
+                        priority=future_nzo.priority,
+                        nzbname=future_nzo.custom_name,
                         nzo_info=nzo_info,
                         url=future_nzo.url,
                         keep=False,
@@ -385,7 +377,7 @@ def add_url(
     pp: Optional[Union[int, str]] = None,
     script: Optional[str] = None,
     cat: Optional[str] = None,
-    priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+    priority: Optional[Union[int, str]] = None,
     nzbname: Optional[str] = None,
     password: Optional[str] = None,
 ):
@@ -400,17 +392,11 @@ def add_url(
         cat = None
     logging.info("Fetching %s", url)
 
-    # Add feed name if it came from RSS
-    msg = T("Trying to fetch NZB from %s") % url
-    if nzbname:
-        msg = "%s - %s" % (nzbname, msg)
-
     # Generate the placeholder
-    future_nzo = sabnzbd.NzbQueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
-
-    # Set password
-    if not future_nzo.password:
-        future_nzo.password = password
+    msg = T("Trying to fetch NZB from %s") % url
+    future_nzo = sabnzbd.NzbQueue.generate_future(
+        msg, pp, script, cat, url=url, priority=priority, password=password, nzbname=nzbname
+    )
 
     # Get it!
     sabnzbd.URLGrabber.add(url, future_nzo)

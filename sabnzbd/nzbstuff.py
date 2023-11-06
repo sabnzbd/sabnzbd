@@ -586,6 +586,7 @@ class NzbObject(TryList):
         cat: Optional[str] = None,
         url: Optional[str] = None,
         priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+        password: Optional[str] = None,
         nzbname: Optional[str] = None,
         status: str = Status.QUEUED,
         nzo_info: Optional[Dict[str, Any]] = None,
@@ -594,30 +595,29 @@ class NzbObject(TryList):
         dup_check: bool = True,
     ):
         super().__init__()
+        # Use original filename as basis
+        self.work_name = self.filename = filename
 
-        self.filename = filename  # Original filename
-        if nzbname and nzb_fp:
-            self.work_name = nzbname  # Use nzbname if set and only for non-future slot
-        else:
-            self.work_name = filename
+        # User defined job name
+        if nzbname:
+            self.final_name = self.work_name = nzbname
 
-        # For future-slots we keep the name given by URLGrabber
-        if nzb_fp is None:
-            self.final_name = self.work_name = filename
-        else:
-            # Remove trailing .nzb and .par(2)
-            self.work_name = create_work_name(self.work_name)
+        # Extract password if not explicitly set, also on URL-fetches which might have a custom name with password
+        self.password = password
+        if not self.password:
+            # Extract before create_work_name, as it would escape the "/" on Windows
+            self.work_name, self.password = scan_password(self.work_name)
 
-        # Extract password
-        self.work_name, self.password = scan_password(self.work_name)
-        if not self.work_name:
-            # In case only /password was entered for nzbname
-            self.work_name = filename
+            # Check for password also in filename
+            if not self.password:
+                _, self.password = scan_password(get_basename(filename))
+
+        # Remove trailing .nzb/.par(2) and sanitize
+        self.work_name = create_work_name(self.work_name)
         self.final_name = self.work_name
 
-        # Check for password also in filename
-        if not self.password:
-            _, self.password = scan_password(os.path.splitext(filename)[0])
+        # Temporary store for custom job name for after URL-fetching
+        self.custom_name = nzbname
 
         # Create a record of the input for pp, script, and priority
         input_pp = pp
@@ -703,9 +703,6 @@ class NzbObject(TryList):
         self.fail_msg = ""
         # Stores various info about the nzo to be
         self.nzo_info: Dict[str, Any] = nzo_info or {}
-
-        # Temporary store for custom foldername - needs to be stored because of url fetching
-        self.custom_name = nzbname
 
         self.next_save = None
         self.save_timeout = None

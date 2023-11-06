@@ -214,14 +214,13 @@ def process_nzb_archive_file(
                             cat=cat,
                             url=url,
                             priority=priority,
+                            password=password,
                             nzbname=nzbname,
                             nzo_info=nzo_info,
                             reuse=reuse,
                             nzo_id=nzo_id,
                             dup_check=dup_check,
                         )
-                        if not nzo.password:
-                            nzo.password = password
                     except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
                         # Empty or fully rejected
                         pass
@@ -321,14 +320,13 @@ def process_single_nzb(
             cat=cat,
             url=url,
             priority=priority,
+            password=password,
             nzbname=nzbname,
             nzo_info=nzo_info,
             reuse=reuse,
             nzo_id=nzo_id,
             dup_check=dup_check,
         )
-        if not nzo.password:
-            nzo.password = password
     except sabnzbd.nzbstuff.NzbEmpty:
         # Malformed or might not be an NZB file
         result = AddNzbFileResult.NO_FILES_FOUND

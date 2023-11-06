@@ -189,8 +189,7 @@ class NzbQueue:
             else:
                 try:
                     logging.debug("Repair job %s without stored NZB", name)
-                    nzo = NzbObject(name, nzbname=name, reuse=repair_folder)
-                    nzo.password = password
+                    nzo = NzbObject(name, password=password, nzbname=name, reuse=repair_folder)
                     self.add(nzo)
                     nzo_ids = [nzo.nzo_id]
                 except:
@@ -248,7 +247,7 @@ class NzbQueue:
         self.__top_only = value
 
     def generate_future(
-        self, msg, pp=None, script=None, cat=None, url=None, priority=DEFAULT_PRIORITY, nzbname=None
+        self, msg, pp=None, script=None, cat=None, url=None, priority=None, password=None, nzbname=None
     ) -> NzbObject:
         """Create and return a placeholder nzo object"""
         logging.debug("Creating placeholder NZO")
@@ -260,6 +259,7 @@ class NzbQueue:
             cat=cat,
             url=url,
             priority=priority,
+            password=password,
             nzbname=nzbname,
             status=Status.GRABBING,
         )
