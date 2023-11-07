@@ -1110,11 +1110,7 @@ function ViewModel() {
                     if(script === 'None') return { scriptValue: 'None', scriptText: glitterTranslate.noneText };
                     return { scriptValue: script, scriptText: script };
                 }))
-                self.queue.scriptsListLoaded(true)
             })
-        } else {
-            // We can already continue
-            self.queue.scriptsListLoaded(true)
         }
 
 

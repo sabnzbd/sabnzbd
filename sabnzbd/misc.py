@@ -1161,15 +1161,14 @@ def run_command(cmd: List[str], **kwargs):
     return txt
 
 
-def run_script(script):
-    """Run a user script (queue complete only)"""
-    script_path = make_script_path(script)
-    if script_path:
+def run_script(script: str):
+    """Run a user script"""
+    if script_path := make_script_path(script):
         try:
-            script_output = run_command([script_path])
-            logging.info("Output of queue-complete script %s: \n%s", script, script_output)
+            script_output = run_command([script_path], env=sabnzbd.newsunpack.create_env())
+            logging.info("Output of script %s: \n%s", script, script_output)
         except:
-            logging.info("Failed queue-complete script %s, Traceback: ", script, exc_info=True)
+            logging.info("Failed script %s, Traceback: ", script, exc_info=True)
 
 
 def set_socks5_proxy():
@@ -1288,24 +1287,17 @@ def system_standby():
 
 
 def change_queue_complete_action(action: str, new: bool = True):
-    """Action or script to be performed once the queue has been completed
-    Scripts are prefixed with 'script_'
-    """
-    _action = None
-    _argument = None
+    """Action or script to be performed once the queue has been completed"""
+    function = None
     if new or cfg.queue_complete_pers():
-        if action.startswith("script_") and is_valid_script(action.replace("script_", "", 1)):
-            # all scripts are labeled script_xxx
-            _action = sabnzbd.misc.run_script
-            _argument = action.replace("script_", "", 1)
-        elif action == "shutdown_pc":
-            _action = system_shutdown
+        if action == "shutdown_pc":
+            function = system_shutdown
         elif action == "hibernate_pc":
-            _action = system_hibernate
+            function = system_hibernate
         elif action == "standby_pc":
-            _action = system_standby
+            function = system_standby
         elif action == "shutdown_program":
-            _action = sabnzbd.shutdown_program
+            function = sabnzbd.shutdown_program
         else:
             action = None
     else:
@@ -1316,8 +1308,7 @@ def change_queue_complete_action(action: str, new: bool = True):
         config.save_config()
 
     sabnzbd.QUEUECOMPLETE = action
-    sabnzbd.QUEUECOMPLETEACTION = _action
-    sabnzbd.QUEUECOMPLETEARG = _argument
+    sabnzbd.QUEUECOMPLETEACTION = function
 
 
 def keep_awake():

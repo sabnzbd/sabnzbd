@@ -276,7 +276,7 @@ def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None
 ##############################################################################
 # Special settings
 ##############################################################################
-pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
+
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
 bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, minval=0, maxval=100)
@@ -375,6 +375,8 @@ ionice = OptionStr("misc", "ionice", validation=clean_nice_ionice_parameters)
 fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
+pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
+end_queue_script = OptionStr("misc", "end_queue_script", "None", validation=validate_script)
 no_dupes = OptionNumber("misc", "no_dupes", 0)
 no_series_dupes = OptionNumber("misc", "no_series_dupes", 0)
 series_propercheck = OptionBool("misc", "series_propercheck", True)

@@ -766,6 +766,7 @@ SWITCH_LIST = (
     "nice",
     "ionice",
     "pre_script",
+    "end_queue_script",
     "pause_on_pwrar",
     "sfv_check",
     "deobfuscate_final_filenames",

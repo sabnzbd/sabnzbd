@@ -169,7 +169,6 @@ SKIN_TEXT = {
     "mode": TT("Processing"),  #: Queue page table column header
     "name": TT("Name"),  #: Queue page table column header
     "button-retry": TT("Retry"),  #: Queue page button
-    "eoq-actions": TT("Actions"),  #: Queue end-of-queue selection box
     "eoq-scripts": TT("Scripts"),  #: Queue page table, script selection menu
     "purgeQueue": TT("Purge Queue"),  #: Queue page button
     "purgeQueueConf": TT("Delete all items from the queue?"),  #: Confirmation popup
@@ -453,6 +452,8 @@ SKIN_TEXT = {
     ),
     "opt-pre_script": TT("Pre-queue user script"),
     "explain-pre_script": TT("Used before an NZB enters the queue."),
+    "opt-end_queue_script": TT("On queue finish script"),
+    "explain-end_queue_script": TT("Executed after the queue finishes downloading."),
     "opt-par_option": TT("Extra PAR2 Parameters"),
     "explain-par_option": TT("Read the Wiki Help on this!"),
     "opt-nice": TT("Nice Parameters"),

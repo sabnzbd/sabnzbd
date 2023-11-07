@@ -41,7 +41,7 @@
             </div><!-- /col2 -->
             <div class="col1">
                 <fieldset>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="pre_script">$T('opt-pre_script')</label>
                         <select name="pre_script" id="pre_script">
                         <!--#for $sc in $scripts#-->
@@ -53,6 +53,19 @@
                         <!--#end for#-->
                         </select>
                         <span class="desc">$T('explain-pre_script')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="end_queue_script">$T('opt-end_queue_script')</label>
+                        <select name="end_queue_script" id="end_queue_script">
+                        <!--#for $sc in $scripts#-->
+                            <!--#if $sc.lower() == $end_queue_script.lower()#-->
+                                <option value="$sc" selected="selected">$Tspec($sc)</option>
+                            <!--#else#-->
+                                <option value="$sc">$Tspec($sc)</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                        </select>
+                        <span class="desc">$T('explain-end_queue_script')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="propagation_delay">$T('opt-propagation_delay')</label>

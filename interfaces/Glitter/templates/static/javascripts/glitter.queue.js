@@ -37,7 +37,6 @@ function QueueListModel(parent) {
     self.multiEditItems = ko.observableArray([]);
     self.categoriesList = ko.observableArray([]);
     self.scriptsList = ko.observableArray([]);
-    self.scriptsListLoaded = ko.observable(false);
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(20).extend({ persist: 'queuePaginationLimit' });
     self.pagination = new paginationModel(self);

@@ -39,7 +39,14 @@ from sabnzbd.newsunpack import (
     is_sfv_file,
 )
 from threading import Thread
-from sabnzbd.misc import on_cleanup_list, is_sample, helpful_warning
+from sabnzbd.misc import (
+    on_cleanup_list,
+    is_sample,
+    helpful_warning,
+    history_updated,
+    change_queue_complete_action,
+    run_script,
+)
 from sabnzbd.filesystem import (
     real_path,
     get_unique_dir,
@@ -172,7 +179,7 @@ class PostProcessor(Thread):
         else:
             self.slow_queue.put(nzo)
         self.save()
-        sabnzbd.misc.history_updated()
+        history_updated()
 
     def remove(self, nzo: NzbObject):
         """Remove given nzo from the queue"""
@@ -181,7 +188,7 @@ class PostProcessor(Thread):
         except:
             pass
         self.save()
-        sabnzbd.misc.history_updated()
+        history_updated()
 
     def stop(self):
         """Stop thread after finishing running job"""
@@ -658,7 +665,7 @@ def process_job(nzo: NzbObject) -> bool:
         # Purge items
         history_db.auto_history_purge()
 
-    sabnzbd.misc.history_updated()
+    history_updated()
     return True
 
 
@@ -1045,16 +1052,16 @@ def handle_empty_queue():
         sabnzbd.save_state()
         notifier.send_notification("SABnzbd", T("Queue finished"), "queue_done")
 
+        # Perform end-of-queue script
+        if cfg.end_queue_script():
+            logging.info("Queue has finished, launching script: %s ", cfg.end_queue_script())
+            run_script(cfg.end_queue_script())
+
         # Perform end-of-queue action when one is set
         if sabnzbd.QUEUECOMPLETEACTION:
-            logging.info(
-                "Queue has finished, launching: %s (%s)", sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG
-            )
-            if sabnzbd.QUEUECOMPLETEARG:
-                sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
-            else:
-                Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
-            sabnzbd.misc.change_queue_complete_action(cfg.queue_complete(), new=False)
+            logging.info("Queue has finished, launching action: %s ", sabnzbd.QUEUECOMPLETEACTION)
+            Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
+            change_queue_complete_action(cfg.queue_complete(), new=False)
 
         # Trigger garbage collection and release of memory
         logging.debug("Triggering garbage collection and release of memory")

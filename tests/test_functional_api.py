@@ -610,28 +610,13 @@ class TestQueueApi(ApiTestFunctions):
             (True, False, "hibernate_pc"),
             (True, False, "standby_pc"),
             (True, True, "shutdown_program"),
-            (True, True, "script_Sample-PostProc.py"),
-            (False, False, "script_Sample-PostProc.py"),
             (False, False, "invalid_option"),
-            (False, True, "script_foobar.py"),  # Doesn't exist, see issue #1650
-            (False, True, "script_" + os.path.join("..", "SABnzbd.py")),  # Outside the scriptsdir, #1650 again
-            (False, True, "script_" + os.path.join("..", "..", "SABnzbd.py")),
-            (False, True, "script_" + os.path.join("..", "..", "..", "SABnzbd.py")),
-            (False, True, "script_"),  # Empty after removal of the prefix
-            (True, True, "script_my_script_for_sab.py"),  # Test for #1651
-            (False, True, "my_script_for_sab.py"),
         ],
     )
     def test_api_queue_change_complete_action(self, should_work, set_scriptsdir, value):
         # To safeguard against actually triggering any of the actions, pause the
         # queue and add some random job before setting any end-of-queue actions.
         self._create_random_queue(minimum_size=1)
-
-        # Setup the script_dir as ordered
-        script_dir = ""
-        if set_scriptsdir:
-            script_dir = "scripts"
-        self._setup_script_dir(script_dir, script="my_script_for_sab.py")
 
         # Run the queue complete action api call
         prev_value = self._get_api_json("queue")["queue"]["finishaction"]

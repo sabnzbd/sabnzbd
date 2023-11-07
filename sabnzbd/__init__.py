@@ -138,7 +138,6 @@ DIR_PID = None
 
 QUEUECOMPLETE = None  # stores the nice name of the action
 QUEUECOMPLETEACTION = None  # stores the name of the function to be called
-QUEUECOMPLETEARG = None  # stores an extra arguments that need to be passed
 
 DAEMON = None
 LINUX_POWER = powersup.HAVE_DBUS
