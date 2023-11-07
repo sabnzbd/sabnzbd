@@ -115,6 +115,8 @@ class TestNZBStuffHelpers:
             ("Jobname / Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces and extra spaces
             ("לינוקס/معلومات سرية", "לינוקס", "معلومات سرية"),  # LTR with slash
             ("לינוקס{{معلومات سرية}}", "לינוקס", "معلومات سرية"),  # LTR with brackets
+            ("thư điện tử password=mật_khẩu", "thư điện tử", "mật_khẩu"),  # Password= notation
+            ("password=PartOfTheJobname", "password=PartOfTheJobname", None),  # Password= at the start
             ("Job}}Name{{FTW", "Job}}Name{{FTW", None),  # Both {{ and }} present but incorrect order (no password)
             ("./Text", "./Text", None),  # Name would end up empty after the function strips the dot
         ],
