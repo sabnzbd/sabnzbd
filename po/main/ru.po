@@ -2233,11 +2233,6 @@ msgstr "Название"
 msgid "Retry"
 msgstr "Повторить"
 
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Действия"
-
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3224,6 +3219,14 @@ msgstr "Пользовательский сценарий до помещени�
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Используется до того, как NZB помещается в очередь."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"

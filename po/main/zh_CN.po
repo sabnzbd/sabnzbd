@@ -2220,11 +2220,6 @@ msgstr "名称"
 msgid "Retry"
 msgstr "重试"
 
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "操作"
-
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3172,6 +3167,14 @@ msgstr "加入队列前执行的用户脚本"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "用于在 NZB 进入队列前执行。"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"

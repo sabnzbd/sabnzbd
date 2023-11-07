@@ -2230,11 +2230,6 @@ msgstr "Navn"
 msgid "Retry"
 msgstr "Prøv igjen"
 
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Hendelser"
-
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3222,6 +3217,14 @@ msgstr "Før-kø bruker skript"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Brukes før en NZB blir lagt til kø"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"

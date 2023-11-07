@@ -2305,11 +2305,6 @@ msgstr "Name"
 msgid "Retry"
 msgstr "Erneut versuchen"
 
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Aktionen"
-
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3362,6 +3357,14 @@ msgstr "Benutzer-Skript vor Warteschlange"
 msgid "Used before an NZB enters the queue."
 msgstr ""
 "Wird verwendet, bevor eine NZB-Datei zur Warteschlange hinzugefügt wird."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"

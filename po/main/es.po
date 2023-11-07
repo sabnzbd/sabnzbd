@@ -2296,11 +2296,6 @@ msgstr "Nombre"
 msgid "Retry"
 msgstr "Reintentar"
 
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Acciones"
-
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3322,6 +3317,14 @@ msgstr "Script de usuario Pre-cola"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Se usa precediendo a la entrada de un NZB en la cola del sistema."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"

@@ -2281,11 +2281,6 @@ msgstr "Naam"
 msgid "Retry"
 msgstr "Opnieuw"
 
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Acties"
-
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3319,6 +3314,14 @@ msgstr "Wachtrij-filter script"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Word uitgevoerd vóór een download aan de wachtrij word toegevoegd"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
