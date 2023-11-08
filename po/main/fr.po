@@ -3360,11 +3360,11 @@ msgstr "Utilisé avant qu'un NZB n'entre dans la file d'attente."
 
 #: sabnzbd/skintext.py
 msgid "On queue finish script"
-msgstr ""
+msgstr "Script de fin de file d'attente"
 
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
-msgstr ""
+msgstr "Exécuté après la fin du téléchargement de la file d'attente."
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
