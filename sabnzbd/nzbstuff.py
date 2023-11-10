@@ -80,6 +80,13 @@ from sabnzbd.filesystem import (
     has_unwanted_extension,
     create_all_dirs,
     get_basename,
+    backup_exists,
+    get_new_id,
+    save_data,
+    load_data,
+    save_compressed,
+    backup_nzb,
+    remove_data,
 )
 from sabnzbd.par2file import FilePar2Info
 from sabnzbd.decorators import synchronized
@@ -229,7 +236,7 @@ class Article(TryList):
     def get_art_id(self):
         """Return unique article storage name, create if needed"""
         if not self.art_id:
-            self.art_id = sabnzbd.filesystem.get_new_id("article", self.nzf.nzo.admin_path)
+            self.art_id = get_new_id("article", self.nzf.nzo.admin_path)
         return self.art_id
 
     def search_new_server(self):
@@ -343,7 +350,7 @@ class NzbFile(TryList):
         self.bytes_left: int = file_bytes
 
         self.nzo: NzbObject = nzo
-        self.nzf_id: str = sabnzbd.filesystem.get_new_id("nzf", nzo.admin_path)
+        self.nzf_id: str = get_new_id("nzf", nzo.admin_path)
         self.deleted = False
         self.import_finished = False
 
@@ -367,7 +374,7 @@ class NzbFile(TryList):
             # Any articles left?
             if raw_article_db:
                 # Save the rest
-                sabnzbd.filesystem.save_data(raw_article_db, self.nzf_id, nzo.admin_path)
+                save_data(raw_article_db, self.nzf_id, nzo.admin_path)
             else:
                 # All imported
                 self.import_finished = True
@@ -375,8 +382,7 @@ class NzbFile(TryList):
     def finish_import(self):
         """Load the article objects from disk"""
         logging.debug("Finishing import on %s", self.filename)
-        raw_article_db = sabnzbd.filesystem.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
-        if raw_article_db:
+        if raw_article_db := load_data(self.nzf_id, self.nzo.admin_path, remove=False):
             for raw_article in raw_article_db:
                 self.add_article(raw_article)
 
@@ -763,7 +769,7 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
         if nzb_fp:
-            full_nzb_path = sabnzbd.filesystem.save_compressed(admin_dir, filename, nzb_fp)
+            full_nzb_path = save_compressed(admin_dir, filename, nzb_fp)
             try:
                 sabnzbd.nzbparser.nzbfile_parser(full_nzb_path, self)
             except Exception as err:
@@ -785,7 +791,7 @@ class NzbObject(TryList):
                 duplicate, series_duplicate = self.has_duplicates()
 
             # Copy to backup
-            sabnzbd.filesystem.backup_nzb(full_nzb_path)
+            backup_nzb(full_nzb_path)
 
         if not self.files and not reuse:
             self.purge_data()
@@ -923,7 +929,6 @@ class NzbObject(TryList):
         if cfg.action_on_unwanted_extensions():
             for nzf in self.files:
                 if has_unwanted_extension(nzf.filename):
-                    # ... we found an unwanted extension
                     logging.warning(T("Unwanted Extension in file %s (%s)"), nzf.filename, self.final_name)
                     # Pause, or Abort:
                     if cfg.action_on_unwanted_extensions() == 1:
@@ -1254,7 +1259,7 @@ class NzbObject(TryList):
         existing_files = globber(wdir, "*.*")
 
         # Substitute renamed files
-        if renames := sabnzbd.filesystem.load_data(RENAMES_FILE, self.admin_path, remove=True):
+        if renames := load_data(RENAMES_FILE, self.admin_path, remove=True):
             for name in renames:
                 if name in existing_files or renames[name] in existing_files:
                     if name in existing_files:
@@ -1822,14 +1827,14 @@ class NzbObject(TryList):
         # Delete all, or just basic files
         if self.futuretype:
             # Remove temporary file left from URL-fetches
-            sabnzbd.filesystem.remove_data(self.nzo_id, self.admin_path)
+            remove_data(self.nzo_id, self.admin_path)
         elif delete_all_data:
             remove_all(self.download_path, recursive=True)
         else:
             # We remove any saved articles and save the renames file
             remove_all(self.download_path, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(self.download_path, "SABnzbd_article_*", keep_folder=True)
-            sabnzbd.filesystem.save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
+            save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
 
     def get_nzf_by_id(self, nzf_id: str) -> NzbFile:
         if nzf_id in self.files_table:
@@ -1868,7 +1873,7 @@ class NzbObject(TryList):
         """Save job's admin to disk"""
         self.save_attribs()
         if self.nzo_id and not self.removed_from_queue:
-            sabnzbd.filesystem.save_data(self, self.nzo_id, self.admin_path)
+            save_data(self, self.nzo_id, self.admin_path)
 
     def save_attribs(self):
         """Save specific attributes for Retry"""
@@ -1876,11 +1881,11 @@ class NzbObject(TryList):
         for attrib in NzoAttributeSaver:
             attribs[attrib] = getattr(self, attrib)
         logging.debug("Saving attributes %s for %s", attribs, self.final_name)
-        sabnzbd.filesystem.save_data(attribs, ATTRIB_FILE, self.admin_path, silent=True)
+        save_data(attribs, ATTRIB_FILE, self.admin_path, silent=True)
 
     def load_attribs(self) -> Tuple[Optional[str], Optional[int], Optional[str]]:
         """Load saved attributes and return them to be parsed"""
-        attribs = sabnzbd.filesystem.load_data(ATTRIB_FILE, self.admin_path, remove=False)
+        attribs = load_data(ATTRIB_FILE, self.admin_path, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
 
         # If attributes file somehow does not exist
@@ -1944,7 +1949,7 @@ class NzbObject(TryList):
                     res,
                 )
                 if not res and cfg.backup_for_duplicates():
-                    res = sabnzbd.filesystem.backup_exists(self.filename)
+                    res = backup_exists(self.filename)
                     logging.debug("Duplicate checked NZB against backup: filename=%s, result=%s", self.filename, res)
 
             # Dupe check off nzb filename
