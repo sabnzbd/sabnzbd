@@ -81,13 +81,27 @@ class AddrInfo:
 def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo):
     """Connect to the ip, and put the result into the queue"""
     try:
+        start = time.time()
         s = socket.socket(addrinfo.family, addrinfo.type)
         s.settimeout(MAXIMUM_RESOLUTION_TIME)
         try:
             s.connect(addrinfo.sockaddr)
+            result_queue.put(addrinfo)
+            logging.debug(
+                "Happy Eyeballs connected to %s (%s) in %dms",
+                addrinfo.ipaddress,
+                addrinfo.canonname,
+                1000 * (time.time() - start),
+            )
+        except socket.error:
+            logging.debug(
+                "Happy Eyeballs failed to connect to %s (%s) in %dms",
+                addrinfo.ipaddress,
+                addrinfo.canonname,
+                1000 * (time.time() - start),
+            )
         finally:
             s.close()
-        result_queue.put(addrinfo)
     except:
         pass
 
@@ -97,9 +111,6 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
     including IPv6 addresses if desired. Returns None in case no addresses were returned
     by getaddrinfo or if no connection could be made to any of the addresses"""
     try:
-        # Time how long it took us
-        start = time.time()
-
         # Get address information, by default both IPV4 and IPV6
         check_hosts = [host]
         family = socket.AF_UNSPEC
@@ -173,7 +184,6 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
                 raise ConnectionError("No addresses could be resolved")
 
         logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.ipaddress, result.canonname)
-        logging.debug("Happy Eyeballs lookup and port connect took: %d ms", int(1000 * (time.time() - start)))
         return result
     except Exception as e:
         logging.debug("Failed Happy Eyeballs lookup: %s", e)
