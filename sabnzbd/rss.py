@@ -391,19 +391,6 @@ class RSSReader:
                         elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
                             myPrio = catPrio
 
-                    if cfg.no_dupes() and self.check_duplicate(title):
-                        if cfg.no_dupes() == 1:
-                            # Dupe-detection: Discard
-                            logging.info("Ignoring duplicate job %s", title)
-                            continue
-                        elif cfg.no_dupes() == 3:
-                            # Dupe-detection: Fail
-                            # We accept it so the Queue can send it to the History
-                            logging.info("Found duplicate job %s", title)
-                        else:
-                            # Dupe-detection: Pause
-                            myPrio = DUP_PRIORITY
-
                     act = download and not first
                     if link in jobs:
                         act = act and not jobs[link].get("status", "").endswith("*")
@@ -545,18 +532,6 @@ class RSSReader:
             for item in self.jobs[feed]:
                 if self.jobs[feed][item]["status"] == "D":
                     self.jobs[feed][item]["status"] = "D-"
-
-    def check_duplicate(self, title):
-        """Check if this title was in this or other feeds
-        Return matching feed name
-        """
-        title = title.lower()
-        for fd in self.jobs:
-            for lk in self.jobs[fd]:
-                item = self.jobs[fd][lk]
-                if item.get("status", " ")[0] == "D" and item.get("title", "").lower() == title:
-                    return fd
-        return ""
 
 
 def patch_feedparser():
