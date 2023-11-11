@@ -1920,7 +1920,12 @@ class NzbObject(TryList):
                 series, season, episode, is_proper = (
                     show_analysis[key] for key in ("title", "season", "episode", "is_proper")
                 )
-                self.duplicate_series_key = "%s/%s/%s" % (series.lower(), season, episode)
+                # Ignore proper results if not desired
+                if not cfg.series_propercheck():
+                    is_proper = False
+
+                # We allow 1 proper result to bypass duplicate detection
+                self.duplicate_series_key = f"{series.lower()}/{season}/{episode}{f'/{is_proper}' if is_proper else ''}"
                 logging.debug("Duplicate checking (%s): %s", self.final_name, self.duplicate_series_key)
 
                 series_duplicate_in_history = history_db.have_episode(self.duplicate_series_key)
