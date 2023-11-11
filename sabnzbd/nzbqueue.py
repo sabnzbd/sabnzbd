@@ -361,7 +361,7 @@ class NzbQueue:
         return nzo.nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> Optional[str]:
+    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> Optional[NzbObject]:
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
@@ -377,18 +377,21 @@ class NzbQueue:
                 nzo.status = Status.DELETED
                 nzo.purge_data(delete_all_data=delete_all_data)
             self.save(False)
-            return nzo_id
-        return None
+            return nzo
 
     @NzbQueueLocker
     def remove_multiple(self, nzo_ids: List[str], delete_all_data=True) -> List[str]:
+        """Remove multiple jobs from the queue. Also triggers duplicate handling
+        and downloader-disconnect, so intended for external use only!"""
         removed = []
         for nzo_id in nzo_ids:
-            if self.remove(nzo_id, delete_all_data=delete_all_data):
+            if nzo := self.remove(nzo_id, delete_all_data=delete_all_data):
                 removed.append(nzo_id)
+                # Start an alternative, if available
+                self.handle_duplicate_alternatives(nzo, success=False)
 
         # Any files left? Otherwise let's disconnect
-        if self.actives(grabs=False) == 0 and cfg.autodisconnect():
+        if not self.actives(grabs=False) and cfg.autodisconnect():
             # This was the last job, close server connections
             sabnzbd.Downloader.disconnect()
 
@@ -970,14 +973,15 @@ class NzbQueue:
         if not cfg.no_dupes() and not cfg.no_series_dupes():
             return
 
+        # Unfortunately we need a copy, since we might remove items from the list
         for nzo in self.__nzo_list[:]:
-            if nzo.duplicate and (
-                (nzo.final_name.lower() == finished_nzo.final_name.lower() or nzo.md5sum == finished_nzo.md5sum)
-                or (
-                    nzo.duplicate_series_key
-                    and finished_nzo.duplicate_series_key
-                    and nzo.duplicate_series_key == finished_nzo.duplicate_series_key
-                )
+            if not nzo.duplicate:
+                continue
+
+            if (nzo.final_name.lower() == finished_nzo.final_name.lower() or nzo.md5sum == finished_nzo.md5sum) or (
+                nzo.duplicate_series_key
+                and finished_nzo.duplicate_series_key
+                and nzo.duplicate_series_key == finished_nzo.duplicate_series_key
             ):
                 # Start the next alternative
                 if not success:

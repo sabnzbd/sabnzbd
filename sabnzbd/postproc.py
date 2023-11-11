@@ -405,7 +405,7 @@ def process_job(nzo: NzbObject) -> bool:
                 return False
 
         # If we don't need extra par2, we can disconnect
-        if sabnzbd.NzbQueue.actives(grabs=False) == 0 and cfg.autodisconnect():
+        if not sabnzbd.NzbQueue.actives(grabs=False) and cfg.autodisconnect():
             # This was the last job, close server connections
             sabnzbd.Downloader.disconnect()
 
@@ -1051,7 +1051,7 @@ def rar_renamer(nzo: NzbObject) -> int:
 
 def handle_empty_queue():
     """Check if empty queue calls for action"""
-    if sabnzbd.NzbQueue.actives() == 0:
+    if not sabnzbd.NzbQueue.actives():
         sabnzbd.save_state()
         notifier.send_notification("SABnzbd", T("Queue finished"), "queue_done")
 
