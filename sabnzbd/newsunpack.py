@@ -66,7 +66,7 @@ from sabnzbd.filesystem import (
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
-from sabnzbd.sorting import Sorter
+from sabnzbd.sorting import SeriesAnalyzer
 
 # Regex globals
 RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
@@ -2135,25 +2135,9 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def analyse_show(name: str) -> Dict[str, str]:
+def analyse_show(job_name: str) -> Dict[str, str]:
     """Use the Sorter to collect some basic info on series"""
-    job = Sorter(
-        None,
-        name,
-        None,
-        None,
-        force=True,
-        sorter_config={
-            "name": "newsunpack__analyse_show",
-            "order": 0,
-            "min_size": -1,
-            "multipart_label": "",
-            "sort_string": "",
-            "sort_cats": [],  # Categories and types are ignored when using the force
-            "sort_type": [],
-            "is_active": 1,
-        },
-    )
+    job = SeriesAnalyzer(job_name)
     job.get_values()
     return {
         "title": job.info.get("title", ""),

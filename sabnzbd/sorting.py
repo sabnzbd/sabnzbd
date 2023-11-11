@@ -73,8 +73,8 @@ class Sorter:
         self,
         nzo: Optional[NzbObject],
         job_name: str,
-        path: str,
-        cat: str,
+        path: Optional[str] = None,
+        cat: Optional[str] = None,
         force: Optional[bool] = False,
         sorter_config: Optional[dict] = None,
     ):
@@ -96,6 +96,9 @@ class Sorter:
         self.is_season_pack = False
         self.season_pack_setname = ""
 
+        self.match_sorters()
+
+    def match_sorters(self):
         # If a sorter configuration is passed as an argument, only use that one
         sorters = [self.sorter_config] if self.sorter_config else config.get_ordered_sorters()
 
@@ -580,6 +583,16 @@ class Sorter:
             logging.debug("Cannot rename %s, new path %s already exists.", largest_file.get("name"), new_filepath)
 
         return move_to_parent_directory(base_path)
+
+
+class SeriesAnalyzer(Sorter):
+    def __init__(self, job_name: str):
+        """Very basic sorter that doesn't require a config"""
+        super().__init__(nzo=None, job_name=job_name)
+
+    def match_sorters(self):
+        """Much more basic matching"""
+        self.guess = guess_what(self.original_job_name)
 
 
 def ends_in_file(path: str) -> bool:
