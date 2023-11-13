@@ -630,20 +630,15 @@ class NzbObject(TryList):
         input_script = script
         input_priority = priority if priority != DEFAULT_PRIORITY else None
 
-        # Determine category and find pp/script values based on input
         # Later will be re-evaluated based on import steps
-        if pp is None:
-            r = u = d = None
-        else:
-            r, u, d = pp_to_opts(pp)
-
         self.priority: int = NORMAL_PRIORITY
         self.set_priority(priority)  # Parse priority of input
-        self.repair: bool = r  # True if we want to repair this set
-        self.unpack: bool = u  # True if we want to unpack this set
-        self.delete: bool = d  # True if we want to delete this set
+        self.repair: bool = True  # True if we want to repair this job
+        self.unpack: bool = True  # True if we want to unpack this job
+        self.delete: bool = True  # True if we want to delete this job
+        self.pp = pp  # Uses setter to set the values above!
         self.cat = cat  # User-set category
-        self.script: Optional[str] = None  # External script for this set
+        self.script: Optional[str] = None  # External script for this job
         if is_valid_script(script):
             self.script = script
 
@@ -678,15 +673,14 @@ class NzbObject(TryList):
         # The current status of the nzo eg:
         # Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.status: str = status
+
         self.avg_bps_freq = 0
         self.avg_bps_total = 0
 
         self.first_articles: List[Article] = []
         self.first_articles_count = 0
         self.saved_articles: Set[Article] = set()
-
         self.nzo_id: Optional[str] = None
-
         self.futuretype = futuretype
         self.removed_from_queue = False
         self.to_be_removed = False
@@ -817,9 +811,8 @@ class NzbObject(TryList):
             cat, pp, script = self.load_attribs()
 
         # Determine category and find pp/script values
-        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
+        self.cat, self.pp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
         self.set_priority(priority)
-        self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
 
         # Show first meta-password (if any), when there's no explicit password
         if not self.password and self.meta.get("password"):
@@ -828,17 +821,17 @@ class NzbObject(TryList):
         # Run user pre-queue script if set and valid
         if not reuse and make_script_path(cfg.pre_script()):
             # Call the script
-            accept, name, pp, cat_pp, script_pp, priority, group = sabnzbd.newsunpack.pre_queue(self, pp, cat)
+            accept, name, pq_pp, pq_cat, pq_script, pq_priority, pq_group = sabnzbd.newsunpack.pre_queue(self, pp, cat)
 
-            if cat_pp:
+            if pq_cat:
                 # An explicit pp/script/priority set upon adding the job takes precedence
                 # over an implicit setting based on the category set by pre-queue
-                if input_priority and not priority:
-                    priority = input_priority
-                if input_pp and not pp:
-                    pp = input_pp
-                if input_script and not script_pp:
-                    script_pp = input_script
+                if input_priority and not pq_priority:
+                    pq_priority = input_priority
+                if input_pp and not pq_pp:
+                    pq_pp = input_pp
+                if input_script and not pq_script:
+                    pq_script = input_script
 
             # Accept or reject
             accept = int_conv(accept)
@@ -854,24 +847,23 @@ class NzbObject(TryList):
             if name:
                 self.set_final_name_and_scan_password(name)
             try:
-                pp = int(pp)
+                pp = int(pq_pp)
             except:
                 pp = None
-            if cat_pp:
-                cat = cat_pp
+            if pq_cat:
+                cat = pq_cat
             try:
-                priority = int(priority)
+                priority = int(pq_priority)
             except:
                 priority = DEFAULT_PRIORITY
-            if script_pp and is_valid_script(script_pp):
-                script = script_pp
-            if group:
-                self.groups = [str(group)]
+            if pq_script and is_valid_script(pq_script):
+                script = pq_script
+            if pq_group:
+                self.groups = [str(pq_group)]
 
             # Re-evaluate results from pre-queue script
-            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
+            self.cat, self.pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
             self.set_priority(priority)
-            self.repair, self.unpack, self.delete = pp_to_opts(pp)
         else:
             accept = 1
 
@@ -1323,15 +1315,14 @@ class NzbObject(TryList):
                 self.bytes_par2 += nzf.bytes
 
     @property
-    def pp(self) -> Optional[int]:
-        if self.repair is None:
-            return None
-        else:
-            return opts_to_pp(self.repair, self.unpack, self.delete)
+    def pp(self) -> int:
+        return opts_to_pp(self.repair, self.unpack, self.delete)
 
-    def set_pp(self, value: int):
+    @pp.setter
+    def pp(self, value: Optional[int]):
+        # If set to None, it will be converted by pp_to_opts to 0 (do nothing)
         self.repair, self.unpack, self.delete = pp_to_opts(value)
-        logging.info("Set pp=%s for job %s", value, self.final_name)
+
         # Abort unpacking if not desired anymore
         if not self.unpack:
             self.abort_direct_unpacker()
@@ -1510,7 +1501,8 @@ class NzbObject(TryList):
 
     def abort_direct_unpacker(self):
         """Abort any running DirectUnpackers"""
-        if self.direct_unpacker:
+        # During nzo creation the property doesn't exist yet
+        if hasattr(self, "direct_unpacker") and self.direct_unpacker:
             self.direct_unpacker.abort()
 
     def check_availability_ratio(self):

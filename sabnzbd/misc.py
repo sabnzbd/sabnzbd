@@ -228,7 +228,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str
     return cat, pp, script, priority
 
 
-def pp_to_opts(pp: int) -> Tuple[bool, bool, bool]:
+def pp_to_opts(pp: Optional[int]) -> Tuple[bool, bool, bool]:
     """Convert numeric processing options to (repair, unpack, delete)"""
     # Convert the pp to an int
     pp = sabnzbd.interface.int_conv(pp)
