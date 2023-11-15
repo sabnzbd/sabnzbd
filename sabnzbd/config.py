@@ -60,6 +60,7 @@ RE_PARAMFINDER = re.compile(r"""'.*?'|".*?"|[^'",\s][^,]*""")
 
 client_ip_seen_and_logged = {}
 
+
 class Option:
     """Basic option class, basic fields"""
 

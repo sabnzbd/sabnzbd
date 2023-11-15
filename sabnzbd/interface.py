@@ -138,7 +138,6 @@ def secured_expose(
                 cherrypy.request.headers.get("User-Agent"),
             )
 
-
         if cfg.api_logging():
             # Log all requests
             logging.debug(
@@ -174,7 +173,6 @@ def secured_expose(
                     cherrypy.request.remote_label,
                     kwargs,
                 )
-
 
         # Add X-Frame-Headers headers to page-requests
         if cfg.x_frame_options():
