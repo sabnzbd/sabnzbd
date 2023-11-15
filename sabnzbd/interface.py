@@ -164,7 +164,7 @@ def secured_expose(
                         kwargs,
                     )
             except:
-                # IP never seen/registrered, so register and log
+                # IP never seen/registered, so register and log
                 config.client_ip_seen_and_logged[clientip] = currenttime
                 logging.debug(
                     "First time IP: Request %s %s from %s %s",
