@@ -138,8 +138,9 @@ def secured_expose(
                 cherrypy.request.headers.get("User-Agent"),
             )
 
-        # Log all requests
+
         if cfg.api_logging():
+            # Log all requests
             logging.debug(
                 "Request %s %s from %s %s",
                 cherrypy.request.method,
@@ -147,6 +148,33 @@ def secured_expose(
                 cherrypy.request.remote_label,
                 kwargs,
             )
+        else:
+            # log first occurrence of a client IP. And again after >= 1 hour
+            clientip = cherrypy.request.remote_label.split()[0]
+            currenttime = time.time()  # in seconds
+            try:
+                timeseen = config.client_ip_seen_and_logged[clientip]
+                # ... IP already seen and logged, so check how long ago:
+                if currenttime - timeseen > 3600:
+                    config.client_ip_seen_and_logged[clientip] = currenttime
+                    logging.debug(
+                        "Earlier seen IP: Request %s %s from %s %s",
+                        cherrypy.request.method,
+                        cherrypy.request.path_info,
+                        cherrypy.request.remote_label,
+                        kwargs,
+                    )
+            except:
+                # IP never seen/registrered, so register and log
+                config.client_ip_seen_and_logged[clientip] = currenttime
+                logging.debug(
+                    "First time IP: Request %s %s from %s %s",
+                    cherrypy.request.method,
+                    cherrypy.request.path_info,
+                    cherrypy.request.remote_label,
+                    kwargs,
+                )
+
 
         # Add X-Frame-Headers headers to page-requests
         if cfg.x_frame_options():
