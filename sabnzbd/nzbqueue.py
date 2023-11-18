@@ -270,7 +270,7 @@ class NzbQueue:
         result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
             if nzo_id in self.__nzo_table:
-                self.__nzo_table[nzo_id].pp = pp
+                self.__nzo_table[nzo_id].set_pp(pp)
                 result += 1
         return result
 
@@ -289,8 +289,9 @@ class NzbQueue:
         for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
             if nzo_id in self.__nzo_table:
                 nzo = self.__nzo_table[nzo_id]
-                nzo.cat, nzo.pp, nzo.script, prio = cat_to_opts(cat)
+                nzo.cat, pp, nzo.script, prio = cat_to_opts(cat)
                 logging.info("Set cat=%s for job %s", cat, nzo.final_name)
+                nzo.set_pp(pp)
                 self.set_priority(nzo_id, prio)
                 # Abort any ongoing unpacking if the category changed
                 nzo.abort_direct_unpacker()

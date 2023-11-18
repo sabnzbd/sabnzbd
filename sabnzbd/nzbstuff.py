@@ -630,15 +630,20 @@ class NzbObject(TryList):
         input_script = script
         input_priority = priority if priority != DEFAULT_PRIORITY else None
 
+        # Determine category and find pp/script values based on input
         # Later will be re-evaluated based on import steps
+        if pp is None:
+            r = u = d = None
+        else:
+            r, u, d = pp_to_opts(pp)
+
         self.priority: int = NORMAL_PRIORITY
         self.set_priority(priority)  # Parse priority of input
-        self.repair: bool = True  # True if we want to repair this job
-        self.unpack: bool = True  # True if we want to unpack this job
-        self.delete: bool = True  # True if we want to delete this job
-        self.pp = pp  # Uses setter to set the values above!
+        self.repair: bool = r  # True if we want to repair this set
+        self.unpack: bool = u  # True if we want to unpack this set
+        self.delete: bool = d  # True if we want to delete this set
         self.cat = cat  # User-set category
-        self.script: Optional[str] = None  # External script for this job
+        self.script: Optional[str] = None  # External script for this set
         if is_valid_script(script):
             self.script = script
 
@@ -811,8 +816,9 @@ class NzbObject(TryList):
             cat, pp, script = self.load_attribs()
 
         # Determine category and find pp/script values
-        self.cat, self.pp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
+        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
         self.set_priority(priority)
+        self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
 
         # Show first meta-password (if any), when there's no explicit password
         if not self.password and self.meta.get("password"):
@@ -862,8 +868,9 @@ class NzbObject(TryList):
                 self.groups = [str(pq_group)]
 
             # Re-evaluate results from pre-queue script
-            self.cat, self.pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
+            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
             self.set_priority(priority)
+            self.repair, self.unpack, self.delete = pp_to_opts(pp)
         else:
             accept = 1
 
@@ -1315,14 +1322,15 @@ class NzbObject(TryList):
                 self.bytes_par2 += nzf.bytes
 
     @property
-    def pp(self) -> int:
-        return opts_to_pp(self.repair, self.unpack, self.delete)
+    def pp(self) -> Optional[int]:
+        if self.repair is None:
+            return None
+        else:
+            return opts_to_pp(self.repair, self.unpack, self.delete)
 
-    @pp.setter
-    def pp(self, value: Optional[int]):
-        # If set to None, it will be converted by pp_to_opts to 0 (do nothing)
+    def set_pp(self, value: int):
         self.repair, self.unpack, self.delete = pp_to_opts(value)
-
+        logging.info("Set pp=%s for job %s", value, self.final_name)
         # Abort unpacking if not desired anymore
         if not self.unpack:
             self.abort_direct_unpacker()
