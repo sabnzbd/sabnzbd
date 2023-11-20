@@ -1349,7 +1349,6 @@ def main():
             "server.socket_host": cherryhost,
             "server.socket_port": cherryport,
             "server.shutdown_timeout": 0,
-            "log.screen": False,
             "engine.autoreload.on": False,
             "tools.encode.on": True,
             "tools.gzip.on": True,
@@ -1361,13 +1360,11 @@ def main():
     )
 
     # Do we want CherryPy Logging? Cannot be done via the config
+    cherrypy.log.screen = False
+    cherrypy.log.access_log.propagate = False
     if cherrypylogging:
         sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-        cherrypy.log.screen = True
-        cherrypy.log.access_log.propagate = True
         cherrypy.log.access_file = str(sabnzbd.WEBLOGFILE)
-    else:
-        cherrypy.log.access_log.propagate = False
 
     # Force mimetypes (OS might overwrite them)
     forced_mime_types = {"css": "text/css", "js": "application/javascript"}
