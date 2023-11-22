@@ -66,7 +66,7 @@ from sabnzbd.filesystem import (
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
-from sabnzbd.sorting import SeriesAnalyzer
+
 
 # Regex globals
 RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
@@ -2135,25 +2135,6 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def analyse_show(job_name: str) -> Dict[str, str]:
-    """Use the Sorter to collect some basic info on series"""
-    job = SeriesAnalyzer(job_name)
-    job.get_values()
-    return {
-        "title": job.info.get("title", ""),
-        "season": job.info.get("season_num", ""),
-        "episode": job.info.get("episode_num", ""),
-        "episode_name": job.info.get("ep_name", ""),
-        "is_proper": job.is_proper(),
-        "resolution": job.info.get("resolution", ""),
-        "decade": job.info.get("decade", ""),
-        "year": job.info.get("year", ""),
-        "month": job.info.get("month", ""),
-        "day": job.info.get("day", ""),
-        "job_type": job.type,
-    }
-
-
 def pre_queue(nzo: NzbObject, pp, cat):
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied separate since they can change.
@@ -2179,7 +2160,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(list(analyse_show(nzo.final_name_with_password).values()))
+        command.extend(list(sabnzbd.sorting.analyse_show(nzo.final_name).values()))
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly

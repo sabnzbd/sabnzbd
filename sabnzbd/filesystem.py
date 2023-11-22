@@ -1218,8 +1218,7 @@ def wait_for_download_folder():
 
 def backup_exists(filename: str) -> bool:
     """Return True if backup exists and no_dupes is set"""
-    path = sabnzbd.cfg.nzb_backup_dir.get_path()
-    return path and os.path.exists(os.path.join(path, filename + ".gz"))
+    return os.path.exists(os.path.join(sabnzbd.cfg.nzb_backup_dir.get_path(), filename + ".gz"))
 
 
 def backup_nzb(nzb_path: str):

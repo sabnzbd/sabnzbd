@@ -52,7 +52,7 @@ from sabnzbd.constants import (
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file, is_valid_script
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file
 
 if sabnzbd.WIN32:
     try:
@@ -798,12 +798,13 @@ def format_time_string(seconds: float) -> str:
     return " ".join(completestr)
 
 
-def int_conv(value: Any) -> int:
-    """Safe conversion to int (can handle None)"""
+def int_conv(value: Any, default: Any = 0) -> int:
+    """Safe conversion to int (can handle None)
+    Returns 0 or requested default value"""
     try:
         return int(value)
     except:
-        return 0
+        return default
 
 
 def create_https_certificates(ssl_cert, ssl_key):

@@ -108,6 +108,7 @@ import sabnzbd.articlecache
 import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
 import sabnzbd.notifier as notifier
+import sabnzbd.sorting
 from sabnzbd.decorators import synchronized
 import sabnzbd.utils.ssdp
 

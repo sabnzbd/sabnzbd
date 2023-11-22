@@ -167,9 +167,9 @@ class Status:
 
 class DuplicateStatus:
     DUPLICATE = "Duplicate"  # Simple duplicate
-    DUPLICATE_ALTERNATIVE = "Duplicate Alternative"  # Alternative duplicate for a job already in the queue
+    DUPLICATE_ALTERNATIVE = "Duplicate Alternative"  # Alternative duplicate for a queued job
     SERIES_DUPLICATE = "Series Duplicate"  # Simple Series duplicate
-    SERIES_DUPLICATE_ALTERNATIVE = "Series Duplicate"  # Alternative duplicate for a job already in the queue
+    SERIES_DUPLICATE_ALTERNATIVE = "Series Duplicate Alternative"  # Alternative duplicate for a queued job
 
 
 class AddNzbFileResult:
