@@ -506,6 +506,9 @@ function QueueModel(parent, data) {
 
     // MB's
     self.progressText = ko.pureComputed(function() {
+        if(self.isGrabbing()) {
+            return glitterTranslate.fetchingURL
+        }
         return (self.totalMB() - self.remainingMB()).toFixed(0) + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
     })
 
