@@ -1144,6 +1144,18 @@ msgstr "Ошибка загрузки %s: обнаружен повреждён�
 msgid "NZB added to queue"
 msgstr "NZB-файл добавлен в очередь"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Пропущен повторяющийся NZB-файл «%s»"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1157,26 +1169,6 @@ msgstr "Пустой NZB-файл %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Пропущен повторяющийся NZB-файл «%s»"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Приостановлен повторяющийся NZB-файл «%s»"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1195,6 +1187,10 @@ msgstr "Ошибка импорта %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "ПОВТОР"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1240,6 +1236,10 @@ msgstr "%s статей отсутствует"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s статей содержат несовпадающие повторы"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Приостановлен повторяющийся NZB-файл «%s»"
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

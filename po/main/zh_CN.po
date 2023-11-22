@@ -1133,6 +1133,18 @@ msgstr "无法加载 %s，侦测到损坏文件"
 msgid "NZB added to queue"
 msgstr "NZB 已添加到队列"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "正在忽略重复 NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "失败于重复的 NZB 文件 \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "重复的 NZB 文件"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1146,26 +1158,6 @@ msgstr "空 NZB 文件 %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr "预队列脚本将任务标记为失败的"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "正在忽略重复 NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "失败于重复的 NZB 文件 \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "重复的 NZB 文件"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "正在暂停重复 NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1184,6 +1176,10 @@ msgstr "导入 %s 出错"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "*重复*"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1229,6 +1225,10 @@ msgstr "%s 篇文章缺失"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s 篇文章存在未匹配的重复"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "正在暂停重复 NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

@@ -1144,6 +1144,18 @@ msgstr "Laddningsfel %s, felaktig fil detekterad"
 msgid "NZB added to queue"
 msgstr "NZB tillagd i kön"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorerar dubblett för NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1157,26 +1169,6 @@ msgstr "NZB filen %s är tom"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorerar dubblett för NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Pausar dubblett för NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1195,6 +1187,10 @@ msgstr "Det gick inte att importera %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUBLETT"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1240,6 +1236,10 @@ msgstr "%s artiklar saknades"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artiklar hade icke-matchande dubletter"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pausar dubblett för NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

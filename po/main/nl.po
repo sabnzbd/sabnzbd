@@ -1189,6 +1189,18 @@ msgstr "Fout bij inladen van %s, corrupt bestand gevonden"
 msgid "NZB added to queue"
 msgstr "Download aan wachtrij toegevoegd"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Dubbele download \"%s\" overgeslagen"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Download '%s' geweigerd omdat het een dubbele is"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "Dubbele download"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1202,26 +1214,6 @@ msgstr "NZB-bestand %s is leeg"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr "Wachtrij filter script heeft de download afgekeurd"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Dubbele download \"%s\" overgeslagen"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Download '%s' geweigerd omdat het een dubbele is"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Dubbele download"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Dubbele download \"%s\" gepauzeerd"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1240,6 +1232,10 @@ msgstr "Fout bij importeren van %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUBBEL"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1285,6 +1281,10 @@ msgstr "%s artikelen ontbreken"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikelen hadden afwijkende duplicaten"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Dubbele download \"%s\" gepauzeerd"
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

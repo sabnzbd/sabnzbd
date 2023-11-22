@@ -1153,6 +1153,18 @@ msgstr "Downloadnings fejl %s, ødelagt fil fundet"
 msgid "NZB added to queue"
 msgstr "NZB tilføjet i køen"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorerer identiske NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Fejler dublet NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "Dublet NZB"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1166,26 +1178,6 @@ msgstr "Tom NZB fil %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr "Før-kø script job markeret som mislykkedet"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorerer identiske NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Fejler dublet NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Dublet NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Pause duplikeret NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1204,6 +1196,10 @@ msgstr "Det lykkedes ikke at importere %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLIKERE"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1249,6 +1245,10 @@ msgstr "%s artikler manglede"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikler havde ikke-matchende dubletter"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pause duplikeret NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

@@ -1203,6 +1203,18 @@ msgstr "Fehler beim Laden von %s. Beschädigte Datei gefunden."
 msgid "NZB added to queue"
 msgstr "NZB zur Warteschlange hinzugefügt"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Doppelte NZB \"%s\" wird ignoriert"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "kopieren der NZB \"%s\" fehlgeschlagen"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "Doppelte NZB"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1221,26 +1233,6 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Doppelte NZB \"%s\" wird ignoriert"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "kopieren der NZB \"%s\" fehlgeschlagen"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Doppelte NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Doppelt vorhandene NZB \"%s\" angehalten"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
 msgid "Unwanted Extension in file %s (%s)"
 msgstr "Ungewollte Dateiendung in der Datei %s (%s)"
 
@@ -1256,6 +1248,10 @@ msgstr "Fehler beim Importieren von %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLIKAT"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1302,6 +1298,10 @@ msgstr "%s Artikel fehlten"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s Artikel hatten nicht übereinstimmende Duplikate"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Doppelt vorhandene NZB \"%s\" angehalten"
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

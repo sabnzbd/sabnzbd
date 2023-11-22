@@ -1203,6 +1203,18 @@ msgstr "Erreur lors du chargement de %s, fichier corrompu détecté"
 msgid "NZB added to queue"
 msgstr "NZB ajouté à la file d'attente"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Doublon NZB ignoré \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Échec de duplication du NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "Dupliquer NZB"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1216,26 +1228,6 @@ msgstr "Fichier NZB %s vide"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr "Le script de pré-file d'attente a marqué la tâche comme échouée"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Doublon NZB ignoré \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Échec de duplication du NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Dupliquer NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Mise en pause du doublon NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1254,6 +1246,10 @@ msgstr "Erreur lors de l'importation de %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DOUBLON"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1299,6 +1295,10 @@ msgstr "%s articles manquants"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articles avec doublons sans correspondance"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Mise en pause du doublon NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

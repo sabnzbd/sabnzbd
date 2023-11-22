@@ -1082,6 +1082,18 @@ msgstr ""
 msgid "NZB added to queue"
 msgstr ""
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1094,26 +1106,6 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
 #. Warning message
@@ -1132,6 +1124,10 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
 msgstr ""
 
 #: sabnzbd/nzbstuff.py
@@ -1177,6 +1173,10 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
 #. Footer: indicator of warnings

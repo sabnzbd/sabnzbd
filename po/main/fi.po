@@ -1147,6 +1147,18 @@ msgstr "Virhe ladattaessa %s, korruptoitunut tiedosto havaittu"
 msgid "NZB added to queue"
 msgstr "NZB lisätty jonoon"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1160,26 +1172,6 @@ msgstr "Tyhjä NZB tiedosto %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1198,6 +1190,10 @@ msgstr "Virhe tuotaessa %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "KAKSOISKAPPALE"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1243,6 +1239,10 @@ msgstr "%s artikkelia puuttui"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikkelissa oli ei-vastaavia kaksoiskappaleita"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

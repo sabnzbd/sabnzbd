@@ -1150,6 +1150,18 @@ msgstr "שגיאה בטעינת %s, קובץ פגום התגלה"
 msgid "NZB added to queue"
 msgstr "NZB התווסף לתור"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "מתעלם מן NZB כפול \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "מכשיל NZB כפול \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "NZB כפול"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1163,26 +1175,6 @@ msgstr "קובץ NZB ריק %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr "תסריט קדם־תור סומן כנכשל"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "מתעלם מן NZB כפול \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "מכשיל NZB כפול \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "NZB כפול"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "משהה NZB כפול \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1201,6 +1193,10 @@ msgstr "שגיאה ביבוא %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "כפול"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1246,6 +1242,10 @@ msgstr "%s מאמרים היו חסרים"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "אל %s מאמרים יש כפילויות בלתי תואמות"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "משהה NZB כפול \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
