@@ -587,9 +587,10 @@ class TestAddingNZBs:
         assert job["priority"] == ALL_PRIOS.get(expected_prio)
         if expected_prio == FORCE_PRIORITY:
             assert "DUPLICATE" not in job["labels"]
+            assert "ALTERNATIVE" not in job["labels"]
             assert job["status"] == "Downloading"
         else:
-            assert "DUPLICATE" in job["labels"]
+            assert "ALTERNATIVE" in job["labels"]
             assert job["status"] == "Paused"
 
         self._clear_and_reset_backup_directory(backup_dir)

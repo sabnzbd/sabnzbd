@@ -465,13 +465,8 @@ def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_ou
     # Reuse the old 'report' column to indicate a URL-fetch
     report = "future" if nzo.futuretype else ""
 
-    # Analyze series info only when job is finished
-    series = ""
-    show_analysis = sabnzbd.newsunpack.analyse_show(nzo.final_name)
-    if show_analysis["job_type"] == "tv":
-        seriesname, season, episode = (show_analysis[key] for key in ("title", "season", "episode"))
-        if seriesname and season and episode:
-            series = "%s/%s/%s" % (seriesname.lower(), season, episode)
+    # Make sure we have the duplicate key
+    nzo.set_duplicate_series_key()
 
     return (
         completed,
@@ -495,7 +490,7 @@ def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_ou
         nzo.fail_msg,
         url_info,
         nzo.bytes_downloaded,
-        series,
+        nzo.duplicate_series_key,
         nzo.md5sum,
         nzo.correct_password,
     )

@@ -26,7 +26,7 @@ import cherrypy._cpreqbody
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
-from sabnzbd.nzbstuff import NzbObject, Article, NzbRejected, NzbRejectToHistory
+from sabnzbd.nzbstuff import NzbObject, Article
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower, duplicate_warning
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
 from sabnzbd.nzbparser import process_single_nzb
@@ -37,7 +37,6 @@ from sabnzbd.constants import (
     QUEUE_VERSION,
     FUTURE_Q_FOLDER,
     JOB_ADMIN,
-    DEFAULT_PRIORITY,
     LOW_PRIORITY,
     HIGH_PRIORITY,
     FORCE_PRIORITY,
@@ -953,8 +952,11 @@ class NzbQueue:
         in the queue or the post-processing queue"""
         lname = name.lower()
         for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
-            if nzo.final_name.lower() == lname or nzo.md5sum == md5sum:
-                return True
+            # Skip any jobs already marked as duplicate, to prevent double-triggers
+            if not nzo.duplicate:
+                # URL's do not have an MD5!
+                if nzo.final_name.lower() == lname or (nzo.md5sum and md5sum and nzo.md5sum == md5sum):
+                    return True
         return False
 
     @NzbQueueLocker
@@ -962,8 +964,10 @@ class NzbQueue:
         """Check whether this episode of the series is already
         in the queue or the post-processing queue"""
         for nzo in self.__nzo_list:
-            if nzo.duplicate_series_key == series_key:
-                return True
+            # Skip any jobs already marked as duplicate, to prevent double-triggers
+            if not nzo.duplicate:
+                if nzo.duplicate_series_key == series_key:
+                    return True
         return False
 
     @NzbQueueLocker
@@ -978,13 +982,18 @@ class NzbQueue:
             if not nzo.duplicate:
                 continue
 
-            if (nzo.final_name.lower() == finished_nzo.final_name.lower() or nzo.md5sum == finished_nzo.md5sum) or (
+            # URL's do not have an MD5!
+            if (
+                nzo.final_name.lower() == finished_nzo.final_name.lower()
+                or (nzo.md5sum and finished_nzo.md5sum and nzo.md5sum == finished_nzo.md5sum)
+            ) or (
                 nzo.duplicate_series_key
                 and finished_nzo.duplicate_series_key
                 and nzo.duplicate_series_key == finished_nzo.duplicate_series_key
             ):
                 # Start the next alternative
                 if not success:
+                    logging.info("Resuming duplicate alternative %s for ", nzo.final_name, finished_nzo.final_name)
                     nzo.duplicate = None
                     nzo.resume()
                     return
@@ -1006,6 +1015,7 @@ class NzbQueue:
                     self.fail_to_history(nzo)
                 else:
                     # Action set to Pause or Tag, so only adjust the label on the first matching job
+                    logging.info("Re-tagging duplicate alternative %s for %s", nzo.final_name, finished_nzo.final_name)
                     if nzo.duplicate == DuplicateStatus.DUPLICATE_ALTERNATIVE:
                         nzo.duplicate = DuplicateStatus.DUPLICATE
                     else:

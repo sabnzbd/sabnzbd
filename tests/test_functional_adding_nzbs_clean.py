@@ -18,9 +18,10 @@
 """
 tests.test_functional_adding_nzbs_clean - Tests for settings interaction when adding NZBs (clean SABnzbd instance)
 """
-
+import time
 from zipfile import ZipFile
 import tests.test_functional_adding_nzbs as test_functional_adding_nzbs
+from sabnzbd.constants import STOP_PRIORITY
 from tests.testhelper import *
 
 
@@ -43,32 +44,42 @@ class TestAddingNZBsClean:
 
         # Test for both normal and zipped version
         for nzbfile in (basenzbfile, zipnzbfile):
-            # Add backup directory for duplicate detection
-            backup_dir = self._add_backup_directory()
+            # Pause the queue at first
+            assert get_api_result(mode="pause")["status"] is True
 
             # Add the job a first time
-            job = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
-            assert job["status"]
-            assert job["nzo_ids"]
+            job1 = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
+            assert job1["status"]
+            assert job1["nzo_ids"]
 
-            # 1=Discard, should return False and no nzo_ids
+            # 1=Discard
             self._api_set_config("no_dupes", 1)
 
-            # Add the job a second time
-            job = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
-            assert not job["status"]
-            assert not job["nzo_ids"]
+            # Add the job a second time, it should be added with ALTERNATIVE label
+            job2 = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
+            assert job2["status"]
+            assert job2["nzo_ids"]
+            queue = get_api_result(mode="queue", extra_arguments={"nzo_ids": job2["nzo_ids"][0]})
+            job_in_queue = queue["queue"]["slots"][0]
+            assert "ALTERNATIVE" in job_in_queue["labels"]
+            assert job_in_queue["status"] == "Paused"
 
-            # 3=Fail to history, should return True and nzo_ids
-            self._api_set_config("no_dupes", 3)
-            job = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
-            assert job["status"]
-            assert job["nzo_ids"]
-            time.sleep(1)
-            assert not get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]["slots"]
-            assert get_api_result(mode="history", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["history"]["slots"]
+            # Stop the first job
+            get_api_result(
+                mode="queue", extra_arguments={"name": "priority", "value": job1["nzo_ids"][0], "value2": STOP_PRIORITY}
+            )
 
-            # Reset
+            # Wait for the job to be removed
+            time.sleep(2)
+            assert get_api_result(mode="history", extra_arguments={"nzo_ids": job1["nzo_ids"][0]})["history"]["slots"]
+
+            # Now the second job should no longer be paused and labelled
+            queue = get_api_result(mode="queue", extra_arguments={"nzo_ids": job2["nzo_ids"][0]})
+            job_in_queue = queue["queue"]["slots"][0]
+            assert "ALTERNATIVE" not in job_in_queue["labels"]
+            assert job_in_queue["status"] == "Queued"
+
+            # Reset duplicate detection
             self._api_set_config("no_dupes", 0)
 
             # Test unwanted extensions Fail to history
@@ -86,4 +97,7 @@ class TestAddingNZBsClean:
                 mode="set_config_default",
                 extra_arguments={"keyword": ["unwanted_extensions", "action_on_unwanted_extensions"]},
             )
-            self._clear_and_reset_backup_directory(backup_dir)
+
+            # Delete all jobs from queue and history
+            for mode in ("queue", "history"):
+                get_api_result(mode=mode, extra_arguments={"name": "delete", "value": "all", "del_files": 1})

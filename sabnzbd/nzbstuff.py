@@ -514,8 +514,9 @@ class NzbRejected(Exception):
 
 
 class NzbRejectToHistory(Exception):
-    def __init__(self, nzo):
+    def __init__(self, nzo, fail_msg):
         self.nzo: NzbObject = nzo
+        self.nzo.fail_msg = fail_msg
         super().__init__()
 
 
@@ -852,8 +853,7 @@ class NzbObject(TryList):
                 self.purge_data()
                 raise NzbRejected
             if accept == 2:
-                self.fail_msg = T("Pre-queue script marked job as failed")
-                raise NzbRejectToHistory(self)
+                raise NzbRejectToHistory(self, T("Pre-queue script marked job as failed"))
 
             # Process all options, only over-write if set by script
             # Beware that cannot do "if priority/pp", because those can
@@ -879,7 +879,6 @@ class NzbObject(TryList):
             self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
             self.set_priority(priority)
             self.repair, self.unpack, self.delete = pp_to_opts(pp)
-   
 
         # Pause if requested by the NZB-adding or the pre-queue script
         if self.priority == PAUSED_PRIORITY:
@@ -909,8 +908,7 @@ class NzbObject(TryList):
                         self.pause()
                     if cfg.action_on_unwanted_extensions() == 2:
                         logging.debug("Unwanted extension ... aborting")
-                        self.fail_msg = T("Aborted, unwanted extension detected")
-                        raise NzbRejectToHistory(self)
+                        raise NzbRejectToHistory(self, T("Aborted, unwanted extension detected"))
 
         if reuse:
             self.check_existing_files(self.download_path)
@@ -1887,13 +1885,24 @@ class NzbObject(TryList):
             else:
                 nzf_ids.remove(nzf_id)
 
+    def set_duplicate_series_key(self):
+        """Shorthand to set the key once"""
+        if not self.duplicate_series_key:
+            show_analysis = sabnzbd.sorting.analyse_show(self.final_name)
+            if show_analysis["job_type"] == "tv":
+                series, season, episode, is_proper = (
+                    show_analysis[key] for key in ("title", "season", "episode", "is_proper")
+                )
+                # Ignore proper results if not desired
+                if not cfg.series_propercheck():
+                    is_proper = False
+
+                # We allow 1 proper result to bypass duplicate detection
+                self.duplicate_series_key = f"{series.lower()}/{season}/{episode}{f'/{is_proper}' if is_proper else ''}"
+
     def duplicate_check(self):
         """Set the correct duplicate status"""
         if not cfg.no_dupes() and not cfg.no_series_dupes():
-            return
-
-        # If the job is forced in any way, skip duplicate check
-        if self.priority == FORCE_PRIORITY:
             return
 
         duplicate_in_history = series_duplicate_in_history = False
@@ -1909,30 +1918,23 @@ class NzbObject(TryList):
 
                 if not duplicate_in_history and cfg.backup_for_duplicates():
                     duplicate_in_history = backup_exists(self.filename)
-                    logging.debug("Duplicate in backup (%s): %s", self.filename, duplicate_in_history)
+                    logging.debug("Duplicate in backup: %s", duplicate_in_history)
 
                 duplicate_in_queue = sabnzbd.NzbQueue.have_name_or_md5sum(self.final_name, self.md5sum)
                 logging.debug("Duplicate in queue: %s", duplicate_in_queue)
 
             # Dupe check off nzb filename
             if not duplicate_in_history and not duplicate_in_queue and cfg.no_series_dupes():
-                show_analysis = sabnzbd.newsunpack.analyse_show(self.final_name)
-                series, season, episode, is_proper = (
-                    show_analysis[key] for key in ("title", "season", "episode", "is_proper")
-                )
-                # Ignore proper results if not desired
-                if not cfg.series_propercheck():
-                    is_proper = False
+                logging.debug("Duplicate episode checking (%s): %s", self.final_name, self.duplicate_series_key)
+                self.set_duplicate_series_key()
+                if self.duplicate_series_key:
+                    series_duplicate_in_history = history_db.have_episode(self.duplicate_series_key)
+                    logging.debug("Duplicate episode in history: %s", series_duplicate_in_history)
 
-                # We allow 1 proper result to bypass duplicate detection
-                self.duplicate_series_key = f"{series.lower()}/{season}/{episode}{f'/{is_proper}' if is_proper else ''}"
-                logging.debug("Duplicate checking (%s): %s", self.final_name, self.duplicate_series_key)
-
-                series_duplicate_in_history = history_db.have_episode(self.duplicate_series_key)
-                logging.debug("Duplicate in history: %s", series_duplicate_in_history)
-
-                series_duplicate_in_queue = sabnzbd.NzbQueue.have_episode(self.duplicate_series_key)
-                logging.debug("Duplicate in queue: %s", series_duplicate_in_queue)
+                    series_duplicate_in_queue = sabnzbd.NzbQueue.have_episode(self.duplicate_series_key)
+                    logging.debug("Duplicate episode in queue: %s", series_duplicate_in_queue)
+                else:
+                    logging.debug("Not an episode, skipping duplicate episode check")
 
         # Set the correct status
         if series_duplicate_in_queue:
@@ -1965,8 +1967,7 @@ class NzbObject(TryList):
             elif (not series_duplicate and cfg.no_dupes() == 3) or (series_duplicate and cfg.no_series_dupes() == 3):
                 # Fail (move to History)
                 duplicate_warning(T('Failing duplicate NZB "%s"'), self.final_name)
-                self.fail_msg = T("Duplicate NZB")
-                raise NzbRejectToHistory(self)
+                raise NzbRejectToHistory(self, T("Duplicate NZB"))
             elif (not series_duplicate and cfg.no_dupes() == 2) or (series_duplicate and cfg.no_series_dupes() == 2):
                 # Pause
                 duplicate_warning(T('Pausing duplicate NZB "%s"'), self.final_name)

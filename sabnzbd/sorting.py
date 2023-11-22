@@ -263,7 +263,7 @@ class Sorter:
             except TypeError:
                 pass
 
-    def is_proper(self):
+    def is_proper(self) -> bool:
         """Determine if the release is tagged 'Proper'. Note that guessit also sets this for similar
         tags such as 'Real' and 'Repack', saving us the trouble of checking for additional keywords."""
         if not self.guess:
@@ -593,6 +593,30 @@ class SeriesAnalyzer(Sorter):
     def match_sorters(self):
         """Much more basic matching"""
         self.guess = guess_what(self.original_job_name)
+
+        # Set the detected job type
+        self.type = self.guess["type"]
+        if self.guess["type"] == "episode":
+            self.type = "date" if self.guess.get("date") else "tv"
+
+
+def analyse_show(job_name: str) -> Dict[str, str]:
+    """Use the Sorter to collect some basic info on series"""
+    job = SeriesAnalyzer(job_name)
+    job.get_values()
+    return {
+        "title": job.info.get("title", ""),
+        "season": job.info.get("season_num", ""),
+        "episode": job.info.get("episode_num", ""),
+        "episode_name": job.info.get("ep_name", ""),
+        "is_proper": job.is_proper(),
+        "resolution": job.info.get("resolution", ""),
+        "decade": job.info.get("decade", ""),
+        "year": job.info.get("year", ""),
+        "month": job.info.get("month", ""),
+        "day": job.info.get("day", ""),
+        "job_type": job.type,
+    }
 
 
 def ends_in_file(path: str) -> bool:
