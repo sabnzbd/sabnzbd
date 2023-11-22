@@ -174,9 +174,17 @@ class TestAddingNZBs:
         try:
             script_path = os.path.join(VAR.SCRIPT_DIR, script_name)
             with open(script_path, "w") as f:
-                # line 1 = accept; 4 = category; 6 = priority
+                # Lines:
+                # 1: Accept
+                # 2: Name
+                # 3: Category
+                # 4: Priority
+                # 5: Post-processing
+                # 6: Script
+                # 7: Duplicate
+                # 8: Duplicate key
                 f.write(
-                    "#!%s\n\nprint('1\\n\\n\\n%s\\n\\n%s\\n')"
+                    "#!%s\n\nprint('1\\n\\n%s\\n%s\\n')"
                     % (
                         sys.executable,
                         (category if category else ""),
@@ -406,8 +414,8 @@ class TestAddingNZBs:
     @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
     @pytest.mark.parametrize("prio_add", sample(PRIO_OPTS_ADD, 3))
     @pytest.mark.parametrize("prio_add_cat", sample(PRIO_OPTS_ADD_CAT, 2))
-    @pytest.mark.parametrize("prio_preq", sample(PRIO_OPTS_PREQ, 2))
-    @pytest.mark.parametrize("prio_preq_cat", sample(PRIO_OPTS_PREQ_CAT, 2))
+    @pytest.mark.parametrize("prio_preq", PRIO_OPTS_PREQ)
+    @pytest.mark.parametrize("prio_preq_cat", PRIO_OPTS_PREQ_CAT)
     def test_adding_nzbs_priority_sample(
         self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat
     ):

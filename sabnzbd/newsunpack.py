@@ -36,7 +36,6 @@ import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import (
     format_time_string,
     find_on_path,
-    int_conv,
     get_all_passwords,
     calc_age,
     cmp,
@@ -45,7 +44,6 @@ from sabnzbd.misc import (
     format_time_left,
 )
 from sabnzbd.filesystem import (
-    make_script_path,
     real_path,
     globber,
     globber_full,
@@ -2133,89 +2131,6 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     if time_used > 10:
         return " - %s %s" % (format_time_left(int((100 - perc) / (perc / time_used)), short_format=True), T("left"))
     return ""
-
-
-def pre_queue(nzo: NzbObject, pp, cat):
-    """Run pre-queue script (if any) and process results.
-    pp and cat are supplied separate since they can change.
-    """
-
-    def fix(p):
-        # If added via API, some items can still be "None" (as a string)
-        if not p or str(p).lower() == "none":
-            return ""
-        return str(p)
-
-    values = [1, nzo.final_name_with_password, pp, cat, nzo.script, nzo.priority, None]
-    script_path = make_script_path(cfg.pre_script())
-    if script_path:
-        # Basic command-line parameters
-        command = [
-            script_path,
-            nzo.final_name_with_password,
-            pp,
-            cat,
-            nzo.script,
-            nzo.priority,
-            str(nzo.bytes),
-            " ".join(nzo.groups),
-        ]
-        command.extend(list(sabnzbd.sorting.analyse_show(nzo.final_name).values()))
-        command = [fix(arg) for arg in command]
-
-        # Fields not in the NZO directly
-        extra_env_fields = {
-            "groups": " ".join(nzo.groups),
-            "show_name": command[8],
-            "show_season": command[9],
-            "show_episode": command[10],
-            "show_episode_name": command[11],
-            "proper": command[12],
-            "resolution": command[13],
-            "decade": command[14],
-            "year": command[15],
-            "month": command[16],
-            "day": command[17],
-            "type": command[18],
-        }
-
-        try:
-            p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
-        except:
-            logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
-            return values
-
-        output = p.stdout.read()
-        ret = p.wait()
-        logging.info("Pre-queue script returned %s and output=\n%s", ret, output)
-        if ret == 0:
-            split_output = output.splitlines()
-            try:
-                # Extract category line from pre-queue output
-                pre_queue_category = split_output[3].strip(" '\"")
-            except IndexError:
-                pre_queue_category = None
-
-            for index, line in enumerate(split_output):
-                line = line.strip(" '\"")
-                if index < len(values):
-                    if line:
-                        values[index] = line
-                    elif pre_queue_category and index in (2, 4, 5):
-                        # Preserve empty pp, script, and priority lines to prevent
-                        # pre-existing values from overriding category-based settings
-                        values[index] = ""
-
-        accept = int_conv(values[0])
-        if accept < 1:
-            logging.info("Pre-Q refuses %s", nzo.final_name)
-        elif accept == 2:
-            logging.info("Pre-Q accepts&fails %s", nzo.final_name)
-        else:
-            logging.info("Pre-Q accepts %s", nzo.final_name)
-
-    return values
-
 
 def is_sevenfile(path: str) -> bool:
     """Return True if path has 7Zip-signature and 7Zip is detected"""

@@ -826,59 +826,15 @@ class NzbObject(TryList):
         # Determine category and find pp/script values
         self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
         self.set_priority(priority)
-        self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
+        self.set_pp(pp_tmp)
 
         # Show first meta-password (if any), when there's no explicit password
         if not self.password and self.meta.get("password"):
             self.password = self.meta.get("password", [None])[0]
 
-        # Run user pre-queue script if set and valid
-        if not reuse and make_script_path(cfg.pre_script()):
-            # Call the script
-            accept, name, pq_pp, pq_cat, pq_script, pq_priority, pq_group = sabnzbd.newsunpack.pre_queue(self, pp, cat)
-
-            if pq_cat:
-                # An explicit pp/script/priority set upon adding the job takes precedence
-                # over an implicit setting based on the category set by pre-queue
-                if input_priority and not pq_priority:
-                    pq_priority = input_priority
-                if input_pp and not pq_pp:
-                    pq_pp = input_pp
-                if input_script and not pq_script:
-                    pq_script = input_script
-
-            # Accept or reject
-            accept = int_conv(accept)
-            if accept < 1:
-                self.purge_data()
-                raise NzbRejected
-            if accept == 2:
-                raise NzbRejectToHistory(self, T("Pre-queue script marked job as failed"))
-
-            # Process all options, only over-write if set by script
-            # Beware that cannot do "if priority/pp", because those can
-            # also have a valid value of 0, which shouldn't be ignored
-            if name:
-                self.set_final_name_and_scan_password(name)
-            try:
-                pp = int(pq_pp)
-            except:
-                pp = None
-            if pq_cat:
-                cat = pq_cat
-            try:
-                priority = int(pq_priority)
-            except:
-                priority = DEFAULT_PRIORITY
-            if pq_script and is_valid_script(pq_script):
-                script = pq_script
-            if pq_group:
-                self.groups = [str(pq_group)]
-
-            # Re-evaluate results from pre-queue script
-            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
-            self.set_priority(priority)
-            self.repair, self.unpack, self.delete = pp_to_opts(pp)
+        # Run user pre-queue script
+        if not reuse:
+            self.run_pre_queue(input_priority, input_pp, input_script)
 
         # Pause if requested by the NZB-adding or the pre-queue script
         if self.priority == PAUSED_PRIORITY:
@@ -1980,6 +1936,96 @@ class NzbObject(TryList):
         if self.duplicate in (DuplicateStatus.DUPLICATE_ALTERNATIVE, DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE):
             logging.info("Pausing duplicate alternative %s", self.final_name)
             self.pause()
+
+    def run_pre_queue(
+        self,
+        input_priority: Optional[Union[int, str]],
+        input_pp: Optional[int],
+        input_script: Optional[str],
+    ):
+        """Run pre-queue script (if any) and process results."""
+        if script_path := make_script_path(cfg.pre_script()):
+
+            def fix_parameter(parameter: Any) -> str:
+                # If added via API, some items can still be "None" (as a string)
+                if not parameter or str(parameter).lower() == "none":
+                    return ""
+                return str(parameter)
+
+            # Basic parameters
+            command = [script_path, self.final_name_with_password, self.cat, self.priority, self.pp, self.script]
+            command = [fix_parameter(arg) for arg in command]
+
+            # Fields not in the NZO directly
+            extra_env_fields = sabnzbd.newsunpack.analyse_show(self.final_name_with_password)
+            extra_env_fields["groups"] = " ".join(self.groups)
+
+            try:
+                p = sabnzbd.newsunpack.build_and_run_command(
+                    command, env=sabnzbd.newsunpack.create_env(self, extra_env_fields)
+                )
+            except:
+                logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
+                return
+
+            output = p.stdout.read()
+            ret = p.wait()
+            logging.info("Pre-queue script returned %s and output=\n%s", ret, output)
+            if ret == 0:
+                # Base values
+                pq_cat = pq_pp = pq_script = pq_priority = None
+                for index, line in enumerate(output.splitlines(), start=1):
+                    # Make sure to keep this in line with the documentation!
+                    # 1: Accept
+                    # 2: Name
+                    # 3: Category
+                    # 4: Priority
+                    # 5: Post-processing
+                    # 6: Script
+                    # 7: Duplicate
+                    # 8: Duplicate key
+                    if line := line.strip(" '\""):
+                        if index == 1:
+                            # Accept or reject
+                            accept = int_conv(line)
+                            if accept < 1:
+                                logging.info("Pre-queue script refuses %s", self.final_name)
+                                self.purge_data()
+                                raise NzbRejected
+                            if accept == 2:
+                                logging.info("Pre-queue marking as failed %s", self.final_name)
+                                raise NzbRejectToHistory(self, T("Pre-queue script marked job as failed"))
+                            logging.info("Pre-queue accepts %s", self.final_name)
+                        elif index == 2:
+                            self.set_final_name_and_scan_password(line)
+                        elif index == 3:
+                            pq_cat = line
+                        elif index == 4:
+                            pq_priority = int_conv(line, default=DEFAULT_PRIORITY)
+                        elif index == 5:
+                            pq_pp = int_conv(line, default=None)
+                        elif index == 6:
+                            if is_valid_script(line):
+                                pq_script = line
+                        elif index == 7:
+                            self.duplicate = line
+                        elif index == 8:
+                            self.duplicate_series_key = line
+
+                if pq_cat:
+                    # An explicit pp/script/priority set upon adding the job takes precedence
+                    # over an implicit setting based on the category set by pre-queue
+                    if input_priority and pq_priority is None:
+                        pq_priority = input_priority
+                    if input_pp and pq_pp is None:
+                        pq_pp = input_pp
+                    if input_script and not pq_script:
+                        pq_script = input_script
+
+                # Re-evaluate results from pre-queue script
+                self.cat, pp, self.script, priority = cat_to_opts(pq_cat, pq_pp, pq_script, pq_priority)
+                self.set_priority(priority)
+                self.set_pp(pp)
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
