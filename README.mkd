@@ -1,10 +1,14 @@
-Release Notes - SABnzbd 4.2.0 Alpha 2
+Release Notes - SABnzbd 4.2.0 Alpha 3
 =========================================================
 
 ## Changes since 4.1.0
+- Duplicate workflow was improved to also detect jobs still in
+  the queue. See description for `Detect duplicate downloads`:
+  https://sabnzbd.org/wiki/configuration/4.2/switches
 - Numerous smaller performance improvements were made.
 - Reduced recursive unpacking to 2 levels, instead of 5.
-- IPv6 addresses are preferred during server address selection.
+- Server IP-address selection was optimized.
+- The `On queue finish script` is now set in Switches.
 - Stricter check if `Complete Folder` is inside `Download Folder`.
 - Windows: Reduced size of installer.
 - Windows/macOS: Updated to Python 3.12.
@@ -12,6 +16,7 @@ Release Notes - SABnzbd 4.2.0 Alpha 2
 ## Bugfixes since 4.1.0
 - Multi-select in the queue was broken for some users.
 - Prevent crash during saving of configuration.
+- If `weblogging` was enabled, output was also written to regular log.
 - Removing a failed download from the history could break active downloads.
 
 ## Upgrade notices
