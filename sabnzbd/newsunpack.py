@@ -2160,23 +2160,23 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(list(sabnzbd.sorting.analyse_show(nzo.final_name).values()))
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly
+        show_analysis = sabnzbd.sorting.BasicAnalyzer(nzo.final_name)
         extra_env_fields = {
             "groups": " ".join(nzo.groups),
-            "show_name": command[8],
-            "show_season": command[9],
-            "show_episode": command[10],
-            "show_episode_name": command[11],
-            "proper": command[12],
-            "resolution": command[13],
-            "decade": command[14],
-            "year": command[15],
-            "month": command[16],
-            "day": command[17],
-            "type": command[18],
+            "title": show_analysis.info.get("title", ""),
+            "season": show_analysis.info.get("season_num", ""),
+            "episode": show_analysis.info.get("episode_num", ""),
+            "episode_name": show_analysis.info.get("ep_name", ""),
+            "is_proper": show_analysis.is_proper(),
+            "resolution": show_analysis.info.get("resolution", ""),
+            "decade": show_analysis.info.get("decade", ""),
+            "year": show_analysis.info.get("year", ""),
+            "month": show_analysis.info.get("month", ""),
+            "day": show_analysis.info.get("day", ""),
+            "job_type": show_analysis.type,
         }
 
         try:

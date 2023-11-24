@@ -414,17 +414,13 @@ SKIN_TEXT = {
     ),
     "opt-pause_on_pwrar": TT("Action when encrypted RAR is downloaded"),
     "explain-pause_on_pwrar": TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
-    "opt-no_dupes": TT("Detect Duplicate Downloads"),
-    "explain-no_dupes": TT(
-        "Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)"
-    ),
-    "opt-no_series_dupes": TT("Detect duplicate episodes in series"),
-    "explain-no_series_dupes": TT(
-        'Detect identical episodes in series (based on "name/season/episode" of items in your History)'
-    ),
-    "opt-series_propercheck": TT("Allow proper releases"),
-    "explain-series_propercheck": TT(
-        "Bypass series duplicate detection if PROPER, REAL or REPACK is detected in the download name"
+    "opt-no_dupes": TT("Identical download detection"),
+    "explain-no_dupes": TT("Detect identical downloads based on name or NZB contents."),
+    "opt-no_smart_dupes": TT("Smart duplicate detection"),
+    "explain-no_smart_dupes": TT("Detect duplicates based on analysis of the filename."),
+    "opt-dupes_propercheck": TT("Allow proper releases"),
+    "explain-dupes_propercheck": TT(
+        "Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in the download name."
     ),
     "nodupes-off": TT("Off"),  #: Three way switch for duplicates
     "nodupes-ignore": TT("Discard"),  #: Four way switch for duplicates
@@ -455,13 +451,9 @@ SKIN_TEXT = {
     "opt-end_queue_script": TT("On queue finish script"),
     "explain-end_queue_script": TT("Executed after the queue finishes downloading."),
     "opt-par_option": TT("Extra PAR2 Parameters"),
-    "explain-par_option": TT("Read the Wiki Help on this!"),
     "opt-nice": TT("Nice Parameters"),
-    "explain-nice": TT("Read the Wiki Help on this!"),
     "opt-ionice": TT("IONice Parameters"),
-    "explain-ionice": TT("Read the Wiki Help on this!"),
     "opt-win_process_prio": TT("External process priority"),
-    "explain-win_process_prio": TT("Read the Wiki Help on this!"),
     "win_process_prio-high": TT("High"),
     "win_process_prio-normal": TT("Normal"),
     "win_process_prio-low": TT("Low"),
@@ -690,7 +682,6 @@ SKIN_TEXT = {
     "opt-nscript_parameters": TT("Parameters"),  #: Notification Script settings
     "explain-nscript_enable": TT("Executes a custom script"),  #: Notification Scriptsettings
     "explain-nscript_script": TT("Which script should we execute for notification?"),  #: Notification Scriptsettings
-    "explain-nscript_parameters": TT("Read the Wiki Help on this!"),  #: Notification Script settings
     # Config->Cat
     "explain-catTags": TT(
         'Indexers can supply a category inside the NZB which SABnzbd will try to match to the categories defined below. Additionally, you can add terms to "Indexer Categories / Groups" to match more categories. Use commas to separate terms. Wildcards in the terms are supported. <br>More information can be found on the Wiki.'

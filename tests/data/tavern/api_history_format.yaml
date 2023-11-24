@@ -52,6 +52,7 @@ stages:
               bytes: !anyint
               meta: null
               series: !anything
+              duplicate_key: !anything
               md5sum: !re_match "[0-9a-fA-F]+"
               password: !anystr
               action_line: !anything
@@ -92,7 +93,7 @@ stages:
           # so parameters match regardless of their order of appearance. Note
           # that the content of 'slots' is checked in a separate expression.
           expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots': [0-9]+)(?=.*'ppslots': [0-9]+)(?=.*'last_history_update': '?[0-9]+'?)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': .+).*}}$"
-          expression: ".*'slots': \\[{{(?=.*'completed': [0-9]+)(?=.*'name': '.+')(?=.*'nzb_name': '.+')(?=.*'category': '.+')(?=.*'pp': '.?')(?=.*'script': '.+')(?=.*'report': '.+')(?=.*'url': '.+')(?=.*'status': '.+')(?=.*'nzo_id': 'SAB.+')(?=.*'storage': '.+')(?=.*'path': '.+')(?=.*'script_line': '.*')(?=.*'download_time': [0-9]+)(?=.*'postproc_time': [0-9]*)(?=.*'stage_log': \\[.*\\])(?=.*'downloaded': [0-9]+)(?=.*'completeness': None)(?=.*'fail_message': '.*')(?=.*'url_info': '.*')(?=.*'bytes': [0-9]+)(?=.*'meta': None)(?=.*'series': '?.*'?)(?=.*'md5sum': '[0-9a-fA-F]+')(?=.*'password': '.*')(?=.*'action_line': '.*')(?=.*'size': '[0-9].*')(?=.*'loaded': (True|False))(?=.*'retry': [0-9]+).*}}\\].*"
+          expression: ".*'slots': \\[{{(?=.*'completed': [0-9]+)(?=.*'name': '.+')(?=.*'nzb_name': '.+')(?=.*'category': '.+')(?=.*'pp': '.?')(?=.*'script': '.+')(?=.*'report': '.+')(?=.*'url': '.+')(?=.*'status': '.+')(?=.*'nzo_id': 'SAB.+')(?=.*'storage': '.+')(?=.*'path': '.+')(?=.*'script_line': '.*')(?=.*'download_time': [0-9]+)(?=.*'postproc_time': [0-9]*)(?=.*'stage_log': \\[.*\\])(?=.*'downloaded': [0-9]+)(?=.*'completeness': None)(?=.*'fail_message': '.*')(?=.*'url_info': '.*')(?=.*'bytes': [0-9]+)(?=.*'meta': None)(?=.*'series': '?.*'?)(?=.*'duplicate_key': '?.*'?)(?=.*'md5sum': '[0-9a-fA-F]+')(?=.*'password': '.*')(?=.*'action_line': '.*')(?=.*'size': '[0-9].*')(?=.*'loaded': (True|False))(?=.*'retry': [0-9]+).*}}\\].*"
 
 
 ---
@@ -150,6 +151,7 @@ stages:
             <bytes>!anyint</bytes>
             <meta>!anystr</meta>
             <series>!anystr</series>
+            <duplicate_key>!anystr</duplicate_key>
             <md5sum>!anystr</md5sum>
             <password>!anystr</password>
             <action_line>!anystr</action_line>

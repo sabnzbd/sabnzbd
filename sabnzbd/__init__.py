@@ -285,6 +285,11 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         misc.convert_sorter_settings()
         cfg.sorters_converted.set(True)
 
+    # Convert duplicate settings
+    if cfg.no_series_dupes():
+        cfg.no_smart_dupes.set(cfg.no_series_dupes())
+        cfg.no_series_dupes.set(0)
+
     # Add hostname to the whitelist
     if not cfg.host_whitelist():
         cfg.host_whitelist.set(socket.gethostname())

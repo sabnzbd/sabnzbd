@@ -82,19 +82,25 @@ class HistoryDB:
             version = self.cursor.fetchone()["user_version"]
         except IndexError:
             version = 0
+
+        # Add any new columns added since last DB version
+        # Use "and" to stop when database has been reset due to corruption
         if version < 1:
-            # Add any missing columns added since first DB version
-            # Use "and" to stop when database has been reset due to corruption
             _ = (
                 self.execute("PRAGMA user_version = 1;")
-                and self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;')
-                and self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
+                and self.execute("ALTER TABLE history ADD COLUMN series TEXT;")
+                and self.execute("ALTER TABLE history ADD COLUMN md5sum TEXT;")
             )
         if version < 2:
-            # Add any missing columns added since second DB version
-            # Use "and" to stop when database has been reset due to corruption
             _ = self.execute("PRAGMA user_version = 2;") and self.execute(
-                'ALTER TABLE "history" ADD COLUMN password TEXT;'
+                "ALTER TABLE history ADD COLUMN password TEXT;"
+            )
+        if version < 3:
+            # Transfer data to new column (requires WHERE-hack), original column should be removed later
+            _ = (
+                self.execute("PRAGMA user_version = 3;")
+                and self.execute("ALTER TABLE history ADD COLUMN duplicate_key TEXT;")
+                and self.execute("UPDATE history SET duplicate_key = series WHERE 1 = 1;")
             )
 
     def execute(self, command: str, args: Sequence = (), save: bool = False) -> bool:
@@ -142,7 +148,7 @@ class HistoryDB:
         """Create a new (empty) database file"""
         self.execute(
             """
-        CREATE TABLE "history" (
+        CREATE TABLE history (
             "id" INTEGER PRIMARY KEY,
             "completed" INTEGER NOT NULL,
             "name" TEXT NOT NULL,
@@ -169,11 +175,12 @@ class HistoryDB:
             "meta" TEXT,
             "series" TEXT,
             "md5sum" TEXT,
-            "password" TEXT
+            "password" TEXT,
+            "duplicate_key" TEXT
         )
         """
         )
-        self.execute("PRAGMA user_version = 2;")
+        self.execute("PRAGMA user_version = 3;")
 
     def close(self):
         """Close database connection"""
@@ -263,7 +270,7 @@ class HistoryDB:
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
             url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-            downloaded, fail_message, url_info, bytes, series, md5sum, password)
+            downloaded, fail_message, url_info, bytes, duplicate_key, md5sum, password)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             t,
             save=True,
@@ -321,11 +328,17 @@ class HistoryDB:
 
         return items, total_items
 
-    def have_episode(self, series_key: str) -> bool:
-        """Check whether History contains this series episode"""
+    def have_duplicate_key(self, duplicate_key: str) -> bool:
+        """Check whether History contains this duplicate key"""
         total = 0
         if self.execute(
-            """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (series_key, Status.FAILED)
+            """
+            SELECT COUNT(*) 
+            FROM History 
+            WHERE 
+                duplicate_key = ? AND 
+                STATUS != ?""",
+            (duplicate_key, Status.FAILED),
         ):
             total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
@@ -334,7 +347,12 @@ class HistoryDB:
         """Check whether this name or md5sum is already in History"""
         total = 0
         if self.execute(
-            """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
+            """
+            SELECT COUNT(*) 
+            FROM History 
+            WHERE 
+                ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND 
+                STATUS != ?""",
             (name, md5sum, Status.FAILED),
         ):
             total = self.cursor.fetchone()["COUNT(*)"]
@@ -466,7 +484,7 @@ def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_ou
     report = "future" if nzo.futuretype else ""
 
     # Make sure we have the duplicate key
-    nzo.set_duplicate_series_key()
+    nzo.set_duplicate_key()
 
     return (
         completed,
@@ -490,7 +508,7 @@ def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_ou
         nzo.fail_msg,
         url_info,
         nzo.bytes_downloaded,
-        nzo.duplicate_series_key,
+        nzo.duplicate_key,
         nzo.md5sum,
         nzo.correct_password,
     )

@@ -953,28 +953,28 @@ class NzbQueue:
         lname = name.lower()
         for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
             # Skip any jobs already marked as duplicate, to prevent double-triggers
-            if not nzo.duplicate:
-                # URL's do not have an MD5!
-                if nzo.final_name.lower() == lname or (nzo.md5sum and md5sum and nzo.md5sum == md5sum):
-                    return True
+            # URL's do not have an MD5!
+            if not nzo.duplicate and (
+                nzo.final_name.lower() == lname or (nzo.md5sum and md5sum and nzo.md5sum == md5sum)
+            ):
+                return True
         return False
 
     @NzbQueueLocker
-    def have_episode(self, series_key: str) -> bool:
-        """Check whether this episode of the series is already
+    def have_duplicate_key(self, duplicate_key: str) -> bool:
+        """Check whether this duplicate key is already
         in the queue or the post-processing queue"""
-        for nzo in self.__nzo_list:
+        for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
             # Skip any jobs already marked as duplicate, to prevent double-triggers
-            if not nzo.duplicate:
-                if nzo.duplicate_series_key == series_key:
-                    return True
+            if not nzo.duplicate and nzo.duplicate_key == duplicate_key:
+                return True
         return False
 
     @NzbQueueLocker
     def handle_duplicate_alternatives(self, finished_nzo: NzbObject, success: bool):
         """Remove matching duplicates if the first job succeeded,
         or start the next alternative if the job failed"""
-        if not cfg.no_dupes() and not cfg.no_series_dupes():
+        if not cfg.no_dupes() and not cfg.no_smart_dupes():
             return
 
         # Unfortunately we need a copy, since we might remove items from the list
@@ -986,16 +986,16 @@ class NzbQueue:
             if (
                 nzo.final_name.lower() == finished_nzo.final_name.lower()
                 or (nzo.md5sum and finished_nzo.md5sum and nzo.md5sum == finished_nzo.md5sum)
-            ) or (
-                nzo.duplicate_series_key
-                and finished_nzo.duplicate_series_key
-                and nzo.duplicate_series_key == finished_nzo.duplicate_series_key
-            ):
+            ) or (nzo.duplicate_key and finished_nzo.duplicate_key and nzo.duplicate_key == finished_nzo.duplicate_key):
                 # Start the next alternative
                 if not success:
-                    logging.info("Resuming duplicate alternative %s for ", nzo.final_name, finished_nzo.final_name)
+                    # Don't just resume if only set to tag
+                    if (nzo.duplicate == DuplicateStatus.DUPLICATE_ALTERNATIVE and cfg.no_dupes() != 4) or (
+                        nzo.duplicate == DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE and cfg.no_smart_dupes() != 4
+                    ):
+                        logging.info("Resuming duplicate alternative %s for ", nzo.final_name, finished_nzo.final_name)
+                        nzo.resume()
                     nzo.duplicate = None
-                    nzo.resume()
                     return
 
                 # Take action on the alternatives to the duplicate
@@ -1003,13 +1003,11 @@ class NzbQueue:
                 #  2 = Pause
                 #  3 = Fail (move to History)
                 #  4 = Tag
-                series_duplicate = nzo.duplicate == DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE
-                if (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1):
+                smart_duplicate = nzo.duplicate == DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE
+                if (not smart_duplicate and cfg.no_dupes() == 1) or (smart_duplicate and cfg.no_smart_dupes() == 1):
                     duplicate_warning(T('Ignoring duplicate NZB "%s"'), nzo.final_name)
                     self.remove(nzo.nzo_id)
-                elif (not series_duplicate and cfg.no_dupes() == 3) or (
-                    series_duplicate and cfg.no_series_dupes() == 3
-                ):
+                elif (not smart_duplicate and cfg.no_dupes() == 3) or (smart_duplicate and cfg.no_smart_dupes() == 3):
                     duplicate_warning(T('Failing duplicate NZB "%s"'), nzo.final_name)
                     nzo.fail_msg = T("Duplicate NZB")
                     self.fail_to_history(nzo)
@@ -1019,7 +1017,7 @@ class NzbQueue:
                     if nzo.duplicate == DuplicateStatus.DUPLICATE_ALTERNATIVE:
                         nzo.duplicate = DuplicateStatus.DUPLICATE
                     else:
-                        nzo.duplicate = DuplicateStatus.SERIES_DUPLICATE
+                        nzo.duplicate = DuplicateStatus.SMART_DUPLICATE
                     return
 
     def __repr__(self):

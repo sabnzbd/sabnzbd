@@ -585,10 +585,12 @@ class Sorter:
         return move_to_parent_directory(base_path)
 
 
-class SeriesAnalyzer(Sorter):
+class BasicAnalyzer(Sorter):
     def __init__(self, job_name: str):
         """Very basic sorter that doesn't require a config"""
         super().__init__(nzo=None, job_name=job_name)
+        # Directly trigger setting all values
+        self.get_values()
 
     def match_sorters(self):
         """Much more basic matching"""
@@ -598,25 +600,6 @@ class SeriesAnalyzer(Sorter):
         self.type = self.guess["type"]
         if self.guess["type"] == "episode":
             self.type = "date" if self.guess.get("date") else "tv"
-
-
-def analyse_show(job_name: str) -> Dict[str, str]:
-    """Use the Sorter to collect some basic info on series"""
-    job = SeriesAnalyzer(job_name)
-    job.get_values()
-    return {
-        "title": job.info.get("title", ""),
-        "season": job.info.get("season_num", ""),
-        "episode": job.info.get("episode_num", ""),
-        "episode_name": job.info.get("ep_name", ""),
-        "is_proper": job.is_proper(),
-        "resolution": job.info.get("resolution", ""),
-        "decade": job.info.get("decade", ""),
-        "year": job.info.get("year", ""),
-        "month": job.info.get("month", ""),
-        "day": job.info.get("day", ""),
-        "job_type": job.type,
-    }
 
 
 def ends_in_file(path: str) -> bool:

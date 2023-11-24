@@ -308,8 +308,9 @@ class RSSReader:
                     myPrio = defPrio
                     n = 0
                     if ("F" in reTypes or "S" in reTypes) and (not season or not episode):
-                        show_analysis = sabnzbd.sorting.analyse_show(title)
-                        season, episode = show_analysis["season"], show_analysis["episode"]
+                        show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
+                        season = show_analysis.info.get("season")
+                        episode = show_analysis.info.get("episode")
 
                     # Match against all filters until an positive or negative match
                     logging.debug("Size %s", size)
@@ -336,12 +337,7 @@ class RSSReader:
                                 logging.debug("Filter requirement match on rule %d", n)
                                 result = False
                                 break
-                            elif (
-                                reTypes[n] == "S"
-                                and season
-                                and episode
-                                and ep_match(season, episode, regexes[n], title)
-                            ):
+                            elif reTypes[n] == "S" and ep_match(season, episode, regexes[n], title):
                                 logging.debug("Filter matched on rule %d", n)
                                 result = True
                                 break
