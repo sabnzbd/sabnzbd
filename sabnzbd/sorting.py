@@ -649,9 +649,8 @@ def move_to_parent_directory(workdir: str) -> Tuple[str, bool]:
     return dest, True
 
 
-def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
-    """Guess metadata for movies or episodes from their name. The sort_type ('movie' or 'episode')
-    is passed as a hint to guessit, if given."""
+def guess_what(name: str) -> MatchesDict:
+    """Guess metadata for movies or episodes from their name."""
 
     if not name:
         raise ValueError("Need a name for guessing")
@@ -670,9 +669,6 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         "excludes": EXCLUDED_GUESSIT_PROPERTIES,
         "date_year_first": True,  # Make sure also short-dates are detected as YY-MM-DD
     }
-    if sort_type:
-        # Hint the type if known
-        guessit_options["type"] = sort_type
 
     guess = guessit.api.guessit(digit_fix + name, options=guessit_options)
     logging.debug("Initial guess for %s is %s", digit_fix + name, guess)
@@ -687,7 +683,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
 
     # Try to avoid setting the type to movie on arbitrary jobs (e.g. 'Setup.exe') just because guessit defaults to that
     table = str.maketrans({char: "" for char in whitespace + "_.-()[]{}"})
-    if guess.get("type") == "movie" and not sort_type == "movie":  # No movie hint
+    if guess.get("type") == "movie":
         if (
             guess.get("title", "").translate(table) == name.translate(table)  # Check for full name used as title
             or any(
@@ -697,7 +693,9 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
                 [key in guess for key in ("year", "screen_size", "video_codec")]
             )  # No typical movie properties set
             or (
-                name.lower().startswith("http://") and name.lower().endswith(".nzb") and guess.get("container" == "nzb")
+                name.lower().startswith(("http://", "https://"))
+                and name.lower().endswith(".nzb")
+                and guess.get("container" == "nzb")
             )  # URL to an nzb file, can happen when pre-queue script rejects a job
         ):
             guess["type"] = "unknown"
