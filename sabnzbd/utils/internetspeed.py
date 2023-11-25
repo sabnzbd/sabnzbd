@@ -82,7 +82,12 @@ def internetspeed() -> float:
 
     if platform.system() == "Linux":
         maxspeed_iperf3 = None
-        iperf3_servers = ["ams.speedtest.clouvider.net", "fra.speedtest.clouvider.net", "nyc.speedtest.clouvider.net", "2a0f:93c0:0:8::2"]
+        iperf3_servers = [
+            "ams.speedtest.clouvider.net",
+            "fra.speedtest.clouvider.net",
+            "nyc.speedtest.clouvider.net",
+            "2a0f:93c0:0:8::2",
+        ]
         for myserver in iperf3_servers:
             iperf3_speed = iperf3_downstream_speed(myserver)
             logging.debug("speed via %s is %s [Mbps]", myserver, iperf3_speed)
