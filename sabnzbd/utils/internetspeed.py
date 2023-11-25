@@ -79,6 +79,7 @@ def internetspeed() -> float:
 
     # check if on Linux (incl docker)
     import platform
+
     if platform.system() == "Linux":
         maxspeed_iperf3 = None
         iperf3_servers = ["ams.speedtest.clouvider.net", "fra.speedtest.clouvider.net", "nyc.speedtest.clouvider.net"]
