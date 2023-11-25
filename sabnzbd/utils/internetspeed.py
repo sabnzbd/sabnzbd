@@ -55,7 +55,7 @@ def iperf3_downstream_speed(server="ams.speedtest.clouvider.net", duration=3):
     client = iperf3.Client()
     client.duration = duration  # seconds
     client.num_streams = 20  # should be enough for ... 2500 Mbps?
-    client.server_hostname = server # todo ipv4 versus ipv6 for strange setups?
+    client.server_hostname = server  # todo both try ipv4 and ipv6 for strange setups?
     client.reverse = True  # Downstream
 
     portlist = list(range(5200, 5209 + 1))
@@ -82,7 +82,7 @@ def internetspeed() -> float:
 
     if platform.system() == "Linux":
         maxspeed_iperf3 = None
-        iperf3_servers = ["ams.speedtest.clouvider.net", "fra.speedtest.clouvider.net", "nyc.speedtest.clouvider.net"]
+        iperf3_servers = ["ams.speedtest.clouvider.net", "fra.speedtest.clouvider.net", "nyc.speedtest.clouvider.net", "2a0f:93c0:0:8::2"]
         for myserver in iperf3_servers:
             iperf3_speed = iperf3_downstream_speed(myserver)
             logging.debug("speed via %s is %s [Mbps]", myserver, iperf3_speed)
