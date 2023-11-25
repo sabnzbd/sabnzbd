@@ -44,18 +44,19 @@ def bytes_to_bits(megabytes_per_second: float) -> float:
     return 8.05 * megabytes_per_second  # bits
 
 
-def iperf3_downstream_speed(server='ams.speedtest.clouvider.net', duration=3):
+def iperf3_downstream_speed(server="ams.speedtest.clouvider.net", duration=3):
     # Returns Internet in Mbps
     try:
-        import iperf3 # needs iperf3 binary and iperf python module.
+        import iperf3  # needs iperf3 binary and iperf python module.
     except:
         return None
     import random
+
     client = iperf3.Client()
-    client.duration = duration # seconds
-    client.num_streams = 20 # should be enough for ... 2500 Mbps?
+    client.duration = duration  # seconds
+    client.num_streams = 20  # should be enough for ... 2500 Mbps?
     client.server_hostname = server
-    client.reverse=True # Downstream
+    client.reverse = True  # Downstream
 
     portlist = list(range(5200, 5209 + 1))
     for _ in range(8):
@@ -64,7 +65,7 @@ def iperf3_downstream_speed(server='ams.speedtest.clouvider.net', duration=3):
         client.port = myport
         logging.debug("Trying %s on port %s", server, myport)
         try:
-            result = client.run() # run the test
+            result = client.run()  # run the test
             # ... after some time:
             Mbps = int(result.received_Mbps)
             return Mbps
@@ -72,21 +73,22 @@ def iperf3_downstream_speed(server='ams.speedtest.clouvider.net', duration=3):
             pass
     return None
 
+
 def internetspeed() -> float:
     """Report Internet speed in MB/s as a float"""
 
     # on Linux, try if iperf3 works
     import platform
+
     if platform.system() == "Linux":
         ams_iperf3_speed = iperf3_downstream_speed("ams.speedtest.clouvider.net")
-        logging.debug("ams_iperf3_speed %s",ams_iperf3_speed)
+        logging.debug("ams_iperf3_speed %s", ams_iperf3_speed)
         nyc_iperf3_speed = iperf3_downstream_speed("nyc.speedtest.clouvider.net")
         logging.debug("nyc_iperf3_speed %s", nyc_iperf3_speed)
         maxspeed_iperf3 = max(ams_iperf3_speed or 0, nyc_iperf3_speed or 0)
         if maxspeed_iperf3 > 0:
             # OK, done
             return maxspeed_iperf3 / 8.05
-
 
     # Do basic test with a small download
     logging.debug("Basic measurement, with small download:")
