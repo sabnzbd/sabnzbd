@@ -79,9 +79,10 @@ def internetspeed() -> float:
 
     # on Linux, try if iperf3 works
     import platform
+
     if platform.system() == "Linux":
         maxspeed_iperf3 = None
-        iperf3_servers = ["ams.speedtest.clouvider.net", "fra.speedtest.clouvider.net", "nyc.speedtest.clouvider.net" ]
+        iperf3_servers = ["ams.speedtest.clouvider.net", "fra.speedtest.clouvider.net", "nyc.speedtest.clouvider.net"]
         for myserver in iperf3_servers:
             iperf3_speed = iperf3_downstream_speed(myserver)
             logging.debug("speed via %s is %s [Mbps]", myserver, iperf3_speed)
