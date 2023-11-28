@@ -219,7 +219,7 @@ class FakeHistoryDB(db.HistoryDB):
             nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
             nzo.nzo_info = {"download_time": randint(1, 10**4)}
             nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
-            nzo.duplicate_series_key = "show/season/episode"
+            nzo.duplicate_key = "show/season/episode"
             nzo.futuretype = False  # for "report", only True when fetching an URL
             nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
 

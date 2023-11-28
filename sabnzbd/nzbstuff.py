@@ -563,7 +563,7 @@ NzbObjectSaver = (
     "encrypted",
     "bad_articles",
     "duplicate",
-    "duplicate_series_key",
+    "duplicate_key",
     "oversized",
     "precheck",
     "incomplete",
@@ -691,7 +691,7 @@ class NzbObject(TryList):
         self.nzo_id: Optional[str] = None
 
         self.duplicate: Optional[str] = None
-        self.duplicate_series_key: Optional[str] = None
+        self.duplicate_key: Optional[str] = None
 
         self.futuretype = futuretype
         self.removed_from_queue = False
@@ -1344,9 +1344,12 @@ class NzbObject(TryList):
     def labels(self):
         """Return (translated) labels of job"""
         labels = []
-        if self.duplicate in (DuplicateStatus.DUPLICATE, DuplicateStatus.SERIES_DUPLICATE):
+        if self.duplicate in (DuplicateStatus.DUPLICATE, DuplicateStatus.SMART_DUPLICATE):
             labels.append(T("DUPLICATE"))
-        if self.duplicate in (DuplicateStatus.DUPLICATE_ALTERNATIVE, DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE):
+        if self.duplicate in (
+            DuplicateStatus.DUPLICATE_ALTERNATIVE,
+            DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE,
+        ):
             labels.append(T("ALTERNATIVE"))
         if self.encrypted > 0:
             labels.append(T("ENCRYPTED"))
@@ -1885,28 +1888,40 @@ class NzbObject(TryList):
             else:
                 nzf_ids.remove(nzf_id)
 
-    def set_duplicate_series_key(self):
+    def set_duplicate_key(self):
         """Shorthand to set the key once"""
-        if not self.duplicate_series_key:
-            show_analysis = sabnzbd.sorting.analyse_show(self.final_name)
-            if show_analysis["job_type"] == "tv":
-                series, season, episode, is_proper = (
-                    show_analysis[key] for key in ("title", "season", "episode", "is_proper")
-                )
-                # Ignore proper results if not desired
-                if not cfg.series_propercheck():
-                    is_proper = False
+        if not self.duplicate_key:
+            show_analysis = sabnzbd.sorting.BasicAnalyzer(self.final_name)
 
-                # We allow 1 proper result to bypass duplicate detection
-                self.duplicate_series_key = f"{series.lower()}/{season}/{episode}{f'/{is_proper}' if is_proper else ''}"
+            # We can only set a duplicate key for these types
+            if show_analysis.type not in ("tv", "movie", "date"):
+                return
+
+            # The key always includes the title, for movies we don't add anything else
+            duplicate_key_items = [show_analysis.info.get("title", "")]
+            if show_analysis.type == "tv":
+                # For TV-shows we add the season and episode
+                duplicate_key_items.append(str(show_analysis.info.get("season", "")))
+                duplicate_key_items.append(str(show_analysis.info.get("episode", "")))
+            elif show_analysis.type == "date":
+                # Add date
+                duplicate_key_items.append(str(show_analysis.info.get("year", "")))
+                duplicate_key_items.append(str(show_analysis.info.get("month", "")))
+                duplicate_key_items.append(str(show_analysis.info.get("day", "")))
+
+            # We allow 1 proper result to bypass the detection, if desired
+            if show_analysis.is_proper() and cfg.dupes_propercheck():
+                duplicate_key_items.append("proper")
+
+            self.duplicate_key = "/".join(duplicate_key_items).lower()
 
     def duplicate_check(self):
         """Set the correct duplicate status"""
-        if not cfg.no_dupes() and not cfg.no_series_dupes():
+        if not cfg.no_dupes() and not cfg.no_smart_dupes():
             return
 
-        duplicate_in_history = series_duplicate_in_history = False
-        duplicate_in_queue = series_duplicate_in_queue = False
+        duplicate_in_history = smart_duplicate_in_history = False
+        duplicate_in_queue = smart_duplicate_in_queue = False
 
         with HistoryDB() as history_db:
             # Dupe check off just name or nzb contents
@@ -1924,25 +1939,25 @@ class NzbObject(TryList):
                 logging.debug("Duplicate in queue: %s", duplicate_in_queue)
 
             # Dupe check off nzb filename
-            if not duplicate_in_history and not duplicate_in_queue and cfg.no_series_dupes():
-                logging.debug("Duplicate episode checking (%s): %s", self.final_name, self.duplicate_series_key)
-                self.set_duplicate_series_key()
-                if self.duplicate_series_key:
-                    series_duplicate_in_history = history_db.have_episode(self.duplicate_series_key)
-                    logging.debug("Duplicate episode in history: %s", series_duplicate_in_history)
+            if not duplicate_in_history and not duplicate_in_queue and cfg.no_smart_dupes():
+                self.set_duplicate_key()
+                logging.debug("Smart duplicate checking (%s): %s", self.final_name, self.duplicate_key)
+                if self.duplicate_key:
+                    smart_duplicate_in_history = history_db.have_duplicate_key(self.duplicate_key)
+                    logging.debug("Duplicate in history: %s", smart_duplicate_in_history)
 
-                    series_duplicate_in_queue = sabnzbd.NzbQueue.have_episode(self.duplicate_series_key)
-                    logging.debug("Duplicate episode in queue: %s", series_duplicate_in_queue)
+                    smart_duplicate_in_queue = sabnzbd.NzbQueue.have_duplicate_key(self.duplicate_key)
+                    logging.debug("Duplicate in queue: %s", smart_duplicate_in_queue)
                 else:
-                    logging.debug("Not an episode, skipping duplicate episode check")
+                    logging.debug("Unknown type, skipping smart duplicate check")
 
         # Set the correct status
-        if series_duplicate_in_queue:
-            self.duplicate = DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE
+        if smart_duplicate_in_queue:
+            self.duplicate = DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE
         elif duplicate_in_queue:
             self.duplicate = DuplicateStatus.DUPLICATE_ALTERNATIVE
-        elif series_duplicate_in_history:
-            self.duplicate = DuplicateStatus.SERIES_DUPLICATE
+        elif smart_duplicate_in_history:
+            self.duplicate = DuplicateStatus.SMART_DUPLICATE
         elif duplicate_in_history:
             self.duplicate = DuplicateStatus.DUPLICATE
 
@@ -1957,18 +1972,18 @@ class NzbObject(TryList):
         #  2 = Pause
         #  3 = Fail (move to History)
         #  4 = Tag
-        if self.duplicate in (DuplicateStatus.DUPLICATE, DuplicateStatus.SERIES_DUPLICATE):
-            series_duplicate = self.duplicate == DuplicateStatus.SERIES_DUPLICATE
-            if (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1):
+        if self.duplicate in (DuplicateStatus.DUPLICATE, DuplicateStatus.SMART_DUPLICATE):
+            smart_duplicate = self.duplicate == DuplicateStatus.SMART_DUPLICATE
+            if (not smart_duplicate and cfg.no_dupes() == 1) or (smart_duplicate and cfg.no_smart_dupes() == 1):
                 # Discard
                 duplicate_warning(T('Ignoring duplicate NZB "%s"'), self.final_name)
                 self.purge_data()
                 raise NzbRejected
-            elif (not series_duplicate and cfg.no_dupes() == 3) or (series_duplicate and cfg.no_series_dupes() == 3):
+            elif (not smart_duplicate and cfg.no_dupes() == 3) or (smart_duplicate and cfg.no_smart_dupes() == 3):
                 # Fail (move to History)
                 duplicate_warning(T('Failing duplicate NZB "%s"'), self.final_name)
                 raise NzbRejectToHistory(self, T("Duplicate NZB"))
-            elif (not series_duplicate and cfg.no_dupes() == 2) or (series_duplicate and cfg.no_series_dupes() == 2):
+            elif (not smart_duplicate and cfg.no_dupes() == 2) or (smart_duplicate and cfg.no_smart_dupes() == 2):
                 # Pause
                 duplicate_warning(T('Pausing duplicate NZB "%s"'), self.final_name)
                 self.pause()
@@ -1976,8 +1991,10 @@ class NzbObject(TryList):
                 # Tag job
                 duplicate_warning('%s: "%s"', T("Duplicate NZB"), self.final_name)
 
-        # In case of alternative, just pause
-        if self.duplicate in (DuplicateStatus.DUPLICATE_ALTERNATIVE, DuplicateStatus.SERIES_DUPLICATE_ALTERNATIVE):
+        # In case of alternative, just pause (unless only tagging is desired)
+        if (self.duplicate == DuplicateStatus.DUPLICATE_ALTERNATIVE and cfg.no_dupes() != 4) or (
+            self.duplicate == DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE and cfg.no_smart_dupes() != 4
+        ):
             logging.info("Pausing duplicate alternative %s", self.final_name)
             self.pause()
 

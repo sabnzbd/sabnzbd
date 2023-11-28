@@ -1742,6 +1742,7 @@ def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, An
             "size": to_units(nzo.bytes_downloaded, "B"),
             "meta": None,
             "series": "",
+            "duplicate_key": nzo.duplicate_key,
             "md5sum": "",
             "password": nzo.correct_password,
             "action_line": nzo.action_line,
