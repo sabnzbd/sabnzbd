@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -2614,7 +2614,6 @@ msgstr "Tijd in de lucht"
 msgid "Backup"
 msgstr "Reserve"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Lees de Wiki pagina over dit onderwerp"
@@ -3192,28 +3191,20 @@ msgstr ""
 "download vrij te geven"
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Detecteer dubbele downloads"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
-"Detecteer identieke downloads (op basis van downloads in je Geschiedenis of "
-"bestanden in je .nzb backup map)."
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Detecteer dubbele afleveringen in series"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
-"Detecteer identieke afleveringen in series (gebaseerd op "
-"\"naam/seizoen/aflevering\" van downloads in je Geschiedenis)."
+
+#: sabnzbd/skintext.py
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3221,11 +3212,9 @@ msgstr "Sta verbeterde downloads toe"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
-"Sla dubbele download detectie over als er in de naam van de download PROPER,"
-" REAL of REPACK bevat"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py

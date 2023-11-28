@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Danish (https://app.transifex.com/sabnzbd/teams/111101/da/)\n"
@@ -2563,7 +2563,6 @@ msgstr "Oppetid"
 msgid "Backup"
 msgstr "Sikkerhedskopi"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Læs mere om dette på Wiki Help!"
@@ -3115,28 +3114,20 @@ msgstr ""
 "I tilfælde af \"Pause\", skal du angive en adgangskode og genoptage jobbet."
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Find identiske downloads"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
-"Fundet identiske NZB filer (baseret på elementer i din historik eller filer "
-"i. nzb Backup mappe)"
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Opdage identiske episoder i serier"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
-"Fundet identiske episoder i serie (baseret på \"navn /sæson /episode\" af "
-"elementer i din historik)"
+
+#: sabnzbd/skintext.py
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3144,8 +3135,8 @@ msgstr "Tillad reelle udgivelser"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
 
 #. Four way switch for duplicates

@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha2\n"
+"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
@@ -2629,7 +2629,6 @@ msgstr "Tiempo en Activo"
 msgid "Backup"
 msgstr "Copia de seguridad"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Lee la ayuda en la Wiki (inglés) acerca de esto!"
@@ -3197,28 +3196,20 @@ msgstr ""
 "trabajo."
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Detectar descargas duplicadas"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
-"Detecta archivos NZB idénticos (basándose en los elementos de su historial o"
-" los archivos en el directorio de copia de seguridad .nzb)"
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Detectar episodios duplicadas en serie"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
-"Detecta episodios idénticos en series (basándose en "
-"\"nombre/temporada/episodio\" de los elementos de su historial)"
+
+#: sabnzbd/skintext.py
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3226,11 +3217,9 @@ msgstr "Permitir comunicados adecuados"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
-"Evitar detección de duplicado de series si se detecta PROPER, REAL o REPACK "
-"en el nombre de la descarga"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
