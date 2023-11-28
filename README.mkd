@@ -1,10 +1,13 @@
-Release Notes - SABnzbd 4.2.0 Alpha 3
+Release Notes - SABnzbd 4.2.0 Beta 1
 =========================================================
 
 ## Changes since 4.1.0
-- Duplicate workflow was improved to also detect jobs still in
-  the queue. See description for `Detect duplicate downloads`:
-  https://sabnzbd.org/wiki/configuration/4.2/switches
+- Duplicate detection workflow was overhauled:
+  `Series Duplicate Detection` was replaced by
+  `Smart Duplicate Detection` that can also detect `Movie`
+  and `Daily Show` duplicates. Additionally, duplicates will
+  also be detected if they are still in the queue.
+  See: https://sabnzbd.org/wiki/duplicate-detection
 - Numerous smaller performance improvements were made.
 - Reduced recursive unpacking to 2 levels, instead of 5.
 - Server IP-address selection was optimized.
