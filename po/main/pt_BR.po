@@ -1245,6 +1245,11 @@ msgstr "%s artigos estavam faltando"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artigos tinham duplicatas não-correspondentes"
 
+#. Main menu item
+#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
+msgid "RSS"
+msgstr "RSS"
+
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pausando NZB duplicado \"%s\""
@@ -2130,11 +2135,6 @@ msgstr "Opções"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Agendamento"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py

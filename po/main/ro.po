@@ -1259,6 +1259,11 @@ msgstr "%s articolele au fost lipsă"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articolele au avut duplicate diferite"
 
+#. Main menu item
+#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
+msgid "RSS"
+msgstr "RSS"
+
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Întrerupem duplicat NZB \"%s\""
@@ -2146,11 +2151,6 @@ msgstr "Comutatoare"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Planificare"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py

@@ -1231,6 +1231,11 @@ msgstr "%s artikler manglet"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikler hadde ulike duplikater"
 
+#. Main menu item
+#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
+msgid "RSS"
+msgstr "RSS"
+
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Stanser duplikatfil \"%s\""
@@ -2110,11 +2115,6 @@ msgstr "Svitsjer"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Nedlastingsplan"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py

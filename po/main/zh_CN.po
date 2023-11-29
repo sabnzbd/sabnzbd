@@ -1221,6 +1221,11 @@ msgstr "%s 篇文章缺失"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s 篇文章存在未匹配的重复"
 
+#. Main menu item
+#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
+msgid "RSS"
+msgstr "RSS"
+
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "正在暂停重复 NZB \"%s\""
@@ -2100,11 +2105,6 @@ msgstr "参数"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "定时任务"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py

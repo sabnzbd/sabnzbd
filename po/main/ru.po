@@ -1232,6 +1232,11 @@ msgstr "%s статей отсутствует"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s статей содержат несовпадающие повторы"
 
+#. Main menu item
+#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
+msgid "RSS"
+msgstr "RSS"
+
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Приостановлен повторяющийся NZB-файл «%s»"
@@ -2113,11 +2118,6 @@ msgstr "Переключатели"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Расписание"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py

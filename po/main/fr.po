@@ -1291,6 +1291,11 @@ msgstr "%s articles manquants"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articles avec doublons sans correspondance"
 
+#. Main menu item
+#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
+msgid "RSS"
+msgstr "RSS"
+
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Mise en pause du doublon NZB \"%s\""
@@ -2183,11 +2188,6 @@ msgstr "Switches"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Planification"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -3235,19 +3235,20 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Identical download detection"
-msgstr ""
+msgstr "Détection des téléchargements identiques"
 
 #: sabnzbd/skintext.py
 msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
+"Détecter les téléchargements identiques basés sur le nom ou le contenu NZB."
 
 #: sabnzbd/skintext.py
 msgid "Smart duplicate detection"
-msgstr ""
+msgstr "Détection intelligente des doublons"
 
 #: sabnzbd/skintext.py
 msgid "Detect duplicates based on analysis of the filename."
-msgstr ""
+msgstr "Détecter les doublons basés sur l'analyse du nom de fichier."
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3258,6 +3259,8 @@ msgid ""
 "Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
 "the download name."
 msgstr ""
+"Contourner la détection des doublons si PROPER, REAL ou REPACK est détecté "
+"dans l'intitulé du téléchargement."
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
