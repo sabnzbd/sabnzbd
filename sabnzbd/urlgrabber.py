@@ -151,7 +151,9 @@ class URLGrabber(Thread):
                         except:
                             continue
                         if item in ("category_id", "x-dnzb-category"):
-                            category = value
+                            # Use indexer category in case no specific one was set
+                            if value and future_nzo.cat in (None, "*"):
+                                future_nzo.cat = misc.cat_convert(value)
                         elif item in ("x-dnzb-moreinfo",):
                             nzo_info["more_info"] = value
                         elif item in ("x-dnzb-name",):
