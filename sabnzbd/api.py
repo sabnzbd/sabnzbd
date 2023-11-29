@@ -1384,7 +1384,6 @@ def build_queue(
     for nzo in nzo_list:
         mbleft = nzo.remaining / MEBI
         mb = nzo.bytes / MEBI
-        is_propagating = (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
 
         slot = {}
         slot["index"] = n
@@ -1405,7 +1404,7 @@ def build_queue(
         slot["direct_unpack"] = nzo.direct_unpack_progress
 
         if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
-            if is_propagating:
+            if nzo.propagation_delay_left:
                 slot["status"] = Status.PROP
             elif nzo.status == Status.CHECKING:
                 slot["status"] = Status.CHECKING
@@ -1420,7 +1419,7 @@ def build_queue(
         if (
             sabnzbd.Downloader.paused
             or sabnzbd.Downloader.paused_for_postproc
-            or is_propagating
+            or nzo.propagation_delay_left
             or nzo.status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
         ) and nzo.priority != FORCE_PRIORITY:
             slot["timeleft"] = "0:00:00"

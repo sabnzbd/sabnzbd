@@ -537,6 +537,7 @@ NzbObjectSaver = (
     "url",
     "groups",
     "avg_date",
+    "propagation_delay",
     "md5of16k",
     "extrapars",
     "par2packs",
@@ -655,6 +656,7 @@ class NzbObject(TryList):
         self.groups = []
         self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
+        self.propagation_delay: Optional[float] = None  # Set during parsing
         self.correct_password: Optional[str] = None
 
         # Bookkeeping values
@@ -831,6 +833,10 @@ class NzbObject(TryList):
         # Show first meta-password (if any), when there's no explicit password
         if not self.password and self.meta.get("password"):
             self.password = self.meta.get("password", [None])[0]
+
+        # Check if we expect propagation delay
+        if (propagation_delay := self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time():
+            self.propagation_delay = propagation_delay
 
         # Run user pre-queue script if set and valid
         if not reuse and make_script_path(cfg.pre_script()):
@@ -1291,6 +1297,17 @@ class NzbObject(TryList):
         else:
             return opts_to_pp(self.repair, self.unpack, self.delete)
 
+    @property
+    def propagation_delay_left(self) -> int:
+        """Returns number of propagation minutes remaining, if any.
+        It could return seconds, but the numerical value is only used in the queue."""
+        if self.propagation_delay:
+            if (time_left := self.propagation_delay - time.time()) > 0:
+                return int(time_left / 60 + 0.5)
+            # We can remove the value, to skip any further calculations
+            self.propagation_delay = None
+        return 0
+
     def set_pp(self, value: int):
         self.repair, self.unpack, self.delete = pp_to_opts(value)
         logging.info("Set pp=%s for job %s", value, self.final_name)
@@ -1367,10 +1384,8 @@ class NzbObject(TryList):
                 labels.append(T("WAIT %s sec") % dif)
 
         # Propagation delay label
-        propagation_delay = float(cfg.propagation_delay() * 60)
-        if propagation_delay and self.avg_stamp + propagation_delay > time.time() and self.priority != FORCE_PRIORITY:
-            wait_time = int((self.avg_stamp + propagation_delay - time.time()) / 60 + 0.5)
-            labels.append(T("PROPAGATING %s min") % wait_time)  # Queue indicator while waiting for propagation of post
+        if self.propagation_delay_left:
+            labels.append(T("PROPAGATING %s min") % self.propagation_delay_left)  # Queue indicator: propagation of post
 
         return labels
 

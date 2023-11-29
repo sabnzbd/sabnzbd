@@ -696,15 +696,13 @@ class NzbQueue:
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """
-        # Pre-calculate propagation delay
-        propagation_delay = float(cfg.propagation_delay() * 60)
         for nzo in self.__nzo_list:
             # Not when queue paused, individually paused, or when waiting for propagation
             # Force items will always download
             if (
                 not sabnzbd.Downloader.paused
                 and nzo.status not in (Status.PAUSED, Status.GRABBING)
-                and (not propagation_delay or (nzo.avg_stamp + propagation_delay) < time.time())
+                and not nzo.propagation_delay_left
             ) or nzo.priority == FORCE_PRIORITY:
                 if not nzo.server_in_try_list(server):
                     if articles := nzo.get_articles(server, servers, fetch_limit):
