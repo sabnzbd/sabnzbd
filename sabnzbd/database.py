@@ -282,8 +282,8 @@ class HistoryDB:
         start: Optional[int] = None,
         limit: Optional[int] = None,
         search: Optional[str] = None,
-        failed_only: int = 0,
         categories: Optional[List[str]] = None,
+        statuses: Optional[List[str]] = None,
         nzo_ids: Optional[List[str]] = None,
     ) -> Tuple[List[Dict[str, Any]], int]:
         """Return records for specified jobs"""
@@ -292,18 +292,20 @@ class HistoryDB:
         post = ""
         if categories:
             categories = ["*" if c == "Default" else c for c in categories]
-            post = " AND (CATEGORY = ?"
-            post += " OR CATEGORY = ? " * (len(categories) - 1)
+            post = " AND (category = ?"
+            post += " OR category = ? " * (len(categories) - 1)
             post += ")"
             command_args.extend(categories)
+        if statuses:
+            post += " AND (status = ?"
+            post += " OR status = ? " * (len(statuses) - 1)
+            post += ")"
+            command_args.extend(statuses)
         if nzo_ids:
-            post += " AND (NZO_ID = ?"
-            post += " OR NZO_ID = ? " * (len(nzo_ids) - 1)
+            post += " AND (nzo_id = ?"
+            post += " OR nzo_id = ? " * (len(nzo_ids) - 1)
             post += ")"
             command_args.extend(nzo_ids)
-        if failed_only:
-            post += " AND STATUS = ?"
-            command_args.append(Status.FAILED)
 
         cmd = "SELECT COUNT(*) FROM history WHERE name LIKE ?"
         total_items = -1
@@ -440,7 +442,7 @@ class HistoryDB:
 
 def convert_search(search: str) -> str:
     """Convert classic wildcard to SQL wildcard"""
-    if not search:
+    if not search or not isinstance(search, str):
         # Default value
         search = ""
     else:

@@ -162,7 +162,7 @@ class Status:
     RUNNING = "Running"  # PP: User's post processing script is running
     VERIFYING = "Verifying"  # PP: Job is being verified (by par2)
     DELETED = "Deleted"  # Q:  Job has been deleted (and is almost gone)
-    PROP = "Propagating"  # Q:  Delayed download
+    PROPAGATING = "Propagating"  # Q:  Delayed download
 
 
 class DuplicateStatus:

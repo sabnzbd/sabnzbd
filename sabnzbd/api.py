@@ -270,6 +270,7 @@ def _api_queue_default(value, kwargs):
     search = kwargs.get("search")
     categories = kwargs.get("cat") or kwargs.get("category")
     priorities = kwargs.get("priority")
+    statuses = kwargs.get("status")
     nzo_ids = kwargs.get("nzo_ids")
 
     if categories and not isinstance(categories, list):
@@ -277,13 +278,21 @@ def _api_queue_default(value, kwargs):
     if priorities and not isinstance(priorities, list):
         # Make sure it's an integer
         priorities = [int_conv(prio) for prio in priorities.split(",")]
+    if statuses and not isinstance(statuses, list):
+        statuses = statuses.split(",")
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
 
     return report(
         keyword="queue",
         data=build_queue(
-            start=start, limit=limit, search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids
+            start=start,
+            limit=limit,
+            search=search,
+            categories=categories,
+            priorities=priorities,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         ),
     )
 
@@ -483,8 +492,9 @@ def _api_history(name, kwargs):
     limit = int_conv(kwargs.get("limit"))
     last_history_update = int_conv(kwargs.get("last_history_update", 0))
     search = kwargs.get("search")
-    failed_only = int_conv(kwargs.get("failed_only"))
     categories = kwargs.get("cat") or kwargs.get("category")
+    statuses = kwargs.get("status")
+    failed_only = int_conv(kwargs.get("failed_only"))
     nzo_ids = kwargs.get("nzo_ids")
 
     # Do we need to send anything?
@@ -493,6 +503,13 @@ def _api_history(name, kwargs):
 
     if categories and not isinstance(categories, list):
         categories = categories.split(",")
+
+    if statuses and not isinstance(statuses, list):
+        statuses = statuses.split(",")
+
+    if failed_only:
+        # We ignore any other statuses, having both doesn't make sense
+        statuses = [Status.FAILED]
 
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
@@ -537,7 +554,12 @@ def _api_history(name, kwargs):
             to_units(day),
         )
         history["slots"], history["ppslots"], history["noofslots"] = build_history(
-            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, nzo_ids=nzo_ids
+            start=start,
+            limit=limit,
+            search=search,
+            categories=categories,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
         history["version"] = sabnzbd.__version__
@@ -1343,6 +1365,7 @@ def build_queue(
     search: Optional[str] = None,
     categories: Optional[List[str]] = None,
     priorities: Optional[List[str]] = None,
+    statuses: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
 ):
     info = build_header(for_template=False)
@@ -1354,7 +1377,13 @@ def build_queue(
         queue_fullsize,
         nzos_matched,
     ) = sabnzbd.NzbQueue.queue_info(
-        search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids, start=start, limit=limit
+        search=search,
+        categories=categories,
+        priorities=priorities,
+        statuses=statuses,
+        nzo_ids=nzo_ids,
+        start=start,
+        limit=limit,
     )
 
     info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
@@ -1405,7 +1434,7 @@ def build_queue(
 
         if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if nzo.propagation_delay_left:
-                slot["status"] = Status.PROP
+                slot["status"] = Status.PROPAGATING
             elif nzo.status == Status.CHECKING:
                 slot["status"] = Status.CHECKING
             else:
@@ -1630,36 +1659,20 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 
 def build_history(
     start: int = 0,
-    limit: int = 0,
+    limit: int = 1000000,
     search: Optional[str] = None,
-    failed_only: int = 0,
     categories: Optional[List[str]] = None,
+    statuses: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
 ) -> Tuple[List[Dict[str, Any]], int, int]:
     """Combine the jobs still in post-processing and the database history"""
-    if not limit:
-        limit = 1000000
-
     # Grab any items that are active or queued in postproc
-    postproc_queue = sabnzbd.PostProcessor.get_queue()
-
-    # Filter out any items that don't match the search term or category
-    if postproc_queue:
-        # It would be more efficient to iterate only once, but we accept the penalty for code clarity
-        if isinstance(categories, list):
-            postproc_queue = [nzo for nzo in postproc_queue if nzo.cat in categories]
-
-        if isinstance(search, str):
-            # Replace * with .* and ' ' with .
-            search_text = search.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
-            try:
-                re_search = re.compile(search_text, re.I)
-                postproc_queue = [nzo for nzo in postproc_queue if re_search.search(nzo.final_name)]
-            except:
-                logging.error(T("Failed to compile regex for search term: %s"), search_text)
-
-        if nzo_ids:
-            postproc_queue = [nzo for nzo in postproc_queue if nzo.nzo_id in nzo_ids]
+    postproc_queue = sabnzbd.PostProcessor.get_queue(
+        search=search,
+        categories=categories,
+        statuses=statuses,
+        nzo_ids=nzo_ids,
+    )
 
     # Multi-page support for postproc items
     postproc_queue_size = len(postproc_queue)
@@ -1668,13 +1681,10 @@ def build_history(
         postproc_queue = []
         database_history_limit = limit
     else:
-        try:
-            if limit:
-                postproc_queue = postproc_queue[start : start + limit]
-            else:
-                postproc_queue = postproc_queue[start:]
-        except:
-            pass
+        if limit:
+            postproc_queue = postproc_queue[start : start + limit]
+        else:
+            postproc_queue = postproc_queue[start:]
         # Remove the amount of postproc items from the db request for history items
         database_history_limit = max(limit - len(postproc_queue), 0)
     database_history_start = max(start - postproc_queue_size, 0)
@@ -1691,12 +1701,22 @@ def build_history(
     # Fetch history items
     if not database_history_limit:
         items, total_items = history_db.fetch_history(
-            database_history_start, 1, search, failed_only, categories, nzo_ids
+            start=database_history_start,
+            limit=1,
+            search=search,
+            categories=categories,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         )
         items = []
     else:
         items, total_items = history_db.fetch_history(
-            database_history_start, database_history_limit, search, failed_only, categories, nzo_ids
+            start=database_history_start,
+            limit=database_history_limit,
+            search=search,
+            categories=categories,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         )
 
     # Add the postproc items to the top of the history

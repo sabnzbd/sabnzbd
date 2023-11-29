@@ -805,12 +805,12 @@ class NzbQueue:
         search: Optional[str] = None,
         categories: Optional[List[str]] = None,
         priorities: Optional[List[str]] = None,
+        statuses: Optional[List[str]] = None,
         nzo_ids: Optional[List[str]] = None,
         start: int = 0,
         limit: int = 0,
     ) -> Tuple[int, int, int, List[NzbObject], int, int]:
-        """Return list of queued jobs,
-        optionally filtered by 'search' and 'nzo_ids', and limited by start and limit.
+        """Return list of queued jobs, optionally filtered and limited by start and limit.
         Not locked for performance, only reads the queue
         """
         if search:
@@ -839,6 +839,10 @@ class NzbQueue:
                 continue
             if priorities and nzo.priority not in priorities:
                 continue
+            if statuses and nzo.status not in statuses:
+                # Propagation status is set only by the API-code, so has to be filtered specially
+                if not (Status.PROPAGATING in statuses and nzo.propagation_delay_left):
+                    continue
             if nzo_ids and nzo.nzo_id not in nzo_ids:
                 continue
 

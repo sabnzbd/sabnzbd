@@ -338,7 +338,7 @@ function ViewModel() {
             limit: parseInt(self.queue.paginationLimit())
         }
         if (self.queue.searchTerm()) {
-            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority"])
+            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority", "status"])
         }
         var queueApi = callAPI(api_call)
             .done(self.updateQueue)
@@ -367,7 +367,7 @@ function ViewModel() {
             last_history_update: self.history.lastUpdate
         }
         if (self.history.searchTerm()) {
-            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category"])
+            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category", "status"])
         }
 
         // History
@@ -397,7 +397,6 @@ function ViewModel() {
             if (keyword === "priority" && api_request["priority"]) {
                 for (const prio_name in self.queue.priorityName) {
                     api_request["priority"] = api_request["priority"].replace(prio_name, self.queue.priorityName[prio_name])
-
                 }
             }
         }

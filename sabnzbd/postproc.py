@@ -216,9 +216,39 @@ class PostProcessor(Thread):
         """Return True if pp queue is empty"""
         return self.slow_queue.empty() and self.fast_queue.empty() and not self.__busy
 
-    def get_queue(self) -> List[NzbObject]:
-        """Return list of NZOs that still need to be processed"""
-        return [nzo for nzo in self.history_queue if nzo.work_name]
+    def get_queue(
+        self,
+        search: Optional[str] = None,
+        categories: Optional[List[str]] = None,
+        statuses: Optional[List[str]] = None,
+        nzo_ids: Optional[List[str]] = None,
+    ) -> List[NzbObject]:
+        """Return list of NZOs that still need to be processed.
+        Optionally filtered by the search terms"""
+        re_search = None
+        if isinstance(search, str):
+            # Replace * with .* and ' ' with .
+            search_text = search.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
+            try:
+                re_search = re.compile(search_text, re.I)
+            except:
+                logging.error(T("Failed to compile regex for search term: %s"), search_text)
+
+        # Need a copy to prevent race conditions
+        filtered_queue = []
+        for nzo in self.history_queue[:]:
+            if not nzo.work_name:
+                continue
+            if re_search and not re_search.search(nzo.final_name):
+                continue
+            if categories and nzo.cat not in categories:
+                continue
+            if statuses and nzo.status not in statuses:
+                continue
+            if nzo_ids and nzo.nzo_id not in nzo_ids:
+                continue
+            filtered_queue.append(nzo)
+        return filtered_queue
 
     def get_path(self, nzo_id: str) -> Optional[str]:
         """Return download path for given nzo_id or None when not found"""
