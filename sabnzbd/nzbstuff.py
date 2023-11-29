@@ -1583,7 +1583,11 @@ class NzbObject(TryList):
         if dups:
             download_msgs.append(T("%s articles had non-matching duplicates") % dups)
         self.set_unpack_info("Download", "<br/>".join(download_msgs), unique=True)
-        self.set_unpack_info("Source", self.url or self.filename, unique=True)
+
+        # Add RSS source
+        if rss_feed := self.nzo_info.get("RSS"):
+            self.set_unpack_info("Source", "%s: %s" % (T("RSS"), rss_feed))
+        self.set_unpack_info("Source", self.url or self.filename)
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, bad_article_type: str):

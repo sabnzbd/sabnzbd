@@ -396,6 +396,7 @@ class RSSReader:
                         star = first
                     if result:
                         _HandleLink(
+                            feed,
                             jobs,
                             link,
                             infourl,
@@ -418,6 +419,7 @@ class RSSReader:
                             new_downloads.append(title)
                     else:
                         _HandleLink(
+                            feed,
                             jobs,
                             link,
                             infourl,
@@ -576,6 +578,7 @@ def patch_feedparser():
 
 
 def _HandleLink(
+    feed,
     jobs,
     link,
     infourl,
@@ -624,8 +627,17 @@ def _HandleLink(
     if download:
         jobs[link]["status"] = "D"
         jobs[link]["time_downloaded"] = time.localtime()
+
         logging.info("Adding %s (%s) to queue", link, title)
-        sabnzbd.urlgrabber.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
+        sabnzbd.urlgrabber.add_url(
+            link,
+            pp=pp,
+            script=script,
+            cat=cat,
+            priority=priority,
+            nzbname=nzbname,
+            nzo_info={"RSS": feed},
+        )
     else:
         if star:
             jobs[link]["status"] = flag + "*"

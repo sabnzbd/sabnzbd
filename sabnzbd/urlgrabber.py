@@ -31,7 +31,7 @@ from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
 import base64
-from typing import Tuple, Optional, Union, List
+from typing import Tuple, Optional, Union, List, Dict, Any
 
 import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES, DEFAULT_PRIORITY
@@ -112,8 +112,7 @@ class URLGrabber(Thread):
                         continue
 
                 filename = None
-                category = None
-                nzo_info = {}
+                nzo_info = future_nzo.nzo_info
                 wait = 0
                 retry = True
                 fetch_request = None
@@ -294,6 +293,10 @@ class URLGrabber(Thread):
             # Failed fetch
             msg = T("URL Fetching failed; %s") % msg
 
+        # Add RSS source
+        if rss_feed := nzo.nzo_info.get("RSS"):
+            nzo.set_unpack_info("Source", "%s: %s" % (T("RSS"), rss_feed))
+
         # Mark as failed and set the info why
         nzo.set_unpack_info("Source", url)
         nzo.set_unpack_info("Source", msg)
@@ -381,6 +384,7 @@ def add_url(
     priority: Optional[Union[int, str]] = None,
     nzbname: Optional[str] = None,
     password: Optional[str] = None,
+    nzo_info: Optional[Dict[str, Any]] = None,
     dup_check: bool = True,
 ) -> Tuple[AddNzbFileResult, List[str]]:
     """Add NZB based on a URL, attributes optional"""
@@ -405,6 +409,7 @@ def add_url(
             password=password,
             nzbname=nzbname,
             status=Status.GRABBING,
+            nzo_info=nzo_info,
             dup_check=dup_check,
         )
     except NzbRejected:

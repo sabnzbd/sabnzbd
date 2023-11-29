@@ -1485,16 +1485,24 @@ class ConfigRss:
         """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
-        nzbname = kwargs.get("nzbname")
-        att = sabnzbd.RSSReader.lookup_url(feed, url)
-        if att:
+        if att := sabnzbd.RSSReader.lookup_url(feed, url):
+            nzbname = kwargs.get("nzbname")
             pp = att.get("pp")
             cat = att.get("cat")
             script = att.get("script")
-            prio = att.get("prio")
+            priority = att.get("prio")
 
             if url:
-                sabnzbd.urlgrabber.add_url(url, pp, script, cat, prio, nzbname)
+                logging.info("Adding %s (%s) to queue", priority, nzbname)
+                sabnzbd.urlgrabber.add_url(
+                    url,
+                    pp=pp,
+                    script=script,
+                    cat=cat,
+                    priority=priority,
+                    nzbname=nzbname,
+                    nzo_info={"RSS": feed},
+                )
             # Need to pass the title instead
             sabnzbd.RSSReader.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
