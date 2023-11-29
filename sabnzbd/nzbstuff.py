@@ -1384,7 +1384,7 @@ class NzbObject(TryList):
                 labels.append(T("WAIT %s sec") % dif)
 
         # Propagation delay label
-        if self.propagation_delay_left:
+        if self.propagation_delay_left and self.priority != FORCE_PRIORITY:
             labels.append(T("PROPAGATING %s min") % self.propagation_delay_left)  # Queue indicator: propagation of post
 
         return labels
