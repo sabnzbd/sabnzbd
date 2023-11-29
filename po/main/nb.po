@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Norwegian Bokmål (https://app.transifex.com/sabnzbd/teams/111101/nb/)\n"
@@ -176,11 +176,6 @@ msgstr "Ingen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standard"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Kunne ikke lage regex for søkestreng: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1462,6 +1457,11 @@ msgstr "Feil %s: Du må oppgi et gyldig brukernavn og passord."
 #: sabnzbd/postproc.py
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Gammel kø oppdaget. Bruk Status -> Reparer for å konvertere køen"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Kunne ikke lage regex for søkestreng: %s"
 
 #. Warning message
 #: sabnzbd/postproc.py

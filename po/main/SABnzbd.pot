@@ -163,11 +163,6 @@ msgid "Default"
 msgstr ""
 
 #. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr ""
-
-#. Error message
 #: sabnzbd/assembler.py
 msgid "Disk full! Forcing Pause"
 msgstr ""
@@ -1367,6 +1362,11 @@ msgstr ""
 #. Warning message
 #: sabnzbd/postproc.py
 msgid "Old queue detected, use Status->Repair to convert the queue"
+msgstr ""
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
 msgstr ""
 
 #. Warning message

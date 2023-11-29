@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Swedish (https://app.transifex.com/sabnzbd/teams/111101/sv/)\n"
@@ -174,11 +174,6 @@ msgstr "Ingen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standard"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Det gick inte att kompilera regex för sök-sträng: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1465,6 +1460,11 @@ msgstr "Error %s: Du måste ange ett giltigt användarnamn och lösenord."
 #: sabnzbd/postproc.py
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Gammal kö hittad, använd Status -> Reparera för att konvertera kön"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Det gick inte att kompilera regex för sök-sträng: %s"
 
 #. Warning message
 #: sabnzbd/postproc.py

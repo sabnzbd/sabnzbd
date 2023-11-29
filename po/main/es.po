@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
@@ -187,11 +187,6 @@ msgstr "Ninguno"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Predeterminado"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Compilación de regex para término fallo: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1524,6 +1519,11 @@ msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 "Se ha encontrado una cola antigua, utilice Estado->Reparar para convertir la"
 " cola"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Compilación de regex para término fallo: %s"
 
 #. Warning message
 #: sabnzbd/postproc.py

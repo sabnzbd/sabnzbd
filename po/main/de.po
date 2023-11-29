@@ -15,7 +15,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -194,12 +194,6 @@ msgstr "Nichts"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standard"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr ""
-"Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen."
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1534,6 +1528,12 @@ msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 "Alte Warteschlangen-Version erkannt, über Status->Reparieren ins neue Format"
 " konvertieren"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr ""
+"Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen."
 
 #. Warning message
 #: sabnzbd/postproc.py

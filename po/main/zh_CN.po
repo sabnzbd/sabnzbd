@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -172,11 +172,6 @@ msgstr "无"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "默认"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "为搜索关键词编译正则表达式失败: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1452,6 +1447,11 @@ msgstr "错误 %s: 您需要提供有效的用户名与密码。"
 #: sabnzbd/postproc.py
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "侦测到旧版队列，请使用“状态”→“修复”转换队列"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "为搜索关键词编译正则表达式失败: %s"
 
 #. Warning message
 #: sabnzbd/postproc.py

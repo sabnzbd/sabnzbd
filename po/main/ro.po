@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -181,11 +181,6 @@ msgstr "Niciunul"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Implicit"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Compilarea unei căutări regex nereuşită: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1496,6 +1491,11 @@ msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 "Coadă de descărcare veche detectată, utilizează Stare->Reparare pentru a "
 "converti coada"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Compilarea unei căutări regex nereuşită: %s"
 
 #. Warning message
 #: sabnzbd/postproc.py

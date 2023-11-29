@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -184,11 +184,6 @@ msgstr "Geen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standaard"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1510,6 +1505,11 @@ msgstr "Fout %s: Je moet een geldige gebruikersnaam en wachtwoord invullen."
 #: sabnzbd/postproc.py
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Oude wachtrij gevonden, gebruik Status->Reparatie om te converteren"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
 
 #. Warning message
 #: sabnzbd/postproc.py

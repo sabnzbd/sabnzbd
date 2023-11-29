@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Alpha3\n"
+"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -177,11 +177,6 @@ msgstr "אין"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "ברירת מחדל"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "עבור מונח חיפוש regex נכשל בליקוט: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -1471,6 +1466,11 @@ msgstr "שגיאה %s: אתה צריך לספק שם משתמש וסיסמה ת�
 #: sabnzbd/postproc.py
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "תור ישן התגלה, השתמש במעמד->תיקון כדי להמיר את התור"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "עבור מונח חיפוש regex נכשל בליקוט: %s"
 
 #. Warning message
 #: sabnzbd/postproc.py
