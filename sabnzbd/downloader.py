@@ -888,6 +888,13 @@ class Downloader(Thread):
                 errormsg = T("Cannot connect to server %s [%s]") % (server.host, error.msg)
                 penalty = _PENALTY_UNKNOWN
                 block = True
+
+            # Set error for server and warn user if it was first time thrown
+            if errormsg and server.active and server.errormsg != errormsg:
+                server.errormsg = errormsg
+                logging.warning(errormsg)
+
+            # Take action on the problem
             if block or (penalty and server.optional):
                 retry_article = False
                 if server.active:
@@ -900,11 +907,6 @@ class Downloader(Thread):
                             self.plan_server(server, penalty)
                 # Note that the article is discard for this server if the server is not required
                 self.__reset_nw(nw, retry_article=retry_article)
-
-            # Set error for server and warn user if it was first time thrown
-            if errormsg and server.active and server.errormsg != errormsg:
-                server.errormsg = errormsg
-                logging.warning(errormsg)
             return False
         except Exception as err:
             logging.error(
