@@ -295,7 +295,7 @@ class URLGrabber(Thread):
 
         # Add RSS source
         if rss_feed := nzo.nzo_info.get("RSS"):
-            nzo.set_unpack_info("Source", "%s: %s" % (T("RSS"), rss_feed))
+            nzo.set_unpack_info("RSS", rss_feed, unique=True)
 
         # Mark as failed and set the info why
         nzo.set_unpack_info("Source", url)

@@ -120,14 +120,15 @@ INTERFACE_PRIORITIES = {
 }
 
 STAGES = {
-    "Source": 0,
-    "Download": 1,
-    "Servers": 2,
-    "Repair": 3,
-    "Filejoin": 4,
-    "Unpack": 5,
-    "Deobfuscate": 6,
-    "Script": 7,
+    "RSS": 0,
+    "Source": 1,
+    "Download": 2,
+    "Servers": 3,
+    "Repair": 4,
+    "Filejoin": 5,
+    "Unpack": 6,
+    "Deobfuscate": 7,
+    "Script": 8,
 }
 
 VALID_ARCHIVES = (".zip", ".rar", ".7z")

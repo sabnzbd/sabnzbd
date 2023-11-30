@@ -1586,8 +1586,8 @@ class NzbObject(TryList):
 
         # Add RSS source
         if rss_feed := self.nzo_info.get("RSS"):
-            self.set_unpack_info("Source", "%s: %s" % (T("RSS"), rss_feed))
-        self.set_unpack_info("Source", self.url or self.filename)
+            self.set_unpack_info("RSS", rss_feed, unique=True)
+        self.set_unpack_info("Source", self.url or self.filename, unique=True)
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, bad_article_type: str):

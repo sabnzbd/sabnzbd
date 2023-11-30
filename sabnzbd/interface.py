@@ -1493,7 +1493,7 @@ class ConfigRss:
             priority = att.get("prio")
 
             if url:
-                logging.info("Adding %s (%s) to queue", priority, nzbname)
+                logging.info("Adding %s (%s) to queue", url, nzbname)
                 sabnzbd.urlgrabber.add_url(
                     url,
                     pp=pp,

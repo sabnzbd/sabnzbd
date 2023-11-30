@@ -28,6 +28,7 @@ SKIN_TEXT = {
     "stage-unpack": TT("Unpack"),  #: PP phase "unpack"
     "stage-deobfuscate": TT("Deobfuscate"),  #: PP phase "deobfuscate"
     "stage-script": TT("Script"),  #: PP phase "script"
+    "stage-rss": TT("RSS"),  #: PP RSS feed  of the NZB
     "stage-source": TT("Source"),  #: PP Source of the NZB (path or URL)
     "stage-servers": TT("Servers"),  #: PP Distribution over servers
     "post-Completed": TT("Completed"),  #: PP status
