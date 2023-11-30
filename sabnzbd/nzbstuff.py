@@ -1950,12 +1950,13 @@ class NzbObject(TryList):
                 duplicate_in_history = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
                 logging.debug("Duplicate in history: %s", duplicate_in_history)
 
-                if not duplicate_in_history and cfg.backup_for_duplicates():
-                    duplicate_in_history = backup_exists(self.filename)
-                    logging.debug("Duplicate in backup: %s", duplicate_in_history)
-
                 duplicate_in_queue = sabnzbd.NzbQueue.have_name_or_md5sum(self.final_name, self.md5sum)
                 logging.debug("Duplicate in queue: %s", duplicate_in_queue)
+
+                # The nzb can already be in the backup while the job is still in the queue!
+                if not duplicate_in_history and not duplicate_in_queue and cfg.backup_for_duplicates():
+                    duplicate_in_history = backup_exists(self.filename)
+                    logging.debug("Duplicate in backup: %s", duplicate_in_history)
 
             # Dupe check off nzb filename
             if not duplicate_in_history and not duplicate_in_queue and cfg.no_smart_dupes():
