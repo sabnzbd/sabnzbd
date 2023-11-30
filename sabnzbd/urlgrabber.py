@@ -149,13 +149,19 @@ class URLGrabber(Thread):
                             value = fetch_request.headers[hdr]
                         except:
                             continue
+
+                        # Skip empty values
+                        if not value:
+                            continue
+
                         if item in ("category_id", "x-dnzb-category"):
                             # Use indexer category in case no specific one was set
                             if value and future_nzo.cat in (None, "*"):
-                                future_nzo.cat = misc.cat_convert(value)
-                        elif item in ("x-dnzb-moreinfo",):
+                                if indexer_cat := misc.cat_convert(value):
+                                    future_nzo.cat = indexer_cat
+                        elif item == "x-dnzb-moreinfo":
                             nzo_info["more_info"] = value
-                        elif item in ("x-dnzb-name",):
+                        elif item == "x-dnzb-name":
                             filename = value
                             if not filename.endswith(".nzb"):
                                 filename += ".nzb"
@@ -173,10 +179,10 @@ class URLGrabber(Thread):
                             nzo_info["password"] = value
                         elif item == "retry-after":
                             wait = misc.int_conv(value)
-
-                        # Get filename from Content-Disposition header
-                        if not filename and "filename" in value:
-                            filename = filename_from_content_disposition(value)
+                        elif item == "content-disposition":
+                            # Get filename from Content-Disposition header
+                            if not filename and "filename" in value:
+                                filename = filename_from_content_disposition(value)
 
                 if wait:
                     # For sites that have a rate-limiting attribute
@@ -368,11 +374,9 @@ def filename_from_content_disposition(content_disposition: str) -> Optional[str]
         filename_from_content_disposition('attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz')
         should return: 'jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz'
     """
-    filename = Message(f"Content-Disposition: attachment; {content_disposition}").get_filename()
-    if filename:
+    if filename := Message(f"Content-Disposition: attachment; {content_disposition}").get_filename():
         # Basic sanitation
-        filename = os.path.basename(filename).lstrip(".").strip()
-        if filename:
+        if filename := os.path.basename(filename).lstrip(".").strip():
             return filename
 
 
