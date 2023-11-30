@@ -1238,11 +1238,6 @@ msgstr "%s מאמרים היו חסרים"
 msgid "%s articles had non-matching duplicates"
 msgstr "אל %s מאמרים יש כפילויות בלתי תואמות"
 
-#. Main menu item
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
-msgid "RSS"
-msgstr "RSS"
-
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "משהה NZB כפול \"%s\""
@@ -1754,6 +1749,11 @@ msgstr "אי־האפלה"
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "תסריט"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

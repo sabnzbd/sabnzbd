@@ -3,12 +3,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
+# Kangwei Li <lkw20010211@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.2.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Kangwei Li <lkw20010211@gmail.com>, 2023\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1221,11 +1222,6 @@ msgstr "%s 篇文章缺失"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s 篇文章存在未匹配的重复"
 
-#. Main menu item
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
-msgid "RSS"
-msgstr "RSS"
-
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "正在暂停重复 NZB \"%s\""
@@ -1733,6 +1729,11 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "脚本"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2874,11 +2875,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
-msgstr ""
+msgstr "完成下载文件夹的最小剩余空间"
 
 #: sabnzbd/skintext.py
 msgid "Will not work if a category folder is on a different disk."
-msgstr ""
+msgstr "当某分类的路径位于另一磁盘上时不生效。"
 
 #. Auto-resume download on the reset day
 #: sabnzbd/skintext.py
@@ -2962,14 +2963,14 @@ msgstr "队列管理及历史数据库的存放位置。<br /><i>仅当队列为
 
 #: sabnzbd/skintext.py
 msgid "Backup Folder"
-msgstr ""
+msgstr "备份文件夹"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Location where the backups of the configuration file and databases are "
 "stored.<br />If left empty, the backup will be created in the Completed "
 "Download Folder."
-msgstr ""
+msgstr "备份配置文件和数据库的位置。<br />如果留空，备份将存放于完成下载文件夹中。"
 
 #: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
@@ -2986,7 +2987,7 @@ msgstr "SABnzbd 日志文件的位置。<br /><i>需要重启 SABnzbd 才能生�
 
 #: sabnzbd/skintext.py
 msgid "Purge Logs"
-msgstr ""
+msgstr "清除日志"
 
 #: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
@@ -3435,7 +3436,7 @@ msgstr "超时"
 
 #: sabnzbd/skintext.py
 msgid "Account expiration date"
-msgstr ""
+msgstr "账户到期时间"
 
 #: sabnzbd/skintext.py
 msgid "Warn 5 days in advance of account expiration date."
@@ -3615,7 +3616,7 @@ msgstr "应用过滤器"
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
-msgstr ""
+msgstr "编辑"
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py

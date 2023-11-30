@@ -1170,11 +1170,6 @@ msgstr ""
 msgid "%s articles had non-matching duplicates"
 msgstr ""
 
-#. Main menu item
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
-msgid "RSS"
-msgstr ""
-
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
@@ -1645,6 +1640,11 @@ msgstr ""
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Script"
+msgstr ""
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
 msgstr ""
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode

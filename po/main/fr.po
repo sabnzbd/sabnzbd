@@ -1291,11 +1291,6 @@ msgstr "%s articles manquants"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articles avec doublons sans correspondance"
 
-#. Main menu item
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
-msgid "RSS"
-msgstr "RSS"
-
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Mise en pause du doublon NZB \"%s\""
@@ -1816,6 +1811,11 @@ msgstr "Désobfuscation"
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Script"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

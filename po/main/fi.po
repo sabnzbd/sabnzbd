@@ -1235,11 +1235,6 @@ msgstr "%s artikkelia puuttui"
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikkelissa oli ei-vastaavia kaksoiskappaleita"
 
-#. Main menu item
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py, sabnzbd/urlgrabber.py
-msgid "RSS"
-msgstr "RSS"
-
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
@@ -1747,6 +1742,11 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Skripti"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
