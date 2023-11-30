@@ -54,7 +54,7 @@ class TestHappyEyeballs:
             assert "google" in addrinfo.canonname
 
     def test_google_unreachable_port(self):
-        assert happyeyeballs("www.google.com", port=33333) is None
+        assert happyeyeballs("www.google.com", port=33333, timeout=1) is None
 
     @pytest.mark.xfail(reason="CI sometimes blocks this")
     def test_nntp(self):

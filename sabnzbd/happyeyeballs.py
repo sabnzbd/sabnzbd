@@ -33,6 +33,7 @@ from typing import Tuple, Union, Optional
 from more_itertools import roundrobin
 
 from sabnzbd import cfg as cfg
+from sabnzbd.constants import DEF_TIMEOUT
 
 # How long to delay between connection attempts? The RFC suggests 250ms, but this is
 # quite long and might give us a slow host that just happened to be on top of the list.
@@ -78,12 +79,12 @@ class AddrInfo:
 
 
 # Called by each thread
-def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo):
+def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: int):
     """Connect to the ip, and put the result into the queue"""
     try:
         start = time.time()
         s = socket.socket(addrinfo.family, addrinfo.type)
-        s.settimeout(MAXIMUM_RESOLUTION_TIME)
+        s.settimeout(timeout)
         try:
             s.connect(addrinfo.sockaddr)
             result_queue.put(addrinfo)
@@ -106,7 +107,7 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo):
         pass
 
 
-def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
+def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
     by getaddrinfo or if no connection could be made to any of the addresses"""
@@ -165,7 +166,7 @@ def happyeyeballs(host: str, port: int) -> Optional[AddrInfo]:
         addr_tried = 0
         result: Optional[AddrInfo] = None
         for addrinfo in roundrobin(ipv6_addrinfo, ipv4_addrinfo):
-            threading.Thread(target=do_socket_connect, args=(result_queue, addrinfo), daemon=True).start()
+            threading.Thread(target=do_socket_connect, args=(result_queue, addrinfo, timeout), daemon=True).start()
             addr_tried += 1
             try:
                 result = result_queue.get(timeout=CONNECTION_ATTEMPT_DELAY)

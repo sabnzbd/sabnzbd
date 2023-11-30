@@ -80,6 +80,7 @@ from sabnzbd.constants import (
     GUESSIT_SORT_TYPES,
     VALID_NZB_FILES,
     VALID_ARCHIVES,
+    DEF_TIMEOUT,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -1151,7 +1152,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        if not happyeyeballs(host, int_conv(port)):
+        if not happyeyeballs(host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_TIMEOUT)):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
     # Default server name is just the host name
