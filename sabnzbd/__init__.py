@@ -183,8 +183,9 @@ INTERNET_BANDWIDTH = 0
 IPERF3INSTALLED = False
 if platform.system() == "Linux":
     try:
-        import iperf3 # checks the python module
-        iperf3.Client() # checks the iperf3 binary / library
+        import iperf3  # checks the python module
+
+        iperf3.Client()  # checks the iperf3 binary / library
         IPERF3INSTALLED = True
     except:
         pass

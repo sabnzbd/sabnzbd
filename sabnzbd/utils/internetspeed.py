@@ -9,7 +9,7 @@ Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 import time
 import logging
 import urllib.request
-import sabnzbd # TODO : needed for getting sabnzbd.IPERF3INSTALLED ?
+import sabnzbd  # TODO : needed for getting sabnzbd.IPERF3INSTALLED ?
 import sabnzbd.cfg as cfg
 
 
