@@ -487,6 +487,16 @@ receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
 switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
+iperf3_servers = OptionList(
+    "misc",
+    "iperf3_servers",
+    [
+        "speedtest.ams1.nl.leaseweb.net",
+        "ams.speedtest.clouvider.net",
+        "fra.speedtest.clouvider.net",
+        "nyc.speedtest.clouvider.net",
+    ],
+)
 
 
 ##############################################################################
