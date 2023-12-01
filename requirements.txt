@@ -45,7 +45,7 @@ pyobjc-framework-Cocoa==10.0; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
-iperf3; sys_platform != 'win32' and sys_platform != 'darwin'
+# iperf3; sys_platform != 'win32' and sys_platform != 'darwin'
 
 # Optional support for *nix tray icon.
 # Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.
