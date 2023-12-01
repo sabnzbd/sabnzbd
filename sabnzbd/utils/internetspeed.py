@@ -8,7 +8,10 @@ Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 
 import time
 import logging
+import platform
 import urllib.request
+import sabnzbd.cfg as cfg
+
 
 SIZE_URL_LIST = [
     [5, "https://sabnzbd.org/tests/internetspeed/5MB.bin"],
@@ -58,7 +61,7 @@ def iperf3_downstream_speed(server="ams.speedtest.clouvider.net", duration=3):
     client.server_hostname = server  # todo both try ipv4 and ipv6 for strange setups?
     client.reverse = True  # Downstream
 
-    portlist = list(range(5200, 5209 + 1))
+    portlist = list(range(5201, 5209 + 1))
     for _ in range(8):
         myport = random.choice(portlist)
         portlist.remove(myport)
@@ -77,26 +80,20 @@ def iperf3_downstream_speed(server="ams.speedtest.clouvider.net", duration=3):
 def internetspeed() -> float:
     """Report Internet speed in MB/s as a float"""
 
-    # check if on Linux (incl docker)
-    import platform
-
+    # First try iperf3 ... which only works on Linux:
     if platform.system() == "Linux":
         maxspeed_iperf3 = None
-        iperf3_servers = [
-            "ams.speedtest.clouvider.net",
-            "fra.speedtest.clouvider.net",
-            "nyc.speedtest.clouvider.net",
-            "2a0f:93c0:0:8::2",
-        ]
+        iperf3_servers = cfg.iperf3_servers()
         for myserver in iperf3_servers:
             iperf3_speed = iperf3_downstream_speed(myserver)
             logging.debug("speed via %s is %s [Mbps]", myserver, iperf3_speed)
             maxspeed_iperf3 = max(maxspeed_iperf3 or 0, iperf3_speed or 0)
 
         if maxspeed_iperf3 > 0:
-            # OK, done
+            # OK, we found a Internet speed via iperf3, so we're done
             return maxspeed_iperf3 / 8.05
 
+    # No iperf3 result, so measure Internet speed via HTTPS
     # Do basic test with a small download
     logging.debug("Basic measurement, with small download:")
     start = time.time()
