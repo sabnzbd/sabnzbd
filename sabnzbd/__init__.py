@@ -74,6 +74,8 @@ elif os.name == "posix":
             pass
 
 
+import platform
+
 # Imported to be referenced from other files directly
 from sabnzbd.version import __version__, __baseline__
 
@@ -177,6 +179,16 @@ PYSTONE_SCORE = 0
 DOWNLOAD_DIR_SPEED = 0
 COMPLETE_DIR_SPEED = 0
 INTERNET_BANDWIDTH = 0
+
+IPERF3INSTALLED = False
+if platform.system() == "Linux":
+    try:
+        import iperf3 # checks the python module
+        iperf3.Client() # checks the iperf3 binary / library
+        IPERF3INSTALLED = True
+    except:
+        pass
+
 
 # Record of HTTPS config files at startup
 CONFIG_BACKUP_HTTPS_OK = []

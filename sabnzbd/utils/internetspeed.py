@@ -8,8 +8,8 @@ Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 
 import time
 import logging
-import platform
 import urllib.request
+import sabnzbd # TODO : needed for getting sabnzbd.IPERF3INSTALLED ?
 import sabnzbd.cfg as cfg
 
 
@@ -80,9 +80,10 @@ def iperf3_downstream_speed(server="ams.speedtest.clouvider.net", duration=3):
 def internetspeed() -> float:
     """Report Internet speed in MB/s as a float"""
 
-    # First try iperf3 ... which only works on Linux:
-    if platform.system() == "Linux":
-        maxspeed_iperf3 = None
+    # If there, try iperf3
+    logging.debug("SJ100 sabnzbd.IPERF3INSTALLED %s", sabnzbd.IPERF3INSTALLED)
+    if sabnzbd.IPERF3INSTALLED:
+        maxspeed_iperf3 = 0
         iperf3_servers = cfg.iperf3_servers()
         for myserver in iperf3_servers:
             iperf3_speed = iperf3_downstream_speed(myserver)
