@@ -865,12 +865,10 @@ class NzbQueue:
         return bytes_left
 
     def is_empty(self) -> bool:
-        empty = True
         for nzo in self.__nzo_list:
             if not nzo.futuretype and nzo.status != Status.PAUSED:
-                empty = False
-                break
-        return empty
+                return False
+        return True
 
     def stop_idle_jobs(self):
         """Detect jobs that have zero files left and send them to post processing"""
