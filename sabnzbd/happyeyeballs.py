@@ -40,9 +40,6 @@ from sabnzbd.constants import DEF_TIMEOUT
 # The absolute minium specified in RFC 8305 is 10ms, so we use that.
 CONNECTION_ATTEMPT_DELAY = 0.01
 
-# The total time we want to wait for any result
-MAXIMUM_RESOLUTION_TIME = 3
-
 # While providers are afraid to add IPv6 to their standard hostnames
 # we map a number of well known hostnames to their IPv6 alternatives.
 # WARNING: Only add if the SSL-certificate allows both hostnames!
@@ -180,7 +177,7 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT) -> Optional[
         if not result:
             try:
                 # Reduce waiting time by time already spent
-                result = result_queue.get(timeout=MAXIMUM_RESOLUTION_TIME - addr_tried * CONNECTION_ATTEMPT_DELAY)
+                result = result_queue.get(timeout=timeout - addr_tried * CONNECTION_ATTEMPT_DELAY)
             except queue.Empty:
                 raise ConnectionError("No addresses could be resolved")
 
