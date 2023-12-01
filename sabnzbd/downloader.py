@@ -666,7 +666,7 @@ class Downloader(Thread):
                 else:
                     read = []
                     BPSMeter.reset()
-                    time.sleep(1.0)
+                    time.sleep(0.1)
                     self.max_chunk_size = _DEFAULT_CHUNK_SIZE
                     with DOWNLOADER_CV:
                         while (
