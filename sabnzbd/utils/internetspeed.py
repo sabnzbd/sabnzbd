@@ -9,6 +9,7 @@ Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 import time
 import logging
 import urllib.request
+import random
 import sabnzbd  # TODO : needed for getting sabnzbd.IPERF3INSTALLED ?
 import sabnzbd.cfg as cfg
 
@@ -50,12 +51,11 @@ def bytes_to_bits(megabytes_per_second: float) -> float:
 def iperf3_downstream_speed(server="ams.speedtest.clouvider.net", duration=3):
     # Returns Internet in Mbps
     try:
-        import iperf3  # needs iperf3 binary and iperf python module.
+        import iperf3  # needs iperf3 python module.
+        client = iperf3.Client() # needs iperf3 binary library
     except:
         return None
-    import random
 
-    client = iperf3.Client()
     client.duration = duration  # seconds
     client.num_streams = 20  # should be enough for ... 2500 Mbps?
     client.server_hostname = server  # todo both try ipv4 and ipv6 for strange setups?
