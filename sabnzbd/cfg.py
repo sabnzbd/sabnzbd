@@ -492,7 +492,6 @@ iperf3_servers = OptionList(
     "iperf3_servers",
     [
         "speedtest.ams1.nl.leaseweb.net",
-        "ams.speedtest.clouvider.net",
         "fra.speedtest.clouvider.net",
         "nyc.speedtest.clouvider.net",
     ],

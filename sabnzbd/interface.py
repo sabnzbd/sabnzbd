@@ -888,6 +888,7 @@ SPECIAL_LIST_LIST = (
     "host_whitelist",
     "local_ranges",
     "ext_rename_ignore",
+    "iperf3_servers",
 )
 
 
