@@ -453,9 +453,23 @@ def same_directory(a: str, b: str) -> int:
             return is_subfolder
 
 
-def check_mount(path: str) -> bool:
-    """Return False if volume isn't mounted on Linux or macOS
-    Retry 6 times with an interval of 1 sec.
+def is_network_path(path: str) -> bool:
+    """Check weither a path is a network path.
+    On Windows, use win32 functions to detect users that try to avoid this detection by using a mapped drive letter.
+    We don't check on Linux for mnt or media, since those could also be used for internal drives."""
+    path = clip_path(path)
+    if path.startswith(r"\\"):
+        return True
+    if sabnzbd.WIN32:
+        drive_letter, _ = os.path.splitdrive(path)
+        return win32file.GetDriveType(drive_letter) == win32file.DRIVE_REMOTE
+    return False
+
+
+def mount_is_available(path: str) -> bool:
+    """Return False if volume isn't mounted on Linux or macOS or
+    the network path isn't available on Windows.
+    Retry wait_ext_drive times with an interval of 1 sec.
     """
     if sabnzbd.MACOS:
         m = re.search(r"^(/Volumes/[^/]+)", path, re.I)
@@ -749,7 +763,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
 @synchronized(DIR_LOCK)
 def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
     """Determine a unique folder or filename"""
-    if not check_mount(path):
+    if not mount_is_available(path):
         return path
 
     new_path = path

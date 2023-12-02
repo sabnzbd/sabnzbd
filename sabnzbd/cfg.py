@@ -51,7 +51,7 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
 )
-from sabnzbd.filesystem import same_directory, real_path
+from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
@@ -188,7 +188,7 @@ def validate_host(value: str) -> ValidateResult:
 
 def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""
-    if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
+    if not sabnzbd.__INITIALIZED__ or (value and is_valid_script(value)):
         return None, value
     elif (value and value == "None") or not value:
         return None, "None"
@@ -217,10 +217,10 @@ def validate_permissions(value: str) -> ValidateResult:
 
 
 def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
-    """Allow only when queues are empty and no UNC"""
+    """Allow only when queues are empty and not a network-path"""
     if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
-        if value.startswith(r"\\"):
-            return T('UNC path "%s" not allowed here') % value, None
+        if is_network_path(real_path(root, value)):
+            return T('Network path "%s" is not allowed here') % value, None
         else:
             return validate_default_if_empty(root, value, default)
     else:

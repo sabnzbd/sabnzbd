@@ -424,36 +424,36 @@ class TestCheckMountLinux(ffs.TestCase):
 
     @set_platform("linux")
     def test_bare_mountpoint_linux(self):
-        assert filesystem.check_mount("/media") is True
-        assert filesystem.check_mount("/media/") is True
-        assert filesystem.check_mount("/mnt") is True
-        assert filesystem.check_mount("/mnt/") is True
+        assert filesystem.mount_is_available("/media") is True
+        assert filesystem.mount_is_available("/media/") is True
+        assert filesystem.mount_is_available("/mnt") is True
+        assert filesystem.mount_is_available("/mnt/") is True
 
     @set_platform("linux")
     def test_existing_dir_linux(self):
-        assert filesystem.check_mount("/media/test") is True
-        assert filesystem.check_mount("/media/test/dir/") is True
-        assert filesystem.check_mount("/media/test/DIR/") is True
-        assert filesystem.check_mount("/mnt/TEST") is True
-        assert filesystem.check_mount("/mnt/TEST/dir/") is True
-        assert filesystem.check_mount("/mnt/TEST/DIR/") is True
+        assert filesystem.mount_is_available("/media/test") is True
+        assert filesystem.mount_is_available("/media/test/dir/") is True
+        assert filesystem.mount_is_available("/media/test/DIR/") is True
+        assert filesystem.mount_is_available("/mnt/TEST") is True
+        assert filesystem.mount_is_available("/mnt/TEST/dir/") is True
+        assert filesystem.mount_is_available("/mnt/TEST/DIR/") is True
 
     @set_platform("linux")
     # Cut down a bit on the waiting time
     @set_config({"wait_ext_drive": 1})
     def test_dir_nonexistent_linux(self):
         # Filesystem is case-sensitive on this platform
-        assert filesystem.check_mount("/media/TEST") is False  # Issue #1457
-        assert filesystem.check_mount("/media/TesT/") is False
-        assert filesystem.check_mount("/mnt/TeSt/DIR") is False
-        assert filesystem.check_mount("/mnt/test/DiR/") is False
+        assert filesystem.mount_is_available("/media/TEST") is False  # Issue #1457
+        assert filesystem.mount_is_available("/media/TesT/") is False
+        assert filesystem.mount_is_available("/mnt/TeSt/DIR") is False
+        assert filesystem.mount_is_available("/mnt/test/DiR/") is False
 
     @set_platform("linux")
     def test_dir_outsider_linux(self):
         # Outside of /media and /mnt
-        assert filesystem.check_mount("/test/that/") is True
+        assert filesystem.mount_is_available("/test/that/") is True
         # Root directory
-        assert filesystem.check_mount("/") is True
+        assert filesystem.mount_is_available("/") is True
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")
@@ -470,33 +470,33 @@ class TestCheckMountMacOS(ffs.TestCase):
 
     @set_platform("macos")
     def test_bare_mountpoint_macos(self):
-        assert filesystem.check_mount("/Volumes") is True
-        assert filesystem.check_mount("/Volumes/") is True
+        assert filesystem.mount_is_available("/Volumes") is True
+        assert filesystem.mount_is_available("/Volumes/") is True
 
     @set_platform("macos")
     def test_existing_dir_macos(self):
-        assert filesystem.check_mount("/Volumes/test") is True
-        assert filesystem.check_mount("/Volumes/test/dir/") is True
+        assert filesystem.mount_is_available("/Volumes/test") is True
+        assert filesystem.mount_is_available("/Volumes/test/dir/") is True
         # Filesystem is set case-insensitive for this platform
-        assert filesystem.check_mount("/VOLUMES/test") is True
-        assert filesystem.check_mount("/volumes/Test/dir/") is True
+        assert filesystem.mount_is_available("/VOLUMES/test") is True
+        assert filesystem.mount_is_available("/volumes/Test/dir/") is True
 
     @set_platform("macos")
     # Cut down a bit on the waiting time
     @set_config({"wait_ext_drive": 1})
     def test_dir_nonexistent_macos(self):
         # Within /Volumes
-        assert filesystem.check_mount("/Volumes/nosuchdir") is False  # Issue #1457
-        assert filesystem.check_mount("/Volumes/noSuchDir/") is False
-        assert filesystem.check_mount("/Volumes/nosuchDIR/subdir") is False
-        assert filesystem.check_mount("/Volumes/NOsuchdir/subdir/") is False
+        assert filesystem.mount_is_available("/Volumes/nosuchdir") is False  # Issue #1457
+        assert filesystem.mount_is_available("/Volumes/noSuchDir/") is False
+        assert filesystem.mount_is_available("/Volumes/nosuchDIR/subdir") is False
+        assert filesystem.mount_is_available("/Volumes/NOsuchdir/subdir/") is False
 
     @set_platform("macos")
     def test_dir_outsider_macos(self):
         # Outside of /Volumes
-        assert filesystem.check_mount("/test/that/") is True
+        assert filesystem.mount_is_available("/test/that/") is True
         # Root directory
-        assert filesystem.check_mount("/") is True
+        assert filesystem.mount_is_available("/") is True
 
 
 class TestCheckMountWin(ffs.TestCase):
@@ -512,39 +512,39 @@ class TestCheckMountWin(ffs.TestCase):
 
     @set_platform("win32")
     def test_existing_dir_win(self):
-        assert filesystem.check_mount("F:\\test") is True
-        assert filesystem.check_mount("F:\\test\\dir\\") is True
+        assert filesystem.mount_is_available("F:\\test") is True
+        assert filesystem.mount_is_available("F:\\test\\dir\\") is True
         # Filesystem and drive letters are case-insensitive on this platform
-        assert filesystem.check_mount("f:\\Test") is True
-        assert filesystem.check_mount("f:\\test\\DIR\\") is True
+        assert filesystem.mount_is_available("f:\\Test") is True
+        assert filesystem.mount_is_available("f:\\test\\DIR\\") is True
 
     @set_platform("win32")
     def test_bare_mountpoint_win(self):
-        assert filesystem.check_mount("F:\\") is True
-        assert filesystem.check_mount("Z:\\") is False
+        assert filesystem.mount_is_available("F:\\") is True
+        assert filesystem.mount_is_available("Z:\\") is False
 
     @set_platform("win32")
     def test_dir_nonexistent_win(self):
         # The existence of the drive letter is what really matters
-        assert filesystem.check_mount("F:\\NoSuchDir") is True
-        assert filesystem.check_mount("F:\\NoSuchDir\\") is True
-        assert filesystem.check_mount("F:\\NOsuchdir\\subdir") is True
-        assert filesystem.check_mount("F:\\nosuchDIR\\subdir\\") is True
+        assert filesystem.mount_is_available("F:\\NoSuchDir") is True
+        assert filesystem.mount_is_available("F:\\NoSuchDir\\") is True
+        assert filesystem.mount_is_available("F:\\NOsuchdir\\subdir") is True
+        assert filesystem.mount_is_available("F:\\nosuchDIR\\subdir\\") is True
 
     @set_platform("win32")
     # Cut down a bit on the waiting time
     @set_config({"wait_ext_drive": 1})
     def test_dir_on_nonexistent_drive_win(self):
         # Non-existent drive-letter
-        assert filesystem.check_mount("H:\\NoSuchDir") is False
-        assert filesystem.check_mount("E:\\NoSuchDir\\") is False
-        assert filesystem.check_mount("L:\\NOsuchdir\\subdir") is False
-        assert filesystem.check_mount("L:\\nosuchDIR\\subdir\\") is False
+        assert filesystem.mount_is_available("H:\\NoSuchDir") is False
+        assert filesystem.mount_is_available("E:\\NoSuchDir\\") is False
+        assert filesystem.mount_is_available("L:\\NOsuchdir\\subdir") is False
+        assert filesystem.mount_is_available("L:\\nosuchDIR\\subdir\\") is False
 
     @set_platform("win32")
     def test_dir_outsider_win(self):
         # Outside the local filesystem
-        assert filesystem.check_mount("//test/that/") is True
+        assert filesystem.mount_is_available("//test/that/") is True
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")

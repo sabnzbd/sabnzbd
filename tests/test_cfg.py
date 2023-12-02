@@ -108,7 +108,7 @@ class TestValidators:
     def test_validate_safedir(self):
         assert cfg.validate_safedir("", "", "def") == (None, "def")
         assert cfg.validate_safedir("", "C:\\", "") == (None, "C:\\")
-        assert "UNC path" in cfg.validate_safedir("", "\\\\NAS\\foo", "")[0]
+        assert "Network path" in cfg.validate_safedir("", "\\\\NAS\\foo", "")[0]
 
     def test_validate_host(self):
         # valid input
