@@ -1070,7 +1070,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
 
 
 @cache_maintainer(clear_time=10)
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
     """Wrapper to keep results cached by cache_maintainer
     If called with force=True, the wrapper will clear the results"""

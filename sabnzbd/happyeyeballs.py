@@ -107,7 +107,7 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
 
 
 @cache_maintainer(clear_time=10)
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
