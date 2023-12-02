@@ -33,6 +33,7 @@ import fnmatch
 import stat
 import ctypes
 import random
+import functools
 from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
@@ -42,7 +43,7 @@ except ImportError:
     pass
 
 import sabnzbd
-from sabnzbd.decorators import synchronized
+from sabnzbd.decorators import synchronized, cache_maintainer
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS, DEF_LOG_FILE
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
@@ -1068,43 +1069,15 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
         return 20.0, 10.0
 
 
-# Store all results to speed things up
-__DIRS_CHECKED = []
-__DISKS_SAME = None
-__LAST_DISK_RESULT = {"download_dir": (0.0, 0.0), "complete_dir": (0.0, 0.0)}
-__LAST_DISK_CALL = 0
-
-
+@cache_maintainer(clear_time=10)
+@functools.cache
 def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
-    """Wrapper to cache results"""
-    global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
-
-    # Reset everything when folders changed
-    dirs_to_check = [sabnzbd.cfg.download_dir.get_path(), sabnzbd.cfg.complete_dir.get_path()]
-    if __DIRS_CHECKED != dirs_to_check:
-        __DIRS_CHECKED = dirs_to_check
-        __DISKS_SAME = None
-        __LAST_DISK_RESULT = {"download_dir": [], "complete_dir": []}
-        __LAST_DISK_CALL = 0
-
-    # When forced, ignore any cache to avoid problems in UI
-    if force:
-        __LAST_DISK_CALL = 0
-
-    # Check against cache
-    if time.time() > __LAST_DISK_CALL + 10.0:
-        # Same disk? Then copy-paste
-        __LAST_DISK_RESULT["download_dir"] = diskspace_base(sabnzbd.cfg.download_dir.get_path())
-        __LAST_DISK_RESULT["complete_dir"] = (
-            __LAST_DISK_RESULT["download_dir"] if __DISKS_SAME else diskspace_base(sabnzbd.cfg.complete_dir.get_path())
-        )
-        __LAST_DISK_CALL = time.time()
-
-    # Do we know if it's same disk?
-    if __DISKS_SAME is None:
-        __DISKS_SAME = __LAST_DISK_RESULT["download_dir"] == __LAST_DISK_RESULT["complete_dir"]
-
-    return __LAST_DISK_RESULT
+    """Wrapper to keep results cached by cache_maintainer
+    If called with force=True, the wrapper will clear the results"""
+    return {
+        "download_dir": diskspace_base(sabnzbd.cfg.download_dir.get_path()),
+        "complete_dir": diskspace_base(sabnzbd.cfg.complete_dir.get_path()),
+    }
 
 
 def get_new_id(prefix, folder, check_list=None):
