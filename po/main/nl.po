@@ -293,8 +293,8 @@ msgstr ""
 "tot de aangemaakte bestanden en mappen."
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-pad '%s' hier niet toegestaan."
+msgid "Network path \"%s\" is not allowed here"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."

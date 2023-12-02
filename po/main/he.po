@@ -278,8 +278,8 @@ msgstr ""
 "הגדרת הרשאות של %s עשויה לדחות גישה מן SABnzbd אל הקבצים והתיקיות שהוא יוצר."
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "נתיב UNC \"%s\" אינו מותר כאן"
+msgid "Network path \"%s\" is not allowed here"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."

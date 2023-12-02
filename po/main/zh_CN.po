@@ -272,8 +272,8 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "此处不允许使用 UNC 路径 \"%s\""
+msgid "Network path \"%s\" is not allowed here"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
