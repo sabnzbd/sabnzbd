@@ -28,12 +28,14 @@ import threading
 import time
 import logging
 import queue
+import functools
 from dataclasses import dataclass
 from typing import Tuple, Union, Optional
 from more_itertools import roundrobin
 
 from sabnzbd import cfg as cfg
 from sabnzbd.constants import DEF_TIMEOUT
+from sabnzbd.decorators import cache_maintainer
 
 # How long to delay between connection attempts? The RFC suggests 250ms, but this is
 # quite long and might give us a slow host that just happened to be on top of the list.
@@ -104,6 +106,8 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
         pass
 
 
+@cache_maintainer(clear_time=10)
+@functools.cache
 def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
