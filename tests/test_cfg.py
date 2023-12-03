@@ -18,6 +18,8 @@
 """
 tests.test_cfg - Testing functions in cfg.py
 """
+import sys
+import pytest
 
 import sabnzbd.cfg as cfg
 
@@ -108,6 +110,9 @@ class TestValidators:
     def test_validate_safedir(self):
         assert cfg.validate_safedir("", "", "def") == (None, "def")
         assert cfg.validate_safedir("", "C:\\", "") == (None, "C:\\")
+
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
+    def test_validate_safedir_win(self):
         assert "Network path" in cfg.validate_safedir("", "\\\\NAS\\foo", "")[0]
 
     def test_validate_host(self):
