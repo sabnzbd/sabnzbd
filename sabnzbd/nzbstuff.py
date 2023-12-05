@@ -1920,8 +1920,8 @@ class NzbObject(TryList):
             duplicate_key_items = [show_analysis.info.get("title", "")]
             if show_analysis.type == "tv":
                 # For TV-shows we add the season and episode
-                duplicate_key_items.append(str(show_analysis.info.get("season", "")))
-                duplicate_key_items.append(str(show_analysis.info.get("episode", "")))
+                duplicate_key_items.append(str(show_analysis.info.get("season_num", "")))
+                duplicate_key_items.append(str(show_analysis.info.get("episode_num", "")))
             elif show_analysis.type == "date":
                 # Add date
                 duplicate_key_items.append(str(show_analysis.info.get("year", "")))
