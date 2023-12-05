@@ -301,7 +301,7 @@ msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" is not allowed here"
-msgstr ""
+msgstr "Le chemin réseau \"%s\" n'est pas autorisé ici"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
