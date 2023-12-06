@@ -69,9 +69,15 @@ class TestAddingNZBsClean:
                 mode="queue", extra_arguments={"name": "priority", "value": job1["nzo_ids"][0], "value2": STOP_PRIORITY}
             )
 
-            # Wait for the job to be removed
-            time.sleep(2)
-            assert get_api_result(mode="history", extra_arguments={"nzo_ids": job1["nzo_ids"][0]})["history"]["slots"]
+            # Wait for the job to be removed and appear in the history
+            for _ in range(10):
+                try:
+                    history = get_api_result(mode="history", extra_arguments={"nzo_ids": job1["nzo_ids"][0]})["history"]
+                    assert history["slots"][0]["nzo_id"] == job1["nzo_ids"][0]
+                    assert history["slots"][0]["status"] == "Failed"
+                    break
+                except (IndexError, AssertionError):
+                    time.sleep(1)
 
             # Now the second job should no longer be paused and labelled
             queue = get_api_result(mode="queue", extra_arguments={"nzo_ids": job2["nzo_ids"][0]})
@@ -88,9 +94,16 @@ class TestAddingNZBsClean:
             job = get_api_result(mode="addlocalfile", extra_arguments={"name": nzbfile})
             assert job["status"]
             assert job["nzo_ids"]
-            time.sleep(1)
-            assert not get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]["slots"]
-            assert get_api_result(mode="history", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["history"]["slots"]
+
+            # Wait for the job to be removed and appear in the history
+            for _ in range(10):
+                try:
+                    assert not get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]
+                    history = get_api_result(mode="history", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["history"]
+                    assert history["slots"][0]["nzo_id"] == job["nzo_ids"][0]
+                    assert history["slots"][0]["status"] == "Failed"
+                except (IndexError, AssertionError):
+                    time.sleep(1)
 
             # Reset and clean up
             get_api_result(
