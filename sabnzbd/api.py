@@ -58,7 +58,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.diskspeed import diskspeedmeasure
-from sabnzbd.utils.internetspeed import internetspeed
+from sabnzbd.internetspeed import internetspeed
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.misc import (
@@ -1272,9 +1272,6 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
     # Calculate performance measures, if requested
     if int_conv(calculate_performance):
-        # Perform the internetspeed measure in separate thread
-        internetspeed_future = sabnzbd.THREAD_POOL.submit(internetspeed)
-
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
@@ -1283,7 +1280,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed_future.result(), 1)
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
