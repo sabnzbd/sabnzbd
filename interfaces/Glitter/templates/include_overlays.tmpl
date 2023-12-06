@@ -134,7 +134,7 @@
                             <div class="col-sm-6">$T('dashboard-systemPerformance') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.pystone"></span>
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small title="$cpumodel $cpusimd" data-tooltip="true">$cpumodel $cpusimd</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -143,7 +143,7 @@
                             <div class="col-sm-6">$T('dashboard-downloadDirSpeed') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.downloaddirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small data-bind="text: statusInfo.downloaddir, attr: { 'data-original-title': statusInfo.downloaddir }" data-tooltip="true"></small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -152,7 +152,7 @@
                             <div class="col-sm-6">$T('dashboard-completeDirSpeed') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.completedirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small data-bind="text: statusInfo.completedir, attr: { 'data-original-title': statusInfo.completedir }" data-tooltip="true"></small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -161,7 +161,7 @@
                             <div class="col-sm-6">$T('dashboard-internetBandwidth') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.internetbandwidth()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small><span data-bind="text: statusInfo.internetbandwidth()*8"></span> Mbps</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
