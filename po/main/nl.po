@@ -294,7 +294,7 @@ msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" is not allowed here"
-msgstr ""
+msgstr "Netwerk-pad \"%s\" hier niet toegestaan."
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -314,6 +314,9 @@ msgid ""
 "Do not use a folder in the application folder as your Scripts Folder, it "
 "might be emptied during updates."
 msgstr ""
+"Als de Map voor scripts zich in de SABnzbd installatie-map bevindt kan deze "
+"automatisch verwijderd worden tijdens updates. We adviseren een andere "
+"locatie te gebruiken voor je scripts."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -467,7 +470,7 @@ msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
-msgstr ""
+msgstr "Onherstelbare fout in de Downloader"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -641,11 +644,15 @@ msgstr ""
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
 msgstr ""
+"Bestanden met lange bestandsnamen kunnen niet worden opgeslagen in %s. Dit "
+"kan voor problemen zorgen tijdens het downloaden."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
 msgstr ""
+"Bestanden met speciale karakters in de bestandsnaam kunnen niet worden "
+"opgeslagen in %s. Dit kan voor problemen zorgen tijdens het downloaden."
 
 #. Warning message
 #: sabnzbd/filesystem.py
@@ -1230,7 +1237,7 @@ msgstr "DUBBEL"
 
 #: sabnzbd/nzbstuff.py
 msgid "ALTERNATIVE"
-msgstr ""
+msgstr "ALTERNATIEF"
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -2600,6 +2607,8 @@ msgid ""
 "Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
+"Versnel reparaties door par2cmdline-turbo te installeren. Beschikbaar voor "
+"veel besturingssystemen."
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -2981,6 +2990,8 @@ msgstr "(kan aangepast worden door de categorieën)."
 msgid ""
 "Use Sorting to automatically organize and rename your completed downloads."
 msgstr ""
+"Gebruik Sorteren om automatisch je voltooide downloads te organiseren en "
+"hernoemen."
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
@@ -3065,7 +3076,7 @@ msgstr "Systeemmappen"
 
 #: sabnzbd/skintext.py
 msgid "Hidden Folders"
-msgstr ""
+msgstr "Verborgen mappen"
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"
@@ -3112,7 +3123,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Purge Logs"
-msgstr ""
+msgstr "Logs wissen"
 
 #: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
@@ -3192,19 +3203,21 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Identical download detection"
-msgstr ""
+msgstr "Identieke downloaddetectie"
 
 #: sabnzbd/skintext.py
 msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
+"Detecteer identieke downloads op basis van de naam of de inhoud van de NZB."
 
 #: sabnzbd/skintext.py
 msgid "Smart duplicate detection"
-msgstr ""
+msgstr "Slimme detectie van dubbele downloads"
 
 #: sabnzbd/skintext.py
 msgid "Detect duplicates based on analysis of the filename."
 msgstr ""
+"Detecteer dubbele downloads op basis van de analyse van de bestandsnaam."
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3215,6 +3228,8 @@ msgid ""
 "Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
 "the download name."
 msgstr ""
+"Sla slimme detectie van dubbele downloads over als de naam van de download "
+"PROPER, REAL of REPACK bevat."
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
@@ -3306,11 +3321,11 @@ msgstr "Word uitgevoerd vóór een download aan de wachtrij word toegevoegd"
 
 #: sabnzbd/skintext.py
 msgid "On queue finish script"
-msgstr ""
+msgstr "Script voor na het afronden van de wachtrij"
 
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
-msgstr ""
+msgstr "Script wordt uitgevoerd nadat de wachtrij is gedownload."
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4282,15 +4297,15 @@ msgstr "Sorteertekst"
 
 #: sabnzbd/skintext.py
 msgid "Multi-part Label"
-msgstr ""
+msgstr "Meervoudig label"
 
 #: sabnzbd/skintext.py
 msgid "Show folder"
-msgstr ""
+msgstr "Map per serie"
 
 #: sabnzbd/skintext.py
 msgid "Season folder"
-msgstr ""
+msgstr "Map per seizoen"
 
 #: sabnzbd/skintext.py
 msgid "In folders"
@@ -4306,7 +4321,7 @@ msgstr "Downloadnaam als Bestandsnaam"
 
 #: sabnzbd/skintext.py
 msgid "Series"
-msgstr ""
+msgstr "Series"
 
 #. Note for title expression in Sorting that does case adjustment
 #: sabnzbd/skintext.py
@@ -4343,7 +4358,7 @@ msgstr "Minimale bestandsgrootte"
 
 #: sabnzbd/skintext.py
 msgid "Affected Job Types"
-msgstr ""
+msgstr "Type downloads"
 
 #: sabnzbd/skintext.py
 msgid "All"
@@ -4351,15 +4366,15 @@ msgstr "alles"
 
 #: sabnzbd/skintext.py
 msgid "Series with air dates"
-msgstr ""
+msgstr "Series met datums"
 
 #: sabnzbd/skintext.py
 msgid "Movies"
-msgstr ""
+msgstr "Films"
 
 #: sabnzbd/skintext.py
 msgid "Other / Unknown"
-msgstr ""
+msgstr "Anders / Onbekend"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4371,34 +4386,43 @@ msgid ""
 "applied.</p><p>More options are available when Advanced Settings is "
 "checked.<br/>Detailed information can be found on the Wiki.</p>"
 msgstr ""
+"<p>Gebruik Sorteren om automatisch je voltooide downloads te organiseren. Bijvoorbeeld het automatisch verplaatsen van alle afleveringen van een serie in een seizoensspecifieke map. Of plaats films in een map met de naam van de film.</p>\n"
+"\n"
+"<p>Sorteringen worden in de getoonde volgorde geprobeerd en kunnen worden herschikt door ze te slepen.<br/> De eerste actieve Sortering die overeenkomt met zowel de betreffende categorie als het type taak wordt toegepast.</p>\n"
+"\n"
+"<p>Meer opties zijn beschikbaar wanneer Geavanceerde instellingen zijn aangevinkt.<br/> Gedetailleerde informatie is te vinden op de Wiki.</p>"
 
 #: sabnzbd/skintext.py
 msgid "Add Sorter"
-msgstr ""
+msgstr "Sortering toevoegen"
 
 #: sabnzbd/skintext.py
 msgid "Remove Sorter"
-msgstr ""
+msgstr "Sortering verwijderen"
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
-msgstr ""
+msgstr "Testgegevens"
 
 #: sabnzbd/skintext.py
 msgid "Quick start"
-msgstr ""
+msgstr "Snel beginnen"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Move and rename all episodes in the \"tv\" category to a show-specific "
 "folder"
 msgstr ""
+"Verplaats en hernoem alle afleveringen in de \"tv\" categorie naar een "
+"specifieke map voor de serie."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Move and rename all movies in the \"movies\" category to a movie-specific "
 "folder"
 msgstr ""
+"Verplaats en hernoem alle films in de categorie \"films\" naar een "
+"specifieke map voor de film."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4641,7 +4665,7 @@ msgstr "Sneltoetsen"
 
 #: sabnzbd/skintext.py
 msgid "Shift+Arrow key: Browse Queue and History pages"
-msgstr ""
+msgstr "Shift+Pijltoets: Blader door de wachtrij- en geschiedenispagina's"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
@@ -4820,7 +4844,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/sorting.py
 msgid "Failed to rename %s to %s"
-msgstr ""
+msgstr "Hernoemen van %s naar %s mislukt"
 
 #. Error message
 #: sabnzbd/sorting.py
