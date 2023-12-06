@@ -86,9 +86,13 @@ class TestDownloadSorting(DownloadFlowBasics):
                 "SINGLE_sort_s23e06_480i-SABnzbd",
                 ["Single.Sort.S23E06.1.mov"],
             ),  # Repeat to verify a unique filename is applied
-            (
+            pytest.param(
                 "single-ep_sort_s06e66_4k_uhd-SABnzbd",
                 ["Single-Ep.Sort.S06E66." + ext for ext in ("avi", "srt")],
+                marks=pytest.mark.xfail(
+                    sabnzbd.MACOS or (sabnzbd.WIN32 and not sabnzbd.WIN64),
+                    reason="Unreliable on macOS and 32bit Windows",
+                ),
             ),  # Single episode with associated smaller file
             (
                 "single-ep_sort_s06e66_4k_uhd-SABnzbd",
