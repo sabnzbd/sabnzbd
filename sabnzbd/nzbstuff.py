@@ -866,6 +866,7 @@ class NzbObject(TryList):
             # also have a valid value of 0, which shouldn't be ignored
             if name:
                 self.set_final_name_and_scan_password(name)
+                self.duplicate_check(repeat=True)
             try:
                 pp = int(pq_pp)
             except:
@@ -1934,10 +1935,15 @@ class NzbObject(TryList):
 
             self.duplicate_key = "/".join(duplicate_key_items).lower()
 
-    def duplicate_check(self):
+    def duplicate_check(self, repeat: bool = False):
         """Set the correct duplicate status"""
         if not cfg.no_dupes() and not cfg.no_smart_dupes():
             return
+
+        # Reset status in case of a repeat analysis
+        if repeat:
+            self.duplicate = None
+            self.duplicate_key = None
 
         duplicate_in_history = smart_duplicate_in_history = False
         duplicate_in_queue = smart_duplicate_in_queue = False
@@ -1953,8 +1959,8 @@ class NzbObject(TryList):
                 duplicate_in_queue = sabnzbd.NzbQueue.have_name_or_md5sum(self.final_name, self.md5sum)
                 logging.debug("Duplicate in queue: %s", duplicate_in_queue)
 
-                # The nzb can already be in the backup while the job is still in the queue!
-                if not duplicate_in_history and not duplicate_in_queue and cfg.backup_for_duplicates():
+                # The nzb can already be in the backup while the job is still in the queue, so skip on repeat
+                if not repeat and not duplicate_in_history and not duplicate_in_queue and cfg.backup_for_duplicates():
                     duplicate_in_history = backup_exists(self.filename)
                     logging.debug("Duplicate in backup: %s", duplicate_in_history)
 
