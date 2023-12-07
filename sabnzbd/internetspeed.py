@@ -41,7 +41,7 @@ SOCKET_TIMEOUT = 3
 BUFFER_SIZE = 5 * 1024 * 1024  # Each connection will allocate its own buffer, so mind the memory usage!
 
 NR_CONNECTIONS = 5
-TIME_LIMIT = 4
+TIME_LIMIT = 3
 
 
 def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLSocket, float]):
@@ -97,11 +97,11 @@ def internetspeed(test_time_limit: int = TIME_LIMIT) -> float:
         logging.info("Internet Bandwidth connection failure", exc_info=True)
         return 0.0
 
-    # We wait the designated amount of time
-    time.sleep(TIME_LIMIT)
+    # We let the workers finish
+    time.sleep(test_time_limit + 0.5)
 
     speed = sum(socket_speed.values()) / 1024 / 1024
-    logging.debug("Internet Bandwidth = %.2f MB/s - %.2f Mbps (in %.2f seconds)", speed, speed * 8.05, TIME_LIMIT)
+    logging.debug("Internet Bandwidth = %.2f MB/s - %.2f Mbps", speed, speed * 8.05)
     return speed
 
 
