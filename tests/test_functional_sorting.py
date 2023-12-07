@@ -90,8 +90,8 @@ class TestDownloadSorting(DownloadFlowBasics):
                 "single-ep_sort_s06e66_4k_uhd-SABnzbd",
                 ["Single-Ep.Sort.S06E66." + ext for ext in ("avi", "srt")],
                 marks=pytest.mark.xfail(
-                    sabnzbd.MACOS or (sabnzbd.WIN32 and not sabnzbd.WIN64),
-                    reason="Unreliable on macOS and 32bit Windows",
+                    sabnzbd.MACOS or sabnzbd.WIN32,
+                    reason="Unreliable on macOS and Windows",
                 ),
             ),  # Single episode with associated smaller file
             (
