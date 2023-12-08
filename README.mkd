@@ -24,6 +24,8 @@ This is a pre-release build of SABnzbd 4.2.0, which includes several new feature
 * **Configuration changes:**
     * The `On queue finish script` is now set in Switches.
     * Reduced recursive unpacking to 2 levels, instead of 5.
+    * Duplicate detection related Pre-queue script input parameters were removed.
+      See: https://sabnzbd.org/wiki/configuration/4.2/scripts/pre-queue-scripts
     * Stricter check if `Complete Folder` is inside `Download Folder`.
     * Windows: Prevent use of network drive as `Download Folder`.
 
