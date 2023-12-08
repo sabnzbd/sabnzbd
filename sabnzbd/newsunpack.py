@@ -185,6 +185,7 @@ ENV_NZO_FIELDS = [
     "cat",
     "correct_password",
     "duplicate",
+    "duplicate_key",
     "encrypted",
     "fail_msg",
     "filename",
