@@ -1,41 +1,55 @@
-Release Notes - SABnzbd 4.2.0 Beta 1
+Release Notes - SABnzbd 4.2.0 Release Candidate 1
 =========================================================
 
-## Changes since 4.1.0
-- Duplicate detection workflow was overhauled:
-  `Series Duplicate Detection` was replaced by
-  `Smart Duplicate Detection` that can also detect `Movie`
-  and `Daily Show` duplicates. Additionally, duplicates will
-  also be detected if they are still in the queue.
-  See: https://sabnzbd.org/wiki/duplicate-detection
-- Numerous smaller performance improvements were made.
-- Reduced recursive unpacking to 2 levels, instead of 5.
-- Server IP-address selection was optimized.
-- The `On queue finish script` is now set in Switches.
-- Stricter check if `Complete Folder` is inside `Download Folder`.
-- Windows: Reduced size of installer.
-- Windows/macOS: Updated to Python 3.12.
+This is a pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
 
-## Bugfixes since 4.1.0
-- Multi-select in the queue was broken for some users.
-- Prevent crash during saving of configuration.
-- If `weblogging` was enabled, output was also written to regular log.
-- Removing a failed download from the history could break active downloads.
+## Key changes since 4.1.0
+
+* **Duplicate detection workflow was overhauled:**
+    * `Series Duplicate Detection` was replaced by `Smart Duplicate Detection`
+      that can also detect `Movie` and `Daily Show` duplicates.
+    * Additionally, duplicates will also be detected if they are still in the queue.
+    * More information: https://sabnzbd.org/wiki/duplicate-detection
+
+* **Interface changes:**
+    * Added ability to filter the Queue and History by `status`.
+    * RSS-feed that provided the download is shown in History details.
+
+* **Performance and usability improvements:**
+    * Numerous smaller performance improvements were made.
+    * Server IP-address selection was optimized.
+    * The `Internet Bandwidth` test was made more reliable.
+    * Windows/macOS: Updated to Python 3.12.
+
+* **Configuration changes:**
+    * The `On queue finish script` is now set in Switches.
+    * Reduced recursive unpacking to 2 levels, instead of 5.
+    * Stricter check if `Complete Folder` is inside `Download Folder`.
+    * Windows: Prevent use of network drive as `Download Folder`.
+
+## Bug fixes since 4.1.0
+
+* Fixed an issue where the multi-select option in the queue was not working for some users.
+* Prevented a crash that would occur during the saving of configuration settings.
+* Ensured that server warnings are always displayed to users.
+* If `weblogging` was enabled, output was also written to regular log.
+* Fixed an issue where removing a failed download from the History could break active downloads.
 
 ## Upgrade notices
-- Direct upgrade is possible from version 3.0.0 and newer.
-  Upgrading from older versions will require `Queue repair`.
-- Downgrading from version 4.2.0 or newer to 3.7.2 or older will
-  require `Queue repair` due to changes in the internal data format.
+
+* You can directly upgrade from version 3.0.0 and newer.
+* Upgrading from older versions will require performing a `Queue repair`.
+* Downgrading from version 4.2.0 or newer to 3.7.2 or older will require
+  performing a `Queue repair` due to changes in the internal data format.
 
 ## Known problems and solutions
-- Read the file "ISSUES.txt"
+
+* Read `ISSUES.txt` or https://sabnzbd.org/wiki/introduction/known-issues
 
 ## About
-  SABnzbd is an open-source cross-platform binary newsreader.
-  It simplifies the process of downloading from Usenet dramatically, thanks
-  to its web-based user interface and advanced built-in post-processing options
-  that automatically verify, repair, extract and clean up posts downloaded
-  from Usenet.
+SABnzbd is an open-source cross-platform binary newsreader.
+It simplifies the process of downloading from Usenet dramatically, thanks to its web-based
+user interface and advanced built-in post-processing options that automatically verify, repair,
+extract and clean up posts downloaded from Usenet.
 
-  (c) Copyright 2007-2023 by The SABnzbd-Team (sabnzbd.org)
+(c) Copyright 2007-2023 by The SABnzbd-Team (sabnzbd.org)
