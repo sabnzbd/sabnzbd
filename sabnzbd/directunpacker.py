@@ -252,7 +252,7 @@ class DirectUnpacker(threading.Thread):
                     self.nzo.set_unpack_info("Unpack", msg, self.cur_setname)
 
                     # Write current log and clear
-                    logging.debug("DirectUnpack Unrar output %s", "\n".join(unrar_log))
+                    logging.debug("DirectUnpack Unrar output: \n%s", "\n".join(unrar_log))
                     unrar_log = []
                     rarfiles = []
                     extracted = []
@@ -344,7 +344,7 @@ class DirectUnpacker(threading.Thread):
         if linebuf:
             unrar_log.append(platform_btou(linebuf.strip()))
         if unrar_log:
-            logging.debug("DirectUnpack Unrar output %s", "\n".join(unrar_log))
+            logging.debug("DirectUnpack Unrar output: \n%s", "\n".join(unrar_log))
 
         # Make more space
         self.reset_active()
