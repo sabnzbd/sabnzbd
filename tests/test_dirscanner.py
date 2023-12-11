@@ -52,8 +52,15 @@ def mock_sleep(create_mock_coroutine):
 
 
 class TestDirScanner:
-    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
-    @pytest.mark.asyncio
+    @classmethod
+    def setup_class(cls):
+        getattr(cfg, "dirscan_dir").set(os.path.join(SAB_CACHE_DIR, "watched"))
+
+    @classmethod
+    def teardown_class(cls):
+        getattr(cfg, "dirscan_dir").set(getattr(cfg, "dirscan_dir").default)
+
+    @pytest.mark.asyncio()
     @pytest.mark.parametrize(
         "path, catdir",
         [
@@ -85,7 +92,6 @@ class TestDirScanner:
             os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), catdir=catdir, keep=False
         )
 
-    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "path",
@@ -110,7 +116,6 @@ class TestDirScanner:
 
         sabnzbd.nzbparser.add_nzbfile.assert_not_called()
 
-    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "path",
