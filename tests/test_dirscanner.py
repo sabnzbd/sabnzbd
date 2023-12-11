@@ -52,14 +52,6 @@ def mock_sleep(create_mock_coroutine):
 
 
 class TestDirScanner:
-    @classmethod
-    def setup_class(cls):
-        getattr(cfg, "dirscan_dir").set(os.path.join(SAB_CACHE_DIR, "watched"))
-
-    @classmethod
-    def teardown_class(cls):
-        getattr(cfg, "dirscan_dir").set(getattr(cfg, "dirscan_dir").default)
-
     @pytest.mark.asyncio()
     @pytest.mark.parametrize(
         "path, catdir",
@@ -82,11 +74,11 @@ class TestDirScanner:
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), contents="FAKEFILE")
+        fs.create_file(os.path.join(catdir or "", path), contents="FAKEFILE")
 
         scanner = sabnzbd.dirscanner.DirScanner()
 
-        await scanner.scan_async(scanner.dirscan_dir)
+        await scanner.scan_async("")
 
         sabnzbd.nzbparser.add_nzbfile.assert_any_call(
             os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), catdir=catdir, keep=False
@@ -108,11 +100,11 @@ class TestDirScanner:
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path))
+        fs.create_file(path)
 
         scanner = sabnzbd.dirscanner.DirScanner()
 
-        await scanner.scan_async(scanner.dirscan_dir)
+        await scanner.scan_async("")
 
         sabnzbd.nzbparser.add_nzbfile.assert_not_called()
 
@@ -128,10 +120,10 @@ class TestDirScanner:
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path), contents="FAKEFILE")
+        fs.create_file(path, contents="FAKEFILE")
 
         scanner = sabnzbd.dirscanner.DirScanner()
 
-        await scanner.scan_async(scanner.dirscan_dir)
+        await scanner.scan_async("")
 
         sabnzbd.nzbparser.add_nzbfile.assert_not_called()
