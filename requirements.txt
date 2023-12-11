@@ -4,13 +4,13 @@ sabctools==8.0.0
 cheetah3==3.2.6.post1
 cffi==1.16.0
 pycparser==2.21
-feedparser==6.0.10
+feedparser==6.0.11
 configobj==5.0.8
 cheroot==10.0.0
 six==1.16.0
 cherrypy==18.8.0
 jaraco.functools==4.0.0
-jaraco.collections==4.3.0
+jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.3.0
 jaraco.context==4.3.0
@@ -34,14 +34,14 @@ cryptography==41.0.7
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.8.0
+ujson==5.9.0
 
 # Windows system integration
 pywin32==306; sys_platform == 'win32'
 
 # macOS system calls
-pyobjc-core==10.0; sys_platform == 'darwin'
-pyobjc-framework-Cocoa==10.0; sys_platform == 'darwin'
+pyobjc-core==10.1; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==10.1; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
