@@ -52,7 +52,7 @@ def mock_sleep(create_mock_coroutine):
 
 
 class TestDirScanner:
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "path, catdir",
         [
