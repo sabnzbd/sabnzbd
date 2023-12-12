@@ -4288,7 +4288,7 @@ msgstr "הסר ממיין"
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
-msgstr ""
+msgstr "בחן נתונים"
 
 #: sabnzbd/skintext.py
 msgid "Quick start"
