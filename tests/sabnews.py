@@ -132,10 +132,10 @@ async def serve_sabnews(hostname, port):
     # Start server
     logging.info("Starting SABNews on %s:%d", hostname, port)
 
-    # Needed for Python 3.5 support!
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     server = await loop.create_server(lambda: NewsServerProtocol(), hostname, port)
-    return server
+    async with server:
+        await server.serve_forever()
 
 
 def create_nzb(nzb_file=None, nzb_dir=None, metadata=None):
@@ -209,9 +209,7 @@ def main():
 
     # Serve if we are not creating NZB's
     if not args.nzb_file and not args.nzb_dir:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(serve_sabnews(args.hostname, args.port))
-        loop.run_forever()
+        asyncio.run(serve_sabnews(args.hostname, args.port))
     else:
         create_nzb(args.nzb_file, args.nzb_dir)
 
