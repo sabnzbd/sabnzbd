@@ -25,6 +25,7 @@ import tempfile
 import threading
 import ssl
 import time
+import warnings
 from typing import Optional
 import portend
 from flaky import flaky
@@ -96,7 +97,11 @@ class TestNewsWrapper:
 
         # Set the options
         if server_tls:
-            server_context.maximum_version = server_tls
+            # Ignore DeprecationWarning about old SSL/TLS settings
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                server_context.maximum_version = server_tls
+
         server_thread = threading.Thread(target=socket_test_server, args=(server_context,), daemon=True)
         server_thread.start()
 
