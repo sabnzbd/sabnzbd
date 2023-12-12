@@ -422,7 +422,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 # Get segments
                 raw_article_db = {}
                 file_bytes = 0
-                if element.find("segments"):
+                if len(element.find("segments")):
                     for segment in element.find("segments").iter("segment"):
                         try:
                             article_id = segment.text

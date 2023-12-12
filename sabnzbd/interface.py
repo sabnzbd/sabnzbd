@@ -21,7 +21,7 @@ sabnzbd.interface - webinterface
 
 import os
 import time
-from datetime import datetime
+import datetime
 import cherrypy
 import logging
 import urllib.parse
@@ -1944,7 +1944,7 @@ def GetRssLog(feed):
 
         # And we add extra fields for sorting
         if job.get("age", 0):
-            job["age_ms"] = (job["age"] - datetime.utcfromtimestamp(0)).total_seconds()
+            job["age_ms"] = (job["age"] - datetime.datetime(1970, 1, 1)).total_seconds()
             job["age"] = calc_age(job["age"], True)
         else:
             job["age_ms"] = ""
