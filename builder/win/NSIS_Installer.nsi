@@ -200,9 +200,14 @@ Section "SABnzbd" SecDummy
   WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "URLUpdateInfo" 'https://sabnzbd.org/'
   WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "Comments" 'The automated Usenet download tool'
   WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayIcon" '$INSTDIR\icons\sabnzbd.ico'
-  WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "EstimatedSize"  25674
+
+  WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "EstimatedSize"  40674
   WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "NoRepair" -1
   WriteRegDWORD HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "NoModify" -1
+
+  WriteRegStr HKEY_CURRENT_USER "Software\Classes\AppUserModelId\SABnzbd" "DisplayName" "SABnzbd"
+  WriteRegStr HKEY_CURRENT_USER "Software\Classes\AppUserModelId\SABnzbd" "IconUri" '$INSTDIR\icons\sabnzbd16_32.ico'
+
   ; write out uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -348,6 +353,8 @@ Section "un.$(MsgDelProgram)" Uninstall
   Delete "$INSTDIR\uninstall.exe"
   DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd"
   DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd"
+  DeleteRegKey HKEY_CURRENT_USER "Software\Classes\AppUserModelId\SABnzbd"
+  DeleteRegKey HKEY_CURRENT_USER "Software\SABnzbd"
 
   ${RemovePrev} "$INSTDIR"
 
@@ -382,8 +389,6 @@ Section "un.$(MsgDelProgram)" Uninstall
   Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
 
   Delete "$DESKTOP\SABnzbd.lnk"
-
-  DeleteRegKey HKEY_CURRENT_USER  "Software\SABnzbd"
 
   ${unregisterExtension} ".nzb" "NZB File"
   ${RefreshShellIcons}

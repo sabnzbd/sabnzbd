@@ -657,6 +657,7 @@ def process_job(nzo: NzbObject) -> bool:
                 0,
             )
 
+    workdir_notifcation_action = workdir_complete
     if all_ok:
         # If the folder only contains one file OR folder, have that as the path
         # Be aware that series/generic/date sorting may move a single file into a folder containing other files
@@ -681,7 +682,13 @@ def process_job(nzo: NzbObject) -> bool:
 
     # Show final status in history
     if all_ok:
-        notifier.send_notification(T("Download Completed"), filename, "complete", nzo.cat)
+        notifier.send_notification(
+            T("Download Completed"),
+            filename,
+            "complete",
+            nzo.cat,
+            {"open_folder": clip_path(workdir_notifcation_action)},
+        )
         nzo.status = Status.COMPLETED
         nzo.fail_msg = ""
     else:
@@ -1083,7 +1090,12 @@ def handle_empty_queue():
     """Check if empty queue calls for action"""
     if not sabnzbd.NzbQueue.actives():
         sabnzbd.save_state()
-        notifier.send_notification("SABnzbd", T("Queue finished"), "queue_done")
+        notifier.send_notification(
+            "SABnzbd",
+            T("Queue finished"),
+            "queue_done",
+            actions={"open_complete": cfg.complete_dir.get_clipped_path()},
+        )
 
         # Perform end-of-queue script
         if cfg.end_queue_script():

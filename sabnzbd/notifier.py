@@ -28,6 +28,7 @@ import urllib.parse
 import http.client
 import json
 from threading import Thread
+from typing import Optional, Dict
 
 import sabnzbd
 import sabnzbd.cfg
@@ -39,6 +40,18 @@ from sabnzbd.newsunpack import create_env
 if sabnzbd.FOUNDATION:
     import Foundation
     import objc
+
+if sabnzbd.WIN32:
+    try:
+        from win32comext.shell import shell
+        from windows_toasts import InteractableWindowsToaster, Toast, ToastActivatedEventArgs, ToastButton
+
+        # Set a custom AUMID to display the right icon, it is written to the registry by the installer
+        shell.SetCurrentProcessExplicitAppUserModelID("SABnzbd")
+        _HAVE_WINDOWS_TOASTER = True
+    except:
+        # Only supported on Windows 10 and above
+        _HAVE_WINDOWS_TOASTER = False
 
 try:
     import notify2
@@ -57,7 +70,7 @@ except:
 # Define translatable message table
 ##############################################################################
 TT = lambda x: x
-NOTIFICATION = {
+NOTIFICATION_TYPES = {
     "startup": TT("Startup/Shutdown"),  #: Notification
     "pause_resume": TT("Pause") + "/" + TT("Resume"),  #: Notification
     "download": TT("Added NZB"),  #: Notification
@@ -72,37 +85,36 @@ NOTIFICATION = {
     "other": TT("Other Messages"),  #: Notification
 }
 
+NOTIFICATION_ACTIONS = {
+    "open_folder": TT("Open folder"),  #: Notification action
+    "open_complete": TT("Open complete folder"),  #: Notification action
+}
 
-def get_icon():
-    icon = os.path.join(sabnzbd.DIR_PROG, "icons", "sabnzbd.ico")
-    with open(icon, "rb") as fp:
-        return fp.read()
 
-
-def have_ntfosd():
+def have_ntfosd() -> bool:
     """Return if any PyNotify (notify2) support is present"""
     return bool(_HAVE_NTFOSD)
 
 
-def check_classes(gtype, section):
-    """Check if `gtype` is enabled in `section`"""
+def check_classes(notification_type: str, section: str) -> bool:
+    """Check if `notification_type` is enabled in `section`"""
     try:
-        return sabnzbd.config.get_config(section, "%s_prio_%s" % (section, gtype))() > 0
+        return sabnzbd.config.get_config(section, "%s_prio_%s" % (section, notification_type))() > 0
     except TypeError:
-        logging.debug("Incorrect Notify option %s:%s_prio_%s", section, section, gtype)
+        logging.debug("Incorrect Notify option %s:%s_prio_%s", section, section, notification_type)
         return False
 
 
-def get_prio(gtype, section):
-    """Check prio of `gtype` in `section`"""
+def get_prio(notification_type: str, section: str) -> int:
+    """Check prio of `notification_type` in `section`"""
     try:
-        return sabnzbd.config.get_config(section, "%s_prio_%s" % (section, gtype))()
+        return sabnzbd.config.get_config(section, "%s_prio_%s" % (section, notification_type))()
     except TypeError:
-        logging.debug("Incorrect Notify option %s:%s_prio_%s", section, section, gtype)
+        logging.debug("Incorrect Notify option %s:%s_prio_%s", section, section, notification_type)
         return -1000
 
 
-def check_cat(section, job_cat, keyword=None):
+def check_cat(section: str, job_cat: str, keyword: Optional[str] = None) -> bool:
     """Check if `job_cat` is enabled in `section`.
     * = All, if no other categories selected.
     """
@@ -118,42 +130,48 @@ def check_cat(section, job_cat, keyword=None):
         return True
 
 
-def send_notification(title, msg, gtype, job_cat=None):
+def send_notification(
+    title: str,
+    msg: str,
+    notification_type: str,
+    job_cat: Optional[str] = None,
+    actions: Optional[Dict[str, str]] = None,
+):
     """Send Notification message"""
-    logging.info("Sending notification: %s - %s (type=%s, job_cat=%s)", title, msg, gtype, job_cat)
+    logging.info("Sending notification: %s - %s (type=%s, job_cat=%s)", title, msg, notification_type, job_cat)
     # Notification Center
     if sabnzbd.MACOS and sabnzbd.cfg.ncenter_enable():
-        if check_classes(gtype, "ncenter") and check_cat("ncenter", job_cat):
-            send_notification_center(title, msg, gtype)
+        if check_classes(notification_type, "ncenter") and check_cat("ncenter", job_cat):
+            send_notification_center(title, msg, notification_type)
 
     # Windows
     if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
-        if check_classes(gtype, "acenter") and check_cat("acenter", job_cat):
-            send_windows(title, msg, gtype)
+        if check_classes(notification_type, "acenter") and check_cat("acenter", job_cat):
+            send_windows(title, msg, notification_type, actions)
 
     # Prowl
     if sabnzbd.cfg.prowl_enable() and check_cat("prowl", job_cat):
         if sabnzbd.cfg.prowl_apikey():
-            Thread(target=send_prowl, args=(title, msg, gtype)).start()
+            Thread(target=send_prowl, args=(title, msg, notification_type)).start()
 
     # Pushover
     if sabnzbd.cfg.pushover_enable() and check_cat("pushover", job_cat):
         if sabnzbd.cfg.pushover_token():
-            Thread(target=send_pushover, args=(title, msg, gtype)).start()
+            Thread(target=send_pushover, args=(title, msg, notification_type)).start()
 
     # Pushbullet
     if sabnzbd.cfg.pushbullet_enable() and check_cat("pushbullet", job_cat):
-        if sabnzbd.cfg.pushbullet_apikey() and check_classes(gtype, "pushbullet"):
-            Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
+        if sabnzbd.cfg.pushbullet_apikey() and check_classes(notification_type, "pushbullet"):
+            Thread(target=send_pushbullet, args=(title, msg, notification_type)).start()
 
     # Notification script.
     if sabnzbd.cfg.nscript_enable() and check_cat("nscript", job_cat):
         if sabnzbd.cfg.nscript_script():
-            Thread(target=send_nscript, args=(title, msg, gtype)).start()
+            Thread(target=send_nscript, args=(title, msg, notification_type)).start()
 
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable():
-        if check_classes(gtype, "ntfosd") and check_cat("ntfosd", job_cat):
+        if check_classes(notification_type, "ntfosd") and check_cat("ntfosd", job_cat):
             send_notify_osd(title, msg)
 
 
@@ -193,14 +211,14 @@ def send_notify_osd(title, message):
         return error
 
 
-def send_notification_center(title, msg, gtype):
+def send_notification_center(title: str, msg: str, notification_type: str):
     """Send message to macOS Notification Center"""
     try:
         NSUserNotification = objc.lookUpClass("NSUserNotification")
         NSUserNotificationCenter = objc.lookUpClass("NSUserNotificationCenter")
         notification = NSUserNotification.alloc().init()
         notification.setTitle_(title)
-        notification.setSubtitle_(T(NOTIFICATION.get(gtype, "other")))
+        notification.setSubtitle_(T(NOTIFICATION_TYPES.get(notification_type, "other")))
         notification.setInformativeText_(msg)
         notification.setSoundName_("NSUserNotificationDefaultSoundName")
         notification.setDeliveryDate_(Foundation.NSDate.dateWithTimeInterval_sinceDate_(0, Foundation.NSDate.date()))
@@ -211,7 +229,7 @@ def send_notification_center(title, msg, gtype):
         return T("Failed to send macOS notification")
 
 
-def send_prowl(title, msg, gtype, force=False, test=None):
+def send_prowl(title, msg, notification_type, force=False, test=None):
     """Send message to Prowl"""
 
     if test:
@@ -221,10 +239,10 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     if not apikey:
         return T("Cannot send, missing required data")
 
-    title = T(NOTIFICATION.get(gtype, "other"))
+    title = T(NOTIFICATION_TYPES.get(notification_type, "other"))
     title = urllib.parse.quote(utob(title))
     msg = urllib.parse.quote(utob(msg))
-    prio = get_prio(gtype, "prowl")
+    prio = get_prio(notification_type, "prowl")
 
     if force:
         prio = 0
@@ -244,7 +262,7 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     return ""
 
 
-def send_pushover(title, msg, gtype, force=False, test=None):
+def send_pushover(title, msg, notification_type, force=False, test=None):
     """Send message to pushover"""
 
     if test:
@@ -260,8 +278,8 @@ def send_pushover(title, msg, gtype, force=False, test=None):
     if not apikey or not userkey:
         return T("Cannot send, missing required data")
 
-    title = T(NOTIFICATION.get(gtype, "other"))
-    prio = get_prio(gtype, "pushover")
+    title = T(NOTIFICATION_TYPES.get(notification_type, "other"))
+    prio = get_prio(notification_type, "pushover")
 
     if force:
         prio = 1
@@ -311,7 +329,7 @@ def do_send_pushover(body):
         return T("Failed to send pushover message")
 
 
-def send_pushbullet(title, msg, gtype, force=False, test=None):
+def send_pushbullet(title, msg, notification_type, force=False, test=None):
     """Send message to Pushbullet"""
 
     if test:
@@ -323,7 +341,7 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
     if not apikey:
         return T("Cannot send, missing required data")
 
-    title = "SABnzbd: " + T(NOTIFICATION.get(gtype, "other"))
+    title = "SABnzbd: " + T(NOTIFICATION_TYPES.get(notification_type, "other"))
 
     try:
         conn = http.client.HTTPSConnection("api.pushbullet.com:443")
@@ -346,7 +364,7 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
     return ""
 
 
-def send_nscript(title, msg, gtype, force=False, test=None):
+def send_nscript(title, msg, notification_type, force=False, test=None):
     """Run user's notification script"""
     if test:
         script = test.get("nscript_script")
@@ -357,15 +375,23 @@ def send_nscript(title, msg, gtype, force=False, test=None):
 
     if not script:
         return T("Cannot send, missing required data")
-    title = "SABnzbd: " + T(NOTIFICATION.get(gtype, "other"))
+    title = "SABnzbd: " + T(NOTIFICATION_TYPES.get(notification_type, "other"))
 
-    if force or check_classes(gtype, "nscript"):
+    if force or check_classes(notification_type, "nscript"):
         script_path = make_script_path(script)
         if script_path:
             ret = -1
             output = None
             try:
-                p = build_and_run_command([script_path, gtype, title, msg], env=create_env(extra_env_fields=env_params))
+                p = build_and_run_command(
+                    [
+                        script_path,
+                        notification_type,
+                        title,
+                        msg,
+                    ],
+                    env=create_env(extra_env_fields=env_params),
+                )
                 output = p.stdout.read()
                 ret = p.wait()
             except:
@@ -382,12 +408,22 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     return ""
 
 
-def send_windows(title, msg, gtype):
-    if sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:
-        try:
+def send_windows(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
+    try:
+        if _HAVE_WINDOWS_TOASTER:
+            notification_sender = InteractableWindowsToaster("SABnzbd", notifierAUMID="SABnzbd")
+            toast_notification = Toast([title, msg], group=notification_type, launch_action=sabnzbd.BROWSER_URL)
+
+            # Add any buttons
+            if actions:
+                for action in actions:
+                    toast_notification.AddAction(ToastButton(NOTIFICATION_ACTIONS[action], launch=actions[action]))
+
+            notification_sender.show_toast(toast_notification)
+        elif sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:
             sabnzbd.WINTRAY.sendnotification(title, msg)
-        except:
-            logging.info(T("Failed to send Windows notification"))
-            logging.debug("Traceback: ", exc_info=True)
-            return T("Failed to send Windows notification")
+    except:
+        logging.info(T("Failed to send Windows notification"))
+        logging.debug("Traceback: ", exc_info=True)
+        return T("Failed to send Windows notification")
     return None

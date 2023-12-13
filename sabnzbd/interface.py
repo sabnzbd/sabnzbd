@@ -2127,7 +2127,7 @@ class ConfigNotify:
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
+        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
         conf["categories"] = list_cats(False)
         conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
         conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION

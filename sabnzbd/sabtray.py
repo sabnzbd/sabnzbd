@@ -35,6 +35,7 @@ from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 
 
 class SABTrayThread(SysTrayIconThread):
+    # When updating these paths, also update them in the NSIS script!
     sabicons = {
         "default": "icons/sabnzbd16_32.ico",
         "green": "icons/sabnzbd16_32green.ico",
