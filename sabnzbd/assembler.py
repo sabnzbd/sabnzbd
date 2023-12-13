@@ -157,6 +157,7 @@ class Assembler(Thread):
             sabnzbd.Downloader.pause()
             if cfg.fulldisk_autoresume():
                 sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
+            sabnzbd.notifier.send_notification("SABnzbd", T("Too little diskspace forcing PAUSE"), "disk_full")
             sabnzbd.emailer.diskfull_mail()
 
     @staticmethod
