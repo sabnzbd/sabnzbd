@@ -162,6 +162,7 @@ RESTART_REQ = False
 PAUSED_ALL = False
 TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
+MACOSTRAY = None  # Thread for the macOS tray icon
 WEBUI_READY = False
 LAST_HISTORY_UPDATE = 1
 RESTORE_DATA = None

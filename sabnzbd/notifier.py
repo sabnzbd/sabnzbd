@@ -37,10 +37,6 @@ from sabnzbd.filesystem import make_script_path
 from sabnzbd.misc import build_and_run_command
 from sabnzbd.newsunpack import create_env
 
-if sabnzbd.FOUNDATION:
-    import Foundation
-    import objc
-
 if sabnzbd.WIN32:
     try:
         from win32comext.shell import shell
@@ -142,7 +138,7 @@ def send_notification(
     # Notification Center
     if sabnzbd.MACOS and sabnzbd.cfg.ncenter_enable():
         if check_classes(notification_type, "ncenter") and check_cat("ncenter", job_cat):
-            send_notification_center(title, msg, notification_type)
+            send_notification_center(title, msg, notification_type, actions)
 
     # Windows
     if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
@@ -211,18 +207,19 @@ def send_notify_osd(title, message):
         return error
 
 
-def send_notification_center(title: str, msg: str, notification_type: str):
-    """Send message to macOS Notification Center"""
+def send_notification_center(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
+    """Send message to macOS Notification Center.
+    Only 1 button is possible on macOS!"""
     try:
-        NSUserNotification = objc.lookUpClass("NSUserNotification")
-        NSUserNotificationCenter = objc.lookUpClass("NSUserNotificationCenter")
-        notification = NSUserNotification.alloc().init()
-        notification.setTitle_(title)
-        notification.setSubtitle_(T(NOTIFICATION_TYPES.get(notification_type, "other")))
-        notification.setInformativeText_(msg)
-        notification.setSoundName_("NSUserNotificationDefaultSoundName")
-        notification.setDeliveryDate_(Foundation.NSDate.dateWithTimeInterval_sinceDate_(0, Foundation.NSDate.date()))
-        NSUserNotificationCenter.defaultUserNotificationCenter().scheduleNotification_(notification)
+        subtitle = T(NOTIFICATION_TYPES.get(notification_type, "other"))
+        button_text = button_action = None
+        if actions:
+            for action in actions:
+                button_text = NOTIFICATION_ACTIONS[action]
+                button_action = actions[action]
+                break
+
+        sabnzbd.MACOSTRAY.send_notification(title, subtitle, msg, button_text, button_action)
     except:
         logging.info(T("Failed to send macOS notification"))
         logging.debug("Traceback: ", exc_info=True)

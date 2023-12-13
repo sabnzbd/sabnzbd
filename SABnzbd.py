@@ -1762,10 +1762,10 @@ if __name__ == "__main__":
 
         # Initialize the menu
         shared_app = NSApplication.sharedApplication()
-        sabnzbd_menu = SABnzbdDelegate.alloc().init()
-        shared_app.setDelegate_(sabnzbd_menu)
+        sabnzbd.MACOSTRAY = SABnzbdDelegate.alloc().init()
+        shared_app.setDelegate_(sabnzbd.MACOSTRAY)
         # Build the menu
-        sabnzbd_menu.awakeFromNib()
+        sabnzbd.MACOSTRAY.awakeFromNib()
         # Run the main eventloop
         AppHelper.runEventLoop()
     else:
