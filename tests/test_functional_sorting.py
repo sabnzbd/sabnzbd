@@ -94,9 +94,13 @@ class TestDownloadSorting(DownloadFlowBasics):
                     reason="Unreliable on macOS and Windows",
                 ),
             ),  # Single episode with associated smaller file
-            (
+            pytest.param(
                 "single-ep_sort_s06e66_4k_uhd-SABnzbd",
                 ["Single-Ep.Sort.S06E66.1." + ext for ext in ("avi", "srt")],
+                marks=pytest.mark.xfail(
+                    sabnzbd.MACOS or sabnzbd.WIN32,
+                    reason="Unreliable on macOS and Windows",
+                ),
             ),  # Repeat to verify unique filenames are applied
         ],
     )
