@@ -43,6 +43,7 @@ from sabnzbd.misc import (
     run_command,
     build_and_run_command,
     format_time_left,
+    is_none,
 )
 from sabnzbd.filesystem import (
     make_script_path,
@@ -2143,7 +2144,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
 
     def fix(p):
         # If added via API, some items can still be "None" (as a string)
-        if not p or str(p).lower() == "none":
+        if is_none(p):
             return ""
         return str(p)
 

@@ -52,6 +52,7 @@ from sabnzbd.misc import (
     is_loopback_addr,
     helpful_warning,
     recursive_html_escape,
+    is_none,
 )
 from sabnzbd.happyeyeballs import happyeyeballs
 from sabnzbd.filesystem import (
@@ -1386,7 +1387,7 @@ class ConfigRss:
             raise rssRaiser(self.__root, kwargs)
 
         pp = kwargs.get("pp", "")
-        if pp.lower() == "none":
+        if is_none(pp):
             pp = ""
         script = ConvertSpecials(kwargs.get("script"))
         cat = ConvertSpecials(kwargs.get("cat"))

@@ -69,6 +69,10 @@ from sabnzbd.misc import (
     calc_age,
     opts_to_pp,
     format_time_left,
+    is_none,
+    history_updated,
+    request_repair,
+    change_queue_complete_action,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files
 from sabnzbd.encoding import xml_name, utob
@@ -205,7 +209,7 @@ def _api_queue_rename(value, kwargs):
 
 def _api_queue_change_complete_action(value, kwargs):
     """API: accepts value(=action)"""
-    sabnzbd.misc.change_queue_complete_action(value)
+    change_queue_complete_action(value)
     return report()
 
 
@@ -394,7 +398,7 @@ def _api_change_cat(name, kwargs):
     if value and value2:
         nzo_id = value
         cat = value2
-        if cat == "None":
+        if is_none(cat):
             cat = None
         result = sabnzbd.NzbQueue.change_cat(nzo_id, cat)
         return report(keyword="status", data=bool(result > 0))
@@ -409,7 +413,7 @@ def _api_change_script(name, kwargs):
     if value and value2:
         nzo_id = value
         script = value2
-        if script.lower() == "none":
+        if is_none(script):
             script = None
         result = sabnzbd.NzbQueue.change_script(nzo_id, script)
         return report(keyword="status", data=bool(result > 0))
@@ -528,7 +532,7 @@ def _api_history(name, kwargs):
                 history_db.remove_failed(search)
             if special in ("all", "completed"):
                 history_db.remove_completed(search)
-            sabnzbd.misc.history_updated()
+            history_updated()
             return report()
         elif value:
             jobs = value.split(",")
@@ -540,7 +544,7 @@ def _api_history(name, kwargs):
                     if del_files:
                         remove_all(history_db.get_incomplete_path(job), recursive=True)
                     history_db.remove_history(job)
-            sabnzbd.misc.history_updated()
+            history_updated()
             return report()
         else:
             return report(_MSG_NO_VALUE)
@@ -723,7 +727,7 @@ def _api_restart(name, kwargs):
 
 def _api_restart_repair(name, kwargs):
     logging.info("Queue repair requested by API")
-    sabnzbd.misc.request_repair()
+    request_repair()
     # Do the shutdown async to still send goodbye to browser
     Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
     return report()
@@ -1558,7 +1562,7 @@ def del_job_files(job_paths):
 
 def Tspec(txt):
     """Translate special terms"""
-    if txt == "None":
+    if is_none(txt):
         return T("None")
     elif txt in ("Default", "*"):
         return T("Default")

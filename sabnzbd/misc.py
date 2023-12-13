@@ -167,6 +167,11 @@ def safe_lower(txt: Any) -> str:
         return ""
 
 
+def is_none(inp: Any) -> bool:
+    """Check for 'not X' but also if it's maybe the string 'None'"""
+    return not inp or (isinstance(inp, str) and inp.lower() == "none")
+
+
 def cmp(x, y):
     """
     Replacement for built-in function cmp that was removed in Python 3
@@ -335,7 +340,7 @@ def cat_convert(cat):
     If no match found, but the indexer-cat starts with the user-cat, return user-cat
     If no match found, return None
     """
-    if cat and cat.lower() != "none":
+    if not is_none(cat):
         cats = config.get_ordered_categories()
         raw_cats = config.get_categories()
         for ucat in cats:
