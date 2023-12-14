@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 4.2.0 Release Candidate 1
+Release Notes - SABnzbd 4.2.0 Release Candidate 2
 =========================================================
 
-This is a pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
+This is the second pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
 
 ## Key changes since 4.1.0
 
@@ -14,18 +14,21 @@ This is a pre-release build of SABnzbd 4.2.0, which includes several new feature
 * **Interface changes:**
     * Added ability to filter the Queue and History by `status`.
     * RSS-feed that provided the download is shown in History details.
+    * macOS/Windows 10 & 11: Added `Open Folder` button to `Job/Queue finished` notifications.
+      Clicking any type of notification will now open a browser with SABnzbd.
 
 * **Performance and usability improvements:**
     * Numerous smaller performance improvements were made.
     * Server IP-address selection was optimized.
     * The `Internet Bandwidth` test was made more reliable.
-    * Windows/macOS: Updated to Python 3.12.
+    * macOS/Windows: Updated to Python 3.12.
 
 * **Configuration changes:**
     * The `On queue finish script` is now set in Switches.
     * Reduced recursive unpacking to 2 levels, instead of 5.
     * Duplicate detection related Pre-queue script input parameters were removed.
-      See: https://sabnzbd.org/wiki/configuration/4.2/scripts/pre-queue-scripts
+      You will need to update your Pre-queue script.
+      More information: https://sabnzbd.org/wiki/configuration/4.2/scripts/pre-queue-scripts
     * Stricter check if `Complete Folder` is inside `Download Folder`.
     * Windows: Prevent use of network drive as `Download Folder`.
 
