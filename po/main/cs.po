@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.2.0RC1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Czech (https://app.transifex.com/sabnzbd/teams/111101/cs/)\n"
@@ -1064,6 +1064,16 @@ msgstr "Fronta dokončena"
 msgid "Other Messages"
 msgstr "Ostatní zprávy"
 
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr ""
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "Otevřít složku s kompletními soubory"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Nedostupné"
@@ -1624,10 +1634,6 @@ msgstr "Prázdný RSS záznam nalezen (%s)"
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
 msgstr "Zobrazit rozhraní"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr "Otevřít složku s kompletními soubory"
 
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py

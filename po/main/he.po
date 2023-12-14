@@ -457,6 +457,8 @@ msgid ""
 "Login from too many different IP addresses to server %s [%s] - "
 "https://sabnzbd.org/multiple-adresses"
 msgstr ""
+"כניסה מיותר מדי כתובות IP שונות אל שרת %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
 
 #: sabnzbd/downloader.py
 msgid "Failed login for server %s [%s]"
@@ -615,12 +617,12 @@ msgstr "%s אינו בר־כתיבה בכלל. זה חוסם הורדות."
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
-msgstr ""
+msgstr "בלתי ניתן לכתוב שם ארוך של קובץ אל %s. זה עשוי לגרום לבעיות."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
-msgstr ""
+msgstr "בלתי ניתן לכתוב שם יוניקוד של קובץ אל %s. זה עשוי לגרום לבעיות."
 
 #. Warning message
 #: sabnzbd/filesystem.py
@@ -1066,6 +1068,16 @@ msgstr "תור הסתיים"
 #: sabnzbd/notifier.py
 msgid "Other Messages"
 msgstr "הודעות אחרות"
+
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr ""
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "פתח תיקיית השלמה"
 
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
@@ -1659,10 +1671,6 @@ msgstr "כניסת RSS ריקה נמצאה (%s)"
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
 msgstr "הראה ממשק"
-
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr "פתח תיקיית השלמה"
 
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
@@ -2556,6 +2564,7 @@ msgid ""
 "Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
+"האץ תיקונים ע״י התקנת par2cmdline-turbo, הוא זמין עבור פלטפורמות רבות."
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -2928,7 +2937,7 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid ""
 "Use Sorting to automatically organize and rename your completed downloads."
-msgstr ""
+msgstr "השתמש במיון כדי לארגן ולשנות שם באופן אוטומטי את ההורדות השלמות שלך."
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
@@ -3136,11 +3145,11 @@ msgstr "גלה הורדות זהות על סמך שם או תכני NZB."
 
 #: sabnzbd/skintext.py
 msgid "Smart duplicate detection"
-msgstr ""
+msgstr "גילוי שכפולים חכם"
 
 #: sabnzbd/skintext.py
 msgid "Detect duplicates based on analysis of the filename."
-msgstr ""
+msgstr "גלה שכפולים על סמך ניתוח של שם הקובץ."
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3150,7 +3159,7 @@ msgstr "התר שחרורים תקינים"
 msgid ""
 "Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
 "the download name."
-msgstr ""
+msgstr "עקוף גילוי שכפולים חכם אם PROPER, REAL או REPACK מתגלים בשם ההורדה."
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
@@ -3240,11 +3249,11 @@ msgstr "בשימוש לפני ש־NZB נכנס לתור."
 
 #: sabnzbd/skintext.py
 msgid "On queue finish script"
-msgstr ""
+msgstr "תסריט בסיום תור"
 
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
-msgstr ""
+msgstr "מבוצע לאחר שהתור יסיים להוריד."
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4116,7 +4125,7 @@ msgstr "שם_סרט"
 
 #: sabnzbd/skintext.py
 msgid "Show Name"
-msgstr "הראה שם"
+msgstr "שם סדרה"
 
 #: sabnzbd/skintext.py
 msgid "Show.Name"
@@ -4124,7 +4133,7 @@ msgstr "שם.סדרה"
 
 #: sabnzbd/skintext.py
 msgid "Show_Name"
-msgstr "הראה_שם"
+msgstr "שם_סדרה"
 
 #: sabnzbd/skintext.py
 msgid "Season Number"
@@ -4192,7 +4201,7 @@ msgstr "תווית מרובת־חלקים"
 
 #: sabnzbd/skintext.py
 msgid "Show folder"
-msgstr "הראה תיקייה"
+msgstr "תיקיית סדרה"
 
 #: sabnzbd/skintext.py
 msgid "Season folder"
@@ -4253,7 +4262,7 @@ msgstr "סוגי עבודה מושפעים"
 
 #: sabnzbd/skintext.py
 msgid "All"
-msgstr "הכל"
+msgstr "הכול"
 
 #: sabnzbd/skintext.py
 msgid "Series with air dates"
@@ -4277,6 +4286,11 @@ msgid ""
 "applied.</p><p>More options are available when Advanced Settings is "
 "checked.<br/>Detailed information can be found on the Wiki.</p>"
 msgstr ""
+"<p>השתמש בממיינים כדי לארגן באופן אוטומטי את ההורדות השלמות שלך. לדוגמה, שים"
+" את כל הפרקים מסדרה בתיקייה של עונה מסויימת.</p><p>ממיינים מנוסים לפי סדר "
+"הופעתם ויכולים להסתדר מחדש על ידי גרירה ושחרור.<br/>הממיין הפעיל הראשון "
+"שתואם אל הקטגוריה המושפעת ואל סוג העבודה הוא זה שמוחל.</p><p>עוד אפשרויות "
+"זמינות כאשר האפשרות הגדרות מתקדמות מסומנת.<br/>מידע מפורט נמצא בוויקי.</p>"
 
 #: sabnzbd/skintext.py
 msgid "Add Sorter"
@@ -4298,13 +4312,13 @@ msgstr "התחלה זריזה"
 msgid ""
 "Move and rename all episodes in the \"tv\" category to a show-specific "
 "folder"
-msgstr ""
+msgstr "העבר ושנה שם את כל הפרקים בקטגוריה \"טלוויזיה\" אל תיקייה של סדרה מסויימת"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Move and rename all movies in the \"movies\" category to a movie-specific "
 "folder"
-msgstr ""
+msgstr "העבר ושנה שם את כל הסרטים בקטגוריה \"סרטים\" אל תיקייה של סרט מסויים"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4546,7 +4560,7 @@ msgstr "קיצורי דרך במקלדת"
 
 #: sabnzbd/skintext.py
 msgid "Shift+Arrow key: Browse Queue and History pages"
-msgstr ""
+msgstr "Shift+מקש חץ: עיין בתור ובדפי היסטוריה"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
