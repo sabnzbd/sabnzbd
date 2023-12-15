@@ -15,7 +15,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0RC1\n"
+"Project-Id-Version: SABnzbd-4.2.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -302,7 +302,7 @@ msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" is not allowed here"
-msgstr ""
+msgstr "Netzwerkpfad \"%s\" ist hier nicht erlaubt"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -323,6 +323,8 @@ msgid ""
 "Do not use a folder in the application folder as your Scripts Folder, it "
 "might be emptied during updates."
 msgstr ""
+"Verwenden Sie keinen Ordner im Anwendungsordner als Ihren Skriptordner, er "
+"könnte während Updates geleert werden."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -475,7 +477,7 @@ msgstr "Fehler %s@%s zu initialisieren, aus folgendem Grund: %s"
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
-msgstr ""
+msgstr "Schwerer Fehler im Downloader"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -649,11 +651,15 @@ msgstr "%s ist nicht beschreibbar. Downloads sind dadurch blockiert."
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
 msgstr ""
+"Kann keinen langen Dateinamen in %s schreiben. Dies kann Probleme "
+"verursachen."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
 msgstr ""
+"Kann keinen Dateinamen in Unicode in %s schreiben. Dies kann Probleme "
+"verursachen."
 
 #. Warning message
 #: sabnzbd/filesystem.py
@@ -1120,7 +1126,7 @@ msgstr "Andere Nachrichten"
 #. Notification action
 #: sabnzbd/notifier.py
 msgid "Open folder"
-msgstr ""
+msgstr "Ordner öffnen"
 
 #. Notification action
 #: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
@@ -1255,7 +1261,7 @@ msgstr "DUPLIKAT"
 
 #: sabnzbd/nzbstuff.py
 msgid "ALTERNATIVE"
-msgstr ""
+msgstr "ALTERNATIVE"
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -2097,7 +2103,6 @@ msgstr "Python Version"
 msgid "Home page"
 msgstr "Startseite"
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr "oder"
@@ -2164,8 +2169,8 @@ msgstr "Forum"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "IRC"
+msgid "Live Chat"
+msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py

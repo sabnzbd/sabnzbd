@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0RC1\n"
+"Project-Id-Version: SABnzbd-4.2.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Serbian (https://app.transifex.com/sabnzbd/teams/111101/sr/)\n"
@@ -2019,7 +2019,6 @@ msgstr "Верзија Python-а"
 msgid "Home page"
 msgstr "Почетна страница"
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr "или"
@@ -2086,8 +2085,8 @@ msgstr "Форум"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "ИРЦ"
+msgid "Live Chat"
+msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py

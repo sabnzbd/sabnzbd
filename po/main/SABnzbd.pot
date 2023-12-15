@@ -1925,7 +1925,6 @@ msgstr ""
 msgid "Home page"
 msgstr ""
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr ""
@@ -1992,7 +1991,7 @@ msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
+msgid "Live Chat"
 msgstr ""
 
 #. Main menu item
