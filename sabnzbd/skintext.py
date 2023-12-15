@@ -106,7 +106,7 @@ SKIN_TEXT = {
     "notAvailable": TT("Not available"),
     "homePage": TT("Home page"),  #: Home page of the SABnzbd project
     "source": TT("Source"),  #: Where to find the SABnzbd sourcecode
-    "or": TT("or"),  #: Used in "IRC or IRC-Webaccess"
+    "or": TT("or"),
     "host": TT("Host"),
     "cancel": TT("Cancel"),
     "login": TT("Log in"),
@@ -126,7 +126,7 @@ SKIN_TEXT = {
     "menu-help": TT("Help"),  #: Main menu item
     "menu-wiki": TT("Wiki"),  #: Main menu item
     "menu-forums": TT("Forum"),  #: Main menu item
-    "menu-irc": TT("IRC"),  #: Main menu item
+    "menu-live-chat": TT("Live Chat"),  #: Main menu item
     "menu-issues": TT("Issues"),  #: Main menu item
     "menu-donate": TT("Support the project, Donate!"),  #: Main menu item
     "cmenu-general": TT("General"),  #: Main menu item
