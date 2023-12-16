@@ -1121,7 +1121,7 @@ msgstr "Autres messages"
 #. Notification action
 #: sabnzbd/notifier.py
 msgid "Open folder"
-msgstr ""
+msgstr "Ouvrir le dossier"
 
 #. Notification action
 #: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
@@ -2162,7 +2162,7 @@ msgstr "Forum"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Live Chat"
-msgstr ""
+msgstr "Chat en direct"
 
 #. Main menu item
 #: sabnzbd/skintext.py
