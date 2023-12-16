@@ -190,6 +190,26 @@ class MultiAddQueue(queue.Queue):
             self.not_empty.notify()
 
 
+def cat_pp_script_sanitizer(
+    cat: Optional[str] = None,
+    pp: Optional[Union[int, str]] = None,
+    script: Optional[str] = None,
+) -> Tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
+    """Basic sanitizer from outside input to a bit more predictable values"""
+    # Cannot use "not pp" because pp can also be 0
+    if pp in ("", "-1"):
+        pp = None
+
+    # Check for valid script is performed in NzbObject init
+    if not script or script.lower() == "default":
+        script = None
+
+    if not cat or cat.lower() in ("default", "*"):
+        cat = None
+
+    return cat, pp, script
+
+
 def name_to_cat(fname, cat=None):
     """Retrieve category from file name, but only if "cat" is None."""
     if cat is None and fname.startswith("{{"):

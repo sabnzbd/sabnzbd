@@ -43,7 +43,7 @@ from sabnzbd.filesystem import (
     remove_file,
     remove_data,
 )
-from sabnzbd.misc import name_to_cat
+from sabnzbd.misc import name_to_cat, cat_pp_script_sanitizer
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES, AddNzbFileResult
 from sabnzbd.utils import rarfile
 
@@ -66,12 +66,8 @@ def add_nzbfile(
     """Add file, either a single NZB-file or an archive.
     All other parameters are passed to the NZO-creation.
     """
-    if pp == "-1":
-        pp = None
-    if script and (script.lower() == "default" or not is_valid_script(script)):
-        script = None
-    if cat and cat.lower() == "default":
-        cat = None
+    # Base conversion of input
+    cat, pp, script = cat_pp_script_sanitizer(cat, pp, script)
 
     if isinstance(nzbfile, str):
         # File coming from queue repair or local file-path

@@ -655,14 +655,11 @@ function ViewModel() {
                 name: $(form.nzbURL).val(),
                 nzbname: $('#nzbname').val(),
                 password: $('#password').val(),
-                script: $('#modal-add-nzb select[name="Post-processing"]').val(),
+                cat: $('#modal-add-nzb select[name="Category"]').val(),
                 priority: $('#modal-add-nzb select[name="Priority"]').val(),
-                pp: $('#modal-add-nzb select[name="Processing"]').val()
+                pp: $('#modal-add-nzb select[name="Processing"]').val(),
+                script: $('#modal-add-nzb select[name="Post-processing"]').val(),
             }
-
-            // Optional, otherwise they get mis-labeled if left empty
-            if ($('#modal-add-nzb select[name="Category"]').val() !== '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
-            if ($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
 
             // Add
             callAPI(theCall).then(function(r) {
@@ -702,13 +699,11 @@ function ViewModel() {
         data.append("mode", "addfile");
         data.append("nzbname", $('#nzbname').val());
         data.append("password", $('#password').val());
-        data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
+        data.append("cat", $('#modal-add-nzb select[name="Category"]').val())
         data.append("priority", $('#modal-add-nzb select[name="Priority"]').val())
+        data.append("pp", $('#modal-add-nzb select[name="Processing"]').val())
+        data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
         data.append("apikey", apiKey);
-
-        // Optional, otherwise they get mis-labeled if left empty
-        if ($('#modal-add-nzb select[name="Category"]').val() !== '*') data.append("cat", $('#modal-add-nzb select[name="Category"]').val());
-        if ($('#modal-add-nzb select[name="Processing"]').val()) data.append("pp", $('#modal-add-nzb select[name="Processing"]').val());
 
         // Add this one
         $.ajax({

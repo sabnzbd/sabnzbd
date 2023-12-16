@@ -34,7 +34,7 @@ import base64
 from typing import Tuple, Optional, Union, List, Dict, Any
 
 import sabnzbd
-from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES, DEFAULT_PRIORITY
+from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
 import sabnzbd.cfg as cfg
@@ -394,6 +394,9 @@ def add_url(
     """Add NZB based on a URL, attributes optional"""
     if not url.lower().startswith("http"):
         return AddNzbFileResult.NO_FILES_FOUND, []
+
+    # Base conversion of input
+    cat, pp, script = misc.cat_pp_script_sanitizer(cat, pp, script)
 
     # Generate the placeholder
     logging.debug("Creating placeholder NZO for %s", url)
