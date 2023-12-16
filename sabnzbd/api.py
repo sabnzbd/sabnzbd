@@ -1283,11 +1283,11 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         # Internet bandwidth
         sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
 
-        internetspeed_ipv4 = round(internetspeed(family=socket.AF_INET),1)
-        logging.debug("SJ internetspeed_ipv4 %s", internetspeed_ipv4) # TODO put it somewhere nice
+        internetspeed_ipv4 = round(internetspeed(family=socket.AF_INET), 1)
+        logging.debug("SJ internetspeed_ipv4 %s", internetspeed_ipv4)  # TODO put it somewhere nice
 
-        internetspeed_ipv6 = round(internetspeed(family=socket.AF_INET6),1)
-        logging.debug("SJ internetspeed_ipv6 %s", internetspeed_ipv6) # TODO put it somewhere nice
+        internetspeed_ipv6 = round(internetspeed(family=socket.AF_INET6), 1)
+        logging.debug("SJ internetspeed_ipv6 %s", internetspeed_ipv6)  # TODO put it somewhere nice
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
