@@ -89,13 +89,13 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
 
 @cache_maintainer(clear_time=10)
 @functools.lru_cache(maxsize=None)
-def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family = socket.AF_UNSPEC) -> Optional[AddrInfo]:
+def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socket.AF_UNSPEC) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
     by getaddrinfo or if no connection could be made to any of the addresses"""
     try:
         # Get address information, by default both IPV4 and IPV6
-        #family = socket.AF_UNSPEC
+        # family = socket.AF_UNSPEC
         if not cfg.ipv6_servers():
             family = socket.AF_INET
 
