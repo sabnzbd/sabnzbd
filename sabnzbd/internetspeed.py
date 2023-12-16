@@ -75,7 +75,7 @@ def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLS
         pass
 
 
-def internetspeed(test_time_limit: int = TIME_LIMIT) -> float:
+def internetspeed(test_time_limit: int = TIME_LIMIT, family=socket.AF_UNSPEC) -> float:
     """Measure internet speed from a test-download using our optimized SSL-code"""
 
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
@@ -83,7 +83,7 @@ def internetspeed(test_time_limit: int = TIME_LIMIT) -> float:
 
     try:
         for _ in range(NR_CONNECTIONS):
-            addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT)
+            addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family=family)
             sock = socket.socket(addrinfo.family, addrinfo.type)
             sock.settimeout(SOCKET_TIMEOUT)
             sock.connect(addrinfo.sockaddr)
