@@ -51,7 +51,7 @@ class TestHappyEyeballs:
         assert "google" in addrinfo.canonname
 
     def test_google_http_want_ipv6(self):
-        addrinfo = happyeyeballs("www.google.com", port=80, family=socket.AF_INET6)
+        addrinfo = happyeyeballs("www.google.com", port=80, timeout=2, family=socket.AF_INET6)
         if addrinfo:
             assert not "." in addrinfo.ipaddress and ":" in addrinfo.ipaddress
             assert "google" in addrinfo.canonname
@@ -60,7 +60,7 @@ class TestHappyEyeballs:
         assert happyeyeballs("not.resolvable.invalid", port=80) is None
 
     def test_ipv6_only(self):
-        if addrinfo := happyeyeballs("ipv6.google.com", port=443):
+        if addrinfo := happyeyeballs("ipv6.google.com", port=443, timeout=2):
             assert ":" in addrinfo.ipaddress
             assert "google" in addrinfo.canonname
 
