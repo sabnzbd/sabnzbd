@@ -28,7 +28,6 @@ from flaky import flaky
 from sabnzbd.happyeyeballs import happyeyeballs
 
 
-
 @flaky
 class TestHappyEyeballs:
     """Tests of happyeyeballs() against various websites/servers
