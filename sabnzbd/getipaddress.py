@@ -138,8 +138,8 @@ def publicip(family=socket.AF_UNSPEC):
         logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
         return None
 
-    r = requests.get(resolveurl, headers={"host": resolvehost})  # http, not https
-    clientip = r.content.decode("utf-8").strip()
+    result = requests.get(resolveurl, headers={"host": resolvehost})  # http, not https
+    clientip = result.content.decode("utf-8").strip()
     logging.debug("Client public IP %s", clientip)
     return clientip
 
