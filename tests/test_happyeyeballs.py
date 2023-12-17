@@ -25,7 +25,8 @@ import socket
 import pytest
 from flaky import flaky
 
-c
+from sabnzbd.happyeyeballs import happyeyeballs
+
 
 
 @flaky
