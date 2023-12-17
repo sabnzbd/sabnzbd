@@ -102,6 +102,7 @@ def localipv4():
     logging.debug("Local IPv4 address = %s", ipv4)
     return ipv4
 
+
 def publicip(family=socket.AF_UNSPEC):
 
     resolvehost = sabnzbd.cfg.selftest_host()
@@ -112,7 +113,7 @@ def publicip(family=socket.AF_UNSPEC):
         logging.debug("Error resolving my IP address")
         return None
 
-    '''
+    """
     if "." in resolvehostip:
         resolveurl = f"http://{resolvehostip}/?ipv4test"
     elif ":" in resolvehostip:
@@ -120,7 +121,7 @@ def publicip(family=socket.AF_UNSPEC):
     else:
         logging.debug("Error resolving my IP address")
         return None
-    '''
+    """
 
     resolveurl = None
     try:
@@ -130,25 +131,27 @@ def publicip(family=socket.AF_UNSPEC):
         pass
     try:
         socket.inet_pton(socket.AF_INET6, resolvehostip)
-        resolveurl = f"http://[{resolvehostip}]/?ipv6test" # including square brackets
+        resolveurl = f"http://[{resolvehostip}]/?ipv6test"  # including square brackets
     except:
         pass
     if not resolveurl:
         logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
         return None
 
-    r = requests.get(resolveurl, headers={'host': resolvehost}) # http, not https
-    clientip = r.content.decode('utf-8').strip()
+    r = requests.get(resolveurl, headers={"host": resolvehost})  # http, not https
+    clientip = r.content.decode("utf-8").strip()
     logging.debug("Client public IP %s", clientip)
     return clientip
+
 
 def publicipv4():
     return publicip(family=socket.AF_INET)
 
+
 def LANipv6():
-    '''
+    """
     return IPv6 address on local LAN interface. So a first check if there is IPv6
-    '''
+    """
     try:
         with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s_ipv6:
             # IPv6 prefix for documentation purpose
@@ -159,9 +162,12 @@ def LANipv6():
 
     logging.debug("IPv6 address = %s", ipv6_address)
     return ipv6_address
+
+
 def ipv6():
     if LANipv6():
         return publicip(family=socket.AF_INET6)
+
 
 def old_publicipv4():
     """Because of dual IPv4/IPv6 clients, finding the
@@ -213,6 +219,3 @@ def old_publicipv4():
 
     logging.debug("Public IPv4 address = %s (in %.2f seconds)", public_ipv4, time.time() - start)
     return public_ipv4
-
-
-
