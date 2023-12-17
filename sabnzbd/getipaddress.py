@@ -104,7 +104,9 @@ def localipv4():
 
 
 def publicip(family=socket.AF_UNSPEC):
-
+    """
+    Reports the public IP address (IPv4 or IPv6, as specified by family), as reported by selftest site
+    """
     resolvehost = sabnzbd.cfg.selftest_host()
     resolvehostaddress = happyeyeballs(resolvehost, port=80, family=family)
     if resolvehostaddress:
@@ -135,6 +137,7 @@ def publicip(family=socket.AF_UNSPEC):
     except:
         pass
     if not resolveurl:
+        # not an ipv4 nor ipv6 address
         logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
         return None
 
