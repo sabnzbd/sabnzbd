@@ -714,7 +714,7 @@ class Downloader(Thread):
             bytes_received, done = nw.recv_chunk()
         except ssl.SSLWantReadError:
             return
-        except:
+        except ConnectionError:
             self.__reset_nw(nw, "Server closed connection", wait=False)
             return
 

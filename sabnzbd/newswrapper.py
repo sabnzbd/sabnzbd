@@ -225,7 +225,8 @@ class NewsWrapper:
 
     def increase_data_buffer(self):
         """Resize the buffer in the extremely unlikely case that it overflows"""
-        new_buffer = sabctools.bytearray_malloc(len(self.data) + NNTP_BUFFER_SIZE / 2)
+        # Input needs to be integer, floats don't work
+        new_buffer = sabctools.bytearray_malloc(len(self.data) + NNTP_BUFFER_SIZE // 2)
         new_buffer[: len(self.data)] = self.data
         logging.info("Increased buffer from %d to %d for %s", len(self.data), len(new_buffer), str(self))
         self.data = new_buffer
