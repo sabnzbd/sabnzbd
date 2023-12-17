@@ -26,11 +26,13 @@ import urllib.error
 import socks
 import logging
 import time
+import requests
 from typing import Callable
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
+from sabnzbd.happyeyeballs import happyeyeballs
 
 
 def timeout(max_timeout: float):
@@ -100,8 +102,68 @@ def localipv4():
     logging.debug("Local IPv4 address = %s", ipv4)
     return ipv4
 
+def publicip(family=socket.AF_UNSPEC):
+
+    resolvehost = sabnzbd.cfg.selftest_host()
+    resolvehostaddress = happyeyeballs(resolvehost, port=80, family=family)
+    if resolvehostaddress:
+        resolvehostip = resolvehostaddress.ipaddress
+    else:
+        logging.debug("Error resolving my IP address")
+        return None
+
+    '''
+    if "." in resolvehostip:
+        resolveurl = f"http://{resolvehostip}/?ipv4test"
+    elif ":" in resolvehostip:
+        resolveurl = f"http://[{resolvehostip}]/?ipv6test" # including square brackets
+    else:
+        logging.debug("Error resolving my IP address")
+        return None
+    '''
+
+    resolveurl = None
+    try:
+        socket.inet_pton(socket.AF_INET, resolvehostip)
+        resolveurl = f"http://{resolvehostip}/?ipv4test"
+    except:
+        pass
+    try:
+        socket.inet_pton(socket.AF_INET6, resolvehostip)
+        resolveurl = f"http://[{resolvehostip}]/?ipv6test" # including square brackets
+    except:
+        pass
+    if not resolveurl:
+        logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
+        return None
+
+    r = requests.get(resolveurl, headers={'host': resolvehost}) # http, not https
+    clientip = r.content.decode('utf-8').strip()
+    logging.debug("Client public IP %s", clientip)
+    return clientip
 
 def publicipv4():
+    return publicip(family=socket.AF_INET)
+
+def LANipv6():
+    '''
+    return IPv6 address on local LAN interface. So a first check if there is IPv6
+    '''
+    try:
+        with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s_ipv6:
+            # IPv6 prefix for documentation purpose
+            s_ipv6.connect(("2001:db8::8080", 80))
+            ipv6_address = s_ipv6.getsockname()[0]
+    except:
+        ipv6_address = None
+
+    logging.debug("IPv6 address = %s", ipv6_address)
+    return ipv6_address
+def ipv6():
+    if LANipv6():
+        return publicip(family=socket.AF_INET6)
+
+def old_publicipv4():
     """Because of dual IPv4/IPv6 clients, finding the
     public ipv4 needs special attention, meaning forcing
     IPv4 connections, and not allowing IPv6 connections
@@ -153,14 +215,4 @@ def publicipv4():
     return public_ipv4
 
 
-def ipv6():
-    try:
-        with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s_ipv6:
-            # IPv6 prefix for documentation purpose
-            s_ipv6.connect(("2001:db8::8080", 80))
-            ipv6_address = s_ipv6.getsockname()[0]
-    except:
-        ipv6_address = None
 
-    logging.debug("IPv6 address = %s", ipv6_address)
-    return ipv6_address

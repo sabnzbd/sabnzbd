@@ -84,6 +84,8 @@ def internetspeed(test_time_limit: int = TIME_LIMIT, family=socket.AF_UNSPEC) ->
     try:
         for _ in range(NR_CONNECTIONS):
             addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family=family)
+            if not addrinfo:
+                break
             sock = socket.socket(addrinfo.family, addrinfo.type)
             sock.settimeout(SOCKET_TIMEOUT)
             sock.connect(addrinfo.sockaddr)
