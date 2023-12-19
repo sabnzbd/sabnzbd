@@ -105,7 +105,7 @@ def localipv4():
 
 def publicip(family=socket.AF_UNSPEC):
     """
-    Reports the public IP address (IPv4 or IPv6, as specified by family), as reported by selftest site
+    Reports the public IP address (IPv4 or IPv6, if specified by family), as reported by selftest site
     """
     resolvehost = sabnzbd.cfg.selftest_host()
     resolvehostaddress = happyeyeballs(resolvehost, port=80, family=family)
@@ -141,8 +141,11 @@ def publicip(family=socket.AF_UNSPEC):
         logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
         return None
 
-    result = requests.get(resolveurl, headers={"host": resolvehost})  # http, not https
-    clientip = result.content.decode("utf-8").strip()
+    req = urllib.request.Request(resolveurl)
+    req.add_header("Host", sabnzbd.cfg.selftest_host())
+    req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
+    clientip = ubtou(urllib.request.urlopen(req, timeout=2).read().strip())
+
     logging.debug("Client public IP %s", clientip)
     return clientip
 
