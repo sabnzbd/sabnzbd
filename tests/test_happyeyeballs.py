@@ -51,6 +51,7 @@ class TestHappyEyeballs:
         assert "google" in addrinfo.canonname
 
     def test_google_http_want_ipv6(self):
+        # TODO: timeout needed for IPv4-only CI environment?
         addrinfo = happyeyeballs("www.google.com", port=80, timeout=2, family=socket.AF_INET6)
         if addrinfo:
             assert not "." in addrinfo.ipaddress and ":" in addrinfo.ipaddress
