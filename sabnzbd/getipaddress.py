@@ -26,7 +26,6 @@ import urllib.error
 import socks
 import logging
 import time
-import requests
 from typing import Callable
 
 import sabnzbd
