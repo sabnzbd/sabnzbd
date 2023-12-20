@@ -773,7 +773,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     return tmp_workdir_complete, workdir_complete, file_sorter, not create_job_dir, marker_file
 
 
-def parring(nzo: NzbObject):
+def parring(nzo: NzbObject) -> Tuple[bool, bool]:
     """Perform par processing. Returns: (par_error, re_add)"""
     logging.info("Starting verification and repair of %s", nzo.final_name)
     par_error = False
@@ -892,7 +892,7 @@ def try_sfv_check(nzo: NzbObject) -> Optional[bool]:
     return True
 
 
-def try_rar_check(nzo: NzbObject, rars):
+def try_rar_check(nzo: NzbObject, rars: List[str]) -> bool:
     """Attempt to verify set using the RARs
     Return True if verified, False when failed
     When setname is '', all RAR files will be used, otherwise only the matching one
@@ -1115,7 +1115,7 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir, skip_nzb):
+def cleanup_list(wdir: str, skip_nzb: bool):
     """Remove all files whose extension matches the cleanup list,
     optionally ignoring the nzb extension
     """
@@ -1138,7 +1138,7 @@ def cleanup_list(wdir, skip_nzb):
             logging.info("Traceback: ", exc_info=True)
 
 
-def prefix(path, pre):
+def prefix(path: str, pre: str) -> str:
     """Apply prefix to last part of path
     '/my/path' and 'hi_' will give '/my/hi_path'
     """
@@ -1176,7 +1176,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     return files
 
 
-def one_file_or_folder(folder):
+def one_file_or_folder(folder: str) -> str:
     """If the dir only contains one file or folder, join that file/folder onto the path"""
     if os.path.exists(folder) and os.path.isdir(folder):
         try:
@@ -1193,7 +1193,7 @@ def one_file_or_folder(folder):
 TAG_RE = re.compile(r"<[^>]+>")
 
 
-def get_last_line(txt):
+def get_last_line(txt: str) -> str:
     """Return last non-empty line of a text, trim to 150 max"""
     # First we remove HTML code in a basic way
     txt = TAG_RE.sub(" ", txt)
@@ -1210,7 +1210,7 @@ def get_last_line(txt):
     return line
 
 
-def remove_samples(path):
+def remove_samples(path: str):
     """Remove all files that match the sample pattern
     Skip deleting if it matches all files or there is only 1 file
     """
@@ -1235,7 +1235,7 @@ def remove_samples(path):
         logging.info("Skipping sample-removal, false-positive")
 
 
-def rename_and_collapse_folder(oldpath, newpath, files):
+def rename_and_collapse_folder(oldpath: str, newpath: str, files: List[str]) -> List[str]:
     """Rename folder, collapsing when there's just a single subfolder
     oldpath --> newpath OR oldpath/subfolder --> newpath
     Modify list of filenames accordingly
@@ -1287,7 +1287,7 @@ def del_marker(path: str):
             logging.info("Traceback: ", exc_info=True)
 
 
-def remove_from_list(name, lst):
+def remove_from_list(name: Optional[str], lst: List[str]):
     if name:
         for n in range(len(lst)):
             if lst[n].endswith(name):
@@ -1296,7 +1296,7 @@ def remove_from_list(name, lst):
                 return
 
 
-def try_alt_nzb(nzo):
+def try_alt_nzb(nzo: NzbObject):
     """Try to get a new NZB if available"""
     url = nzo.nzo_info.get("failure")
     if url and cfg.new_nzb_on_failure():

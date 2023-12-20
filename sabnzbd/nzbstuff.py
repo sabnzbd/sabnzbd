@@ -1496,7 +1496,7 @@ class NzbObject(TryList):
         if hasattr(self, "direct_unpacker") and self.direct_unpacker:
             self.direct_unpacker.abort()
 
-    def check_availability_ratio(self):
+    def check_availability_ratio(self) -> Tuple[bool, float]:
         """Determine if we are still meeting the required ratio"""
         availability_ratio = req_ratio = cfg.req_completion_rate()
 
@@ -1522,7 +1522,7 @@ class NzbObject(TryList):
         # Check based on availability ratio
         return availability_ratio >= req_ratio, availability_ratio
 
-    def check_first_article_availability(self):
+    def check_first_article_availability(self) -> bool:
         """Use the first articles to see if
         it's likely the job will succeed
         """
@@ -1652,7 +1652,7 @@ class NzbObject(TryList):
         return articles
 
     @synchronized(NZO_LOCK)
-    def move_top_bulk(self, nzf_ids):
+    def move_top_bulk(self, nzf_ids: List[str]):
         self.cleanup_nzf_ids(nzf_ids)
         if nzf_ids:
             target = list(range(len(nzf_ids)))
