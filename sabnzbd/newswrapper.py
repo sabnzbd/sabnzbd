@@ -187,7 +187,7 @@ class NewsWrapper:
     def recv_chunk(self) -> Tuple[int, bool]:
         """Receive data, return #bytes, done, skip"""
         # Resize the buffer in the extremely unlikely case that it got full
-        if len(self.data) - self.data_position == 0:
+        if self.data_position == len(self.data):
             self.nntp.nw.increase_data_buffer()
 
         # Receive data into the pre-allocated buffer
@@ -205,7 +205,15 @@ class NewsWrapper:
         self.timeout = time.time() + self.server.timeout
         self.data_position += bytes_recv
 
-        # Official end-of-article is "\r\n.\r\n",
+        # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
+        # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
+        # another recv_chunk so the buffer is increased and the data from the SSL-layer is read. See #2752.
+        if self.nntp.nw.server.ssl and self.data_position == len(self.data) and self.nntp.sock.pending() > 0:
+            # We do not perform error-handling, as we know there is data available to read
+            additional_bytes_recv, additional_result = self.recv_chunk()
+            return bytes_recv + additional_bytes_recv, additional_result
+
+        # Official end-of-article is "\r\n.\r\n"
         # Using the data directly seems faster than the memoryview
         if self.data[self.data_position - 5 : self.data_position] == b"\r\n.\r\n":
             return bytes_recv, True

@@ -714,7 +714,8 @@ class Downloader(Thread):
             bytes_received, done = nw.recv_chunk()
         except ssl.SSLWantReadError:
             return
-        except ConnectionError:
+        except (ConnectionError, ConnectionAbortedError):
+            # The ConnectionAbortedError is thrown by sabctools in case of fatal SSL-layer problems
             self.__reset_nw(nw, "Server closed connection", wait=False)
             return
 

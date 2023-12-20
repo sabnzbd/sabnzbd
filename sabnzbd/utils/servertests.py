@@ -117,9 +117,9 @@ def test_nntp_server_dict(kwargs):
         try:
             nw.reset_data_buffer()
             nw.recv_chunk()
-        except:
+        except Exception as err:
             # Some internal error, not always safe to close connection
-            return False, str(sys.exc_info()[1])
+            return False, str(err)
 
     # Parse result
     return_status = ()
