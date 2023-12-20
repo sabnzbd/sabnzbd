@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 4.2.0 Release Candidate 2
+Release Notes - SABnzbd 4.2.0 Release Candidate 3
 =========================================================
 
-This is the second pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
+This is the third pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
 
 ## Key changes since 4.1.0
 
@@ -36,6 +36,7 @@ This is the second pre-release build of SABnzbd 4.2.0, which includes several ne
 
 * Fixed an issue where the multi-select option in the queue was not working for some users.
 * Prevented a crash that would occur during the saving of configuration settings.
+* Jobs with larger articles could stall the queue for several minutes.
 * Ensured that server warnings are always displayed to users.
 * If `weblogging` was enabled, output was also written to regular log.
 * Fixed an issue where removing a failed download from the History could break active downloads.
