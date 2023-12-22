@@ -1,0 +1,41 @@
+# `git blame` master ignore list.
+#
+# This file contains a list of git hashes of revisions to be ignored
+# by `git blame`. These revisions are considered "unimportant" in
+# that they are unlikely to be what you are interested in when blaming.
+# They are typically expected to be formatting-only changes.
+#
+# It can be used for `git blame` using `--ignore-revs-file` or by
+# setting `blame.ignoreRevsFile` in the `git config`[1].
+#
+# Ignore these commits when reporting with blame. Calling
+#
+#   git blame --ignore-revs-file .git-blame-ignore-revs
+#
+# will tell `git blame` to ignore changes made by these revisions when
+# assigning blame, as if the change never happened.
+#
+# You can enable this as a default for your local repository by
+# running
+#
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# This will probably be automatically picked by your IDE
+# (VSCode+GitLens and JetBrains products are confirmed to do this).
+#
+# Important: if you are switching to a branch without this file,
+# `git blame` will fail with an error.
+#
+# GitHub also excludes the commits listed below from its "Blame"
+# views[2][3].
+#
+# [1]: https://git-scm.com/docs/git-blame#Documentation/git-blame.txt-blameignoreRevsFile
+# [2]: https://github.blog/changelog/2022-03-24-ignore-commits-in-the-blame-view-beta/
+# [3]: https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view
+
+
+# Black changes
+465a88154152fb0607a63fa24c8446bff43ec886
+f06891926661986fff52d6eb4b4cb120c71972d1
+9bcbcaefdfecc85aedfd8e2f8aaa1ca7f959404e
+433dcab02b29f7bd3827e237434034deecc1b549
