@@ -1282,10 +1282,10 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
         # Internet bandwidth
         internetspeed_ipv4 = round(internetspeed(family=socket.AF_INET), 1)
-        logging.debug("SJ internetspeed_ipv4 %s", internetspeed_ipv4)  # TODO put it somewhere nice
+        logging.debug("internetspeed via IPv4 %s MB/s", internetspeed_ipv4)  # TODO put it somewhere nice
 
         internetspeed_ipv6 = round(internetspeed(family=socket.AF_INET6), 1)
-        logging.debug("SJ internetspeed_ipv6 %s", internetspeed_ipv6)  # TODO put it somewhere nice
+        logging.debug("internetspeed via IPv6 %s MB/s", internetspeed_ipv6)  # TODO put it somewhere nice
 
         sabnzbd.INTERNET_BANDWIDTH = max(internetspeed_ipv4 or 0, internetspeed_ipv6 or 0)
 
