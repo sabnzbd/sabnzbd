@@ -43,6 +43,15 @@ from sabnzbd.decorators import cache_maintainer
 CONNECTION_ATTEMPT_DELAY = 0.01
 
 
+def family_type(family):
+    if family == socket.AF_INET:
+        return "IPv4-only"
+    elif family == socket.AF_INET6:
+        return "IPv6-only"
+    else:
+        return ""
+
+
 # For typing and convenience!
 @dataclass
 class AddrInfo:
@@ -92,7 +101,8 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
 def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socket.AF_UNSPEC) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
-    by getaddrinfo or if no connection could be made to any of the addresses"""
+    by getaddrinfo or if no connection could be made to any of the addresses.
+    If family is specified, only that family is tried"""
     try:
         # Get address information, by default both IPV4 and IPV6
         # family = socket.AF_UNSPEC
@@ -128,9 +138,10 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socke
                 raise
 
         logging.debug(
-            "Available addresses for %s (port=%d): %d IPv4 and %d IPv6",
+            "Available addresses for %s (port=%d %s): %d IPv4 and %d IPv6",
             host,
             port,
+            family_type(family),
             len(ipv4_addrinfo),
             len(ipv6_addrinfo),
         )
@@ -159,7 +170,14 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socke
             except queue.Empty:
                 raise ConnectionError("No addresses could be resolved")
 
-        logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.ipaddress, result.canonname)
+        logging.info(
+            "Quickest IP address for %s (port=%d %s): %s (%s)",
+            host,
+            port,
+            family_type(family),
+            result.ipaddress,
+            result.canonname,
+        )
         return result
     except Exception as e:
         logging.debug("Failed Happy Eyeballs lookup: %s", e)
