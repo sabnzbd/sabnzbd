@@ -268,13 +268,16 @@ class NewsWrapper:
 
 class NNTP:
     # Pre-define attributes to save memory
-    __slots__ = ("nw", "addrinfo", "error_msg", "sock", "fileno")
+    __slots__ = ("nw", "addrinfo", "error_msg", "sock", "fileno", "closed")
 
     def __init__(self, nw: NewsWrapper, addrinfo: AddrInfo):
         self.nw: NewsWrapper = nw
         # Add local reference to prevent crash in case the server.addrinfo is reset
         self.addrinfo: AddrInfo = addrinfo
         self.error_msg: Optional[str] = None
+
+        # Prevent closing this socket until it's done connecting
+        self.closed = False
 
         # Create SSL-context if it is needed and not created yet
         if self.nw.server.ssl and not self.nw.server.ssl_context:
@@ -321,7 +324,6 @@ class NNTP:
         else:
             self.connect()
 
-    @synchronized(DOWNLOADER_LOCK)
     def connect(self):
         """Start of connection, can be performed a-sync"""
         try:
@@ -348,8 +350,11 @@ class NNTP:
             if not self.nw.blocking:
                 # Set to non-blocking mode
                 self.sock.setblocking(False)
-                # Now it's safe to add the socket to the list of active sockets
-                sabnzbd.Downloader.add_socket(self.fileno, self.nw)
+                # Only add to active sockets if it's not somehow already closing
+                # Locked, so it can't interleave with any of the Downloader "__nw" actions
+                with DOWNLOADER_LOCK:
+                    if not self.closed:
+                        sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:
             self.error(e)
 
@@ -387,7 +392,9 @@ class NNTP:
         # Blocking = server-test, pass directly to display code
         if self.nw.blocking:
             raise socket.error(errno.ECONNREFUSED, str(error))
-        else:
+
+        # Ignore if the socket was already closed, resulting in errors
+        if not self.closed:
             msg = "Failed to connect: %s %s@%s:%s (%s)" % (
                 str(error),
                 self.nw.thrdnum,
@@ -403,8 +410,10 @@ class NNTP:
                 logging.warning(msg)
             self.nw.server.warning = msg
 
+    @synchronized(DOWNLOADER_LOCK)
     def close(self, send_quit: bool):
-        """Safely close socket"""
+        """Safely close socket.
+        Locked to match connect(), even though most likely the caller already holds the same lock."""
         try:
             if send_quit:
                 self.sock.sendall(b"QUIT\r\n")
@@ -412,6 +421,7 @@ class NNTP:
             self.sock.close()
         except Exception as e:
             logging.info("%s@%s: Failed to close socket (error=%s)", self.nw.thrdnum, self.nw.server.host, str(e))
+        self.closed = True
 
     def __repr__(self):
         return "<NNTP: %s:%s>" % (self.addrinfo.canonname, self.nw.server.port)
