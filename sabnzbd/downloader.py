@@ -136,7 +136,7 @@ class Server:
         self.retention: int = retention
         self.send_group: bool = send_group
 
-        # TODO: Remove for final release
+        # TODO: Remove after next release
         if send_group:
             helpful_warning(
                 "You have 'Send Group' enabled for %s. Could you let us know why? https://github.com/sabnzbd/sabnzbd/discussions/2715",

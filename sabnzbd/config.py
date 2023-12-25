@@ -556,6 +556,13 @@ class ConfigCat:
             except KeyError:
                 continue
 
+        # TODO: Remove after next release
+        if "alt.bin" in self.newzbin.get_string():
+            sabnzbd.misc.helpful_warning(
+                "You have set a newsgroup for category %s. Could you let us know why? https://github.com/sabnzbd/sabnzbd/discussions/2758",
+                self.__name,
+            )
+
     def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
