@@ -1745,12 +1745,12 @@ class ConfigCats:
         conf["defdir"] = cfg.complete_dir.get_clipped_path()
 
         categories = config.get_ordered_categories()
-        conf["have_cats"] = len(categories) > 1
+        new_cat_order = max(cat["order"] for cat in categories) + 1
 
-        # Add empty line
+        # Add empty line to add new categories
         empty = {
             "name": "",
-            "order": "0",
+            "order": str(new_cat_order),
             "pp": "-1",
             "script": "",
             "dir": "",

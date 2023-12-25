@@ -1151,12 +1151,12 @@ def get_categories() -> Dict[str, ConfigCat]:
 
     # Add Default categories
     if "*" not in cats:
-        ConfigCat("*", {"pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
+        ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
         # Add some category suggestions
-        ConfigCat("movies", {})
-        ConfigCat("tv", {})
-        ConfigCat("audio", {})
-        ConfigCat("software", {})
+        ConfigCat("movies", {"order": 1})
+        ConfigCat("tv", {"order": 2})
+        ConfigCat("audio", {"order": 3})
+        ConfigCat("software", {"order": 4})
 
         # Save config for future use
         save_config(True)
