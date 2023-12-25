@@ -414,6 +414,8 @@ class NNTP:
     def close(self, send_quit: bool):
         """Safely close socket.
         Locked to match connect(), even though most likely the caller already holds the same lock."""
+        # Set status first, so any calls in connect/error are handled correctly
+        self.closed = True
         try:
             if send_quit:
                 self.sock.sendall(b"QUIT\r\n")
@@ -421,7 +423,6 @@ class NNTP:
             self.sock.close()
         except Exception as e:
             logging.info("%s@%s: Failed to close socket (error=%s)", self.nw.thrdnum, self.nw.server.host, str(e))
-        self.closed = True
 
     def __repr__(self):
         return "<NNTP: %s:%s>" % (self.addrinfo.canonname, self.nw.server.port)
