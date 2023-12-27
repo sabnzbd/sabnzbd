@@ -134,7 +134,7 @@ def format_time_left(totalseconds: int, short_format: bool = False) -> str:
 
 def calc_age(date: datetime.datetime, trans: bool = False) -> str:
     """Calculate the age difference between now and date.
-    Value is returned as a formatted string of days, hours and minutes
+    Value is returned as a formatted string of days, hours and minutes.
     When 'trans' is True, time symbols will be translated.
     """
     if trans:
