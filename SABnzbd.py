@@ -1207,23 +1207,13 @@ def main():
             logging.warning(T("Could not load additional certificates from certifi package"))
             logging.info("Traceback: ", exc_info=True)
 
-    # Extra startup info
+    # List the number of certificates available (can take up to 1.5 seconds)
     if sabnzbd.cfg.log_level() > 1:
-        # List the number of certificates available (can take up to 1.5 seconds)
         logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
-
-        # List networking
-        localipv4()
-        publicipv4()
-        ipv6()
-        dnslookup()
-
-        # Measure basic system performance measured by pystone and - if possible - CPU model
-        getpystone()
-        getcpu()
 
     logging.info("Using INI file %s", inifile)
 
+    # Store auto-browser setting from command line
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
 
