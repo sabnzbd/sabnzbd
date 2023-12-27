@@ -54,9 +54,11 @@ class TestMisc:
         m = date - datetime.timedelta(minutes=1)
         h = date - datetime.timedelta(hours=1)
         d = date - datetime.timedelta(days=1)
-        self.assertTime("1m", m)
-        self.assertTime("1h", h)
-        self.assertTime("1d", d)
+        dhm = date - datetime.timedelta(days=1, hours=1, minutes=1)
+        self.assertTime("0d 0h 1m", m)
+        self.assertTime("0d 1h 0m", h)
+        self.assertTime("1d 0h 0m", d)
+        self.assertTime("1d 1h 1m", dhm)
 
     def test_safe_lower(self):
         assert "all caps" == misc.safe_lower("ALL CAPS")
