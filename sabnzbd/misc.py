@@ -149,8 +149,9 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
     try:
         # Return time difference in human-readable format
         date_diff = datetime.datetime.now() - date
-        days, hours = divmod(date_diff.days, 24)
-        hours, minutes = divmod(hours, 60)
+        days = date_diff.days
+        hours, rem = divmod(date_diff.seconds, 3600)
+        minutes, seconds = divmod(rem, 60)
         return f"{days}{d} {hours}{h} {minutes}{m}"
     except:
         return "-"
