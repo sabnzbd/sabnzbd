@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 4.2.0 Release Candidate 3
+Release Notes - SABnzbd 4.2.0 Release Candidate 4
 =========================================================
 
-This is the third pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
+This is the fourth and final pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
 
 ## Key changes since 4.1.0
 
@@ -21,7 +21,7 @@ This is the third pre-release build of SABnzbd 4.2.0, which includes several new
     * Numerous smaller performance improvements were made.
     * Server IP-address selection was optimized.
     * The `Internet Bandwidth` test was made more reliable.
-    * macOS/Windows: Updated to Python 3.12.
+    * macOS/Windows: Updated to Python 3.12 and par2cmdline-turbo v1.1.1.
 
 * **Configuration changes:**
     * The `On queue finish script` is now set in Switches.
