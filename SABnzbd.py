@@ -83,7 +83,6 @@ from sabnzbd.constants import (
 )
 import sabnzbd.newsunpack
 from sabnzbd.misc import (
-    check_latest_version,
     exit_sab,
     split_host,
     create_https_certificates,
@@ -1465,8 +1464,6 @@ def main():
     if not autorestarted:
         launch_a_browser(browser_url)
         notifier.send_notification("SABnzbd", T("SABnzbd %s started") % sabnzbd.__version__, "startup")
-        # Now's the time to check for a new version
-        check_latest_version()
     autorestarted = False
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only

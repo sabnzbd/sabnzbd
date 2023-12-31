@@ -193,13 +193,19 @@ class Scheduler:
             self.scheduler.add_single_task(sabnzbd.RSSReader.run, "RSS", 15)
 
         if cfg.version_check():
-            # Check for new release, once per week on random time
+            # Check for new release daily at a random time
             m = random.randint(0, 59)
             h = random.randint(0, 23)
-            d = (random.randint(1, 7),)
 
-            logging.info("Scheduling VersionCheck on day %s at %s:%s", d[0], h, m)
-            self.scheduler.add_daytime_task(sabnzbd.misc.check_latest_version, "VerCheck", d, None, (h, m))
+            logging.info("Scheduling version check in 10 minutes and daily at %s:%s", h, m)
+            self.scheduler.add_single_task(sabnzbd.misc.check_latest_version, "version_check", 10 * 60)
+            self.scheduler.add_daytime_task(
+                sabnzbd.misc.check_latest_version,
+                "recurring_version_check",
+                DAILY_RANGE,
+                None,
+                (h, m),
+            )
 
         action, hour, minute = sabnzbd.BPSMeter.get_quota()
         if action:
@@ -209,15 +215,29 @@ class Scheduler:
         if sabnzbd.misc.int_conv(cfg.history_retention()) > 0:
             logging.info("Setting schedule for midnight auto history-purge")
             self.scheduler.add_daytime_task(
-                sabnzbd.database.scheduled_history_purge, "midnight_history_purge", DAILY_RANGE, None, (0, 0)
+                sabnzbd.database.scheduled_history_purge,
+                "midnight_history_purge",
+                DAILY_RANGE,
+                None,
+                (0, 0),
             )
 
         logging.info("Setting schedule for midnight BPS reset")
-        self.scheduler.add_daytime_task(sabnzbd.BPSMeter.update, "midnight_bps", DAILY_RANGE, None, (0, 0))
-
-        logging.info("Setting schedule for server expiration check")
         self.scheduler.add_daytime_task(
-            sabnzbd.downloader.check_server_expiration, "check_server_expiration", DAILY_RANGE, None, (0, 0)
+            sabnzbd.BPSMeter.update,
+            "midnight_bps",
+            DAILY_RANGE,
+            None,
+            (0, 0),
+        )
+
+        logging.info("Setting schedule for midnight server expiration check")
+        self.scheduler.add_daytime_task(
+            sabnzbd.downloader.check_server_expiration,
+            "check_server_expiration",
+            DAILY_RANGE,
+            None,
+            (0, 0),
         )
 
         logging.info("Setting schedule for server quota check")
