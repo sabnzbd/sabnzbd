@@ -1281,22 +1281,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         # Internet bandwidth
-        internetspeed_ipv4 = round(internetspeed(family=socket.AF_INET), 1)
-        logging.debug("internetspeed via IPv4 %s MB/s", internetspeed_ipv4)  # TODO put it somewhere nice
-
-        internetspeed_ipv6 = round(internetspeed(family=socket.AF_INET6), 1)
-        logging.debug("internetspeed via IPv6 %s MB/s", internetspeed_ipv6)  # TODO put it somewhere nice
-
-        sabnzbd.INTERNET_BANDWIDTH = max(internetspeed_ipv4 or 0, internetspeed_ipv6 or 0)
-
-        if internetspeed_ipv4 > 0 and internetspeed_ipv6 > 0:
-            quotient = internetspeed_ipv4 / internetspeed_ipv6
-            if quotient > 1.8:
-                logging.warning("IPv4 faster than IPv6")
-            elif quotient < 0.5:
-                logging.warning("IPv4 slower than IPv6")
-            else:
-                logging.debug("IPv4 and IPv6 about the same speed")
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(),1)
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
