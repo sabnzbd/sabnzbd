@@ -19,19 +19,25 @@
 sabnzbd.getipaddress
 """
 
-import socket
 import functools
-import urllib.request
-import urllib.error
-import socks
 import logging
+import socket
 import time
+import urllib.error
+import urllib.request
 from typing import Callable
+
+import socks
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
 from sabnzbd.happyeyeballs import happyeyeballs
+
+import importlib
+
+# from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr # results in circular import error
+importlib.import_module("sabnzbd.misc")  # to avoid circular import error
 
 
 def timeout(max_timeout: float):
@@ -114,29 +120,11 @@ def publicip(family=socket.AF_UNSPEC):
         logging.debug("Error resolving my IP address")
         return None
 
-    """
-    if "." in resolvehostip:
+    if sabnzbd.misc.is_ipv4_addr(resolvehostip):
         resolveurl = f"http://{resolvehostip}/?ipv4test"
-    elif ":" in resolvehostip:
-        resolveurl = f"http://[{resolvehostip}]/?ipv6test" # including square brackets
-    else:
-        logging.debug("Error resolving my IP address")
-        return None
-    """
-
-    resolveurl = None
-    try:
-        socket.inet_pton(socket.AF_INET, resolvehostip)
-        resolveurl = f"http://{resolvehostip}/?ipv4test"
-    except:
-        pass
-    try:
-        socket.inet_pton(socket.AF_INET6, resolvehostip)
+    elif sabnzbd.misc.is_ipv6_addr(resolvehostip):
         resolveurl = f"http://[{resolvehostip}]/?ipv6test"  # including square brackets
-    except:
-        pass
-    if not resolveurl:
-        # not an ipv4 nor ipv6 address
+    else:
         logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
         return None
 
