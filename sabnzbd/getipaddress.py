@@ -110,7 +110,7 @@ def localipv4():
 
 def publicip(family=socket.AF_UNSPEC):
     """
-    Reports the public IP address (IPv4 or IPv6, if specified by family), as reported by selftest site
+    Reports the client's public IP address (IPv4 or IPv6, if specified by family), as reported by selftest site
     """
     if resolvehostaddress := happyeyeballs(sabnzbd.cfg.selftest_host(), port=80, family=family):
         resolvehostip = resolvehostaddress.ipaddress
