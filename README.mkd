@@ -58,4 +58,4 @@ It simplifies the process of downloading from Usenet dramatically, thanks to its
 user interface and advanced built-in post-processing options that automatically verify, repair,
 extract and clean up posts downloaded from Usenet.
 
-(c) Copyright 2007-2023 by The SABnzbd-Team (sabnzbd.org)
+(c) Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
