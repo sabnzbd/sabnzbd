@@ -34,11 +34,6 @@ import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
 from sabnzbd.happyeyeballs import happyeyeballs
 
-import importlib
-
-# from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr # results in circular import error
-importlib.import_module("sabnzbd.misc")  # to avoid circular import error
-
 
 def timeout(max_timeout: float):
     """Timeout decorator, parameter in seconds."""
