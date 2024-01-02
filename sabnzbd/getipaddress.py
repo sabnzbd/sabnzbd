@@ -115,7 +115,7 @@ def publicip(family=socket.AF_UNSPEC):
     if resolvehostaddress := happyeyeballs(sabnzbd.cfg.selftest_host(), port=80, family=family):
         resolvehostip = resolvehostaddress.ipaddress
     else:
-        logging.debug("Error resolving my IP address")
+        logging.debug("Error resolving my IP address: resolvehost not found")
         return None
 
     if sabnzbd.misc.is_ipv4_addr(resolvehostip):
