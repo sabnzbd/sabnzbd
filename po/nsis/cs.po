@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2023 The SABnzbd-Team
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Pavel C <quoing_transifex@mess.cz>, 2022
