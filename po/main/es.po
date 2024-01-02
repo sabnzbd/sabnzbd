@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2023 The SABnzbd-Team
 # 
 # Translators:
 # Ester Molla Aragones <moarages@gmail.com>, 2020
