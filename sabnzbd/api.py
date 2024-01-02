@@ -1281,7 +1281,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(),1)
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
