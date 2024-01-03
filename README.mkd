@@ -1,11 +1,11 @@
-Release Notes - SABnzbd 4.2.0 Release Candidate 4
+Release Notes - SABnzbd 4.2.0
 =========================================================
 
-This is the fourth and final pre-release build of SABnzbd 4.2.0, which includes several new features and bug fixes.
+This is the latest stable SABnzbd release, version 4.2.0, which includes several new features and bug fixes.
 
 ## Key changes since 4.1.0
 
-* **Duplicate detection workflow was overhauled:**
+* **Duplicate detection workflow overhaul:**
     * `Series Duplicate Detection` was replaced by `Smart Duplicate Detection`
       that can also detect `Movie` and `Daily Show` duplicates.
     * Additionally, duplicates will also be detected if they are still in the queue.
