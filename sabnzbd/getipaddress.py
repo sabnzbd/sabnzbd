@@ -122,13 +122,22 @@ def public_ip(family=socket.AF_UNSPEC):
         logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
         return None
 
-    req = urllib.request.Request(resolveurl)
-    req.add_header("Host", sabnzbd.cfg.selftest_host())
-    req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
-    clientip = ubtou(urllib.request.urlopen(req, timeout=2).read().strip())
+    try:
+        req = urllib.request.Request(resolveurl)
+        req.add_header("Host", sabnzbd.cfg.selftest_host())
+        req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
+        with urllib.request.urlopen(req, timeout=2) as open_req:
+            client_ip = ubtou(open_req.read().strip())
 
-    logging.debug("Public address %s = %s (in %.2f seconds)", family_type(family), clientip, time.time() - start)
-    return clientip
+        # Make sure it's a valid IPv4 or IPv6 address
+        if not sabnzbd.misc.is_ipv4_addr(client_ip) and not sabnzbd.misc.is_ipv6_addr(client_ip):
+            raise ValueError
+    except urllib.error.URLError:
+        logging.debug("Failed to get public address from %s (%s)", sabnzbd.cfg.selftest_host(), family_type(family))
+        return None
+
+    logging.debug("Public address %s = %s (in %.2f seconds)", family_type(family), client_ip, time.time() - start)
+    return client_ip
 
 
 def public_ipv4():

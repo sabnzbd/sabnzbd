@@ -134,7 +134,7 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socke
                 raise
 
         logging.debug(
-            "Available addresses for %s (port=%d %s): %d IPv4 and %d IPv6",
+            "Available addresses for %s (port=%d, %s): %d IPv4 and %d IPv6",
             host,
             port,
             family_type(family),
@@ -167,7 +167,7 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socke
                 raise ConnectionError("No addresses could be resolved")
 
         logging.info(
-            "Quickest IP address for %s (port=%d %s): %s (%s)",
+            "Quickest IP address for %s (port=%d, %s): %s (%s)",
             host,
             port,
             family_type(family),
