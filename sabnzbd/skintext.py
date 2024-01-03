@@ -470,7 +470,6 @@ SKIN_TEXT = {
         "Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay."
     ),
     "opt-check_new_rel": TT("Check for New Release"),
-    "explain-check_new_rel": TT("Weekly check for new SABnzbd release."),
     "also-test": TT("Also test releases"),  #: Pick list for weekly test for new releases
     "opt-replace_spaces": TT("Replace Spaces in Foldername"),
     "explain-replace_spaces": TT("Replace spaces with underscores in folder names."),
