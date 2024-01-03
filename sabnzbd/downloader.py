@@ -531,10 +531,6 @@ class Downloader(Thread):
         sabnzbd.decoder.decode(article, data_view)
 
     def run(self):
-        # Verify SSL certificate checking
-        sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
-        logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
-
         # Warn if there are servers defined, but none are valid
         if config.get_servers() and not self.servers:
             logging.warning(T("There are no active servers!"))

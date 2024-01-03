@@ -119,7 +119,7 @@ def public_ip(family=socket.AF_UNSPEC):
     elif sabnzbd.misc.is_ipv6_addr(resolvehostip):
         resolveurl = f"http://[{resolvehostip}]/?ipv6test"  # including square brackets
     else:
-        logging.debug("Error resolving my IP address: got no valid IPv4 nor IPv6 address")
+        logging.debug("Error resolving public IP address: no valid IPv4 or IPv6 address found")
         return None
 
     try:
@@ -133,7 +133,12 @@ def public_ip(family=socket.AF_UNSPEC):
         if not sabnzbd.misc.is_ipv4_addr(client_ip) and not sabnzbd.misc.is_ipv6_addr(client_ip):
             raise ValueError
     except urllib.error.URLError:
-        logging.debug("Failed to get public address from %s (%s)", sabnzbd.cfg.selftest_host(), family_type(family))
+        logging.debug(
+            "Failed to get public address from %s (%s)",
+            sabnzbd.cfg.selftest_host(),
+            family_type(family),
+            exc_info=True,
+        )
         return None
 
     logging.debug("Public address %s = %s (in %.2f seconds)", family_type(family), client_ip, time.time() - start)

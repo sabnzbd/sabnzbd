@@ -308,11 +308,6 @@ class NNTP:
                 # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
                 self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
 
-            # Disable any verification if the setup is bad
-            if not sabnzbd.CERTIFICATE_VALIDATION:
-                self.nw.server.ssl_context.check_hostname = False
-                self.nw.server.ssl_context.verify_mode = ssl.CERT_NONE
-
         # Create socket and store fileno of the socket
         self.sock: Union[socket.socket, ssl.SSLSocket] = socket.socket(self.addrinfo.family, self.addrinfo.type)
         self.fileno: int = self.sock.fileno()

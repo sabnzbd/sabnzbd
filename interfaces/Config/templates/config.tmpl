@@ -33,14 +33,6 @@
                         $ssl_version
                     </td>
                 </tr>
-                <!--#if not $certificate_validation#-->
-                <tr>
-                    <th scope="row"></th>
-                    <td>
-                        <span class="label label-danger">$T('warning')</span> $T('explain-nosslcontext')
-                    </td>
-                </tr>
-                <!--#end if#-->
                 <!--#if not $windows and not $macos#-->
                 <tr>
                     <th scope="row">Par2cmdline-turbo:</th>

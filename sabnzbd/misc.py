@@ -1231,33 +1231,6 @@ def set_https_verification(value):
     return prev
 
 
-def test_cert_checking():
-    """Test quality of certificate validation"""
-    # User disabled the test, assume proper SSL certificates
-    if not cfg.selftest_host():
-        return True
-
-    # Try a connection to our test-host
-    try:
-        ctx = ssl.create_default_context()
-        base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
-        ssl_sock.settimeout(2.0)
-        ssl_sock.connect((cfg.selftest_host(), 443))
-        ssl_sock.close()
-        return True
-    except (socket.gaierror, socket.timeout):
-        # Non-SSL related error.
-        # We now assume that certificates work instead of forcing
-        # lower quality just because some (temporary) internet problem
-        logging.info("Could not determine system certificate validation quality due to connection problems")
-        return True
-    except:
-        # Seems something is still wrong
-        set_https_verification(False)
-    return False
-
-
 def request_repair():
     """Request a full repair on next restart"""
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
