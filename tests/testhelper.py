@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -51,6 +51,7 @@ from sabnzbd.constants import (
     NORMAL_PRIORITY,
     REPAIR_PRIORITY,
     Status,
+    PP_LOOKUP,
 )
 import sabnzbd.database as db
 from sabnzbd.misc import pp_to_opts
@@ -215,9 +216,10 @@ class FakeHistoryDB(db.HistoryDB):
             nzo.nzo_id = "SABnzbd_nzo_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(8)))
             nzo.bytes_downloaded = randint(1024, 1024**4)
             nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(db._PP_LOOKUP.keys())))  # for "pp"
+            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
             nzo.nzo_info = {"download_time": randint(1, 10**4)}
             nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
+            nzo.duplicate_key = "show/season/episode"
             nzo.futuretype = False  # for "report", only True when fetching an URL
             nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
 

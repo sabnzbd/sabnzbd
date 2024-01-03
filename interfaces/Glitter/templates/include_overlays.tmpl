@@ -134,7 +134,7 @@
                             <div class="col-sm-6">$T('dashboard-systemPerformance') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.pystone"></span>
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small title="$cpumodel $cpusimd" data-tooltip="true">$cpumodel $cpusimd</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -143,7 +143,7 @@
                             <div class="col-sm-6">$T('dashboard-downloadDirSpeed') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.downloaddirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small data-bind="text: statusInfo.downloaddir, attr: { 'data-original-title': statusInfo.downloaddir }" data-tooltip="true"></small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -152,7 +152,7 @@
                             <div class="col-sm-6">$T('dashboard-completeDirSpeed') &nbsp; </div>
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.completedirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small data-bind="text: statusInfo.completedir, attr: { 'data-original-title': statusInfo.completedir }" data-tooltip="true"></small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -161,7 +161,7 @@
                             <div class="col-sm-6">$T('dashboard-internetBandwidth') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.internetbandwidth()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small><span data-bind="text: statusInfo.internetbandwidth()*8"></span> Mbps</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -225,15 +225,20 @@
                                 </div>
                                 <div class="row" data-bind="visible: serverssl">
                                     <div class="col-sm-6">$T('srv-ssl')</div>
-                                    <div class="col-sm-6">
-                                        <span class="glyphicon glyphicon-ok"></span> <span data-bind="text: serversslinfo"></span>
+                                    <div class="col-sm-6 col-dot-overflow">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                        <span data-bind="text: serversslinfo"></span>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-6"># $T('connections')</div>
                                     <div class="col-sm-6">
                                         <span data-bind="text: serverconnections().length"></span> /
-                                        <span data-bind="text: servertotalconn"></span>
+                                        <span data-bind="text: servertotalconn"></span><br>
+                                        <!-- ko if: serveripaddress() -->
+                                        <span data-bind="text: servercanonname"></span><br>
+                                        <span data-bind="text: serveripaddress"></span>
+                                        <!-- /ko -->
                                     </div>
                                 </div>
                                 <div class="row">
@@ -249,11 +254,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" data-bind="visible: !isFinite(serveractiveconn())">
+                                <div class="row" data-bind="visible: serverwarning()">
                                     <div class="col-sm-12">
                                         <div class="alert alert-warning">
                                             <span class="glyphicon glyphicon-info-sign"></span>
-                                            <span data-bind="text: serveractiveconn()"></span>
+                                            <span data-bind="text: serverwarning()"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -707,13 +712,13 @@
                             <td><a href="https://github.com/sabnzbd/sabnzbd" target="_blank">https://github.com/sabnzbd/sabnzbd/</a></td>
                         </tr>
                         <tr>
-                            <td><strong>$T('menu-irc'):</strong></td>
+                            <td><strong>$T('menu-live-chat'):</strong></td>
                             <td><a href="https://sabnzbd.org/live-chat" target="_blank">https://sabnzbd.org/live-chat</a></td>
                         </tr>
                     </tbody>
                 </table>
                 <hr/>
-                <p><small>Copyright (C) 2007-2021 The SABnzbd-Team (<a href="https://sabnzbd.org/" target="_blank">sabnzbd.org</a>)<br/>$T('yourRights') </small></p>
+                <p><small>Copyright &copy; 2007-2024 by The SABnzbd-Team (<a href="https://sabnzbd.org/" target="_blank">sabnzbd.org</a>)<br/>$T('yourRights') </small></p>
             </div>
         </div>
     </div>

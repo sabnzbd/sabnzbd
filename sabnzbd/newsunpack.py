@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -61,12 +61,12 @@ from sabnzbd.filesystem import (
     get_filename,
     SEVENMULTI_RE,
     is_size,
+    get_basename,
 )
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, JOB_ADMIN
-from sabnzbd.par2file import FilePar2Info
-from sabnzbd.sorting import Sorter
+
 
 # Regex globals
 RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
@@ -185,6 +185,7 @@ ENV_NZO_FIELDS = [
     "cat",
     "correct_password",
     "duplicate",
+    "duplicate_key",
     "encrypted",
     "fail_msg",
     "filename",
@@ -275,8 +276,10 @@ def unpacker(
     depth: int = 0,
 ) -> Tuple[Union[int, bool], List[str]]:
     """Do a recursive unpack from all archives in 'download_path' to 'workdir_complete'"""
-    if depth > 5:
-        logging.warning(T("Unpack nesting too deep [%s]"), nzo.final_name)
+    if depth > 2:
+        # Prevent going to deep down the rabbit-hole
+        nzo.set_unpack_info("Unpack", T("Unpack nesting too deep [%s]") % nzo.final_name)
+        logging.info(T("Unpack nesting too deep [%s]"), nzo.final_name)
         return False, []
     depth += 1
 
@@ -510,7 +513,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: Li
         rar_set = setname_from_path(rar)
         if RAR_V3_RE.search(rar_set):
             # Remove the ".partXX" part
-            rar_set = os.path.splitext(rar_set)[0]
+            rar_set = get_basename(rar_set)
         if rar_set not in rar_sets:
             rar_sets[rar_set] = []
         rar_sets[rar_set].append(rar)
@@ -738,7 +741,10 @@ def rar_extract_core(
         if not line:
             break
 
+        # Skip empty lines
         line = line.strip()
+        if not line:
+            continue
         lines.append(line)
 
         if line.startswith("Extracting from"):
@@ -840,7 +846,7 @@ def rar_extract_core(
             if p.stdout:
                 p.stdout.close()
             p.wait()
-            logging.debug("UNRAR output %s", "\n".join(lines))
+            logging.debug("UNRAR output: \n%s", "\n".join(lines))
             return fail, [], []
 
     if p.stdout:
@@ -850,7 +856,7 @@ def rar_extract_core(
     # Which files did we use to extract this?
     rarfiles = rar_volumelist(rarfile_path, password, rarfiles)
 
-    logging.debug("UNRAR output %s", "\n".join(lines))
+    logging.debug("UNRAR output: \n%s", "\n".join(lines))
     msg = T("Unpacked %s files/folders in %s") % (len(extracted), format_time_string(time.time() - start))
     nzo.set_unpack_info("Unpack", msg, setname)
     logging.info(msg)
@@ -874,7 +880,7 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: Lis
         setname = setname_from_path(seven)
         if SEVENMULTI_RE.search(setname):
             # Remove the ".001" part
-            setname = os.path.splitext(setname)[0]
+            setname = get_basename(setname)
         if setname not in seven_sets:
             seven_sets[setname] = []
         seven_sets[setname].append(seven)
@@ -1086,7 +1092,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
 
             # Remove extra files created during repair and par2 base files
             for path in new_dir_content:
-                if os.path.splitext(path)[1] == ".1" and path not in old_dir_content:
+                if get_ext(path) == ".1" and path not in old_dir_content:
                     deletables.append(os.path.join(nzo.download_path, path))
             deletables.append(os.path.join(nzo.download_path, setname + ".par2"))
             deletables.append(os.path.join(nzo.download_path, setname + ".PAR2"))
@@ -1171,7 +1177,6 @@ def par2cmdline_verify(
     renames = {}
     reconstructed = []
 
-    linebuf = ""
     finished = False
     readd = False
 
@@ -1186,20 +1191,13 @@ def par2cmdline_verify(
 
     # Loop over the output, whee
     while 1:
-        char = p.stdout.read(1)
-        if not char:
+        line = p.stdout.readline()
+        if not line:
             break
 
-        # Line not complete yet
-        if char not in ("\n", "\r"):
-            linebuf += char
-            continue
-
-        line = linebuf.strip()
-        linebuf = ""
-
         # Skip empty lines
-        if line == "":
+        line = line.strip()
+        if not line:
             continue
 
         if not line.startswith(("Repairing:", "Scanning:", "Loading:", "Solving:", "Constructing:")):
@@ -1406,7 +1404,7 @@ def par2cmdline_verify(
     if nzo.fail_msg:
         logging.info(nzo.fail_msg)
 
-    logging.debug("PAR2 output was\n%s", "\n".join(lines))
+    logging.debug("par2cmdline output was:\n%s", "\n".join(lines))
 
     # If successful, add renamed files to the collection
     if finished and renames:
@@ -1458,7 +1456,6 @@ def multipar_verify(
     renames = {}
     reconstructed = []
 
-    linebuf = ""
     finished = False
     readd = False
 
@@ -1475,20 +1472,13 @@ def multipar_verify(
 
     # Loop over the output, whee
     while 1:
-        char = p.stdout.read(1)
-        if not char:
+        line = p.stdout.readline()
+        if not line:
             break
 
-        # Line not complete yet
-        if char not in ("\n", "\r"):
-            linebuf += char
-            continue
-
-        line = linebuf.strip()
-        linebuf = ""
-
         # Skip empty lines
-        if line == "":
+        line = line.strip()
+        if not line:
             continue
 
         # Save it all
@@ -1743,7 +1733,7 @@ def multipar_verify(
     if nzo.fail_msg:
         logging.info(nzo.fail_msg)
 
-    logging.debug("MultiPar output was\n%s", "\n".join(lines))
+    logging.debug("MultiPar output:\n%s", "\n".join(lines))
 
     # Add renamed files to the collection
     # MultiPar always automatically renames whatever it can in the 'Searching misnamed file:'-section
@@ -2146,41 +2136,6 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def analyse_show(name: str) -> Dict[str, str]:
-    """Use the Sorter to collect some basic info on series"""
-    job = Sorter(
-        None,
-        name,
-        None,
-        None,
-        force=True,
-        sorter_config={
-            "name": "newsunpack__analyse_show",
-            "order": 0,
-            "min_size": -1,
-            "multipart_label": "",
-            "sort_string": "",
-            "sort_cats": [],  # Categories and types are ignored when using the force
-            "sort_type": [],
-            "is_active": 1,
-        },
-    )
-    job.get_values()
-    return {
-        "title": job.info.get("title", ""),
-        "season": job.info.get("season_num", ""),
-        "episode": job.info.get("episode_num", ""),
-        "episode_name": job.info.get("ep_name", ""),
-        "is_proper": job.is_proper(),
-        "resolution": job.info.get("resolution", ""),
-        "decade": job.info.get("decade", ""),
-        "year": job.info.get("year", ""),
-        "month": job.info.get("month", ""),
-        "day": job.info.get("day", ""),
-        "job_type": job.type,
-    }
-
-
 def pre_queue(nzo: NzbObject, pp, cat):
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied separate since they can change.
@@ -2206,23 +2161,23 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(list(analyse_show(nzo.final_name_with_password).values()))
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly
+        show_analysis = sabnzbd.sorting.BasicAnalyzer(nzo.final_name)
         extra_env_fields = {
             "groups": " ".join(nzo.groups),
-            "show_name": command[8],
-            "show_season": command[9],
-            "show_episode": command[10],
-            "show_episode_name": command[11],
-            "proper": command[12],
-            "resolution": command[13],
-            "decade": command[14],
-            "year": command[15],
-            "month": command[16],
-            "day": command[17],
-            "type": command[18],
+            "title": show_analysis.info.get("title", ""),
+            "season": show_analysis.info.get("season_num", ""),
+            "episode": show_analysis.info.get("episode_num", ""),
+            "episode_name": show_analysis.info.get("ep_name", ""),
+            "is_proper": show_analysis.is_proper(),
+            "resolution": show_analysis.info.get("resolution", ""),
+            "decade": show_analysis.info.get("decade", ""),
+            "year": show_analysis.info.get("year", ""),
+            "month": show_analysis.info.get("month", ""),
+            "day": show_analysis.info.get("day", ""),
+            "job_type": show_analysis.type,
         }
 
         try:

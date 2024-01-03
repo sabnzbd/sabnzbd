@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0RC2\n"
+"Project-Id-Version: SABnzbd-4.2.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Russian (https://app.transifex.com/sabnzbd/teams/111101/ru/)\n"
@@ -164,8 +164,8 @@ msgid "Test Notification"
 msgstr "Тестовое уведомление"
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
-msgstr "&nbsp;Разрешение адреса"
+msgid "Resolving address"
+msgstr "Разрешение адреса"
 
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
@@ -176,11 +176,6 @@ msgstr "Ничего"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "по умолчанию"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Не удалось составить регулярное выражение поиска: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -253,10 +248,6 @@ msgid "Incorrect parameter"
 msgstr "Неправильный параметр"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-путь «%s» здесь не допускается"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s не является допустимым адресом электронной почты"
 
@@ -264,7 +255,7 @@ msgstr "%s не является допустимым адресом элект�
 msgid "Server address required"
 msgstr "Требуется адрес сервера"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Недопустимый адрес сервера."
 
@@ -284,8 +275,18 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Ошибка: очередь не пустая, папку нельзя изменить."
+msgid "Network path \"%s\" is not allowed here"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Queue not empty, cannot change folder."
+msgstr "Очередь не пустая, папку нельзя изменить."
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -339,7 +340,7 @@ msgstr "Ошибка команды SQL (см. журнал)"
 msgid "Failed to close database, see log"
 msgstr "Не удалось закрыть базу данных (см. журнал)"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Недопустимый этап ведения журнала для %s"
@@ -406,7 +407,7 @@ msgid "Paused"
 msgstr "Приостановлено"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 
@@ -662,12 +663,6 @@ msgid "Unsuccessful login attempt from %s"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
-
-#: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
 
@@ -797,7 +792,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Запуск сценария"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr ""
@@ -1065,6 +1059,16 @@ msgstr ""
 msgid "Other Messages"
 msgstr "Другие сообщения"
 
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr ""
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr ""
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr ""
@@ -1145,6 +1149,18 @@ msgstr "Ошибка загрузки %s: обнаружен повреждён�
 msgid "NZB added to queue"
 msgstr "NZB-файл добавлен в очередь"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Пропущен повторяющийся NZB-файл «%s»"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1158,26 +1174,6 @@ msgstr "Пустой NZB-файл %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Пропущен повторяющийся NZB-файл «%s»"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Приостановлен повторяющийся NZB-файл «%s»"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1196,6 +1192,10 @@ msgstr "Ошибка импорта %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "ПОВТОР"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1241,6 +1241,10 @@ msgstr "%s статей отсутствует"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s статей содержат несовпадающие повторы"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Приостановлен повторяющийся NZB-файл «%s»"
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1467,6 +1471,11 @@ msgstr "Ошибка %s: укажите действительное имя по
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Не удалось составить регулярное выражение поиска: %s"
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid ""
@@ -1651,10 +1660,6 @@ msgstr "Обнаружена пустая запись RSS (%s)"
 msgid "Show interface"
 msgstr "Показать интерфейс"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr ""
-
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for"
@@ -1742,6 +1747,11 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Сценарий"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2015,7 +2025,6 @@ msgstr ""
 msgid "Home page"
 msgstr ""
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr ""
@@ -2082,8 +2091,8 @@ msgstr "Форум"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "IRC"
+msgid "Live Chat"
+msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2114,11 +2123,6 @@ msgstr "Переключатели"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Расписание"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2233,11 +2237,6 @@ msgstr "Название"
 #: sabnzbd/skintext.py
 msgid "Retry"
 msgstr "Повторить"
-
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Действия"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -2561,7 +2560,6 @@ msgstr "Время работы"
 msgid "Backup"
 msgstr "Резервный"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Описание см. на вики-странице."
@@ -3113,23 +3111,19 @@ msgid "In case of \"Pause\", you'll need to set a password and resume the job."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Обнаруживать повторяющиеся загрузки"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
+msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3138,8 +3132,8 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
 
 #. Four way switch for duplicates
@@ -3225,6 +3219,14 @@ msgstr "Пользовательский сценарий до помещени�
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Используется до того, как NZB помещается в очередь."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4764,10 +4766,6 @@ msgstr "Время ожидания истекло"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Во время входа на сервер был выполнен выход."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

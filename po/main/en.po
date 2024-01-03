@@ -125,3 +125,6 @@ msgstr "0 is highest priority, 99 is the lowest priority"
 
 msgid "Filter out sample files (e.g. video samples)."
 msgstr "Filter out sample files (e.g. video samples/proofs)."
+
+msgid "Pre-queue user script"
+msgstr "Pre-queue script"

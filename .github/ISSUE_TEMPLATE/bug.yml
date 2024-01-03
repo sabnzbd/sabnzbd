@@ -1,0 +1,30 @@
+name: Bug report
+description: >
+  Did you discover a bug in SABnzbd? Report it here!
+  If you are not 100% certain this is a bug please go to our forums, Reddit or Discord server first.
+labels:
+  - Bug
+body:
+  - type: input
+    attributes:
+      label: SABnzbd version
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Operating system
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Using Docker image
+      options:
+        - linuxserver
+        - hotio
+        - Other
+  - type: textarea
+    attributes:
+      label: Description
+      description: Include error logs directly or link to extended logs on https://pastebin.com/
+    validations:
+      required: true

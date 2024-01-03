@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -86,13 +86,21 @@ class TestDownloadSorting(DownloadFlowBasics):
                 "SINGLE_sort_s23e06_480i-SABnzbd",
                 ["Single.Sort.S23E06.1.mov"],
             ),  # Repeat to verify a unique filename is applied
-            (
+            pytest.param(
                 "single-ep_sort_s06e66_4k_uhd-SABnzbd",
                 ["Single-Ep.Sort.S06E66." + ext for ext in ("avi", "srt")],
+                marks=pytest.mark.xfail(
+                    sabnzbd.MACOS or sabnzbd.WIN32,
+                    reason="Unreliable on macOS and Windows",
+                ),
             ),  # Single episode with associated smaller file
-            (
+            pytest.param(
                 "single-ep_sort_s06e66_4k_uhd-SABnzbd",
                 ["Single-Ep.Sort.S06E66.1." + ext for ext in ("avi", "srt")],
+                marks=pytest.mark.xfail(
+                    sabnzbd.MACOS or sabnzbd.WIN32,
+                    reason="Unreliable on macOS and Windows",
+                ),
             ),  # Repeat to verify unique filenames are applied
         ],
     )

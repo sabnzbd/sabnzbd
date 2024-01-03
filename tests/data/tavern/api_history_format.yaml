@@ -29,8 +29,7 @@ stages:
           week_size: !re_match "[0-9][0-9.]*(\ [A-Z])?"
           day_size: !re_match "[0-9][0-9.]*(\ [A-Z])?"
           slots:
-            - id: !anyint
-              completed: !anyint
+            - completed: !anyint
               name: !anystr
               nzb_name: !anystr
               category: !anystr
@@ -42,7 +41,6 @@ stages:
               nzo_id: !anystr
               storage: !anystr
               path: !anystr
-              script_log: !anything
               script_line: !anystr
               download_time: !anyint
               postproc_time: !anyint
@@ -54,6 +52,7 @@ stages:
               bytes: !anyint
               meta: null
               series: !anything
+              duplicate_key: !anything
               md5sum: !re_match "[0-9a-fA-F]+"
               password: !anystr
               action_line: !anything
@@ -94,7 +93,7 @@ stages:
           # so parameters match regardless of their order of appearance. Note
           # that the content of 'slots' is checked in a separate expression.
           expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots': [0-9]+)(?=.*'ppslots': [0-9]+)(?=.*'last_history_update': '?[0-9]+'?)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': .+).*}}$"
-          expression: ".*'slots': \\[{{(?=.*'id': [0-9]+)(?=.*'completed': [0-9]+)(?=.*'name': '.+')(?=.*'nzb_name': '.+')(?=.*'category': '.+')(?=.*'pp': '.?')(?=.*'script': '.+')(?=.*'report': '.+')(?=.*'url': '.+')(?=.*'status': '.+')(?=.*'nzo_id': 'SAB.+')(?=.*'storage': '.+')(?=.*'path': '.+')(?=.*'script_log': '.*')(?=.*'script_line': '.*')(?=.*'download_time': [0-9]+)(?=.*'postproc_time': [0-9]*)(?=.*'stage_log': \\[.*\\])(?=.*'downloaded': [0-9]+)(?=.*'completeness': None)(?=.*'fail_message': '.*')(?=.*'url_info': '.*')(?=.*'bytes': [0-9]+)(?=.*'meta': None)(?=.*'series': '?.*'?)(?=.*'md5sum': '[0-9a-fA-F]+')(?=.*'password': '.*')(?=.*'action_line': '.*')(?=.*'size': '[0-9].*')(?=.*'loaded': (True|False))(?=.*'retry': [0-9]+).*}}\\].*"
+          expression: ".*'slots': \\[{{(?=.*'completed': [0-9]+)(?=.*'name': '.+')(?=.*'nzb_name': '.+')(?=.*'category': '.+')(?=.*'pp': '.?')(?=.*'script': '.+')(?=.*'report': '.+')(?=.*'url': '.+')(?=.*'status': '.+')(?=.*'nzo_id': 'SAB.+')(?=.*'storage': '.+')(?=.*'path': '.+')(?=.*'script_line': '.*')(?=.*'download_time': [0-9]+)(?=.*'postproc_time': [0-9]*)(?=.*'stage_log': \\[.*\\])(?=.*'downloaded': [0-9]+)(?=.*'completeness': None)(?=.*'fail_message': '.*')(?=.*'url_info': '.*')(?=.*'bytes': [0-9]+)(?=.*'meta': None)(?=.*'series': '?.*'?)(?=.*'duplicate_key': '?.*'?)(?=.*'md5sum': '[0-9a-fA-F]+')(?=.*'password': '.*')(?=.*'action_line': '.*')(?=.*'size': '[0-9].*')(?=.*'loaded': (True|False))(?=.*'retry': [0-9]+).*}}\\].*"
 
 
 ---
@@ -128,7 +127,7 @@ stages:
             <month_size>!anystr</month_size>
             <week_size>!anystr</week_size>
             <day_size>!anystr</day_size>
-            <slots><slot><id>!anyint</id>
+            <slots><slot>
             <completed>!anyint</completed>
             <name>!anystr</name>
             <nzb_name>!anystr</nzb_name>
@@ -141,7 +140,6 @@ stages:
             <nzo_id>!anystr</nzo_id>
             <storage>!anystr</storage>
             <path>!anystr</path>
-            <script_log>!anystr</script_log>
             <script_line>!anystr</script_line>
             <download_time>!anyint</download_time>
             <postproc_time>!anyint</postproc_time>
@@ -153,6 +151,7 @@ stages:
             <bytes>!anyint</bytes>
             <meta>!anystr</meta>
             <series>!anystr</series>
+            <duplicate_key>!anystr</duplicate_key>
             <md5sum>!anystr</md5sum>
             <password>!anystr</password>
             <action_line>!anystr</action_line>

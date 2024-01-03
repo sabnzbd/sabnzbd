@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -39,7 +39,14 @@ from sabnzbd.newsunpack import (
     is_sfv_file,
 )
 from threading import Thread
-from sabnzbd.misc import on_cleanup_list, is_sample, helpful_warning
+from sabnzbd.misc import (
+    on_cleanup_list,
+    is_sample,
+    helpful_warning,
+    history_updated,
+    change_queue_complete_action,
+    run_script,
+)
 from sabnzbd.filesystem import (
     real_path,
     get_unique_dir,
@@ -146,7 +153,7 @@ class PostProcessor(Thread):
             logging.info("Corrupt %s file, discarding", POSTPROC_QUEUE_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
 
-    def delete(self, nzo_id, del_files=False):
+    def delete(self, nzo_id: str, del_files: bool = False):
         """Remove a job from the post processor queue"""
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
@@ -172,7 +179,7 @@ class PostProcessor(Thread):
         else:
             self.slow_queue.put(nzo)
         self.save()
-        sabnzbd.misc.history_updated()
+        history_updated()
 
     def remove(self, nzo: NzbObject):
         """Remove given nzo from the queue"""
@@ -181,7 +188,7 @@ class PostProcessor(Thread):
         except:
             pass
         self.save()
-        sabnzbd.misc.history_updated()
+        history_updated()
 
     def stop(self):
         """Stop thread after finishing running job"""
@@ -189,7 +196,7 @@ class PostProcessor(Thread):
         self.slow_queue.put(None)
         self.fast_queue.put(None)
 
-    def cancel_pp(self, nzo_id):
+    def cancel_pp(self, nzo_id: str) -> Optional[bool]:
         """Change the status, so that the PP is canceled"""
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
@@ -205,15 +212,45 @@ class PostProcessor(Thread):
                 return True
         return None
 
-    def empty(self):
+    def empty(self) -> bool:
         """Return True if pp queue is empty"""
         return self.slow_queue.empty() and self.fast_queue.empty() and not self.__busy
 
-    def get_queue(self):
-        """Return list of NZOs that still need to be processed"""
-        return [nzo for nzo in self.history_queue if nzo.work_name]
+    def get_queue(
+        self,
+        search: Optional[str] = None,
+        categories: Optional[List[str]] = None,
+        statuses: Optional[List[str]] = None,
+        nzo_ids: Optional[List[str]] = None,
+    ) -> List[NzbObject]:
+        """Return list of NZOs that still need to be processed.
+        Optionally filtered by the search terms"""
+        re_search = None
+        if isinstance(search, str):
+            # Replace * with .* and ' ' with .
+            search_text = search.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
+            try:
+                re_search = re.compile(search_text, re.I)
+            except:
+                logging.error(T("Failed to compile regex for search term: %s"), search_text)
 
-    def get_path(self, nzo_id):
+        # Need a copy to prevent race conditions
+        filtered_queue = []
+        for nzo in self.history_queue[:]:
+            if not nzo.work_name:
+                continue
+            if re_search and not re_search.search(nzo.final_name):
+                continue
+            if categories and nzo.cat not in categories:
+                continue
+            if statuses and nzo.status not in statuses:
+                continue
+            if nzo_ids and nzo.nzo_id not in nzo_ids:
+                continue
+            filtered_queue.append(nzo)
+        return filtered_queue
+
+    def get_path(self, nzo_id: str) -> Optional[str]:
         """Return download path for given nzo_id or None when not found"""
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
@@ -313,7 +350,7 @@ class PostProcessor(Thread):
             sabnzbd.Downloader.resume_from_postproc()
 
 
-def process_job(nzo: NzbObject):
+def process_job(nzo: NzbObject) -> bool:
     """Process one job"""
     start = time.time()
 
@@ -398,7 +435,7 @@ def process_job(nzo: NzbObject):
                 return False
 
         # If we don't need extra par2, we can disconnect
-        if sabnzbd.NzbQueue.actives(grabs=False) == 0 and cfg.autodisconnect():
+        if not sabnzbd.NzbQueue.actives(grabs=False) and cfg.autodisconnect():
             # This was the last job, close server connections
             sabnzbd.Downloader.disconnect()
 
@@ -593,6 +630,9 @@ def process_job(nzo: NzbObject):
         # Force error for empty result
         all_ok = all_ok and not empty
 
+        # See if we need to start an alternative or remove the duplicates
+        sabnzbd.NzbQueue.handle_duplicate_alternatives(nzo, all_ok)
+
     except:
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
         logging.info("Traceback: ", exc_info=True)
@@ -617,6 +657,7 @@ def process_job(nzo: NzbObject):
                 0,
             )
 
+    workdir_notifcation_action = workdir_complete
     if all_ok:
         # If the folder only contains one file OR folder, have that as the path
         # Be aware that series/generic/date sorting may move a single file into a folder containing other files
@@ -641,7 +682,13 @@ def process_job(nzo: NzbObject):
 
     # Show final status in history
     if all_ok:
-        notifier.send_notification(T("Download Completed"), filename, "complete", nzo.cat)
+        notifier.send_notification(
+            T("Download Completed"),
+            filename,
+            "complete",
+            nzo.cat,
+            {"open_folder": clip_path(workdir_notifcation_action)},
+        )
         nzo.status = Status.COMPLETED
         nzo.fail_msg = ""
     else:
@@ -658,7 +705,7 @@ def process_job(nzo: NzbObject):
         # Purge items
         history_db.auto_history_purge()
 
-    sabnzbd.misc.history_updated()
+    history_updated()
     return True
 
 
@@ -718,14 +765,15 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
 
         # Is the unique path different? Then we also need to modify the final path
         if prefixed_path != tmp_workdir_complete:
-            workdir_complete = workdir_complete + os.path.splitext(tmp_workdir_complete)[1]
+            # The unique path adds an "extension"
+            workdir_complete = workdir_complete + get_ext(tmp_workdir_complete)
     else:
         tmp_workdir_complete = workdir_complete
 
     return tmp_workdir_complete, workdir_complete, file_sorter, not create_job_dir, marker_file
 
 
-def parring(nzo: NzbObject):
+def parring(nzo: NzbObject) -> Tuple[bool, bool]:
     """Perform par processing. Returns: (par_error, re_add)"""
     logging.info("Starting verification and repair of %s", nzo.final_name)
     par_error = False
@@ -844,7 +892,7 @@ def try_sfv_check(nzo: NzbObject) -> Optional[bool]:
     return True
 
 
-def try_rar_check(nzo: NzbObject, rars):
+def try_rar_check(nzo: NzbObject, rars: List[str]) -> bool:
     """Attempt to verify set using the RARs
     Return True if verified, False when failed
     When setname is '', all RAR files will be used, otherwise only the matching one
@@ -1040,20 +1088,25 @@ def rar_renamer(nzo: NzbObject) -> int:
 
 def handle_empty_queue():
     """Check if empty queue calls for action"""
-    if sabnzbd.NzbQueue.actives() == 0:
+    if not sabnzbd.NzbQueue.actives():
         sabnzbd.save_state()
-        notifier.send_notification("SABnzbd", T("Queue finished"), "queue_done")
+        notifier.send_notification(
+            "SABnzbd",
+            T("Queue finished"),
+            "queue_done",
+            actions={"open_complete": cfg.complete_dir.get_clipped_path()},
+        )
+
+        # Perform end-of-queue script
+        if cfg.end_queue_script():
+            logging.info("Queue has finished, launching script: %s ", cfg.end_queue_script())
+            run_script(cfg.end_queue_script())
 
         # Perform end-of-queue action when one is set
         if sabnzbd.QUEUECOMPLETEACTION:
-            logging.info(
-                "Queue has finished, launching: %s (%s)", sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG
-            )
-            if sabnzbd.QUEUECOMPLETEARG:
-                sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
-            else:
-                Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
-            sabnzbd.misc.change_queue_complete_action(cfg.queue_complete(), new=False)
+            logging.info("Queue has finished, launching action: %s ", sabnzbd.QUEUECOMPLETEACTION)
+            Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
+            change_queue_complete_action(cfg.queue_complete(), new=False)
 
         # Trigger garbage collection and release of memory
         logging.debug("Triggering garbage collection and release of memory")
@@ -1062,7 +1115,7 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir, skip_nzb):
+def cleanup_list(wdir: str, skip_nzb: bool):
     """Remove all files whose extension matches the cleanup list,
     optionally ignoring the nzb extension
     """
@@ -1085,7 +1138,7 @@ def cleanup_list(wdir, skip_nzb):
             logging.info("Traceback: ", exc_info=True)
 
 
-def prefix(path, pre):
+def prefix(path: str, pre: str) -> str:
     """Apply prefix to last part of path
     '/my/path' and 'hi_' will give '/my/hi_path'
     """
@@ -1123,7 +1176,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     return files
 
 
-def one_file_or_folder(folder):
+def one_file_or_folder(folder: str) -> str:
     """If the dir only contains one file or folder, join that file/folder onto the path"""
     if os.path.exists(folder) and os.path.isdir(folder):
         try:
@@ -1140,7 +1193,7 @@ def one_file_or_folder(folder):
 TAG_RE = re.compile(r"<[^>]+>")
 
 
-def get_last_line(txt):
+def get_last_line(txt: str) -> str:
     """Return last non-empty line of a text, trim to 150 max"""
     # First we remove HTML code in a basic way
     txt = TAG_RE.sub(" ", txt)
@@ -1157,7 +1210,7 @@ def get_last_line(txt):
     return line
 
 
-def remove_samples(path):
+def remove_samples(path: str):
     """Remove all files that match the sample pattern
     Skip deleting if it matches all files or there is only 1 file
     """
@@ -1182,7 +1235,7 @@ def remove_samples(path):
         logging.info("Skipping sample-removal, false-positive")
 
 
-def rename_and_collapse_folder(oldpath, newpath, files):
+def rename_and_collapse_folder(oldpath: str, newpath: str, files: List[str]) -> List[str]:
     """Rename folder, collapsing when there's just a single subfolder
     oldpath --> newpath OR oldpath/subfolder --> newpath
     Modify list of filenames accordingly
@@ -1234,7 +1287,7 @@ def del_marker(path: str):
             logging.info("Traceback: ", exc_info=True)
 
 
-def remove_from_list(name, lst):
+def remove_from_list(name: Optional[str], lst: List[str]):
     if name:
         for n in range(len(lst)):
             if lst[n].endswith(name):
@@ -1243,7 +1296,7 @@ def remove_from_list(name, lst):
                 return
 
 
-def try_alt_nzb(nzo):
+def try_alt_nzb(nzo: NzbObject):
     """Try to get a new NZB if available"""
     url = nzo.nzo_info.get("failure")
     if url and cfg.new_nzb_on_failure():

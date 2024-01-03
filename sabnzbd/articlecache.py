@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ sabnzbd.articlecache - Article cache handling
 import logging
 import threading
 import struct
-from typing import Dict, List
+from typing import Dict, Collection
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -91,7 +91,7 @@ class ArticleCache:
             return
 
         # Register article for bookkeeping in case the job is deleted
-        nzo.add_saved_article(article)
+        nzo.saved_articles.add(article)
 
         if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
             # Write the first-fetched articles to temporary file unless downloading
@@ -133,7 +133,7 @@ class ArticleCache:
             data = sabnzbd.filesystem.load_data(
                 article.art_id, nzo.admin_path, remove=True, do_pickle=False, silent=True
             )
-        nzo.remove_saved_article(article)
+        nzo.saved_articles.discard(article)
         return data
 
     def flush_articles(self):
@@ -147,7 +147,7 @@ class ArticleCache:
                 # Could fail if already deleted by purge_articles or load_data
                 logging.debug("Failed to flush item from cache, probably already deleted or written to disk")
 
-    def purge_articles(self, articles: List[Article]):
+    def purge_articles(self, articles: Collection[Article]):
         """Remove all saved articles, from memory and disk"""
         logging.debug("Purging %s articles from the cache/disk", len(articles))
         for article in articles:

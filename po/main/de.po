@@ -15,7 +15,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0RC2\n"
+"Project-Id-Version: SABnzbd-4.2.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -182,8 +182,8 @@ msgid "Test Notification"
 msgstr "Benachrichtigungen testen"
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
-msgstr "&nbsp;Adresse wird aufgelöst …"
+msgid "Resolving address"
+msgstr "Adresse wird aufgelöst …"
 
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
@@ -194,12 +194,6 @@ msgstr "Nichts"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standard"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr ""
-"Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen."
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -278,10 +272,6 @@ msgid "Incorrect parameter"
 msgstr "Fehlerhafter Parameter"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-Pfad \"%s\" ist hier nicht erlaubt"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s ist keine gültige E-Mail-Adresse"
 
@@ -289,7 +279,7 @@ msgstr "%s ist keine gültige E-Mail-Adresse"
 msgid "Server address required"
 msgstr "Server-Adresse wird benötigt"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Ungültige Server-Adresse."
 
@@ -311,10 +301,21 @@ msgstr ""
 "erstellten Dateien und Ordner von SABnzbd verweigern."
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
+msgid "Network path \"%s\" is not allowed here"
+msgstr "Netzwerkpfad \"%s\" ist hier nicht erlaubt"
+
+#: sabnzbd/cfg.py
+msgid "Queue not empty, cannot change folder."
 msgstr ""
-"Fehler: Ordner kann nicht geändert werden, da die Warteschlange nicht leer "
-"ist."
+"Ordner kann nicht geändert werden, da die Warteschlange nicht leer ist."
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+"Der \"Abgeschlossene Downloads\"-Ordner darf kein Unterordner des "
+"\"Temporäre Downloads\"-Ordners sein."
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -322,6 +323,8 @@ msgid ""
 "Do not use a folder in the application folder as your Scripts Folder, it "
 "might be emptied during updates."
 msgstr ""
+"Verwenden Sie keinen Ordner im Anwendungsordner als Ihren Skriptordner, er "
+"könnte während Updates geleert werden."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -371,7 +374,7 @@ msgid "Failed to close database, see log"
 msgstr ""
 "Fehler beim Schliessen der Datenbank. Beachten Sie das Nachrichtenprotokoll."
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Ungültiges Stufen-Protokoll im Verlauf für %s"
@@ -442,7 +445,7 @@ msgid "Paused"
 msgstr "Angehalten"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Bevor ein Bandbreitenlimit gesetzt werden kann, muss die maximale Bandbreite"
@@ -474,7 +477,7 @@ msgstr "Fehler %s@%s zu initialisieren, aus folgendem Grund: %s"
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
-msgstr ""
+msgstr "Schwerer Fehler im Downloader"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -648,11 +651,15 @@ msgstr "%s ist nicht beschreibbar. Downloads sind dadurch blockiert."
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
 msgstr ""
+"Kann keinen langen Dateinamen in %s schreiben. Dies kann Probleme "
+"verursachen."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
 msgstr ""
+"Kann keinen Dateinamen in Unicode in %s schreiben. Dies kann Probleme "
+"verursachen."
 
 #. Warning message
 #: sabnzbd/filesystem.py
@@ -705,14 +712,6 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Fehlerhafter Login Versuch von %s"
-
-#: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
-"Der \"Abgeschlossene Downloads\"-Ordner darf kein Unterordner des "
-"\"Temporäre Downloads\"-Ordners sein."
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
@@ -849,7 +848,6 @@ msgstr "Film Sortierung"
 msgid "Running script"
 msgstr "Ausführen des Skripts"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Entpacken zu tief verschachtelt [%s]"
@@ -1125,6 +1123,16 @@ msgstr "Warteschlange abgearbeitet"
 msgid "Other Messages"
 msgstr "Andere Nachrichten"
 
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr "Ordner öffnen"
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "Öffne Zielverzeichnis"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Nicht verfügbar"
@@ -1205,6 +1213,18 @@ msgstr "Fehler beim Laden von %s. Beschädigte Datei gefunden."
 msgid "NZB added to queue"
 msgstr "NZB zur Warteschlange hinzugefügt"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Doppelte NZB \"%s\" wird ignoriert"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "kopieren der NZB \"%s\" fehlgeschlagen"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "Doppelte NZB"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1223,26 +1243,6 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Doppelte NZB \"%s\" wird ignoriert"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "kopieren der NZB \"%s\" fehlgeschlagen"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Doppelte NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Doppelt vorhandene NZB \"%s\" angehalten"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
 msgid "Unwanted Extension in file %s (%s)"
 msgstr "Ungewollte Dateiendung in der Datei %s (%s)"
 
@@ -1258,6 +1258,10 @@ msgstr "Fehler beim Importieren von %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLIKAT"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr "ALTERNATIVE"
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1304,6 +1308,10 @@ msgstr "%s Artikel fehlten"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s Artikel hatten nicht übereinstimmende Duplikate"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Doppelt vorhandene NZB \"%s\" angehalten"
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1537,6 +1545,12 @@ msgstr ""
 "Alte Warteschlangen-Version erkannt, über Status->Reparieren ins neue Format"
 " konvertieren"
 
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr ""
+"Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen."
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid ""
@@ -1724,10 +1738,6 @@ msgstr "Leerer RSS-Feed gefunden: %s"
 msgid "Show interface"
 msgstr "Interface anzeigen"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr "Öffne Zielverzeichnis"
-
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for"
@@ -1815,6 +1825,11 @@ msgstr "Entschleiern"
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Skript"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2088,7 +2103,6 @@ msgstr "Python Version"
 msgid "Home page"
 msgstr "Startseite"
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr "oder"
@@ -2155,8 +2169,8 @@ msgstr "Forum"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "IRC"
+msgid "Live Chat"
+msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2187,11 +2201,6 @@ msgstr "Schalter"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Planung"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2306,11 +2315,6 @@ msgstr "Name"
 #: sabnzbd/skintext.py
 msgid "Retry"
 msgstr "Erneut versuchen"
-
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Aktionen"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -2648,7 +2652,6 @@ msgstr "Zeit seit Start"
 msgid "Backup"
 msgstr "Sicherheitskopie"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Lesen Sie dazu die Hilfe im Wiki!"
@@ -3241,28 +3244,20 @@ msgstr ""
 "fortsetzen."
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Doppelte Downloads erkennen"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
-"Doppelte NZB Datei entdeckt (basierend auf den Eintragungen in der Historie "
-"oder den .nzb Dateien im NZB-Backup-Ordner)"
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Doppelte Episoden in Serien erkennen"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
-"Identische Episoden in den Serien entdeckt (basierend auf "
-"\"name/season/episode\") der Einträge in der Historie"
+
+#: sabnzbd/skintext.py
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3270,11 +3265,9 @@ msgstr "Erlaube \"Proper\" Releases"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
-"Umgehe Serien Duplikat-Erkennung, wenn PROPER, REAL oder REPACK im Download-"
-"Namen erkannt wird"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
@@ -3364,6 +3357,14 @@ msgstr "Benutzer-Skript vor Warteschlange"
 msgid "Used before an NZB enters the queue."
 msgstr ""
 "Wird verwendet, bevor eine NZB-Datei zur Warteschlange hinzugefügt wird."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4958,10 +4959,6 @@ msgid ""
 msgstr ""
 "Unbekanntes SSL-Protokoll: SSL deaktivieren oder alternativen Port "
 "versuchen."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Sever beendet beim Anmeldeverlauf."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

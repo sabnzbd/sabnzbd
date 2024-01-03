@@ -58,11 +58,11 @@ function convertHTMLtoText(htmltxt) {
 // Function to re-write 0:09:21=>9:21, 0:10:10=>10:10, 0:00:30=>0:30
 function rewriteTime(timeString) {
     // Remove "0:0" from start
-    if(timeString.substring(0,3) == '0:0') {
+    if(timeString.substring(0,3) === '0:0') {
         timeString = timeString.substring(3)
     }
     // Remove "0:" from start
-    else if(timeString.substring(0,2) == '0:') {
+    else if(timeString.substring(0,2) === '0:') {
         timeString = timeString.substring(2)
     }
     return timeString
@@ -71,13 +71,13 @@ function rewriteTime(timeString) {
 // How to display the date-time?
 function displayDateTime(inDate, outFormat, inFormat) {
     // What input?
-    if(inDate == '') {
+    if(inDate === '') {
         var theMoment = moment()
     } else {
         var theMoment = moment.utc(inDate, inFormat)
     }
     // Special format or regular format?
-    if(outFormat == 'fromNow') {
+    if(outFormat === 'fromNow') {
         return theMoment.fromNow()
     } else {
         return theMoment.local().format(outFormat)
@@ -155,7 +155,7 @@ function setCheckAllState(checkSelector, rangeSelector) {
     var nrChecks = allChecks.filter(":checked");
     if(nrChecks.length === 0) {
         $(checkSelector).prop({'checked': false, 'indeterminate': false})
-    } else if(nrChecks.length == allChecks.length) {
+    } else if(nrChecks.length === allChecks.length) {
         $(checkSelector).prop({'checked': true, 'indeterminate': false})
     } else {
         $(checkSelector).prop({'checked': false, 'indeterminate': true})

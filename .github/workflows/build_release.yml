@@ -13,10 +13,10 @@ jobs:
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.11 (64bit)
+    - name: Set up Python 3.12 (64bit)
       uses: actions/setup-python@v4
       with:
-        python-version: "3.11"
+        python-version: "3.12"
         architecture: "x64"
     - name: Cache Python virtualenv (64bit)
       uses: syphar/restore-virtualenv@v1.3
@@ -63,8 +63,8 @@ jobs:
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt
-        pip install --upgrade -r builder/requirements.txt
+        pip install --upgrade -r requirements.txt --no-dependencies
+        pip install --upgrade -r builder/requirements.txt --no-dependencies
     - name: Build Windows standalone binary (32bit and legacy)
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (32bit and legacy)
@@ -81,7 +81,7 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.11.5"
+      PYTHON_VERSION: "3.12.1"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
@@ -98,10 +98,7 @@ jobs:
       if: steps.cache-python-download.outputs.cache-hit != 'true'
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
-      run: |
-        sudo installer -pkg ~/python.pkg -target /
-        unlink /usr/local/bin/python
-        ln -s /usr/local/bin/python3 /usr/local/bin/python
+      run: sudo installer -pkg ~/python.pkg -target /
     - name: Cache Python virtualenv
       uses: syphar/restore-virtualenv@v1.3
       id: cache-virtualenv
@@ -112,19 +109,18 @@ jobs:
       # We have to manually take a few steps:
       # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
       #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
-      #     https://github.com/pyca/cryptography/issues/5918
-      # 2.  Due to PyObjC we cannot run pip on the main requirements without installing dependencies
-      # 3.  We need to build the PyInstaller bootloader:
+      #     https://github.com/pypa/pip/issues/5453
+      # 2.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        
-        pip3 install --upgrade -r requirements.txt --no-binary cffi
+    
+        pip3 install --upgrade -r requirements.txt --no-binary cffi --no-dependencies
         
         pip3 uninstall cryptography -y
-        pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-deps --dest .
+        pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-dependencies --dest .
         pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
 
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller --no-dependencies

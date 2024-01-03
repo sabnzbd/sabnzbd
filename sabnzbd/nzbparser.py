@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2017 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2008-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
 from sabnzbd import nzbstuff
-from sabnzbd.encoding import utob, correct_unknown_encoding, correct_cherrypy_encoding
+from sabnzbd.encoding import utob, correct_cherrypy_encoding
 from sabnzbd.filesystem import (
     get_filename,
     is_valid_script,
@@ -43,7 +43,7 @@ from sabnzbd.filesystem import (
     remove_file,
     remove_data,
 )
-from sabnzbd.misc import name_to_cat
+from sabnzbd.misc import name_to_cat, cat_pp_script_sanitizer
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES, AddNzbFileResult
 from sabnzbd.utils import rarfile
 
@@ -66,12 +66,8 @@ def add_nzbfile(
     """Add file, either a single NZB-file or an archive.
     All other parameters are passed to the NZO-creation.
     """
-    if pp == "-1":
-        pp = None
-    if script and (script.lower() == "default" or not is_valid_script(script)):
-        script = None
-    if cat and cat.lower() == "default":
-        cat = None
+    # Base conversion of input
+    cat, pp, script = cat_pp_script_sanitizer(cat, pp, script)
 
     if isinstance(nzbfile, str):
         # File coming from queue repair or local file-path
@@ -214,20 +210,20 @@ def process_nzb_archive_file(
                             cat=cat,
                             url=url,
                             priority=priority,
+                            password=password,
                             nzbname=nzbname,
                             nzo_info=nzo_info,
                             reuse=reuse,
                             nzo_id=nzo_id,
                             dup_check=dup_check,
                         )
-                        if not nzo.password:
-                            nzo.password = password
                     except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
                         # Empty or fully rejected
                         pass
-                    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
-                        # Duplicate or unwanted extension that was failed to history
-                        nzo_ids.append(err.nzo_id)
+                    except sabnzbd.nzbstuff.NzbRejectToHistory as err:
+                        # Duplicate or unwanted extension directed to history
+                        sabnzbd.NzbQueue.fail_to_history(err.nzo)
+                        nzo_ids.append(err.nzo.nzo_id)
                     except:
                         # Something else is wrong, show error
                         logging.error(T("Error while adding %s, removing"), name, exc_info=True)
@@ -321,23 +317,23 @@ def process_single_nzb(
             cat=cat,
             url=url,
             priority=priority,
+            password=password,
             nzbname=nzbname,
             nzo_info=nzo_info,
             reuse=reuse,
             nzo_id=nzo_id,
             dup_check=dup_check,
         )
-        if not nzo.password:
-            nzo.password = password
     except sabnzbd.nzbstuff.NzbEmpty:
         # Malformed or might not be an NZB file
         result = AddNzbFileResult.NO_FILES_FOUND
     except sabnzbd.nzbstuff.NzbRejected:
         # Rejected as duplicate or by pre-queue script
         result = AddNzbFileResult.ERROR
-    except sabnzbd.nzbstuff.NzbRejectedToHistory as err:
-        # Duplicate or unwanted extension that was failed to history
-        nzo_ids.append(err.nzo_id)
+    except sabnzbd.nzbstuff.NzbRejectToHistory as err:
+        # Duplicate or unwanted extension directed to history
+        sabnzbd.NzbQueue.fail_to_history(err.nzo)
+        nzo_ids.append(err.nzo.nzo_id)
     except:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
@@ -422,8 +418,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 # Get segments
                 raw_article_db = {}
                 file_bytes = 0
-                bad_articles = False
-                if element.find("segments"):
+                if len(element.find("segments")):
                     for segment in element.find("segments").iter("segment"):
                         try:
                             article_id = segment.text
@@ -443,14 +438,12 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                                         article_id,
                                     )
                                     nzo.increase_bad_articles_counter("duplicate_articles")
-                                    bad_articles = True
                                 else:
                                     logging.info("Skipping duplicate article (%s)", article_id)
                             elif segment_size <= 0 or segment_size >= 2**23:
                                 # Perform sanity check (not negative, 0 or larger than 8MB) on article size
                                 logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
                                 nzo.increase_bad_articles_counter("bad_articles")
-                                bad_articles = True
                             else:
                                 raw_article_db[partnum] = (article_id, segment_size)
                                 file_bytes += segment_size

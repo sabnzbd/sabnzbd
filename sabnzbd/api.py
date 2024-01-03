@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -51,12 +51,14 @@ from sabnzbd.constants import (
     MEBI,
     GIGI,
     AddNzbFileResult,
+    PP_LOOKUP,
+    STAGES,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.diskspeed import diskspeedmeasure
-from sabnzbd.utils.internetspeed import internetspeed
+from sabnzbd.internetspeed import internetspeed
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.misc import (
@@ -72,8 +74,9 @@ from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_s
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup, active_socks5_proxy
-from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
+from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
+from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.emailer
 import sabnzbd.sorting
 
@@ -267,6 +270,7 @@ def _api_queue_default(value, kwargs):
     search = kwargs.get("search")
     categories = kwargs.get("cat") or kwargs.get("category")
     priorities = kwargs.get("priority")
+    statuses = kwargs.get("status")
     nzo_ids = kwargs.get("nzo_ids")
 
     if categories and not isinstance(categories, list):
@@ -274,13 +278,21 @@ def _api_queue_default(value, kwargs):
     if priorities and not isinstance(priorities, list):
         # Make sure it's an integer
         priorities = [int_conv(prio) for prio in priorities.split(",")]
+    if statuses and not isinstance(statuses, list):
+        statuses = statuses.split(",")
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
 
     return report(
         keyword="queue",
         data=build_queue(
-            start=start, limit=limit, search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids
+            start=start,
+            limit=limit,
+            search=search,
+            categories=categories,
+            priorities=priorities,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         ),
     )
 
@@ -480,8 +492,9 @@ def _api_history(name, kwargs):
     limit = int_conv(kwargs.get("limit"))
     last_history_update = int_conv(kwargs.get("last_history_update", 0))
     search = kwargs.get("search")
-    failed_only = int_conv(kwargs.get("failed_only"))
     categories = kwargs.get("cat") or kwargs.get("category")
+    statuses = kwargs.get("status")
+    failed_only = int_conv(kwargs.get("failed_only"))
     nzo_ids = kwargs.get("nzo_ids")
 
     # Do we need to send anything?
@@ -490,6 +503,13 @@ def _api_history(name, kwargs):
 
     if categories and not isinstance(categories, list):
         categories = categories.split(",")
+
+    if statuses and not isinstance(statuses, list):
+        statuses = statuses.split(",")
+
+    if failed_only:
+        # We ignore any other statuses, having both doesn't make sense
+        statuses = [Status.FAILED]
 
     if nzo_ids and not isinstance(nzo_ids, list):
         nzo_ids = nzo_ids.split(",")
@@ -513,12 +533,12 @@ def _api_history(name, kwargs):
         elif value:
             jobs = value.split(",")
             for job in jobs:
-                path = sabnzbd.PostProcessor.get_path(job)
-                if path:
+                if sabnzbd.PostProcessor.get_path(job):
                     sabnzbd.PostProcessor.delete(job, del_files=del_files)
                 else:
                     history_db = sabnzbd.get_db_connection()
-                    remove_all(history_db.get_path(job), recursive=True)
+                    if del_files:
+                        remove_all(history_db.get_incomplete_path(job), recursive=True)
                     history_db.remove_history(job)
             sabnzbd.misc.history_updated()
             return report()
@@ -534,7 +554,12 @@ def _api_history(name, kwargs):
             to_units(day),
         )
         history["slots"], history["ppslots"], history["noofslots"] = build_history(
-            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, nzo_ids=nzo_ids
+            start=start,
+            limit=limit,
+            search=search,
+            categories=categories,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
         history["version"] = sabnzbd.__version__
@@ -589,9 +614,9 @@ def _api_addurl(name, kwargs):
     password = kwargs.get("password", "")
 
     if name:
-        nzo_id = sabnzbd.urlgrabber.add_url(name, pp, script, cat, priority, nzbname, password)
         # Reporting a list of NZO's, for compatibility with other add-methods
-        return report(keyword="", data={"status": True, "nzo_ids": [nzo_id]})
+        res, nzo_ids = sabnzbd.urlgrabber.add_url(name, pp, script, cat, priority, nzbname, password)
+        return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
     else:
         logging.info("API-call addurl: no URLs received")
         return report(_MSG_NO_VALUE)
@@ -1247,9 +1272,6 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
     # Calculate performance measures, if requested
     if int_conv(calculate_performance):
-        # Perform the internetspeed measure in separate thread
-        internetspeed_future = sabnzbd.THREAD_POOL.submit(internetspeed)
-
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
@@ -1258,7 +1280,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed_future.result(), 1)
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
@@ -1289,11 +1311,11 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["servers"] = []
     # Servers-list could be modified during iteration, so we need a copy
     for server in sabnzbd.Downloader.servers[:]:
-        connected = sum(nw.connected for nw in server.idle_threads[:])
+        activeconn = sum(nw.connected for nw in server.idle_threads.copy())
         serverconnections = []
-        for nw in server.busy_threads[:]:
+        for nw in server.busy_threads.copy():
             if nw.connected:
-                connected += 1
+                activeconn += 1
             if nw.article:
                 serverconnections.append(
                     {
@@ -1304,25 +1326,31 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
                     }
                 )
 
-        if server.warning and not (connected or server.errormsg):
-            connected = server.warning
-
-        if server.request and not server.info:
-            connected = T("&nbsp;Resolving address").replace("&nbsp;", "")
-
         server_info = {
             "servername": server.displayname,
-            "serveractiveconn": connected,
+            "serveractive": server.active,
+            "serveractiveconn": activeconn,
             "servertotalconn": server.threads,
             "serverconnections": serverconnections,
             "serverssl": server.ssl,
             "serversslinfo": server.ssl_info,
-            "serveractive": server.active,
+            "serveripaddress": None,
+            "servercanonname": None,
+            "serverwarning": server.warning,
             "servererror": server.errormsg,
             "serverpriority": server.priority,
             "serveroptional": server.optional,
             "serverbps": to_units(sabnzbd.BPSMeter.server_bps.get(server.id, 0)),
         }
+
+        # Only add this information if we are connected
+        if activeconn and server.addrinfo:
+            server_info["serveripaddress"] = server.addrinfo.ipaddress
+            server_info["servercanonname"] = server.addrinfo.canonname
+
+        if server.request and not server.addrinfo:
+            server_info["serverwarning"] = T("Resolving address")
+
         info["servers"].append(server_info)
 
     return info
@@ -1334,6 +1362,7 @@ def build_queue(
     search: Optional[str] = None,
     categories: Optional[List[str]] = None,
     priorities: Optional[List[str]] = None,
+    statuses: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
 ):
     info = build_header(for_template=False)
@@ -1345,7 +1374,13 @@ def build_queue(
         queue_fullsize,
         nzos_matched,
     ) = sabnzbd.NzbQueue.queue_info(
-        search=search, categories=categories, priorities=priorities, nzo_ids=nzo_ids, start=start, limit=limit
+        search=search,
+        categories=categories,
+        priorities=priorities,
+        statuses=statuses,
+        nzo_ids=nzo_ids,
+        start=start,
+        limit=limit,
     )
 
     info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
@@ -1375,7 +1410,6 @@ def build_queue(
     for nzo in nzo_list:
         mbleft = nzo.remaining / MEBI
         mb = nzo.bytes / MEBI
-        is_propagating = (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
 
         slot = {}
         slot["index"] = n
@@ -1396,8 +1430,8 @@ def build_queue(
         slot["direct_unpack"] = nzo.direct_unpack_progress
 
         if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
-            if is_propagating:
-                slot["status"] = Status.PROP
+            if nzo.propagation_delay_left:
+                slot["status"] = Status.PROPAGATING
             elif nzo.status == Status.CHECKING:
                 slot["status"] = Status.CHECKING
             else:
@@ -1411,7 +1445,7 @@ def build_queue(
         if (
             sabnzbd.Downloader.paused
             or sabnzbd.Downloader.paused_for_postproc
-            or is_propagating
+            or nzo.propagation_delay_left
             or nzo.status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
         ) and nzo.priority != FORCE_PRIORITY:
             slot["timeleft"] = "0:00:00"
@@ -1504,9 +1538,9 @@ def retry_job(job, new_nzb=None, password=None):
         history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
-            nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat)
+            nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat, dup_check=False)
         else:
-            path = history_db.get_path(job)
+            path = history_db.get_incomplete_path(job)
             nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)
         if nzo_id:
             # Only remove from history if we repaired something
@@ -1622,36 +1656,20 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 
 def build_history(
     start: int = 0,
-    limit: int = 0,
+    limit: int = 1000000,
     search: Optional[str] = None,
-    failed_only: int = 0,
     categories: Optional[List[str]] = None,
+    statuses: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
-) -> Tuple[Dict[str, Any], int, int]:
+) -> Tuple[List[Dict[str, Any]], int, int]:
     """Combine the jobs still in post-processing and the database history"""
-    if not limit:
-        limit = 1000000
-
     # Grab any items that are active or queued in postproc
-    postproc_queue = sabnzbd.PostProcessor.get_queue()
-
-    # Filter out any items that don't match the search term or category
-    if postproc_queue:
-        # It would be more efficient to iterate only once, but we accept the penalty for code clarity
-        if isinstance(categories, list):
-            postproc_queue = [nzo for nzo in postproc_queue if nzo.cat in categories]
-
-        if isinstance(search, str):
-            # Replace * with .* and ' ' with .
-            search_text = search.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
-            try:
-                re_search = re.compile(search_text, re.I)
-                postproc_queue = [nzo for nzo in postproc_queue if re_search.search(nzo.final_name)]
-            except:
-                logging.error(T("Failed to compile regex for search term: %s"), search_text)
-
-        if nzo_ids:
-            postproc_queue = [nzo for nzo in postproc_queue if nzo.nzo_id in nzo_ids]
+    postproc_queue = sabnzbd.PostProcessor.get_queue(
+        search=search,
+        categories=categories,
+        statuses=statuses,
+        nzo_ids=nzo_ids,
+    )
 
     # Multi-page support for postproc items
     postproc_queue_size = len(postproc_queue)
@@ -1660,13 +1678,10 @@ def build_history(
         postproc_queue = []
         database_history_limit = limit
     else:
-        try:
-            if limit:
-                postproc_queue = postproc_queue[start : start + limit]
-            else:
-                postproc_queue = postproc_queue[start:]
-        except:
-            pass
+        if limit:
+            postproc_queue = postproc_queue[start : start + limit]
+        else:
+            postproc_queue = postproc_queue[start:]
         # Remove the amount of postproc items from the db request for history items
         database_history_limit = max(limit - len(postproc_queue), 0)
     database_history_start = max(start - postproc_queue_size, 0)
@@ -1683,36 +1698,30 @@ def build_history(
     # Fetch history items
     if not database_history_limit:
         items, total_items = history_db.fetch_history(
-            database_history_start, 1, search, failed_only, categories, nzo_ids
+            start=database_history_start,
+            limit=1,
+            search=search,
+            categories=categories,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         )
         items = []
     else:
         items, total_items = history_db.fetch_history(
-            database_history_start, database_history_limit, search, failed_only, categories, nzo_ids
+            start=database_history_start,
+            limit=database_history_limit,
+            search=search,
+            categories=categories,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
         )
 
+    # Add the postproc items to the top of the history
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
-
-    # Add the postproc items to the top of the history
-    items = get_active_history(postproc_queue, items)
-
-    # Un-reverse the queue
-    items.reverse()
-
-    for item in items:
-        item["size"] = to_units(item["bytes"], "B")
-
-        if "loaded" not in item:
-            item["loaded"] = False
-
-        path = item.get("path", "")
-        item["retry"] = int_conv(item.get("status") == Status.FAILED and path and os.path.exists(path))
-        # Retry of failed URL-fetch
-        if item["report"] == "future":
-            item["retry"] = True
-
+    add_active_history(postproc_queue, items)
     total_items += postproc_queue_size
+    items.reverse()
 
     if close_db:
         history_db.close()
@@ -1720,47 +1729,48 @@ def build_history(
     return items, postproc_queue_size, total_items
 
 
-def get_active_history(queue, items):
-    """Get the jobs currently in progress and active history queue."""
-    for nzo in queue:
-        item = {}
-        (
-            item["completed"],
-            item["name"],
-            item["nzb_name"],
-            item["category"],
-            item["pp"],
-            item["script"],
-            item["report"],
-            item["url"],
-            item["status"],
-            item["nzo_id"],
-            item["storage"],
-            item["path"],
-            item["script_log"],
-            item["script_line"],
-            item["download_time"],
-            item["postproc_time"],
-            item["stage_log"],
-            item["downloaded"],
-            item["fail_message"],
-            item["url_info"],
-            item["bytes"],
-            _,
-            _,
-            item["password"],
-        ) = build_history_info(nzo)
-        item["action_line"] = nzo.action_line
-        item = unpack_history_info(item)
+def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, Any]]):
+    """Get the active history queue and add it to the existing items list"""
+    for nzo in postproc_queue:
+        # This output has to be the same as fetch_history!
+        item = {
+            "completed": int(time.time()),
+            "name": nzo.final_name,
+            "nzb_name": nzo.filename,
+            "category": nzo.cat,
+            "pp": PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X"),
+            "script": nzo.script,
+            "report": "",
+            "url": nzo.url,
+            "status": nzo.status,
+            "nzo_id": nzo.nzo_id,
+            "storage": "",
+            "path": clip_path(nzo.download_path),
+            "script_line": "",
+            "download_time": nzo.nzo_info.get("download_time", 0),
+            "postproc_time": 0,
+            "stage_log": [],
+            "downloaded": nzo.bytes_downloaded,
+            "completeness": None,
+            "fail_message": nzo.fail_msg,
+            "url_info": nzo.nzo_info.get("details", "") or nzo.nzo_info.get("more_info", ""),
+            "bytes": nzo.bytes_downloaded,
+            "size": to_units(nzo.bytes_downloaded, "B"),
+            "meta": None,
+            "series": "",
+            "duplicate_key": nzo.duplicate_key,
+            "md5sum": "",
+            "password": nzo.correct_password,
+            "action_line": nzo.action_line,
+            "loaded": nzo.pp_active,
+            "retry": False,
+        }
+        # Add stage information, in the correct order
+        for stage in STAGES:
+            if stage in nzo.unpack_info:
+                item["stage_log"].append({"name": stage, "actions": nzo.unpack_info[stage]})
 
-        item["loaded"] = nzo.pp_active
-        if item["bytes"]:
-            item["size"] = to_units(item["bytes"], "B")
-        else:
-            item["size"] = ""
         items.append(item)
-
-    return items
 
 
 def calc_timeleft(bytesleft, bps):

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -309,56 +309,58 @@ class TestSanitizeFiles(ffs.TestCase):
                 assert not os.path.exists(file)
 
 
-class TestSameFile:
+class TestSameDirectory:
     def test_nothing_in_common_win_paths(self):
-        assert 0 == filesystem.same_file("C:\\", "D:\\")
-        assert 0 == filesystem.same_file("C:\\", "/home/test")
+        assert 0 == filesystem.same_directory("C:\\", "D:\\")
+        assert 0 == filesystem.same_directory("C:\\", "/home/test")
 
     def test_nothing_in_common_unix_paths(self):
-        assert 0 == filesystem.same_file("/home/", "/data/test")
-        assert 0 == filesystem.same_file("/test/home/test", "/home/")
-        assert 0 == filesystem.same_file("/test/../home", "/test")
-        assert 0 == filesystem.same_file("/test/./test", "/test")
+        assert 0 == filesystem.same_directory("/home/", "/data/test")
+        assert 0 == filesystem.same_directory("/test/home/test", "/home/")
+        assert 0 == filesystem.same_directory("/test/../home", "/test")
+        assert 0 == filesystem.same_directory("/test/./test", "/test")
 
     @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")
     @set_platform("linux")
     def test_posix_fun(self):
-        assert 1 == filesystem.same_file("/test", "/test")
+        assert 1 == filesystem.same_directory("/test", "/test")
         # IEEE 1003.1-2017 par. 4.13 for details
-        assert 0 == filesystem.same_file("/test", "//test")
-        assert 1 == filesystem.same_file("/test", "///test")
-        assert 1 == filesystem.same_file("/test", "/test/")
-        assert 1 == filesystem.same_file("/test", "/test//")
-        assert 1 == filesystem.same_file("/test", "/test///")
+        assert 0 == filesystem.same_directory("/test", "//test")
+        assert 1 == filesystem.same_directory("/test", "///test")
+        assert 1 == filesystem.same_directory("/test", "/test/")
+        assert 1 == filesystem.same_directory("/test", "/test//")
+        assert 1 == filesystem.same_directory("/test", "/test///")
 
     def test_same(self):
-        assert 1 == filesystem.same_file("/home/123", "/home/123")
-        assert 1 == filesystem.same_file("D:\\", "D:\\")
-        assert 1 == filesystem.same_file("/test/../test", "/test")
-        assert 1 == filesystem.same_file("test/../test", "test")
-        assert 1 == filesystem.same_file("/test/./test", "/test/test")
-        assert 1 == filesystem.same_file("./test", "test")
+        assert 1 == filesystem.same_directory("/home/123", "/home/123")
+        assert 1 == filesystem.same_directory("/test/../test", "/test")
+        assert 1 == filesystem.same_directory("test/../test", "test")
+        assert 1 == filesystem.same_directory("/test/./test", "/test/test")
+        assert 1 == filesystem.same_directory("./test", "test")
 
     def test_subfolder(self):
-        assert 2 == filesystem.same_file("\\\\?\\C:\\", "\\\\?\\C:\\Users\\")
-        assert 2 == filesystem.same_file("/home/test123", "/home/test123/sub")
-        assert 2 == filesystem.same_file("/test", "/test/./test")
-        assert 2 == filesystem.same_file("/home/../test", "/test/./test")
+        assert 2 == filesystem.same_directory("/home/test123", "/home/test123/sub")
+        assert 2 == filesystem.same_directory("/test", "/test/./test")
+        assert 2 == filesystem.same_directory("/home/../test", "/test/./test")
 
-    @set_platform("win32")
-    def test_capitalization(self):
-        # Only matters on Windows/macOS
-        assert 1 == filesystem.same_file("/HOME/123", "/home/123")
-        assert 1 == filesystem.same_file("D:\\", "d:\\")
-        assert 2 == filesystem.same_file("\\\\?\\c:\\", "\\\\?\\C:\\Users\\")
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Relies on os.sep so should only run on Windows")
+    def test_windows(self):
+        assert 1 == filesystem.same_directory("D:\\", "D:\\")
+        assert 2 == filesystem.same_directory("\\\\?\\C:\\", "\\\\?\\C:\\Users\\")
+        assert 1 == filesystem.same_directory("/HOME/123", "/home/123")
+        assert 1 == filesystem.same_directory("D:\\", "d:\\")
+        assert 2 == filesystem.same_directory("\\\\?\\c:\\", "\\\\?\\C:\\Users\\")
+
+    def test_looks_likesubfolder_but_isnt(self):
+        assert 0 == filesystem.same_directory("/mnt/sabnzbd", "/mnt/sabnzbd-data")
 
     @pytest.mark.skipif(sys.platform.startswith(("win", "darwin")), reason="Requires a case-sensitive filesystem")
     @set_platform("linux")
     def test_capitalization_linux(self):
-        assert 2 == filesystem.same_file("/home/test123", "/home/test123/sub")
-        assert 0 == filesystem.same_file("/test", "/Test")
-        assert 0 == filesystem.same_file("tesT", "Test")
-        assert 0 == filesystem.same_file("/test/../Home", "/home")
+        assert 2 == filesystem.same_directory("/home/test123", "/home/test123/sub")
+        assert 0 == filesystem.same_directory("/test", "/Test")
+        assert 0 == filesystem.same_directory("tesT", "Test")
+        assert 0 == filesystem.same_directory("/test/../Home", "/home")
 
 
 class TestClipLongPath:
@@ -422,36 +424,36 @@ class TestCheckMountLinux(ffs.TestCase):
 
     @set_platform("linux")
     def test_bare_mountpoint_linux(self):
-        assert filesystem.check_mount("/media") is True
-        assert filesystem.check_mount("/media/") is True
-        assert filesystem.check_mount("/mnt") is True
-        assert filesystem.check_mount("/mnt/") is True
+        assert filesystem.mount_is_available("/media") is True
+        assert filesystem.mount_is_available("/media/") is True
+        assert filesystem.mount_is_available("/mnt") is True
+        assert filesystem.mount_is_available("/mnt/") is True
 
     @set_platform("linux")
     def test_existing_dir_linux(self):
-        assert filesystem.check_mount("/media/test") is True
-        assert filesystem.check_mount("/media/test/dir/") is True
-        assert filesystem.check_mount("/media/test/DIR/") is True
-        assert filesystem.check_mount("/mnt/TEST") is True
-        assert filesystem.check_mount("/mnt/TEST/dir/") is True
-        assert filesystem.check_mount("/mnt/TEST/DIR/") is True
+        assert filesystem.mount_is_available("/media/test") is True
+        assert filesystem.mount_is_available("/media/test/dir/") is True
+        assert filesystem.mount_is_available("/media/test/DIR/") is True
+        assert filesystem.mount_is_available("/mnt/TEST") is True
+        assert filesystem.mount_is_available("/mnt/TEST/dir/") is True
+        assert filesystem.mount_is_available("/mnt/TEST/DIR/") is True
 
     @set_platform("linux")
     # Cut down a bit on the waiting time
     @set_config({"wait_ext_drive": 1})
     def test_dir_nonexistent_linux(self):
         # Filesystem is case-sensitive on this platform
-        assert filesystem.check_mount("/media/TEST") is False  # Issue #1457
-        assert filesystem.check_mount("/media/TesT/") is False
-        assert filesystem.check_mount("/mnt/TeSt/DIR") is False
-        assert filesystem.check_mount("/mnt/test/DiR/") is False
+        assert filesystem.mount_is_available("/media/TEST") is False  # Issue #1457
+        assert filesystem.mount_is_available("/media/TesT/") is False
+        assert filesystem.mount_is_available("/mnt/TeSt/DIR") is False
+        assert filesystem.mount_is_available("/mnt/test/DiR/") is False
 
     @set_platform("linux")
     def test_dir_outsider_linux(self):
         # Outside of /media and /mnt
-        assert filesystem.check_mount("/test/that/") is True
+        assert filesystem.mount_is_available("/test/that/") is True
         # Root directory
-        assert filesystem.check_mount("/") is True
+        assert filesystem.mount_is_available("/") is True
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")
@@ -468,33 +470,33 @@ class TestCheckMountMacOS(ffs.TestCase):
 
     @set_platform("macos")
     def test_bare_mountpoint_macos(self):
-        assert filesystem.check_mount("/Volumes") is True
-        assert filesystem.check_mount("/Volumes/") is True
+        assert filesystem.mount_is_available("/Volumes") is True
+        assert filesystem.mount_is_available("/Volumes/") is True
 
     @set_platform("macos")
     def test_existing_dir_macos(self):
-        assert filesystem.check_mount("/Volumes/test") is True
-        assert filesystem.check_mount("/Volumes/test/dir/") is True
+        assert filesystem.mount_is_available("/Volumes/test") is True
+        assert filesystem.mount_is_available("/Volumes/test/dir/") is True
         # Filesystem is set case-insensitive for this platform
-        assert filesystem.check_mount("/VOLUMES/test") is True
-        assert filesystem.check_mount("/volumes/Test/dir/") is True
+        assert filesystem.mount_is_available("/VOLUMES/test") is True
+        assert filesystem.mount_is_available("/volumes/Test/dir/") is True
 
     @set_platform("macos")
     # Cut down a bit on the waiting time
     @set_config({"wait_ext_drive": 1})
     def test_dir_nonexistent_macos(self):
         # Within /Volumes
-        assert filesystem.check_mount("/Volumes/nosuchdir") is False  # Issue #1457
-        assert filesystem.check_mount("/Volumes/noSuchDir/") is False
-        assert filesystem.check_mount("/Volumes/nosuchDIR/subdir") is False
-        assert filesystem.check_mount("/Volumes/NOsuchdir/subdir/") is False
+        assert filesystem.mount_is_available("/Volumes/nosuchdir") is False  # Issue #1457
+        assert filesystem.mount_is_available("/Volumes/noSuchDir/") is False
+        assert filesystem.mount_is_available("/Volumes/nosuchDIR/subdir") is False
+        assert filesystem.mount_is_available("/Volumes/NOsuchdir/subdir/") is False
 
     @set_platform("macos")
     def test_dir_outsider_macos(self):
         # Outside of /Volumes
-        assert filesystem.check_mount("/test/that/") is True
+        assert filesystem.mount_is_available("/test/that/") is True
         # Root directory
-        assert filesystem.check_mount("/") is True
+        assert filesystem.mount_is_available("/") is True
 
 
 class TestCheckMountWin(ffs.TestCase):
@@ -510,39 +512,39 @@ class TestCheckMountWin(ffs.TestCase):
 
     @set_platform("win32")
     def test_existing_dir_win(self):
-        assert filesystem.check_mount("F:\\test") is True
-        assert filesystem.check_mount("F:\\test\\dir\\") is True
+        assert filesystem.mount_is_available("F:\\test") is True
+        assert filesystem.mount_is_available("F:\\test\\dir\\") is True
         # Filesystem and drive letters are case-insensitive on this platform
-        assert filesystem.check_mount("f:\\Test") is True
-        assert filesystem.check_mount("f:\\test\\DIR\\") is True
+        assert filesystem.mount_is_available("f:\\Test") is True
+        assert filesystem.mount_is_available("f:\\test\\DIR\\") is True
 
     @set_platform("win32")
     def test_bare_mountpoint_win(self):
-        assert filesystem.check_mount("F:\\") is True
-        assert filesystem.check_mount("Z:\\") is False
+        assert filesystem.mount_is_available("F:\\") is True
+        assert filesystem.mount_is_available("Z:\\") is False
 
     @set_platform("win32")
     def test_dir_nonexistent_win(self):
         # The existence of the drive letter is what really matters
-        assert filesystem.check_mount("F:\\NoSuchDir") is True
-        assert filesystem.check_mount("F:\\NoSuchDir\\") is True
-        assert filesystem.check_mount("F:\\NOsuchdir\\subdir") is True
-        assert filesystem.check_mount("F:\\nosuchDIR\\subdir\\") is True
+        assert filesystem.mount_is_available("F:\\NoSuchDir") is True
+        assert filesystem.mount_is_available("F:\\NoSuchDir\\") is True
+        assert filesystem.mount_is_available("F:\\NOsuchdir\\subdir") is True
+        assert filesystem.mount_is_available("F:\\nosuchDIR\\subdir\\") is True
 
     @set_platform("win32")
     # Cut down a bit on the waiting time
     @set_config({"wait_ext_drive": 1})
     def test_dir_on_nonexistent_drive_win(self):
         # Non-existent drive-letter
-        assert filesystem.check_mount("H:\\NoSuchDir") is False
-        assert filesystem.check_mount("E:\\NoSuchDir\\") is False
-        assert filesystem.check_mount("L:\\NOsuchdir\\subdir") is False
-        assert filesystem.check_mount("L:\\nosuchDIR\\subdir\\") is False
+        assert filesystem.mount_is_available("H:\\NoSuchDir") is False
+        assert filesystem.mount_is_available("E:\\NoSuchDir\\") is False
+        assert filesystem.mount_is_available("L:\\NOsuchdir\\subdir") is False
+        assert filesystem.mount_is_available("L:\\nosuchDIR\\subdir\\") is False
 
     @set_platform("win32")
     def test_dir_outsider_win(self):
         # Outside the local filesystem
-        assert filesystem.check_mount("//test/that/") is True
+        assert filesystem.mount_is_available("//test/that/") is True
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")

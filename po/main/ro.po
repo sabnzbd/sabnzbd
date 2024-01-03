@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0RC2\n"
+"Project-Id-Version: SABnzbd-4.2.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -169,8 +169,8 @@ msgid "Test Notification"
 msgstr "Notificări Test"
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
-msgstr "&nbsp;Reolvare adresă"
+msgid "Resolving address"
+msgstr "Reolvare adresă"
 
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
@@ -181,11 +181,6 @@ msgstr "Niciunul"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Implicit"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Compilarea unei căutări regex nereuşită: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -264,10 +259,6 @@ msgid "Incorrect parameter"
 msgstr "Parametru Incorect"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "cale UNC \"%s\" nu este premisă aici"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s nu este o adresă email validă"
 
@@ -275,7 +266,7 @@ msgstr "%s nu este o adresă email validă"
 msgid "Server address required"
 msgstr "Adresă server necesară"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Adresă server invalidă"
 
@@ -295,8 +286,20 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Eroare: Coada nu este goală, nu pot schimba dosar."
+msgid "Network path \"%s\" is not allowed here"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Queue not empty, cannot change folder."
+msgstr "Coada nu este goală, nu pot schimba dosar."
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+"Directorul de descărcări finalizate nu poate fi același, sau un subdirector "
+"al directorului de descărcări temporare"
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -351,7 +354,7 @@ msgstr "Comandă SQL Nereuşită, vedeţi jurnal"
 msgid "Failed to close database, see log"
 msgstr "Închidere bază de date nereuşită, vedeţi jurnal"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Jurnal istoric stagii invalid pentru %s"
@@ -421,7 +424,7 @@ msgid "Paused"
 msgstr "Întrerupt"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Trebuie să seta-ţi lățimea de bandă maximă înainte de a seta o limită de "
@@ -679,14 +682,6 @@ msgid "Unsuccessful login attempt from %s"
 msgstr "Încercare de conectare nereușită de la %s"
 
 #: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
-"Directorul de descărcări finalizate nu poate fi același, sau un subdirector "
-"al directorului de descărcări temporare"
-
-#: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
 
@@ -820,7 +815,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Rulare script"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Numărul de arhive încorporate este prea mare [%s]"
@@ -1092,6 +1086,16 @@ msgstr "Coadă finalizată"
 msgid "Other Messages"
 msgstr "Alte Mesaje"
 
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr ""
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "Deschide dosar descărcări complete"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Indisponibil"
@@ -1172,6 +1176,18 @@ msgstr "Eroare încărcare %s, fişier corupt detectat"
 msgid "NZB added to queue"
 msgstr "NZB adăugat în coadă"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorăm duplicat NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Eșuare duplicat NZB „%s”"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "NZB duplicat"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1185,26 +1201,6 @@ msgstr "Fişier NZB gol %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr "Scriptul pre-coadă a marcat sarcina ca nereușită"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorăm duplicat NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Eșuare duplicat NZB „%s”"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "NZB duplicat"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Întrerupem duplicat NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1223,6 +1219,10 @@ msgstr "Eroare importare %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUPLICAT"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1268,6 +1268,10 @@ msgstr "%s articolele au fost lipsă"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articolele au avut duplicate diferite"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Întrerupem duplicat NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1498,6 +1502,11 @@ msgstr ""
 "Coadă de descărcare veche detectată, utilizează Stare->Reparare pentru a "
 "converti coada"
 
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Compilarea unei căutări regex nereuşită: %s"
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid ""
@@ -1684,10 +1693,6 @@ msgstr "Valoare RSS gasită a fost goală (%s)"
 msgid "Show interface"
 msgstr "Arată interfața"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr "Deschide dosar descărcări complete"
-
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for"
@@ -1775,6 +1780,11 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Script"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2048,7 +2058,6 @@ msgstr "Versiune Python"
 msgid "Home page"
 msgstr "Pagină de pornire"
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr "sau"
@@ -2115,8 +2124,8 @@ msgstr "Forum"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "IRC"
+msgid "Live Chat"
+msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2147,11 +2156,6 @@ msgstr "Comutatoare"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Planificare"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2266,11 +2270,6 @@ msgstr "Nume"
 #: sabnzbd/skintext.py
 msgid "Retry"
 msgstr "Reîncearcă"
-
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Acțiuni"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -2597,7 +2596,6 @@ msgstr "Durata Funcţionării"
 msgid "Backup"
 msgstr "Server Secundar"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Citeşte Ajutorul Wiki despre asta !"
@@ -3146,23 +3144,19 @@ msgstr ""
 "reluați sarcina."
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Detectează Descărcări Duplicate"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Detectează episoade duplicate în seriale"
+msgid "Detect identical downloads based on name or NZB contents."
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3171,8 +3165,8 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
 
 #. Four way switch for duplicates
@@ -3260,6 +3254,14 @@ msgstr "Script utilizator Pre-Coadă"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Folosit înainte ca un NZB să intre în coadă."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4801,10 +4803,6 @@ msgstr "A depăşit timpul alocat"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Serverul a renunţat în timpul logării."
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

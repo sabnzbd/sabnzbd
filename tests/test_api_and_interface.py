@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -227,3 +227,35 @@ class TestSecuredExpose:
         set_remote_host_or_ip(hostname="not_me")
         assert self.main_page.api() is None
         assert cherrypy.response.status == 403
+
+
+class TestHistory:
+    @pytest.mark.usefixtures("run_sabnzbd")
+    def test_add_active_history_consistency(self):
+        """Verify that add_active_history has the same structure as fetch_history"""
+        history_db = os.path.join(SAB_CACHE_DIR, DEF_ADMIN_DIR, DB_HISTORY_NAME)
+        with FakeHistoryDB(history_db) as fake_history:
+            fake_history.add_fake_history_jobs(1)
+            jobs, total_items = fake_history.fetch_history()
+            history_job = jobs[-1]
+
+            # Add minimal attributes to create pp-job
+            nzo = mock.Mock()
+            nzo.final_name = "test_add_active_history"
+            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))
+            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
+            nzo.bytes_downloaded = randint(1024, 1024**4)
+            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
+            api.add_active_history([nzo], jobs)
+
+            # Make sure the job was added to the list
+            pp_job = jobs[-1]
+            assert pp_job["name"] == nzo.final_name
+            assert pp_job["name"] != history_job["name"]
+
+            # Compare the keys, so not the values!
+            pp_keys = list(pp_job.keys())
+            pp_keys.sort()
+            history_keys = list(history_job.keys())
+            history_keys.sort()
+            assert pp_keys == history_keys

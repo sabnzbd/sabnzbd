@@ -616,7 +616,7 @@ jQuery(document).ready(function(){
 
     // Only the Accept filter needs all the options
     jQuery('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
-        jQuery(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', jQuery(this).val() != "A" && jQuery(this).val() != "S")
+        jQuery(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', jQuery(this).val() !== "A" && jQuery(this).val() !== "S")
     })
     // Trigger on-load for all
     jQuery('.disabled_options_rule').find('td select:not([name="filter_type"])').attr('disabled', true)

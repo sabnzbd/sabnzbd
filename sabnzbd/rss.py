@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ import threading
 import urllib.parse
 
 import sabnzbd
-from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
+from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -74,8 +74,8 @@ def remove_obsolete(jobs, new_jobs):
 
 RSS_LOCK = threading.RLock()
 _RE_SP = re.compile(r"s*(\d+)[ex](\d+)", re.I)
-_RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
-_RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
+_RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
+_RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 
 
 class RSSReader:
@@ -308,8 +308,9 @@ class RSSReader:
                     myPrio = defPrio
                     n = 0
                     if ("F" in reTypes or "S" in reTypes) and (not season or not episode):
-                        show_analysis = sabnzbd.newsunpack.analyse_show(title)
-                        season, episode = show_analysis["season"], show_analysis["episode"]
+                        show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
+                        season = show_analysis.info.get("season")
+                        episode = show_analysis.info.get("episode")
 
                     # Match against all filters until an positive or negative match
                     logging.debug("Size %s", size)
@@ -336,12 +337,7 @@ class RSSReader:
                                 logging.debug("Filter requirement match on rule %d", n)
                                 result = False
                                 break
-                            elif (
-                                reTypes[n] == "S"
-                                and season
-                                and episode
-                                and ep_match(season, episode, regexes[n], title)
-                            ):
+                            elif reTypes[n] == "S" and ep_match(season, episode, regexes[n], title):
                                 logging.debug("Filter matched on rule %d", n)
                                 result = True
                                 break
@@ -391,19 +387,6 @@ class RSSReader:
                         elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
                             myPrio = catPrio
 
-                    if cfg.no_dupes() and self.check_duplicate(title):
-                        if cfg.no_dupes() == 1:
-                            # Dupe-detection: Discard
-                            logging.info("Ignoring duplicate job %s", title)
-                            continue
-                        elif cfg.no_dupes() == 3:
-                            # Dupe-detection: Fail
-                            # We accept it so the Queue can send it to the History
-                            logging.info("Found duplicate job %s", title)
-                        else:
-                            # Dupe-detection: Pause
-                            myPrio = DUP_PRIORITY
-
                     act = download and not first
                     if link in jobs:
                         act = act and not jobs[link].get("status", "").endswith("*")
@@ -413,6 +396,7 @@ class RSSReader:
                         star = first
                     if result:
                         _HandleLink(
+                            feed,
                             jobs,
                             link,
                             infourl,
@@ -435,6 +419,7 @@ class RSSReader:
                             new_downloads.append(title)
                     else:
                         _HandleLink(
+                            feed,
                             jobs,
                             link,
                             infourl,
@@ -546,18 +531,6 @@ class RSSReader:
                 if self.jobs[feed][item]["status"] == "D":
                     self.jobs[feed][item]["status"] = "D-"
 
-    def check_duplicate(self, title):
-        """Check if this title was in this or other feeds
-        Return matching feed name
-        """
-        title = title.lower()
-        for fd in self.jobs:
-            for lk in self.jobs[fd]:
-                item = self.jobs[fd][lk]
-                if item.get("status", " ")[0] == "D" and item.get("title", "").lower() == title:
-                    return fd
-        return ""
-
 
 def patch_feedparser():
     """Apply options that work for SABnzbd
@@ -605,6 +578,7 @@ def patch_feedparser():
 
 
 def _HandleLink(
+    feed,
     jobs,
     link,
     infourl,
@@ -653,8 +627,17 @@ def _HandleLink(
     if download:
         jobs[link]["status"] = "D"
         jobs[link]["time_downloaded"] = time.localtime()
+
         logging.info("Adding %s (%s) to queue", link, title)
-        sabnzbd.urlgrabber.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
+        sabnzbd.urlgrabber.add_url(
+            link,
+            pp=pp,
+            script=script,
+            cat=cat,
+            priority=priority,
+            nzbname=nzbname,
+            nzo_info={"RSS": feed},
+        )
     else:
         if star:
             jobs[link]["status"] = flag + "*"

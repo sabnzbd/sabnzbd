@@ -109,13 +109,13 @@
                 // Remove start
                 self.currentBrowserPath = self.currentBrowserPath.replace(self.element.data('initialdir')+folderSeperator, '');
                 // If it's identical to the initial dir the replacement won't work
-                if(self.currentBrowserPath == self.element.data('initialdir')) {
+                if(self.currentBrowserPath === self.element.data('initialdir')) {
                     self.currentBrowserPath = '';
                 }
             }
 
             // Changed?
-            if(self.element.val() != self.currentBrowserPath) {
+            if(self.element.val() !== self.currentBrowserPath) {
                 self.element.val(self.currentBrowserPath);
                 formHasChanged = true;
             }
@@ -157,7 +157,7 @@
             var list = $('<div class="list-group">').appendTo(self.fileBrowserDialog);
             $.each(data.paths, function (i, entry) {
                 // Title for first one
-                if(i == 0) {
+                if(i === 0) {
                     self.fileBrowserDialog.prepend($('<h4>').text(entry.current_path))
                     return
                 }
@@ -166,7 +166,7 @@
                     self.browse(entry.path, endpoint); }
                 ).text(entry.name);
                 // Back image
-                if(entry.name == '..') {
+                if(entry.name === '..') {
                     $('<span class="glyphicon glyphicon-arrow-left"></span> ').prependTo(link);
                 } else {
                     $('<span class="glyphicon glyphicon-folder-open"></span> ').prependTo(link);
@@ -239,8 +239,8 @@ function do_restart() {
     $('.main-restarting').show()
 
     // What template
-    var switchedHTTPS = ($('#enable_https').is(':checked') == ($('#enable_https').data('original') === undefined))
-    var portsUnchanged  = ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))
+    var switchedHTTPS = ($('#enable_https').is(':checked') === ($('#enable_https').data('original') === undefined))
+    var portsUnchanged  = ($('#port').val() === $('#port').data('original')) && ($('#https_port').val() === $('#https_port').data('original'))
 
     // Are we on settings page or did nothing change?
     if(!$('body').hasClass('General') || (!switchedHTTPS && portsUnchanged)) {
@@ -248,7 +248,7 @@ function do_restart() {
         var urlTotal = window.location.origin + urlBase
     } else {
         // Protocol and port depend on http(s) setting
-        if($('#enable_https').is(':checked') && (window.location.protocol == 'https:' || !$('#https_port').val())) {
+        if($('#enable_https').is(':checked') && (window.location.protocol === 'https:' || !$('#https_port').val())) {
             // Https on and we visited this page from HTTPS
             var urlProtocol = 'https:';
             var urlPort = $('#https_port').val() ? $('#https_port').val() : $('#port').val();
@@ -297,7 +297,7 @@ function do_restart() {
 
             // Exception if we go from HTTPS to HTTP
             // (this is not allowed by browsers and all of the above will be ignored)
-            if(window.location.protocol != urlProtocol) {
+            if(window.location.protocol !== urlProtocol) {
                 // Saftey redirect after 20 sec
                 setTimeout(function() {
                     location.href = urlTotal;
@@ -429,7 +429,7 @@ $(document).ready(function () {
         $('.advanced-settings').toggle()
         addRowColor()
     })
-    if(localStorage.getItem('advanced-settings') == 'true') {
+    if(localStorage.getItem('advanced-settings') === 'true') {
         $('.advanced-settings').show()
         $('#advanced-settings-button').prop('checked', true)
         addRowColor()

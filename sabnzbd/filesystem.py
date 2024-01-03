@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2017 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2008-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ import fnmatch
 import stat
 import ctypes
 import random
+import functools
 from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
@@ -42,7 +43,7 @@ except ImportError:
     pass
 
 import sabnzbd
-from sabnzbd.decorators import synchronized
+from sabnzbd.decorators import synchronized, cache_maintainer
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS, DEF_LOG_FILE
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
@@ -61,6 +62,11 @@ def get_ext(filename: str) -> str:
         return os.path.splitext(filename)[1].lower()
     except:
         return ""
+
+
+def get_basename(filename: str) -> str:
+    """Shorthand for getting the basename of a filename"""
+    return os.path.splitext(filename)[0]
 
 
 def is_listed_ext(ext: str, ext_list: list) -> bool:
@@ -111,7 +117,7 @@ def get_filename(path: str) -> str:
 
 def setname_from_path(path: str) -> str:
     """Get the setname from a path"""
-    return os.path.splitext(os.path.basename(path))[0]
+    return get_basename(os.path.basename(path))
 
 
 def is_writable(path: str) -> bool:
@@ -234,21 +240,25 @@ def sanitize_filename(name: str) -> str:
     # preserving the extension (max ext length 20)
     # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
     # but we stay on the safe side: max DEF_FILE_MAX bytes
-    if len(utob(name)) + len(utob(ext)) > DEF_FILE_MAX:
-        logging.debug("Filename %s is too long, so truncating", name + ext)
-        # Too long filenames are often caused by incorrect non-ascii chars,
-        # so brute-force remove those non-ascii chars
-        name = ubtou(name.encode("ascii", "ignore"))
-        # Now it's plain ASCII, so no need for len(str.encode()) anymore; plain len() is enough
-        if len(name) + len(ext) > DEF_FILE_MAX:
-            # still too long, limit the extension
-            maxextlength = 20  # max length of an extension
-            if len(ext) > maxextlength:
-                # allow first <maxextlength> chars, including the starting dot
-                ext = ext[:maxextlength]
+    try:
+        if len(utob(name)) + len(utob(ext)) > DEF_FILE_MAX:
+            logging.debug("Filename %s is too long, so truncating", name + ext)
+            # Too long filenames are often caused by incorrect non-ascii chars,
+            # so brute-force remove those non-ascii chars
+            name = ubtou(name.encode("ascii", "ignore"))
+            # Now it's plain ASCII, so no need for len(str.encode()) anymore; plain len() is enough
             if len(name) + len(ext) > DEF_FILE_MAX:
-                # Still too long, limit the basename
-                name = name[: DEF_FILE_MAX - len(ext)]
+                # still too long, limit the extension
+                maxextlength = 20  # max length of an extension
+                if len(ext) > maxextlength:
+                    # allow first <maxextlength> chars, including the starting dot
+                    ext = ext[:maxextlength]
+                if len(name) + len(ext) > DEF_FILE_MAX:
+                    # Still too long, limit the basename
+                    name = name[: DEF_FILE_MAX - len(ext)]
+    except UnicodeError:
+        # Just in case of strange encoding problems, like #2714
+        pass
 
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
@@ -407,10 +417,10 @@ def create_real_path(
         return False, path, None
 
 
-def same_file(a: str, b: str) -> int:
+def same_directory(a: str, b: str) -> int:
     """Return 0 if A and B have nothing in common
     return 1 if A and B are actually the same path
-    return 2 if B is a subfolder of A
+    return 2 if B is a sub-folder of A
     """
     if sabnzbd.WIN32 or sabnzbd.MACOS:
         a = clip_path(a.lower())
@@ -418,6 +428,13 @@ def same_file(a: str, b: str) -> int:
 
     a = os.path.normpath(os.path.abspath(a))
     b = os.path.normpath(os.path.abspath(b))
+
+    # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
+    # But only if it doesn't already end in a slash, for example C:\
+    if not a.endswith(os.sep):
+        a = a + os.sep
+    if not b.endswith(os.sep):
+        b = b + os.sep
 
     # If it's the same file, it's also a sub-folder
     is_subfolder = 0
@@ -436,9 +453,23 @@ def same_file(a: str, b: str) -> int:
             return is_subfolder
 
 
-def check_mount(path: str) -> bool:
-    """Return False if volume isn't mounted on Linux or macOS
-    Retry 6 times with an interval of 1 sec.
+def is_network_path(path: str) -> bool:
+    """Check weither a path is a network path.
+    On Windows, use win32 functions to detect users that try to avoid this detection by using a mapped drive letter.
+    We don't check on Linux for mnt or media, since those could also be used for internal drives."""
+    path = clip_path(path)
+    if path.startswith(r"\\"):
+        return True
+    if sabnzbd.WIN32:
+        drive_letter, _ = os.path.splitdrive(path)
+        return win32file.GetDriveType(drive_letter) == win32file.DRIVE_REMOTE
+    return False
+
+
+def mount_is_available(path: str) -> bool:
+    """Return False if volume isn't mounted on Linux or macOS or
+    the network path isn't available on Windows.
+    Retry wait_ext_drive times with an interval of 1 sec.
     """
     if sabnzbd.MACOS:
         m = re.search(r"^(/Volumes/[^/]+)", path, re.I)
@@ -563,7 +594,7 @@ def list_scripts(default: bool = False, none: bool = True) -> List[str]:
                 if (
                     (
                         sabnzbd.WIN32
-                        and os.path.splitext(script)[1].lower() in PATHEXT
+                        and get_ext(script) in PATHEXT
                         and not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN
                     )
                     or script.endswith(".py")
@@ -732,7 +763,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
 @synchronized(DIR_LOCK)
 def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
     """Determine a unique folder or filename"""
-    if not check_mount(path):
+    if not mount_is_available(path):
         return path
 
     new_path = path
@@ -865,11 +896,11 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
         oldpath, _ = os.path.split(old)
         # Check not outside directory
         # In case of "same_file() == 1": same directory, so nothing to do
-        if same_file(oldpath, path) == 0:
+        if same_directory(oldpath, path) == 0:
             # Outside current directory, this is most likely malicious
             logging.error(T("Blocked attempt to create directory %s"), path)
             raise OSError("Refusing to go outside directory")
-        elif same_file(oldpath, path) == 2:
+        elif same_directory(oldpath, path) == 2:
             # Sub-directory, so create if does not yet exist:
             create_all_dirs(path)
 
@@ -1052,43 +1083,15 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
         return 20.0, 10.0
 
 
-# Store all results to speed things up
-__DIRS_CHECKED = []
-__DISKS_SAME = None
-__LAST_DISK_RESULT = {"download_dir": (0.0, 0.0), "complete_dir": (0.0, 0.0)}
-__LAST_DISK_CALL = 0
-
-
+@cache_maintainer(clear_time=10)
+@functools.lru_cache(maxsize=None)
 def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
-    """Wrapper to cache results"""
-    global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
-
-    # Reset everything when folders changed
-    dirs_to_check = [sabnzbd.cfg.download_dir.get_path(), sabnzbd.cfg.complete_dir.get_path()]
-    if __DIRS_CHECKED != dirs_to_check:
-        __DIRS_CHECKED = dirs_to_check
-        __DISKS_SAME = None
-        __LAST_DISK_RESULT = {"download_dir": [], "complete_dir": []}
-        __LAST_DISK_CALL = 0
-
-    # When forced, ignore any cache to avoid problems in UI
-    if force:
-        __LAST_DISK_CALL = 0
-
-    # Check against cache
-    if time.time() > __LAST_DISK_CALL + 10.0:
-        # Same disk? Then copy-paste
-        __LAST_DISK_RESULT["download_dir"] = diskspace_base(sabnzbd.cfg.download_dir.get_path())
-        __LAST_DISK_RESULT["complete_dir"] = (
-            __LAST_DISK_RESULT["download_dir"] if __DISKS_SAME else diskspace_base(sabnzbd.cfg.complete_dir.get_path())
-        )
-        __LAST_DISK_CALL = time.time()
-
-    # Do we know if it's same disk?
-    if __DISKS_SAME is None:
-        __DISKS_SAME = __LAST_DISK_RESULT["download_dir"] == __LAST_DISK_RESULT["complete_dir"]
-
-    return __LAST_DISK_RESULT
+    """Wrapper to keep results cached by cache_maintainer
+    If called with force=True, the wrapper will clear the results"""
+    return {
+        "download_dir": diskspace_base(sabnzbd.cfg.download_dir.get_path()),
+        "complete_dir": diskspace_base(sabnzbd.cfg.complete_dir.get_path()),
+    }
 
 
 def get_new_id(prefix, folder, check_list=None):
@@ -1193,20 +1196,6 @@ def load_admin(data_id: str, remove=False, silent=False) -> Any:
     return load_data(data_id, sabnzbd.cfg.admin_dir.get_path(), remove=remove, silent=silent)
 
 
-def check_incomplete_vs_complete():
-    """Make sure download_dir and complete_dir are not identical
-    or that download_dir is not a subfolder of complete_dir"""
-    complete = sabnzbd.cfg.complete_dir.get_path()
-    if same_file(sabnzbd.cfg.download_dir.get_path(), complete):
-        if real_path("X", sabnzbd.cfg.download_dir()) == long_path(sabnzbd.cfg.download_dir()):
-            # Abs path, so set download_dir as an abs path inside the complete_dir
-            sabnzbd.cfg.download_dir.set(os.path.join(complete, "incomplete"))
-        else:
-            sabnzbd.cfg.download_dir.set("incomplete")
-        return False
-    return True
-
-
 def wait_for_download_folder():
     """Wait for download folder to become available"""
     while not sabnzbd.cfg.download_dir.test_path():
@@ -1216,8 +1205,7 @@ def wait_for_download_folder():
 
 def backup_exists(filename: str) -> bool:
     """Return True if backup exists and no_dupes is set"""
-    path = sabnzbd.cfg.nzb_backup_dir.get_path()
-    return path and os.path.exists(os.path.join(path, filename + ".gz"))
+    return os.path.exists(os.path.join(sabnzbd.cfg.nzb_backup_dir.get_path(), filename + ".gz"))
 
 
 def backup_nzb(nzb_path: str):

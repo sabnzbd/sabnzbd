@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -347,7 +347,6 @@ class TestOtherApi(ApiTestFunctions):
         assert self._get_api_json("pause_pp")["status"] is True
         assert self._get_api_text("resume_pp").startswith("ok")
 
-    @pytest.mark.xfail(reason="See #2685")
     @pytest.mark.parametrize("set_watched_dir", [False, True])
     def test_api_watched_now(self, set_watched_dir):
         value = SAB_CACHE_DIR if set_watched_dir else ""
@@ -611,28 +610,13 @@ class TestQueueApi(ApiTestFunctions):
             (True, False, "hibernate_pc"),
             (True, False, "standby_pc"),
             (True, True, "shutdown_program"),
-            (True, True, "script_Sample-PostProc.py"),
-            (False, False, "script_Sample-PostProc.py"),
             (False, False, "invalid_option"),
-            (False, True, "script_foobar.py"),  # Doesn't exist, see issue #1650
-            (False, True, "script_" + os.path.join("..", "SABnzbd.py")),  # Outside the scriptsdir, #1650 again
-            (False, True, "script_" + os.path.join("..", "..", "SABnzbd.py")),
-            (False, True, "script_" + os.path.join("..", "..", "..", "SABnzbd.py")),
-            (False, True, "script_"),  # Empty after removal of the prefix
-            (True, True, "script_my_script_for_sab.py"),  # Test for #1651
-            (False, True, "my_script_for_sab.py"),
         ],
     )
     def test_api_queue_change_complete_action(self, should_work, set_scriptsdir, value):
         # To safeguard against actually triggering any of the actions, pause the
         # queue and add some random job before setting any end-of-queue actions.
         self._create_random_queue(minimum_size=1)
-
-        # Setup the script_dir as ordered
-        script_dir = ""
-        if set_scriptsdir:
-            script_dir = "scripts"
-        self._setup_script_dir(script_dir, script="my_script_for_sab.py")
 
         # Run the queue complete action api call
         prev_value = self._get_api_json("queue")["queue"]["finishaction"]

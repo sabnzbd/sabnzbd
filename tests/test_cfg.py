@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,8 +18,10 @@
 """
 tests.test_cfg - Testing functions in cfg.py
 """
+import sys
+import pytest
+
 import sabnzbd.cfg as cfg
-import socket
 
 
 class TestValidators:
@@ -93,11 +95,25 @@ class TestValidators:
         assert cfg.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
         assert cfg.validate_single_tag(["alt.group"]) == (None, ["alt.group"])
 
+    def test_all_lowercase(self):
+        assert cfg.all_lowercase("") == (None, "")
+        assert cfg.all_lowercase("Bla") == (None, "bla")
+        assert cfg.all_lowercase(["foo", "bar"]) == (None, ["foo", "bar"])
+        assert cfg.all_lowercase(["foo ", " bar"]) == (None, ["foo", "bar"])
+
     def test_lower_case_ext(self):
         assert cfg.lower_case_ext("") == (None, "")
         assert cfg.lower_case_ext(".Bla") == (None, "bla")
         assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
+
+    def test_validate_safedir(self):
+        assert cfg.validate_safedir("", "", "def") == (None, "def")
+        assert cfg.validate_safedir("", "C:\\", "") == (None, "C:\\")
+
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
+    def test_validate_safedir_win(self):
+        assert "Network path" in cfg.validate_safedir("", "\\\\NAS\\foo", "")[0]
 
     def test_validate_host(self):
         # valid input
@@ -106,8 +122,6 @@ class TestValidators:
         assert cfg.validate_host("1.1.1.1") == (None, "1.1.1.1")
         assert cfg.validate_host("::1") == (None, "::1")
         assert cfg.validate_host("::") == (None, "::")
-        assert cfg.validate_host("www.example.com")[1]
-        assert cfg.validate_host(socket.gethostname())[1]  # resolves to something
 
         # non-valid input. Should return None as second parameter
         assert not cfg.validate_host("0.0.0.0.")[1]  # Trailing dot

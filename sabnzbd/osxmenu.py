@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,9 @@ import os
 import sys
 import time
 import logging
-from objc import YES, NO
+from typing import Optional
+
+from objc import YES, NO, lookUpClass
 from Foundation import (
     NSObject,
     NSDate,
@@ -34,6 +36,8 @@ from Foundation import (
     NSFont,
     NSImage,
     NSAttributedString,
+    NSUserNotification,
+    NSUserNotificationCenter,
 )
 from AppKit import (
     NSStatusBar,
@@ -65,6 +69,8 @@ from sabnzbd.panic import launch_a_browser
 from sabnzbd.api import fast_queue
 import sabnzbd.config as config
 
+DefaultUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
+
 status_icons = {
     "idle": "icons/sabnzbd_osx_idle.tiff",
     "pause": "icons/sabnzbd_osx_pause.tiff",
@@ -82,6 +88,9 @@ class SABnzbdDelegate(NSObject):
         # Wait for SABnzbd to be ready, otherwise tray_icon might not be read from config yet
         while not sabnzbd.WEBUI_READY and not sabnzbd.SABSTOP:
             time.sleep(0.5)
+
+        # Set this thread as default handler for notification actions
+        DefaultUserNotificationCenter.setDelegate_(self)
 
         # Do we want the menu
         if sabnzbd.cfg.tray_icon():
@@ -541,3 +550,45 @@ class SABnzbdDelegate(NSObject):
         self.status_item.setHighlightMode_(NO)
         sabnzbd.shutdown_program()
         return NSTerminateNow
+
+    def send_notification(
+        self,
+        title: str,
+        subtitle: str,
+        msg: str,
+        button_text: Optional[str] = None,
+        button_action: Optional[str] = None,
+    ):
+        """Send a macOS notification, optionally with 1 action button"""
+        notification = NSUserNotification.alloc().init()
+        notification.setTitle_(title)
+        notification.setSubtitle_(subtitle)
+        notification.setInformativeText_(msg)
+        notification.setSoundName_("NSUserNotificationDefaultSoundName")
+
+        if button_text and button_action:
+            notification.setHasActionButton_(True)
+            notification.set_showsButtons_(True)
+            notification.setActionButtonTitle_(button_text)
+            notification.setUserInfo_({"value": button_action})
+        else:
+            notification.setHasActionButton_(False)
+            notification.set_showsButtons_(False)
+
+        notification.setDeliveryDate_(NSDate.dateWithTimeInterval_sinceDate_(0, NSDate.date()))
+        DefaultUserNotificationCenter.scheduleNotification_(notification)
+
+    def userNotificationCenter_didActivateNotification_(self, center, notification):
+        """Handler for the clicks on the notification"""
+
+        if notification.activationType() == 1:
+            # user clicked on the notification (not on a button)
+            launch_a_browser(sabnzbd.BROWSER_URL, force=True)
+
+        elif notification.activationType() == 2:
+            # User clicked on the action button
+            if os.path.exists(folder2open := notification.userInfo()["value"]):
+                os.system('open "%s"' % folder2open)
+
+        # Remove this notification after interaction
+        DefaultUserNotificationCenter._removeDisplayedNotification_(notification)

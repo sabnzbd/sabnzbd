@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -49,7 +49,7 @@ RENAMES_FILE = "__renames__"
 ATTRIB_FILE = "SABnzbd_attrib"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABCTOOLS_VERSION_REQUIRED = "7.1.2"
+SABCTOOLS_VERSION_REQUIRED = "8.1.0"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
@@ -107,8 +107,9 @@ NORMAL_PRIORITY = 0
 LOW_PRIORITY = -1
 DEFAULT_PRIORITY = -100
 PAUSED_PRIORITY = -2
-DUP_PRIORITY = -3
 STOP_PRIORITY = -4
+
+PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
 INTERFACE_PRIORITIES = {
     FORCE_PRIORITY: "Force",
@@ -119,14 +120,15 @@ INTERFACE_PRIORITIES = {
 }
 
 STAGES = {
-    "Source": 0,
-    "Download": 1,
-    "Servers": 2,
-    "Repair": 3,
-    "Filejoin": 4,
-    "Unpack": 5,
-    "Deobfuscate": 6,
-    "Script": 7,
+    "RSS": 0,
+    "Source": 1,
+    "Download": 2,
+    "Servers": 3,
+    "Repair": 4,
+    "Filejoin": 5,
+    "Unpack": 6,
+    "Deobfuscate": 7,
+    "Script": 8,
 }
 
 VALID_ARCHIVES = (".zip", ".rar", ".7z")
@@ -161,7 +163,14 @@ class Status:
     RUNNING = "Running"  # PP: User's post processing script is running
     VERIFYING = "Verifying"  # PP: Job is being verified (by par2)
     DELETED = "Deleted"  # Q:  Job has been deleted (and is almost gone)
-    PROP = "Propagating"  # Q:  Delayed download
+    PROPAGATING = "Propagating"  # Q:  Delayed download
+
+
+class DuplicateStatus:
+    DUPLICATE = "Duplicate"  # Simple duplicate
+    DUPLICATE_ALTERNATIVE = "Duplicate Alternative"  # Alternative duplicate for a queued job
+    SMART_DUPLICATE = "Smart Duplicate"  # Simple Series duplicate
+    SMART_DUPLICATE_ALTERNATIVE = "Smart Duplicate Alternative"  # Alternative duplicate for a queued job
 
 
 class AddNzbFileResult:

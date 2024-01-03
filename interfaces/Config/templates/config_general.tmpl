@@ -267,7 +267,7 @@
 jQuery(document).ready(function(){
     // Show the message about translating when it's non-English
     function hideOrShowTranslate() {
-        if(jQuery('#language').val() == 'en') {
+        if(jQuery('#language').val() === 'en') {
             jQuery('.alert-translate').hide()
         } else {
             jQuery('.alert-translate').show()
@@ -290,7 +290,7 @@ jQuery(document).ready(function(){
     // So when exposed to internet and no password, no external limit or no username/password
     var safeCheck = jQuery('#host, #inet_exposure, #${pid}_wu, #${pid}_wp')
     function checkSafety() {
-        if(jQuery('#host').val() != 'localhost' && jQuery('#host').val() != '127.0.0.1') {
+        if(jQuery('#host').val() !== 'localhost' && jQuery('#host').val() !== '127.0.0.1') {
             // No limitation on local-network
             if(jQuery('#inet_exposure').val() > 3) {
                 // And no username and password?
@@ -375,7 +375,7 @@ jQuery(document).ready(function(){
     })
 
     // Only allow re-generate if default certs
-    if(jQuery('#https_cert').val() != '$def_https_cert_file') {
+    if(jQuery('#https_cert').val() !== '$def_https_cert_file') {
         jQuery('.generate_cert').attr('disabled', 'disabled')
     }
 

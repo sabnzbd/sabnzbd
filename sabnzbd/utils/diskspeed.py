@@ -43,7 +43,7 @@ def diskspeedmeasure(dirname: str) -> float:
         os.close(fp_testfile)
         # Remove the file
         os.remove(filename)
-    except (PermissionError, NotADirectoryError, FileNotFoundError):
+    except OSError:
         # Could not write, so ... report 0.0
         logging.debug("Failed to measure disk speed on %s", dirname)
         return 0.0

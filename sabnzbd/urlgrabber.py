@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,14 +26,15 @@ import logging
 import queue
 import urllib.request
 import urllib.parse
+import urllib.error
 from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
 import base64
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, List, Dict, Any
 
 import sabnzbd
-from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES, DEFAULT_PRIORITY
+from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
 import sabnzbd.cfg as cfg
@@ -41,7 +42,7 @@ import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.nzbparser import AddNzbFileResult
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzbstuff import NzbObject, NzbRejected, NzbRejectToHistory
 
 
 class URLGrabber(Thread):
@@ -111,8 +112,7 @@ class URLGrabber(Thread):
                         continue
 
                 filename = None
-                category = None
-                nzo_info = {}
+                nzo_info = future_nzo.nzo_info
                 wait = 0
                 retry = True
                 fetch_request = None
@@ -120,7 +120,7 @@ class URLGrabber(Thread):
                 logging.info("Grabbing URL %s", url)
                 try:
                     fetch_request = _build_request(url)
-                except Exception as e:
+                except (urllib.error.HTTPError, Exception) as e:
                     # Cannot list exceptions here, because of unpredictability over platforms
                     error0 = str(sys.exc_info()[0]).lower()
                     error1 = str(sys.exc_info()[1]).lower()
@@ -149,11 +149,19 @@ class URLGrabber(Thread):
                             value = fetch_request.headers[hdr]
                         except:
                             continue
+
+                        # Skip empty values
+                        if not value:
+                            continue
+
                         if item in ("category_id", "x-dnzb-category"):
-                            category = value
-                        elif item in ("x-dnzb-moreinfo",):
+                            # Use indexer category in case no specific one was set
+                            if value and future_nzo.cat in (None, "*"):
+                                if indexer_cat := misc.cat_convert(value):
+                                    future_nzo.cat = indexer_cat
+                        elif item == "x-dnzb-moreinfo":
                             nzo_info["more_info"] = value
-                        elif item in ("x-dnzb-name",):
+                        elif item == "x-dnzb-name":
                             filename = value
                             if not filename.endswith(".nzb"):
                                 filename += ".nzb"
@@ -171,10 +179,10 @@ class URLGrabber(Thread):
                             nzo_info["password"] = value
                         elif item == "retry-after":
                             wait = misc.int_conv(value)
-
-                        # Get filename from Content-Disposition header
-                        if not filename and "filename" in value:
-                            filename = filename_from_content_disposition(value)
+                        elif item == "content-disposition":
+                            # Get filename from Content-Disposition header
+                            if not filename and "filename" in value:
+                                filename = filename_from_content_disposition(value)
 
                 if wait:
                     # For sites that have a rate-limiting attribute
@@ -205,14 +213,6 @@ class URLGrabber(Thread):
                 elif "&nzbname=" in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find("&nzbname=") + 9 :]
-
-                pp = future_nzo.pp
-                script = future_nzo.script
-                cat = future_nzo.cat
-                if (cat is None or cat == "*") and category:
-                    cat = misc.cat_convert(category)
-                priority = future_nzo.priority
-                nzbname = future_nzo.custom_name
 
                 # process data
                 if not data:
@@ -245,11 +245,11 @@ class URLGrabber(Thread):
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
                     res, _ = sabnzbd.nzbparser.add_nzbfile(
                         path,
-                        pp=pp,
-                        script=script,
-                        cat=cat,
-                        priority=priority,
-                        nzbname=nzbname,
+                        pp=future_nzo.pp,
+                        script=future_nzo.script,
+                        cat=future_nzo.cat,
+                        priority=future_nzo.priority,
+                        nzbname=future_nzo.custom_name,
                         nzo_info=nzo_info,
                         url=future_nzo.url,
                         keep=False,
@@ -299,6 +299,10 @@ class URLGrabber(Thread):
             # Failed fetch
             msg = T("URL Fetching failed; %s") % msg
 
+        # Add RSS source
+        if rss_feed := nzo.nzo_info.get("RSS"):
+            nzo.set_unpack_info("RSS", rss_feed, unique=True)
+
         # Mark as failed and set the info why
         nzo.set_unpack_info("Source", url)
         nzo.set_unpack_info("Source", msg)
@@ -312,8 +316,7 @@ class URLGrabber(Thread):
         nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
 
         # Add to history and run script if desired
-        sabnzbd.NzbQueue.remove(nzo.nzo_id)
-        sabnzbd.PostProcessor.process(nzo)
+        sabnzbd.NzbQueue.fail_to_history(nzo)
 
 
 def _build_request(url: str) -> HTTPResponse:
@@ -371,11 +374,9 @@ def filename_from_content_disposition(content_disposition: str) -> Optional[str]
         filename_from_content_disposition('attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz')
         should return: 'jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz'
     """
-    filename = Message(f"Content-Disposition: attachment; {content_disposition}").get_filename()
-    if filename:
+    if filename := Message(f"Content-Disposition: attachment; {content_disposition}").get_filename():
         # Basic sanitation
-        filename = os.path.basename(filename).lstrip(".").strip()
-        if filename:
+        if filename := os.path.basename(filename).lstrip(".").strip():
             return filename
 
 
@@ -384,33 +385,51 @@ def add_url(
     pp: Optional[Union[int, str]] = None,
     script: Optional[str] = None,
     cat: Optional[str] = None,
-    priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+    priority: Optional[Union[int, str]] = None,
     nzbname: Optional[str] = None,
     password: Optional[str] = None,
-):
+    nzo_info: Optional[Dict[str, Any]] = None,
+    dup_check: bool = True,
+) -> Tuple[AddNzbFileResult, List[str]]:
     """Add NZB based on a URL, attributes optional"""
     if not url.lower().startswith("http"):
-        return
-    if not pp or pp == "-1":
-        pp = None
-    if script and script.lower() == "default":
-        script = None
-    if cat and cat.lower() == "default":
-        cat = None
-    logging.info("Fetching %s", url)
+        return AddNzbFileResult.NO_FILES_FOUND, []
 
-    # Add feed name if it came from RSS
-    msg = T("Trying to fetch NZB from %s") % url
-    if nzbname:
-        msg = "%s - %s" % (nzbname, msg)
+    # Base conversion of input
+    cat, pp, script = misc.cat_pp_script_sanitizer(cat, pp, script)
 
     # Generate the placeholder
-    future_nzo = sabnzbd.NzbQueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
+    logging.debug("Creating placeholder NZO for %s", url)
+    msg = T("Trying to fetch NZB from %s") % url
+    result: AddNzbFileResult = AddNzbFileResult.OK
+    future_nzo = None
+    nzo_ids = []
+    try:
+        future_nzo = NzbObject(
+            filename=msg,
+            pp=pp,
+            script=script,
+            futuretype=True,
+            cat=cat,
+            url=url,
+            priority=priority,
+            password=password,
+            nzbname=nzbname,
+            status=Status.GRABBING,
+            nzo_info=nzo_info,
+            dup_check=dup_check,
+        )
+    except NzbRejected:
+        # Rejected as duplicate
+        result = AddNzbFileResult.ERROR
+    except NzbRejectToHistory as err:
+        # Duplicate directed to history
+        sabnzbd.NzbQueue.fail_to_history(err.nzo)
+        nzo_ids.append(err.nzo.nzo_id)
 
-    # Set password
-    if not future_nzo.password:
-        future_nzo.password = password
+    # Success
+    if future_nzo:
+        nzo_ids.append(sabnzbd.NzbQueue.add(future_nzo))
+        sabnzbd.URLGrabber.add(url, future_nzo)
 
-    # Get it!
-    sabnzbd.URLGrabber.add(url, future_nzo)
-    return future_nzo.nzo_id
+    return result, nzo_ids

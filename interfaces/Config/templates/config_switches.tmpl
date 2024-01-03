@@ -41,7 +41,7 @@
             </div><!-- /col2 -->
             <div class="col1">
                 <fieldset>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="pre_script">$T('opt-pre_script')</label>
                         <select name="pre_script" id="pre_script">
                         <!--#for $sc in $scripts#-->
@@ -53,6 +53,19 @@
                         <!--#end for#-->
                         </select>
                         <span class="desc">$T('explain-pre_script')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="end_queue_script">$T('opt-end_queue_script')</label>
+                        <select name="end_queue_script" id="end_queue_script">
+                        <!--#for $sc in $scripts#-->
+                            <!--#if $sc.lower() == $end_queue_script.lower()#-->
+                                <option value="$sc" selected="selected">$Tspec($sc)</option>
+                            <!--#else#-->
+                                <option value="$sc">$Tspec($sc)</option>
+                            <!--#end if#-->
+                        <!--#end for#-->
+                        </select>
+                        <span class="desc">$T('explain-end_queue_script')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="propagation_delay">$T('opt-propagation_delay')</label>
@@ -83,23 +96,29 @@
                             <option value="3" <!--#if int($no_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
                             <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
                         </select>
-                        <span class="desc">$T('explain-no_dupes')</span>
+                        <span class="desc">
+                            $T('explain-no_dupes')<br>
+                            <a href="https://sabnzbd.org/wiki/duplicate-detection" target="_blank">https://sabnzbd.org/wiki/duplicate-detection</a>
+                        </span>
                     </div>
                     <div class="field-pair">
-                        <label class="config" for="no_series_dupes">$T('opt-no_series_dupes')</label>
-                        <select name="no_series_dupes" id="no_series_dupes">
-                            <option value="0" <!--#if int($no_series_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
-                            <option value="4" <!--#if int($no_series_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
-                            <option value="2" <!--#if int($no_series_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="3" <!--#if int($no_series_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
-                            <option value="1" <!--#if int($no_series_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
+                        <label class="config" for="no_smart_dupes">$T('opt-no_smart_dupes')</label>
+                        <select name="no_smart_dupes" id="no_smart_dupes">
+                            <option value="0" <!--#if int($no_smart_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="4" <!--#if int($no_smart_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
+                            <option value="2" <!--#if int($no_smart_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
+                            <option value="3" <!--#if int($no_smart_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
+                            <option value="1" <!--#if int($no_smart_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
                         </select>
-                        <span class="desc">$T('explain-no_series_dupes')</span>
+                        <span class="desc">
+                            $T('explain-no_smart_dupes')<br>
+                            <a href="https://sabnzbd.org/wiki/duplicate-detection" target="_blank">https://sabnzbd.org/wiki/duplicate-detection</a>
+                        </span>
                     </div>
                     <div class="field-pair advanced-settings">
-                        <label class="config" for="series_propercheck">$T('opt-series_propercheck')</label>
-                        <input type="checkbox" name="series_propercheck" id="series_propercheck" value="1" <!--#if int($series_propercheck) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-series_propercheck')</span>
+                        <label class="config" for="dupes_propercheck">$T('opt-dupes_propercheck')</label>
+                        <input type="checkbox" name="dupes_propercheck" id="dupes_propercheck" value="1" <!--#if int($dupes_propercheck) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-dupes_propercheck')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>
@@ -174,12 +193,12 @@
                     <div class="field-pair advanced-settings <!--#if not $have_nice then "disabled" else "" #-->">
                         <label class="config" for="nice">$T('opt-nice')</label>
                         <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-nice')</span>
+                        <span class="desc">$T('readwiki')</span>
                     </div>
                     <div class="field-pair advanced-settings <!--#if not $have_ionice then "disabled" else "" #-->">
                         <label class="config" for="ionice">$T('opt-ionice')</label>
                         <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-ionice')</span>
+                        <span class="desc">$T('readwiki')</span>
                     </div>
                     <!--#else#-->
                     <div class="field-pair advanced-settings">
@@ -191,13 +210,13 @@
                             <option value="2" <!--#if int($win_process_prio) == 2 then 'selected="selected"' else ""#-->>$T('win_process_prio-low')</option>
                             <option value="1" <!--#if int($win_process_prio) == 1 then 'selected="selected"' else ""#-->>$T('win_process_prio-idle')</option>
                         </select>
-                        <span class="desc">$T('explain-win_process_prio')</span>
+                        <span class="desc">$T('readwiki')</span>
                     </div>
                     <!--#end if#-->
                     <div class="field-pair advanced-settings">
                         <label class="config" for="par_option">$T('opt-par_option')</label>
                         <input type="text" name="par_option" id="par_option" value="$par_option" />
-                        <span class="desc">$T('explain-par_option')</span>
+                        <span class="desc">$T('readwiki')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
@@ -346,7 +365,7 @@ jQuery(document).ready(function() {
         var retention_select = jQuery('#history_retention_select').val()
         var retention_number = jQuery('#history_retention_number')
         // Keep all or keep none
-        if(retention_select == "0" || retention_select == "-1") {
+        if(retention_select === "0" || retention_select === "-1") {
             retention_number.hide()
             retention_number.val('')
             retention_number.attr('placeholder', '')

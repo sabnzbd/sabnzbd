@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,12 +31,13 @@ import socket
 import time
 import datetime
 import inspect
+import queue
 import ctypes
 import html
 import ipaddress
 import socks
 from threading import Thread
-from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict
+from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
 
 import sabnzbd
 import sabnzbd.getipaddress
@@ -51,7 +52,7 @@ from sabnzbd.constants import (
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file, is_valid_script
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file
 
 if sabnzbd.WIN32:
     try:
@@ -84,7 +85,14 @@ HAVE_AMPM = bool(time.strftime("%p"))
 
 def helpful_warning(*args, **kwargs):
     """Wrapper to ignore helpful warnings if desired"""
-    if sabnzbd.cfg.helpful_warnings():
+    if cfg.helpful_warnings():
+        return logging.warning(*args, **kwargs)
+    return logging.info(*args, **kwargs)
+
+
+def duplicate_warning(*args, **kwargs):
+    """Wrapper to ignore duplicate warnings if desired"""
+    if cfg.warn_dupl_jobs():
         return logging.warning(*args, **kwargs)
     return logging.info(*args, **kwargs)
 
@@ -171,6 +179,37 @@ def cmp(x, y):
     return (x > y) - (x < y)
 
 
+class MultiAddQueue(queue.Queue):
+    def put_multiple(self, multiple_items: Collection):
+        """Take advantage of the dequeue used by Queue that has a very
+        fast extend method to add multiple items at once.
+        See: https://github.com/sabnzbd/sabnzbd/discussions/2704"""
+        with self.not_full:
+            self.queue.extend(multiple_items)
+            self.unfinished_tasks += len(multiple_items)
+            self.not_empty.notify()
+
+
+def cat_pp_script_sanitizer(
+    cat: Optional[str] = None,
+    pp: Optional[Union[int, str]] = None,
+    script: Optional[str] = None,
+) -> Tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
+    """Basic sanitizer from outside input to a bit more predictable values"""
+    # Cannot use "not pp" because pp can also be 0
+    if pp in ("", "-1"):
+        pp = None
+
+    # Check for valid script is performed in NzbObject init
+    if not script or script.lower() == "default":
+        script = None
+
+    if not cat or cat.lower() in ("default", "*"):
+        cat = None
+
+    return cat, pp, script
+
+
 def name_to_cat(fname, cat=None):
     """Retrieve category from file name, but only if "cat" is None."""
     if cat is None and fname.startswith("{{"):
@@ -216,7 +255,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str
     return cat, pp, script, priority
 
 
-def pp_to_opts(pp: int) -> Tuple[bool, bool, bool]:
+def pp_to_opts(pp: Optional[int]) -> Tuple[bool, bool, bool]:
     """Convert numeric processing options to (repair, unpack, delete)"""
     # Convert the pp to an int
     pp = sabnzbd.interface.int_conv(pp)
@@ -779,12 +818,13 @@ def format_time_string(seconds: float) -> str:
     return " ".join(completestr)
 
 
-def int_conv(value: Any) -> int:
-    """Safe conversion to int (can handle None)"""
+def int_conv(value: Any, default: Any = 0) -> int:
+    """Safe conversion to int (can handle None)
+    Returns 0 or requested default value"""
     try:
         return int(value)
     except:
-        return 0
+        return default
 
 
 def create_https_certificates(ssl_cert, ssl_key):
@@ -1015,19 +1055,6 @@ def ip_extract() -> List[str]:
     return ips
 
 
-def get_server_addrinfo(host: str, port: int) -> socket.getaddrinfo:
-    """Return getaddrinfo() based on user settings"""
-    try:
-        if cfg.ipv6_servers():
-            # Standard IPV4 or IPV6
-            return socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
-        else:
-            # Only IPv4
-            return socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
-    except:
-        return []
-
-
 def get_base_url(url: str) -> str:
     """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
     But also api.althub.co.za -> althub.co.za
@@ -1162,15 +1189,14 @@ def run_command(cmd: List[str], **kwargs):
     return txt
 
 
-def run_script(script):
-    """Run a user script (queue complete only)"""
-    script_path = make_script_path(script)
-    if script_path:
+def run_script(script: str):
+    """Run a user script"""
+    if script_path := make_script_path(script):
         try:
-            script_output = run_command([script_path])
-            logging.info("Output of queue-complete script %s: \n%s", script, script_output)
+            script_output = run_command([script_path], env=sabnzbd.newsunpack.create_env())
+            logging.info("Output of script %s: \n%s", script, script_output)
         except:
-            logging.info("Failed queue-complete script %s, Traceback: ", script, exc_info=True)
+            logging.info("Failed script %s, Traceback: ", script, exc_info=True)
 
 
 def set_socks5_proxy():
@@ -1289,24 +1315,17 @@ def system_standby():
 
 
 def change_queue_complete_action(action: str, new: bool = True):
-    """Action or script to be performed once the queue has been completed
-    Scripts are prefixed with 'script_'
-    """
-    _action = None
-    _argument = None
+    """Action or script to be performed once the queue has been completed"""
+    function = None
     if new or cfg.queue_complete_pers():
-        if action.startswith("script_") and is_valid_script(action.replace("script_", "", 1)):
-            # all scripts are labeled script_xxx
-            _action = sabnzbd.misc.run_script
-            _argument = action.replace("script_", "", 1)
-        elif action == "shutdown_pc":
-            _action = system_shutdown
+        if action == "shutdown_pc":
+            function = system_shutdown
         elif action == "hibernate_pc":
-            _action = system_hibernate
+            function = system_hibernate
         elif action == "standby_pc":
-            _action = system_standby
+            function = system_standby
         elif action == "shutdown_program":
-            _action = sabnzbd.shutdown_program
+            function = sabnzbd.shutdown_program
         else:
             action = None
     else:
@@ -1317,8 +1336,7 @@ def change_queue_complete_action(action: str, new: bool = True):
         config.save_config()
 
     sabnzbd.QUEUECOMPLETE = action
-    sabnzbd.QUEUECOMPLETEACTION = _action
-    sabnzbd.QUEUECOMPLETEARG = _argument
+    sabnzbd.QUEUECOMPLETEACTION = function
 
 
 def keep_awake():

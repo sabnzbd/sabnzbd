@@ -1,15 +1,20 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-pyinstaller==5.13.2
-pyinstaller-hooks-contrib==2023.8
-altgraph==0.17.3
-wrapt==1.15.0
-setuptools==68.2.2
+pyinstaller==6.3.0
+packaging==23.2
+pyinstaller-hooks-contrib==2023.11
+altgraph==0.17.4
+wrapt==1.16.0
+setuptools==69.0.3
 certifi
 
-# orjson does not support 32bit Windows, exclude it based on Python-version
-# This way we also test ujson on Python 3.8 in the CI-tests
-orjson==3.9.7; python_version > '3.8'
+# Required on 32bit Windows, exclude it based on Python-version
+importlib_metadata==7.0.1; python_version < '3.10'
+importlib_resources==6.1.1; python_version < '3.10'
+zipp==3.17.0; python_version < '3.10'
+
+# orjson does not support 32bit Windows, also exclude based on Python-version
+orjson==3.9.10; python_version > '3.8'
 
 # For the Windows build
 pefile==2023.2.7; sys_platform == 'win32'
@@ -18,6 +23,6 @@ pywin32-ctypes==0.2.2; sys_platform == 'win32'
 # For the macOS build
 dmgbuild==1.6.1; sys_platform == 'darwin'
 mac-alias==2.2.2; sys_platform == 'darwin'
-macholib==1.16.2; sys_platform == 'darwin'
+macholib==1.16.3; sys_platform == 'darwin'
 ds-store==1.3.1; sys_platform == 'darwin'
 PyNaCl==1.5.0; sys_platform == 'darwin'

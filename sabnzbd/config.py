@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -46,8 +46,7 @@ from sabnzbd.constants import (
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
-CONFIG_LOCK = threading.Lock()
-SAVE_CONFIG_LOCK = threading.Lock()
+CONFIG_LOCK = threading.RLock()
 
 
 CFG_OBJ: configobj.ConfigObj  # Holds INI structure
@@ -57,7 +56,7 @@ CFG_OBJ: configobj.ConfigObj  # Holds INI structure
 CFG_MODIFIED = False  # Signals a change in option dictionary
 # Should be reset after saving to settings file
 
-RE_PARAMFINDER = re.compile(r"""(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)""")
+RE_PARAMFINDER = re.compile(r"""'.*?'|".*?"|[^'",\s][^,]*""")
 
 
 class Option:
@@ -236,6 +235,11 @@ class OptionDir(Option):
         self.__writable: bool = writable
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
+    def create_path(self, path: Optional[str] = None):
+        if not path:
+            path = self.get()
+        return create_real_path(self.keyword, self.__root, path, self.__apply_permissions, self.__writable)
+
     def get(self) -> str:
         """Return value, corrected for platform"""
         p = super().get()
@@ -245,15 +249,12 @@ class OptionDir(Option):
             return p.replace("\\", "/") if "\\" in p else p
 
     def get_path(self) -> str:
-        """Return full absolute path"""
-        value = self.get()
+        """Return full absolute path, create it if necessary"""
         path = ""
-        if value:
+        if value := self.get():
             path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                _, path, _ = create_real_path(
-                    self.keyword, self.__root, value, self.__apply_permissions, self.__writable
-                )
+                _, path, _ = self.create_path(value)
         return path
 
     def get_clipped_path(self) -> str:
@@ -262,8 +263,7 @@ class OptionDir(Option):
 
     def test_path(self) -> bool:
         """Return True if path exists"""
-        value = self.get()
-        if value:
+        if value := self.get():
             return os.path.exists(real_path(self.__root, value))
         else:
             return False
@@ -285,9 +285,7 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, super().default)
             if not error:
                 if value and (self.__create or create):
-                    res, path, error = create_real_path(
-                        self.keyword, self.__root, value, self.__apply_permissions, self.__writable
-                    )
+                    _, path, error = self.create_path(value)
             if not error:
                 super().set(value)
         return error
@@ -432,7 +430,7 @@ class ConfigServer:
         name = "servers," + self.__name
 
         self.displayname = OptionStr(name, "displayname", add=False)
-        self.host = OptionStr(name, "host", add=False)
+        self.host = OptionStr(name, "host", validation=sabnzbd.cfg.all_lowercase, add=False)
         self.port = OptionNumber(name, "port", 119, 0, 2**16 - 1, add=False)
         self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
         self.username = OptionStr(name, "username", add=False)
@@ -557,6 +555,13 @@ class ConfigCat:
                 getattr(self, kw).set(value)
             except KeyError:
                 continue
+
+        # TODO: Remove after next release
+        if "alt.bin" in self.newzbin.get_string():
+            sabnzbd.misc.helpful_warning(
+                "You have set a newsgroup for category %s. Could you let us know why? https://github.com/sabnzbd/sabnzbd/discussions/2758",
+                self.__name,
+            )
 
     def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
         """Return a dictionary with all attributes"""
@@ -783,6 +788,7 @@ def delete_from_database(section, keyword):
     CFG_MODIFIED = True
 
 
+@synchronized(CONFIG_LOCK)
 def get_dconfig(section, keyword, nested=False):
     """Return a config values dictionary,
     Single item or slices based on 'section', 'keyword'
@@ -829,6 +835,7 @@ def get_dconfig(section, keyword, nested=False):
     return True, data
 
 
+@synchronized(CONFIG_LOCK)
 def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
     """Return a config object, based on 'section', 'keyword'"""
     try:
@@ -838,6 +845,7 @@ def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
         return None
 
 
+@synchronized(CONFIG_LOCK)
 def set_config(kwargs):
     """Set a config item, using values in dictionary"""
     try:
@@ -848,6 +856,7 @@ def set_config(kwargs):
     return True
 
 
+@synchronized(CONFIG_LOCK)
 def delete(section: str, keyword: str):
     """Delete specific config item"""
     try:
@@ -862,7 +871,7 @@ def delete(section: str, keyword: str):
 # This does input and output of configuration to an INI file.
 # It translates this data structure to the config database.
 ##############################################################################
-@synchronized(SAVE_CONFIG_LOCK)
+@synchronized(CONFIG_LOCK)
 def read_config(path):
     """Read the complete INI file and check its version number
     if OK, pass values to config-database
@@ -947,7 +956,7 @@ def _read_config(path, try_backup=False):
     return True, ""
 
 
-@synchronized(SAVE_CONFIG_LOCK)
+@synchronized(CONFIG_LOCK)
 def save_config(force=False):
     """Update Setup file with current option values"""
     global CFG_OBJ, CFG_DATABASE, CFG_MODIFIED
@@ -1102,6 +1111,7 @@ def restore_config_backup(config_backup_data: bytes):
         logging.info("Traceback: ", exc_info=True)
 
 
+@synchronized(CONFIG_LOCK)
 def get_servers() -> Dict[str, ConfigServer]:
     global CFG_DATABASE
     try:
@@ -1110,6 +1120,7 @@ def get_servers() -> Dict[str, ConfigServer]:
         return {}
 
 
+@synchronized(CONFIG_LOCK)
 def get_sorters() -> Dict[str, ConfigSorter]:
     global CFG_DATABASE
     try:
@@ -1128,6 +1139,7 @@ def get_ordered_sorters() -> List[Dict]:
     return sorters
 
 
+@synchronized(CONFIG_LOCK)
 def get_categories() -> Dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
@@ -1139,12 +1151,12 @@ def get_categories() -> Dict[str, ConfigCat]:
 
     # Add Default categories
     if "*" not in cats:
-        ConfigCat("*", {"pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
+        ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
         # Add some category suggestions
-        ConfigCat("movies", {})
-        ConfigCat("tv", {})
-        ConfigCat("audio", {})
-        ConfigCat("software", {})
+        ConfigCat("movies", {"order": 1})
+        ConfigCat("tv", {"order": 2})
+        ConfigCat("audio", {"order": 3})
+        ConfigCat("software", {"order": 4})
 
         # Save config for future use
         save_config(True)
@@ -1179,6 +1191,7 @@ def get_ordered_categories() -> List[Dict]:
     return categories
 
 
+@synchronized(CONFIG_LOCK)
 def get_rss() -> Dict[str, ConfigRSS]:
     global CFG_DATABASE
     try:

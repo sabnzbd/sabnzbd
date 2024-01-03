@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ sabnzbd.interface - webinterface
 
 import os
 import time
-from datetime import datetime
+import datetime
 import cherrypy
 import logging
 import urllib.parse
@@ -47,20 +47,19 @@ from sabnzbd.misc import (
     get_base_url,
     is_ipv4_addr,
     is_ipv6_addr,
-    get_server_addrinfo,
     is_lan_addr,
     is_local_addr,
     is_loopback_addr,
-    ip_in_subnet,
     helpful_warning,
     recursive_html_escape,
 )
+from sabnzbd.happyeyeballs import happyeyeballs
 from sabnzbd.filesystem import (
     real_path,
     globber,
     globber_full,
     clip_path,
-    same_file,
+    same_directory,
     setname_from_path,
 )
 from sabnzbd.encoding import xml_name, utob
@@ -81,6 +80,7 @@ from sabnzbd.constants import (
     GUESSIT_SORT_TYPES,
     VALID_NZB_FILES,
     VALID_ARCHIVES,
+    DEF_TIMEOUT,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -180,8 +180,7 @@ def secured_expose(
 
         # Some pages need correct API key
         if check_api_key:
-            msg = check_apikey(kwargs)
-            if msg:
+            if msg := check_apikey(kwargs):
                 cherrypy.response.status = 403
                 if cfg.api_warnings():
                     return msg
@@ -470,8 +469,7 @@ class MainPage:
     def scriptlog(self, **kwargs):
         """Needed for all skins, URL is fixed due to postproc"""
         # No session key check, due to fixed URLs
-        name = kwargs.get("name")
-        if name:
+        if name := kwargs.get("name"):
             history_db = sabnzbd.get_db_connection()
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
@@ -739,21 +737,9 @@ class ConfigFolders:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveDirectories(self, **kwargs):
         for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-            value = kwargs.get(kw)
-            if value is not None or kw in LIST_BOOL_DIRPAGE:
-                if kw in ("complete_dir", "dirscan_dir", "backup_dir"):
-                    msg = config.get_config("misc", kw).set(value, create=True)
-                else:
-                    msg = config.get_config("misc", kw).set(value)
-                if msg:
-                    # return sabnzbd.api.report('json', error=msg)
-                    return badParameterResponse(msg, kwargs.get("ajax"))
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
+                return badParameterResponse(msg, kwargs.get("ajax"))
 
-        if not sabnzbd.filesystem.check_incomplete_vs_complete():
-            return badParameterResponse(
-                T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
-                kwargs.get("ajax"),
-            )
         config.save_config()
         if kwargs.get("ajax"):
             return sabnzbd.api.report()
@@ -781,6 +767,7 @@ SWITCH_LIST = (
     "nice",
     "ionice",
     "pre_script",
+    "end_queue_script",
     "pause_on_pwrar",
     "sfv_check",
     "deobfuscate_final_filenames",
@@ -795,8 +782,8 @@ SWITCH_LIST = (
     "fail_hopeless_jobs",
     "enable_all_par",
     "enable_recursive",
-    "no_series_dupes",
-    "series_propercheck",
+    "no_smart_dupes",
+    "dupes_propercheck",
     "script_can_fail",
     "unwanted_extensions",
     "action_on_unwanted_extensions",
@@ -833,8 +820,7 @@ class ConfigSwitches:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSwitches(self, **kwargs):
         for kw in SWITCH_LIST:
-            msg = config.get_config("misc", kw).set(kwargs.get(kw))
-            if msg:
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg, kwargs.get("ajax"))
 
         config.save_config()
@@ -934,10 +920,7 @@ class ConfigSpecial:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSpecial(self, **kwargs):
         for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
-            item = config.get_config("misc", kw)
-            value = kwargs.get(kw)
-            msg = item.set(value)
-            if msg:
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg)
 
         config.save_config()
@@ -961,6 +944,8 @@ GENERAL_LIST = (
     "socks5_proxy_url",
     "auto_browser",
     "check_new_rel",
+    "bandwidth_max",
+    "bandwidth_perc",
 )
 
 
@@ -995,8 +980,6 @@ class ConfigGeneral:
         for kw in GENERAL_LIST:
             conf[kw] = config.get_config("misc", kw)()
 
-        conf["bandwidth_max"] = cfg.bandwidth_max()
-        conf["bandwidth_perc"] = cfg.bandwidth_perc()
         conf["nzb_key"] = cfg.nzb_key()
         conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 
@@ -1009,10 +992,7 @@ class ConfigGeneral:
     def saveGeneral(self, **kwargs):
         # Handle general options
         for kw in GENERAL_LIST:
-            item = config.get_config("misc", kw)
-            value = kwargs.get(kw)
-            msg = item.set(value)
-            if msg:
+            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
                 return badParameterResponse(msg, ajax=kwargs.get("ajax"))
 
         # Handle special options
@@ -1020,16 +1000,6 @@ class ConfigGeneral:
 
         web_dir = kwargs.get("web_dir")
         change_web_dir(web_dir)
-
-        bandwidth_max = kwargs.get("bandwidth_max")
-        if bandwidth_max is not None:
-            cfg.bandwidth_max.set(bandwidth_max)
-        bandwidth_perc = kwargs.get("bandwidth_perc")
-        if bandwidth_perc is not None:
-            cfg.bandwidth_perc.set(bandwidth_perc)
-        bandwidth_perc = cfg.bandwidth_perc()
-        if bandwidth_perc and not bandwidth_max:
-            helpful_warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
 
         config.save_config()
 
@@ -1182,7 +1152,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        if not get_server_addrinfo(host, int_conv(port)):
+        if not happyeyeballs(host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_TIMEOUT)):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
     # Default server name is just the host name
@@ -1516,16 +1486,24 @@ class ConfigRss:
         """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
-        nzbname = kwargs.get("nzbname")
-        att = sabnzbd.RSSReader.lookup_url(feed, url)
-        if att:
+        if att := sabnzbd.RSSReader.lookup_url(feed, url):
+            nzbname = kwargs.get("nzbname")
             pp = att.get("pp")
             cat = att.get("cat")
             script = att.get("script")
-            prio = att.get("prio")
+            priority = att.get("prio")
 
             if url:
-                sabnzbd.urlgrabber.add_url(url, pp, script, cat, prio, nzbname)
+                logging.info("Adding %s (%s) to queue", url, nzbname)
+                sabnzbd.urlgrabber.add_url(
+                    url,
+                    pp=pp,
+                    script=script,
+                    cat=cat,
+                    priority=priority,
+                    nzbname=nzbname,
+                    nzo_info={"RSS": feed},
+                )
             # Need to pass the title instead
             sabnzbd.RSSReader.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
@@ -1767,12 +1745,12 @@ class ConfigCats:
         conf["defdir"] = cfg.complete_dir.get_clipped_path()
 
         categories = config.get_ordered_categories()
-        conf["have_cats"] = len(categories) > 1
+        new_cat_order = max(cat["order"] for cat in categories) + 1
 
-        # Add empty line
+        # Add empty line to add new categories
         empty = {
             "name": "",
-            "order": "0",
+            "order": str(new_cat_order),
             "pp": "-1",
             "script": "",
             "dir": "",
@@ -1803,7 +1781,7 @@ class ConfigCats:
 
         if newname:
             # Check if this cat-dir is not sub-folder of incomplete
-            if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):
+            if same_directory(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):
                 return T("Category folder cannot be a subfolder of the Temporary Download Folder.")
 
             # Delete current one and replace with new one
@@ -1966,7 +1944,7 @@ def GetRssLog(feed):
 
         # And we add extra fields for sorting
         if job.get("age", 0):
-            job["age_ms"] = (job["age"] - datetime.utcfromtimestamp(0)).total_seconds()
+            job["age_ms"] = (job["age"] - datetime.datetime(1970, 1, 1)).total_seconds()
             job["age"] = calc_age(job["age"], True)
         else:
             job["age_ms"] = ""
@@ -2149,7 +2127,7 @@ class ConfigNotify:
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
+        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
         conf["categories"] = list_cats(False)
         conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
         conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION
@@ -2169,7 +2147,8 @@ class ConfigNotify:
     def saveNotify(self, **kwargs):
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
-                config.get_config(section, option).set(kwargs.get(option))
+                if msg := config.get_config(section, option).set(kwargs.get(option)):
+                    return badParameterResponse(msg, kwargs.get("ajax"))
         config.save_config()
         if kwargs.get("ajax"):
             return sabnzbd.api.report()

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -83,7 +83,6 @@ from sabnzbd.constants import (
 )
 import sabnzbd.newsunpack
 from sabnzbd.misc import (
-    check_latest_version,
     exit_sab,
     split_host,
     create_https_certificates,
@@ -244,7 +243,7 @@ def print_version():
             """
 %s-%s
 
-Copyright (C) 2007-2023 The SABnzbd-Team (sabnzbd.org)
+(C) Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -752,26 +751,9 @@ def commandline_handler():
     serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
     upload_nzbs = []
 
-    # macOS binary: get rid of the weird -psn_0_123456 parameter
-    for arg in sys.argv:
-        if arg.startswith("-psn_"):
-            sys.argv.remove(arg)
-            break
-
-    # Ugly hack to remove the extra "SABnzbd*" parameter the Windows binary
-    # gets when it's restarted
-    if len(sys.argv) > 1 and "sabnzbd" in sys.argv[1].lower() and not sys.argv[1].startswith("-"):
-        slice_start = 2
-    else:
-        slice_start = 1
-
-    # Prepend options from env-variable to options
-    info = os.environ.get("SABnzbd", "").split()
-    info.extend(sys.argv[slice_start:])
-
     try:
         opts, args = getopt.getopt(
-            info,
+            sys.argv[1:],
             "phdvncwl:s:f:t:b:2:",
             [
                 "pause",
@@ -854,7 +836,7 @@ def main():
 
     autobrowser = None
     autorestarted = False
-    sabnzbd.MY_FULLNAME = sys.argv[0]
+    sabnzbd.MY_FULLNAME = __file__
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     fork = False
     pause = False
@@ -922,6 +904,7 @@ def main():
                 exit_sab(1)
         elif opt == "--console":
             console_logging = True
+            sabnzbd.RESTART_ARGS.append(opt)
         elif opt in ("-v", "--version"):
             print_version()
             exit_sab(0)
@@ -966,7 +949,7 @@ def main():
     org_dir = os.getcwd()
 
     # Need console logging if requested, for SABnzbd.py and SABnzbd-console.exe
-    console_logging = console_logging or sabnzbd.MY_NAME.lower().find("-console") > 0 or not hasattr(sys, "frozen")
+    console_logging = console_logging or sys.executable.endswith("console.exe") or not hasattr(sys, "frozen")
     console_logging = console_logging and not sabnzbd.DAEMON
 
     LOGLEVELS = (logging.FATAL, logging.WARNING, logging.INFO, logging.DEBUG)
@@ -1223,23 +1206,13 @@ def main():
             logging.warning(T("Could not load additional certificates from certifi package"))
             logging.info("Traceback: ", exc_info=True)
 
-    # Extra startup info
+    # List the number of certificates available (can take up to 1.5 seconds)
     if sabnzbd.cfg.log_level() > 1:
-        # List the number of certificates available (can take up to 1.5 seconds)
         logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
-
-        # List networking
-        localipv4()
-        publicipv4()
-        ipv6()
-        dnslookup()
-
-        # Measure basic system performance measured by pystone and - if possible - CPU model
-        getpystone()
-        getcpu()
 
     logging.info("Using INI file %s", inifile)
 
+    # Store auto-browser setting from command line
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
 
@@ -1365,7 +1338,6 @@ def main():
             "server.socket_host": cherryhost,
             "server.socket_port": cherryport,
             "server.shutdown_timeout": 0,
-            "log.screen": False,
             "engine.autoreload.on": False,
             "tools.encode.on": True,
             "tools.gzip.on": True,
@@ -1377,13 +1349,11 @@ def main():
     )
 
     # Do we want CherryPy Logging? Cannot be done via the config
+    cherrypy.log.screen = False
+    cherrypy.log.access_log.propagate = False
     if cherrypylogging:
         sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-        cherrypy.log.screen = True
-        cherrypy.log.access_log.propagate = True
         cherrypy.log.access_file = str(sabnzbd.WEBLOGFILE)
-    else:
-        cherrypy.log.access_log.propagate = False
 
     # Force mimetypes (OS might overwrite them)
     forced_mime_types = {"css": "text/css", "js": "application/javascript"}
@@ -1494,8 +1464,6 @@ def main():
     if not autorestarted:
         launch_a_browser(browser_url)
         notifier.send_notification("SABnzbd", T("SABnzbd %s started") % sabnzbd.__version__, "startup")
-        # Now's the time to check for a new version
-        check_latest_version()
     autorestarted = False
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
@@ -1596,9 +1564,8 @@ def main():
             if hasattr(sys, "frozen"):
                 if sabnzbd.MACOS:
                     # On macOS restart of app instead of embedded python
-                    my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
                     my_args = " ".join(sys.argv[1:])
-                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), my_name, my_args)
+                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), sys.executable, my_args)
                     logging.info("Launching: %s", cmd)
                     os.system(cmd)
                 elif sabnzbd.WIN_SERVICE:
@@ -1782,10 +1749,10 @@ if __name__ == "__main__":
 
         # Initialize the menu
         shared_app = NSApplication.sharedApplication()
-        sabnzbd_menu = SABnzbdDelegate.alloc().init()
-        shared_app.setDelegate_(sabnzbd_menu)
+        sabnzbd.MACOSTRAY = SABnzbdDelegate.alloc().init()
+        shared_app.setDelegate_(sabnzbd.MACOSTRAY)
         # Build the menu
-        sabnzbd_menu.awakeFromNib()
+        sabnzbd.MACOSTRAY.awakeFromNib()
         # Run the main eventloop
         AppHelper.runEventLoop()
     else:

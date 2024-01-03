@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0RC2\n"
+"Project-Id-Version: SABnzbd-4.2.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Finnish (https://app.transifex.com/sabnzbd/teams/111101/fi/)\n"
@@ -168,8 +168,8 @@ msgid "Test Notification"
 msgstr "Testaa ilmoitusta"
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
-msgstr "&nbsp;Selvitetään osoitetta"
+msgid "Resolving address"
+msgstr "Selvitetään osoitetta"
 
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
@@ -180,11 +180,6 @@ msgstr "Ei mitään"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Oletus"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Regex käännös epäonnistui hakutermille: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -257,10 +252,6 @@ msgid "Incorrect parameter"
 msgstr "Virheellinen parametri"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "TUNT polku \"%s\" ei ole sallittu"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s ei ole kelvollinen sähköpostiosoite"
 
@@ -268,7 +259,7 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Virheellinen palvelimen osoite."
 
@@ -288,8 +279,18 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
+msgid "Network path \"%s\" is not allowed here"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Queue not empty, cannot change folder."
+msgstr "Jono ei ole tyhjä, kansiota ei voida vaihtaa."
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -343,7 +344,7 @@ msgstr "SQL komento epäonnistui, katso loki"
 msgid "Failed to close database, see log"
 msgstr "Tietokannan sulkeminen epäonnistui, katso loki"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Virheellinen tila lokihistoriassa kohteelle %s"
@@ -410,7 +411,7 @@ msgid "Paused"
 msgstr "Keskeytetty"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Sinun täytyy määrittää enimmäiskaista ennen kaistarajoituksen käyttöönottoa."
@@ -667,12 +668,6 @@ msgid "Unsuccessful login attempt from %s"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
-
-#: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
 
@@ -802,7 +797,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Ajetaan skripti"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Purkaessa havaittiin liikaa pakkauskerroksia [%s]"
@@ -1068,6 +1062,16 @@ msgstr "Jono valmistunut"
 msgid "Other Messages"
 msgstr "Muut viestit"
 
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr ""
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "Avaa valmistuneet-kansio"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ei saatavilla"
@@ -1148,6 +1152,18 @@ msgstr "Virhe ladattaessa %s, korruptoitunut tiedosto havaittu"
 msgid "NZB added to queue"
 msgstr "NZB lisätty jonoon"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1161,26 +1177,6 @@ msgstr "Tyhjä NZB tiedosto %s"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1199,6 +1195,10 @@ msgstr "Virhe tuotaessa %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "KAKSOISKAPPALE"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1244,6 +1244,10 @@ msgstr "%s artikkelia puuttui"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikkelissa oli ei-vastaavia kaksoiskappaleita"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1468,6 +1472,11 @@ msgstr "Virhe %s: Syötä kelvollinen käyttäjänimi ja salasana."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Vanhan version jono havaittiin, käytä Tila->Korjaa muuntaaksesi jonon"
 
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Regex käännös epäonnistui hakutermille: %s"
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid ""
@@ -1652,10 +1661,6 @@ msgstr "Tyhjä RSS kohde löytyi (%s)"
 msgid "Show interface"
 msgstr "Näytä käyttöliittymä"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr "Avaa valmistuneet-kansio"
-
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for"
@@ -1743,6 +1748,11 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Skripti"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2016,7 +2026,6 @@ msgstr "Python versio"
 msgid "Home page"
 msgstr "Kotisivu"
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr "tai"
@@ -2083,8 +2092,8 @@ msgstr "Foorumi"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "IRC"
+msgid "Live Chat"
+msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2115,11 +2124,6 @@ msgstr "Muuttujat"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Ajastus"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2234,11 +2238,6 @@ msgstr "Nimi"
 #: sabnzbd/skintext.py
 msgid "Retry"
 msgstr "Yritä uudelleen"
-
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Toiminnot"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -2565,7 +2564,6 @@ msgstr "Käynnissäoloaika"
 msgid "Backup"
 msgstr "Varmuuskopioi"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Lue Wikin ohjeet tähän!"
@@ -3128,23 +3126,19 @@ msgstr ""
 " lataamista."
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Tunnista päällekkäiset lataukset"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Tunnista identtiset jaksot sarjassa"
+msgid "Detect identical downloads based on name or NZB contents."
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3153,8 +3147,8 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
 
 #. Four way switch for duplicates
@@ -3242,6 +3236,14 @@ msgstr "Esijonon käyttäjän skripti"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Käytetään ennen NZB lisäämistä jonoon."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4788,10 +4790,6 @@ msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 "Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Palvelin lopetettiin kesken kirjautumisen"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

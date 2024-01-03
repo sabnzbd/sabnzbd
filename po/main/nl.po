@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0RC2\n"
+"Project-Id-Version: SABnzbd-4.2.0RC3\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -172,8 +172,8 @@ msgid "Test Notification"
 msgstr "Test melding"
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
-msgstr "&nbsp;Adres opzoeken"
+msgid "Resolving address"
+msgstr "Adres opzoeken"
 
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
@@ -184,11 +184,6 @@ msgstr "Geen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standaard"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -269,10 +264,6 @@ msgid "Incorrect parameter"
 msgstr "Incorrecte parameter"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC-pad '%s' hier niet toegestaan."
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s is geen geldig e-mailadres"
 
@@ -280,7 +271,7 @@ msgstr "%s is geen geldig e-mailadres"
 msgid "Server address required"
 msgstr "Serveradres verplicht"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Ongeldige servernaam"
 
@@ -302,8 +293,20 @@ msgstr ""
 "tot de aangemaakte bestanden en mappen."
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
+msgid "Network path \"%s\" is not allowed here"
+msgstr "Netwerk-pad \"%s\" hier niet toegestaan."
+
+#: sabnzbd/cfg.py
+msgid "Queue not empty, cannot change folder."
+msgstr "Wachtrij is niet leeg, andere map kiezen niet mogelijk."
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+"De Map voor verwerkte downloads mag niet een map in de Tijdelijke download "
+"map zijn."
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -311,6 +314,9 @@ msgid ""
 "Do not use a folder in the application folder as your Scripts Folder, it "
 "might be emptied during updates."
 msgstr ""
+"Als de Map voor scripts zich in de SABnzbd installatie-map bevindt kan deze "
+"automatisch verwijderd worden tijdens updates. We adviseren een andere "
+"locatie te gebruiken voor je scripts."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -360,7 +366,7 @@ msgstr "SQL-commando mislukt, zie logbestand"
 msgid "Failed to close database, see log"
 msgstr "Het lukt niet om de database te sluiten, zie log"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Ongeldig loggen van fase in geschiedenis voor %s"
@@ -432,7 +438,7 @@ msgid "Paused"
 msgstr "Gepauzeerd"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Je moet eerst een maximumbandbreedte instellen voordat je een limiet kunt "
@@ -464,7 +470,7 @@ msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
-msgstr ""
+msgstr "Onherstelbare fout in de Downloader"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -638,11 +644,15 @@ msgstr ""
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
 msgstr ""
+"Bestanden met lange bestandsnamen kunnen niet worden opgeslagen in %s. Dit "
+"kan voor problemen zorgen tijdens het downloaden."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
 msgstr ""
+"Bestanden met speciale karakters in de bestandsnaam kunnen niet worden "
+"opgeslagen in %s. Dit kan voor problemen zorgen tijdens het downloaden."
 
 #. Warning message
 #: sabnzbd/filesystem.py
@@ -694,14 +704,6 @@ msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Mislukte login poging van %s"
-
-#: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
-"De Map voor verwerkte downloads mag niet een map in de Tijdelijke download "
-"map zijn."
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
@@ -838,7 +840,6 @@ msgstr "Film sorteren"
 msgid "Running script"
 msgstr "Script uitvoeren"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Teveel niveaus om uit te pakken [%s]"
@@ -1110,6 +1111,16 @@ msgstr "Wachtrij voltooid"
 msgid "Other Messages"
 msgstr "Andere berichten"
 
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr "Open map"
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "Open map met voltooide downloads"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Niet beschikbaar"
@@ -1190,6 +1201,18 @@ msgstr "Fout bij inladen van %s, corrupt bestand gevonden"
 msgid "NZB added to queue"
 msgstr "Download aan wachtrij toegevoegd"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Dubbele download \"%s\" overgeslagen"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Download '%s' geweigerd omdat het een dubbele is"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "Dubbele download"
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1203,26 +1226,6 @@ msgstr "NZB-bestand %s is leeg"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr "Wachtrij filter script heeft de download afgekeurd"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Dubbele download \"%s\" overgeslagen"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Download '%s' geweigerd omdat het een dubbele is"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Dubbele download"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Dubbele download \"%s\" gepauzeerd"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1241,6 +1244,10 @@ msgstr "Fout bij importeren van %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUBBEL"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr "ALTERNATIEF"
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1286,6 +1293,10 @@ msgstr "%s artikelen ontbreken"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikelen hadden afwijkende duplicaten"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Dubbele download \"%s\" gepauzeerd"
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1512,6 +1523,11 @@ msgstr "Fout %s: Je moet een geldige gebruikersnaam en wachtwoord invullen."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Oude wachtrij gevonden, gebruik Status->Reparatie om te converteren"
 
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid ""
@@ -1699,10 +1715,6 @@ msgstr "Lege RSS-feed gevonden (%s)"
 msgid "Show interface"
 msgstr "Toon webinterface"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr "Open map met voltooide downloads"
-
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for"
@@ -1790,6 +1802,11 @@ msgstr "Bestandsnaam verbeteren"
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Script"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2063,7 +2080,6 @@ msgstr "Python versie"
 msgid "Home page"
 msgstr "Startpagina"
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr "of"
@@ -2130,8 +2146,8 @@ msgstr "Forum"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "IRC"
+msgid "Live Chat"
+msgstr "Live Chat"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2162,11 +2178,6 @@ msgstr "Opties"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Taakplanner"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2281,11 +2292,6 @@ msgstr "Naam"
 #: sabnzbd/skintext.py
 msgid "Retry"
 msgstr "Opnieuw"
-
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Acties"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -2606,6 +2612,8 @@ msgid ""
 "Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
+"Versnel reparaties door par2cmdline-turbo te installeren. Beschikbaar voor "
+"veel besturingssystemen."
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -2620,7 +2628,6 @@ msgstr "Tijd in de lucht"
 msgid "Backup"
 msgstr "Reserve"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Lees de Wiki pagina over dit onderwerp"
@@ -2988,6 +2995,8 @@ msgstr "(kan aangepast worden door de categorieën)."
 msgid ""
 "Use Sorting to automatically organize and rename your completed downloads."
 msgstr ""
+"Gebruik Sorteren om automatisch je voltooide downloads te organiseren en "
+"hernoemen."
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
@@ -3072,7 +3081,7 @@ msgstr "Systeemmappen"
 
 #: sabnzbd/skintext.py
 msgid "Hidden Folders"
-msgstr ""
+msgstr "Verborgen mappen"
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"
@@ -3119,7 +3128,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Purge Logs"
-msgstr ""
+msgstr "Logs wissen"
 
 #: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
@@ -3198,28 +3207,22 @@ msgstr ""
 "download vrij te geven"
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Detecteer dubbele downloads"
+msgid "Identical download detection"
+msgstr "Identieke downloaddetectie"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
-"Detecteer identieke downloads (op basis van downloads in je Geschiedenis of "
-"bestanden in je .nzb backup map)."
+"Detecteer identieke downloads op basis van de naam of de inhoud van de NZB."
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Detecteer dubbele afleveringen in series"
+msgid "Smart duplicate detection"
+msgstr "Slimme detectie van dubbele downloads"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Detect duplicates based on analysis of the filename."
 msgstr ""
-"Detecteer identieke afleveringen in series (gebaseerd op "
-"\"naam/seizoen/aflevering\" van downloads in je Geschiedenis)."
+"Detecteer dubbele downloads op basis van de analyse van de bestandsnaam."
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3227,11 +3230,11 @@ msgstr "Sta verbeterde downloads toe"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
-"Sla dubbele download detectie over als er in de naam van de download PROPER,"
-" REAL of REPACK bevat"
+"Sla slimme detectie van dubbele downloads over als de naam van de download "
+"PROPER, REAL of REPACK bevat."
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
@@ -3320,6 +3323,14 @@ msgstr "Wachtrij-filter script"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Word uitgevoerd vóór een download aan de wachtrij word toegevoegd"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr "Script voor na het afronden van de wachtrij"
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr "Script wordt uitgevoerd nadat de wachtrij is gedownload."
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4291,15 +4302,15 @@ msgstr "Sorteertekst"
 
 #: sabnzbd/skintext.py
 msgid "Multi-part Label"
-msgstr ""
+msgstr "Meervoudig label"
 
 #: sabnzbd/skintext.py
 msgid "Show folder"
-msgstr ""
+msgstr "Map per serie"
 
 #: sabnzbd/skintext.py
 msgid "Season folder"
-msgstr ""
+msgstr "Map per seizoen"
 
 #: sabnzbd/skintext.py
 msgid "In folders"
@@ -4315,7 +4326,7 @@ msgstr "Downloadnaam als Bestandsnaam"
 
 #: sabnzbd/skintext.py
 msgid "Series"
-msgstr ""
+msgstr "Series"
 
 #. Note for title expression in Sorting that does case adjustment
 #: sabnzbd/skintext.py
@@ -4352,7 +4363,7 @@ msgstr "Minimale bestandsgrootte"
 
 #: sabnzbd/skintext.py
 msgid "Affected Job Types"
-msgstr ""
+msgstr "Type downloads"
 
 #: sabnzbd/skintext.py
 msgid "All"
@@ -4360,15 +4371,15 @@ msgstr "alles"
 
 #: sabnzbd/skintext.py
 msgid "Series with air dates"
-msgstr ""
+msgstr "Series met datums"
 
 #: sabnzbd/skintext.py
 msgid "Movies"
-msgstr ""
+msgstr "Films"
 
 #: sabnzbd/skintext.py
 msgid "Other / Unknown"
-msgstr ""
+msgstr "Anders / Onbekend"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4380,34 +4391,43 @@ msgid ""
 "applied.</p><p>More options are available when Advanced Settings is "
 "checked.<br/>Detailed information can be found on the Wiki.</p>"
 msgstr ""
+"<p>Gebruik Sorteren om automatisch je voltooide downloads te organiseren. Bijvoorbeeld het automatisch verplaatsen van alle afleveringen van een serie in een seizoensspecifieke map. Of plaats films in een map met de naam van de film.</p>\n"
+"\n"
+"<p>Sorteringen worden in de getoonde volgorde geprobeerd en kunnen worden herschikt door ze te slepen.<br/> De eerste actieve Sortering die overeenkomt met zowel de betreffende categorie als het type taak wordt toegepast.</p>\n"
+"\n"
+"<p>Meer opties zijn beschikbaar wanneer Geavanceerde instellingen zijn aangevinkt.<br/> Gedetailleerde informatie is te vinden op de Wiki.</p>"
 
 #: sabnzbd/skintext.py
 msgid "Add Sorter"
-msgstr ""
+msgstr "Sortering toevoegen"
 
 #: sabnzbd/skintext.py
 msgid "Remove Sorter"
-msgstr ""
+msgstr "Sortering verwijderen"
 
 #: sabnzbd/skintext.py
 msgid "Test Data"
-msgstr ""
+msgstr "Testgegevens"
 
 #: sabnzbd/skintext.py
 msgid "Quick start"
-msgstr ""
+msgstr "Snel beginnen"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Move and rename all episodes in the \"tv\" category to a show-specific "
 "folder"
 msgstr ""
+"Verplaats en hernoem alle afleveringen in de \"tv\" categorie naar een "
+"specifieke map voor de serie."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Move and rename all movies in the \"movies\" category to a movie-specific "
 "folder"
 msgstr ""
+"Verplaats en hernoem alle films in de categorie \"films\" naar een "
+"specifieke map voor de film."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4650,7 +4670,7 @@ msgstr "Sneltoetsen"
 
 #: sabnzbd/skintext.py
 msgid "Shift+Arrow key: Browse Queue and History pages"
-msgstr ""
+msgstr "Shift+Pijltoets: Blader door de wachtrij- en geschiedenispagina's"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
@@ -4829,7 +4849,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/sorting.py
 msgid "Failed to rename %s to %s"
-msgstr ""
+msgstr "Hernoemen van %s naar %s mislukt"
 
 #. Error message
 #: sabnzbd/sorting.py
@@ -4896,10 +4916,6 @@ msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 "Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "De server stopte tijdens de login"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

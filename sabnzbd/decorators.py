@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +18,8 @@
 ##############################################################################
 # Decorators
 ##############################################################################
+import time
+import functools
 from typing import Union, Callable
 from threading import Lock, RLock, Condition
 
@@ -28,6 +30,9 @@ from threading import Lock, RLock, Condition
 # The NzbQueueLocker both locks and notifies the Downloader
 NZBQUEUE_LOCK = RLock()
 DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
+
+# All operations that modify downloader state need to be locked
+DOWNLOADER_LOCK = RLock()
 
 
 def synchronized(lock: Union[Lock, RLock]):
@@ -57,3 +62,24 @@ def NzbQueueLocker(func: Callable):
             DOWNLOADER_CV.release()
 
     return call_func
+
+
+def cache_maintainer(clear_time: int):
+    """
+    A function decorator that clears functools.cache or functools.lru_cache clear_time seconds
+    :param clear_time: In seconds, how often to clear cache (only checks when called)
+    """
+
+    def inner(func):
+        def wrapper(*args, **kwargs):
+            if hasattr(func, "next_clear"):
+                if time.time() > func.next_clear or kwargs.get("force"):
+                    func.cache_clear()
+                    func.next_clear = time.time() + clear_time
+            else:
+                func.next_clear = time.time() + clear_time
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return inner

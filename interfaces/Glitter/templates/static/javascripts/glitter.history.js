@@ -43,7 +43,7 @@ function HistoryListModel(parent) {
         var newItems = [];
         $.each(data.slots, function(index, slot) {
             var existingItem = ko.utils.arrayFirst(self.historyItems(), function(i) {
-                return i.historyStatus.nzo_id() == slot.nzo_id;
+                return i.historyStatus.nzo_id() === slot.nzo_id;
             });
             // Set index in the results
             slot.index = index
@@ -59,7 +59,7 @@ function HistoryListModel(parent) {
         });
 
         // Remove all items
-        if(itemIds.length == self.paginationLimit()) {
+        if(itemIds.length === self.paginationLimit()) {
             // Replace it, so only 1 Knockout DOM-update!
             self.historyItems(newItems);
             newItems = [];
@@ -68,7 +68,7 @@ function HistoryListModel(parent) {
             $.each(itemIds, function() {
                 var id = this.toString();
                 self.historyItems.remove(ko.utils.arrayFirst(self.historyItems(), function(i) {
-                    return i.historyStatus.nzo_id() == id;
+                    return i.historyStatus.nzo_id() === id;
                 }));
             });
         }
@@ -82,7 +82,7 @@ function HistoryListModel(parent) {
             if(self.parent.queue.multiEditItems().length > 0) {
                 $.each(newItems, function() {
                     var currentItem = this;
-                    self.parent.queue.multiEditItems.remove(function(inList) { return inList.id == currentItem.id; })
+                    self.parent.queue.multiEditItems.remove(function(inList) { return inList.id === currentItem.id; })
                 })
             }
         }
@@ -148,7 +148,7 @@ function HistoryListModel(parent) {
     // Searching in history (rate-limited in declaration)
     self.searchTerm.subscribe(function() {
         // Go back to page 1
-        if(self.pagination.currentPage() != 1) {
+        if(self.pagination.currentPage() !== 1) {
             // This forces a refresh
             self.pagination.moveToPage(1);
         } else {
@@ -160,13 +160,13 @@ function HistoryListModel(parent) {
     // Clear searchterm
     self.clearSearchTerm = function(data, event) {
         // Was it escape key or click?
-        if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
+        if(event.type === 'mousedown' || (event.keyCode && event.keyCode === 27)) {
             // Set the loader so it doesn't flicker and then switch
             self.isLoading(true)
             self.searchTerm('');
         }
         // Was it click and the field is empty? Then we focus on the field
-        if(event.type == 'mousedown' && self.searchTerm() == '') {
+        if(event.type === 'mousedown' && self.searchTerm() === '') {
             $(event.target).parents('.search-box').find('input[type="text"]').focus()
             return;
         }
@@ -209,22 +209,22 @@ function HistoryListModel(parent) {
         var del_files, value;
 
         // Purge failed
-        if(whatToRemove == 'history-purge-failed') {
+        if(whatToRemove === 'history-purge-failed') {
             del_files = 0;
             value = 'failed';
         }
         // Also remove files
-        if(whatToRemove == 'history-purgeremove-failed') {
+        if(whatToRemove === 'history-purgeremove-failed') {
             del_files = 1;
             value = 'failed';
         }
         // Remove completed
-        if(whatToRemove == 'history-purge-completed') {
+        if(whatToRemove === 'history-purge-completed') {
             del_files = 0;
             value = 'completed';
         }
         // Remove the ones on this page
-        if(whatToRemove == 'history-purge-page') {
+        if(whatToRemove === 'history-purge-page') {
             // List all the ID's
             var strIDs = '';
             $.each(self.historyItems(), function(index) {
@@ -264,8 +264,119 @@ function HistoryListModel(parent) {
     self.showMultiEdit = function() {
         self.isMultiEditing(!self.isMultiEditing())
         self.multiEditItems.removeAll();
-        $('.history-table input[name="multiedit"], #history-options #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
+        $('.history-table input[name="multiedit"], #multiedit-checkall-history').prop({'checked': false, 'indeterminate': false})
     }
+
+    // Add to the list
+    self.addMultiEdit = function(item, event) {
+        // Is it a shift-click?
+        if(event.shiftKey) {
+            checkShiftRange('.history-table input[name="multiedit"]');
+        }
+
+        // Add or remove from the list?
+        if(event.currentTarget.checked) {
+            // Add item
+            self.multiEditItems.push(item);
+        } else {
+            // Go over them all to know which one to remove
+            self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+        }
+
+        // Update check-all buton state
+        setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]')
+        return true;
+    }
+
+    // Check all
+    self.checkAllJobs = function(item, event) {
+        // Get which ones we care about
+        var allChecks = $('.history-table input[name="multiedit"]').filter(':not(:disabled):visible');
+
+        // We need to re-evaltuate the state of this check-all
+        // Otherwise the 'inderterminate' will be overwritten by the click event!
+        setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]')
+
+        // Now we can check what happend
+        // For when some are checked, or all are checked (but not partly)
+        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
+            var allActive = allChecks.filter(":checked")
+            // First remove the from the list
+            if(allActive.length == self.multiEditItems().length) {
+                // Just remove all
+                self.multiEditItems.removeAll();
+                // Remove the check
+                allActive.prop('checked', false)
+            } else {
+                // Remove them seperate
+                allActive.each(function() {
+                    // Go over them all to know which one to remove
+                    var item = ko.dataFor(this)
+                    self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+                    // Remove the check of this one
+                    this.checked = false;
+                })
+            }
+        } else {
+            // None are checked, so check and add them all
+            allChecks.prop('checked', true)
+            allChecks.each(function() { self.multiEditItems.push(ko.dataFor(this)) })
+            event.target.checked = true
+        }
+        // Set state of all the check-all's
+        setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]')
+        return true;
+    }
+
+    // Delete all selected
+    self.doMultiDelete = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        // Need confirm
+        if(!self.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDown)) {
+            // List all the ID's
+            var strIDs = '';
+            $.each(self.multiEditItems(), function(index) {
+                strIDs = strIDs + this.id + ',';
+            })
+
+            // Show notification
+            showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
+
+            // Remove
+            callAPI({
+                mode: 'history',
+                name: 'delete',
+                del_files: 1,
+                value: strIDs
+            }).then(function(response) {
+                if(response.status) {
+                    // Make sure the queue doesnt flicker and then fade-out
+                    // Make sure no flickering (if there are more items left) and then remove
+                    self.isLoading(self.totalItems() > 1)
+                    self.parent.refresh();
+                    // Empty it
+                    self.multiEditItems.removeAll();
+                    // Hide notification
+                    hideNotification()
+                }
+            })
+        }
+    }
+
+    // On change of page we need to check all those that were in the list!
+    self.historyItems.subscribe(function() {
+        // We need to wait until the unit is actually finished rendering
+        setTimeout(function() {
+            $.each(self.multiEditItems(), function(index) {
+                $('#multiedit_' + this.id).prop('checked', true);
+            })
+
+            // Update check-all buton state
+            setCheckAllState('#multiedit-checkall-history', '.history-table input[name="multiedit"]')
+        }, 100)
+    }, null, "arrayChange")
 }
 
 /**
@@ -316,14 +427,14 @@ function HistoryModel(parent, data) {
 
     // Waiting?
     self.processingWaiting = ko.pureComputed(function() {
-        return(self.status() == 'Queued')
+        return(self.status() === 'Queued')
     })
 
     // Processing or done?
     self.processingDownload = ko.pureComputed(function() {
         var status = self.status();
         // When we can cancel
-        if (status === 'Extracting' || status === 'Verifying' || status == 'Repairing' || status === 'Running') {
+        if (status === 'Extracting' || status === 'Verifying' || status === 'Repairing' || status === 'Running') {
             return 2
         }
         // These cannot be cancelled
@@ -357,7 +468,7 @@ function HistoryModel(parent, data) {
                     try {
                         // Extract the Download section
                         var downloadLog = ko.utils.arrayFirst(self.historyStatus.stage_log(), function(item) {
-                            return item.name() == 'Download'
+                            return item.name() === 'Download'
                         });
                         // Extract the speed
                         return downloadLog.actions()[0].match(/(\S*\s\S+)(?=<br\/>)/)[0]
@@ -366,7 +477,7 @@ function HistoryModel(parent, data) {
                 return;
             case 'category':
                 // Exception for *
-                if(self.historyStatus.category() == "*")
+                if(self.historyStatus.category() === "*")
                     return glitterTranslate.defaultText
                 return self.historyStatus.category();
             case 'size':
@@ -437,7 +548,7 @@ function HistoryModel(parent, data) {
         // Confirm?
         if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.deleteMsg + ":\n" + item.historyStatus.name() + "\n\n" + glitterTranslate.removeDow1)) {
             // Are we still processing and it can be stopped?
-            if(item.processingDownload() == 2) {
+            if(item.processingDownload() === 2) {
                 callAPI({
                     mode: 'cancel_pp',
                     value: self.id
@@ -455,6 +566,7 @@ function HistoryModel(parent, data) {
                         // Make sure no flickering (if there are more items left) and then remove
                         self.parent.isLoading(self.parent.totalItems() > 1)
                         self.parent.historyItems.remove(self);
+                        self.parent.multiEditItems.remove(function(inList) { return inList.id === self.id; })
                         self.parent.parent.refresh();
                     }
                 });

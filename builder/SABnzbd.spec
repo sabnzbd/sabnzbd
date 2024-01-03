@@ -96,7 +96,7 @@ pyi_analysis = Analysis(
     ["SABnzbd.py"],
     datas=extra_pyinstaller_files,
     hiddenimports=extra_hiddenimports,
-    excludes=["ujson", "FixTk", "tcl", "tk", "_tkinter", "tkinter", "Tkinter"],
+    excludes=["ujson", "FixTk", "tcl", "tk", "_tkinter", "tkinter", "Tkinter", "pydoc", "pydoc_data.topics"],
 )
 
 pyz = PYZ(pyi_analysis.pure, pyi_analysis.zipped_data)
@@ -113,10 +113,10 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name="SABnzbd",
-    upx=True,
     console=False,
     append_pkg=False,
     icon="icons/sabnzbd.ico",
+    contents_directory=".",
     version=version_info,
     target_arch="universal2",
     entitlements_file="builder/osx/entitlements.plist",
@@ -134,9 +134,9 @@ if sys.platform == "win32":
         [],
         exclude_binaries=True,
         name="SABnzbd-console",
-        upx=True,
         append_pkg=False,
         icon="icons/sabnzbd.ico",
+        contents_directory=".",
         version=version_info,
     )
 
@@ -145,7 +145,6 @@ if sys.platform == "win32":
         pyi_analysis.binaries,
         pyi_analysis.zipfiles,
         pyi_analysis.datas,
-        upx=True,
         name="SABnzbd-console",
     )
 

@@ -1,12 +1,11 @@
 <!--#set global $pane="Sorting"#-->
 <!--#set global $help_uri = $confighelpuri + "sorting"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
-
-<div class="padTable section explain-sorting">
-    <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-    $T('explain-sorting')
-</div>
 <div class="colmask">
+    <div class="padTable section">
+        <a class="main-helplink" href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+        $T('explain-sorting')
+    </div>
     <div class="padding alt section">
         <button type="button" class="btn btn-default addSorter"><span class="glyphicon glyphicon-plus"></span> $T('add-sorter')</button>
         <label for="advanced-settings-button" class="form-control advanced-button ">
@@ -345,7 +344,7 @@
     </div>
 
     <!--#if len($slotinfo) == 1 and ("tv" in $categories or "movies" in $categories)#-->
-    <div class="section align-center alt sorting-quick-setup">
+    <div class="section align-center sorting-quick-setup">
         <h3>$T('sort-quick-add'):</h3>
         <!--#if "tv" in $categories#-->
         <form action="save_sorter" method="post" autocomplete="off">
@@ -493,7 +492,7 @@
             update: function(event, ui) {
                 jQuery('.Sorting form.sorting-row').each(function(index, elm) {
                     // Update order of all elements
-                    if(index != elm.order.value) {
+                    if(index !== elm.order.value) {
                         elm.order.value = index
                         // Submit changed order
                         var data = {}

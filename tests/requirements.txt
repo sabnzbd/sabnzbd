@@ -1,7 +1,7 @@
 # Testing requirements
+pytest==7.4.4
 selenium
 requests
-pytest
 pyfakefs
 werkzeug<2.1.0 # Breaks httpbin in newer versions
 pytest-httpbin

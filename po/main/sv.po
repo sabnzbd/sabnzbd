@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.1.0RC2\n"
+"Project-Id-Version: SABnzbd-4.2.0RC2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Swedish (https://app.transifex.com/sabnzbd/teams/111101/sv/)\n"
@@ -162,8 +162,8 @@ msgid "Test Notification"
 msgstr "Testa notifikation"
 
 #: sabnzbd/api.py
-msgid "&nbsp;Resolving address"
-msgstr "&nbsp;Lösa adress"
+msgid "Resolving address"
+msgstr "Lösa adress"
 
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
@@ -174,11 +174,6 @@ msgstr "Ingen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standard"
-
-#. Error message
-#: sabnzbd/api.py
-msgid "Failed to compile regex for search term: %s"
-msgstr "Det gick inte att kompilera regex för sök-sträng: %s"
 
 #. Error message
 #: sabnzbd/assembler.py
@@ -251,10 +246,6 @@ msgid "Incorrect parameter"
 msgstr "Fel parameter"
 
 #: sabnzbd/cfg.py
-msgid "UNC path \"%s\" not allowed here"
-msgstr "UNC sökväg \"%s\" är inte tillåten här"
-
-#: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
 msgstr "%s är inte en godkänd e-mail adress"
 
@@ -262,7 +253,7 @@ msgstr "%s är inte en godkänd e-mail adress"
 msgid "Server address required"
 msgstr "Kräver serveradress"
 
-#: sabnzbd/cfg.py, sabnzbd/utils/servertests.py
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
 msgid "Invalid server address."
 msgstr "Ogiltig serveradress"
 
@@ -282,8 +273,18 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/cfg.py
-msgid "Error: Queue not empty, cannot change folder."
-msgstr "Fel: Kön är inte tom, kan inte byta mapp."
+msgid "Network path \"%s\" is not allowed here"
+msgstr ""
+
+#: sabnzbd/cfg.py
+msgid "Queue not empty, cannot change folder."
+msgstr "Kön är inte tom, kan inte byta mapp."
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -338,7 +339,7 @@ msgstr "SQL Kommando misslyckades, se logg"
 msgid "Failed to close database, see log"
 msgstr "Det gick inte att stänga databasen, se logg"
 
-#. Error message
+#. Warning message
 #: sabnzbd/database.py
 msgid "Invalid stage logging in history for %s"
 msgstr "Felaktig loggning i historiken av %s"
@@ -405,7 +406,7 @@ msgid "Paused"
 msgstr "Pausad"
 
 #. Warning message
-#: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "Du måste ange maximal bandbredd innan du kan ange bandbreddsgräns"
 
@@ -661,12 +662,6 @@ msgid "Unsuccessful login attempt from %s"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid ""
-"The Completed Download Folder cannot be the same or a subfolder of the "
-"Temporary Download Folder"
-msgstr ""
-
-#: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
 
@@ -796,7 +791,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Kör skript"
 
-#. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
 msgstr "Nästling för djup [%s]"
@@ -1065,6 +1059,16 @@ msgstr "Kön färdig"
 msgid "Other Messages"
 msgstr "Andra meddelanden"
 
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr ""
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "Öppna färdig mapp"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ej tillgänglig"
@@ -1145,6 +1149,18 @@ msgstr "Laddningsfel %s, felaktig fil detekterad"
 msgid "NZB added to queue"
 msgstr "NZB tillagd i kön"
 
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorerar dubblett för NZB \"%s\""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
@@ -1158,26 +1174,6 @@ msgstr "NZB filen %s är tom"
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorerar dubblett för NZB \"%s\""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Pausar dubblett för NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1196,6 +1192,10 @@ msgstr "Det gick inte att importera %s"
 #: sabnzbd/nzbstuff.py
 msgid "DUPLICATE"
 msgstr "DUBLETT"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "ENCRYPTED"
@@ -1241,6 +1241,10 @@ msgstr "%s artiklar saknades"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artiklar hade icke-matchande dubletter"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pausar dubblett för NZB \"%s\""
 
 #. Footer: indicator of warnings
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1467,6 +1471,11 @@ msgstr "Error %s: Du måste ange ett giltigt användarnamn och lösenord."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Gammal kö hittad, använd Status -> Reparera för att konvertera kön"
 
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Det gick inte att kompilera regex för sök-sträng: %s"
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid ""
@@ -1651,10 +1660,6 @@ msgstr "Tom RSS post hittades (%s)"
 msgid "Show interface"
 msgstr "Visa gränssnitt"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Open complete folder"
-msgstr "Öppna färdig mapp"
-
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for"
@@ -1742,6 +1747,11 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Script"
 msgstr "Skript"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2015,7 +2025,6 @@ msgstr "Python-version"
 msgid "Home page"
 msgstr "Webbplats"
 
-#. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
 msgstr "eller"
@@ -2082,8 +2091,8 @@ msgstr "Forum"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "IRC"
-msgstr "IRC"
+msgid "Live Chat"
+msgstr ""
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2114,11 +2123,6 @@ msgstr "Switchar"
 #: sabnzbd/skintext.py
 msgid "Scheduling"
 msgstr "Schemaläggare"
-
-#. Main menu item
-#: sabnzbd/skintext.py
-msgid "RSS"
-msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2233,11 +2237,6 @@ msgstr "Namn"
 #: sabnzbd/skintext.py
 msgid "Retry"
 msgstr "Försök igen"
-
-#. Queue end-of-queue selection box
-#: sabnzbd/skintext.py
-msgid "Actions"
-msgstr "Åtgärder"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -2561,7 +2560,6 @@ msgstr "Upptid"
 msgid "Backup"
 msgstr "Säkerhetskopiera"
 
-#. Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Read the Wiki Help on this!"
 msgstr "Läs Wiki Help för detta!"
@@ -3110,23 +3108,19 @@ msgid "In case of \"Pause\", you'll need to set a password and resume the job."
 msgstr "Om \"Pausad\", så behöver du ange ett lösenord för att återuppta jobbet."
 
 #: sabnzbd/skintext.py
-msgid "Detect Duplicate Downloads"
-msgstr "Upptäck dubbletter av nedladdningar"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Detect identical NZB files (based on items in your History or files in .nzb "
-"Backup Folder)"
+msgid "Identical download detection"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Detect duplicate episodes in series"
-msgstr "Hitta dublettavsnitt i serier"
+msgid "Detect identical downloads based on name or NZB contents."
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid ""
-"Detect identical episodes in series (based on \"name/season/episode\" of "
-"items in your History)"
+msgid "Smart duplicate detection"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3135,8 +3129,8 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
 msgstr ""
 
 #. Four way switch for duplicates
@@ -3224,6 +3218,14 @@ msgstr "Kö-specifika användarskript"
 #: sabnzbd/skintext.py
 msgid "Used before an NZB enters the queue."
 msgstr "Används innan en NZB tas in i kön."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4757,10 +4759,6 @@ msgstr "Timeout"
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Servern avslutades under inloggning"
 
 #: sabnzbd/utils/servertests.py
 msgid "Server requires username and password."

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import sabnzbd
 from sabnzbd.config import (
@@ -51,7 +51,11 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
 )
-from sabnzbd.filesystem import long_path
+from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
+
+# Validators currently only are made for string/list-of-strings
+# and return those on success or an error message.
+ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None]]
 
 
 ##############################################################################
@@ -64,7 +68,7 @@ class ErrorCatchingArgumentParser(argparse.ArgumentParser):
             raise ValueError
 
 
-def clean_nice_ionice_parameters(value):
+def clean_nice_ionice_parameters(value: str) -> ValidateResult:
     """Verify that the passed parameters are not exploits"""
     if value:
         parser = ErrorCatchingArgumentParser()
@@ -87,28 +91,18 @@ def clean_nice_ionice_parameters(value):
     return None, value
 
 
-def all_lowercase(value):
-    """Lowercase everything!"""
+def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
+    """Lowercase and strip everything!"""
     if isinstance(value, list):
-        # If list, for each item
-        return None, [item.lower() for item in value]
-    return None, value.lower()
+        return None, [item.lower().strip() for item in value]
+    return None, value.lower().strip()
 
 
-def lower_case_ext(value):
+def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
     """Generate lower case extension(s), without dot"""
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
-
-
-def validate_no_unc(root, value, default):
-    """Check if path isn't a UNC path"""
-    # Only need to check the 'value' part
-    if value and not value.startswith(r"\\"):
-        return validate_notempty(root, value, default)
-    else:
-        return T('UNC path "%s" not allowed here') % value, None
 
 
 def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
@@ -121,7 +115,7 @@ def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
     return None, value
 
 
-def validate_strip_right_slash(value):
+def validate_strip_right_slash(value: str) -> Tuple[None, str]:
     """Strips the right slash"""
     if value:
         return None, value.rstrip("/")
@@ -131,8 +125,7 @@ def validate_strip_right_slash(value):
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_email(value):
-    global email_endjob, email_full, email_rss
+def validate_email(value: Union[List, str]) -> ValidateResult:
     if email_endjob() or email_full() or email_rss():
         if isinstance(value, list):
             values = value
@@ -144,18 +137,16 @@ def validate_email(value):
     return None, value
 
 
-def validate_server(value):
+def validate_server(value: str) -> ValidateResult:
     """Check if server non-empty"""
-    global email_endjob, email_full, email_rss
     if value == "" and (email_endjob() or email_full() or email_rss()):
         return T("Server address required"), None
     else:
         return None, value
 
 
-def validate_host(value):
+def validate_host(value: str) -> ValidateResult:
     """Check if host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
-
     # easy: value is a plain IPv4 or IPv6 address:
     try:
         ipaddress.ip_address(value)
@@ -195,16 +186,16 @@ def validate_host(value):
     return T("Invalid server address."), None
 
 
-def validate_script(value):
+def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""
-    if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
+    if not sabnzbd.__INITIALIZED__ or (value and is_valid_script(value)):
         return None, value
     elif (value and value == "None") or not value:
         return None, "None"
     return T("%s is not a valid script") % value, None
 
 
-def validate_permissions(value: str):
+def validate_permissions(value: str) -> ValidateResult:
     """Check the permissions for correct input"""
     # Octal verification
     if not value:
@@ -225,18 +216,46 @@ def validate_permissions(value: str):
     return None, value
 
 
-def validate_safedir(root, value, default):
-    """Allow only when queues are empty and no UNC"""
+def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
+    """Allow only when queues are empty and not a network-path"""
     if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
-        return validate_no_unc(root, value, default)
+        if is_network_path(real_path(root, value)):
+            return T('Network path "%s" is not allowed here') % value, None
+        else:
+            return validate_default_if_empty(root, value, default)
     else:
-        return T("Error: Queue not empty, cannot change folder."), None
+        return T("Queue not empty, cannot change folder."), None
 
 
-def validate_scriptdir_not_appdir(root, value, default):
+def validate_download_vs_complete_dir(root: str, value: str, default: str):
+    """Make sure download_dir and complete_dir are not identical
+    or that download_dir is not a subfolder of complete_dir"""
+    # Check what new value we are trying to set
+    if default == DEF_COMPLETE_DIR:
+        check_download_dir = download_dir.get_path()
+        check_complete_dir = real_path(root, value)
+    elif default == DEF_DOWNLOAD_DIR:
+        check_download_dir = real_path(root, value)
+        check_complete_dir = complete_dir.get_path()
+    else:
+        raise ValueError("Validator can only be used for download_dir/complete_dir")
+
+    if same_directory(check_download_dir, check_complete_dir):
+        return (
+            T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
+            None,
+        )
+    elif default == DEF_COMPLETE_DIR:
+        # The complete_dir allows UNC
+        return validate_default_if_empty(root, value, default)
+    else:
+        return validate_safedir(root, value, default)
+
+
+def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
     """Warn users to not use the Program Files folder for their scripts"""
     # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
-    if value and long_path(os.path.join(root, value)).startswith(long_path(sabnzbd.DIR_PROG) + os.pathsep):
+    if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
         # Warn, but do not block
         sabnzbd.misc.helpful_warning(
             T(
@@ -246,7 +265,7 @@ def validate_scriptdir_not_appdir(root, value, default):
     return None, value
 
 
-def validate_notempty(root, value, default):
+def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None, str]:
     """If value is empty, return default"""
     if value:
         return None, value
@@ -257,7 +276,7 @@ def validate_notempty(root, value, default):
 ##############################################################################
 # Special settings
 ##############################################################################
-pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
+
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
 bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, minval=0, maxval=100)
@@ -311,11 +330,21 @@ socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 ##############################################################################
 permissions = OptionStr("misc", "permissions", validation=validate_permissions)
 download_dir = OptionDir(
-    "misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, apply_permissions=True, validation=validate_safedir
+    "misc",
+    "download_dir",
+    DEF_DOWNLOAD_DIR,
+    create=False,  # Flag is modified and directory is created during initialize!
+    apply_permissions=True,
+    validation=validate_download_vs_complete_dir,
 )
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
-    "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_permissions=True, validation=validate_notempty
+    "misc",
+    "complete_dir",
+    DEF_COMPLETE_DIR,
+    create=False,  # Flag is modified and directory is created during initialize!
+    apply_permissions=True,
+    validation=validate_download_vs_complete_dir,
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
@@ -326,7 +355,7 @@ backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
 dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
 password_file = OptionDir("misc", "password_file", "", create=False)
-log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_notempty)
+log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_default_if_empty)
 
 
 ##############################################################################
@@ -346,15 +375,18 @@ ionice = OptionStr("misc", "ionice", validation=clean_nice_ionice_parameters)
 fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
+pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
+end_queue_script = OptionStr("misc", "end_queue_script", "None", validation=validate_script)
 no_dupes = OptionNumber("misc", "no_dupes", 0)
-no_series_dupes = OptionNumber("misc", "no_series_dupes", 0)
-series_propercheck = OptionBool("misc", "series_propercheck", True)
+no_series_dupes = OptionNumber("misc", "no_series_dupes", 0)  # Kept for converting to no_smart_dupes
+no_smart_dupes = OptionNumber("misc", "no_smart_dupes", 0)
+dupes_propercheck = OptionBool("misc", "dupes_propercheck", True)
 pause_on_pwrar = OptionNumber("misc", "pause_on_pwrar", 1)
 ignore_samples = OptionBool("misc", "ignore_samples", False)
 deobfuscate_final_filenames = OptionBool("misc", "deobfuscate_final_filenames", True)
 auto_sort = OptionStr("misc", "auto_sort")
 direct_unpack = OptionBool("misc", "direct_unpack", False)
-propagation_delay = OptionNumber("misc", "propagation_delay", 0)
+propagation_delay = OptionNumber("misc", "propagation_delay", 0, minval=0)
 folder_rename = OptionBool("misc", "folder_rename", True)
 replace_spaces = OptionBool("misc", "replace_spaces", False)
 replace_underscores = OptionBool("misc", "replace_underscores", False)
@@ -419,7 +451,7 @@ wait_for_dfolder = OptionBool("misc", "wait_for_dfolder", False)
 rss_filenames = OptionBool("misc", "rss_filenames", False)
 api_logging = OptionBool("misc", "api_logging", True)
 html_login = OptionBool("misc", "html_login", True)
-warn_dupl_jobs = OptionBool("misc", "warn_dupl_jobs", True)
+warn_dupl_jobs = OptionBool("misc", "warn_dupl_jobs", False)
 helpful_warnings = OptionBool("misc", "helpful_warnings", True)
 keep_awake = OptionBool("misc", "keep_awake", True)
 tray_icon = OptionBool("misc", "tray_icon", True)
@@ -476,7 +508,7 @@ email_cats = OptionList("misc", "email_cats", ["*"])
 # [ncenter]
 ncenter_enable = OptionBool("ncenter", "ncenter_enable", sabnzbd.MACOS)
 ncenter_cats = OptionList("ncenter", "ncenter_cats", ["*"])
-ncenter_prio_startup = OptionBool("ncenter", "ncenter_prio_startup", True)
+ncenter_prio_startup = OptionBool("ncenter", "ncenter_prio_startup", False)
 ncenter_prio_download = OptionBool("ncenter", "ncenter_prio_download", False)
 ncenter_prio_pause_resume = OptionBool("ncenter", "ncenter_prio_pause_resume", False)
 ncenter_prio_pp = OptionBool("ncenter", "ncenter_prio_pp", False)
@@ -486,7 +518,7 @@ ncenter_prio_disk_full = OptionBool("ncenter", "ncenter_prio_disk_full", True)
 ncenter_prio_new_login = OptionBool("ncenter", "ncenter_prio_new_login", False)
 ncenter_prio_warning = OptionBool("ncenter", "ncenter_prio_warning", False)
 ncenter_prio_error = OptionBool("ncenter", "ncenter_prio_error", False)
-ncenter_prio_queue_done = OptionBool("ncenter", "ncenter_prio_queue_done", True)
+ncenter_prio_queue_done = OptionBool("ncenter", "ncenter_prio_queue_done", False)
 ncenter_prio_other = OptionBool("ncenter", "ncenter_prio_other", True)
 
 # [acenter]
@@ -502,13 +534,13 @@ acenter_prio_disk_full = OptionBool("acenter", "acenter_prio_disk_full", True)
 acenter_prio_new_login = OptionBool("acenter", "acenter_prio_new_login", False)
 acenter_prio_warning = OptionBool("acenter", "acenter_prio_warning", False)
 acenter_prio_error = OptionBool("acenter", "acenter_prio_error", False)
-acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", True)
+acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", False)
 acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
 ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.MACOS)
 ntfosd_cats = OptionList("ntfosd", "ntfosd_cats", ["*"])
-ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", True)
+ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", False)
 ntfosd_prio_download = OptionBool("ntfosd", "ntfosd_prio_download", False)
 ntfosd_prio_pause_resume = OptionBool("ntfosd", "ntfosd_prio_pause_resume", False)
 ntfosd_prio_pp = OptionBool("ntfosd", "ntfosd_prio_pp", False)
@@ -518,7 +550,7 @@ ntfosd_prio_disk_full = OptionBool("ntfosd", "ntfosd_prio_disk_full", True)
 ntfosd_prio_new_login = OptionBool("ntfosd", "ntfosd_prio_new_login", False)
 ntfosd_prio_warning = OptionBool("ntfosd", "ntfosd_prio_warning", False)
 ntfosd_prio_error = OptionBool("ntfosd", "ntfosd_prio_error", False)
-ntfosd_prio_queue_done = OptionBool("ntfosd", "ntfosd_prio_queue_done", True)
+ntfosd_prio_queue_done = OptionBool("ntfosd", "ntfosd_prio_queue_done", False)
 ntfosd_prio_other = OptionBool("ntfosd", "ntfosd_prio_other", True)
 
 # [prowl]
@@ -535,7 +567,7 @@ prowl_prio_disk_full = OptionNumber("prowl", "prowl_prio_disk_full", 1)
 prowl_prio_new_login = OptionNumber("prowl", "prowl_prio_new_login", -3)
 prowl_prio_warning = OptionNumber("prowl", "prowl_prio_warning", -3)
 prowl_prio_error = OptionNumber("prowl", "prowl_prio_error", -3)
-prowl_prio_queue_done = OptionNumber("prowl", "prowl_prio_queue_done", 0)
+prowl_prio_queue_done = OptionNumber("prowl", "prowl_prio_queue_done", -3)
 prowl_prio_other = OptionNumber("prowl", "prowl_prio_other", 0)
 
 # [pushover]
@@ -556,7 +588,7 @@ pushover_prio_disk_full = OptionNumber("pushover", "pushover_prio_disk_full", 1)
 pushover_prio_new_login = OptionNumber("pushover", "pushover_prio_new_login", -3)
 pushover_prio_warning = OptionNumber("pushover", "pushover_prio_warning", 1)
 pushover_prio_error = OptionNumber("pushover", "pushover_prio_error", 1)
-pushover_prio_queue_done = OptionNumber("pushover", "pushover_prio_queue_done", -1)
+pushover_prio_queue_done = OptionNumber("pushover", "pushover_prio_queue_done", -3)
 pushover_prio_other = OptionNumber("pushover", "pushover_prio_other", -1)
 
 # [pushbullet]
@@ -582,7 +614,7 @@ nscript_enable = OptionBool("nscript", "nscript_enable")
 nscript_cats = OptionList("nscript", "nscript_cats", ["*"])
 nscript_script = OptionStr("nscript", "nscript_script", validation=validate_script)
 nscript_parameters = OptionStr("nscript", "nscript_parameters")
-nscript_prio_startup = OptionBool("nscript", "nscript_prio_startup", True)
+nscript_prio_startup = OptionBool("nscript", "nscript_prio_startup", False)
 nscript_prio_download = OptionBool("nscript", "nscript_prio_download", False)
 nscript_prio_pause_resume = OptionBool("nscript", "nscript_prio_pause_resume", False)
 nscript_prio_pp = OptionBool("nscript", "nscript_prio_pp", False)
@@ -592,7 +624,7 @@ nscript_prio_disk_full = OptionBool("nscript", "nscript_prio_disk_full", True)
 nscript_prio_new_login = OptionBool("nscript", "nscript_prio_new_login", False)
 nscript_prio_warning = OptionBool("nscript", "nscript_prio_warning", False)
 nscript_prio_error = OptionBool("nscript", "nscript_prio_error", False)
-nscript_prio_queue_done = OptionBool("nscript", "nscript_prio_queue_done", True)
+nscript_prio_queue_done = OptionBool("nscript", "nscript_prio_queue_done", False)
 nscript_prio_other = OptionBool("nscript", "nscript_prio_other", True)
 
 

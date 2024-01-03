@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,39 +27,18 @@ import sys
 import threading
 import sqlite3
 from sqlite3 import Connection, Cursor
-from typing import Union, Dict, Optional, List, Sequence
+from typing import Optional, List, Sequence, Dict, Any, Tuple
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status, PP_LOOKUP
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
-from sabnzbd.misc import int_conv, caller_name, opts_to_pp
+from sabnzbd.misc import int_conv, caller_name, opts_to_pp, to_units
 from sabnzbd.filesystem import remove_file, clip_path
 
 DB_LOCK = threading.RLock()
-
-
-def convert_search(search):
-    """Convert classic wildcard to SQL wildcard"""
-    if not search:
-        # Default value
-        search = ""
-    else:
-        # Allow * for wildcard matching and space
-        search = search.replace("*", "%").replace(" ", "%")
-
-    # Allow ^ for start of string and $ for end of string
-    if search and search.startswith("^"):
-        search = search.replace("^", "")
-        search += "%"
-    elif search and search.endswith("$"):
-        search = search.replace("$", "")
-        search = "%" + search
-    else:
-        search = "%" + search + "%"
-    return search
 
 
 class HistoryDB:
@@ -103,19 +82,25 @@ class HistoryDB:
             version = self.cursor.fetchone()["user_version"]
         except IndexError:
             version = 0
+
+        # Add any new columns added since last DB version
+        # Use "and" to stop when database has been reset due to corruption
         if version < 1:
-            # Add any missing columns added since first DB version
-            # Use "and" to stop when database has been reset due to corruption
             _ = (
                 self.execute("PRAGMA user_version = 1;")
-                and self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;')
-                and self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
+                and self.execute("ALTER TABLE history ADD COLUMN series TEXT;")
+                and self.execute("ALTER TABLE history ADD COLUMN md5sum TEXT;")
             )
         if version < 2:
-            # Add any missing columns added since second DB version
-            # Use "and" to stop when database has been reset due to corruption
             _ = self.execute("PRAGMA user_version = 2;") and self.execute(
-                'ALTER TABLE "history" ADD COLUMN password TEXT;'
+                "ALTER TABLE history ADD COLUMN password TEXT;"
+            )
+        if version < 3:
+            # Transfer data to new column (requires WHERE-hack), original column should be removed later
+            _ = (
+                self.execute("PRAGMA user_version = 3;")
+                and self.execute("ALTER TABLE history ADD COLUMN duplicate_key TEXT;")
+                and self.execute("UPDATE history SET duplicate_key = series WHERE 1 = 1;")
             )
 
     def execute(self, command: str, args: Sequence = (), save: bool = False) -> bool:
@@ -163,7 +148,7 @@ class HistoryDB:
         """Create a new (empty) database file"""
         self.execute(
             """
-        CREATE TABLE "history" (
+        CREATE TABLE history (
             "id" INTEGER PRIMARY KEY,
             "completed" INTEGER NOT NULL,
             "name" TEXT NOT NULL,
@@ -190,11 +175,12 @@ class HistoryDB:
             "meta" TEXT,
             "series" TEXT,
             "md5sum" TEXT,
-            "password" TEXT
+            "password" TEXT,
+            "duplicate_key" TEXT
         )
         """
         )
-        self.execute("PRAGMA user_version = 2;")
+        self.execute("PRAGMA user_version = 3;")
 
     def close(self):
         """Close database connection"""
@@ -277,14 +263,14 @@ class HistoryDB:
                     save=True,
                 )
 
-    def add_history_db(self, nzo, storage="", postproc_time=0, script_output="", script_line=""):
+    def add_history_db(self, nzo, storage: str, postproc_time: int, script_output: str, script_line: str):
         """Add a new job entry to the database"""
-        t = build_history_info(nzo, storage, postproc_time, script_output, script_line, series_info=True)
+        t = build_history_info(nzo, storage, postproc_time, script_output, script_line)
 
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
             url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-            downloaded, fail_message, url_info, bytes, series, md5sum, password)
+            downloaded, fail_message, url_info, bytes, duplicate_key, md5sum, password)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             t,
             save=True,
@@ -296,28 +282,30 @@ class HistoryDB:
         start: Optional[int] = None,
         limit: Optional[int] = None,
         search: Optional[str] = None,
-        failed_only: int = 0,
         categories: Optional[List[str]] = None,
+        statuses: Optional[List[str]] = None,
         nzo_ids: Optional[List[str]] = None,
-    ):
+    ) -> Tuple[List[Dict[str, Any]], int]:
         """Return records for specified jobs"""
         command_args = [convert_search(search)]
 
         post = ""
         if categories:
             categories = ["*" if c == "Default" else c for c in categories]
-            post = " AND (CATEGORY = ?"
-            post += " OR CATEGORY = ? " * (len(categories) - 1)
+            post = " AND (category = ?"
+            post += " OR category = ? " * (len(categories) - 1)
             post += ")"
             command_args.extend(categories)
+        if statuses:
+            post += " AND (status = ?"
+            post += " OR status = ? " * (len(statuses) - 1)
+            post += ")"
+            command_args.extend(statuses)
         if nzo_ids:
-            post += " AND (NZO_ID = ?"
-            post += " OR NZO_ID = ? " * (len(nzo_ids) - 1)
+            post += " AND (nzo_id = ?"
+            post += " OR nzo_id = ? " * (len(nzo_ids) - 1)
             post += ")"
             command_args.extend(nzo_ids)
-        if failed_only:
-            post += " AND STATUS = ?"
-            command_args.append(Status.FAILED)
 
         cmd = "SELECT COUNT(*) FROM history WHERE name LIKE ?"
         total_items = -1
@@ -342,28 +330,37 @@ class HistoryDB:
 
         return items, total_items
 
-    def have_episode(self, series: str, season: str, episode: str) -> bool:
-        """Check whether History contains this series episode"""
+    def have_duplicate_key(self, duplicate_key: str) -> bool:
+        """Check whether History contains this duplicate key"""
         total = 0
-        if series and season and episode:
-            pattern = "%s/%s/%s" % (series.lower(), season, episode)
-            if self.execute(
-                """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
-            ):
-                total = self.cursor.fetchone()["COUNT(*)"]
+        if self.execute(
+            """
+            SELECT COUNT(*) 
+            FROM History 
+            WHERE 
+                duplicate_key = ? AND 
+                STATUS != ?""",
+            (duplicate_key, Status.FAILED),
+        ):
+            total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
 
     def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
         """Check whether this name or md5sum is already in History"""
         total = 0
         if self.execute(
-            """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
+            """
+            SELECT COUNT(*) 
+            FROM History 
+            WHERE 
+                ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND 
+                STATUS != ?""",
             (name, md5sum, Status.FAILED),
         ):
             total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
 
-    def get_history_size(self):
+    def get_history_size(self) -> Tuple[int, int, int]:
         """Returns the total size of the history and
         amounts downloaded in the last month and week
         """
@@ -388,34 +385,32 @@ class HistoryDB:
 
         return total, month, week
 
-    def get_script_log(self, nzo_id):
+    def get_script_log(self, nzo_id: str) -> str:
         """Return decompressed log file"""
         data = ""
-        t = (nzo_id,)
-        if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
                 data = ubtou(zlib.decompress(self.cursor.fetchone()["script_log"]))
             except:
                 pass
         return data
 
-    def get_name(self, nzo_id):
+    def get_name(self, nzo_id: str) -> str:
         """Return name of the job `nzo_id`"""
-        t = (nzo_id,)
         name = ""
-        if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
-                name = self.cursor.fetchone()["name"]
+                return self.cursor.fetchone()["name"]
             except TypeError:
                 # No records found
                 pass
         return name
 
-    def get_path(self, nzo_id: str):
-        """Return the `incomplete` path of the job `nzo_id` if it is still there"""
-        t = (nzo_id,)
+    def get_incomplete_path(self, nzo_id: str) -> str:
+        """Return the `incomplete` path of the job `nzo_id` if
+        the job failed and if the path is still there"""
         path = ""
-        if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT path FROM history WHERE nzo_id = ?  AND status = ?""", (nzo_id, Status.FAILED)):
             try:
                 path = self.cursor.fetchone()["path"]
             except TypeError:
@@ -423,12 +418,11 @@ class HistoryDB:
                 pass
         if os.path.exists(path):
             return path
-        return None
+        return path
 
-    def get_other(self, nzo_id):
+    def get_other(self, nzo_id: str) -> Tuple[str, str, str, str, str]:
         """Return additional data for job `nzo_id`"""
-        t = (nzo_id,)
-        if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
+        if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
                 item = self.cursor.fetchone()
                 return item["report"], item["url"], item["pp"], item["script"], item["category"]
@@ -446,13 +440,32 @@ class HistoryDB:
         self.close()
 
 
-_PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
+def convert_search(search: str) -> str:
+    """Convert classic wildcard to SQL wildcard"""
+    if not search or not isinstance(search, str):
+        # Default value
+        search = ""
+    else:
+        # Allow * for wildcard matching and space
+        search = search.replace("*", "%").replace(" ", "%")
+
+    # Allow ^ for start of string and $ for end of string
+    if search and search.startswith("^"):
+        search = search.replace("^", "")
+        search += "%"
+    elif search and search.endswith("$"):
+        search = search.replace("$", "")
+        search = "%" + search
+    else:
+        search = "%" + search + "%"
+    return search
 
 
-def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output="", script_line="", series_info=False):
+def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_output: str, script_line: str):
     """Collects all the information needed for the database"""
+    nzo: sabnzbd.nzbstuff.NzbObject
     completed = int(time.time())
-    pp = _PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X")
+    pp = PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X")
 
     if script_output:
         # Compress the output of the script
@@ -472,12 +485,8 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
     # Reuse the old 'report' column to indicate a URL-fetch
     report = "future" if nzo.futuretype else ""
 
-    # Analyze series info only when job is finished
-    series = ""
-    if series_info and (show_analysis := sabnzbd.newsunpack.analyse_show(nzo.final_name))["job_type"] == "tv":
-        seriesname, season, episode = (show_analysis[key] for key in ("title", "season", "episode"))
-        if seriesname and season and episode:
-            series = "%s/%s/%s" % (seriesname.lower(), season, episode)
+    # Make sure we have the duplicate key
+    nzo.set_duplicate_key()
 
     return (
         completed,
@@ -501,19 +510,18 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
         nzo.fail_msg,
         url_info,
         nzo.bytes_downloaded,
-        series,
+        nzo.duplicate_key,
         nzo.md5sum,
         nzo.correct_password,
     )
 
 
-def unpack_history_info(item: Union[Dict, sqlite3.Row]):
+def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
     """Expands the single line stage_log from the DB
     into a python dictionary for use in the history display
     """
     # Convert result to dictionary
-    if isinstance(item, sqlite3.Row):
-        item = dict(item)
+    item = dict(item)
 
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lst = item["stage_log"]
@@ -522,7 +530,7 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
         try:
             all_stages_lines = lst.split("\r\n")
         except:
-            logging.error(T("Invalid stage logging in history for %s"), item["name"])
+            logging.warning(T("Invalid stage logging in history for %s"), item["name"])
             logging.debug("Lines: %s", lst)
             all_stages_lines = []
 
@@ -536,7 +544,7 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
             try:
                 stage["actions"] = logs.split(";")
             except:
-                logging.error(T("Invalid stage logging in history for %s"), item["name"])
+                logging.warning(T("Invalid stage logging in history for %s"), item["name"])
                 logging.debug("Logs: %s", logs)
             parsed_stage_log.append(stage)
 
@@ -546,11 +554,24 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
     else:
         item["stage_log"] = []
 
-    if item["script_log"]:
-        item["script_log"] = ""
-    # The action line is only available for items in the postproc queue
-    if "action_line" not in item:
-        item["action_line"] = ""
+    # Remove database id
+    item.pop("id")
+
+    # Human-readable size
+    item["size"] = to_units(item["bytes"], "B")
+
+    # We do not want the raw script output here
+    item.pop("script_log")
+
+    # The action line and loaded is only available for items in the postproc queue
+    item["action_line"] = ""
+    item["loaded"] = False
+
+    # Retry and retry for failed URL-fetch
+    item["retry"] = int_conv(item["status"] == Status.FAILED and item["path"] and os.path.exists(item["path"]))
+    if item["report"] == "future":
+        item["retry"] = True
+
     return item
 
 

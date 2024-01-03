@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,6 +28,7 @@ SKIN_TEXT = {
     "stage-unpack": TT("Unpack"),  #: PP phase "unpack"
     "stage-deobfuscate": TT("Deobfuscate"),  #: PP phase "deobfuscate"
     "stage-script": TT("Script"),  #: PP phase "script"
+    "stage-rss": TT("RSS"),  #: PP RSS feed  of the NZB
     "stage-source": TT("Source"),  #: PP Source of the NZB (path or URL)
     "stage-servers": TT("Servers"),  #: PP Distribution over servers
     "post-Completed": TT("Completed"),  #: PP status
@@ -105,7 +106,7 @@ SKIN_TEXT = {
     "notAvailable": TT("Not available"),
     "homePage": TT("Home page"),  #: Home page of the SABnzbd project
     "source": TT("Source"),  #: Where to find the SABnzbd sourcecode
-    "or": TT("or"),  #: Used in "IRC or IRC-Webaccess"
+    "or": TT("or"),
     "host": TT("Host"),
     "cancel": TT("Cancel"),
     "login": TT("Log in"),
@@ -125,7 +126,7 @@ SKIN_TEXT = {
     "menu-help": TT("Help"),  #: Main menu item
     "menu-wiki": TT("Wiki"),  #: Main menu item
     "menu-forums": TT("Forum"),  #: Main menu item
-    "menu-irc": TT("IRC"),  #: Main menu item
+    "menu-live-chat": TT("Live Chat"),  #: Main menu item
     "menu-issues": TT("Issues"),  #: Main menu item
     "menu-donate": TT("Support the project, Donate!"),  #: Main menu item
     "cmenu-general": TT("General"),  #: Main menu item
@@ -169,7 +170,6 @@ SKIN_TEXT = {
     "mode": TT("Processing"),  #: Queue page table column header
     "name": TT("Name"),  #: Queue page table column header
     "button-retry": TT("Retry"),  #: Queue page button
-    "eoq-actions": TT("Actions"),  #: Queue end-of-queue selection box
     "eoq-scripts": TT("Scripts"),  #: Queue page table, script selection menu
     "purgeQueue": TT("Purge Queue"),  #: Queue page button
     "purgeQueueConf": TT("Delete all items from the queue?"),  #: Confirmation popup
@@ -415,17 +415,13 @@ SKIN_TEXT = {
     ),
     "opt-pause_on_pwrar": TT("Action when encrypted RAR is downloaded"),
     "explain-pause_on_pwrar": TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
-    "opt-no_dupes": TT("Detect Duplicate Downloads"),
-    "explain-no_dupes": TT(
-        "Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)"
-    ),
-    "opt-no_series_dupes": TT("Detect duplicate episodes in series"),
-    "explain-no_series_dupes": TT(
-        'Detect identical episodes in series (based on "name/season/episode" of items in your History)'
-    ),
-    "opt-series_propercheck": TT("Allow proper releases"),
-    "explain-series_propercheck": TT(
-        "Bypass series duplicate detection if PROPER, REAL or REPACK is detected in the download name"
+    "opt-no_dupes": TT("Identical download detection"),
+    "explain-no_dupes": TT("Detect identical downloads based on name or NZB contents."),
+    "opt-no_smart_dupes": TT("Smart duplicate detection"),
+    "explain-no_smart_dupes": TT("Detect duplicates based on analysis of the filename."),
+    "opt-dupes_propercheck": TT("Allow proper releases"),
+    "explain-dupes_propercheck": TT(
+        "Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in the download name."
     ),
     "nodupes-off": TT("Off"),  #: Three way switch for duplicates
     "nodupes-ignore": TT("Discard"),  #: Four way switch for duplicates
@@ -453,14 +449,12 @@ SKIN_TEXT = {
     ),
     "opt-pre_script": TT("Pre-queue user script"),
     "explain-pre_script": TT("Used before an NZB enters the queue."),
+    "opt-end_queue_script": TT("On queue finish script"),
+    "explain-end_queue_script": TT("Executed after the queue finishes downloading."),
     "opt-par_option": TT("Extra PAR2 Parameters"),
-    "explain-par_option": TT("Read the Wiki Help on this!"),
     "opt-nice": TT("Nice Parameters"),
-    "explain-nice": TT("Read the Wiki Help on this!"),
     "opt-ionice": TT("IONice Parameters"),
-    "explain-ionice": TT("Read the Wiki Help on this!"),
     "opt-win_process_prio": TT("External process priority"),
-    "explain-win_process_prio": TT("Read the Wiki Help on this!"),
     "win_process_prio-high": TT("High"),
     "win_process_prio-normal": TT("Normal"),
     "win_process_prio-low": TT("Low"),
@@ -689,7 +683,6 @@ SKIN_TEXT = {
     "opt-nscript_parameters": TT("Parameters"),  #: Notification Script settings
     "explain-nscript_enable": TT("Executes a custom script"),  #: Notification Scriptsettings
     "explain-nscript_script": TT("Which script should we execute for notification?"),  #: Notification Scriptsettings
-    "explain-nscript_parameters": TT("Read the Wiki Help on this!"),  #: Notification Script settings
     # Config->Cat
     "explain-catTags": TT(
         'Indexers can supply a category inside the NZB which SABnzbd will try to match to the categories defined below. Additionally, you can add terms to "Indexer Categories / Groups" to match more categories. Use commas to separate terms. Wildcards in the terms are supported. <br>More information can be found on the Wiki.'

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -52,7 +52,6 @@ def mock_sleep(create_mock_coroutine):
 
 
 class TestDirScanner:
-    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "path, catdir",
@@ -75,17 +74,16 @@ class TestDirScanner:
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), contents="FAKEFILE")
+        fs.create_file(os.path.join(catdir or "", path), contents="FAKEFILE")
 
         scanner = sabnzbd.dirscanner.DirScanner()
 
-        await scanner.scan_async(scanner.dirscan_dir)
+        await scanner.scan_async("")
 
         sabnzbd.nzbparser.add_nzbfile.assert_any_call(
             os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), catdir or "", path), catdir=catdir, keep=False
         )
 
-    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "path",
@@ -102,15 +100,14 @@ class TestDirScanner:
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path))
+        fs.create_file(path)
 
         scanner = sabnzbd.dirscanner.DirScanner()
 
-        await scanner.scan_async(scanner.dirscan_dir)
+        await scanner.scan_async("")
 
         sabnzbd.nzbparser.add_nzbfile.assert_not_called()
 
-    @set_config({"dirscan_dir": os.path.join(SAB_CACHE_DIR, "watched")})
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "path",
@@ -123,10 +120,10 @@ class TestDirScanner:
         mocker.patch("sabnzbd.nzbparser.add_nzbfile", return_value=(AddNzbFileResult.ERROR, []))
         mocker.patch("sabnzbd.config.save_config", return_value=True)
 
-        fs.create_file(os.path.join(sabnzbd.cfg.dirscan_dir.get_path(), path), contents="FAKEFILE")
+        fs.create_file(path, contents="FAKEFILE")
 
         scanner = sabnzbd.dirscanner.DirScanner()
 
-        await scanner.scan_async(scanner.dirscan_dir)
+        await scanner.scan_async("")
 
         sabnzbd.nzbparser.add_nzbfile.assert_not_called()

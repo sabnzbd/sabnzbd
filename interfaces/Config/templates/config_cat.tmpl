@@ -122,7 +122,7 @@
             update: function(event, ui) {
                 jQuery('.Categories form.sorting-row').each(function(index, elm) {
                     // Update order of all elements
-                    if(index != elm.order.value) {
+                    if(index !== elm.order.value) {
                         elm.order.value = index
                         // Submit changed order
                         var data = {}

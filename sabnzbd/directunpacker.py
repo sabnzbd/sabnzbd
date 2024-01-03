@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ from typing import Optional, Dict, List, Tuple
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
-from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file
+from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file, get_basename
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
@@ -180,23 +180,30 @@ class DirectUnpacker(threading.Thread):
             with START_STOP_LOCK:
                 if not self.active_instance or not self.active_instance.stdout:
                     break
-                char = self.active_instance.stdout.read(1)
 
+                while 1:
+                    # Keep reading until reaching space or end of line
+                    # to prevent continuous locking and unlocking
+                    char = self.active_instance.stdout.read(1)
+                    linebuf += char
+
+                    if char in (b" ", b"\n", b""):
+                        break
+
+            # End of program
             if not char:
-                # End of program
                 break
-            linebuf += char
-
-            # Continue if it's not a space or end of line
-            if char not in (b" ", b"\n"):
-                continue
 
             # Handle whole lines
             if char == b"\n":
                 # When reaching end-of-line, we can safely convert and add to the log
                 linebuf_encoded = platform_btou(linebuf.strip())
-                unrar_log.append(linebuf_encoded)
                 linebuf = b""
+
+                # Skip empty lines
+                if not linebuf_encoded:
+                    continue
+                unrar_log.append(linebuf_encoded)
 
                 # Error? Let PP-handle this job
                 if any(
@@ -245,7 +252,7 @@ class DirectUnpacker(threading.Thread):
                     self.nzo.set_unpack_info("Unpack", msg, self.cur_setname)
 
                     # Write current log and clear
-                    logging.debug("DirectUnpack Unrar output %s", "\n".join(unrar_log))
+                    logging.debug("DirectUnpack Unrar output: \n%s", "\n".join(unrar_log))
                     unrar_log = []
                     rarfiles = []
                     extracted = []
@@ -337,7 +344,7 @@ class DirectUnpacker(threading.Thread):
         if linebuf:
             unrar_log.append(platform_btou(linebuf.strip()))
         if unrar_log:
-            logging.debug("DirectUnpack Unrar output %s", "\n".join(unrar_log))
+            logging.debug("DirectUnpack Unrar output: \n%s", "\n".join(unrar_log))
 
         # Make more space
         self.reset_active()
@@ -545,7 +552,7 @@ def analyze_rar_filename(filename):
     else:
         # Detect if first of "rxx" set
         if filename.endswith(".rar"):
-            return os.path.splitext(filename)[0], 1
+            return get_basename(filename), 1
     return None, None
 
 
@@ -558,9 +565,9 @@ def abort_all():
 
 def test_disk_performance():
     """Test the incomplete-dir performance and enable
-    Direct Unpack if good enough (> 40MB/s)
+    Direct Unpack if good enough (> 100MB/s)
     """
-    if diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()) > 40:
+    if diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()) > 100:
         cfg.direct_unpack.set(True)
         logging.warning(
             T("Direct Unpack was automatically enabled.")

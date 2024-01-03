@@ -117,7 +117,7 @@ else:
         jQuery('#arguments').val((jQuery(this).find('option:selected').data('action')))
 
         // Is it speedlimit?
-        if(jQuery(this).find('option:selected').val() == 'speedlimit') {
+        if(jQuery(this).find('option:selected').val() === 'speedlimit') {
             jQuery('#hidden_arguments').show()
             jQuery('#hidden_arguments input').attr('placeholder', 'Bytes/s, "1M" = 1 MB/s, "500K" = 500 KB/s')
         } else {

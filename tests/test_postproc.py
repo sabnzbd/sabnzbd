@@ -1,3 +1,14 @@
+#!/usr/bin/python3 -OO
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
@@ -14,7 +25,7 @@ import shutil
 from unittest import mock
 
 from sabnzbd import postproc
-from sabnzbd.config import ConfigSorter, ConfigCat, read_config
+from sabnzbd.config import ConfigSorter, ConfigCat
 from sabnzbd.filesystem import globber_full, clip_path
 from sabnzbd.misc import sort_to_opts
 

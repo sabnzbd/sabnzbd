@@ -90,7 +90,7 @@ function ViewModel() {
         var speedLimitNumber = Math.round(speedLimitNumberFull * 10) / 10;
 
         // Fix it for lower than 1MB/s
-        if (bandwithLimitText == 'M' && speedLimitNumber < 1) {
+        if (bandwithLimitText === 'M' && speedLimitNumber < 1) {
             bandwithLimitText = 'K';
             speedLimitNumber = Math.round(speedLimitNumberFull * 1024);
         }
@@ -133,100 +133,6 @@ function ViewModel() {
         return parseInt(self.nrWarnings()) + self.allMessages().length;
     })
 
-    self.updateCheckAllButtonState = function(section) {
-        setCheckAllState(`#multiedit-checkall-${section}`, `.${section}-table input[name="multiedit"]`)
-    }
-
-    // Add queue or history item to multi-edit list
-    self.addMultiEdit = function(item, event) {
-        // The parent model is either the queue or history
-        const model = this.parent;
-        const section = model.queueItems ? 'queue' : 'history';
-
-        if(event.shiftKey) {
-            checkShiftRange(`.${section}-table input[name="multiedit"]`);
-        }
-
-        if(event.currentTarget.checked) {
-            model.multiEditItems.push(item);
-
-            // History is not editable
-            // Only the queue will fire the multi-edit update
-            model.doMultiEditUpdate?.();
-        } else {
-            model.multiEditItems.remove(function(inList) { return inList.id == item.id; })
-        }
-
-        self.updateCheckAllButtonState(section);
-        return true;
-    }
-    
-    // Check all queue or history items
-    self.checkAllJobs = function(item, event) {
-        const section = event.currentTarget.closest('.multioperations-selector').id === 'history-options' ? 'history' : 'queue';
-        const model = section === 'history' ? self.history : self.queue;
-
-        const allChecks = $(`.${section}-table input[name="multiedit"]`).filter(':not(:disabled):visible');
-
-        self.updateCheckAllButtonState(section);
-
-        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
-            const allActive = allChecks.filter(":checked")
-            if(allActive.length === model.multiEditItems().length) {
-                model.multiEditItems.removeAll();
-                allActive.prop('checked', false)
-            } else {
-                allActive.each(function() {
-                    var item = ko.dataFor(this)
-                    model.multiEditItems.remove(function(inList) { return inList.id === item.id; })
-                    this.checked = false;
-                })
-            }
-        } else {
-            allChecks.prop('checked', true)
-            allChecks.each(function() { model.multiEditItems.push(ko.dataFor(this)) })
-            event.target.checked = true
-
-            model.multiEditUpdate?.();
-        }
-
-        self.updateCheckAllButtonState(section);
-        return true;
-    }
-
-    // Delete all selected queue or history items
-    self.doMultiDelete = function(item, event) {
-        const section = event.currentTarget.closest('.multioperations-selector').id === 'history-options' ? 'history' : 'queue';
-        const model = section === 'history' ? self.history : self.queue;
-
-        // Anything selected?
-        if(model.multiEditItems().length < 1) return;
-
-        if(!self.confirmDeleteHistory() || confirm(glitterTranslate.removeDown)) {
-            let strIDs = '';
-            $.each(model.multiEditItems(), function() {
-                strIDs = strIDs + this.id + ',';
-            })
-
-            showNotification('.main-notification-box-removing-multiple', 0, model.multiEditItems().length)
-
-            callAPI({
-                mode: section,
-                name: 'delete',
-                del_files: 1,
-                value: strIDs
-            }).then(function(response) {
-                if(response.status) {
-                    // Make sure the history doesnt flicker and then fade-out
-                    model.isLoading(true)
-                    self.refresh()
-                    model.multiEditItems.removeAll();
-                    hideNotification()
-                }
-            })
-        }
-    }
-
     // Update main queue
     self.updateQueue = function(response) {
         // Block in case off dragging
@@ -244,7 +150,7 @@ function ViewModel() {
         /***
             Possible login failure?
         ***/
-        if (response.hasOwnProperty('error') && response.error == 'Missing authentication') {
+        if (response.hasOwnProperty('error') && response.error === 'Missing authentication') {
             // Restart
             document.location = document.location;
         }
@@ -265,7 +171,7 @@ function ViewModel() {
         self.diskSpaceLeft1(response.queue.diskspace1_norm)
 
         // Same sizes? Then it's all 1 disk!
-        if (response.queue.diskspace1 != response.queue.diskspace2) {
+        if (response.queue.diskspace1 !== response.queue.diskspace2) {
             self.diskSpaceLeft2(response.queue.diskspace2_norm)
         } else {
             self.diskSpaceLeft2('')
@@ -290,7 +196,7 @@ function ViewModel() {
             Spark line
         ***/
         // Break the speed if empty queue
-        if (response.queue.sizeleft == '0 B') {
+        if (response.queue.sizeleft === '0 B') {
             response.queue.kbpersec = 0;
             response.queue.speed = '0';
         }
@@ -309,9 +215,9 @@ function ViewModel() {
         self.speedHistory.push(parseInt(response.queue.kbpersec));
 
         // Is sparkline visible? Not on small mobile devices..
-        if ($('.sparkline-container').css('display') != 'none') {
+        if ($('.sparkline-container').css('display') !== 'none') {
             // Make sparkline
-            if (self.speedHistory.length == 1) {
+            if (self.speedHistory.length === 1) {
                 // We only use speedhistory from SAB if we use global settings
                 // Otherwise SAB doesn't know the refresh rate
                 if (!self.useGlobalOptions()) {
@@ -346,7 +252,7 @@ function ViewModel() {
             Speedlimit
         ***/
         // Nothing or 0 means 100%
-        if(response.queue.speedlimit == '' || response.queue.speedlimit == '0') {
+        if(response.queue.speedlimit === '' || response.queue.speedlimit === '0') {
             self.speedLimitInt(100)
         } else {
             self.speedLimitInt(parseInt(response.queue.speedlimit));
@@ -369,7 +275,7 @@ function ViewModel() {
 
         // Paused main queue
         if (self.downloadsPaused()) {
-            if (response.queue.pause_int == '0') {
+            if (response.queue.pause_int === '0') {
                 timeString = glitterTranslate.paused;
             } else {
                 var pauseSplit = response.queue.pause_int.split(/:/);
@@ -432,13 +338,13 @@ function ViewModel() {
             limit: parseInt(self.queue.paginationLimit())
         }
         if (self.queue.searchTerm()) {
-            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority"])
+            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority", "status"])
         }
         var queueApi = callAPI(api_call)
             .done(self.updateQueue)
             .fail(function(response) {
                 // Catch the failure of authorization error
-                if (response.status == 401) {
+                if (response.status === 401) {
                     // Stop refresh and reload
                     clearInterval(self.interval)
                     location.reload();
@@ -461,7 +367,7 @@ function ViewModel() {
             last_history_update: self.history.lastUpdate
         }
         if (self.history.searchTerm()) {
-            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category"])
+            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category", "status"])
         }
 
         // History
@@ -488,10 +394,9 @@ function ViewModel() {
                 api_request[keyword] = parsed_query[keyword]
             }
             // Special case for priority, dirty replace of string by numeric value
-            if (keyword == "priority" && api_request["priority"]) {
+            if (keyword === "priority" && api_request["priority"]) {
                 for (const prio_name in self.queue.priorityName) {
                     api_request["priority"] = api_request["priority"].replace(prio_name, self.queue.priorityName[prio_name])
-
                 }
             }
         }
@@ -606,7 +511,7 @@ function ViewModel() {
     // Update the warnings
     self.nrWarnings.subscribe(function(newValue) {
         // Really any change?
-        if (newValue == self.allWarnings().length) return;
+        if (newValue === self.allWarnings().length) return;
 
         // Get all warnings
         callAPI({
@@ -628,7 +533,7 @@ function ViewModel() {
                         type: glitterTranslate.status[warning.type].slice(0, -1),
                         text: convertHTMLtoText(warning.text).replace(/ /g, '\u00A0').replace(/(?:\r\n|\r|\n)/g, '<br />'),
                         timestamp: warning.time,
-                        css: (warning.type == "ERROR" ? "danger" : warning.type == "WARNING" ? "warning" : "info"),
+                        css: (warning.type === "ERROR" ? "danger" : warning.type === "WARNING" ? "warning" : "info"),
                         clear: self.clearWarnings
                     };
                     self.allWarnings.push(warningData)
@@ -648,7 +553,7 @@ function ViewModel() {
     // Clear messages
     self.clearMessages = function(whatToRemove) {
         // Remove specifc type of messages
-        self.allMessages.remove(function(item) { return item.index == whatToRemove });
+        self.allMessages.remove(function(item) { return item.index === whatToRemove });
         // Now so we don't show again today
         localStorageSetItem(whatToRemove, Date.now())
     }
@@ -659,7 +564,7 @@ function ViewModel() {
         if (!self.speedLimitInt()) return;
 
         // Update
-        if (self.speedLimitInt() != newValue) {
+        if (self.speedLimitInt() !== newValue) {
             callAPI({
                 mode: "config",
                 name: "speedlimit",
@@ -732,11 +637,17 @@ function ViewModel() {
             return false;
         }
 
+        // Disable the buttons to prevent multiple uploads
+        let submit_buttons = $(form).find("input[type='submit']")
+        submit_buttons.attr("disabled", true)
+
         // Upload file using the method we also use for drag-and-drop
         if ($(form.nzbFile)[0].files[0]) {
             self.addNZBFromFile($(form.nzbFile)[0].files);
             // Hide modal, upload will reset the form
             $("#modal-add-nzb").modal("hide");
+            // Re-enable the buttons
+            submit_buttons.attr("disabled", false)
         } else if ($(form.nzbURL).val()) {
             // Or add URL
             var theCall = {
@@ -744,14 +655,11 @@ function ViewModel() {
                 name: $(form.nzbURL).val(),
                 nzbname: $('#nzbname').val(),
                 password: $('#password').val(),
-                script: $('#modal-add-nzb select[name="Post-processing"]').val(),
+                cat: $('#modal-add-nzb select[name="Category"]').val(),
                 priority: $('#modal-add-nzb select[name="Priority"]').val(),
-                pp: $('#modal-add-nzb select[name="Processing"]').val()
+                pp: $('#modal-add-nzb select[name="Processing"]').val(),
+                script: $('#modal-add-nzb select[name="Post-processing"]').val(),
             }
-
-            // Optional, otherwise they get mis-labeled if left empty
-            if ($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
-            if ($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
 
             // Add
             callAPI(theCall).then(function(r) {
@@ -760,6 +668,7 @@ function ViewModel() {
                 $("#modal-add-nzb").modal("hide");
                 form.reset()
                 $('#nzbname').val('')
+                submit_buttons.attr("disabled", false)
             });
         }
     }
@@ -779,7 +688,7 @@ function ViewModel() {
         fileindex++
 
         // Check if it's maybe a folder, we can't handle those
-        if (!file.type && file.size % 4096 == 0) return;
+        if (!file.type && file.size % 4096 === 0) return;
 
         // Add notification
         showNotification('.main-notification-box-uploading', 0, fileindex)
@@ -790,13 +699,11 @@ function ViewModel() {
         data.append("mode", "addfile");
         data.append("nzbname", $('#nzbname').val());
         data.append("password", $('#password').val());
-        data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
+        data.append("cat", $('#modal-add-nzb select[name="Category"]').val())
         data.append("priority", $('#modal-add-nzb select[name="Priority"]').val())
+        data.append("pp", $('#modal-add-nzb select[name="Processing"]').val())
+        data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
         data.append("apikey", apiKey);
-
-        // Optional, otherwise they get mis-labeled if left empty
-        if ($('#modal-add-nzb select[name="Category"]').val() != '*') data.append("cat", $('#modal-add-nzb select[name="Category"]').val());
-        if ($('#modal-add-nzb select[name="Processing"]').val()) data.append("pp", $('#modal-add-nzb select[name="Processing"]').val());
 
         // Add this one
         $.ajax({
@@ -827,10 +734,10 @@ function ViewModel() {
     // Load status info
     self.loadStatusInfo = function(item, event) {
         // Full refresh? Only on click and for the status-screen
-        var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
+        var statusFullRefresh = (event !== undefined) && $('#options-status').hasClass('active');
 
         // Measure performance? Takes a while
-        var statusPerformance = (event != undefined) && $(event.currentTarget).hasClass('diskspeed-button');
+        var statusPerformance = (event !== undefined) && $(event.currentTarget).hasClass('diskspeed-button');
 
         // Make it spin if the user requested it otherwise we don't,
         // because browsers use a lot of CPU for the animation
@@ -870,43 +777,7 @@ function ViewModel() {
             }
 
             // Update the servers
-            if (self.statusInfo.servers().length != data.status.servers.length) {
-                // Empty them, in case of update
-                self.statusInfo.servers([])
-
-                // Initial add
-                $.each(data.status.servers, function() {
-                    self.statusInfo.servers.push({
-                        'servername': ko.observable(this.servername),
-                        'serveroptional': ko.observable(this.serveroptional),
-                        'serverpriority': ko.observable(this.serverpriority),
-                        'servertotalconn': ko.observable(this.servertotalconn),
-                        'serverssl': ko.observable(this.serverssl),
-                        'serversslinfo': ko.observable(this.serversslinfo),
-                        'serveractiveconn': ko.observable(this.serveractiveconn),
-                        'servererror': ko.observable(this.servererror),
-                        'serveractive': ko.observable(this.serveractive),
-                        'serverconnections': ko.observableArray(this.serverconnections),
-                        'serverbps': ko.observable(this.serverbps)
-                    })
-                })
-            } else {
-                // Update
-                $.each(data.status.servers, function(index) {
-                    var activeServer = self.statusInfo.servers()[index];
-                    activeServer.servername(this.servername),
-                        activeServer.serveroptional(this.serveroptional),
-                        activeServer.serverpriority(this.serverpriority),
-                        activeServer.servertotalconn(this.servertotalconn),
-                        activeServer.serverssl(this.serverssl),
-                        activeServer.serversslinfo(this.serversslinfo),
-                        activeServer.serveractiveconn(this.serveractiveconn),
-                        activeServer.servererror(this.servererror),
-                        activeServer.serveractive(this.serveractive),
-                        activeServer.serverconnections(this.serverconnections),
-                        activeServer.serverbps(this.serverbps)
-                })
-            }
+            ko.mapping.fromJS(data.status.servers, {}, self.statusInfo.servers)
 
             // Add tooltips to possible new items
             if (!isMobile) $('#modal-options [data-tooltip="true"]').tooltip({ trigger: 'hover', container: 'body' })
@@ -922,7 +793,7 @@ function ViewModel() {
         var nzbSize = $(event.target).data('size')
 
         // Maybe it was a click on the icon?
-        if (nzbSize == undefined) {
+        if (nzbSize === undefined) {
             nzbSize = $(event.target.parentElement).data('size')
         }
 
@@ -1004,7 +875,7 @@ function ViewModel() {
         $('#options-orphans [data-tooltip="true"]').tooltip('hide')
 
         // Show notification on delete
-        if ($(htmlElement.currentTarget).data('action') == 'delete_orphan') {
+        if ($(htmlElement.currentTarget).data('action') === 'delete_orphan') {
             showNotification('.main-notification-box-removing', 1000)
         } else {
             // Adding back to queue
@@ -1218,7 +1089,7 @@ function ViewModel() {
         // Reformat and set categories
         self.queue.categoriesList($.map(response.config.categories, function(cat) {
             // Default?
-            if(cat.name == '*') return { catValue: '*', catText: glitterTranslate.defaultText };
+            if(cat.name === '*') return { catValue: '*', catText: glitterTranslate.defaultText };
             return { catValue: cat.name, catText: cat.name };
         }))
 
@@ -1230,14 +1101,10 @@ function ViewModel() {
                 // Reformat script-list
                 self.queue.scriptsList($.map(script_response.scripts, function(script) {
                     // None?
-                    if(script == 'None') return { scriptValue: 'None', scriptText: glitterTranslate.noneText };
+                    if(script === 'None') return { scriptValue: 'None', scriptText: glitterTranslate.noneText };
                     return { scriptValue: script, scriptText: script };
                 }))
-                self.queue.scriptsListLoaded(true)
             })
-        } else {
-            // We can already continue
-            self.queue.scriptsListLoaded(true)
         }
 
 
@@ -1314,7 +1181,7 @@ function ViewModel() {
         // Orphaned folders? If user clicked away we check again in 5 days
         if (self.statusInfo.folders().length >= 3 && orphanMsg) {
             // Check if not already there
-            if (!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index == 'OrphanedMsg' })) {
+            if (!ko.utils.arrayFirst(self.allMessages(), function(item) { return item.index === 'OrphanedMsg' })) {
                 self.allMessages.push({
                     index: 'OrphanedMsg',
                     type: glitterTranslate.status['INFO'],
@@ -1326,7 +1193,7 @@ function ViewModel() {
         } else {
             // Remove any message, if it was there
             self.allMessages.remove(function(item) {
-                return item.index == 'OrphanedMsg';
+                return item.index === 'OrphanedMsg';
             })
         }
     })

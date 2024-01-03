@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@ from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 
 
 class SABTrayThread(SysTrayIconThread):
+    # When updating these paths, also update them in the NSIS script!
     sabicons = {
         "default": "icons/sabnzbd16_32.ico",
         "green": "icons/sabnzbd16_32green.ico",

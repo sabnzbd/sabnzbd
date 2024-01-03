@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,13 +26,14 @@ import time
 import logging
 import ssl
 import sabctools
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DEF_TIMEOUT, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import utob, ubtou
-from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
+from sabnzbd.happyeyeballs import AddrInfo
+from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
@@ -102,16 +103,15 @@ class NewsWrapper:
 
     def init_connect(self):
         """Setup the connection in NNTP object"""
-        # Server-info is normally requested by initialization of
-        # servers in Downloader, but not when testing servers
-        if self.blocking and not self.server.info:
-            self.server.info = get_server_addrinfo(self.server.host, self.server.port)
+        # Sanity check, especially for the server test
+        if not self.server.addrinfo:
+            raise socket.error(errno.EADDRNOTAVAIL, T("Invalid server address."))
 
         # Construct buffer and NNTP object
-        self.data = bytearray(NNTP_BUFFER_SIZE)
+        self.data = sabctools.bytearray_malloc(NNTP_BUFFER_SIZE)
         self.data_view = memoryview(self.data)
         self.reset_data_buffer()
-        self.nntp = NNTP(self, self.server.hostip)
+        self.nntp = NNTP(self, self.server.addrinfo)
         self.timeout = time.time() + self.server.timeout
 
     def finish_connect(self, code: int):
@@ -187,7 +187,7 @@ class NewsWrapper:
     def recv_chunk(self) -> Tuple[int, bool]:
         """Receive data, return #bytes, done, skip"""
         # Resize the buffer in the extremely unlikely case that it got full
-        if len(self.data) - self.data_position == 0:
+        if self.data_position == len(self.data):
             self.nntp.nw.increase_data_buffer()
 
         # Receive data into the pre-allocated buffer
@@ -199,13 +199,21 @@ class NewsWrapper:
 
         # No data received
         if bytes_recv == 0:
-            raise ConnectionError("server closed connection")
+            raise ConnectionError("Server closed connection")
 
         # Success, move timeout and internal data position
         self.timeout = time.time() + self.server.timeout
         self.data_position += bytes_recv
 
-        # Official end-of-article is "\r\n.\r\n",
+        # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
+        # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
+        # another recv_chunk so the buffer is increased and the data from the SSL-layer is read. See #2752.
+        if self.nntp.nw.server.ssl and self.data_position == len(self.data) and self.nntp.sock.pending() > 0:
+            # We do not perform error-handling, as we know there is data available to read
+            additional_bytes_recv, additional_result = self.recv_chunk()
+            return bytes_recv + additional_bytes_recv, additional_result
+
+        # Official end-of-article is "\r\n.\r\n"
         # Using the data directly seems faster than the memoryview
         if self.data[self.data_position - 5 : self.data_position] == b"\r\n.\r\n":
             return bytes_recv, True
@@ -225,26 +233,17 @@ class NewsWrapper:
 
     def increase_data_buffer(self):
         """Resize the buffer in the extremely unlikely case that it overflows"""
-        new_buffer = bytearray(len(self.data) + NNTP_BUFFER_SIZE)
+        # Input needs to be integer, floats don't work
+        new_buffer = sabctools.bytearray_malloc(len(self.data) + NNTP_BUFFER_SIZE // 2)
         new_buffer[: len(self.data)] = self.data
-        logging.info("Increasing buffer from %d to %d for %s", len(self.data), len(new_buffer), str(self))
+        logging.info("Increased buffer from %d to %d for %s", len(self.data), len(new_buffer), str(self))
         self.data = new_buffer
         self.data_view = memoryview(self.data)
 
-    def get_data_buffer(self) -> bytearray:
-        """Get a copy of the data buffer in a new bytes object"""
-        return bytearray(self.data_view[: self.data_position])
-
-    def hard_reset(self, wait: bool = True, send_quit: bool = True):
+    def hard_reset(self, wait: bool = True):
         """Destroy and restart"""
         if self.nntp:
-            try:
-                if send_quit:
-                    self.nntp.sock.sendall(b"QUIT\r\n")
-                    time.sleep(0.01)
-                self.nntp.sock.close()
-            except:
-                pass
+            self.nntp.close(send_quit=self.connected)
             self.nntp = None
 
         # Reset all variables (including the NNTP connection)
@@ -269,23 +268,16 @@ class NewsWrapper:
 
 class NNTP:
     # Pre-define attributes to save memory
-    __slots__ = ("nw", "host", "error_msg", "sock", "fileno")
+    __slots__ = ("nw", "addrinfo", "error_msg", "sock", "fileno", "closed")
 
-    def __init__(self, nw: NewsWrapper, host):
+    def __init__(self, nw: NewsWrapper, addrinfo: AddrInfo):
         self.nw: NewsWrapper = nw
-        self.host: str = host  # Store the fastest ip
+        # Add local reference to prevent crash in case the server.addrinfo is reset
+        self.addrinfo: AddrInfo = addrinfo
         self.error_msg: Optional[str] = None
 
-        if not self.nw.server.info:
-            raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
-
-        af, socktype, proto, _, _ = self.nw.server.info[0]
-
-        # there will be a connect to host (or self.host, so let's force set 'af' to the correct value
-        if is_ipv4_addr(self.host):
-            af = socket.AF_INET
-        if is_ipv6_addr(self.host):
-            af = socket.AF_INET6
+        # Prevent closing this socket until it's done connecting
+        self.closed = False
 
         # Create SSL-context if it is needed and not created yet
         if self.nw.server.ssl and not self.nw.server.ssl_context:
@@ -322,7 +314,7 @@ class NNTP:
                 self.nw.server.ssl_context.verify_mode = ssl.CERT_NONE
 
         # Create socket and store fileno of the socket
-        self.sock = socket.socket(af, socktype, proto)
+        self.sock: Union[socket.socket, ssl.SSLSocket] = socket.socket(self.addrinfo.family, self.addrinfo.type)
         self.fileno: int = self.sock.fileno()
 
         # Open the connection in a separate thread due to avoid blocking
@@ -339,7 +331,7 @@ class NNTP:
             self.sock.settimeout(self.nw.server.timeout)
 
             # Connect
-            self.sock.connect((self.host, self.nw.server.port))
+            self.sock.connect(self.addrinfo.sockaddr)
 
             # Secured or unsecured?
             if self.nw.server.ssl:
@@ -358,8 +350,11 @@ class NNTP:
             if not self.nw.blocking:
                 # Set to non-blocking mode
                 self.sock.setblocking(False)
-                # Now it's safe to add the socket to the list of active sockets
-                sabnzbd.Downloader.add_socket(self.fileno, self.nw)
+                # Only add to active sockets if it's not somehow already closing
+                # Locked, so it can't interleave with any of the Downloader "__nw" actions
+                with DOWNLOADER_LOCK:
+                    if not self.closed:
+                        sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:
             self.error(e)
 
@@ -397,9 +392,16 @@ class NNTP:
         # Blocking = server-test, pass directly to display code
         if self.nw.blocking:
             raise socket.error(errno.ECONNREFUSED, str(error))
-        else:
-            msg = "Failed to connect: %s" % (str(error))
-            msg = "%s %s:%s (%s)" % (msg, self.nw.server.host, self.nw.server.port, self.host)
+
+        # Ignore if the socket was already closed, resulting in errors
+        if not self.closed:
+            msg = "Failed to connect: %s %s@%s:%s (%s)" % (
+                str(error),
+                self.nw.thrdnum,
+                self.nw.server.host,
+                self.nw.server.port,
+                self.addrinfo.canonname,
+            )
             self.error_msg = msg
             self.nw.server.next_busy_threads_check = 0
             if self.nw.server.warning == msg:
@@ -408,5 +410,19 @@ class NNTP:
                 logging.warning(msg)
             self.nw.server.warning = msg
 
+    @synchronized(DOWNLOADER_LOCK)
+    def close(self, send_quit: bool):
+        """Safely close socket.
+        Locked to match connect(), even though most likely the caller already holds the same lock."""
+        # Set status first, so any calls in connect/error are handled correctly
+        self.closed = True
+        try:
+            if send_quit:
+                self.sock.sendall(b"QUIT\r\n")
+                time.sleep(0.01)
+            self.sock.close()
+        except Exception as e:
+            logging.info("%s@%s: Failed to close socket (error=%s)", self.nw.thrdnum, self.nw.server.host, str(e))
+
     def __repr__(self):
-        return "<NNTP: %s:%s>" % (self.host, self.nw.server.port)
+        return "<NNTP: %s:%s>" % (self.addrinfo.canonname, self.nw.server.port)

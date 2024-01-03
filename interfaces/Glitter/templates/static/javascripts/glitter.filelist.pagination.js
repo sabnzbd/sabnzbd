@@ -57,7 +57,7 @@ function Fileslisting(parent) {
             $.each(response.files, function(index, slot) {
                 // Existing or updating?
                 var existingItem = ko.utils.arrayFirst(self.fileItems(), function(i) {
-                    return i.nzf_id() == slot.nzf_id;
+                    return i.nzf_id() === slot.nzf_id;
                 });
 
                 if(existingItem) {
@@ -76,7 +76,7 @@ function Fileslisting(parent) {
             }
 
             // Check if we show/hide completed
-            if(localStorageGetItem('showCompletedFiles') == 'No') {
+            if(localStorageGetItem('showCompletedFiles') === 'No') {
                 $('.item-files-table tr.files-done').hide();
                 $('#filelist-showcompleted').removeClass('hover-button')
             }
@@ -217,8 +217,8 @@ function FileslistingModel(parent, data) {
     self.nzf_id = ko.observable(data.nzf_id);
     self.file_age = ko.observable(data.age);
     self.mb = ko.observable(data.mb);
-    self.canselect = ko.observable(data.status != "finished" && data.status != "queued");
-    self.isdone =  ko.observable(data.status == "finished");
+    self.canselect = ko.observable(data.status !== "finished" && data.status !== "queued");
+    self.isdone =  ko.observable(data.status === "finished");
     self.percentage = ko.observable(self.isdone() ? fixPercentages(100) : fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
 
     // Update internally
@@ -227,8 +227,8 @@ function FileslistingModel(parent, data) {
         self.nzf_id(data.nzf_id)
         self.file_age(data.age)
         self.mb(data.mb)
-        self.canselect(data.status != "finished" && data.status != "queued")
-        self.isdone(data.status == "finished")
+        self.canselect(data.status !== "finished" && data.status !== "queued")
+        self.isdone(data.status === "finished")
         // Data is given in MB, would always show 0% for small files even if completed
         self.percentage(self.isdone() ? fixPercentages(100) : fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)))
     }
@@ -266,7 +266,7 @@ function paginationModel(parent) {
         // Return object for adding
         return {
             page: pageNr,
-            isCurrent: pageNr == self.currentPage(),
+            isCurrent: pageNr === self.currentPage(),
             isDots: false,
             onclick: function(data) {
                 self.moveToPage(data.page);
@@ -356,7 +356,7 @@ function paginationModel(parent) {
             }
 
             // Change of number of pages?
-            if(newNrPages != self.nrPages()) {
+            if(newNrPages !== self.nrPages()) {
                 // Update
                 self.nrPages(newNrPages);
             }

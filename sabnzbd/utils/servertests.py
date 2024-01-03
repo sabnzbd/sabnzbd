@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -86,6 +86,7 @@ def test_nntp_server_dict(kwargs):
         return False, T("Invalid server details")
 
     try:
+        s.request_addrinfo_blocking()
         nw = NewsWrapper(server=s, thrdnum=-1, block=True)
         nw.init_connect()
         while not nw.connected:
@@ -102,15 +103,7 @@ def test_nntp_server_dict(kwargs):
         # Trying SSL on non-SSL port?
         if match_str(str(err), ("unknown protocol", "wrong version number")):
             return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
-
         return False, str(err)
-
-    except TypeError:
-        return False, T("Invalid server address.")
-
-    except IndexError:
-        # No data was received in recv_chunk() call
-        return False, T("Server quit during login sequence.")
 
     except NNTPPermanentError:
         # Handled by the code below
@@ -124,9 +117,9 @@ def test_nntp_server_dict(kwargs):
         try:
             nw.reset_data_buffer()
             nw.recv_chunk()
-        except:
+        except Exception as err:
             # Some internal error, not always safe to close connection
-            return False, str(sys.exc_info()[1])
+            return False, str(err)
 
     # Parse result
     return_status = ()
@@ -146,5 +139,5 @@ def test_nntp_server_dict(kwargs):
         return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
 
     # Close the connection and return result
-    nw.hard_reset(send_quit=True)
+    nw.hard_reset()
     return return_status

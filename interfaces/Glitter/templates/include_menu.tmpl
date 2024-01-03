@@ -102,26 +102,15 @@
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>
                     <li>
-                        <!-- ko if: queue.scriptsListLoaded -->
                         <select data-bind="value: finishaction, event: { change: setOnQueueFinish }" class="form-control">
                             <option value=""></option>
-                            <optgroup label="$T('eoq-actions')">
-                                <option value="shutdown_program">$T('shutdownSab')</option>
-                                <!--#if $power_options#-->
-                                <option value="shutdown_pc">$T('shutdownPc')</option>
-                                <option value="standby_pc">$T('standbyPc')</option>
-                                <option value="hibernate_pc">$T('hibernatePc')</option>
-                                <!--#end if#-->
-                            </optgroup>
-                            <optgroup label="$T('eoq-scripts')" data-bind="visible: queue.scriptsList().length > 1">
-                                <!-- ko foreach: queue.scriptsList -->
-                                    <!-- ko if: \$data.scriptValue != 'None' -->
-                                        <option data-bind="text: \$data.scriptText, attr: { value: 'script_'+\$data.scriptValue } " ></option>
-                                    <!-- /ko -->
-                                <!-- /ko -->
-                            </optgroup>
+                            <option value="shutdown_program">$T('shutdownSab')</option>
+                            <!--#if $power_options#-->
+                            <option value="shutdown_pc">$T('shutdownPc')</option>
+                            <option value="standby_pc">$T('standbyPc')</option>
+                            <option value="hibernate_pc">$T('hibernatePc')</option>
+                            <!--#end if#-->
                         </select>
-                        <!-- /ko -->
                     </li>
                 </ul>
             </li>

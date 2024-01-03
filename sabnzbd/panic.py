@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -241,7 +241,7 @@ def launch_a_browser(url, force=False):
         if url and not url.startswith("http"):
             url = "file:///%s" % url
         if webbrowser:
-            webbrowser.open(url, 2, 1)
+            webbrowser.open(url, 2, True)
         else:
             logging.info("Not showing panic message in webbrowser, no support found")
     except:

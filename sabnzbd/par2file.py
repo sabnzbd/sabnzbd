@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,6 +29,7 @@ from typing import Dict, Optional, Tuple
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
+from sabnzbd.filesystem import get_basename
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -80,7 +81,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
         block = m.group(3)
     else:
         # Base-par2 file
-        setname = os.path.splitext(name)[0].strip()
+        setname = get_basename(name).strip()
         # Could not parse the filename, need deep inspection
         # We already know it's a par2 from the is_parfile
         if filepath:
@@ -230,7 +231,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                     duplicates16k.append(par2info.hash16k)
                     table[par2info.filename].has_duplicate = True
 
-    except Exception as e:
+    except:
         logging.info("Par2 parser crashed in file %s", fname)
         logging.debug("Traceback: ", exc_info=True)
         table = {}

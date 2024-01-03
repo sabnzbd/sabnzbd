@@ -37,7 +37,6 @@ function QueueListModel(parent) {
     self.multiEditItems = ko.observableArray([]);
     self.categoriesList = ko.observableArray([]);
     self.scriptsList = ko.observableArray([]);
-    self.scriptsListLoaded = ko.observable(false);
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(20).extend({ persist: 'queuePaginationLimit' });
     self.pagination = new paginationModel(self);
@@ -75,7 +74,7 @@ function QueueListModel(parent) {
         $.each(data.slots, function() {
             var item = this;
             var existingItem = ko.utils.arrayFirst(self.queueItems(), function(i) {
-                return i.id == item.nzo_id;
+                return i.id === item.nzo_id;
             });
 
             if(existingItem) {
@@ -88,7 +87,7 @@ function QueueListModel(parent) {
         });
 
         // Remove all items if there's any
-        if(itemIds.length == self.paginationLimit()) {
+        if(itemIds.length === self.paginationLimit()) {
             // Replace it, so only 1 Knockout DOM-update!
             self.queueItems(newItems);
             newItems = [];
@@ -97,7 +96,7 @@ function QueueListModel(parent) {
             $.each(itemIds, function() {
                 var id = this.toString();
                 self.queueItems.remove(ko.utils.arrayFirst(self.queueItems(), function(i) {
-                    return i.id == id;
+                    return i.id === id;
                 }));
             });
         }
@@ -171,7 +170,7 @@ function QueueListModel(parent) {
     // Searching in queue (rate-limited in decleration)
     self.searchTerm.subscribe(function() {
         // Go back to page 1
-        if(self.pagination.currentPage() != 1) {
+        if(self.pagination.currentPage() !== 1) {
             // This forces a refresh
             self.pagination.moveToPage(1);
         } else {
@@ -183,12 +182,12 @@ function QueueListModel(parent) {
     // Clear searchterm
     self.clearSearchTerm = function(data, event) {
         // Was it escape key or click?
-        if(event.type == 'mousedown' || (event.keyCode && event.keyCode == 27)) {
+        if(event.type === 'mousedown' || (event.keyCode && event.keyCode === 27)) {
             self.isLoading(true)
             self.searchTerm('');
         }
         // Was it click and the field is empty? Then we focus on the field
-        if(event.type == 'mousedown' && self.searchTerm() == '') {
+        if(event.type === 'mousedown' && self.searchTerm() === '') {
             $(event.target).parents('.search-box').find('input[type="text"]').focus()
             return;
         }
@@ -255,7 +254,7 @@ function QueueListModel(parent) {
         // Reset form and remove all checked ones
         $form[0].reset();
         self.multiEditItems.removeAll();
-        $('.queue-table input[name="multiedit"], .queue #multiedit-checkall').prop({'checked': false, 'indeterminate': false})
+        $('.queue-table input[name="multiedit"], #multiedit-checkall-queue').prop({'checked': false, 'indeterminate': false})
 
         // Is the multi-edit in view?
         if(($form.offset().top + $form.outerHeight(true)) > ($(window).scrollTop()+$(window).height())) {
@@ -264,6 +263,72 @@ function QueueListModel(parent) {
                 scrollTop: $form.offset().top + $form.outerHeight(true) - $(window).height() + 'px'
             }, 'fast')
         }
+    }
+
+    // Add to the list
+    self.addMultiEdit = function(item, event) {
+        // Is it a shift-click?
+        if(event.shiftKey) {
+            checkShiftRange('.queue-table input[name="multiedit"]');
+        }
+
+        // Add or remove from the list?
+        if(event.currentTarget.checked) {
+            // Add item
+            self.multiEditItems.push(item);
+            // Update them all
+            self.doMultiEditUpdate();
+        } else {
+            // Go over them all to know which one to remove
+            self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+        }
+
+        // Update check-all buton state
+        setCheckAllState('#multiedit-checkall-queue', '.queue-table input[name="multiedit"]')
+        return true;
+    }
+
+    // Check all
+    self.checkAllJobs = function(item, event) {
+        // Get which ones we care about
+        var allChecks = $('.queue-table input[name="multiedit"]').filter(':not(:disabled):visible');
+
+        // We need to re-evaltuate the state of this check-all
+        // Otherwise the 'inderterminate' will be overwritten by the click event!
+        setCheckAllState('#multiedit-checkall-queue', '.queue-table input[name="multiedit"]')
+
+        // Now we can check what happend
+        // For when some are checked, or all are checked (but not partly)
+        if(event.target.indeterminate || (event.target.checked && !event.target.indeterminate)) {
+            var allActive = allChecks.filter(":checked")
+            // First remove the from the list
+            if(allActive.length == self.multiEditItems().length) {
+                // Just remove all
+                self.multiEditItems.removeAll();
+                // Remove the check
+                allActive.prop('checked', false)
+            } else {
+                // Remove them seperate
+                allActive.each(function() {
+                    // Go over them all to know which one to remove
+                    var item = ko.dataFor(this)
+                    self.multiEditItems.remove(function(inList) { return inList.id == item.id; })
+                    // Remove the check of this one
+                    this.checked = false;
+                })
+            }
+        } else {
+            // None are checked, so check and add them all
+            allChecks.prop('checked', true)
+            allChecks.each(function() { self.multiEditItems.push(ko.dataFor(this)) })
+            event.target.checked = true
+
+            // Now we fire the update
+            self.doMultiEditUpdate()
+        }
+        // Set state of all the check-all's
+        setCheckAllState('#multiedit-checkall-queue', '.queue-table input[name="multiedit"]')
+        return true;
     }
 
     // Do the actual multi-update immediatly
@@ -286,14 +351,14 @@ function QueueListModel(parent) {
 
         // All non-category updates need to only happen after a category update
         function nonCatUpdates() {
-            if(newScript != '') {
+            if(newScript !== '') {
                 callAPI({
                     mode: 'change_script',
                     value: strIDs,
                     value2: newScript
                 })
             }
-            if(newPrior != '') {
+            if(newPrior !== '') {
                 callAPI({
                     mode: 'queue',
                     name: 'priority',
@@ -301,7 +366,7 @@ function QueueListModel(parent) {
                     value2: newPrior
                 })
             }
-            if(newProc != '') {
+            if(newProc !== '') {
                 callAPI({
                     mode: 'change_opts',
                     value: strIDs,
@@ -318,13 +383,13 @@ function QueueListModel(parent) {
 
             // Wat a little and do the refresh
             // Only if anything changed!
-            if(newStatus || newProc != '' || newPrior != '' || newScript != '' || newCat != '') {
+            if(newStatus || newProc !== '' || newPrior !== '' || newScript !== '' || newCat !== '') {
                 setTimeout(parent.refresh, 100)
             }
         }
 
         // What is changed?
-        if(newCat != '') {
+        if(newCat !== '') {
             callAPI({
                 mode: 'change_cat',
                 value: strIDs,
@@ -336,6 +401,42 @@ function QueueListModel(parent) {
 
     }
 
+    // Delete all selected
+    self.doMultiDelete = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        // Need confirm
+        if(!self.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
+            // List all the ID's
+            var strIDs = '';
+            $.each(self.multiEditItems(), function(index) {
+                strIDs = strIDs + this.id + ',';
+            })
+
+            // Show notification
+            showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
+
+            // Remove
+            callAPI({
+                mode: 'queue',
+                name: 'delete',
+                del_files: 1,
+                value: strIDs
+            }).then(function(response) {
+                if(response.status) {
+                    // Make sure the queue doesnt flicker and then fade-out
+                    self.isLoading(true)
+                    self.parent.refresh()
+                    // Empty it
+                    self.multiEditItems.removeAll();
+                    // Hide notification
+                    hideNotification()
+                }
+            })
+        }
+    }
+
     // On change of page we need to check all those that were in the list!
     self.queueItems.subscribe(function() {
         // We need to wait until the unit is actually finished rendering
@@ -345,7 +446,7 @@ function QueueListModel(parent) {
             })
 
             // Update check-all buton state
-            setCheckAllState('.queue #multiedit-checkall', '.queue-table input[name="multiedit"]')
+            setCheckAllState('#multiedit-checkall-queue', '.queue-table input[name="multiedit"]')
         }, 100)
     }, null, "arrayChange")
 }
@@ -365,8 +466,8 @@ function QueueModel(parent, data) {
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
     self.labels = ko.observableArray(data.labels);
-    self.isGrabbing = ko.observable(data.status == 'Grabbing' || data.avg_age == '-')
-    self.isFetchingBlocks = data.status == 'Fetching' || data.priority == 'Repair' // No need to update
+    self.isGrabbing = ko.observable(data.status === 'Grabbing' || data.avg_age === '-')
+    self.isFetchingBlocks = data.status === 'Fetching' || data.priority === 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
     self.remainingMB = ko.observable(parseFloat(data.mbleft))
     self.missingMB = ko.observable(parseFloat(data.mbmissing))
@@ -377,7 +478,7 @@ function QueueModel(parent, data) {
     self.priority = ko.observable(parent.priorityName[data.priority]);
     self.script = ko.observable(data.script);
     self.unpackopts = ko.observable(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
-    self.pausedStatus = ko.observable(data.status == 'Paused');
+    self.pausedStatus = ko.observable(data.status === 'Paused');
     self.timeLeft = ko.observable(data.timeleft);
 
     // Initially empty
@@ -388,7 +489,7 @@ function QueueModel(parent, data) {
     // Color of the progress bar
     self.progressColor = ko.computed(function() {
         // Checking
-        if(self.status() == 'Checking') {
+        if(self.status() === 'Checking') {
             return '#58A9FA'
         }
         // Check for missing data, the value is arbitrary! (2%)
@@ -396,7 +497,7 @@ function QueueModel(parent, data) {
             return '#F8A34E'
         }
         // Set to grey, only when not Force download
-        if((self.parent.parent.downloadsPaused() && self.priority() != 2) || self.pausedStatus()) {
+        if((self.parent.parent.downloadsPaused() && self.priority() !== 2) || self.pausedStatus()) {
             return '#B7B7B7'
         }
         // Nothing
@@ -405,6 +506,9 @@ function QueueModel(parent, data) {
 
     // MB's
     self.progressText = ko.pureComputed(function() {
+        if(self.isGrabbing()) {
+            return glitterTranslate.fetchingURL
+        }
         return (self.totalMB() - self.remainingMB()).toFixed(0) + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
     })
 
@@ -424,15 +528,15 @@ function QueueModel(parent, data) {
     })
     self.statusText = ko.computed(function() {
         // Checking
-        if(self.status() == 'Checking') {
+        if(self.status() === 'Checking') {
             return glitterTranslate.checking
         }
         // Grabbing
-        if(self.status() == 'Grabbing') {
+        if(self.status() === 'Grabbing') {
             return glitterTranslate.fetch
         }
         // Pausing status
-        if((self.parent.parent.downloadsPaused() && self.priority() != 2) || self.pausedStatus()) {
+        if((self.parent.parent.downloadsPaused() && self.priority() !== 2) || self.pausedStatus()) {
             return glitterTranslate.paused;
         }
         // Just the time
@@ -442,7 +546,7 @@ function QueueModel(parent, data) {
     // Icon to better show force-priority
     self.queueIcon = ko.computed(function() {
         // Force comes first
-        if(self.priority() == 2) {
+        if(self.priority() === 2) {
             return 'glyphicon-forward'
         }
         if(self.pausedStatus()) {
@@ -456,17 +560,17 @@ function QueueModel(parent, data) {
         switch(param) {
             case 'category':
                 // Exception for *
-                if(self.category() == "*")
+                if(self.category() === "*")
                     return glitterTranslate.defaultText
                 return self.category();
             case 'priority':
                 // Onload-exception
-                if(self.priority() == undefined) return;
-                return ko.utils.arrayFirst(self.parent.priorityOptions(), function(item) { return item.value == self.priority()}).name;
+                if(self.priority() === undefined) return;
+                return ko.utils.arrayFirst(self.parent.priorityOptions(), function(item) { return item.value === self.priority()}).name;
             case 'processing':
                 // Onload-exception
-                if(self.unpackopts() == undefined) return;
-                return ko.utils.arrayFirst(self.parent.processingOptions(), function(item) { return item.value == self.unpackopts()}).name;
+                if(self.unpackopts() === undefined) return;
+                return ko.utils.arrayFirst(self.parent.processingOptions(), function(item) { return item.value === self.unpackopts()}).name;
             case 'scripts':
                 return self.script();
             case 'age':
@@ -482,7 +586,7 @@ function QueueModel(parent, data) {
         self.password(data.password);
         self.index(data.index);
         self.status(data.status)
-        self.isGrabbing(data.status == 'Grabbing' || data.avg_age == '-')
+        self.isGrabbing(data.status === 'Grabbing' || data.avg_age === '-')
         self.totalMB(parseFloat(data.mb));
         self.remainingMB(parseFloat(data.mbleft));
         self.missingMB(parseFloat(data.mbmissing))
@@ -493,12 +597,12 @@ function QueueModel(parent, data) {
         self.priority(parent.priorityName[data.priority]);
         self.script(data.script);
         self.unpackopts(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
-        self.pausedStatus(data.status == 'Paused');
+        self.pausedStatus(data.status === 'Paused');
         self.timeLeft(data.timeleft);
 
         // Did the label-list change?
         // Otherwise KO will send updates to all texts during refresh()
-        if(self.rawLabels != data.labels.toString()) {
+        if(self.rawLabels !== data.labels.toString()) {
             // Update
             self.labels(data.labels);
             self.rawLabels = data.labels.toString();
@@ -535,7 +639,7 @@ function QueueModel(parent, data) {
     // Do on change
     self.nameForEdit.subscribe(function(newName) {
         // Anything change or empty?
-        if(!newName || self.name() == newName) return;
+        if(!newName || self.name() === newName) return;
 
         // Rename would abort Direct Unpack, so ask if user is sure
         if(self.direct_unpack() && !confirm(glitterTranslate.renameAbort)) return;
@@ -625,7 +729,7 @@ function QueueModel(parent, data) {
                 // Make sure no flickering (if there are more items left) and then remove
                 self.parent.isLoading(self.parent.totalItems() > 1)
                 parent.queueItems.remove(itemToDelete);
-                parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
+                parent.multiEditItems.remove(function(inList) { return inList.id === itemToDelete.id; })
                 self.parent.parent.refresh();
                 // Hide notifcation
                 hideNotification()

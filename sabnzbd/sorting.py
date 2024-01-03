@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ import logging
 import re
 import guessit
 from rebulk.match import MatchesDict
-from string import whitespace, ascii_lowercase, punctuation
+from string import whitespace, punctuation
 from typing import Optional, Union, List, Tuple, Dict
 
 import sabnzbd
@@ -57,7 +57,10 @@ UPPERCASE = ("III", "II", "IV")
 
 REPLACE_AFTER = {"()": "", "..": ".", "__": "_", "  ": " ", " .%ext": ".%ext"}
 
-RE_GI = re.compile(r"(%G([._]?)I<([\w]+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
+RE_GI = re.compile(r"(%G([._]?)I<(\w+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
+RE_LOWERCASE = re.compile(r"{([^{]*)}")
+RE_ENDEXT = re.compile(r"\.%ext}?$", re.I)
+RE_ENDFN = re.compile(r"%fn}?$", re.I)
 
 # Prevent guessit/rebulk from spamming the log when debug logging is active in SABnzbd
 logging.getLogger("rebulk").setLevel(logging.WARNING)
@@ -70,8 +73,8 @@ class Sorter:
         self,
         nzo: Optional[NzbObject],
         job_name: str,
-        path: str,
-        cat: str,
+        path: Optional[str] = None,
+        cat: Optional[str] = None,
         force: Optional[bool] = False,
         sorter_config: Optional[dict] = None,
     ):
@@ -93,6 +96,9 @@ class Sorter:
         self.is_season_pack = False
         self.season_pack_setname = ""
 
+        self.match_sorters()
+
+    def match_sorters(self):
         # If a sorter configuration is passed as an argument, only use that one
         sorters = [self.sorter_config] if self.sorter_config else config.get_ordered_sorters()
 
@@ -231,7 +237,7 @@ class Sorter:
     def get_showdescriptions(self):
         """Get the show descriptions based on metadata, guessit and jobname"""
         self.info["ep_name"], self.info["ep_name_two"], self.info["ep_name_three"] = get_descriptions(
-            self.nzo, self.guess, self.original_job_name
+            self.nzo, self.guess
         )
 
     def get_year(self):
@@ -257,7 +263,7 @@ class Sorter:
             except TypeError:
                 pass
 
-    def is_proper(self):
+    def is_proper(self) -> bool:
         """Determine if the release is tagged 'Proper'. Note that guessit also sets this for similar
         tags such as 'Real' and 'Repack', saving us the trouble of checking for additional keywords."""
         if not self.guess:
@@ -436,7 +442,7 @@ class Sorter:
 
                 try:
                     logging.debug("Renaming season pack file %s to %s", f, f_new)
-                    renamer(self._to_filepath(f, base_path), f_new_path := self._to_filepath(f_new, base_path))
+                    renamer(self._to_filepath(f, base_path), self._to_filepath(f_new, base_path))
                     success = True
                 except Exception:
                     logging.error("Failed to rename file %s to %s in season pack %s", f, f_new, self.original_job_name)
@@ -450,7 +456,7 @@ class Sorter:
                     # * existing files (but not directories),
                     # * that were created as part of this job,
                     # * and didn't qualify for processing in the own right.
-                    if os.path.isfile(os.path.join(base_path, sim_f)) and sim_f in all_job_files and not sim_f in files:
+                    if os.path.isfile(os.path.join(base_path, sim_f)) and sim_f in all_job_files and sim_f not in files:
                         sim_f_new = os.path.basename(sim_f).replace(f_name, f_name_new, 1)
                         logging.debug("Renaming %s to %s (alongside season pack file %s)", sim_f, sim_f_new, f)
                         try:
@@ -470,7 +476,7 @@ class Sorter:
                 )
         return success
 
-    def _rename_sequential(self, sequential_files: List[str], base_path: str) -> bool:
+    def _rename_sequential(self, sequential_files: Dict[str, str], base_path: str) -> bool:
         success = False
         for index, f in sequential_files.items():
             filepath = self._to_filepath(f, base_path)
@@ -579,10 +585,25 @@ class Sorter:
         return move_to_parent_directory(base_path)
 
 
+class BasicAnalyzer(Sorter):
+    def __init__(self, job_name: str):
+        """Very basic sorter that doesn't require a config"""
+        super().__init__(nzo=None, job_name=job_name)
+        # Directly trigger setting all values
+        self.get_values()
+
+    def match_sorters(self):
+        """Much more basic matching"""
+        self.guess = guess_what(self.original_job_name)
+
+        # Set the detected job type
+        self.type = self.guess["type"]
+        if self.guess["type"] == "episode":
+            self.type = "date" if self.guess.get("date") else "tv"
+
+
 def ends_in_file(path: str) -> bool:
     """Return True when path ends with '.%ext' or '%fn' while allowing for a lowercase marker"""
-    RE_ENDEXT = re.compile(r"\.%ext}?$", re.I)
-    RE_ENDFN = re.compile(r"%fn}?$", re.I)
     return bool(RE_ENDEXT.search(path) or RE_ENDFN.search(path))
 
 
@@ -611,9 +632,8 @@ def move_to_parent_directory(workdir: str) -> Tuple[str, bool]:
     return dest, True
 
 
-def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
-    """Guess metadata for movies or episodes from their name. The sort_type ('movie' or 'episode')
-    is passed as a hint to guessit, if given."""
+def guess_what(name: str) -> MatchesDict:
+    """Guess metadata for movies or episodes from their name."""
 
     if not name:
         raise ValueError("Need a name for guessing")
@@ -632,9 +652,6 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         "excludes": EXCLUDED_GUESSIT_PROPERTIES,
         "date_year_first": True,  # Make sure also short-dates are detected as YY-MM-DD
     }
-    if sort_type:
-        # Hint the type if known
-        guessit_options["type"] = sort_type
 
     guess = guessit.api.guessit(digit_fix + name, options=guessit_options)
     logging.debug("Initial guess for %s is %s", digit_fix + name, guess)
@@ -649,7 +666,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
 
     # Try to avoid setting the type to movie on arbitrary jobs (e.g. 'Setup.exe') just because guessit defaults to that
     table = str.maketrans({char: "" for char in whitespace + "_.-()[]{}"})
-    if guess.get("type") == "movie" and not sort_type == "movie":  # No movie hint
+    if guess.get("type") == "movie":
         if (
             guess.get("title", "").translate(table) == name.translate(table)  # Check for full name used as title
             or any(
@@ -659,7 +676,9 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
                 [key in guess for key in ("year", "screen_size", "video_codec")]
             )  # No typical movie properties set
             or (
-                name.lower().startswith("http://") and name.lower().endswith(".nzb") and guess.get("container" == "nzb")
+                name.lower().startswith(("http://", "https://"))
+                and name.lower().endswith(".nzb")
+                and guess.get("container" == "nzb")
             )  # URL to an nzb file, can happen when pre-queue script rejects a job
         ):
             guess["type"] = "unknown"
@@ -744,15 +763,13 @@ def get_titles(
 
 def replace_word(word_input: str, one: str, two: str) -> str:
     """Regex replace on just words"""
-    RE_WORD = re.compile(r"\W(%s)(\W|$)" % one, re.I)
-    matches = RE_WORD.findall(word_input)
-    if matches:
+    if matches := re.findall(r"\W(%s)(\W|$)" % one, word_input, re.I):
         for _ in matches:
             word_input = word_input.replace(one, two)
     return word_input
 
 
-def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict], jobname: str) -> Tuple[str, str, str]:
+def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict]) -> Tuple[str, str, str]:
     """Try to get an episode title or similar description from the NZB metadata or jobname, e.g.
     'Download This' in Show.S01E23.Download.This.1080p.HDTV.x264 and return multiple formats"""
     ep_name = None
@@ -772,7 +789,6 @@ def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict], job
 
 def to_lowercase(path: str) -> str:
     """Lowercases any characters enclosed in {}"""
-    RE_LOWERCASE = re.compile(r"{([^{]*)}")
     while True:
         m = RE_LOWERCASE.search(path)
         if not m:

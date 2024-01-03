@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -108,12 +108,8 @@ import sabnzbd.articlecache
 import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
 import sabnzbd.notifier as notifier
+import sabnzbd.sorting
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import (
-    DEFAULT_PRIORITY,
-    VALID_ARCHIVES,
-    REPAIR_REQUEST,
-)
 import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization
@@ -143,7 +139,6 @@ DIR_PID = None
 
 QUEUECOMPLETE = None  # stores the nice name of the action
 QUEUECOMPLETEACTION = None  # stores the name of the function to be called
-QUEUECOMPLETEARG = None  # stores an extra arguments that need to be passed
 
 DAEMON = None
 LINUX_POWER = powersup.HAVE_DBUS
@@ -167,6 +162,7 @@ RESTART_REQ = False
 PAUSED_ALL = False
 TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
+MACOSTRAY = None  # Thread for the macOS tray icon
 WEBUI_READY = False
 LAST_HISTORY_UPDATE = 1
 RESTORE_DATA = None
@@ -242,11 +238,11 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     if cfg.wait_for_dfolder():
         filesystem.wait_for_download_folder()
 
-    # Set the folders to be created, then the check_incomplete_vs_complete
-    # check will create them by calling get_path on them
+    # Create the folders, now that we waited for them to be available
     cfg.download_dir.set_create(True)
+    cfg.download_dir.create_path()
     cfg.complete_dir.set_create(True)
-    filesystem.check_incomplete_vs_complete()
+    cfg.complete_dir.create_path()
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
@@ -289,6 +285,11 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     if not cfg.sorters_converted():
         misc.convert_sorter_settings()
         cfg.sorters_converted.set(True)
+
+    # Convert duplicate settings
+    if cfg.no_series_dupes():
+        cfg.no_smart_dupes.set(cfg.no_series_dupes())
+        cfg.no_series_dupes.set(0)
 
     # Add hostname to the whitelist
     if not cfg.host_whitelist():
@@ -374,35 +375,35 @@ def halt():
         logging.debug("Stopping URLGrabber")
         sabnzbd.URLGrabber.stop()
         try:
-            sabnzbd.URLGrabber.join()
+            sabnzbd.URLGrabber.join(timeout=3)
         except:
             pass
 
         logging.debug("Stopping dirscanner")
         sabnzbd.DirScanner.stop()
         try:
-            sabnzbd.DirScanner.join()
+            sabnzbd.DirScanner.join(timeout=3)
         except:
             pass
 
         logging.debug("Stopping downloader")
         sabnzbd.Downloader.stop()
         try:
-            sabnzbd.Downloader.join()
+            sabnzbd.Downloader.join(timeout=3)
         except:
             pass
 
         logging.debug("Stopping assembler")
         sabnzbd.Assembler.stop()
         try:
-            sabnzbd.Assembler.join()
+            sabnzbd.Assembler.join(timeout=3)
         except:
             pass
 
         logging.debug("Stopping postprocessor")
         sabnzbd.PostProcessor.stop()
         try:
-            sabnzbd.PostProcessor.join()
+            sabnzbd.PostProcessor.join(timeout=3)
         except:
             pass
 

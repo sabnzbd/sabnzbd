@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,12 +16,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_utils.test_happyeyeballs - Testing SABnzbd happyeyeballs
+tests.test_happyeyeballs - Testing SABnzbd happyeyeballs
 """
+import os
+import sys
+import socket
 
+import pytest
 from flaky import flaky
 
-from sabnzbd.utils.happyeyeballs import happyeyeballs
+from sabnzbd.happyeyeballs import happyeyeballs
 
 
 @flaky
@@ -32,25 +36,27 @@ class TestHappyEyeballs:
     """
 
     def test_google_http(self):
-        ip = happyeyeballs("www.google.com")
-        assert "." in ip or ":" in ip
+        addrinfo = happyeyeballs("www.google.com", port=80)
+        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
+        assert "google" in addrinfo.canonname
 
     def test_google_https(self):
-        ip = happyeyeballs("www.google.com", port=443)
-        assert "." in ip or ":" in ip
+        addrinfo = happyeyeballs("www.google.com", port=443)
+        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
+        assert "google" in addrinfo.canonname
 
     def test_not_resolvable(self):
-        ip = happyeyeballs("not.resolvable.invalid")
-        assert ip is None
+        assert happyeyeballs("not.resolvable.invalid", port=80) is None
 
     def test_ipv6_only(self):
-        ip = happyeyeballs("ipv6.google.com")
-        assert ip is None or ":" in ip
+        if addrinfo := happyeyeballs("ipv6.google.com", port=443):
+            assert ":" in addrinfo.ipaddress
+            assert "google" in addrinfo.canonname
 
     def test_google_unreachable_port(self):
-        ip = happyeyeballs("www.google.com", port=33333)
-        assert ip is None
+        assert happyeyeballs("www.google.com", port=33333, timeout=1) is None
 
-    def test_newszilla_nntp(self):
-        ip = happyeyeballs("newszilla.xs4all.nl", port=119)
+    @pytest.mark.xfail(reason="CI sometimes blocks this")
+    def test_nntp(self):
+        ip = happyeyeballs("news.newshosting.com", port=119).ipaddress
         assert "." in ip or ":" in ip

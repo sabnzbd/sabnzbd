@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2023 The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ from sabnzbd.filesystem import (
     diskspace,
     get_filename,
     has_unwanted_extension,
+    get_basename,
 )
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
@@ -156,6 +157,7 @@ class Assembler(Thread):
             sabnzbd.Downloader.pause()
             if cfg.fulldisk_autoresume():
                 sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
+            sabnzbd.notifier.send_notification("SABnzbd", T("Too little diskspace forcing PAUSE"), "disk_full")
             sabnzbd.emailer.diskfull_mail()
 
     @staticmethod
@@ -249,7 +251,7 @@ SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
 def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
     """Return True if this is likely to be a cloaked encrypted post"""
-    fname = os.path.splitext(get_filename(path.lower()))[0]
+    fname = get_basename(get_filename(path.lower()))
     for name in names:
         name = get_filename(name.lower())
         name, ext = os.path.splitext(name)
