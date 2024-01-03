@@ -31,16 +31,16 @@ class TestGetIpAddress:
         for item in address:
             assert isinstance(item[0], type(socket.AF_INET))
 
-    def test_publicipv4(self):
-        public_ipv4 = publicipv4()
-        assert is_ipv4_addr(public_ipv4)
+    def test_public_ipv4(self):
+        publicipv4 = public_ipv4()
+        assert is_ipv4_addr(publicipv4)
 
-    def test_localipv4(self):
-        local_ipv4 = localipv4()
-        assert is_ipv4_addr(local_ipv4)
+    def test_local_ipv4(self):
+        localipv4 = local_ipv4()
+        assert is_ipv4_addr(localipv4)
 
-    def test_ipv6(self):
-        test_ipv6 = ipv6()
+    def test_public_ipv6(self):
+        test_ipv6 = public_ipv6()
         # Not all systems have IPv6
         if test_ipv6:
             assert is_ipv6_addr(test_ipv6)

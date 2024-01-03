@@ -33,7 +33,6 @@ from dataclasses import dataclass
 from typing import Tuple, Union, Optional
 from more_itertools import roundrobin
 
-from sabnzbd import cfg as cfg
 from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.decorators import cache_maintainer
 
@@ -41,15 +40,6 @@ from sabnzbd.decorators import cache_maintainer
 # quite long and might give us a slow host that just happened to be on top of the list.
 # The absolute minium specified in RFC 8305 is 10ms, so we use that.
 CONNECTION_ATTEMPT_DELAY = 0.01
-
-
-def family_type(family):
-    if family == socket.AF_INET:
-        return "IPv4-only"
-    elif family == socket.AF_INET6:
-        return "IPv6-only"
-    else:
-        return ""
 
 
 # For typing and convenience!
@@ -65,6 +55,17 @@ class AddrInfo:
     def __post_init__(self):
         # For easy access
         self.ipaddress = self.sockaddr[0]
+
+
+def family_type(family) -> str:
+    """Human-readable socket type"""
+    if family not in (socket.AF_INET, socket.AF_INET6, socket.AF_UNSPEC):
+        raise ValueError("Invalid family")
+    if family == socket.AF_INET:
+        return "IPv4-only"
+    elif family == socket.AF_INET6:
+        return "IPv6-only"
+    return "IPv4 and IPv6"
 
 
 # Called by each thread
@@ -104,11 +105,6 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socke
     by getaddrinfo or if no connection could be made to any of the addresses.
     If family is specified, only that family is tried"""
     try:
-        # Get address information, by default both IPV4 and IPV6
-        # family = socket.AF_UNSPEC
-        if not cfg.ipv6_servers():
-            family = socket.AF_INET
-
         ipv4_addrinfo = []
         ipv6_addrinfo = []
         last_canonname = ""
