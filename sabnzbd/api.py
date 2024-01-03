@@ -73,7 +73,7 @@ from sabnzbd.misc import (
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup, active_socks5_proxy
+from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
 from sabnzbd.nzbstuff import NzbObject
@@ -1303,9 +1303,9 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     # Dashboard: Connection information
     if not int_conv(skip_dashboard):
         info["active_socks5_proxy"] = active_socks5_proxy()
-        info["localipv4"] = localipv4()
-        info["publicipv4"] = publicipv4()
-        info["ipv6"] = ipv6()
+        info["localipv4"] = local_ipv4()
+        info["publicipv4"] = public_ipv4()
+        info["ipv6"] = public_ipv6()
         info["dnslookup"] = dnslookup()
 
     info["servers"] = []

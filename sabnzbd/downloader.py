@@ -223,7 +223,13 @@ class Server:
     def request_addrinfo_blocking(self):
         """Blocking attempt to run getaddrinfo() and Happy Eyeballs for specified server"""
         logging.debug("Retrieving server address information for %s", self.host)
-        self.addrinfo = happyeyeballs(self.host, self.port, self.timeout)
+
+        # Disable IPV6 if desired
+        family = socket.AF_UNSPEC
+        if not cfg.ipv6_servers():
+            family = socket.AF_INET
+
+        self.addrinfo = happyeyeballs(self.host, self.port, self.timeout, family)
         if not self.addrinfo:
             self.bad_cons += self.threads
             # Notify next call to maybe_block_server

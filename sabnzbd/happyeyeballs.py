@@ -33,7 +33,6 @@ from dataclasses import dataclass
 from typing import Tuple, Union, Optional
 from more_itertools import roundrobin
 
-from sabnzbd import cfg as cfg
 from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.decorators import cache_maintainer
 
@@ -56,6 +55,17 @@ class AddrInfo:
     def __post_init__(self):
         # For easy access
         self.ipaddress = self.sockaddr[0]
+
+
+def family_type(family) -> str:
+    """Human-readable socket type"""
+    if family not in (socket.AF_INET, socket.AF_INET6, socket.AF_UNSPEC):
+        raise ValueError("Invalid family")
+    if family == socket.AF_INET:
+        return "IPv4-only"
+    elif family == socket.AF_INET6:
+        return "IPv6-only"
+    return "IPv4 and IPv6"
 
 
 # Called by each thread
@@ -89,16 +99,12 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
 
 @cache_maintainer(clear_time=10)
 @functools.lru_cache(maxsize=None)
-def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT) -> Optional[AddrInfo]:
+def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socket.AF_UNSPEC) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
-    by getaddrinfo or if no connection could be made to any of the addresses"""
+    by getaddrinfo or if no connection could be made to any of the addresses.
+    If family is specified, only that family is tried"""
     try:
-        # Get address information, by default both IPV4 and IPV6
-        family = socket.AF_UNSPEC
-        if not cfg.ipv6_servers():
-            family = socket.AF_INET
-
         ipv4_addrinfo = []
         ipv6_addrinfo = []
         last_canonname = ""
@@ -128,9 +134,10 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT) -> Optional[
                 raise
 
         logging.debug(
-            "Available addresses for %s (port=%d): %d IPv4 and %d IPv6",
+            "Available addresses for %s (port=%d, %s): %d IPv4 and %d IPv6",
             host,
             port,
+            family_type(family),
             len(ipv4_addrinfo),
             len(ipv6_addrinfo),
         )
@@ -159,7 +166,14 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT) -> Optional[
             except queue.Empty:
                 raise ConnectionError("No addresses could be resolved")
 
-        logging.info("Quickest IP address for %s (port=%d): %s (%s)", host, port, result.ipaddress, result.canonname)
+        logging.info(
+            "Quickest IP address for %s (port=%d, %s): %s (%s)",
+            host,
+            port,
+            family_type(family),
+            result.ipaddress,
+            result.canonname,
+        )
         return result
     except Exception as e:
         logging.debug("Failed Happy Eyeballs lookup: %s", e)

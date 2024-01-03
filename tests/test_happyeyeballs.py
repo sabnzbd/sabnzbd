@@ -45,11 +45,23 @@ class TestHappyEyeballs:
         assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
         assert "google" in addrinfo.canonname
 
+    def test_google_http_want_ipv4(self):
+        addrinfo = happyeyeballs("www.google.com", port=80, family=socket.AF_INET)
+        assert "." in addrinfo.ipaddress and not ":" in addrinfo.ipaddress
+        assert "google" in addrinfo.canonname
+
+    def test_google_http_want_ipv6(self):
+        # TODO: timeout needed for IPv4-only CI environment?
+        addrinfo = happyeyeballs("www.google.com", port=80, timeout=2, family=socket.AF_INET6)
+        if addrinfo:
+            assert not "." in addrinfo.ipaddress and ":" in addrinfo.ipaddress
+            assert "google" in addrinfo.canonname
+
     def test_not_resolvable(self):
         assert happyeyeballs("not.resolvable.invalid", port=80) is None
 
     def test_ipv6_only(self):
-        if addrinfo := happyeyeballs("ipv6.google.com", port=443):
+        if addrinfo := happyeyeballs("ipv6.google.com", port=443, timeout=2):
             assert ":" in addrinfo.ipaddress
             assert "google" in addrinfo.canonname
 
