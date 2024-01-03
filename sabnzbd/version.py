@@ -7,4 +7,4 @@
 # Do not forget to update the appdata file for every major release!
 
 __version__ = "4.2.0"
-__baseline__ = "unknown"
+__baseline__ = "5c4dfa4cc65084a5052efe52d98bda7b698439be"
