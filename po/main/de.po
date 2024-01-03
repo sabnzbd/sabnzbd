@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2023 The SABnzbd-Team
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # C E <githubce@eiselt.ch>, 2020
@@ -15,7 +15,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0RC2\n"
+"Project-Id-Version: SABnzbd-4.2.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -2623,18 +2623,6 @@ msgstr "7zip aktivieren"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will"
-" be encrypted, however, validating a server's identity using its "
-"certificates is not possible. OpenSSL 1.0.2 or above and up-to-date local CA"
-" certificates are required."
-msgstr ""
-"Sichere (SSL) Verbindungen von SABnzbd zu Newsserver und Webseiten sind "
-"verschlüsselt, aber das Validieren der Server Identität mit dessen "
-"Zertifikat ist nicht möglich. Vorraussetzungen dafür sind OpenSSL 1.0.2 oder"
-" höher und aktuelle lokale CA Zertifikate."
-
-#: sabnzbd/skintext.py
-msgid ""
 "Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
@@ -3423,10 +3411,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Check for New Release"
 msgstr "Auf neue Version prüfen"
-
-#: sabnzbd/skintext.py
-msgid "Weekly check for new SABnzbd release."
-msgstr "Wöchentlich überprüfen, ob eine neue SABnzbd-Version verfügbar ist."
 
 #. Pick list for weekly test for new releases
 #: sabnzbd/skintext.py
