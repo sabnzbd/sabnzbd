@@ -299,9 +299,10 @@ msgstr ""
 "Le réglage des permissions de %s pourrait refuser à SABnzbd l'accès aux "
 "fichiers et dossiers qu'il crée."
 
+#. Warning message
 #: sabnzbd/cfg.py
-msgid "Network path \"%s\" is not allowed here"
-msgstr "Le chemin réseau \"%s\" n'est pas autorisé ici"
+msgid "Network path \"%s\" should not be used here"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -775,6 +776,11 @@ msgstr "ERREUR:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Retour"
+
+#: sabnzbd/misc.py
+msgid ""
+"To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
+msgstr ""
 
 #: sabnzbd/misc.py
 msgid "d"

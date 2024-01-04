@@ -253,8 +253,9 @@ msgstr ""
 msgid "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
 msgstr ""
 
+#. Warning message
 #: sabnzbd/cfg.py
-msgid "Network path \"%s\" is not allowed here"
+msgid "Network path \"%s\" should not be used here"
 msgstr ""
 
 #: sabnzbd/cfg.py
@@ -675,6 +676,10 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Back"
+msgstr ""
+
+#: sabnzbd/misc.py
+msgid "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
 msgstr ""
 
 #: sabnzbd/misc.py

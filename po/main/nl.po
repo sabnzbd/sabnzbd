@@ -292,9 +292,10 @@ msgstr ""
 "Ingestelde rechten van %s zouden kunnen beletten dat SABnzbd toegang heeft "
 "tot de aangemaakte bestanden en mappen."
 
+#. Warning message
 #: sabnzbd/cfg.py
-msgid "Network path \"%s\" is not allowed here"
-msgstr "Netwerk-pad \"%s\" hier niet toegestaan."
+msgid "Network path \"%s\" should not be used here"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -772,6 +773,11 @@ msgstr "FOUT:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Terug"
+
+#: sabnzbd/misc.py
+msgid ""
+"To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
+msgstr ""
 
 #: sabnzbd/misc.py
 msgid "d"

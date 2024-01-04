@@ -272,8 +272,9 @@ msgid ""
 " it creates."
 msgstr ""
 
+#. Warning message
 #: sabnzbd/cfg.py
-msgid "Network path \"%s\" is not allowed here"
+msgid "Network path \"%s\" should not be used here"
 msgstr ""
 
 #: sabnzbd/cfg.py
@@ -726,6 +727,11 @@ msgstr "FEL:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Bakåt"
+
+#: sabnzbd/misc.py
+msgid ""
+"To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
+msgstr ""
 
 #: sabnzbd/misc.py
 msgid "d"

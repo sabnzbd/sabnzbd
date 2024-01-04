@@ -300,9 +300,10 @@ msgstr ""
 "Die aktuellen Zugriffseinstellungen (%s) könnte SABnzbd den Zugriff auf die "
 "erstellten Dateien und Ordner von SABnzbd verweigern."
 
+#. Warning message
 #: sabnzbd/cfg.py
-msgid "Network path \"%s\" is not allowed here"
-msgstr "Netzwerkpfad \"%s\" ist hier nicht erlaubt"
+msgid "Network path \"%s\" should not be used here"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -780,6 +781,11 @@ msgstr "FEHLER:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Zurück"
+
+#: sabnzbd/misc.py
+msgid ""
+"To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
+msgstr ""
 
 #: sabnzbd/misc.py
 msgid "d"

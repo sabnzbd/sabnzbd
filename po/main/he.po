@@ -277,9 +277,10 @@ msgid ""
 msgstr ""
 "הגדרת הרשאות של %s עשויה לדחות גישה מן SABnzbd אל הקבצים והתיקיות שהוא יוצר."
 
+#. Warning message
 #: sabnzbd/cfg.py
-msgid "Network path \"%s\" is not allowed here"
-msgstr "נתיב הרשת \"%s\" אינו מותר כאן"
+msgid "Network path \"%s\" should not be used here"
+msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -736,6 +737,11 @@ msgstr "שגיאה:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "הקודם"
+
+#: sabnzbd/misc.py
+msgid ""
+"To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
+msgstr ""
 
 #: sabnzbd/misc.py
 msgid "d"
