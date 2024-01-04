@@ -83,11 +83,12 @@ RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 HAVE_AMPM = bool(time.strftime("%p"))
 
 
-def helpful_warning(*args, **kwargs):
+def helpful_warning(msg, *args, **kwargs):
     """Wrapper to ignore helpful warnings if desired"""
     if cfg.helpful_warnings():
-        return logging.warning(*args, **kwargs)
-    return logging.info(*args, **kwargs)
+        msg = "%s\n%s" % (msg, T("To prevent all helpful warnings, disable Special setting 'helpful_warnings'."))
+        return logging.warning(msg, *args, **kwargs)
+    return logging.info(msg, *args, **kwargs)
 
 
 def duplicate_warning(*args, **kwargs):

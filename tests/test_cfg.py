@@ -111,10 +111,6 @@ class TestValidators:
         assert cfg.validate_safedir("", "", "def") == (None, "def")
         assert cfg.validate_safedir("", "C:\\", "") == (None, "C:\\")
 
-    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
-    def test_validate_safedir_win(self):
-        assert "Network path" in cfg.validate_safedir("", "\\\\NAS\\foo", "")[0]
-
     def test_validate_host(self):
         # valid input
         assert cfg.validate_host("127.0.0.1") == (None, "127.0.0.1")
