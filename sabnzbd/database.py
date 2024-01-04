@@ -80,7 +80,7 @@ class HistoryDB:
         self.execute("PRAGMA user_version;")
         try:
             version = self.cursor.fetchone()["user_version"]
-        except IndexError:
+        except (IndexError, TypeError):
             version = 0
 
         # Add any new columns added since last DB version
