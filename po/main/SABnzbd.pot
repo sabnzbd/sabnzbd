@@ -253,8 +253,9 @@ msgstr ""
 msgid "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
 msgstr ""
 
+#. Warning message
 #: sabnzbd/cfg.py
-msgid "Network path \"%s\" is not allowed here"
+msgid "Network path \"%s\" should not be used here"
 msgstr ""
 
 #: sabnzbd/cfg.py
@@ -675,6 +676,10 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Back"
+msgstr ""
+
+#: sabnzbd/misc.py
+msgid "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
 msgstr ""
 
 #: sabnzbd/misc.py
@@ -2412,10 +2417,6 @@ msgid "Enable 7zip"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server's identity using its certificates is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates are required."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Speed up repairs by installing par2cmdline-turbo, it is available for many platforms."
 msgstr ""
 
@@ -3061,10 +3062,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Check for New Release"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Weekly check for new SABnzbd release."
 msgstr ""
 
 #. Pick list for weekly test for new releases

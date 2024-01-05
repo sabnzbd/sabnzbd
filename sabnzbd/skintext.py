@@ -252,9 +252,6 @@ SKIN_TEXT = {
     "confirmWithoutSavingPrompt": TT("Changes have not been saved, and will be lost."),
     "explain-sessionExpire": TT("When your IP address changes or SABnzbd is restarted the session will expire."),
     "opt-enable_7zip": TT("Enable 7zip"),
-    "explain-nosslcontext": TT(
-        "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server's identity using its certificates is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates are required."
-    ),
     "explain-getpar2turbo": TT("Speed up repairs by installing par2cmdline-turbo, it is available for many platforms."),
     "version": TT("Version"),
     "uptime": TT("Uptime"),
@@ -473,7 +470,6 @@ SKIN_TEXT = {
         "Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay."
     ),
     "opt-check_new_rel": TT("Check for New Release"),
-    "explain-check_new_rel": TT("Weekly check for new SABnzbd release."),
     "also-test": TT("Also test releases"),  #: Pick list for weekly test for new releases
     "opt-replace_spaces": TT("Replace Spaces in Foldername"),
     "explain-replace_spaces": TT("Replace spaces with underscores in folder names."),

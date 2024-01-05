@@ -1,7 +1,16 @@
-Release Notes - SABnzbd 4.2.0
+Release Notes - SABnzbd 4.2.1
 =========================================================
 
-This is the latest stable SABnzbd release, version 4.2.0, which includes several new features and bug fixes.
+This is a bug-fix release of SABnzbd 4.2.0.
+
+## Bug-fixes and changes since 4.2.0:
+
+* **Bug-fixes:**
+    * New downloads did not appear in the History after the update to 4.2.0.
+
+* **Changes:**
+    * The external IPv6-address is shown, instead of the internal address.
+    * Windows: Network drives as `Download Folder` are no longer blocked, only warned against.
 
 ## Key changes since 4.1.0
 

@@ -80,32 +80,32 @@ class HistoryDB:
         self.execute("PRAGMA user_version;")
         try:
             version = self.cursor.fetchone()["user_version"]
-        except IndexError:
+        except (IndexError, TypeError):
             version = 0
 
         # Add any new columns added since last DB version
         # Use "and" to stop when database has been reset due to corruption
         if version < 1:
             _ = (
-                self.execute("PRAGMA user_version = 1;")
-                and self.execute("ALTER TABLE history ADD COLUMN series TEXT;")
-                and self.execute("ALTER TABLE history ADD COLUMN md5sum TEXT;")
+                self.execute("PRAGMA user_version = 1;", save=True)
+                and self.execute("ALTER TABLE history ADD COLUMN series TEXT;", save=True)
+                and self.execute("ALTER TABLE history ADD COLUMN md5sum TEXT;", save=True)
             )
         if version < 2:
-            _ = self.execute("PRAGMA user_version = 2;") and self.execute(
-                "ALTER TABLE history ADD COLUMN password TEXT;"
+            _ = self.execute("PRAGMA user_version = 2;", save=True) and self.execute(
+                "ALTER TABLE history ADD COLUMN password TEXT;", save=True
             )
         if version < 3:
             # Transfer data to new column (requires WHERE-hack), original column should be removed later
             _ = (
-                self.execute("PRAGMA user_version = 3;")
-                and self.execute("ALTER TABLE history ADD COLUMN duplicate_key TEXT;")
-                and self.execute("UPDATE history SET duplicate_key = series WHERE 1 = 1;")
+                self.execute("PRAGMA user_version = 3;", save=True)
+                and self.execute("ALTER TABLE history ADD COLUMN duplicate_key TEXT;", save=True)
+                and self.execute("UPDATE history SET duplicate_key = series WHERE 1 = 1;", save=True)
             )
 
     def execute(self, command: str, args: Sequence = (), save: bool = False) -> bool:
         """Wrapper for executing SQL commands"""
-        for tries in range(5, 0, -1):
+        for tries in (4, 3, 2, 1, 0):
             try:
                 self.cursor.execute(command, args)
                 if save:
@@ -113,7 +113,7 @@ class HistoryDB:
                 return True
             except:
                 error = str(sys.exc_info()[1])
-                if tries >= 0 and "is locked" in error:
+                if tries > 0 and "is locked" in error:
                     logging.debug("Database locked, wait and retry")
                     time.sleep(0.5)
                     continue
@@ -178,9 +178,10 @@ class HistoryDB:
             "password" TEXT,
             "duplicate_key" TEXT
         )
-        """
+        """,
+            save=True,
         )
-        self.execute("PRAGMA user_version = 3;")
+        self.execute("PRAGMA user_version = 3;", save=True)
 
     def close(self):
         """Close database connection"""

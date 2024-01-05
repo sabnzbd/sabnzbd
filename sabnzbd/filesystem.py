@@ -1199,7 +1199,7 @@ def load_admin(data_id: str, remove=False, silent=False) -> Any:
 def wait_for_download_folder():
     """Wait for download folder to become available"""
     while not sabnzbd.cfg.download_dir.test_path():
-        logging.debug("Waiting for incomplete folder")
+        logging.info("Waiting for incomplete folder")
         time.sleep(2.0)
 
 

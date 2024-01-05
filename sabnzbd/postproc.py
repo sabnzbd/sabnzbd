@@ -46,6 +46,7 @@ from sabnzbd.misc import (
     history_updated,
     change_queue_complete_action,
     run_script,
+    is_none,
 )
 from sabnzbd.filesystem import (
     real_path,
@@ -1098,7 +1099,7 @@ def handle_empty_queue():
         )
 
         # Perform end-of-queue script
-        if cfg.end_queue_script():
+        if not is_none(cfg.end_queue_script()):
             logging.info("Queue has finished, launching script: %s ", cfg.end_queue_script())
             run_script(cfg.end_queue_script())
 

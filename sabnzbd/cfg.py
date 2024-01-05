@@ -190,7 +190,7 @@ def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and is_valid_script(value)):
         return None, value
-    elif (value and value == "None") or not value:
+    elif sabnzbd.misc.is_none(value):
         return None, "None"
     return T("%s is not a valid script") % value, None
 
@@ -219,10 +219,10 @@ def validate_permissions(value: str) -> ValidateResult:
 def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
     """Allow only when queues are empty and not a network-path"""
     if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
+        # We allow it, but send a warning
         if is_network_path(real_path(root, value)):
-            return T('Network path "%s" is not allowed here') % value, None
-        else:
-            return validate_default_if_empty(root, value, default)
+            sabnzbd.misc.helpful_warning(T('Network path "%s" should not be used here'), value)
+        return validate_default_if_empty(root, value, default)
     else:
         return T("Queue not empty, cannot change folder."), None
 

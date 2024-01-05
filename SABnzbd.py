@@ -103,8 +103,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, dnslookup
-from sabnzbd.utils.getperformance import getpystone, getcpu
+from sabnzbd.getipaddress import local_ipv4
 import sabnzbd.utils.ssdp as ssdp
 
 try:
@@ -1474,7 +1473,7 @@ def main():
             external_host = cherryhost
         else:
             # Fall back to the IPv4 address of the LAN interface
-            external_host = localipv4()
+            external_host = local_ipv4()
         logging.debug("Using %s as host address for Bonjour and SSDP", external_host)
 
         # Only broadcast to local network addresses. If local ranges have been defined, further

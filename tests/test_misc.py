@@ -62,6 +62,18 @@ class TestMisc:
         assert "all caps" == misc.safe_lower("ALL CAPS")
         assert "" == misc.safe_lower(None)
 
+    def test_is_none(self):
+        assert misc.is_none(None) is True
+        assert misc.is_none(0) is True
+        assert misc.is_none(False) is True
+        assert misc.is_none("None") is True
+        assert misc.is_none("nOne") is True
+
+        assert misc.is_none(True) is False
+        assert misc.is_none(1) is False
+        assert misc.is_none(True) is False
+        assert misc.is_none("Not None") is False
+
     def test_cmp(self):
         assert misc.cmp(1, 2) < 0
         assert misc.cmp(2, 1) > 0

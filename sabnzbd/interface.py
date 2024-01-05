@@ -52,6 +52,7 @@ from sabnzbd.misc import (
     is_loopback_addr,
     helpful_warning,
     recursive_html_escape,
+    is_none,
 )
 from sabnzbd.happyeyeballs import happyeyeballs
 from sabnzbd.filesystem import (
@@ -517,7 +518,6 @@ class Wizard:
             cfg.language.set(kwargs.get("lang"))
 
         info = build_header(sabnzbd.WIZARD_DIR)
-        info["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
         # Just in case, add server
         servers = config.get_servers()
@@ -682,11 +682,8 @@ class ConfigPage:
         conf["configfn"] = clip_path(config.get_filename())
         conf["cmdline"] = sabnzbd.CMDLINE
         conf["build"] = sabnzbd.__baseline__[:7]
-
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
         conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
-
-        conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
         conf["ssl_version"] = ssl.OPENSSL_VERSION
 
         return template_filtered_response(
@@ -800,8 +797,6 @@ class ConfigSwitches:
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-
-        conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
         conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
 
@@ -957,8 +952,6 @@ class ConfigGeneral:
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
-
         web_list = []
         for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
             # Ignore the config
@@ -1072,7 +1065,6 @@ class ConfigServer:
 
         conf["servers"] = new
         conf["cats"] = list_cats(default=True)
-        conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
         return template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_server.tmpl"),
@@ -1386,7 +1378,7 @@ class ConfigRss:
             raise rssRaiser(self.__root, kwargs)
 
         pp = kwargs.get("pp", "")
-        if pp.lower() == "none":
+        if is_none(pp):
             pp = ""
         script = ConvertSpecials(kwargs.get("script"))
         cat = ConvertSpecials(kwargs.get("cat"))

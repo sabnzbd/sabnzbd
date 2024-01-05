@@ -19,18 +19,20 @@
 sabnzbd.getipaddress
 """
 
-import socket
 import functools
-import urllib.request
-import urllib.error
-import socks
 import logging
+import socket
 import time
+import urllib.error
+import urllib.request
 from typing import Callable
+
+import socks
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
+from sabnzbd.happyeyeballs import happyeyeballs, family_type
 
 
 def timeout(max_timeout: float):
@@ -88,7 +90,7 @@ def dnslookup():
     return result
 
 
-def localipv4():
+def local_ipv4():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
             # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
@@ -101,59 +103,56 @@ def localipv4():
     return ipv4
 
 
-def publicipv4():
-    """Because of dual IPv4/IPv6 clients, finding the
-    public ipv4 needs special attention, meaning forcing
-    IPv4 connections, and not allowing IPv6 connections
-    Function uses sabnzbd.cfg.selftest_host(), which must report our public IPv4 address over which we access it
+def public_ip(family=socket.AF_UNSPEC):
+    """
+    Reports the client's public IP address (IPv4 or IPv6, if specified by family), as reported by selftest host
     """
     start = time.time()
+    if resolvehostaddress := happyeyeballs(sabnzbd.cfg.selftest_host(), port=443, family=family):
+        resolvehostip = resolvehostaddress.ipaddress
+    else:
+        logging.debug("Error resolving my IP address: resolvehost not found")
+        return None
+
+    if sabnzbd.misc.is_ipv4_addr(resolvehostip):
+        resolveurl = f"http://{resolvehostip}/?ipv4test"
+    elif sabnzbd.misc.is_ipv6_addr(resolvehostip):
+        resolveurl = f"http://[{resolvehostip}]/?ipv6test"  # including square brackets
+    else:
+        logging.debug("Error resolving public IP address: no valid IPv4 or IPv6 address found")
+        return None
+
     try:
-        # look up IPv4 addresses of selftest_host
-        lookup_result_iv4 = addresslookup4(sabnzbd.cfg.selftest_host())
+        req = urllib.request.Request(resolveurl)
+        req.add_header("Host", sabnzbd.cfg.selftest_host())
+        req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
+        with urllib.request.urlopen(req, timeout=2) as open_req:
+            client_ip = ubtou(open_req.read().strip())
 
-        # Make sure there is a result, abort otherwise
-        if not lookup_result_iv4:
-            raise Exception
-    except Exception:
-        # something very bad: no name resolving of selftest_host
-        logging.debug("Failed to detect public IPv4 address: looking up %s failed", sabnzbd.cfg.selftest_host())
+        # Make sure it's a valid IPv4 or IPv6 address
+        if not sabnzbd.misc.is_ipv4_addr(client_ip) and not sabnzbd.misc.is_ipv6_addr(client_ip):
+            raise ValueError
+    except urllib.error.URLError:
+        logging.debug(
+            "Failed to get public address from %s (%s)",
+            sabnzbd.cfg.selftest_host(),
+            family_type(family),
+            exc_info=True,
+        )
         return None
 
-    public_ipv4 = None
-    # we got one or more IPv4 address(es) for selftest_host, so let's connect and ask for our own public IPv4
-    for item in lookup_result_iv4:
-        # get next IPv4 address of sabnzbd.cfg.selftest_host()
-        selftest_ipv4 = item[4][0]
-        try:
-            # put the selftest_host's IPv4 address into the URL
-            req = urllib.request.Request("http://" + selftest_ipv4 + "/")
-            # specify the User-Agent, because certain sites refuse connections with "python urllib2" as User-Agent:
-            req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
-            # specify the Host, because we only provide the IPv4 address in the URL:
-            req.add_header("Host", sabnzbd.cfg.selftest_host())
-            # get the response, timeout 2 seconds, in case the website is not accessible
-            public_ipv4 = ubtou(urllib.request.urlopen(req, timeout=2).read())
-            # ... check the response is indeed an IPv4 address:
-            # if we got anything else than a plain IPv4 address, this will raise an exception
-            socket.inet_aton(public_ipv4)
-            # if we get here without exception, we found our public IPv4, and we're done:
-            break
-        except (socket.error, urllib.error.URLError):
-            # the connect OR the inet_aton raised an exception, so:
-            public_ipv4 = None  # reset
-            # continue the for loop to try next server IPv4 address
-            pass
-
-    if not public_ipv4:
-        logging.debug("Failed to get public IPv4 address from %s", sabnzbd.cfg.selftest_host())
-        return None
-
-    logging.debug("Public IPv4 address = %s (in %.2f seconds)", public_ipv4, time.time() - start)
-    return public_ipv4
+    logging.debug("Public address %s = %s (in %.2f seconds)", family_type(family), client_ip, time.time() - start)
+    return client_ip
 
 
-def ipv6():
+def public_ipv4():
+    return public_ip(family=socket.AF_INET)
+
+
+def local_ipv6():
+    """
+    return IPv6 address on local LAN interface. So a first check if there is IPv6 connectivity
+    """
     try:
         with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s_ipv6:
             # IPv6 prefix for documentation purpose
@@ -164,3 +163,8 @@ def ipv6():
 
     logging.debug("IPv6 address = %s", ipv6_address)
     return ipv6_address
+
+
+def public_ipv6():
+    if local_ipv6():
+        return public_ip(family=socket.AF_INET6)

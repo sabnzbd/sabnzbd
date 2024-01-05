@@ -13,7 +13,7 @@ from cryptography.x509.oid import NameOID
 import datetime
 import socket
 
-from sabnzbd.getipaddress import localipv4
+from sabnzbd.getipaddress import local_ipv4
 
 
 def generate_key(key_size=2048, output_file="key.pem"):
@@ -64,7 +64,7 @@ def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", L
         san_list.append(x509.IPAddress(ipaddress.IPv6Address("::1")))
 
         # append local v4 ip
-        mylocalipv4 = localipv4()
+        mylocalipv4 = local_ipv4()
         if mylocalipv4:
             san_list.append(x509.IPAddress(ipaddress.IPv4Address(str(mylocalipv4))))
     except:

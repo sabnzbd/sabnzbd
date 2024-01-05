@@ -223,7 +223,13 @@ class Server:
     def request_addrinfo_blocking(self):
         """Blocking attempt to run getaddrinfo() and Happy Eyeballs for specified server"""
         logging.debug("Retrieving server address information for %s", self.host)
-        self.addrinfo = happyeyeballs(self.host, self.port, self.timeout)
+
+        # Disable IPV6 if desired
+        family = socket.AF_UNSPEC
+        if not cfg.ipv6_servers():
+            family = socket.AF_INET
+
+        self.addrinfo = happyeyeballs(self.host, self.port, self.timeout, family)
         if not self.addrinfo:
             self.bad_cons += self.threads
             # Notify next call to maybe_block_server
@@ -525,10 +531,6 @@ class Downloader(Thread):
         sabnzbd.decoder.decode(article, data_view)
 
     def run(self):
-        # Verify SSL certificate checking
-        sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
-        logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
-
         # Warn if there are servers defined, but none are valid
         if config.get_servers() and not self.servers:
             logging.warning(T("There are no active servers!"))

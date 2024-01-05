@@ -83,11 +83,12 @@ RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 HAVE_AMPM = bool(time.strftime("%p"))
 
 
-def helpful_warning(*args, **kwargs):
+def helpful_warning(msg, *args, **kwargs):
     """Wrapper to ignore helpful warnings if desired"""
     if cfg.helpful_warnings():
-        return logging.warning(*args, **kwargs)
-    return logging.info(*args, **kwargs)
+        msg = "%s\n%s" % (msg, T("To prevent all helpful warnings, disable Special setting 'helpful_warnings'."))
+        return logging.warning(msg, *args, **kwargs)
+    return logging.info(msg, *args, **kwargs)
 
 
 def duplicate_warning(*args, **kwargs):
@@ -165,6 +166,11 @@ def safe_lower(txt: Any) -> str:
         return txt.lower()
     else:
         return ""
+
+
+def is_none(inp: Any) -> bool:
+    """Check for 'not X' but also if it's maybe the string 'None'"""
+    return not inp or (isinstance(inp, str) and inp.lower() == "none")
 
 
 def cmp(x, y):
@@ -335,7 +341,7 @@ def cat_convert(cat):
     If no match found, but the indexer-cat starts with the user-cat, return user-cat
     If no match found, return None
     """
-    if cat and cat.lower() != "none":
+    if not is_none(cat):
         cats = config.get_ordered_categories()
         raw_cats = config.get_categories()
         for ucat in cats:
@@ -1224,33 +1230,6 @@ def set_https_verification(value):
     else:
         ssl._create_default_https_context = ssl._create_unverified_context
     return prev
-
-
-def test_cert_checking():
-    """Test quality of certificate validation"""
-    # User disabled the test, assume proper SSL certificates
-    if not cfg.selftest_host():
-        return True
-
-    # Try a connection to our test-host
-    try:
-        ctx = ssl.create_default_context()
-        base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
-        ssl_sock.settimeout(2.0)
-        ssl_sock.connect((cfg.selftest_host(), 443))
-        ssl_sock.close()
-        return True
-    except (socket.gaierror, socket.timeout):
-        # Non-SSL related error.
-        # We now assume that certificates work instead of forcing
-        # lower quality just because some (temporary) internet problem
-        logging.info("Could not determine system certificate validation quality due to connection problems")
-        return True
-    except:
-        # Seems something is still wrong
-        set_https_verification(False)
-    return False
 
 
 def request_repair():
