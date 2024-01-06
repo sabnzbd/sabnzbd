@@ -75,7 +75,7 @@ def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLS
         pass
 
 
-def internetspeed(test_time_limit: int = TIME_LIMIT) -> float:
+def internetspeed(test_time_limit: int = TIME_LIMIT, family=socket.AF_UNSPEC) -> float:
     """Measure internet speed from a test-download using our optimized SSL-code"""
 
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
