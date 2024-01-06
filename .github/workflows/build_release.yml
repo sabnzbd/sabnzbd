@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         path: "*-win64-bin.zip"
-        name: Windows Windows standalone binary (64bit)
+        name: Windows standalone binary (64bit)
     - name: Upload Windows installer (64bit)
       uses: actions/upload-artifact@v3
       with:
@@ -71,7 +71,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         path: "*-win32-bin.zip"
-        name: Windows Windows standalone binary (32bit and legacy)
+        name: Windows standalone binary (32bit and legacy)
 
   build_macos:
     name: Build macOS binary
