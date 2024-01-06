@@ -831,6 +831,7 @@ SPECIAL_BOOL_LIST = (
     "preserve_paused_state",
     "no_penalties",
     "ipv6_servers",
+    "ipv6_staging",
     "fast_fail",
     "overwrite_files",
     "enable_par_cleanup",
