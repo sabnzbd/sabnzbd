@@ -4186,6 +4186,10 @@ msgid "Bottom"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be completed' are disabled."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr ""
 
