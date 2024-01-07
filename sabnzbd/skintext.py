@@ -831,6 +831,9 @@ SKIN_TEXT = {
     "Glitter-top": TT("Top"),
     "Glitter-bottom": TT("Bottom"),
     "Glitter-retryJob": TT("Retry"),
+    "Glitter-retryNoChecks": TT(
+        "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be completed' are disabled."
+    ),
     "Glitter-more": TT("More"),
     "Glitter-scriptLog": TT("View Script Log"),
     "Glitter-clearHistory": TT("Purge History"),
