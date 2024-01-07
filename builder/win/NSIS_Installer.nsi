@@ -170,6 +170,24 @@ Section "SABnzbd" SecDummy
   SetOutPath "$INSTDIR"
   SetShellVarContext all
 
+  DetailPrint $(MsgShutting)
+
+  ;------------------------------------------------------------------
+  ; Shutdown any running service
+
+  !insertmacro SERVICE "stop" "SABnzbd" ""
+
+  ;------------------------------------------------------------------
+  ; Terminate SABnzbd.exe
+  loop:
+    ${nsProcess::FindProcess} "SABnzbd.exe" $R0
+    StrCmp $R0 0 0 endcheck
+    ${nsProcess::CloseProcess} "SABnzbd.exe" $R0
+    Sleep 500
+    Goto loop
+  endcheck:
+  ${nsProcess::Unload}
+
   ;------------------------------------------------------------------
   ; Make sure old versions are gone (reg-key already read in onInt)
   StrCmp $PREV_INST_DIR "" noPrevInstallRemove
@@ -292,38 +310,14 @@ Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
 
   ;------------------------------------------------------------------
-  ; make sure user terminates sabnzbd.exe or else abort
-  ;
-  loop:
-    ${nsProcess::FindProcess} "SABnzbd.exe" $R0
-    StrCmp $R0 0 0 endcheck
-    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) IDOK loop IDCANCEL exitinstall
-    exitinstall:
-      ${nsProcess::Unload}
-      Abort
-  endcheck:
-
-  ;------------------------------------------------------------------
-  ; make sure both services aren't running
-  ;
-  !insertmacro SERVICE "running" "SABnzbd" ""
-  Pop $0 ;response
-  !insertmacro SERVICE "running" "SABHelper" ""
-  Pop $1
-  ${If} $0 == true
-  ${OrIf} $1 == true
-    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) IDOK loop IDCANCEL exitinstall
-    ; exitinstall already defined above
-  ${EndIf}
-
-  ;------------------------------------------------------------------
   ; Tell users about the service change
   ;
   !insertmacro SERVICE "installed" "SABHelper" ""
   Pop $0 ;response
   ${If} $0 == true
     MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgServChange) IDOK removeservices IDCANCEL exitinstall
-    ; exitinstall already defined above
+    exitinstall:
+      Abort
     removeservices:
         !insertmacro SERVICE "delete" "SABHelper" ""
         !insertmacro SERVICE "delete" "SABnzbd" ""
@@ -345,9 +339,9 @@ UninstallText $(MsgUninstall)
 
 Section "un.$(MsgDelProgram)" Uninstall
 ;make sure sabnzbd.exe isn't running..if so shut it down
+  DetailPrint $(MsgShutting)
   ${nsProcess::KillProcess} "SABnzbd.exe" $R0
   ${nsProcess::Unload}
-  DetailPrint "Process Killed"
 
   ; add delete commands to delete whatever files/registry keys/etc you installed here.
   Delete "$INSTDIR\uninstall.exe"
@@ -409,13 +403,13 @@ SectionEnd
 
   LangString MsgSupportUs   ${LANG_ENGLISH} "Support the project, Donate!"
 
-  LangString MsgCloseSab    ${LANG_ENGLISH} "Please close $\"SABnzbd.exe$\" first"
-
   LangString MsgServChange  ${LANG_ENGLISH} "The SABnzbd Windows Service changed in SABnzbd 3.0.0. $\nYou will need to reinstall the SABnzbd service. $\n$\nClick `OK` to remove the existing services or `Cancel` to cancel this upgrade."
 
   LangString MsgOnly64bit   ${LANG_ENGLISH} "The installer only supports 64-bit Windows, use the standalone version to run on 32-bit Windows."
 
   LangString MsgNoWin7      ${LANG_ENGLISH} "The installer only supports Windows 8.1 and above, use the standalone legacy version to run on older Windows version."
+
+  LangString MsgShutting    ${LANG_ENGLISH} "Shutting down SABnzbd"
 
   LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
 
