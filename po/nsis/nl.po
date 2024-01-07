@@ -1,12 +1,12 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2023 The SABnzbd-Team
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2021
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0RC4\n"
+"Project-Id-Version: SABnzbd-4.2.1\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -23,10 +23,6 @@ msgstr "Toon opmerkingen bij deze uitgave"
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "Steun het project, doneer!"
-
-#: builder/win/NSIS_Installer.nsi
-msgid "Please close \"SABnzbd.exe\" first"
-msgstr "Sluit \"SABnzbd.exe\" eerst af"
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
@@ -53,6 +49,10 @@ msgstr ""
 "Alleen Windows 8.1 en nieuwer worden ondersteund door de installer, download"
 " de standalone legacy versie om SABnzbd uit te voeren op oudere versies van "
 "Windows."
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Shutting down SABnzbd"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"

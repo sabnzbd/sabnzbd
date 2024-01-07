@@ -21,10 +21,6 @@ msgid "Support the project, Donate!"
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
-msgid "Please close \"SABnzbd.exe\" first"
-msgstr ""
-
-#: builder/win/NSIS_Installer.nsi
 msgid "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing services or `Cancel` to cancel this upgrade."
 msgstr ""
 
@@ -34,6 +30,10 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "The installer only supports Windows 8.1 and above, use the standalone legacy version to run on older Windows version."
+msgstr ""
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Shutting down SABnzbd"
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
