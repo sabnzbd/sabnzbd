@@ -2,7 +2,7 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 pyinstaller==5.13.2
 packaging==23.2
-pyinstaller-hooks-contrib==2023.11
+pyinstaller-hooks-contrib==2023.12
 altgraph==0.17.4
 wrapt==1.16.0
 setuptools==69.0.3
