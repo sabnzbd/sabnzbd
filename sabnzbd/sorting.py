@@ -678,7 +678,7 @@ def guess_what(name: str) -> MatchesDict:
             or (
                 name.lower().startswith(("http://", "https://"))
                 and name.lower().endswith(".nzb")
-                and guess.get("container" == "nzb")
+                and guess.get("container") == "nzb"
             )  # URL to an nzb file, can happen when pre-queue script rejects a job
         ):
             guess["type"] = "unknown"
