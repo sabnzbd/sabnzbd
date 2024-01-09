@@ -265,7 +265,7 @@ SKIN_TEXT = {
     "explain-host": TT("Host SABnzbd should listen on."),
     "opt-port": TT("SABnzbd Port"),
     "explain-port": TT("Port SABnzbd should listen on."),
-    "opt-web_dir": TT("Web Interface"),
+    "opt-web_dir": TT("Web Interface Skin"),
     "explain-web_dir": TT("Choose a skin."),
     "opt-web_username": TT("SABnzbd Username"),
     "explain-web_username": TT("Optional authentication username."),
