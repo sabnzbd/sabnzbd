@@ -12,12 +12,13 @@
 # reloxx13 <reloxx@interia.pl>, 2022
 # kameb, 2023
 # Safihre <safihre@sabnzbd.org>, 2023
+# HandyDandy04, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.2.1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: HandyDandy04, 2024\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -303,7 +304,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" should not be used here"
-msgstr ""
+msgstr "Netzwerkpfad \"%s\" ist hier nicht erlaubt"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -786,6 +787,8 @@ msgstr "Zurück"
 msgid ""
 "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
 msgstr ""
+"Um alle hilfreichen Warnungen zu verbergen, deaktiviere die extra "
+"Einstellung 'helpful_warnings'."
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -2176,7 +2179,7 @@ msgstr "Forum"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Live Chat"
-msgstr ""
+msgstr "Echtzeit Chat"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2632,6 +2635,8 @@ msgid ""
 "Speed up repairs by installing par2cmdline-turbo, it is available for many "
 "platforms."
 msgstr ""
+"Erhöhe Reparaturgeschwindigkeit durch installation von Multicore Par2, "
+"verfügbar auf vielen Plattformen."
 
 #: sabnzbd/skintext.py
 msgid "Version"
@@ -3239,19 +3244,20 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Identical download detection"
-msgstr ""
+msgstr "Erkennung identischer Downloads"
 
 #: sabnzbd/skintext.py
 msgid "Detect identical downloads based on name or NZB contents."
 msgstr ""
+"Erkenne identische Downloads anhand des Dateinamens oder des NZB-Inhalts."
 
 #: sabnzbd/skintext.py
 msgid "Smart duplicate detection"
-msgstr ""
+msgstr "Intelligente Duplikat Erkennung"
 
 #: sabnzbd/skintext.py
 msgid "Detect duplicates based on analysis of the filename."
-msgstr ""
+msgstr "Erkenne Duplikate durch Analyse der Dateinamen."
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
@@ -3262,6 +3268,8 @@ msgid ""
 "Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
 "the download name."
 msgstr ""
+"Umgehe intelligente Duplikat-Erkennung, wenn PROPER, REAL oder REPACK im "
+"Download-Namen erkannt wird"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
@@ -3359,6 +3367,8 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
 msgstr ""
+"Wurde nach Fertigstellung des Downloads der eingereihten Aufträge "
+"ausgeführt."
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4706,7 +4716,7 @@ msgstr "Tastaturkürzel"
 
 #: sabnzbd/skintext.py
 msgid "Shift+Arrow key: Browse Queue and History pages"
-msgstr ""
+msgstr "Shift+Pfeil-Taste: Durchsuche eingereihte Aufträge und Verlaufsseiten"
 
 #: sabnzbd/skintext.py
 msgid "How long or untill when do you want to pause? (in English!)"
