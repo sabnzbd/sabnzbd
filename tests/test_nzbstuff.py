@@ -195,6 +195,7 @@ class TestNZBStuffHelpers:
             ("Bla [Now it's done.exe]", "Now it's done.exe"),
             # If specified between [], the extension should be a valid one
             ("Bla [Now it's done.123nonsense]", "Bla [Now it's done.123nonsense]"),
+            ('[PRiVATE]-[WtFnZb]-[00000.clpi]-[1/46] - "" yEnc  788 (1/1)', "00000.clpi"),
             # In anyone can improve the one below, that would be great!
             (
                 '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
