@@ -277,6 +277,9 @@ def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None
 # Special settings
 ##############################################################################
 
+# This should be here so it's initialized first when the config is read
+helpful_warnings = OptionBool("misc", "helpful_warnings", True)
+
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
 bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, minval=0, maxval=100)
@@ -452,7 +455,7 @@ rss_filenames = OptionBool("misc", "rss_filenames", False)
 api_logging = OptionBool("misc", "api_logging", True)
 html_login = OptionBool("misc", "html_login", True)
 warn_dupl_jobs = OptionBool("misc", "warn_dupl_jobs", False)
-helpful_warnings = OptionBool("misc", "helpful_warnings", True)
+
 keep_awake = OptionBool("misc", "keep_awake", True)
 tray_icon = OptionBool("misc", "tray_icon", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
