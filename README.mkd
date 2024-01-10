@@ -1,7 +1,15 @@
-Release Notes - SABnzbd 4.2.1
+Release Notes - SABnzbd 4.2.2 Beta 1
 =========================================================
 
-This is a bug-fix release of SABnzbd 4.2.0.
+This is the second bug-fix release of SABnzbd 4.2.0.
+
+## Bug-fixes and changes since 4.2.1:
+
+* **Bug-fixes:**
+    * RSS readout could result in a crash if duplicate detection is enabled.
+
+* **Changes:**
+    * Windows: Installer will automatically shutdown SABnzbd if it is running.
 
 ## Bug-fixes and changes since 4.2.0:
 
