@@ -2595,12 +2595,12 @@ msgid "Port SABnzbd should listen on."
 msgstr "Portti jota SABnzbdn tulisi kuunnella."
 
 #: sabnzbd/skintext.py
-msgid "Web Interface"
-msgstr "Web-käyttöliittymä"
+msgid "Web Interface Theme"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Choose a skin."
-msgstr "Valitse teema."
+msgid "Choose a theme."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -4381,6 +4381,10 @@ msgstr "VAROITUS:"
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Nouda"
+
+#: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "Web-käyttöliittymä"
 
 #: sabnzbd/skintext.py
 msgid "Refresh rate"

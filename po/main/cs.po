@@ -2558,11 +2558,11 @@ msgid "Port SABnzbd should listen on."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Web Interface"
-msgstr "Webové rozhraní"
+msgid "Web Interface Theme"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Choose a skin."
+msgid "Choose a theme."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4275,6 +4275,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "Webové rozhraní"
 
 #: sabnzbd/skintext.py
 msgid "Refresh rate"

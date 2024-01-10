@@ -2606,12 +2606,12 @@ msgid "Port SABnzbd should listen on."
 msgstr "פתחה אשר SABnzbd צריך להאזין אליה."
 
 #: sabnzbd/skintext.py
-msgid "Web Interface"
-msgstr "ממשק רשת"
+msgid "Web Interface Theme"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Choose a skin."
-msgstr "בחר עור."
+msgid "Choose a theme."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -4391,6 +4391,10 @@ msgstr "אזהרה:"
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "משוך"
+
+#: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "ממשק רשת"
 
 #: sabnzbd/skintext.py
 msgid "Refresh rate"

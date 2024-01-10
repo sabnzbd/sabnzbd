@@ -2659,12 +2659,12 @@ msgid "Port SABnzbd should listen on."
 msgstr "Puerto en que SABnzbd debería escuchar"
 
 #: sabnzbd/skintext.py
-msgid "Web Interface"
-msgstr "Interfaz web"
+msgid "Web Interface Theme"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Choose a skin."
-msgstr "Elije una piel"
+msgid "Choose a theme."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -4470,6 +4470,10 @@ msgstr "AVISO:"
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Obtener"
+
+#: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "Interfaz web"
 
 #: sabnzbd/skintext.py
 msgid "Refresh rate"

@@ -2583,12 +2583,12 @@ msgid "Port SABnzbd should listen on."
 msgstr "Порт на који SABnzbd чека везе."
 
 #: sabnzbd/skintext.py
-msgid "Web Interface"
-msgstr "Веб интерфејс"
+msgid "Web Interface Theme"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Choose a skin."
-msgstr "Odaberi izgled"
+msgid "Choose a theme."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -4340,6 +4340,10 @@ msgstr "ПАЖЊА:"
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Преузми"
+
+#: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "Веб интерфејс"
 
 #: sabnzbd/skintext.py
 msgid "Refresh rate"
