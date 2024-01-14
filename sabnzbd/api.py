@@ -1297,7 +1297,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
             sabnzbd.INTERNET_BANDWIDTH = max(internetspeed_ipv4 or 0, internetspeed_ipv6 or 0)
 
             if internetspeed_ipv4 > 0 and internetspeed_ipv6 > 0:
-                # both working, so let's see if it's aout the same speed (good), there is a big difference (bad)
+                # both working, so let's see if it's about the same speed (good), there is a big difference (bad)
                 speed_quotient = internetspeed_ipv4 / internetspeed_ipv6
                 if speed_quotient > 2:
                     logging.warning(
