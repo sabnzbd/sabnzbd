@@ -1296,17 +1296,23 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
             # get the max:
             sabnzbd.INTERNET_BANDWIDTH = max(internetspeed_ipv4 or 0, internetspeed_ipv6 or 0)
 
-            """
             if internetspeed_ipv4 > 0 and internetspeed_ipv6 > 0:
-                # both working, so let's see if there is a big difference
-                quotient = internetspeed_ipv4 / internetspeed_ipv6
-                if quotient > 2:
-                    logging.warning("IPv4 faster than IPv6: %s MB/s versus %s MB/s", internetspeed_ipv4, internetspeed_ipv6)
-                elif quotient < 0.5:
-                    logging.warning("IPv4 slower than IPv6: %s MB/s versus %s MB/s", internetspeed_ipv4, internetspeed_ipv6)
+                # both working, so let's see if it's aout the same speed (good), there is a big difference (bad)
+                speed_quotient = internetspeed_ipv4 / internetspeed_ipv6
+                if speed_quotient > 2:
+                    logging.warning(
+                        "IPv4 faster than IPv6: %s MB/s versus %s MB/s", internetspeed_ipv4, internetspeed_ipv6
+                    )
+                elif speed_quotient < 0.5:
+                    logging.warning(
+                        "IPv4 slower than IPv6: %s MB/s versus %s MB/s", internetspeed_ipv4, internetspeed_ipv6
+                    )
                 else:
-                    logging.debug("Good: IPv4 and IPv6 are about the same speed: %s MB/s resp %s MB/s", internetspeed_ipv4, internetspeed_ipv6)
-            """
+                    logging.debug(
+                        "Good: IPv4 and IPv6 are about the same speed: %s MB/s resp %s MB/s",
+                        internetspeed_ipv4,
+                        internetspeed_ipv6,
+                    )
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
