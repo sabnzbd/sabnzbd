@@ -102,7 +102,7 @@ from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
 # In the subject, we expect the filename within double quotes
 RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
 # Otherwise something that looks like a filename
-RE_SUBJECT_BASIC_FILENAME = re.compile(r"([\w\-+()'\s.,]{5,}\.[A-Za-z0-9]{2,4})[^A-Za-z0-9]")
+RE_SUBJECT_BASIC_FILENAME = re.compile(r"\b([\w\-+()' .,]+(?:\[[\w\-/+()' .,]*][\w\-+()' .,]*)*\.[A-Za-z0-9]{2,4})\b")
 RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
 
 
