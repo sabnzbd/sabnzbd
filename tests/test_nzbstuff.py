@@ -123,17 +123,21 @@ class TestNZBStuffHelpers:
             ("multiple_pw{{first-pw}}_{{second-pw}}", "multiple_pw", "first-pw}}_{{second-pw"),  # Greed is Good
             ("デビアン", "デビアン", None),  # Unicode
             ("Gentoo_Hobby_Edition {{secret}}", "Gentoo_Hobby_Edition", "secret"),  # Space between name and password
+            ("Test {{secret}}.nzb", "Test", "secret"),
             ("Mandrake{{top{{secret}}", "Mandrake", "top{{secret"),  # Double opening {{
             ("Красная}}{{Шляпа}}", "Красная}}", "Шляпа"),  # Double closing }}
             ("{{Jobname{{PassWord}}", "{{Jobname", "PassWord"),  # {{ at start
             ("Hello/kITTY", "Hello", "kITTY"),  # Notation with slash
+            ("Hello/kITTY.nzb", "Hello", "kITTY"),  # Notation with slash and extension
             ("/Jobname", "/Jobname", None),  # Slash at start
             ("Jobname/Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces
             ("Jobname / Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces and extra spaces
+            ("Jobname / Top{{Secret}}.nzb", "Jobname", "Top{{Secret}}"),
             ("לינוקס/معلومات سرية", "לינוקס", "معلومات سرية"),  # LTR with slash
             ("לינוקס{{معلومات سرية}}", "לינוקס", "معلومات سرية"),  # LTR with brackets
             ("thư điện tử password=mật_khẩu", "thư điện tử", "mật_khẩu"),  # Password= notation
             ("password=PartOfTheJobname", "password=PartOfTheJobname", None),  # Password= at the start
+            ("Job password=Test.par2", "Job", "Test"),  # Password= including extension
             ("Job}}Name{{FTW", "Job}}Name{{FTW", None),  # Both {{ and }} present but incorrect order (no password)
             ("./Text", "./Text", None),  # Name would end up empty after the function strips the dot
         ],
@@ -141,22 +145,23 @@ class TestNZBStuffHelpers:
     def test_scan_password(self, argument, name, password):
         assert nzbstuff.scan_password(argument) == (name, password)
 
-    def test_create_work_name(self):
+    @pytest.mark.parametrize(
+        "file_name, clean_file_name",
+        [
+            ("my_awesome_nzb_file.pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file.....pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file....par2..", "my_awesome_nzb_file"),
+            (" my_awesome_nzb_file  .pAr.nZb", "my_awesome_nzb_file"),
+            ("with.extension.and.period.par2.", "with.extension.and.period"),
+            ("nothing.in.here", "nothing.in.here"),
+            ("  just.space  ", "just.space"),
+            ("http://test.par2  ", "http://test.par2"),
+        ],
+    )
+    def test_create_work_name(self, file_name, clean_file_name):
         # Only test stuff specific for create_work_name
         # The sanitizing is already tested in tests for sanitize_foldername
-        file_names = {
-            "my_awesome_nzb_file.pAr2.nZb": "my_awesome_nzb_file",
-            "my_awesome_nzb_file.....pAr2.nZb": "my_awesome_nzb_file",
-            "my_awesome_nzb_file....par2..": "my_awesome_nzb_file",
-            " my_awesome_nzb_file  .pAr.nZb": "my_awesome_nzb_file",
-            "with.extension.and.period.par2.": "with.extension.and.period",
-            "nothing.in.here": "nothing.in.here",
-            "  just.space  ": "just.space",
-            "http://test.par2  ": "http://test.par2",
-        }
-
-        for file_name, clean_file_name in file_names.items():
-            assert nzbstuff.create_work_name(file_name) == clean_file_name
+        assert nzbstuff.create_work_name(file_name) == clean_file_name
 
     @pytest.mark.parametrize(
         "subject, filename",

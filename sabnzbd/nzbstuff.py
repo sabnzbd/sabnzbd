@@ -88,6 +88,7 @@ from sabnzbd.filesystem import (
     save_compressed,
     backup_nzb,
     remove_data,
+    strip_extensions,
 )
 from sabnzbd.par2file import FilePar2Info
 from sabnzbd.decorators import synchronized
@@ -2110,14 +2111,8 @@ def nzf_cmp_name(nzf1: NzbFile, nzf2: NzbFile):
 def create_work_name(name: str) -> str:
     """Remove ".nzb" and ".par(2)" and sanitize, skip URL's"""
     if name.find("://") < 0:
-        # In case it was one of these, there might be more
-        # Need to remove any invalid characters before starting
-        name_base, ext = os.path.splitext(sanitize_foldername(name))
-        while ext.lower() in (".nzb", ".par", ".par2"):
-            name = name_base
-            name_base, ext = os.path.splitext(name)
-        # And make sure we remove invalid characters again
-        return sanitize_foldername(name)
+        # Invalid charters need to be removed before and after (see unit-tests)
+        return sanitize_foldername(strip_extensions(sanitize_foldername(name)))
     else:
         return name.strip()
 
@@ -2127,6 +2122,10 @@ def scan_password(name: str) -> Tuple[str, Optional[str]]:
     if "http://" in name or "https://" in name:
         return name, None
 
+    # Strip any unwanted usenet-related extensions
+    name = strip_extensions(name)
+
+    # Identify any braces
     braces = name[1:].find("{{")
     if braces < 0:
         braces = len(name)
