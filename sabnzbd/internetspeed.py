@@ -82,8 +82,8 @@ def internetspeed(test_time_limit: int = TIME_LIMIT) -> float:
     socket_speed = {}
 
     try:
+        addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT)
         for _ in range(NR_CONNECTIONS):
-            addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT)
             sock = socket.socket(addrinfo.family, addrinfo.type)
             sock.settimeout(SOCKET_TIMEOUT)
             sock.connect(addrinfo.sockaddr)
