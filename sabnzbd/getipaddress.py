@@ -168,5 +168,8 @@ def local_ipv6():
 
 
 def public_ipv6():
-    if local_ipv6():
-        return public_ip(family=socket.AF_INET6)
+    if ipv6_address := local_ipv6():
+        if sabnzbd.misc.is_lan_addr(ipv6_address):
+            return public_ip(family=socket.AF_INET6)
+        else:
+            return ipv6_address
