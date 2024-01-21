@@ -1433,12 +1433,13 @@ class NzbObject(TryList):
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
         # If user resumes after warning, reset duplicate/oversized/incomplete/unwanted indicators
-        self.duplicate = None
         self.oversized = False
         self.incomplete = False
         if self.unwanted_ext:
             # If user resumes after "unwanted" warning, no more auto-pauses
             self.unwanted_ext = 2
+        if self.duplicate:
+            self.duplicate = DuplicateStatus.DUPLICATE_IGNORED
 
     @synchronized(NZO_LOCK)
     def add_parfile(self, parfile: NzbFile) -> bool:

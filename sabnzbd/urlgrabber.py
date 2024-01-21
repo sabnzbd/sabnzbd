@@ -34,7 +34,7 @@ import base64
 from typing import Tuple, Optional, Union, List, Dict, Any
 
 import sabnzbd
-from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
+from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES, DuplicateStatus
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
 import sabnzbd.cfg as cfg
@@ -243,6 +243,10 @@ class URLGrabber(Thread):
 
                 # Check if nzb file
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
+                    # If the user resumed a duplicate detected URL, skip the check
+                    dup_check = future_nzo.duplicate != DuplicateStatus.DUPLICATE_IGNORED
+
+                    # Add the new job to the queue
                     res, _ = sabnzbd.nzbparser.add_nzbfile(
                         path,
                         pp=future_nzo.pp,
@@ -255,6 +259,7 @@ class URLGrabber(Thread):
                         keep=False,
                         password=future_nzo.password,
                         nzo_id=future_nzo.nzo_id,
+                        dup_check=dup_check,
                     )
                     if res is AddNzbFileResult.RETRY:
                         logging.info("Incomplete NZB, retry after 5 min %s", url)
