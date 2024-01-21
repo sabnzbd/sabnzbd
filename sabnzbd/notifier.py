@@ -406,6 +406,11 @@ def send_nscript(title, msg, notification_type, force=False, test=None):
 
 
 def send_windows(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
+    """Send Windows notifications, either fancy with buttons (Windows 10+) or basic ones"""
+    # Skip any notifications if ran as a Windows Service, it can result in crashes
+    if sabnzbd.WIN_SERVICE:
+        return None
+
     try:
         if _HAVE_WINDOWS_TOASTER:
             notification_sender = InteractableWindowsToaster("SABnzbd", notifierAUMID="SABnzbd")
