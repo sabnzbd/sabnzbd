@@ -65,7 +65,7 @@ def family_type(family) -> str:
         return "IPv4-only"
     elif family == socket.AF_INET6:
         return "IPv6-only"
-    return "IPv4 and IPv6"
+    return "IPv4 or IPv6"
 
 
 # Called by each thread

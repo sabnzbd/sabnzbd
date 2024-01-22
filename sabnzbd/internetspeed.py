@@ -30,7 +30,7 @@ from typing import Dict
 
 import sabctools
 import sabnzbd
-from sabnzbd.happyeyeballs import happyeyeballs
+from sabnzbd.happyeyeballs import happyeyeballs, family_type
 
 TEST_HOSTNAME = "sabnzbd.org"
 TEST_PORT = 443
@@ -75,14 +75,14 @@ def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLS
         pass
 
 
-def internetspeed(test_time_limit: int = TIME_LIMIT, family=socket.AF_UNSPEC) -> float:
+def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socket.AF_UNSPEC) -> float:
     """Measure internet speed from a test-download using our optimized SSL-code"""
 
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
     socket_speed = {}
 
     try:
-        addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT)
+        addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family)
         for _ in range(NR_CONNECTIONS):
             sock = socket.socket(addrinfo.family, addrinfo.type)
             sock.settimeout(SOCKET_TIMEOUT)
@@ -101,8 +101,30 @@ def internetspeed(test_time_limit: int = TIME_LIMIT, family=socket.AF_UNSPEC) ->
     time.sleep(test_time_limit + 0.5)
 
     speed = sum(socket_speed.values()) / 1024 / 1024
-    logging.debug("Internet Bandwidth = %.2f MB/s - %.2f Mbps", speed, speed * 8.05)
+    logging.debug("Internet Bandwidth (%s) = %.2f MB/s - %.2f Mbps", family_type(family), speed, speed * 8.05)
     return speed
+
+
+def internetspeed() -> float:
+    # Internet bandwidth
+    if not sabnzbd.cfg.ipv6_staging():
+        # no special IPv6 wishes, so straight Internet speed test (ipv4 / ipv6 agnostic)
+        return round(internetspeed_interal(), 2)
+    else:
+        internetspeed_ipv4 = round(internetspeed_interal(family=socket.AF_INET), 1)
+        internetspeed_ipv6 = round(internetspeed_interal(family=socket.AF_INET6), 1)
+        if internetspeed_ipv4 > 0 and internetspeed_ipv6 > 0:
+            # both working, so let's see if it's about the same speed (good), there is a big difference (bad)
+            if 0.5 > (internetspeed_ipv4 / internetspeed_ipv6) > 2:
+                sabnzbd.misc.helpful_warning(
+                    T(
+                        "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus %f MB/s",
+                        internetspeed_ipv4,
+                        internetspeed_ipv6,
+                    )
+                )
+
+        return max(internetspeed_ipv4, internetspeed_ipv6)
 
 
 if __name__ == "__main__":

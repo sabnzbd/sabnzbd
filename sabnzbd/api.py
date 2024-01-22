@@ -1280,39 +1280,12 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
-        # Diskspeed of download (aka incomplete) and complete directory:
-        sabnzbd.DOWNLOAD_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
-        sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
+        # Disk speed of download (aka incomplete) and complete directory:
+        sabnzbd.DOWNLOAD_DIR_SPEED = diskspeedmeasure(sabnzbd.cfg.download_dir.get_path())
+        sabnzbd.COMPLETE_DIR_SPEED = diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path())
 
         # Internet bandwidth
-        if not cfg.ipv6_staging():
-            # no special IPv6 wishes, so straight Internet speed test (ipv4 / ipv6 agnostic)
-            sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
-        else:
-            internetspeed_ipv4 = round(internetspeed(family=socket.AF_INET), 1)
-            logging.debug("internetspeed via IPv4 %s MB/s", internetspeed_ipv4)  # TODO put it somewhere nice
-            internetspeed_ipv6 = round(internetspeed(family=socket.AF_INET6), 1)
-            logging.debug("internetspeed via IPv6 %s MB/s", internetspeed_ipv6)  # TODO put it somewhere nice
-            # get the max:
-            sabnzbd.INTERNET_BANDWIDTH = max(internetspeed_ipv4 or 0, internetspeed_ipv6 or 0)
-
-            if internetspeed_ipv4 > 0 and internetspeed_ipv6 > 0:
-                # both working, so let's see if it's about the same speed (good), there is a big difference (bad)
-                speed_quotient = internetspeed_ipv4 / internetspeed_ipv6
-                if speed_quotient > 2:
-                    logging.warning(
-                        "IPv4 faster than IPv6: %s MB/s versus %s MB/s", internetspeed_ipv4, internetspeed_ipv6
-                    )
-                elif speed_quotient < 0.5:
-                    logging.warning(
-                        "IPv4 slower than IPv6: %s MB/s versus %s MB/s", internetspeed_ipv4, internetspeed_ipv6
-                    )
-                else:
-                    logging.debug(
-                        "Good: IPv4 and IPv6 are about the same speed: %s MB/s resp %s MB/s",
-                        internetspeed_ipv4,
-                        internetspeed_ipv6,
-                    )
+        sabnzbd.INTERNET_BANDWIDTH = internetspeed()
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler
