@@ -48,7 +48,6 @@ CONNECTION_ATTEMPT_DELAY = 0.01
 IPV6_MAPPING = {
     "news.eweka.nl": "news6.eweka.nl",
     "news.xlned.com": "news6.xlned.com",
-    "news.usenet.farm": "news6.usenet.farm",
     "news.easynews.com": "news6.easynews.com",
     "news.tweaknews.nl": "news6.tweaknews.nl",
     "news.tweaknews.eu": "news6.tweaknews.eu",
