@@ -25,7 +25,6 @@ import re
 import gc
 import time
 import getpass
-import socket
 import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any
