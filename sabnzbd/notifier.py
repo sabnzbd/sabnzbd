@@ -210,6 +210,7 @@ def send_notify_osd(title, message):
 def send_notification_center(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
     """Send message to macOS Notification Center.
     Only 1 button is possible on macOS!"""
+    logging.debug("Sending macOS notification")
     try:
         subtitle = T(NOTIFICATION_TYPES.get(notification_type, "other"))
         button_text = button_action = None
@@ -228,7 +229,7 @@ def send_notification_center(title: str, msg: str, notification_type: str, actio
 
 def send_prowl(title, msg, notification_type, force=False, test=None):
     """Send message to Prowl"""
-
+    logging.debug("Sending Prowl notification")
     if test:
         apikey = test.get("prowl_apikey")
     else:
@@ -261,7 +262,7 @@ def send_prowl(title, msg, notification_type, force=False, test=None):
 
 def send_pushover(title, msg, notification_type, force=False, test=None):
     """Send message to pushover"""
-
+    logging.debug("Sending Pushover notification")
     if test:
         apikey = test.get("pushover_token")
         userkey = test.get("pushover_userkey")
@@ -328,7 +329,7 @@ def do_send_pushover(body):
 
 def send_pushbullet(title, msg, notification_type, force=False, test=None):
     """Send message to Pushbullet"""
-
+    logging.debug("Sending Pushbullet notification")
     if test:
         apikey = test.get("pushbullet_apikey")
         device = test.get("pushbullet_device")
@@ -363,6 +364,7 @@ def send_pushbullet(title, msg, notification_type, force=False, test=None):
 
 def send_nscript(title, msg, notification_type, force=False, test=None):
     """Run user's notification script"""
+    logging.debug("Sending notification script notification")
     if test:
         script = test.get("nscript_script")
         env_params = {"notification_parameters": test.get("nscript_parameters")}
@@ -411,6 +413,7 @@ def send_windows(title: str, msg: str, notification_type: str, actions: Optional
     if sabnzbd.WIN_SERVICE:
         return None
 
+    logging.debug("Sending Windows notification")
     try:
         if _HAVE_WINDOWS_TOASTER:
             notification_sender = InteractableWindowsToaster("SABnzbd", notifierAUMID="SABnzbd")
