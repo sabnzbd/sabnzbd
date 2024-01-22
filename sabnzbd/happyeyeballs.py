@@ -33,6 +33,7 @@ from dataclasses import dataclass
 from typing import Tuple, Union, Optional
 from more_itertools import roundrobin
 
+import sabnzbd.cfg as cfg
 from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.decorators import cache_maintainer
 
@@ -40,6 +41,25 @@ from sabnzbd.decorators import cache_maintainer
 # quite long and might give us a slow host that just happened to be on top of the list.
 # The absolute minium specified in RFC 8305 is 10ms, so we use that.
 CONNECTION_ATTEMPT_DELAY = 0.01
+
+# While providers are afraid to add IPv6 to their standard hostnames
+# we map a number of well known hostnames to their IPv6 alternatives.
+# WARNING: Only add if the SSL-certificate allows both hostnames!
+IPV6_MAPPING = {
+    "news.eweka.nl": "news6.eweka.nl",
+    "news.xlned.com": "news6.xlned.com",
+    "news.usenet.farm": "news6.usenet.farm",
+    "news.easynews.com": "news6.easynews.com",
+    "news.tweaknews.nl": "news6.tweaknews.nl",
+    "news.tweaknews.eu": "news6.tweaknews.eu",
+    "news.astraweb.com": "news6.astraweb.com",
+    "news.pureusenet.nl": "news6.pureusenet.nl",
+    "news.sunnyusenet.com": "news6.sunnyusenet.com",
+    "news.newshosting.com": "news6.newshosting.com",
+    "news.usenetserver.com": "news6.usenetserver.com",
+    "news.frugalusenet.com": "news-v6.frugalusenet.com",
+    "eunews.frugalusenet.com": "eunews-v6.frugalusenet.com",
+}
 
 
 # For typing and convenience!
@@ -105,33 +125,41 @@ def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socke
     by getaddrinfo or if no connection could be made to any of the addresses.
     If family is specified, only that family is tried"""
     try:
+        # See if we can add a IPv6 alternative
+        check_hosts = [host]
+        if cfg.ipv6_staging() and host in IPV6_MAPPING:
+            check_hosts.append(IPV6_MAPPING[host])
+            logging.info("Added alternative IPv6 address: %s", IPV6_MAPPING[host])
+
         ipv4_addrinfo = []
         ipv6_addrinfo = []
         last_canonname = ""
+        for check_host in check_hosts:
+            try:
+                for addrinfo in socket.getaddrinfo(
+                    check_host, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME
+                ):
+                    # Convert to AddrInfo
+                    addrinfo = AddrInfo(*addrinfo)
 
-        try:
-            for addrinfo in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM, flags=socket.AI_CANONNAME):
-                # Convert to AddrInfo
-                addrinfo = AddrInfo(*addrinfo)
+                    # The canonname is only reported once per alias
+                    if addrinfo.canonname:
+                        last_canonname = addrinfo.canonname
+                    elif last_canonname:
+                        addrinfo.canonname = last_canonname
 
-                # The canonname is only reported once per alias
-                if addrinfo.canonname:
-                    last_canonname = addrinfo.canonname
-                elif last_canonname:
-                    addrinfo.canonname = last_canonname
-
-                # Put it in the right list for further processing
-                # But prevent adding duplicate items to the lists
-                if addrinfo not in ipv6_addrinfo and addrinfo not in ipv4_addrinfo:
-                    if addrinfo.family == socket.AddressFamily.AF_INET6:
-                        ipv6_addrinfo.append(addrinfo)
-                    else:
-                        ipv4_addrinfo.append(addrinfo)
-        except:
-            # Did we fail on the first getaddrinfo already?
-            # Otherwise, we failed on the IPv6 alternative address, and those failures can be ignored
-            if not ipv4_addrinfo and not ipv6_addrinfo:
-                raise
+                    # Put it in the right list for further processing
+                    # But prevent adding duplicate items to the lists
+                    if addrinfo not in ipv6_addrinfo and addrinfo not in ipv4_addrinfo:
+                        if addrinfo.family == socket.AddressFamily.AF_INET6:
+                            ipv6_addrinfo.append(addrinfo)
+                        else:
+                            ipv4_addrinfo.append(addrinfo)
+            except:
+                # Did we fail on the first getaddrinfo already?
+                # Otherwise, we failed on the IPv6 alternative address, and those failures can be ignored
+                if not ipv4_addrinfo and not ipv6_addrinfo:
+                    raise
 
         logging.debug(
             "Available addresses for %s (port=%d, %s): %d IPv4 and %d IPv6",
