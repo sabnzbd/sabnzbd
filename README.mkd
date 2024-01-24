@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.2.2 Release Candidate 1
+Release Notes - SABnzbd 4.2.2 Release Candidate 2
 =========================================================
 
 This is the second bug-fix release of SABnzbd 4.2.0.
@@ -6,9 +6,11 @@ This is the second bug-fix release of SABnzbd 4.2.0.
 ## Bug-fixes and changes since 4.2.1:
 
 * **Bug-fixes:**
-    * RSS readout could result in a crash if duplicate detection is enabled.
+    * RSS readout could result in a crash if Duplicate Detection was enabled.
     * Passwords were not always correctly parsed.
     * Warnings could show even if `helpful_warnings` was disabled.
+    * Duplicate Detection would trigger again on URLs if they were resumed.
+    * Windows: Fatal crash could occur if ran as Service.
 
 * **Changes:**
     * Parsing of filenames from the NZB was extended to allow more exotic formatting.
