@@ -56,17 +56,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture:  ${{ matrix.python-architecture }}
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Install system dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar p7zip-full par2
-    - name: Cache Python virtualenv
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv
-      with:
-        custom_cache_key_element: ci-${{ matrix.python-architecture }}
-        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python --version
         python -m pip install --upgrade pip wheel

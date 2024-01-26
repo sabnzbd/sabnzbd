@@ -18,15 +18,9 @@ jobs:
       with:
         python-version: "3.12"
         architecture: "x64"
-    - name: Cache Python virtualenv (64bit)
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv-64bit
-      with:
-        custom_virtualenv_dir: "venv64"
-        custom_cache_key_element: "release"
-        requirement_files:  "**/requirements.txt"
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Install Python dependencies (64bit)
-      if: steps.cache-virtualenv-64bit.outputs.cache-hit != 'true'
       # Without dependencies to make sure everything is covered in the requirements.txt
       run: |
         python --version
@@ -50,15 +44,9 @@ jobs:
       with:
         python-version: "3.8"
         architecture: "x86"
-    - name: Cache Python virtualenv (32bit and legacy)
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv-32bit
-      with:
-        custom_virtualenv_dir: "venv32"
-        custom_cache_key_element: "release"
-        requirement_files: "**/requirements.txt"
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Install Python dependencies (32bit and legacy)
-      if: steps.cache-virtualenv-32bit.outputs.cache-hit != 'true'
       # We do not care about the extra dependencies for the legacy build
       run: |
         python --version
@@ -88,23 +76,24 @@ jobs:
       ARCHFLAGS: -arch x86_64 -arch arm64
     steps:
     - uses: actions/checkout@v3
+    - name: Set up Python 3.12
+      # Only use this for the caching of pip packages!
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Cache Python download
       id: cache-python-download
       uses: actions/cache@v3
       with:
         path: ~/python.pkg
         key: cache-macOS-Python-${{ env.PYTHON_VERSION }}
-    - name: Get Python
+    - name: Get Python from python.org
       if: steps.cache-python-download.outputs.cache-hit != 'true'
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
       run: sudo installer -pkg ~/python.pkg -target /
-    - name: Cache Python virtualenv
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv
-      with:
-        custom_cache_key_element: "release"
-        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies
       # We have to manually take a few steps:
       # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
@@ -112,7 +101,6 @@ jobs:
       #     https://github.com/pypa/pip/issues/5453
       # 2.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
