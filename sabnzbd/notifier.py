@@ -23,6 +23,7 @@ sabnzbd.notifier - Send notifications to any notification services
 
 import os.path
 import logging
+import platform
 import urllib.request
 import urllib.parse
 import http.client
@@ -34,7 +35,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import utob
 from sabnzbd.filesystem import make_script_path
-from sabnzbd.misc import build_and_run_command
+from sabnzbd.misc import build_and_run_command, int_conv
 from sabnzbd.newsunpack import create_env
 
 if sabnzbd.WIN32:
@@ -42,11 +43,15 @@ if sabnzbd.WIN32:
         from win32comext.shell import shell
         from windows_toasts import InteractableWindowsToaster, Toast, ToastActivatedEventArgs, ToastButton
 
+        # Only Windows 10 and above are supported
+        if int_conv(platform.release()) < 10:
+            raise OSError
+
         # Set a custom AUMID to display the right icon, it is written to the registry by the installer
         shell.SetCurrentProcessExplicitAppUserModelID("SABnzbd")
         _HAVE_WINDOWS_TOASTER = True
     except:
-        # Only supported on Windows 10 and above
+        # Sending toasts on non-supported platforms results in segfaults
         _HAVE_WINDOWS_TOASTER = False
 
 try:
