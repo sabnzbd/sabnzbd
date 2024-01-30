@@ -769,7 +769,10 @@ class TestQueueApi(ApiTestFunctions):
             ("my_scripted_script_.py", True, True),
             ("유닉스.py", True, True),
             pytest.param(
-                "유닉스.sh", True, True, marks=pytest.mark.skipif(sys.platform.startswith("win"), reason="Not for Windows")
+                "유닉스.sh",
+                True,
+                True,
+                marks=pytest.mark.skipif(sys.platform.startswith("win"), reason="Not for Windows"),
             ),
             pytest.param(
                 "لغة برمجة نصية",
