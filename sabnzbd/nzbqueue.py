@@ -979,7 +979,7 @@ class NzbQueue:
 
         # Unfortunately we need a copy, since we might remove items from the list
         for nzo in self.__nzo_list[:]:
-            if not nzo.duplicate:
+            if not nzo.duplicate or nzo.duplicate == DuplicateStatus.DUPLICATE_IGNORED:
                 continue
 
             # URL's do not have an MD5!

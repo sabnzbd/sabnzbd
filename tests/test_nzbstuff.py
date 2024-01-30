@@ -123,17 +123,21 @@ class TestNZBStuffHelpers:
             ("multiple_pw{{first-pw}}_{{second-pw}}", "multiple_pw", "first-pw}}_{{second-pw"),  # Greed is Good
             ("デビアン", "デビアン", None),  # Unicode
             ("Gentoo_Hobby_Edition {{secret}}", "Gentoo_Hobby_Edition", "secret"),  # Space between name and password
+            ("Test {{secret}}.nzb", "Test", "secret"),
             ("Mandrake{{top{{secret}}", "Mandrake", "top{{secret"),  # Double opening {{
             ("Красная}}{{Шляпа}}", "Красная}}", "Шляпа"),  # Double closing }}
             ("{{Jobname{{PassWord}}", "{{Jobname", "PassWord"),  # {{ at start
             ("Hello/kITTY", "Hello", "kITTY"),  # Notation with slash
+            ("Hello/kITTY.nzb", "Hello", "kITTY"),  # Notation with slash and extension
             ("/Jobname", "/Jobname", None),  # Slash at start
             ("Jobname/Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces
             ("Jobname / Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces and extra spaces
+            ("Jobname / Top{{Secret}}.nzb", "Jobname", "Top{{Secret}}"),
             ("לינוקס/معلومات سرية", "לינוקס", "معلومات سرية"),  # LTR with slash
             ("לינוקס{{معلومات سرية}}", "לינוקס", "معلومات سرية"),  # LTR with brackets
             ("thư điện tử password=mật_khẩu", "thư điện tử", "mật_khẩu"),  # Password= notation
             ("password=PartOfTheJobname", "password=PartOfTheJobname", None),  # Password= at the start
+            ("Job password=Test.par2", "Job", "Test"),  # Password= including extension
             ("Job}}Name{{FTW", "Job}}Name{{FTW", None),  # Both {{ and }} present but incorrect order (no password)
             ("./Text", "./Text", None),  # Name would end up empty after the function strips the dot
         ],
@@ -141,22 +145,23 @@ class TestNZBStuffHelpers:
     def test_scan_password(self, argument, name, password):
         assert nzbstuff.scan_password(argument) == (name, password)
 
-    def test_create_work_name(self):
+    @pytest.mark.parametrize(
+        "file_name, clean_file_name",
+        [
+            ("my_awesome_nzb_file.pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file.....pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file....par2..", "my_awesome_nzb_file"),
+            (" my_awesome_nzb_file  .pAr.nZb", "my_awesome_nzb_file"),
+            ("with.extension.and.period.par2.", "with.extension.and.period"),
+            ("nothing.in.here", "nothing.in.here"),
+            ("  just.space  ", "just.space"),
+            ("http://test.par2  ", "http://test.par2"),
+        ],
+    )
+    def test_create_work_name(self, file_name, clean_file_name):
         # Only test stuff specific for create_work_name
         # The sanitizing is already tested in tests for sanitize_foldername
-        file_names = {
-            "my_awesome_nzb_file.pAr2.nZb": "my_awesome_nzb_file",
-            "my_awesome_nzb_file.....pAr2.nZb": "my_awesome_nzb_file",
-            "my_awesome_nzb_file....par2..": "my_awesome_nzb_file",
-            " my_awesome_nzb_file  .pAr.nZb": "my_awesome_nzb_file",
-            "with.extension.and.period.par2.": "with.extension.and.period",
-            "nothing.in.here": "nothing.in.here",
-            "  just.space  ": "just.space",
-            "http://test.par2  ": "http://test.par2",
-        }
-
-        for file_name, clean_file_name in file_names.items():
-            assert nzbstuff.create_work_name(file_name) == clean_file_name
+        assert nzbstuff.create_work_name(file_name) == clean_file_name
 
     @pytest.mark.parametrize(
         "subject, filename",
@@ -195,22 +200,20 @@ class TestNZBStuffHelpers:
             ("Bla [Now it's done.exe]", "Now it's done.exe"),
             # If specified between [], the extension should be a valid one
             ("Bla [Now it's done.123nonsense]", "Bla [Now it's done.123nonsense]"),
-            # In anyone can improve the one below, that would be great!
+            ('[PRiVATE]-[WtFnZb]-[00000.clpi]-[1/46] - "" yEnc  788 (1/1)', "00000.clpi"),
             (
                 '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
-                '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
+                "Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv",
             ),
             (
                 "[PRiVATE]-[WtFnZb]-[219]-[1/series.name.s01e01.1080p.web.h264-group.mkv] - "
                 " yEnc (1/[PRiVATE] \\c2b510b594\\::686ea969999193.155368eba4965e56a8cd263382e012.f2712fdc::/97bd201cf931/) 1 (1/0)",
                 "series.name.s01e01.1080p.web.h264-group.mkv",
             ),
-            # This is not correct, but better than nothing
-            # In anyone can improve, that would be great!
             (
                 "[PRiVATE]-[WtFnZb]-[/More.Bla.S02E01.1080p.WEB.h264-EDITH[eztv.re].mkv-WtF[nZb]/"
-                "More.Bla.S02E01.1080p.WEB.h264-EDITH.mkv]-[1/2] - &quot;&quot; yEnc  2990558544 (1/4173)",
-                "More.Bla.S02E01.1080p.WEB.h264",
+                'More.Bla.S02E01.1080p.WEB.h264-EDITH.mkv]-[1/2] - "" yEnc  2990558544 (1/4173)',
+                "More.Bla.S02E01.1080p.WEB.h264-EDITH[eztv.re].mkv",
             ),
         ],
     )

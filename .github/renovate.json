@@ -22,7 +22,8 @@
   "ignoreDeps": [
     "jaraco.text",
     "sabctools",
-    "werkzeug"
+    "werkzeug",
+    "pyinstaller"
   ],
   "packageRules": [
     {

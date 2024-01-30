@@ -1,8 +1,8 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-pyinstaller==6.3.0
+pyinstaller==5.13.2
 packaging==23.2
-pyinstaller-hooks-contrib==2023.11
+pyinstaller-hooks-contrib==2024.0
 altgraph==0.17.4
 wrapt==1.16.0
 setuptools==69.0.3
@@ -14,7 +14,7 @@ importlib_resources==6.1.1; python_version < '3.10'
 zipp==3.17.0; python_version < '3.10'
 
 # orjson does not support 32bit Windows, also exclude based on Python-version
-orjson==3.9.10; python_version > '3.8'
+orjson==3.9.12; python_version > '3.8'
 
 # For the Windows build
 pefile==2023.2.7; sys_platform == 'win32'

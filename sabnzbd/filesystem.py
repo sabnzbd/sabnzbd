@@ -351,6 +351,15 @@ def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] =
     return output_filelist
 
 
+def strip_extensions(name: str, ext_to_remove: Tuple[str, ...] = (".nzb", ".par", ".par2")):
+    """Strip extensions from a filename, without sanitizing the filename"""
+    name_base, ext = os.path.splitext(name)
+    while ext.lower() in ext_to_remove:
+        name = name_base
+        name_base, ext = os.path.splitext(name)
+    return name
+
+
 def real_path(loc: str, path: str) -> str:
     """When 'path' is relative, return normalized join of 'loc' and 'path'
     When 'path' is absolute, return normalized path

@@ -62,6 +62,7 @@ def add_nzbfile(
     reuse: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
+    dup_check: bool = True,
 ):
     """Add file, either a single NZB-file or an archive.
     All other parameters are passed to the NZO-creation.
@@ -119,6 +120,7 @@ def add_nzbfile(
             url=url,
             password=password,
             nzo_id=nzo_id,
+            dup_check=dup_check,
         )
     else:
         return process_single_nzb(
@@ -136,6 +138,7 @@ def add_nzbfile(
             url=url,
             password=password,
             nzo_id=nzo_id,
+            dup_check=dup_check,
         )
 
 
@@ -151,10 +154,10 @@ def process_nzb_archive_file(
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
     nzo_info: Optional[Dict[str, Any]] = None,
-    dup_check: bool = True,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
+    dup_check: bool = True,
 ) -> Tuple[AddNzbFileResult, List[str]]:
     """Analyse archive and create job(s).
     Accepts archive files with ONLY nzb/nfo/folder files in it.
@@ -266,10 +269,10 @@ def process_single_nzb(
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
     nzo_info: Optional[Dict[str, Any]] = None,
-    dup_check: bool = True,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
+    dup_check: bool = True,
 ) -> Tuple[AddNzbFileResult, List[str]]:
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise

@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0\n"
+"Project-Id-Version: SABnzbd-4.2.1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Russian (https://app.transifex.com/sabnzbd/teams/111101/ru/)\n"
@@ -2591,12 +2591,12 @@ msgid "Port SABnzbd should listen on."
 msgstr "Порт, по которому будет доступна служба SABnzbd."
 
 #: sabnzbd/skintext.py
-msgid "Web Interface"
-msgstr "Веб-интерфейс"
+msgid "Web Interface Theme"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Choose a skin."
-msgstr "Выберите тему."
+msgid "Choose a theme."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -4362,6 +4362,10 @@ msgid "Fetch"
 msgstr "Загрузить"
 
 #: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "Веб-интерфейс"
+
+#: sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Частота обновления"
 
@@ -4464,6 +4468,12 @@ msgstr "В начало"
 #: sabnzbd/skintext.py
 msgid "Bottom"
 msgstr "В конец"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
+"completed' are disabled."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

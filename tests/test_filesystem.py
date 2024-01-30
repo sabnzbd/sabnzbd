@@ -1194,16 +1194,25 @@ class TestUnwantedExtensions:
                 assert filesystem.has_unwanted_extension(filename) is False
 
 
-class TestDirectoryWriting:
-    # very basic test of directory_is_writable()
-    # let's test on the tempdir provided by the OS:
+class TestOtherFileSystemFunctions:
     def test_directory_is_writable(self):
-        # verify directory is writable at all
+        # very basic test of directory_is_writable()
+        # let's test on the tempdir provided by the OS:
         assert filesystem.directory_is_writable(tempfile.gettempdir())
 
-
-class FilesystemCapabilities:
     def test_filesystem_capabilities(self):
         # test the filesystem is capable of long and unicode filenames
         # any modern filesystem (ext3, ext4, ntfs, modern FAT) should succeed
         assert filesystem.check_filesystem_capabilities(tempfile.gettempdir())
+
+    @pytest.mark.parametrize(
+        "name, ext_to_remove, output",
+        [
+            ("Test.nzb", (".nzb",), "Test"),
+            ("Test.nzb.nzb.nzb.nzb.nzb", (".nzb",), "Test"),
+            ("Test.not", (".nzb",), "Test.not"),
+            ("No.par2.Test.par2.nzb", (".nzb", ".par2"), "No.par2.Test"),
+        ],
+    )
+    def test_strip_extensions(self, name, ext_to_remove, output):
+        assert filesystem.strip_extensions(name, ext_to_remove) == output

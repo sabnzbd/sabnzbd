@@ -141,6 +141,7 @@ def public_ip(family=socket.AF_UNSPEC):
         )
         return None
 
+    # If text is updated, make sure to update log-anonymization
     logging.debug("Public address %s = %s (in %.2f seconds)", family_type(family), client_ip, time.time() - start)
     return client_ip
 
@@ -161,10 +162,14 @@ def local_ipv6():
     except:
         ipv6_address = None
 
-    logging.debug("IPv6 address = %s", ipv6_address)
+    # If text is updated, make sure to update log-anonymization
+    logging.debug("Local IPv6 address = %s", ipv6_address)
     return ipv6_address
 
 
 def public_ipv6():
-    if local_ipv6():
-        return public_ip(family=socket.AF_INET6)
+    if local_address := local_ipv6():
+        if public_address := public_ip(family=socket.AF_INET6):
+            return public_address
+        elif not sabnzbd.misc.is_lan_addr(local_address):
+            return local_address

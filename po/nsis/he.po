@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2023 The SABnzbd-Team
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0RC3\n"
+"Project-Id-Version: SABnzbd-4.2.1\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: ION, 2021\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -24,10 +24,6 @@ msgstr "הראה הערות שחרור"
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "תמוך במיזם, תרום!"
-
-#: builder/win/NSIS_Installer.nsi
-msgid "Please close \"SABnzbd.exe\" first"
-msgstr "אנא סגור את \"SABnzbd.exe\" תחילה"
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
@@ -54,6 +50,10 @@ msgid ""
 msgstr ""
 "המתקין תומך רק במערכת Windows 8.1 ומעלה, השתמש בגרסה העצמאית המיושנת כדי "
 "להריץ על גרסת Windows ישנה יותר."
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Shutting down SABnzbd"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"

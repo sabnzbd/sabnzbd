@@ -3,13 +3,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
-# Fred L <88com88@gmail.com>, 2023
+# Fred L <88com88@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.0\n"
+"Project-Id-Version: SABnzbd-4.2.2Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Fred L <88com88@gmail.com>, 2023\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2024\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -302,7 +302,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" should not be used here"
-msgstr ""
+msgstr "Le chemin réseau \"%s\" ne devrait pas être utilisé ici"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -781,6 +781,8 @@ msgstr "Retour"
 msgid ""
 "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
 msgstr ""
+"Pour éviter tous les avertissements utiles, désactivez le paramètre spécial "
+"'helpful_warnings'."
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -2673,11 +2675,11 @@ msgid "Port SABnzbd should listen on."
 msgstr "Port que SABnzbd doit surveiller."
 
 #: sabnzbd/skintext.py
-msgid "Web Interface"
-msgstr "Interface Web"
+msgid "Web Interface Theme"
+msgstr "Thème de l'interface web"
 
 #: sabnzbd/skintext.py
-msgid "Choose a skin."
+msgid "Choose a theme."
 msgstr "Choisissez un thème."
 
 #: sabnzbd/skintext.py
@@ -4544,6 +4546,10 @@ msgid "Fetch"
 msgstr "Charger"
 
 #: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "Interface Web"
+
+#: sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Taux de rafraîchissement"
 
@@ -4646,6 +4652,14 @@ msgstr "Tout en haut"
 #: sabnzbd/skintext.py
 msgid "Bottom"
 msgstr "Tout en bas"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
+"completed' are disabled."
+msgstr ""
+"Lorsque vous réessayez une tâche, la \"Détection des doublons\" et "
+"\"Abandonner les travaux qui ne peuvent pas être terminés\" sont désactivés."
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"

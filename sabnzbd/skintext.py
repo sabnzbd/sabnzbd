@@ -265,8 +265,8 @@ SKIN_TEXT = {
     "explain-host": TT("Host SABnzbd should listen on."),
     "opt-port": TT("SABnzbd Port"),
     "explain-port": TT("Port SABnzbd should listen on."),
-    "opt-web_dir": TT("Web Interface"),
-    "explain-web_dir": TT("Choose a skin."),
+    "opt-web_dir": TT("Web Interface Theme"),
+    "explain-web_dir": TT("Choose a theme."),
     "opt-web_username": TT("SABnzbd Username"),
     "explain-web_username": TT("Optional authentication username."),
     "opt-web_password": TT("SABnzbd Password"),
@@ -831,6 +831,9 @@ SKIN_TEXT = {
     "Glitter-top": TT("Top"),
     "Glitter-bottom": TT("Bottom"),
     "Glitter-retryJob": TT("Retry"),
+    "Glitter-retryNoChecks": TT(
+        "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be completed' are disabled."
+    ),
     "Glitter-more": TT("More"),
     "Glitter-scriptLog": TT("View Script Log"),
     "Glitter-clearHistory": TT("Purge History"),
