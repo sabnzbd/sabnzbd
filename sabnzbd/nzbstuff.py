@@ -1884,10 +1884,14 @@ class NzbObject(TryList):
             return None, None, None
 
         # Only a subset we want to apply directly to the NZO
-        for attrib in ("final_name", "priority", "password", "url"):
+        for attrib in ("final_name", "priority", "url"):
             # Only set if it is present and has a value
             if attribs.get(attrib):
                 setattr(self, attrib, attribs[attrib])
+
+        # Only set password if it wasn't already set
+        if not self.password and attribs.get("password"):
+            self.password = attribs["password"]
 
         # Rest is to be used directly in the NZO-init flow
         return attribs["cat"], attribs["pp"], attribs["script"]
