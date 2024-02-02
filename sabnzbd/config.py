@@ -447,7 +447,6 @@ class ConfigServer:
         self.expire_date = OptionStr(name, "expire_date", add=False)
         self.quota = OptionStr(name, "quota", add=False)
         self.usage_at_start = OptionNumber(name, "usage_at_start", add=False)
-        self.send_group = OptionBool(name, "send_group", False, add=False)
         self.priority = OptionNumber(name, "priority", 0, 0, 99, add=False)
         self.notes = OptionStr(name, "notes", add=False)
 
@@ -473,7 +472,6 @@ class ConfigServer:
             "ssl",
             "ssl_verify",
             "ssl_ciphers",
-            "send_group",
             "enable",
             "required",
             "optional",
@@ -516,7 +514,6 @@ class ConfigServer:
         output_dict["expire_date"] = self.expire_date()
         output_dict["quota"] = self.quota()
         output_dict["usage_at_start"] = self.usage_at_start()
-        output_dict["send_group"] = self.send_group()
         output_dict["priority"] = self.priority()
         output_dict["notes"] = self.notes()
         return output_dict

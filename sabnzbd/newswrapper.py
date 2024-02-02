@@ -177,13 +177,6 @@ class NewsWrapper:
         self.nntp.sock.sendall(command)
         self.reset_data_buffer()
 
-    def send_group(self, group: str):
-        """Send the NNTP GROUP command"""
-        self.timeout = time.time() + self.server.timeout
-        command = utob("GROUP %s\r\n" % group)
-        self.nntp.sock.sendall(command)
-        self.reset_data_buffer()
-
     def recv_chunk(self) -> Tuple[int, bool]:
         """Receive data, return #bytes, done, skip"""
         # Resize the buffer in the extremely unlikely case that it got full

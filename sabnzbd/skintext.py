@@ -567,8 +567,6 @@ SKIN_TEXT = {
     "button-clrServer": TT("Clear Counters"),  #: Button: Clear server's byte counters
     "srv-testing": TT("Testing server details..."),
     "srv-bandwidth": TT("Bandwidth"),
-    "srv-send_group": TT("Send Group"),
-    "srv-explain-send_group": TT("Send group command before requesting articles."),
     "srv-notes": TT("Personal notes"),
     "srv-article-availability": TT("Article availability"),
     "srv-articles-tried": TT(

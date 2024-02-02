@@ -1162,7 +1162,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ("ssl", "send_group", "enable", "required", "optional"):
+    for kw in ("ssl", "enable", "required", "optional"):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:
