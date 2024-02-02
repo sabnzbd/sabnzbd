@@ -3539,14 +3539,6 @@ msgid "Bandwidth"
 msgstr "带宽"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "发送 Group 命令"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "请求文章之前发送 group 命令。"
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "注释"
 

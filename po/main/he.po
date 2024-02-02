@@ -3627,14 +3627,6 @@ msgid "Bandwidth"
 msgstr "רוחב פס"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "שלח קבוצה"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "פקודת שלח קבוצה לפני בקשת מאמרים."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "הערות אישיות"
 

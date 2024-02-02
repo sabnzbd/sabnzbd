@@ -3584,14 +3584,6 @@ msgid "Bandwidth"
 msgstr "Проток"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Пошаљи 'Group'"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Послати команду 'group' пре тражења артикла."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Lične zabeleške"
 

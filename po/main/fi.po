@@ -3618,14 +3618,6 @@ msgid "Bandwidth"
 msgstr "Kaista"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Lähetä ryhmä"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Lähettää ryhmäkomennon ennen artikkeleiden pyytämistä."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Henkilökohtaiset huomautukset"
 

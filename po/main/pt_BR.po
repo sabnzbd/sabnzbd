@@ -3618,14 +3618,6 @@ msgid "Bandwidth"
 msgstr "Largura de banda"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Enviar Grupo"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Enviar comando do grupo antes de solicitar artigos."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Notas pessoais"
 
