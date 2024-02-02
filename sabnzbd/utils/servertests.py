@@ -78,7 +78,6 @@ def test_nntp_server_dict(kwargs):
             use_ssl=ssl,
             ssl_verify=ssl_verify,
             ssl_ciphers=ssl_ciphers,
-            send_group=False,
             username=username,
             password=password,
         )
