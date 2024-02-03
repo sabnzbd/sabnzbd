@@ -1,5 +1,6 @@
 # Testing requirements
 pytest==7.4.4
+setuptools
 selenium
 requests
 pyfakefs

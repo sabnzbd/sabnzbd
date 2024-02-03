@@ -92,7 +92,7 @@ def osx_shutdown():
 def osx_standby():
     """Make macOS system sleep, returns after wakeup"""
     try:
-        subprocess.call(["osascript", "-e", 'tell app "System Events" to sleep'])
+        subprocess.call(["pmset", "sleepnow"])
         time.sleep(10)
     except:
         logging.error(T("Failed to standby system"))

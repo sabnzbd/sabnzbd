@@ -29,7 +29,8 @@ import urllib.parse
 import http.client
 import json
 from threading import Thread
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
+import apprise
 
 import sabnzbd
 import sabnzbd.cfg
@@ -115,6 +116,20 @@ def get_prio(notification_type: str, section: str) -> int:
         return -1000
 
 
+def get_target(notification_type: str, section: str) -> Union[str, bool, None]:
+    """Check target of `notification_type` in `section` if enabled is set"""
+    try:
+        return (
+            sabnzbd.config.get_config(section, "%s_target_%s" % (section, notification_type))().strip()
+            if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0
+            else False
+        )
+
+    except TypeError:
+        logging.debug("Incorrect Notify option %s:%s_target_%s", section, section, notification_type)
+        return None
+
+
 def check_cat(section: str, job_cat: str, keyword: Optional[str] = None) -> bool:
     """Check if `job_cat` is enabled in `section`.
     * = All, if no other categories selected.
@@ -164,6 +179,11 @@ def send_notification(
     if sabnzbd.cfg.pushbullet_enable() and check_cat("pushbullet", job_cat):
         if sabnzbd.cfg.pushbullet_apikey() and check_classes(notification_type, "pushbullet"):
             Thread(target=send_pushbullet, args=(title, msg, notification_type)).start()
+
+    # Apprise
+    if sabnzbd.cfg.apprise_enable() and check_cat("apprise", job_cat):
+        if sabnzbd.cfg.apprise_urls() and check_classes(notification_type, "apprise"):
+            Thread(target=send_apprise, args=(title, msg, notification_type)).start()
 
     # Notification script.
     if sabnzbd.cfg.nscript_enable() and check_cat("nscript", job_cat):
@@ -263,6 +283,87 @@ def send_prowl(title, msg, notification_type, force=False, test=None):
             logging.info("Traceback: ", exc_info=True)
             return T("Failed to send Prowl message")
     return ""
+
+
+def send_apprise(title, msg, notification_type, force=False, test=None):
+    """send apprise message"""
+    logging.debug("Sending Apprise notification")
+    if test:
+        urls = test.get("apprise_urls")
+    else:
+        urls = sabnzbd.cfg.apprise_urls()
+
+    # Notification mapper
+    n_map = {
+        # Startup/Shutdown
+        "startup": apprise.common.NotifyType.INFO,
+        # Pause/Resume
+        "pause_resume": apprise.common.NotifyType.INFO,
+        # Added NZB
+        "download": apprise.common.NotifyType.INFO,
+        # Post-processing started
+        "pp": apprise.common.NotifyType.INFO,
+        # Job finished
+        "complete": apprise.common.NotifyType.SUCCESS,
+        # Job failed
+        "failed": apprise.common.NotifyType.FAILURE,
+        # Warning
+        "warning": apprise.common.NotifyType.WARNING,
+        # Error
+        "error": apprise.common.NotifyType.FAILURE,
+        # Disk full
+        "disk_full": apprise.common.NotifyType.WARNING,
+        # Queue finished
+        "queue_done": apprise.common.NotifyType.INFO,
+        # User logged in
+        "new_login": apprise.common.NotifyType.INFO,
+        # Other Messages
+        "other": apprise.common.NotifyType.INFO,
+    }
+
+    # Prepare our Asset Object
+    asset = apprise.AppriseAsset(
+        app_id="SABnzbd",
+        app_desc="SABnzbd Notification",
+        app_url="https://sabnzbd.org/",
+        image_path_mask=os.path.join(os.path.dirname(__file__), "apprise", "apprise-{TYPE}.png"),
+        image_url_mask="https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/images/icons/apprise/{TYPE}.png",
+        image_url_logo="https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/images/icons/"
+        "apple-touch-icon-180x180-precomposed.png",
+    )
+
+    # Initialize our Apprise Instance
+    apobj = apprise.Apprise(asset=asset)
+
+    if not test:
+        # Get a list of tags that are set to use the common list
+        target = get_target(notification_type, "apprise")
+        if isinstance(target, str):
+            if target:
+                # Store our URL and assign our key
+                if not apobj.add(target):
+                    logging.warning(
+                        "Key: %s - %s", notification_type, T("One or more Apprise URLs could not be loaded.")
+                    )
+
+            else:
+                # Use default list
+                apobj.add(urls)
+
+        else:
+            # Nothing to notify
+            return ""
+
+    else:
+        # Use default list
+        apobj.add(urls)
+
+    # The below notifies anything added to our list
+    return (
+        ""
+        if apobj.notify(body=msg, title=title, notify_type=n_map[notification_type], body_format="text")
+        else T("Failed to send one or more Apprise Notifications")
+    )
 
 
 def send_pushover(title, msg, notification_type, force=False, test=None):
