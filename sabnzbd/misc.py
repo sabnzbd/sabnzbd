@@ -482,7 +482,7 @@ def check_latest_version():
     # Fetch version info
     data = get_from_url("https://sabnzbd.org/latest.txt")
     if not data:
-        logging.info("Cannot retrieve version information from GitHub.com")
+        logging.info("Cannot retrieve version information from sabnzbd.org")
         logging.debug("Traceback: ", exc_info=True)
         return
 
