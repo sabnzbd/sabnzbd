@@ -358,12 +358,17 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
         # Use default list
         apobj.add(urls)
 
-    # The below notifies anything added to our list
-    return (
-        ""
-        if apobj.notify(body=msg, title=title, notify_type=n_map[notification_type], body_format="text")
-        else T("Failed to send one or more Apprise Notifications")
-    )
+    try:
+        # The below notifies anything added to our list
+        return (
+            ""
+            if apobj.notify(body=msg, title=title, notify_type=n_map[notification_type], body_format="text")
+            else T("Failed to send one or more Apprise Notifications")
+        )
+    except:
+        logging.warning(T("Failed to send Apprise message"))
+        logging.info("Traceback: ", exc_info=True)
+        return T("Failed to send Apprise message")
 
 
 def send_pushover(title, msg, notification_type, force=False, test=None):
