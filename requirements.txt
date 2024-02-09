@@ -70,6 +70,9 @@ charset_normalizer==3.3.2
 idna==3.6
 urllib3==2.2.0
 certifi==2024.2.2
+oauthlib==3.2.2
+PyJWT==2.8.0
+blinker==1.7.0
 
 # Markdown Requirements
 importlib-metadata==7.0.1
