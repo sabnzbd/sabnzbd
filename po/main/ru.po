@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.1\n"
+"Project-Id-Version: SABnzbd-4.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Russian (https://app.transifex.com/sabnzbd/teams/111101/ru/)\n"
@@ -3595,14 +3595,6 @@ msgstr "Данные проверки сервера..."
 #: sabnzbd/skintext.py
 msgid "Bandwidth"
 msgstr "Трафик"
-
-#: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Отправлять группу"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Отправлять команду группы перед запросом статей."
 
 #: sabnzbd/skintext.py
 msgid "Personal notes"

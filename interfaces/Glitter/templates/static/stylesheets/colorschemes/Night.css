@@ -140,6 +140,12 @@ select.form-control,
     color: #EBEBEB;
 }
 
+.btn-default:not(.navbar-btn):hover,
+select:hover,
+input:hover {
+    background-color: #666666;
+}
+
 /* Needed to force the text-color */
 .table-striped>tbody>tr:nth-child(odd)>td,
 .table>tbody>tr:nth-child(odd)>td,

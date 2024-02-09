@@ -88,6 +88,7 @@ from sabnzbd.filesystem import (
     save_compressed,
     backup_nzb,
     remove_data,
+    strip_extensions,
 )
 from sabnzbd.par2file import FilePar2Info
 from sabnzbd.decorators import synchronized
@@ -102,7 +103,7 @@ from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
 # In the subject, we expect the filename within double quotes
 RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
 # Otherwise something that looks like a filename
-RE_SUBJECT_BASIC_FILENAME = re.compile(r"([\w\-+()'\s.,]{5,}\.[A-Za-z0-9]{2,4})[^A-Za-z0-9]")
+RE_SUBJECT_BASIC_FILENAME = re.compile(r"\b([\w\-+()' .,]+(?:\[[\w\-/+()' .,]*][\w\-+()' .,]*)*\.[A-Za-z0-9]{2,4})\b")
 RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
 
 
@@ -1432,12 +1433,13 @@ class NzbObject(TryList):
             # If user resumes after encryption warning, no more auto-pauses
             self.encrypted = 2
         # If user resumes after warning, reset duplicate/oversized/incomplete/unwanted indicators
-        self.duplicate = None
         self.oversized = False
         self.incomplete = False
         if self.unwanted_ext:
             # If user resumes after "unwanted" warning, no more auto-pauses
             self.unwanted_ext = 2
+        if self.duplicate:
+            self.duplicate = DuplicateStatus.DUPLICATE_IGNORED
 
     @synchronized(NZO_LOCK)
     def add_parfile(self, parfile: NzbFile) -> bool:
@@ -1882,10 +1884,14 @@ class NzbObject(TryList):
             return None, None, None
 
         # Only a subset we want to apply directly to the NZO
-        for attrib in ("final_name", "priority", "password", "url"):
+        for attrib in ("final_name", "priority", "url"):
             # Only set if it is present and has a value
             if attribs.get(attrib):
                 setattr(self, attrib, attribs[attrib])
+
+        # Only set password if it wasn't already set
+        if not self.password and attribs.get("password"):
+            self.password = attribs["password"]
 
         # Rest is to be used directly in the NZO-init flow
         return attribs["cat"], attribs["pp"], attribs["script"]
@@ -2110,14 +2116,8 @@ def nzf_cmp_name(nzf1: NzbFile, nzf2: NzbFile):
 def create_work_name(name: str) -> str:
     """Remove ".nzb" and ".par(2)" and sanitize, skip URL's"""
     if name.find("://") < 0:
-        # In case it was one of these, there might be more
-        # Need to remove any invalid characters before starting
-        name_base, ext = os.path.splitext(sanitize_foldername(name))
-        while ext.lower() in (".nzb", ".par", ".par2"):
-            name = name_base
-            name_base, ext = os.path.splitext(name)
-        # And make sure we remove invalid characters again
-        return sanitize_foldername(name)
+        # Invalid charters need to be removed before and after (see unit-tests)
+        return sanitize_foldername(strip_extensions(sanitize_foldername(name)))
     else:
         return name.strip()
 
@@ -2127,6 +2127,10 @@ def scan_password(name: str) -> Tuple[str, Optional[str]]:
     if "http://" in name or "https://" in name:
         return name, None
 
+    # Strip any unwanted usenet-related extensions
+    name = strip_extensions(name)
+
+    # Identify any braces
     braces = name[1:].find("{{")
     if braces < 0:
         braces = len(name)

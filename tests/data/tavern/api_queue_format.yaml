@@ -12,7 +12,6 @@ stages:
       params:
         mode: queue
         apikey: "{SAB_APIKEY}"
-        output: json
         limit: 1
     response:
       status_code: 200
@@ -75,36 +74,6 @@ stages:
             status: "Paused"
             timeleft: "0:00:00"
             avg_age: "!anystr"
-
----
-test_name: Check general queue format (text output)
-
-stages:
-  - name: queue format single entry
-    request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
-      method: GET
-      params:
-        mode: queue
-        apikey: "{SAB_APIKEY}"
-        output: text
-        limit: 1
-    response:
-      status_code: 200
-      headers:
-        content-type: !re_match "text/plain"
-        content-type: !re_search "charset=(UTF|utf)-8"
-        pragma: "no-cache"
-        access-control-allow-origin: "*"
-        content-length: !re_match "[0-9]+"
-      verify_response_with:
-        function: tavern.helpers:validate_regex
-        extra_kwargs:
-          # Verify only a bunch of key response parameters with a regex using
-          # positive looksaheads, so parameters match regardless of their order
-          # of appearance in the text output
-          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
-
 
 ---
 test_name: Check general queue format (xml output)

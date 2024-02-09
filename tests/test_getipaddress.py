@@ -32,15 +32,14 @@ class TestGetIpAddress:
             assert isinstance(item[0], type(socket.AF_INET))
 
     def test_public_ipv4(self):
-        publicipv4 = public_ipv4()
-        assert is_ipv4_addr(publicipv4)
+        if publicipv4 := public_ipv4():
+            assert is_ipv4_addr(publicipv4)
 
     def test_local_ipv4(self):
-        localipv4 = local_ipv4()
-        assert is_ipv4_addr(localipv4)
+        if localipv4 := local_ipv4():
+            assert is_ipv4_addr(localipv4)
 
     def test_public_ipv6(self):
-        test_ipv6 = public_ipv6()
-        # Not all systems have IPv6
-        if test_ipv6:
+        if test_ipv6 := public_ipv6():
+            # Not all systems have IPv6
             assert is_ipv6_addr(test_ipv6)

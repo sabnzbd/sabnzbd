@@ -1,28 +1,24 @@
 # SABnzbd Translation Template file NSIS
 # Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
 # 
-# Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
-# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
-"Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
+"Language-Team: Italian (https://app.transifex.com/sabnzbd/teams/111101/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: it\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Show Release Notes"
-msgstr "显示版本说明"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
-msgstr "支持该项目，捐助!"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
@@ -49,34 +45,34 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
-msgstr "这将从您的系统中卸载 SABnzbd"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
-msgstr "启动时运行"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
-msgstr "桌面图标"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
-msgstr "NZB 文件关联"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
-msgstr "删除程序"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
-msgstr "删除设置"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
-msgstr "不可以覆盖安装。\\n\\n点击“确定”可移除旧版，或点击“取消”取消升级。"
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
-msgstr "您的设置及数据将会保留。"
+msgstr ""

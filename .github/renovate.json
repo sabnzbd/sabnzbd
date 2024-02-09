@@ -7,9 +7,6 @@
   "schedule": [
     "before 8am on Monday"
   ],
-  "ignorePaths": [
-    ".github/workflows/**"
-  ],
   "pip_requirements": {
     "fileMatch": [
       "requirements.txt",

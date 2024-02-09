@@ -171,6 +171,7 @@ class DuplicateStatus:
     DUPLICATE_ALTERNATIVE = "Duplicate Alternative"  # Alternative duplicate for a queued job
     SMART_DUPLICATE = "Smart Duplicate"  # Simple Series duplicate
     SMART_DUPLICATE_ALTERNATIVE = "Smart Duplicate Alternative"  # Alternative duplicate for a queued job
+    DUPLICATE_IGNORED = "Duplicate Ignored"
 
 
 class AddNzbFileResult:

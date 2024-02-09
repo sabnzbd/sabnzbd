@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.1\n"
+"Project-Id-Version: SABnzbd-4.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/sabnzbd/teams/111101/pt_BR/)\n"
@@ -3616,14 +3616,6 @@ msgstr "Testando detalhes do servidor..."
 #: sabnzbd/skintext.py
 msgid "Bandwidth"
 msgstr "Largura de banda"
-
-#: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Enviar Grupo"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Enviar comando do grupo antes de solicitar artigos."
 
 #: sabnzbd/skintext.py
 msgid "Personal notes"

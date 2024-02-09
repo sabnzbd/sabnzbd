@@ -53,6 +53,7 @@ from sabnzbd.misc import (
     helpful_warning,
     recursive_html_escape,
     is_none,
+    get_cpu_name,
 )
 from sabnzbd.happyeyeballs import happyeyeballs
 from sabnzbd.filesystem import (
@@ -69,7 +70,6 @@ import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.utils.getperformance import getcpu
 import sabnzbd.utils.ssdp
 from sabnzbd.constants import (
     DEF_STD_CONFIG,
@@ -430,7 +430,7 @@ class MainPage:
             info["have_rss_defined"] = bool(config.get_rss())
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
 
-            info["cpumodel"] = getcpu()
+            info["cpumodel"] = get_cpu_name()
             info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
 
             # Have logout only with HTML and if inet=5, only when we are external
@@ -831,6 +831,7 @@ SPECIAL_BOOL_LIST = (
     "preserve_paused_state",
     "no_penalties",
     "ipv6_servers",
+    "ipv6_staging",
     "fast_fail",
     "overwrite_files",
     "enable_par_cleanup",
@@ -1162,7 +1163,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ("ssl", "send_group", "enable", "required", "optional"):
+    for kw in ("ssl", "enable", "required", "optional"):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:

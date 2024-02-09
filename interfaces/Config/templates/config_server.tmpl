@@ -107,11 +107,6 @@
                         <a href="https://sabnzbd.org/wiki/advanced/ssl-ciphers" target="_blank">https://sabnzbd.org/wiki/advanced/ssl-ciphers</a></span>
                     </div>
                     <div class="field-pair advanced-settings">
-                        <label class="config" for="send_group">$T('srv-send_group')</label>
-                        <input type="checkbox" name="send_group" id="send_group" value="1" />
-                        <span class="desc">$T('srv-explain-send_group')</span>
-                    </div>
-                    <div class="field-pair advanced-settings">
                         <label class="config" for="required">$T('srv-required')</label>
                         <input type="checkbox" name="required" id="required" value="1" />
                         <span class="desc">$T('explain-required')</span>
@@ -247,11 +242,6 @@
                             <label class="config" for="optional$cur">$T('srv-optional')</label>
                             <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($server['optional']) != 0 then 'checked="checked"' else ""#--> />
                             <span class="desc">$T('explain-optional')</span>
-                        </div>
-                        <div class="field-pair advanced-settings">
-                            <label class="config" for="send_group$cur">$T('srv-send_group')</label>
-                            <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($server['send_group']) != 0 then 'checked="checked"' else ""#--> />
-                            <span class="desc">$T('srv-explain-send_group')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="expire_date$cur">$T('srv-expire_date')</label>

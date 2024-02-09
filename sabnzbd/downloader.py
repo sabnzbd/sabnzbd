@@ -80,7 +80,6 @@ class Server:
         "required",
         "optional",
         "retention",
-        "send_group",
         "username",
         "password",
         "busy_threads",
@@ -111,7 +110,6 @@ class Server:
         use_ssl,
         ssl_verify,
         ssl_ciphers,
-        send_group,
         username=None,
         password=None,
         required=False,
@@ -134,15 +132,6 @@ class Server:
         self.required: bool = required
         self.optional: bool = optional
         self.retention: int = retention
-        self.send_group: bool = send_group
-
-        # TODO: Remove after next release
-        if send_group:
-            helpful_warning(
-                "You have 'Send Group' enabled for %s. Could you let us know why? https://github.com/sabnzbd/sabnzbd/discussions/2715",
-                self.displayname,
-            )
-
         self.username: Optional[str] = username
         self.password: Optional[str] = password
 
@@ -331,7 +320,6 @@ class Downloader(Thread):
             required = srv.required()
             optional = srv.optional()
             retention = int(srv.retention() * 24 * 3600)  # days ==> seconds
-            send_group = srv.send_group()
             create = True
 
         if oldserver:
@@ -358,7 +346,6 @@ class Downloader(Thread):
                     ssl,
                     ssl_verify,
                     ssl_ciphers,
-                    send_group,
                     username,
                     password,
                     required,
@@ -975,16 +962,9 @@ class Downloader(Thread):
 
     def __request_article(self, nw: NewsWrapper):
         try:
-            nzo = nw.article.nzf.nzo
-            if nw.server.send_group and nzo.group != nw.group:
-                group = nzo.group
-                if sabnzbd.LOG_ALL:
-                    logging.debug("Thread %s@%s: GROUP <%s>", nw.thrdnum, nw.server.host, group)
-                nw.send_group(group)
-            else:
-                if sabnzbd.LOG_ALL:
-                    logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
-                nw.body()
+            if sabnzbd.LOG_ALL:
+                logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
+            nw.body()
             # Mark as ready to be read
             self.add_socket(nw.nntp.fileno, nw)
         except socket.error as err:

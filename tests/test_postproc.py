@@ -150,11 +150,11 @@ class TestPostProc:
                     "order": 0,
                     "pp": None,
                     "script": None,
-                    "dir": os.path.join(
-                        SAB_CACHE_DIR, ("category_dir_for_" + category + ("*" if not has_jobdir else ""))
-                    )
-                    if has_catdir
-                    else None,
+                    "dir": (
+                        os.path.join(SAB_CACHE_DIR, ("category_dir_for_" + category + ("*" if not has_jobdir else "")))
+                        if has_catdir
+                        else None
+                    ),
                     "newzbin": "",
                     "priority": 0,
                 },

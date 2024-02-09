@@ -135,15 +135,16 @@ def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
 
 
 def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
-    """Build JSON request to SABnzbd"""
-    arguments = {"apikey": SAB_APIKEY, "output": "json", "mode": mode}
+    """Build request to SABnzbd"""
+    arguments = {"apikey": SAB_APIKEY, "mode": mode}
     arguments.update(extra_arguments)
+
     r = requests.get("http://%s:%s/api" % (host, port), params=arguments)
-    if arguments["output"] == "text":
-        return r.text
-    elif arguments["output"] == "xml":
+    if "xml" in r.headers["Content-Type"]:
         return xmltodict.parse(r.text)
-    return r.json()
+    if "json" in r.headers["Content-Type"]:
+        return r.json()
+    return r.text
 
 
 def create_nzb(nzb_dir: str, metadata: Optional[Dict[str, str]] = None) -> str:

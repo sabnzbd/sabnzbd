@@ -1079,22 +1079,7 @@ def report(error: Optional[str] = None, keyword: str = "value", data: Any = None
     If no error and no data, only a status report is made.
     Else, a data report is made (optional 'keyword' for outer XML section).
     """
-    output = cherrypy.request.params.get("output")
-    if output == "json":
-        content = "application/json;charset=UTF-8"
-        if error:
-            info = {"status": False, "error": error}
-        elif data is None:
-            info = {"status": True}
-        else:
-            if hasattr(data, "__iter__") and not keyword:
-                info = data
-            else:
-                info = {keyword: data}
-
-        response = utob(json.dumps(info))
-
-    elif output == "xml":
+    if cherrypy.request.params.get("output") == "xml":
         if not keyword:
             # xml always needs an outer keyword, even when json doesn't
             keyword = "result"
@@ -1107,15 +1092,19 @@ def report(error: Optional[str] = None, keyword: str = "value", data: Any = None
         else:
             status_str = xmlmaker.run(keyword, data)
         response = '<?xml version="1.0" encoding="UTF-8" ?>\n%s\n' % status_str
-
     else:
-        content = "text/plain"
+        content = "application/json;charset=UTF-8"
         if error:
-            response = "error: %s\n" % error
-        elif not data:
-            response = "ok\n"
+            info = {"status": False, "error": error}
+        elif data is None:
+            info = {"status": True}
         else:
-            response = "%s\n" % str(data)
+            if hasattr(data, "__iter__") and not keyword:
+                info = data
+            else:
+                info = {keyword: data}
+
+        response = utob(json.dumps(info))
 
     cherrypy.response.headers["Content-Type"] = content
     cherrypy.response.headers["Pragma"] = "no-cache"
@@ -1279,12 +1268,12 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
-        # Diskspeed of download (aka incomplete) and complete directory:
-        sabnzbd.DOWNLOAD_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
-        sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
+        # Disk speed of download (aka incomplete) and complete directory:
+        sabnzbd.DOWNLOAD_DIR_SPEED = diskspeedmeasure(sabnzbd.cfg.download_dir.get_path())
+        sabnzbd.COMPLETE_DIR_SPEED = diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path())
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
+        sabnzbd.INTERNET_BANDWIDTH = internetspeed()
 
     # How often did we delay?
     info["delayed_assembler"] = sabnzbd.BPSMeter.delayed_assembler

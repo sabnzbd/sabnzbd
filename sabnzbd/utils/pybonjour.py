@@ -241,7 +241,6 @@ kDNSServiceInterfaceIndexLocalOnly = -1
 
 
 class BonjourError(Exception):
-
     """
 
     Exception representing an error returned by the DNS-SD library.
@@ -321,7 +320,6 @@ _DNSServiceErrorType = ctypes.c_int32
 
 
 class DNSRecordRef(ctypes.c_void_p):
-
     """
 
     A DNSRecordRef pointer.  DO NOT CREATE INSTANCES OF THIS CLASS!
@@ -367,7 +365,6 @@ class _DNSRecordRef_or_null(DNSRecordRef):
 
 
 class DNSServiceRef(DNSRecordRef):
-
     """
 
     A DNSServiceRef pointer.  DO NOT CREATE INSTANCES OF THIS CLASS!
@@ -1740,7 +1737,6 @@ def DNSServiceConstructFullName(service=None, regtype=_NO_DEFAULT, domain=_NO_DE
 
 
 class TXTRecord(object):
-
     """
 
     A mapping representing a DNS TXT record.  The TXT record's

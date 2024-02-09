@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.2.2 Beta 1
+Release Notes - SABnzbd 4.2.2 Release Candidate 1
 =========================================================
 
 This is the second bug-fix release of SABnzbd 4.2.0.
@@ -7,8 +7,11 @@ This is the second bug-fix release of SABnzbd 4.2.0.
 
 * **Bug-fixes:**
     * RSS readout could result in a crash if duplicate detection is enabled.
+    * Passwords were not always correctly parsed.
+    * Warnings could show even if `helpful_warnings` was disabled.
 
 * **Changes:**
+    * Parsing of filenames from the NZB was extended to allow more exotic formatting.
     * Windows: Installer will automatically shutdown SABnzbd if it is running.
 
 ## Bug-fixes and changes since 4.2.0:

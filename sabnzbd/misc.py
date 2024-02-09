@@ -20,9 +20,11 @@ sabnzbd.misc - misc classes
 """
 
 import os
+import platform
 import ssl
 import sys
 import logging
+import functools
 import urllib.request
 import urllib.parse
 import re
@@ -51,11 +53,13 @@ from sabnzbd.constants import (
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import ubtou
+from sabnzbd.decorators import cache_maintainer
+from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file
 
 if sabnzbd.WIN32:
     try:
+        import winreg
         import win32process
         import win32con
 
@@ -381,8 +385,6 @@ _SERVICE_PARM = "CommandLine"
 
 def get_serv_parms(service):
     """Get the service command line parameters from Registry"""
-    import winreg
-
     service_parms = []
     try:
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
@@ -402,8 +404,6 @@ def get_serv_parms(service):
 
 def set_serv_parms(service, args):
     """Set the service command line parameters in Registry"""
-    import winreg
-
     serv = []
     for arg in args:
         serv.append(arg[0])
@@ -482,7 +482,7 @@ def check_latest_version():
     # Fetch version info
     data = get_from_url("https://sabnzbd.org/latest.txt")
     if not data:
-        logging.info("Cannot retrieve version information from GitHub.com")
+        logging.info("Cannot retrieve version information from sabnzbd.org")
         logging.debug("Traceback: ", exc_info=True)
         return
 
@@ -737,6 +737,51 @@ def get_macos_memory():
     """Use system-call to extract total memory on macOS"""
     system_output = run_command(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
+
+
+@cache_maintainer(clear_time=3600)
+@functools.lru_cache(maxsize=None)
+def get_cpu_name():
+    """Find the CPU name (which needs a different method per OS), and return it
+    If none found, return platform.platform()"""
+
+    cputype = None
+
+    try:
+        if sabnzbd.WIN32:
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0")
+            cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
+            winreg.CloseKey(key)
+
+        elif sabnzbd.MACOS:
+            cputype = subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"]).strip()
+
+        else:
+            with open("/proc/cpuinfo") as fp:
+                for myline in fp.readlines():
+                    if myline.startswith("model name"):
+                        # Typical line:
+                        # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
+                        cputype = myline.split(":", 1)[1]  # get everything after the first ":"
+                        break  # we're done
+        cputype = platform_btou(cputype)
+    except:
+        # An exception, maybe due to a subprocess call gone wrong
+        pass
+
+    if cputype:
+        # OK, found. Remove unwanted spaces:
+        cputype = " ".join(cputype.split())
+    else:
+        try:
+            # Not found, so let's fall back to platform()
+            cputype = platform.platform()
+        except:
+            # Can fail on special platforms (like Snapcraft or embedded)
+            pass
+
+    logging.debug("CPU model = %s", cputype)
+    return cputype
 
 
 def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
