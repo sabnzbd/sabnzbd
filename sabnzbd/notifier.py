@@ -120,7 +120,13 @@ def get_target(notification_type: str, section: str) -> Union[str, bool, None]:
     """Check target of `notification_type` in `section` if enabled is set"""
     try:
         if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0:
-            return sabnzbd.config.get_config(section, "%s_target_%s" % (section, notification_type))().strip()
+            result = sabnzbd.config.get_config(section, "%s_target_%s" % (section, notification_type))().strip()
+            if result:
+                return result
+
+            else:
+                # Use Default
+                return True
 
     except TypeError:
         logging.debug("Incorrect Notify option %s:%s_target_%s", section, section, notification_type)
@@ -337,21 +343,20 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
     if not test:
         # Get a list of tags that are set to use the common list
         if target := get_target(notification_type, "apprise"):
-            if isinstance(target, str):
-                if target:
-                    # Store our URL and assign our key
-                    if not apobj.add(target):
-                        logging.warning(
-                            "Key: %s - %s", notification_type, T("One or more Apprise URLs could not be loaded.")
-                        )
+            if target is True:
+                # Use default list
+                apobj.add(urls)
 
-                else:
-                    # Use default list
-                    apobj.add(urls)
+            else:  # Target is string of URLs to over-ride with
+                # Store our URL and assign our key
+                if not apobj.add(target):
+                    logging.warning(
+                        "Key: %s - %s", notification_type, T("One or more Apprise URLs could not be loaded.")
+                    )
 
-            else:
-                # Nothing to notify
-                return ""
+        else:
+            # Nothing to notify
+            return ""
 
     else:
         # Use default list
