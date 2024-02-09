@@ -119,15 +119,14 @@ def get_prio(notification_type: str, section: str) -> int:
 def get_target(notification_type: str, section: str) -> Union[str, bool, None]:
     """Check target of `notification_type` in `section` if enabled is set"""
     try:
-        return (
-            sabnzbd.config.get_config(section, "%s_target_%s" % (section, notification_type))().strip()
-            if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0
-            else False
-        )
+        if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0:
+            return sabnzbd.config.get_config(section, "%s_target_%s" % (section, notification_type))().strip()
 
     except TypeError:
         logging.debug("Incorrect Notify option %s:%s_target_%s", section, section, notification_type)
         return None
+
+    return False
 
 
 def check_cat(section: str, job_cat: str, keyword: Optional[str] = None) -> bool:
@@ -337,22 +336,22 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
 
     if not test:
         # Get a list of tags that are set to use the common list
-        target = get_target(notification_type, "apprise")
-        if isinstance(target, str):
-            if target:
-                # Store our URL and assign our key
-                if not apobj.add(target):
-                    logging.warning(
-                        "Key: %s - %s", notification_type, T("One or more Apprise URLs could not be loaded.")
-                    )
+        if target := get_target(notification_type, "apprise"):
+            if isinstance(target, str):
+                if target:
+                    # Store our URL and assign our key
+                    if not apobj.add(target):
+                        logging.warning(
+                            "Key: %s - %s", notification_type, T("One or more Apprise URLs could not be loaded.")
+                        )
+
+                else:
+                    # Use default list
+                    apobj.add(urls)
 
             else:
-                # Use default list
-                apobj.add(urls)
-
-        else:
-            # Nothing to notify
-            return ""
+                # Nothing to notify
+                return ""
 
     else:
         # Use default list
@@ -360,15 +359,15 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
 
     try:
         # The below notifies anything added to our list
-        return (
-            ""
-            if apobj.notify(body=msg, title=title, notify_type=n_map[notification_type], body_format="text")
-            else T("Failed to send one or more Apprise Notifications")
-        )
+        if not apobj.notify(body=msg, title=title, notify_type=n_map[notification_type], body_format="text"):
+            return T("Failed to send one or more Apprise Notifications")
+
     except:
         logging.warning(T("Failed to send Apprise message"))
         logging.info("Traceback: ", exc_info=True)
         return T("Failed to send Apprise message")
+
+    return ""
 
 
 def send_pushover(title, msg, notification_type, force=False, test=None):
