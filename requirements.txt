@@ -65,6 +65,15 @@ requests-oauthlib==1.3.1
 markdown==3.5.2
 paho-mqtt==1.6.1
 
+# Requests Requirements
+charset_normalizer==3.3.2
+idna==3.6
+urllib3==2.2.0
+certifi==2024.2.2
+
+# Markdown Requirements
+importlib-metadata==7.0.1
+
 # Optional support for system power management on *nix.
 # Requires libdbus-1-dev to be installed.
 # Uncomment line below or manually install after installing requirements.
