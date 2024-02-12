@@ -5,7 +5,7 @@ packaging==23.2
 pyinstaller-hooks-contrib==2024.1
 altgraph==0.17.4
 wrapt==1.16.0
-setuptools==69.0.3
+setuptools==69.1.0
 certifi
 
 # Required on 32bit Windows, exclude it based on Python-version
