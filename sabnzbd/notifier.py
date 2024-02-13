@@ -120,18 +120,13 @@ def get_target(notification_type: str, section: str) -> Union[str, bool, None]:
     """Check target of `notification_type` in `section` if enabled is set"""
     try:
         if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0:
-            result = sabnzbd.config.get_config(section, "%s_target_%s" % (section, notification_type))().strip()
-            if result:
+            if result := sabnzbd.config.get_config(section, "%s_target_%s" % (section, notification_type))():
                 return result
-
-            else:
-                # Use Default
-                return True
-
+            # Use Default
+            return True
     except TypeError:
         logging.debug("Incorrect Notify option %s:%s_target_%s", section, section, notification_type)
-        return None
-
+        return False
     return False
 
 
@@ -331,10 +326,9 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
         app_id="SABnzbd",
         app_desc="SABnzbd Notification",
         app_url="https://sabnzbd.org/",
-        image_path_mask=os.path.join(os.path.dirname(__file__), "apprise", "apprise-{TYPE}.png"),
-        image_url_mask="https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/images/icons/apprise/{TYPE}.png",
-        image_url_logo="https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/images/icons/"
-        "apple-touch-icon-180x180-precomposed.png",
+        image_path_mask=os.path.join(sabnzbd.DIR_PROG, "icons", "apprise", "apprise-{TYPE}.png"),
+        image_url_mask="https://sabnzbd.org/images/icons/apprise/{TYPE}.png",
+        image_url_logo="https://sabnzbd.org/images/icons/apple-touch-icon-180x180-precomposed.png",
     )
 
     # Initialize our Apprise Instance
@@ -346,25 +340,25 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
             if target is True:
                 # Use default list
                 apobj.add(urls)
-
-            else:  # Target is string of URLs to over-ride with
+            elif not apobj.add(target):
+                # Target is string of URLs to over-ride with
                 # Store our URL and assign our key
-                if not apobj.add(target):
-                    logging.warning(
-                        "Key: %s - %s", notification_type, T("One or more Apprise URLs could not be loaded.")
-                    )
-
+                logging.warning("%s - %s", notification_type, T("One or more Apprise URLs could not be loaded."))
         else:
             # Nothing to notify
             return ""
-
     else:
         # Use default list
         apobj.add(urls)
 
     try:
         # The below notifies anything added to our list
-        if not apobj.notify(body=msg, title=title, notify_type=n_map[notification_type], body_format="text"):
+        if not apobj.notify(
+            body=msg,
+            title=title,
+            notify_type=n_map[notification_type],
+            body_format=apprise.NotifyFormat.TEXT,
+        ):
             return T("Failed to send one or more Apprise Notifications")
 
     except:
