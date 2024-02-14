@@ -32,6 +32,7 @@ function QueueListModel(parent) {
     // External var's
     self.queueItems = ko.observableArray([]);
     self.totalItems = ko.observable(0);
+    self.deleteItems = ko.observableArray([]);
     self.isMultiEditing = ko.observable(false).extend({ persist: 'queueIsMultiEditing' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
     self.multiEditItems = ko.observableArray([]);
@@ -145,6 +146,27 @@ function QueueListModel(parent) {
             value2: targetIndex
         }).then(self.parent.refresh);
 
+    }
+
+    self.triggerRemoveDownload = function(items) {
+        // Show and fill modal
+        self.deleteItems.removeAll()
+
+        // Single or multiple items?
+        if(items.length) {
+            ko.utils.arrayPushAll(self.deleteItems, items)
+        } else {
+            self.deleteItems.push(items)
+        }
+
+        // Show modal or delete right away
+        if(self.parent.confirmDeleteQueue()) {
+            // Open modal if desired
+            $('#modal-delete-queue-job').modal("show")
+        } else {
+            // Otherwise just submit right away
+            $('#modal-delete-queue-job form').submit()
+        }
     }
 
     // Save pagination state
@@ -401,41 +423,46 @@ function QueueListModel(parent) {
 
     }
 
+    // Remove downloads from queue
+    self.removeDownloads = function(form) {
+        // Hide modal and show notification
+        $('#modal-delete-queue-job').modal("hide")
+        showNotification('.main-notification-box-removing')
+
+        var strIDs = '';
+        $.each(self.deleteItems(), function(index) {
+            strIDs = strIDs + this.id + ',';
+        })
+
+        callAPI({
+            mode: 'queue',
+            name: 'delete',
+            del_files: 1,
+            value: strIDs
+        }).then(function(response) {
+            // Make sure no flickering (if there are more items left) and then remove
+            self.isLoading(true)
+            self.queueItems.removeAll(self.deleteItems());
+            self.multiEditItems.removeAll(self.deleteItems())
+            self.parent.refresh();
+            // Hide notification and close modal
+            hideNotification()
+        });
+    };
+
     // Delete all selected
     self.doMultiDelete = function() {
         // Anything selected?
         if(self.multiEditItems().length < 1) return;
 
-        // Need confirm
-        if(!self.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDown)) {
-            // List all the ID's
-            var strIDs = '';
-            $.each(self.multiEditItems(), function(index) {
-                strIDs = strIDs + this.id + ',';
-            })
-
-            // Show notification
-            showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
-
-            // Remove
-            callAPI({
-                mode: 'queue',
-                name: 'delete',
-                del_files: 1,
-                value: strIDs
-            }).then(function(response) {
-                if(response.status) {
-                    // Make sure the queue doesnt flicker and then fade-out
-                    self.isLoading(true)
-                    self.parent.refresh()
-                    // Empty it
-                    self.multiEditItems.removeAll();
-                    // Hide notification
-                    hideNotification()
-                }
-            })
-        }
+        // Trigger modal
+        self.triggerRemoveDownload(self.multiEditItems())
     }
+
+    // Focus on the confirm button
+    $('#modal-delete-queue-job').on("shown.bs.modal", function() {
+        $('#modal-delete-queue-job .btn[type="submit"]').focus()
+    })
 
     // On change of page we need to check all those that were in the list!
     self.queueItems.subscribe(function() {
@@ -711,29 +738,5 @@ function QueueModel(parent, data) {
         })
     }
 
-    // Remove 1 download from queue
-    self.removeDownload = function(item, event) {
-        // Confirm and remove
-        if(!self.parent.parent.confirmDeleteQueue() || confirm(glitterTranslate.deleteMsg + ":\n" + item.name() + "\n\n" + glitterTranslate.removeDow1)) {
-            var itemToDelete = this;
 
-            // Show notification
-            showNotification('.main-notification-box-removing')
-
-            callAPI({
-                mode: 'queue',
-                name: 'delete',
-                del_files: 1,
-                value: item.id
-            }).then(function(response) {
-                // Make sure no flickering (if there are more items left) and then remove
-                self.parent.isLoading(self.parent.totalItems() > 1)
-                parent.queueItems.remove(itemToDelete);
-                parent.multiEditItems.remove(function(inList) { return inList.id === itemToDelete.id; })
-                self.parent.parent.refresh();
-                // Hide notifcation
-                hideNotification()
-            });
-        }
-    };
 }

@@ -431,18 +431,16 @@ function ViewModel() {
             return;
         }
         // Show modal
-        $('#modal_custom_pause').modal('show')
-
-        // Focus on the input field
-        $('#modal_custom_pause').on('shown.bs.modal', function() {
-            $('#customPauseInput').focus()
-        })
-
-        // Reset on modal close
-        $('#modal_custom_pause').on('hide.bs.modal', function() {
-            self.pauseCustom('');
-        })
+        $('#modal-custom-pause').modal('show')
     }
+
+    $('#modal-custom-pause').on('shown.bs.modal', function() {
+        // Focus on the input field when opening the modal
+        $('#customPauseInput').focus()
+    }).on('hide.bs.modal', function() {
+        // Reset on modal close
+        self.pauseCustom('');
+    })
 
     // Update on changes
     self.pauseCustom.subscribe(function(newValue) {
@@ -455,7 +453,7 @@ function ViewModel() {
         // At least 3 charaters
         if (newValue.length < 3) {
             $('#customPauseOutput').text('').data('time', 0)
-            $('#modal_custom_pause .btn-default').addClass('disabled')
+            $('#modal-custom-pause .btn-default').addClass('disabled')
             return;
         }
 
@@ -480,11 +478,11 @@ function ViewModel() {
             var pauseDuration = Math.round((pauseParsed - Date.parse('now')) / 1000 / 60);
             $('#customPauseOutput').html('<span class="glyphicon glyphicon-pause"></span> ' + glitterTranslate.pauseFor + ' ' + pauseDuration + ' ' + glitterTranslate.minutes)
             $('#customPauseOutput').data('time', pauseDuration)
-            $('#modal_custom_pause .btn-default').removeClass('disabled')
+            $('#modal-custom-pause .btn-default').removeClass('disabled')
         } else if (newValue) {
             // No..
             $('#customPauseOutput').text(glitterTranslate.pausePromptFail)
-            $('#modal_custom_pause .btn-default').addClass('disabled')
+            $('#modal-custom-pause .btn-default').addClass('disabled')
         }
     })
 
@@ -503,7 +501,7 @@ function ViewModel() {
                 // Refresh and close the modal
                 self.refresh()
                 self.downloadsPaused(true);
-                $('#modal_custom_pause').modal('hide')
+                $('#modal-custom-pause').modal('hide')
             });
         }
     }
