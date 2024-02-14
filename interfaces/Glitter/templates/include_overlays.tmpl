@@ -635,19 +635,43 @@
     </div>
 </div>
 
-<div id="modal-delete-queue-job" class="modal fade" tabindex="-1">
+<div id="modal-delete-queue-job" class="modal modal-delete-job fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title row-wrap-text">$T('removeNZB-Files')</h4>
             </div>
-            <form id="delete-job-form" data-bind="submit: queue.removeDownloads">
+            <form data-bind="submit: queue.removeDownloads">
                 <div class="modal-body">
                     $T('confirm')
 
                     <ul data-bind="foreach: queue.deleteItems">
                         <li data-bind="text: name"></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">$T('cancel')</button>
+                    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> $T('nzo-delete')</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="modal-delete-history-job" class="modal modal-delete-job fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title row-wrap-text">$T('nzo-delete')</h4>
+            </div>
+            <form data-bind="submit: history.removeDownloads">
+                <div class="modal-body">
+                    $T('confirm')
+
+                    <ul data-bind="foreach: history.deleteItems">
+                        <li data-bind="text: historyStatus.name"></li>
                     </ul>
                 </div>
                 <div class="modal-footer">

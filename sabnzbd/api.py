@@ -344,12 +344,12 @@ def _api_retry(name, kwargs):
 
 
 def _api_cancel_pp(name, kwargs):
-    """API: accepts name, value(=nzo_id)"""
-    nzo_id = kwargs.get("value")
-    if sabnzbd.PostProcessor.cancel_pp(nzo_id):
-        return report(keyword="", data={"status": True, "nzo_id": nzo_id})
-    else:
-        return report(_MSG_NO_ITEM)
+    """API: accepts name, value(=nzo_ids)"""
+    if nzo_ids := kwargs.get("value"):
+        nzo_ids = nzo_ids.split(",")
+        if sabnzbd.PostProcessor.cancel_pp(nzo_ids):
+            return report(keyword="", data={"status": True, "nzo_ids": nzo_ids})
+    return report(_MSG_NO_ITEM)
 
 
 def _api_addlocalfile(name, kwargs):

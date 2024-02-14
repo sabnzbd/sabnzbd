@@ -108,7 +108,7 @@
                         </div>
                         <!-- /ko -->
                     </div>
-                    <a href="#" data-bind="click: deleteSlot">
+                    <a href="#" data-bind="click: parent.triggerRemoveDownload">
                         <span class="hover-button glyphicon glyphicon-trash" data-bind="css: { 'glyphicon-stop' : processingDownload() == 2, disabled : processingDownload() == 1 }, attr: { title: processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }"></span>
                     </a>
                 </td>

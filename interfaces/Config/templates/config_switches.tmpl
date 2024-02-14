@@ -93,7 +93,7 @@
                             <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="4" <!--#if int($no_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="3" <!--#if int($no_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
+                            <option value="3" <!--#if int($no_dupes) == 3 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                             <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
                         </select>
                         <span class="desc">
@@ -107,7 +107,7 @@
                             <option value="0" <!--#if int($no_smart_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="4" <!--#if int($no_smart_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_smart_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="3" <!--#if int($no_smart_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
+                            <option value="3" <!--#if int($no_smart_dupes) == 3 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                             <option value="1" <!--#if int($no_smart_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
                         </select>
                         <span class="desc">
@@ -125,7 +125,7 @@
                         <select name="pause_on_pwrar" id="pause_on_pwrar">
                             <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="1" <!--#if int($pause_on_pwrar) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
+                            <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                         </select>
                         <span class="desc">$T('explain-pause_on_pwrar')</span>
                     </div>
@@ -143,7 +143,7 @@
                         <select name="action_on_unwanted_extensions" id="action_on_unwanted_extensions">
                             <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="1" <!--#if int($action_on_unwanted_extensions) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
+                            <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                         </select>
                         <span class="desc">$T('explain-action_on_unwanted_extensions')</span>
                     </div>

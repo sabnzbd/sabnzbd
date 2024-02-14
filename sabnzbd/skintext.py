@@ -423,9 +423,9 @@ SKIN_TEXT = {
     "nodupes-off": TT("Off"),  #: Three way switch for duplicates
     "nodupes-ignore": TT("Discard"),  #: Four way switch for duplicates
     "nodupes-pause": TT("Pause"),  #: Four way switch for duplicates
-    "nodupes-fail": TT("Fail job (move to History)"),  #: Four way switch for duplicates
     "nodupes-tag": TT("Tag job"),  #: Four way switch for duplicates
-    "abort": TT("Abort"),  #: Three way switch for encrypted posts
+    "fail-to-history": TT("Fail job (move to History)"),  #: Four way switch for duplicates
+    "abort": TT("Abort post-processing"),
     "opt-action_on_unwanted_extensions": TT("Action when unwanted extension detected"),
     "explain-action_on_unwanted_extensions": TT("Action when an unwanted extension is detected"),
     "opt-unwanted_extensions": TT("Unwanted extensions"),

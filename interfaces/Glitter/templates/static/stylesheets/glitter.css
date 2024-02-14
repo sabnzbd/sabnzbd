@@ -1521,6 +1521,15 @@ input[name="nzbURL"] {
     transition : border 500ms ease-out;
 }
 
+/* DELETE MODAL */
+.modal-delete-job ul {
+    margin-top: 10px;
+}
+
+.modal-delete-job li {
+    word-break: break-all;
+}
+
 /* HELP MODAL */
 
 #modal-help .modal-body {

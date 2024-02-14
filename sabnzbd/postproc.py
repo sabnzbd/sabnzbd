@@ -197,10 +197,11 @@ class PostProcessor(Thread):
         self.slow_queue.put(None)
         self.fast_queue.put(None)
 
-    def cancel_pp(self, nzo_id: str) -> Optional[bool]:
-        """Change the status, so that the PP is canceled"""
+    def cancel_pp(self, nzo_ids: List[str]) -> Optional[bool]:
+        """Abort Direct Unpack and change the status, so that the PP is canceled"""
+        result = None
         for nzo in self.history_queue:
-            if nzo.nzo_id == nzo_id:
+            if nzo.nzo_id in nzo_ids:
                 nzo.abort_direct_unpacker()
                 if nzo.pp_active:
                     nzo.pp_active = False
@@ -210,8 +211,9 @@ class PostProcessor(Thread):
                         logging.info("Killed external process %s", self.external_process.args[0])
                     except:
                         pass
-                return True
-        return None
+                result = True
+            return result
+        return result
 
     def empty(self) -> bool:
         """Return True if pp queue is empty"""

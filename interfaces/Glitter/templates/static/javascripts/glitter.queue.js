@@ -445,7 +445,6 @@ function QueueListModel(parent) {
             self.queueItems.removeAll(self.deleteItems());
             self.multiEditItems.removeAll(self.deleteItems())
             self.parent.refresh();
-            // Hide notification and close modal
             hideNotification()
         });
     };
