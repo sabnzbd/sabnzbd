@@ -3149,18 +3149,17 @@ msgstr "Kassér"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
-msgstr "Mislykkes job (flyt til historik)"
-
-#. Four way switch for duplicates
-#: sabnzbd/skintext.py
 msgid "Tag job"
 msgstr "Marker job"
 
-#. Three way switch for encrypted posts
+#. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Abort"
-msgstr "Afbryd"
+msgid "Fail job (move to History)"
+msgstr "Mislykkes job (flyt til historik)"
+
+#: sabnzbd/skintext.py
+msgid "Abort post-processing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"

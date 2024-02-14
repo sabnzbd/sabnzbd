@@ -3158,18 +3158,17 @@ msgstr "Descartar"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
+msgid "Tag job"
 msgstr ""
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Tag job"
+msgid "Fail job (move to History)"
 msgstr ""
 
-#. Three way switch for encrypted posts
 #: sabnzbd/skintext.py
-msgid "Abort"
-msgstr "Cancelar"
+msgid "Abort post-processing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"

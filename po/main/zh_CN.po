@@ -3092,18 +3092,17 @@ msgstr "舍弃"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
-msgstr "失败的任务 (移动到历史)"
-
-#. Four way switch for duplicates
-#: sabnzbd/skintext.py
 msgid "Tag job"
 msgstr ""
 
-#. Three way switch for encrypted posts
+#. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Abort"
-msgstr "中止"
+msgid "Fail job (move to History)"
+msgstr "失败的任务 (移动到历史)"
+
+#: sabnzbd/skintext.py
+msgid "Abort post-processing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
