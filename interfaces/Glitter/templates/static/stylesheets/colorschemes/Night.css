@@ -206,7 +206,8 @@ tbody .caret {
 .info-container,
 #modal-options .options-status-box small,
 #modal-options #options-status small,
-#modal-options .tab-content h4 {
+#modal-options .tab-content h4,
+h2 small {
     color: #D6D6D6;
 }
 

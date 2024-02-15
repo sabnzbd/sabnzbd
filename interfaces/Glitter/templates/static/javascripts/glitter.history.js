@@ -9,6 +9,7 @@ function HistoryListModel(parent) {
     self.lastUpdate = 0;
     self.historyItems = ko.observableArray([])
     self.showFailed = ko.observable(false).extend({ persist: 'historyShowFailed' });
+    self.showArchive = ko.observable(false).extend({ persist: 'historyShowArchive' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
@@ -201,7 +202,18 @@ function HistoryListModel(parent) {
         // Set the loader so it doesn't flicker and then switch
         self.isLoading(true)
         self.showFailed(!self.showFailed())
-        // Forde hide tooltip so it doesn't linger
+        // Force hide tooltip so it doesn't linger
+        $('#history-options a').tooltip('hide')
+        // Force refresh
+        self.parent.refresh(true)
+    }
+
+    // Toggle showing archive
+    self.toggleShowArchive = function(data, event) {
+        // Set the loader so it doesn't flicker and then switch
+        self.isLoading(true)
+        self.showArchive(!self.showArchive())
+        // Force hide tooltip so it doesn't linger
         $('#history-options a').tooltip('hide')
         // Force refresh
         self.parent.refresh(true)

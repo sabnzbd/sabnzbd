@@ -121,7 +121,7 @@ function ViewModel() {
     // Dynamic history length check
     self.hasHistory = ko.pureComputed(function() {
         // We also 'have history' if we can't find any results of the search or there are no failed ones
-        return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed() || self.history.isLoading())
+        return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed() || self.history.showArchive() || self.history.isLoading())
     })
 
     self.hasWarnings = ko.pureComputed(function() {
@@ -364,6 +364,7 @@ function ViewModel() {
             failed_only: self.history.showFailed() * 1,
             start: self.history.pagination.currentStart(),
             limit: parseInt(self.history.paginationLimit()),
+            archive: self.history.showArchive() * 1,
             last_history_update: self.history.lastUpdate
         }
         if (self.history.searchTerm()) {

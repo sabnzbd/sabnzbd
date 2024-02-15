@@ -106,6 +106,10 @@ class HistoryDB:
                     and self.execute("ALTER TABLE history ADD COLUMN duplicate_key TEXT;")
                     and self.execute("UPDATE history SET duplicate_key = series WHERE 1 = 1;")
                 )
+            if version < 4:
+                _ = self.execute("PRAGMA user_version = 4;") and self.execute(
+                    "ALTER TABLE history ADD COLUMN archive INTEGER;"
+                )
 
     def execute(self, command: str, args: Sequence = ()) -> bool:
         """Wrapper for executing SQL commands"""
@@ -180,11 +184,12 @@ class HistoryDB:
             "series" TEXT,
             "md5sum" TEXT,
             "password" TEXT,
-            "duplicate_key" TEXT
+            "duplicate_key" TEXT,
+            "archive" INTEGER
         )
         """
         )
-        self.execute("PRAGMA user_version = 3;")
+        self.execute("PRAGMA user_version = 4;")
 
     def close(self):
         """Close database connection"""
@@ -277,6 +282,7 @@ class HistoryDB:
         self,
         start: Optional[int] = None,
         limit: Optional[int] = None,
+        archive: Optional[bool] = None,
         search: Optional[str] = None,
         categories: Optional[List[str]] = None,
         statuses: Optional[List[str]] = None,
@@ -286,6 +292,8 @@ class HistoryDB:
         command_args = [convert_search(search)]
 
         post = ""
+        if archive:
+            post += " AND archive = 1"
         if categories:
             categories = ["*" if c == "Default" else c for c in categories]
             post = " AND (category = ?"

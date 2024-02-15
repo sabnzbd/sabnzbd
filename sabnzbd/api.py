@@ -487,6 +487,7 @@ def _api_history(name, kwargs):
     statuses = clean_comma_separated_list(kwargs.get("status"))
     failed_only = int_conv(kwargs.get("failed_only"))
     nzo_ids = clean_comma_separated_list(kwargs.get("nzo_ids"))
+    archive = bool(int_conv(kwargs.get("archive")))
 
     # Do we need to send anything?
     if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
@@ -537,6 +538,7 @@ def _api_history(name, kwargs):
         history["slots"], history["ppslots"], history["noofslots"] = build_history(
             start=start,
             limit=limit,
+            archive=archive,
             search=search,
             categories=categories,
             statuses=statuses,
@@ -1634,34 +1636,41 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 def build_history(
     start: int = 0,
     limit: int = 1000000,
+    archive: bool = False,
     search: Optional[str] = None,
     categories: Optional[List[str]] = None,
     statuses: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
 ) -> Tuple[List[Dict[str, Any]], int, int]:
     """Combine the jobs still in post-processing and the database history"""
-    # Grab any items that are active or queued in postproc
-    postproc_queue = sabnzbd.PostProcessor.get_queue(
-        search=search,
-        categories=categories,
-        statuses=statuses,
-        nzo_ids=nzo_ids,
-    )
+    if not archive:
+        # Grab any items that are active or queued in postproc
+        postproc_queue = sabnzbd.PostProcessor.get_queue(
+            search=search,
+            categories=categories,
+            statuses=statuses,
+            nzo_ids=nzo_ids,
+        )
 
-    # Multi-page support for postproc items
-    postproc_queue_size = len(postproc_queue)
-    if start > postproc_queue_size:
-        # On a page where we shouldn't show postproc items
-        postproc_queue = []
-        database_history_limit = limit
-    else:
-        if limit:
-            postproc_queue = postproc_queue[start : start + limit]
+        # Multi-page support for postproc items
+        postproc_queue_size = len(postproc_queue)
+        if start > postproc_queue_size:
+            # On a page where we shouldn't show postproc items
+            postproc_queue = []
+            database_history_limit = limit
         else:
-            postproc_queue = postproc_queue[start:]
-        # Remove the amount of postproc items from the db request for history items
-        database_history_limit = max(limit - len(postproc_queue), 0)
-    database_history_start = max(start - postproc_queue_size, 0)
+            if limit:
+                postproc_queue = postproc_queue[start : start + limit]
+            else:
+                postproc_queue = postproc_queue[start:]
+            # Remove the amount of postproc items from the db request for history items
+            database_history_limit = max(limit - len(postproc_queue), 0)
+        database_history_start = max(start - postproc_queue_size, 0)
+    else:
+        database_history_start = start
+        database_history_limit = limit
+        postproc_queue = []
+        postproc_queue_size = 0
 
     # Acquire the db instance
     try:
@@ -1677,6 +1686,7 @@ def build_history(
         items, total_items = history_db.fetch_history(
             start=database_history_start,
             limit=1,
+            archive=archive,
             search=search,
             categories=categories,
             statuses=statuses,
@@ -1687,6 +1697,7 @@ def build_history(
         items, total_items = history_db.fetch_history(
             start=database_history_start,
             limit=database_history_limit,
+            archive=archive,
             search=search,
             categories=categories,
             statuses=statuses,

@@ -1192,6 +1192,10 @@ tr.queue-item>td:first-child>a {
     color:  red !important;
 }
 
+.history-options-show-failed .archive-icon {
+    fill: #2bbd43;
+}
+
 .processing-download {
     width: 16px;
     height: 18px;

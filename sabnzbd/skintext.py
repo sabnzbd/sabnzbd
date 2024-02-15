@@ -121,6 +121,7 @@ SKIN_TEXT = {
     "menu-home": TT("Home"),  #: Main menu item
     "menu-queue": TT("Queue"),  #: Main menu item
     "menu-history": TT("History"),  #: Main menu item
+    "menu-archive": TT("Archive"),  #: Main menu item
     "menu-config": TT("Config"),  #: Main menu item
     "menu-cons": TT("Status"),  #: Main menu item
     "menu-help": TT("Help"),  #: Main menu item
