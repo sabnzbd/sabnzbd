@@ -272,6 +272,10 @@ button:focus {
     outline: initial;
 }
 
+.archive-icon {
+    fill: #EBEBEB;
+}
+
 /* Placeholders - Will not work if grouped! */
 ::-webkit-input-placeholder {
    color: #EBEBEB !important;

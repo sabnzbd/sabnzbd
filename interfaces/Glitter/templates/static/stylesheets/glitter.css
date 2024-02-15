@@ -1103,20 +1103,26 @@ tr.queue-item>td:first-child>a {
 }
 
 #history-options .hover-button {
-    padding: 7px 8px 7px 8px;
+    padding: 7px;
     line-height: 1.428571429;
     display: inline-block;
 }
 
+#history-options .hover-button.history-archive {
+    line-height: 1em;
+    vertical-align: middle;
+}
+
 #history-options div {
     display: inline-block;
+    vertical-align: middle;
     margin-left: 5px;
 }
 
 #history-options input[name="multieditCheckAll"] {
     vertical-align: middle;
     position: relative;
-    top: -1px;
+    top: -2px;
     margin-left: 8px;
 } 
 

@@ -187,6 +187,7 @@ SKIN_TEXT = {
     "showDetails": TT("Show details"),  #: Button/link showing History job details
     "showFailedHis": TT("Show Failed"),  #: Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!
     "showAllHis": TT("Show All"),  #: Button or link showing all History jobs
+    "showArchive": TT("Show Archive"),  #: Button showing all archived jobs
     "size": TT("Size"),  #: History table header
     "status": TT("Status"),  #: History table header
     "purgeFailed": TT("Purge Failed NZBs"),  #: Button to delete all failed jobs in History
