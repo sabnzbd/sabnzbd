@@ -741,7 +741,7 @@ class Downloader(Thread):
                 done = True
                 logging.debug("Article <%s> is present", article.article)
 
-            elif nw.status_code in (411, 423, 430):
+            elif nw.status_code in (411, 423, 430, 451):
                 done = True
                 logging.debug(
                     "Thread %s@%s: Article %s missing (error=%s)",
