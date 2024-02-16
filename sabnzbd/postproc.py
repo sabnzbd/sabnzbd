@@ -281,6 +281,15 @@ class PostProcessor(Thread):
         # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
         database.scheduled_history_purge()
 
+        # Check for Apprise notification script
+        # We don't have a much better place to do this, since there's no notifier-thread
+        # TODO: Remove in 4.4
+        if sabnzbd.cfg.nscript_script() == "sabnzbd-notify.py":
+            helpful_warning(
+                "NZB-Notify has been integrated into SABnzbd. You can now use the "
+                "Apprise section to configure the same notifications."
+            )
+
         # Start looping
         check_eoq = False
         while not self.__stop:
