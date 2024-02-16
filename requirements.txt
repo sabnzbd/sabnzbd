@@ -1,5 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
+apprise==1.7.2
 sabctools==8.1.0
 cheetah3==3.2.6.post1
 cffi==1.16.0
@@ -47,6 +48,22 @@ pyobjc-framework-Cocoa==10.1; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
+
+# Apprise Requirements
+requests==2.31.0
+requests-oauthlib==1.3.1
+PyYAML==6.0.1
+markdown==3.5.2
+paho-mqtt==1.6.1
+
+# Requests Requirements
+charset_normalizer==3.3.2
+idna==3.6
+urllib3==2.2.0
+certifi==2024.2.2
+oauthlib==3.2.2
+PyJWT==2.8.0
+blinker==1.7.0
 
 # Optional support for *nix tray icon.
 # Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.

@@ -671,6 +671,16 @@ SKIN_TEXT = {
     "explain-pushbullet_apikey": TT("Your personal Pushbullet API key (required)"),  #: Pushbullet settings
     "opt-pushbullet_device": TT("Device"),  #: Pushbullet settings
     "explain-pushbullet_device": TT("Device to which message should be sent"),  #: Pushbullet settings
+    "section-Apprise": TT("Apprise"),  #: Header for Apprise notification section
+    "opt-apprise_enable": TT("Enable Apprise notifications"),  #: Apprise settings
+    "explain-apprise_enable": TT(
+        "Send notifications using Apprise to almost any notification service"
+    ),  #: Apprise settings
+    "opt-apprise_urls": TT("Default Apprise URLs"),  #: Apprise settings
+    "explain-apprise_urls": TT("Use a comma and/or space to identify more then one URL."),  #: Apprise settings
+    "explain-apprise_extra_urls": TT(
+        "Override the default URLs for specific notification types below, if desired."
+    ),  #: Apprise settings
     "section-NScript": TT("Notification Script"),  #: Header for Notification Script notification section
     "opt-nscript_enable": TT("Enable notification script"),  #: Notification Script settings
     "opt-nscript_script": TT("Script"),  #: Notification Script settings

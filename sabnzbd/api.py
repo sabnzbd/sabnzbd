@@ -657,7 +657,7 @@ def _api_warnings(name, kwargs):
 LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password)': '(.*?)'", re.I)
 LOG_INI_HIDE_RE = re.compile(
     rb"(apikey|api|user|username|password|email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey"
-    rb"|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address|Public address IPv[4|6]-only|Local IPv6 address)\s?=.*",
+    rb"|apprise_(target_[a-z_]+|urls)|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address|Public address IPv[4|6]-only|Local IPv6 address)\s?=.*",
     re.I,
 )
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
@@ -851,6 +851,13 @@ def _api_test_pushbullet(name, kwargs):
     return report(error=res)
 
 
+def _api_test_apprise(name, kwargs):
+    """API: send a test Apprise notification, return result"""
+    logging.info("Sending Apprise notification")
+    res = sabnzbd.notifier.send_apprise("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
+    return report(error=res)
+
+
 def _api_test_nscript(name, kwargs):
     """API: execute a test notification script, return result"""
     logging.info("Executing notification script")
@@ -1023,6 +1030,7 @@ _api_table = {
     "test_osd": (_api_test_osd, 3),
     "test_pushover": (_api_test_pushover, 3),
     "test_pushbullet": (_api_test_pushbullet, 3),
+    "test_apprise": (_api_test_apprise, 3),
     "test_prowl": (_api_test_prowl, 3),
     "test_nscript": (_api_test_nscript, 3),
 }
