@@ -741,12 +741,6 @@ class Downloader(Thread):
                 done = True
                 logging.debug("Article <%s> is present", article.article)
 
-            elif nw.status_code == 211:
-                logging.debug("group command ok -> %s", nw.nntp_msg)
-                nw.group = nw.article.nzf.nzo.group
-                nw.reset_data_buffer()
-                self.__request_article(nw)
-
             elif nw.status_code in (411, 423, 430):
                 done = True
                 logging.debug(
