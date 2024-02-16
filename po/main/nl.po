@@ -1142,6 +1142,20 @@ msgstr "Kon macOS notificatie niet verzenden"
 msgid "Failed to send Prowl message"
 msgstr "Verzenden van Prowl-bericht mislukt"
 
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "One or more Apprise URLs could not be loaded."
+msgstr ""
+
+#: sabnzbd/notifier.py
+msgid "Failed to send one or more Apprise Notifications"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message"
+msgstr ""
+
 #. Error message
 #: sabnzbd/notifier.py
 msgid "Bad response from Pushover (%s): %s"
@@ -4113,6 +4127,35 @@ msgstr "Apparaat"
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
 msgstr "Apparaat dat de berichten moet ontvangen"
+
+#. Header for Apprise notification section
+#: sabnzbd/skintext.py
+msgid "Apprise"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Enable Apprise notifications"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Send notifications using Apprise to almost any notification service"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Default Apprise URLs"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Use a comma and/or space to identify more then one URL."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Override the default URLs for specific notification types below, if desired."
+msgstr ""
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
