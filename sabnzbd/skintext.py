@@ -677,7 +677,7 @@ SKIN_TEXT = {
         "Send notifications using Apprise to almost any notification service"
     ),  #: Apprise settings
     "opt-apprise_urls": TT("Default Apprise URLs"),  #: Apprise settings
-    "explain-apprise_urls": TT("Use a comma and/or space to identify more then one URL."),  #: Apprise settings
+    "explain-apprise_urls": TT("Use a comma and/or space to identify more than one URL."),  #: Apprise settings
     "explain-apprise_extra_urls": TT(
         "Override the default URLs for specific notification types below, if desired."
     ),  #: Apprise settings
