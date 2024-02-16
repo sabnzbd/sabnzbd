@@ -4013,7 +4013,7 @@ msgstr ""
 
 #. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Use a comma and/or space to identify more then one URL."
+msgid "Use a comma and/or space to identify more than one URL."
 msgstr ""
 
 #: sabnzbd/skintext.py
