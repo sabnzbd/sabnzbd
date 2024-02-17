@@ -764,6 +764,18 @@ class Downloader(Thread):
                 nw.reset_data_buffer()
                 self.__request_article(nw)
 
+            else:
+                logging.warning(
+                    "%s@%s recieved unknown status code %s for article %s: %s",
+                    nw.thrdnum,
+                    nw.server.host,
+                    nw.status_code,
+                    article.article,
+                    nw.nntp_msg,
+                )
+                done = True
+                nw.reset_data_buffer()
+
         if done:
             # Successful data, clear "bad" counter
             server.bad_cons = 0
