@@ -766,12 +766,12 @@ class Downloader(Thread):
 
             else:
                 logging.warning(
-                    "%s@%s recieved unknown status code %s for article %s: %s",
+                    T("%s@%s recieved unknown status code %s for article %s: %s"),
                     nw.thrdnum,
                     nw.server.host,
                     nw.status_code,
                     article.article,
-                    nw.nntp_msg,
+                    nw.nntp_msg.splitlines()[0],
                 )
                 done = True
                 nw.reset_data_buffer()
