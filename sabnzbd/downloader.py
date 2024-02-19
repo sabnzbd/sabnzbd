@@ -741,7 +741,7 @@ class Downloader(Thread):
                 done = True
                 logging.debug("Article <%s> is present", article.article)
 
-            elif nw.status_code in (411, 423, 430):
+            elif nw.status_code in (411, 423, 430, 451):
                 done = True
                 logging.debug(
                     "Thread %s@%s: Article %s missing (error=%s)",
@@ -763,6 +763,18 @@ class Downloader(Thread):
                     logging.debug("Server %s does not support BODY", server.host)
                 nw.reset_data_buffer()
                 self.__request_article(nw)
+
+            else:
+                logging.warning(
+                    T("%s@%s recieved unknown status code %s for article %s: %s"),
+                    nw.thrdnum,
+                    nw.server.host,
+                    nw.status_code,
+                    article.article,
+                    nw.nntp_msg.splitlines()[0],
+                )
+                done = True
+                nw.reset_data_buffer()
 
         if done:
             # Successful data, clear "bad" counter
