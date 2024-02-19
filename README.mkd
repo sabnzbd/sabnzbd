@@ -1,7 +1,17 @@
-Release Notes - SABnzbd 4.2.2
+Release Notes - SABnzbd 4.2.3 Release Candidate 1
 =========================================================
 
-This is the second bug-fix release of SABnzbd 4.2.0.
+This is the third bug-fix release of SABnzbd 4.2.0.
+
+## Bug-fixes and changes since 4.2.2:
+
+* **Bug-fixes:**
+    * Handle new status code for missing articles, which could result in timeouts.
+    * Retry of failed job would not use the password provided.
+    * macOS: System standby after finishing the queue would not always work.
+
+* **Changes:**
+    * Remove `Send Group` option for Servers.
 
 ## Bug-fixes and changes since 4.2.1:
 
