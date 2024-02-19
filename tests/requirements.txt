@@ -9,7 +9,8 @@ pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict
-tavern>=2.0.0
+tavern
+flask
 tavalidate
 importlib_metadata
 lxml

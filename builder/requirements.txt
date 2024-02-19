@@ -13,7 +13,7 @@ importlib_resources==6.1.1; python_version < '3.10'
 zipp==3.17.0; python_version < '3.10'
 
 # orjson does not support 32bit Windows, also exclude based on Python-version
-orjson==3.9.13; python_version > '3.8'
+orjson==3.9.14; python_version > '3.8'
 
 # For the Windows build
 pefile==2023.2.7; sys_platform == 'win32'
