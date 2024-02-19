@@ -1102,16 +1102,16 @@ msgstr "כישלון בשליחת הודעת Prowl"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "One or more Apprise URLs could not be loaded."
-msgstr ""
+msgstr "כתובת Apprise אחת או יותר לא יכלו להיטען."
 
 #: sabnzbd/notifier.py
 msgid "Failed to send one or more Apprise Notifications"
-msgstr ""
+msgstr "כישלון בשליחת התראת Apprise אחת או יותר"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message"
-msgstr ""
+msgstr "כישלון בשליחת הודעת Apprise"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -3187,7 +3187,7 @@ msgstr "הכשל עבודה (העבר להיסטוריה)"
 
 #: sabnzbd/skintext.py
 msgid "Abort post-processing"
-msgstr ""
+msgstr "בטל בתר־עיבוד"
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
@@ -4028,31 +4028,33 @@ msgstr "מכשיר אליו הודעה תישלח"
 #. Header for Apprise notification section
 #: sabnzbd/skintext.py
 msgid "Apprise"
-msgstr ""
+msgstr "Apprise"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Enable Apprise notifications"
-msgstr ""
+msgstr "אפשר התראות Apprise"
 
 #: sabnzbd/skintext.py
 msgid "Send notifications using Apprise to almost any notification service"
-msgstr ""
+msgstr "שלח התראות ע״י שימוש בשירות Apprise אל כמעט כל שירות התראות"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Default Apprise URLs"
-msgstr ""
+msgstr "כתובות Apprise ברירות מחדל"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use a comma and/or space to identify more than one URL."
-msgstr ""
+msgstr "השתמש בפסיק, ברווח או בשניהם כדי לזהות יותר מכתובת אחת."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Override the default URLs for specific notification types below, if desired."
 msgstr ""
+"דרוס את כתובות ברירות המחדל עבור סוגי התראה מסויימים שמצויינים למטה, אם תרצה"
+" בכך."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
