@@ -448,6 +448,11 @@ msgstr "Det lykkedes ikke at initialisere %s@%s med begrundelse %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s recieved unknown status code %s for article %s: %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Alt for mange forbindelser til serveren %s [%s]"

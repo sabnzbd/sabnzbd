@@ -449,6 +449,11 @@ msgstr "כישלון באתחול %s@%s עם סיבה: %s"
 msgid "Fatal error in Downloader"
 msgstr "שגיאה גורלית במורידן"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s recieved unknown status code %s for article %s: %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "יותר מדי חיבורים לשרת %s [%s]"

@@ -440,6 +440,11 @@ msgstr "Feilet å starte %s@%s grunnet: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s recieved unknown status code %s for article %s: %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "For mange tilkoblinger til server %s [%s]"

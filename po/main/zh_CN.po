@@ -437,6 +437,11 @@ msgstr "无法初始化 %s@%s，原因为: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s recieved unknown status code %s for article %s: %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "服务器 %s 连接数过多 [%s]"

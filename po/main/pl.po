@@ -438,6 +438,11 @@ msgstr "Błąd podczas inicjalizacji %s@%s: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s recieved unknown status code %s for article %s: %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Zbyt wiele połączeń do serwera %s [%s]"

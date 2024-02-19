@@ -476,6 +476,11 @@ msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
 msgid "Fatal error in Downloader"
 msgstr "Erreur fatale dans le Téléchargeur"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s recieved unknown status code %s for article %s: %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Trop de connexions au serveur %s [%s]"
