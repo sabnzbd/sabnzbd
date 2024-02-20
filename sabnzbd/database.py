@@ -38,7 +38,7 @@ from sabnzbd.encoding import ubtou, utob
 from sabnzbd.misc import int_conv, caller_name, opts_to_pp, to_units
 from sabnzbd.filesystem import remove_file, clip_path
 
-DB_LOCK = threading.RLock()
+DB_LOCK = threading.Lock()
 
 
 class HistoryDB:
@@ -50,66 +50,68 @@ class HistoryDB:
 
     # These class attributes will be accessed directly because
     # they need to be shared by all instances
-    db_path = None  # Will contain full path to history database
-    done_cleaning = False  # Ensure we only do one Vacuum per session
+    db_path = None  # Full path to history database
+    startup_done = False
 
     @synchronized(DB_LOCK)
     def __init__(self):
         """Determine database path and create connection"""
         self.connection: Optional[Connection] = None
         self.cursor: Optional[Cursor] = None
-        if not HistoryDB.db_path:
-            HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         self.connect()
 
     def connect(self):
         """Create a connection to the database"""
-        create_table = not os.path.exists(HistoryDB.db_path)
+        if not HistoryDB.db_path:
+            HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
+        create_table = not HistoryDB.startup_done and not os.path.exists(HistoryDB.db_path)
+
         self.connection = sqlite3.connect(HistoryDB.db_path)
+        self.connection.isolation_level = None  # autocommit attribute only introduced in Python 3.12
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
-        if create_table:
-            self.create_history_db()
-        elif not HistoryDB.done_cleaning:
-            # Run VACUUM on sqlite
+
+        # Perform initialization only once
+        if not HistoryDB.startup_done:
+            if create_table:
+                self.create_history_db()
+
             # When an object (table, index, or trigger) is dropped from the database, it leaves behind empty space
             # http://www.sqlite.org/lang_vacuum.html
-            HistoryDB.done_cleaning = True
             self.execute("VACUUM")
 
-        self.execute("PRAGMA user_version;")
-        try:
-            version = self.cursor.fetchone()["user_version"]
-        except (IndexError, TypeError):
-            version = 0
+            # See if we need to perform any updates
+            self.execute("PRAGMA user_version;")
+            try:
+                version = self.cursor.fetchone()["user_version"]
+            except (IndexError, TypeError):
+                version = 0
 
-        # Add any new columns added since last DB version
-        # Use "and" to stop when database has been reset due to corruption
-        if version < 1:
-            _ = (
-                self.execute("PRAGMA user_version = 1;", save=True)
-                and self.execute("ALTER TABLE history ADD COLUMN series TEXT;", save=True)
-                and self.execute("ALTER TABLE history ADD COLUMN md5sum TEXT;", save=True)
-            )
-        if version < 2:
-            _ = self.execute("PRAGMA user_version = 2;", save=True) and self.execute(
-                "ALTER TABLE history ADD COLUMN password TEXT;", save=True
-            )
-        if version < 3:
-            # Transfer data to new column (requires WHERE-hack), original column should be removed later
-            _ = (
-                self.execute("PRAGMA user_version = 3;", save=True)
-                and self.execute("ALTER TABLE history ADD COLUMN duplicate_key TEXT;", save=True)
-                and self.execute("UPDATE history SET duplicate_key = series WHERE 1 = 1;", save=True)
-            )
+            # Add any new columns added since last DB version
+            # Use "and" to stop when database has been reset due to corruption
+            if version < 1:
+                _ = (
+                    self.execute("PRAGMA user_version = 1;")
+                    and self.execute("ALTER TABLE history ADD COLUMN series TEXT;")
+                    and self.execute("ALTER TABLE history ADD COLUMN md5sum TEXT;")
+                )
+            if version < 2:
+                _ = self.execute("PRAGMA user_version = 2;") and self.execute(
+                    "ALTER TABLE history ADD COLUMN password TEXT;"
+                )
+            if version < 3:
+                # Transfer data to new column (requires WHERE-hack), original column should be removed later
+                _ = (
+                    self.execute("PRAGMA user_version = 3;")
+                    and self.execute("ALTER TABLE history ADD COLUMN duplicate_key TEXT;")
+                    and self.execute("UPDATE history SET duplicate_key = series WHERE 1 = 1;")
+                )
 
-    def execute(self, command: str, args: Sequence = (), save: bool = False) -> bool:
+    def execute(self, command: str, args: Sequence = ()) -> bool:
         """Wrapper for executing SQL commands"""
         for tries in (4, 3, 2, 1, 0):
             try:
                 self.cursor.execute(command, args)
-                if save:
-                    self.connection.commit()
                 return True
             except:
                 error = str(sys.exc_info()[1])
@@ -129,6 +131,7 @@ class HistoryDB:
                         remove_file(HistoryDB.db_path)
                     except:
                         pass
+                    HistoryDB.startup_done = False
                     self.connect()
                     # Return False in case of "duplicate column" error
                     # because the column addition in connect() must be terminated
@@ -141,6 +144,7 @@ class HistoryDB:
                     try:
                         self.connection.rollback()
                     except:
+                        # Can fail in case of automatic rollback
                         logging.debug("Rollback Failed:", exc_info=True)
             return False
 
@@ -178,10 +182,9 @@ class HistoryDB:
             "password" TEXT,
             "duplicate_key" TEXT
         )
-        """,
-            save=True,
+        """
         )
-        self.execute("PRAGMA user_version = 3;", save=True)
+        self.execute("PRAGMA user_version = 3;")
 
     def close(self):
         """Close database connection"""
@@ -196,9 +199,7 @@ class HistoryDB:
         """Remove all completed jobs from the database, optional with `search` pattern"""
         search = convert_search(search)
         logging.info("Removing all completed jobs from history")
-        return self.execute(
-            """DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.COMPLETED), save=True
-        )
+        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.COMPLETED))
 
     def get_failed_paths(self, search=None):
         """Return list of all storage paths of failed jobs (may contain non-existing or empty paths)"""
@@ -215,9 +216,7 @@ class HistoryDB:
         """Remove all failed jobs from the database, optional with `search` pattern"""
         search = convert_search(search)
         logging.info("Removing all failed jobs from history")
-        return self.execute(
-            """DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED), save=True
-        )
+        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED))
 
     def remove_history(self, jobs=None):
         """Remove all jobs in the list `jobs`, empty list will remove all completed jobs"""
@@ -228,7 +227,7 @@ class HistoryDB:
                 jobs = [jobs]
 
             for job in jobs:
-                self.execute("""DELETE FROM history WHERE nzo_id = ?""", (job,), save=True)
+                self.execute("""DELETE FROM history WHERE nzo_id = ?""", (job,))
                 logging.info("[%s] Removing job %s from history", caller_name(), job)
 
     def auto_history_purge(self):
@@ -247,9 +246,7 @@ class HistoryDB:
             if days_to_keep > 0:
                 logging.info("Removing completed jobs older than %s days from history", days_to_keep)
                 return self.execute(
-                    """DELETE FROM history WHERE status = ? AND completed < ?""",
-                    (Status.COMPLETED, seconds_to_keep),
-                    save=True,
+                    """DELETE FROM history WHERE status = ? AND completed < ?""", (Status.COMPLETED, seconds_to_keep)
                 )
         else:
             # How many to keep?
@@ -261,7 +258,6 @@ class HistoryDB:
                         SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ?
                     )""",
                     (Status.COMPLETED, Status.COMPLETED, to_keep),
-                    save=True,
                 )
 
     def add_history_db(self, nzo, storage: str, postproc_time: int, script_output: str, script_line: str):
@@ -274,7 +270,6 @@ class HistoryDB:
             downloaded, fail_message, url_info, bytes, duplicate_key, md5sum, password)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             t,
-            save=True,
         )
         logging.info("Added job %s to history", nzo.final_name)
 
