@@ -73,6 +73,7 @@ from sabnzbd.misc import (
     history_updated,
     request_repair,
     change_queue_complete_action,
+    clean_comma_separated_list,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files
 from sabnzbd.encoding import xml_name, utob
@@ -176,8 +177,7 @@ def _api_queue_delete(value, kwargs):
     if value.lower() == "all":
         removed = sabnzbd.NzbQueue.remove_all(kwargs.get("search"))
         return report(keyword="", data={"status": bool(removed), "nzo_ids": removed})
-    elif value:
-        items = value.split(",")
+    elif items := clean_comma_separated_list(value):
         delete_all_data = int_conv(kwargs.get("del_files"))
         removed = sabnzbd.NzbQueue.remove_multiple(items, delete_all_data=delete_all_data)
         return report(keyword="", data={"status": bool(removed), "nzo_ids": removed})
@@ -187,9 +187,8 @@ def _api_queue_delete(value, kwargs):
 
 def _api_queue_delete_nzf(value, kwargs):
     """API: accepts value(=nzo_id), value2(=nzf_ids)"""
-    nzf_ids = kwargs.get("value2")
+    nzf_ids = clean_comma_separated_list(kwargs.get("value2"))
     if value and nzf_ids:
-        nzf_ids = nzf_ids.split(",")
         removed = sabnzbd.NzbQueue.remove_nzfs(value, nzf_ids)
         return report(keyword="", data={"status": bool(removed), "nzf_ids": removed})
     else:
@@ -220,8 +219,7 @@ def _api_queue_purge(value, kwargs):
 
 def _api_queue_pause(value, kwargs):
     """API: accepts value(=list of nzo_id)"""
-    if value:
-        items = value.split(",")
+    if items := clean_comma_separated_list(value):
         handled = sabnzbd.NzbQueue.pause_multiple_nzo(items)
     else:
         handled = False
@@ -230,8 +228,7 @@ def _api_queue_pause(value, kwargs):
 
 def _api_queue_resume(value, kwargs):
     """API: accepts value(=list of nzo_id)"""
-    if value:
-        items = value.split(",")
+    if items := clean_comma_separated_list(value):
         handled = sabnzbd.NzbQueue.resume_multiple_nzo(items)
     else:
         handled = False
@@ -240,14 +237,15 @@ def _api_queue_resume(value, kwargs):
 
 def _api_queue_priority(value, kwargs):
     """API: accepts value(=nzo_id), value2(=priority)"""
-    value2 = kwargs.get("value2")
-    if value and value2:
+    nzo_ids = clean_comma_separated_list(value)
+    priority = kwargs.get("value2")
+    if nzo_ids and priority:
         try:
             try:
-                priority = int(value2)
+                priority = int(priority)
             except:
                 return report(_MSG_INT_VALUE)
-            pos = sabnzbd.NzbQueue.set_priority(value, priority)
+            pos = sabnzbd.NzbQueue.set_priority(nzo_ids, priority)
             # Returns the position in the queue, -1 is incorrect job-id
             return report(keyword="position", data=pos)
         except:
@@ -272,20 +270,14 @@ def _api_queue_default(value, kwargs):
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
     search = kwargs.get("search")
-    categories = kwargs.get("cat") or kwargs.get("category")
-    priorities = kwargs.get("priority")
-    statuses = kwargs.get("status")
-    nzo_ids = kwargs.get("nzo_ids")
+    categories = clean_comma_separated_list(kwargs.get("cat") or kwargs.get("category"))
+    priorities = clean_comma_separated_list(kwargs.get("priority"))
+    statuses = clean_comma_separated_list(kwargs.get("status"))
+    nzo_ids = clean_comma_separated_list(kwargs.get("nzo_ids"))
 
-    if categories and not isinstance(categories, list):
-        categories = categories.split(",")
-    if priorities and not isinstance(priorities, list):
+    if priorities:
         # Make sure it's an integer
-        priorities = [int_conv(prio) for prio in priorities.split(",")]
-    if statuses and not isinstance(statuses, list):
-        statuses = statuses.split(",")
-    if nzo_ids and not isinstance(nzo_ids, list):
-        nzo_ids = nzo_ids.split(",")
+        priorities = [int_conv(prio) for prio in priorities]
 
     return report(
         keyword="queue",
@@ -336,8 +328,7 @@ def _api_retry(name, kwargs):
     password = kwargs.get("password")
     password = password[0] if isinstance(password, list) else password
 
-    nzo_id = retry_job(value, name, password)
-    if nzo_id:
+    if nzo_id := retry_job(value, name, password):
         return report(keyword="", data={"status": True, "nzo_id": nzo_id})
     else:
         return report(_MSG_NO_ITEM)
@@ -345,8 +336,7 @@ def _api_retry(name, kwargs):
 
 def _api_cancel_pp(name, kwargs):
     """API: accepts name, value(=nzo_ids)"""
-    if nzo_ids := kwargs.get("value"):
-        nzo_ids = nzo_ids.split(",")
+    if nzo_ids := clean_comma_separated_list(kwargs.get("value")):
         if sabnzbd.PostProcessor.cancel_pp(nzo_ids):
             return report(keyword="", data={"status": True, "nzo_ids": nzo_ids})
     return report(_MSG_NO_ITEM)
@@ -393,14 +383,12 @@ def _api_switch(name, kwargs):
 
 def _api_change_cat(name, kwargs):
     """API: accepts value(=nzo_id), value2(=category)"""
-    value = kwargs.get("value")
-    value2 = kwargs.get("value2")
-    if value and value2:
-        nzo_id = value
-        cat = value2
+    nzo_ids = clean_comma_separated_list(kwargs.get("value"))
+    cat = kwargs.get("value2")
+    if nzo_ids and cat:
         if is_none(cat):
             cat = None
-        result = sabnzbd.NzbQueue.change_cat(nzo_id, cat)
+        result = sabnzbd.NzbQueue.change_cat(nzo_ids, cat)
         return report(keyword="status", data=bool(result > 0))
     else:
         return report(_MSG_NO_VALUE)
@@ -408,14 +396,12 @@ def _api_change_cat(name, kwargs):
 
 def _api_change_script(name, kwargs):
     """API: accepts value(=nzo_id), value2(=script)"""
-    value = kwargs.get("value")
-    value2 = kwargs.get("value2")
-    if value and value2:
-        nzo_id = value
-        script = value2
+    nzo_ids = clean_comma_separated_list(kwargs.get("value"))
+    script = kwargs.get("value2")
+    if nzo_ids and script:
         if is_none(script):
             script = None
-        result = sabnzbd.NzbQueue.change_script(nzo_id, script)
+        result = sabnzbd.NzbQueue.change_script(nzo_ids, script)
         return report(keyword="status", data=bool(result > 0))
     else:
         return report(_MSG_NO_VALUE)
@@ -423,18 +409,19 @@ def _api_change_script(name, kwargs):
 
 def _api_change_opts(name, kwargs):
     """API: accepts value(=nzo_id), value2(=pp)"""
-    value = kwargs.get("value")
-    value2 = kwargs.get("value2")
-    result = 0
-    if value and value2 and value2.isdigit():
-        result = sabnzbd.NzbQueue.change_opts(value, int(value2))
-    return report(keyword="status", data=bool(result > 0))
+    nzo_ids = clean_comma_separated_list(kwargs.get("value"))
+    pp = kwargs.get("value2")
+    if nzo_ids and pp and pp.isdigit():
+        result = sabnzbd.NzbQueue.change_opts(nzo_ids, int(pp))
+        return report(keyword="status", data=bool(result > 0))
+    return report(_MSG_NO_ITEM)
 
 
 def _api_fullstatus(name, kwargs):
     """API: full history status"""
     status = build_status(
-        calculate_performance=kwargs.get("calculate_performance", 0), skip_dashboard=kwargs.get("skip_dashboard", 1)
+        calculate_performance=kwargs.get("calculate_performance", 0),
+        skip_dashboard=kwargs.get("skip_dashboard", 1),
     )
     return report(keyword="status", data=status)
 
@@ -496,27 +483,18 @@ def _api_history(name, kwargs):
     limit = int_conv(kwargs.get("limit"))
     last_history_update = int_conv(kwargs.get("last_history_update", 0))
     search = kwargs.get("search")
-    categories = kwargs.get("cat") or kwargs.get("category")
-    statuses = kwargs.get("status")
+    categories = clean_comma_separated_list(kwargs.get("cat") or kwargs.get("category"))
+    statuses = clean_comma_separated_list(kwargs.get("status"))
     failed_only = int_conv(kwargs.get("failed_only"))
-    nzo_ids = kwargs.get("nzo_ids")
+    nzo_ids = clean_comma_separated_list(kwargs.get("nzo_ids"))
 
     # Do we need to send anything?
     if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
         return report(keyword="history", data=False)
 
-    if categories and not isinstance(categories, list):
-        categories = categories.split(",")
-
-    if statuses and not isinstance(statuses, list):
-        statuses = statuses.split(",")
-
     if failed_only:
         # We ignore any other statuses, having both doesn't make sense
         statuses = [Status.FAILED]
-
-    if nzo_ids and not isinstance(nzo_ids, list):
-        nzo_ids = nzo_ids.split(",")
 
     if not limit:
         limit = cfg.history_limit()
@@ -535,8 +513,7 @@ def _api_history(name, kwargs):
             history_updated()
             return report()
         elif value:
-            jobs = value.split(",")
-            for job in jobs:
+            for job in clean_comma_separated_list(value):
                 if sabnzbd.PostProcessor.get_path(job):
                     sabnzbd.PostProcessor.delete(job, del_files=del_files)
                 else:
@@ -584,12 +561,11 @@ def _api_get_files(name, kwargs):
 def _api_move_nzf_bulk(name, kwargs):
     """API: accepts name(=top/up/down/bottom), value=(=nzo_id), nzf_ids, size (optional)"""
     nzo_id = kwargs.get("value")
-    nzf_ids = kwargs.get("nzf_ids")
+    nzf_ids = clean_comma_separated_list(kwargs.get("nzf_ids"))
     size = int_conv(kwargs.get("size"))
 
     if nzo_id and nzf_ids and name:
         name = name.lower()
-        nzf_ids = nzf_ids.split(",")
         nzf_moved = False
         if name == "up" and size:
             sabnzbd.NzbQueue.move_nzf_up_bulk(nzo_id, nzf_ids, size)

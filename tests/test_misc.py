@@ -74,6 +74,15 @@ class TestMisc:
         assert misc.is_none(True) is False
         assert misc.is_none("Not None") is False
 
+    def test_clean_comma_separated_list(self):
+        assert misc.clean_comma_separated_list("") == []
+        assert misc.clean_comma_separated_list(None) == []
+        assert misc.clean_comma_separated_list(123) == []
+        assert misc.clean_comma_separated_list("a,b") == ["a", "b"]
+        assert misc.clean_comma_separated_list(",b") == ["b"]
+        assert misc.clean_comma_separated_list("   a  ,  b  ") == ["a", "b"]
+        assert misc.clean_comma_separated_list(["a  ", "  b", ""]) == ["a", "b"]
+
     def test_cmp(self):
         assert misc.cmp(1, 2) < 0
         assert misc.cmp(2, 1) > 0

@@ -54,6 +54,7 @@ from sabnzbd.misc import (
     recursive_html_escape,
     is_none,
     get_cpu_name,
+    clean_comma_separated_list,
 )
 from sabnzbd.happyeyeballs import happyeyeballs
 from sabnzbd.filesystem import (
@@ -211,11 +212,14 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
     # Never check the XFF header unless access would have been granted based on the remote IP alone!
-    if is_allowed and cfg.verify_xff_header() and (xff_header := cherrypy.request.headers.get("X-Forwarded-For")):
-        xff_ips = [ip.strip() for ip in xff_header.split(",")]
+    if (
+        is_allowed
+        and cfg.verify_xff_header()
+        and (xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For")))
+    ):
         is_allowed = all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)
         if not is_allowed:
-            logging.debug("Denying access based on X-Forwarded-For header '%s'", xff_header)
+            logging.debug("Denying access based on X-Forwarded-For IPs '%s'", xff_ips)
 
     if not is_allowed and warn_user:
         log_warning_and_ip(T("Refused connection from:"))
