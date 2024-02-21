@@ -120,8 +120,7 @@ function ViewModel() {
 
     // Dynamic history length check
     self.hasHistory = ko.pureComputed(function() {
-        // We also 'have history' if we can't find any results of the search or there are no failed ones
-        return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.showFailed() || self.history.showArchive() || self.history.isLoading())
+        return (self.history.historyItems().length > 0 || self.history.searchTerm() || self.history.isLoading())
     })
 
     self.hasWarnings = ko.pureComputed(function() {

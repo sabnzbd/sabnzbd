@@ -27,7 +27,7 @@ import sys
 import threading
 import sqlite3
 from sqlite3 import Connection, Cursor
-from typing import Optional, List, Sequence, Dict, Any, Tuple
+from typing import Optional, List, Sequence, Dict, Any, Tuple, Union
 
 import sabnzbd
 import sabnzbd.cfg
@@ -110,6 +110,8 @@ class HistoryDB:
                 _ = self.execute("PRAGMA user_version = 4;") and self.execute(
                     "ALTER TABLE history ADD COLUMN archive INTEGER;"
                 )
+
+            HistoryDB.startup_done = True
 
     def execute(self, command: str, args: Sequence = ()) -> bool:
         """Wrapper for executing SQL commands"""
@@ -200,13 +202,29 @@ class HistoryDB:
             logging.error(T("Failed to close database, see log"))
             logging.info("Traceback: ", exc_info=True)
 
-    def remove_completed(self, search=None):
-        """Remove all completed jobs from the database, optional with `search` pattern"""
-        search = convert_search(search)
-        logging.info("Removing all completed jobs from history")
-        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.COMPLETED))
+    def archive(self, job: str):
+        """Move job to the archive"""
+        self.execute("""UPDATE history SET archive = 1 WHERE nzo_id = ?""", (job,))
+        logging.info("[%s] Moved job %s to archive", caller_name(), job)
 
-    def get_failed_paths(self, search=None):
+    def remove(self, job: str):
+        """Permanently remove job from the history"""
+        self.execute("""DELETE FROM history WHERE nzo_id = ?""", (job,))
+        logging.info("[%s] Removing job %s from history", caller_name(), job)
+
+    def archive_with_status(self, status: str, search: Optional[str] = None):
+        """Archive all jobs with a specific status, optional with `search` pattern"""
+        search = convert_search(search)
+        logging.info("Archiving all jobs with status=%s", status)
+        return self.execute("""UPDATE history SET archive = 1 WHERE name LIKE ? AND status = ?""", (search, status))
+
+    def remove_with_status(self, status: str, search: Optional[str] = None):
+        """Remove all jobs from the database with a specific status, optional with `search` pattern"""
+        search = convert_search(search)
+        logging.info("Removing all jobs with status=%s", status)
+        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, status))
+
+    def get_failed_paths(self, search: Optional[str] = None) -> List[str]:
         """Return list of all storage paths of failed jobs (may contain non-existing or empty paths)"""
         search = convert_search(search)
         fetch_ok = self.execute(
@@ -217,24 +235,6 @@ class HistoryDB:
         else:
             return []
 
-    def remove_failed(self, search=None):
-        """Remove all failed jobs from the database, optional with `search` pattern"""
-        search = convert_search(search)
-        logging.info("Removing all failed jobs from history")
-        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED))
-
-    def remove_history(self, jobs=None):
-        """Remove all jobs in the list `jobs`, empty list will remove all completed jobs"""
-        if jobs is None:
-            self.remove_completed()
-        else:
-            if not isinstance(jobs, list):
-                jobs = [jobs]
-
-            for job in jobs:
-                self.execute("""DELETE FROM history WHERE nzo_id = ?""", (job,))
-                logging.info("[%s] Removing job %s from history", caller_name(), job)
-
     def auto_history_purge(self):
         """Remove history items based on the configured history-retention"""
         if sabnzbd.cfg.history_retention() == "0":
@@ -242,7 +242,7 @@ class HistoryDB:
 
         if sabnzbd.cfg.history_retention() == "-1":
             # Delete all non-failed ones
-            self.remove_completed()
+            self.remove_with_status(Status.COMPLETED)
 
         if "d" in sabnzbd.cfg.history_retention():
             # How many days to keep?
@@ -294,6 +294,8 @@ class HistoryDB:
         post = ""
         if archive:
             post += " AND archive = 1"
+        else:
+            post += " AND archive IS NULL"
         if categories:
             categories = ["*" if c == "Default" else c for c in categories]
             post = " AND (category = ?"
@@ -570,6 +572,7 @@ def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
     # The action line and loaded is only available for items in the postproc queue
     item["action_line"] = ""
     item["loaded"] = False
+    item["archive"] = bool(item["archive"])
 
     # Retry and retry for failed URL-fetch
     item["retry"] = int_conv(item["status"] == Status.FAILED and item["path"] and os.path.exists(item["path"]))

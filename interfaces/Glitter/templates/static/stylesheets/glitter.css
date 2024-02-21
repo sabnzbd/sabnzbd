@@ -690,6 +690,10 @@ tbody.no-downloads tr td {
     border-bottom: 1px solid #F0F0F0 !important;
 }
 
+tbody.no-downloads tr td>span {
+    opacity: 0.7;
+}
+
 tbody.no-downloads tr td a {
     line-height: 2em;
     font-size: 1.5em;
@@ -1538,6 +1542,25 @@ input[name="nzbURL"] {
 
 .modal-delete-job li {
     word-break: break-all;
+}
+
+.modal-delete-job .checkbox {
+    float: left;
+    margin: 8px 5px 0px;
+}
+
+#modal-purge-history .checkbox {
+    margin: 0;
+}
+
+.modal-delete-job .checkbox input,
+#modal-purge-history .checkbox input {
+    margin-top: 3px;
+}
+
+.modal-delete-job .checkbox input+span,
+#modal-purge-history .checkbox input+span {
+    font-weight: bold;
 }
 
 /* HELP MODAL */

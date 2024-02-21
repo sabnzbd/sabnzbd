@@ -104,6 +104,7 @@ SKIN_TEXT = {
     "parameters": TT("Parameters"),  #: Config: startup parameters of SABnzbd
     "pythonVersion": TT("Python Version"),
     "notAvailable": TT("Not available"),
+    "empty": TT("Empty"),
     "homePage": TT("Home page"),  #: Home page of the SABnzbd project
     "source": TT("Source"),  #: Where to find the SABnzbd sourcecode
     "or": TT("or"),

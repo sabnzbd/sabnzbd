@@ -348,7 +348,7 @@ class PostProcessor(Thread):
 
             if nzo.to_be_removed:
                 with database.HistoryDB() as history_db:
-                    history_db.remove_history(nzo.nzo_id)
+                    history_db.remove(nzo.nzo_id)
                 nzo.purge_data()
 
             # Processing done

@@ -503,25 +503,36 @@ def _api_history(name, kwargs):
     if name == "delete":
         special = value.lower()
         del_files = bool(int_conv(kwargs.get("del_files")))
+        skip_archive = bool(int_conv(kwargs.get("skip_archive")))
         if special in ("all", "failed", "completed"):
             history_db = sabnzbd.get_db_connection()
             if special in ("all", "failed"):
                 if del_files:
                     del_job_files(history_db.get_failed_paths(search))
-                history_db.remove_failed(search)
+                if not skip_archive:
+                    history_db.archive_with_status(Status.FAILED, search)
+                else:
+                    history_db.remove_with_status(Status.FAILED, search)
             if special in ("all", "completed"):
-                history_db.remove_completed(search)
+                if not skip_archive:
+                    history_db.archive_with_status(Status.COMPLETED, search)
+                else:
+                    history_db.remove_with_status(Status.COMPLETED, search)
             history_updated()
             return report()
         elif value:
             for job in clean_comma_separated_list(value):
                 if sabnzbd.PostProcessor.get_path(job):
+                    # This is always a permanent delete, no archiving
                     sabnzbd.PostProcessor.delete(job, del_files=del_files)
                 else:
                     history_db = sabnzbd.get_db_connection()
                     if del_files:
                         remove_all(history_db.get_incomplete_path(job), recursive=True)
-                    history_db.remove_history(job)
+                    if not skip_archive:
+                        history_db.archive(job)
+                    else:
+                        history_db.remove(job)
             history_updated()
             return report()
         else:
@@ -1523,7 +1534,7 @@ def retry_job(job, new_nzb=None, password=None):
             nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)
         if nzo_id:
             # Only remove from history if we repaired something
-            history_db.remove_history(job)
+            history_db.remove(job)
             return nzo_id
     return None
 
@@ -1752,6 +1763,7 @@ def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, An
             "action_line": nzo.action_line,
             "loaded": nzo.pp_active,
             "retry": False,
+            "archive": False,
         }
         # Add stage information, in the correct order
         for stage in STAGES:
@@ -1820,11 +1832,11 @@ def history_remove_failed():
     logging.info("Scheduled removal of all failed jobs")
     with HistoryDB() as history_db:
         del_job_files(history_db.get_failed_paths())
-        history_db.remove_failed()
+        history_db.remove_with_status(Status.FAILED)
 
 
 def history_remove_completed():
     """Remove all completed jobs from history"""
     logging.info("Scheduled removal of all completed jobs")
     with HistoryDB() as history_db:
-        history_db.remove_completed()
+        history_db.remove_with_status(Status.COMPLETED)

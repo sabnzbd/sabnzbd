@@ -675,6 +675,11 @@
                     </ul>
                 </div>
                 <div class="modal-footer">
+                     <div class="checkbox">
+                        <label>
+                            <input type="checkbox"> <span>Permanently delete (skip archive)</span>
+                        </label>
+                    </div>
                     <button type="button" class="btn btn-default" data-dismiss="modal">$T('cancel')</button>
                     <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> $T('nzo-delete')</button>
                 </div>
@@ -787,6 +792,13 @@
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purgeremove-failed"><span class="glyphicon glyphicon-floppy-remove"></span> $T('purgeFailed-Files')</button><hr />
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-completed"><span class="glyphicon glyphicon-floppy-saved"></span> $T('purgeCompl')</button><hr />
                 <button type="button" class="btn btn-danger" data-bind="click: history.emptyHistory" data-action="history-purge-page"><span class="glyphicon glyphicon-check"></span> $T('purgePage') <span class="label label-default" data-bind="text: history.historyItems().length"></span></button>
+            </div>
+            <div class="modal-footer">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox"> <span>Permanently delete (skip archive)</span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>

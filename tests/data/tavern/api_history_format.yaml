@@ -58,6 +58,7 @@ stages:
               size: !re_match "[0-9][0-9.]*\ [A-Z]"
               loaded: !anybool
               retry: !anyint
+              archive: !anybool
           noofslots: !anyint
           ppslots: !anyint
           last_history_update: !anyint
@@ -125,6 +126,7 @@ stages:
             <size>!anystr</size>
             <loaded>!anybool</loaded>
             <retry>!anyint</retry>
+            <archive>!anybool</archive>
             </slot>
             </slots>
             <noofslots>!anyint</noofslots>

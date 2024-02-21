@@ -131,6 +131,9 @@ function HistoryListModel(parent) {
             self.deleteItems.push(items)
         }
 
+        // If we are in Archive mode, check the box to delete permanently
+        $('#modal-delete-history-job input[type="checkbox"]').prop("checked", self.showArchive())
+
         // Show modal or delete right away
         if(self.parent.confirmDeleteHistory()) {
             // Open modal if desired
@@ -199,8 +202,6 @@ function HistoryListModel(parent) {
 
     // Toggle showing failed
     self.toggleShowFailed = function(data, event) {
-        // Set the loader so it doesn't flicker and then switch
-        self.isLoading(true)
         self.showFailed(!self.showFailed())
         // Force hide tooltip so it doesn't linger
         $('#history-options a').tooltip('hide')
@@ -210,8 +211,6 @@ function HistoryListModel(parent) {
 
     // Toggle showing archive
     self.toggleShowArchive = function(data, event) {
-        // Set the loader so it doesn't flicker and then switch
-        self.isLoading(true)
         self.showArchive(!self.showArchive())
         // Force hide tooltip so it doesn't linger
         $('#history-options a').tooltip('hide')
@@ -235,9 +234,6 @@ function HistoryListModel(parent) {
 
     // Empty history options
     self.emptyHistory = function(data, event) {
-        // Make sure no flickering
-        self.isLoading(true)
-
         // What event?
         var whatToRemove = $(event.target).data('action');
         var del_files, value;
@@ -394,14 +390,15 @@ function HistoryListModel(parent) {
             });
         }
         if(strIDsHistory !== "") {
+            var skipArchive = $('#modal-delete-history-job input[type="checkbox"]').prop("checked")
             callAPI({
                 mode: 'history',
                 name: 'delete',
                 del_files: 1,
+                skip_archive: skipArchive * 1,
                 value: strIDsHistory
             }).then(function(response) {
                 // Make sure no flickering (if there are more items left) and then remove
-                self.isLoading(true)
                 self.historyItems.removeAll(self.deleteItems());
                 self.multiEditItems.removeAll(self.deleteItems())
                 self.parent.refresh();
