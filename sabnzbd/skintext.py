@@ -179,6 +179,7 @@ SKIN_TEXT = {
     "purgeNZBs-Files": TT("Purge NZBs & Delete Files"),  #: Queue page button
     "removeNZB": TT("Remove NZB"),  #: Queue page button
     "removeNZB-Files": TT("Remove NZB & Delete Files"),  #: Queue page button
+    "permanently-delete": TT("Permanently delete (skip archive)"),  #: Checkbox if job should be added to Archive
     "missingArt": TT("Missing articles"),  #: Caption for missing articles in Queue
     "quota-left": TT("Quota left"),  #: Remaining quota (displayed in Queue)
     "manual": TT("manual"),  #: Manual reset of quota

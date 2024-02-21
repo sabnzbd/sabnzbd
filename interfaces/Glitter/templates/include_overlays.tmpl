@@ -677,7 +677,7 @@
                 <div class="modal-footer">
                      <div class="checkbox">
                         <label>
-                            <input type="checkbox"> <span>Permanently delete (skip archive)</span>
+                            <input type="checkbox" data-bind="checked: history.showArchive()"> <span>$T('permanently-delete')</span>
                         </label>
                     </div>
                     <button type="button" class="btn btn-default" data-dismiss="modal">$T('cancel')</button>
@@ -796,7 +796,7 @@
             <div class="modal-footer">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox"> <span>Permanently delete (skip archive)</span>
+                        <input type="checkbox" data-bind="checked: history.showArchive()"> <span>$T('permanently-delete')</span>
                     </label>
                 </div>
             </div>

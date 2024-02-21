@@ -131,9 +131,6 @@ function HistoryListModel(parent) {
             self.deleteItems.push(items)
         }
 
-        // If we are in Archive mode, check the box to delete permanently
-        $('#modal-delete-history-job input[type="checkbox"]').prop("checked", self.showArchive())
-
         // Show modal or delete right away
         if(self.parent.confirmDeleteHistory()) {
             // Open modal if desired
@@ -236,6 +233,7 @@ function HistoryListModel(parent) {
     self.emptyHistory = function(data, event) {
         // What event?
         var whatToRemove = $(event.target).data('action');
+        var skipArchive = $('#modal-purge-history input[type="checkbox"]').prop("checked")
         var del_files, value;
 
         // Purge failed
@@ -268,6 +266,7 @@ function HistoryListModel(parent) {
                 mode: 'history',
                 name: 'delete',
                 del_files: 1,
+                archive: (!skipArchive) * 1,
                 value: strIDs
             }).then(function() {
                 // Clear search, refresh and hide
@@ -282,8 +281,9 @@ function HistoryListModel(parent) {
         callAPI({
             mode: 'history',
             name: 'delete',
-            value: value,
-            del_files: del_files
+            del_files: del_files,
+            archive: (!skipArchive) * 1,
+            value: value
         }).then(function() {
             self.parent.refresh();
             $("#modal-purge-history").modal('hide');
@@ -395,7 +395,7 @@ function HistoryListModel(parent) {
                 mode: 'history',
                 name: 'delete',
                 del_files: 1,
-                skip_archive: skipArchive * 1,
+                archive: (!skipArchive) * 1,
                 value: strIDsHistory
             }).then(function(response) {
                 // Make sure no flickering (if there are more items left) and then remove

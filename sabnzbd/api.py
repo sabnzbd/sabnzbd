@@ -487,34 +487,26 @@ def _api_history(name, kwargs):
     statuses = clean_comma_separated_list(kwargs.get("status"))
     failed_only = int_conv(kwargs.get("failed_only"))
     nzo_ids = clean_comma_separated_list(kwargs.get("nzo_ids"))
-    archive = bool(int_conv(kwargs.get("archive")))
 
-    # Do we need to send anything?
-    if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
-        return report(keyword="history", data=False)
-
-    if failed_only:
-        # We ignore any other statuses, having both doesn't make sense
-        statuses = [Status.FAILED]
-
-    if not limit:
-        limit = cfg.history_limit()
+    # Archive status is used for showing items and deleting
+    archive = False
+    if kwargs.get("archive") == "1":
+        archive = True
 
     if name == "delete":
         special = value.lower()
         del_files = bool(int_conv(kwargs.get("del_files")))
-        skip_archive = bool(int_conv(kwargs.get("skip_archive")))
         if special in ("all", "failed", "completed"):
             history_db = sabnzbd.get_db_connection()
             if special in ("all", "failed"):
                 if del_files:
                     del_job_files(history_db.get_failed_paths(search))
-                if not skip_archive:
+                if archive:
                     history_db.archive_with_status(Status.FAILED, search)
                 else:
                     history_db.remove_with_status(Status.FAILED, search)
             if special in ("all", "completed"):
-                if not skip_archive:
+                if archive:
                     history_db.archive_with_status(Status.COMPLETED, search)
                 else:
                     history_db.remove_with_status(Status.COMPLETED, search)
@@ -529,7 +521,7 @@ def _api_history(name, kwargs):
                     history_db = sabnzbd.get_db_connection()
                     if del_files:
                         remove_all(history_db.get_incomplete_path(job), recursive=True)
-                    if not skip_archive:
+                    if archive:
                         history_db.archive(job)
                     else:
                         history_db.remove(job)
@@ -538,6 +530,17 @@ def _api_history(name, kwargs):
         else:
             return report(_MSG_NO_VALUE)
     elif not name:
+        # Do we need to send anything?
+        if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
+            return report(keyword="history", data=False)
+
+        if failed_only:
+            # We ignore any other statuses, having both doesn't make sense
+            statuses = [Status.FAILED]
+
+        if not limit:
+            limit = cfg.history_limit()
+
         history = {}
         grand, month, week, day = sabnzbd.BPSMeter.get_sums()
         history["total_size"], history["month_size"], history["week_size"], history["day_size"] = (
