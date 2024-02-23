@@ -27,7 +27,7 @@ import time
 import getpass
 import cherrypy
 from threading import Thread
-from typing import Tuple, Optional, List, Dict, Any
+from typing import Tuple, Optional, List, Dict, Any, Union
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
@@ -100,7 +100,7 @@ _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
 
 
-def api_handler(kwargs: Dict[str, Any]):
+def api_handler(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API Dispatcher"""
     # Clean-up the arguments
     for vr in ("mode", "name", "value", "value2", "value3", "start", "limit", "search"):
@@ -114,13 +114,13 @@ def api_handler(kwargs: Dict[str, Any]):
     return response
 
 
-def _api_get_config(name, kwargs):
+def _api_get_config(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts keyword, section"""
     _, data = config.get_dconfig(kwargs.get("section"), kwargs.get("keyword"))
     return report(keyword="config", data=data)
 
 
-def _api_set_config(name, kwargs):
+def _api_set_config(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts keyword, section"""
     if cfg.configlock():
         return report(_MSG_CONFIG_LOCKED)
@@ -141,7 +141,7 @@ def _api_set_config(name, kwargs):
     return report(keyword="config", data=data)
 
 
-def _api_set_config_default(name, kwargs):
+def _api_set_config_default(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: Reset requested config variables back to defaults. Currently only for misc-section"""
     if cfg.configlock():
         return report(_MSG_CONFIG_LOCKED)
@@ -156,7 +156,7 @@ def _api_set_config_default(name, kwargs):
     return report()
 
 
-def _api_del_config(name, kwargs):
+def _api_del_config(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts keyword, section"""
     if cfg.configlock():
         return report(_MSG_CONFIG_LOCKED)
@@ -166,13 +166,13 @@ def _api_del_config(name, kwargs):
         return report(_MSG_NOT_IMPLEMENTED)
 
 
-def _api_queue(name, kwargs):
+def _api_queue(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: Dispatcher for mode=queue"""
     value = kwargs.get("value", "")
     return _api_queue_table.get(name, (_api_queue_default, 2))[0](value, kwargs)
 
 
-def _api_queue_delete(value, kwargs):
+def _api_queue_delete(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value"""
     if value.lower() == "all":
         removed = sabnzbd.NzbQueue.remove_all(kwargs.get("search"))
@@ -185,7 +185,7 @@ def _api_queue_delete(value, kwargs):
         return report(_MSG_NO_VALUE)
 
 
-def _api_queue_delete_nzf(value, kwargs):
+def _api_queue_delete_nzf(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id), value2(=nzf_ids)"""
     nzf_ids = clean_comma_separated_list(kwargs.get("value2"))
     if value and nzf_ids:
@@ -195,7 +195,7 @@ def _api_queue_delete_nzf(value, kwargs):
         return report(_MSG_NO_VALUE2)
 
 
-def _api_queue_rename(value, kwargs):
+def _api_queue_rename(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=old name), value2(=new name), value3(=password)"""
     value2 = kwargs.get("value2")
     value3 = kwargs.get("value3")
@@ -206,18 +206,18 @@ def _api_queue_rename(value, kwargs):
         return report(_MSG_NO_VALUE2)
 
 
-def _api_queue_change_complete_action(value, kwargs):
+def _api_queue_change_complete_action(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=action)"""
     change_queue_complete_action(value)
     return report()
 
 
-def _api_queue_purge(value, kwargs):
+def _api_queue_purge(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     removed = sabnzbd.NzbQueue.remove_all(kwargs.get("search"))
     return report(keyword="", data={"status": bool(removed), "nzo_ids": removed})
 
 
-def _api_queue_pause(value, kwargs):
+def _api_queue_pause(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=list of nzo_id)"""
     if items := clean_comma_separated_list(value):
         handled = sabnzbd.NzbQueue.pause_multiple_nzo(items)
@@ -226,7 +226,7 @@ def _api_queue_pause(value, kwargs):
     return report(keyword="", data={"status": bool(handled), "nzo_ids": handled})
 
 
-def _api_queue_resume(value, kwargs):
+def _api_queue_resume(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=list of nzo_id)"""
     if items := clean_comma_separated_list(value):
         handled = sabnzbd.NzbQueue.resume_multiple_nzo(items)
@@ -235,7 +235,7 @@ def _api_queue_resume(value, kwargs):
     return report(keyword="", data={"status": bool(handled), "nzo_ids": handled})
 
 
-def _api_queue_priority(value, kwargs):
+def _api_queue_priority(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id), value2(=priority)"""
     nzo_ids = clean_comma_separated_list(value)
     priority = kwargs.get("value2")
@@ -254,7 +254,7 @@ def _api_queue_priority(value, kwargs):
         return report(_MSG_NO_VALUE2)
 
 
-def _api_queue_sort(value, kwargs):
+def _api_queue_sort(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts sort, dir"""
     sort = kwargs.get("sort", "")
     direction = kwargs.get("dir", "")
@@ -265,7 +265,7 @@ def _api_queue_sort(value, kwargs):
         return report(_MSG_NO_VALUE2)
 
 
-def _api_queue_default(value, kwargs):
+def _api_queue_default(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts sort, dir, start, limit and search terms"""
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
@@ -293,12 +293,12 @@ def _api_queue_default(value, kwargs):
     )
 
 
-def _api_translate(name, kwargs):
+def _api_translate(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=acronym)"""
     return report(keyword="value", data=T(kwargs.get("value", "")))
 
 
-def _api_addfile(name, kwargs):
+def _api_addfile(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts name, pp, script, cat, priority, nzbname"""
     # Normal upload will send the nzb in a kw arg called name or nzbfile
     if not name or isinstance(name, str):
@@ -319,7 +319,7 @@ def _api_addfile(name, kwargs):
         return report(_MSG_NO_VALUE)
 
 
-def _api_retry(name, kwargs):
+def _api_retry(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts name, value(=nzo_id), nzbfile(=optional NZB), password (optional)"""
     value = kwargs.get("value")
     # Normal upload will send the nzb in a kw arg called nzbfile
@@ -334,7 +334,7 @@ def _api_retry(name, kwargs):
         return report(_MSG_NO_ITEM)
 
 
-def _api_cancel_pp(name, kwargs):
+def _api_cancel_pp(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts name, value(=nzo_ids)"""
     if nzo_ids := clean_comma_separated_list(kwargs.get("value")):
         if sabnzbd.PostProcessor.cancel_pp(nzo_ids):
@@ -342,7 +342,7 @@ def _api_cancel_pp(name, kwargs):
     return report(_MSG_NO_ITEM)
 
 
-def _api_addlocalfile(name, kwargs):
+def _api_addlocalfile(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts name, pp, script, cat, priority, nzbname"""
     if name:
         if os.path.exists(name):
@@ -369,7 +369,7 @@ def _api_addlocalfile(name, kwargs):
         return report(_MSG_NO_VALUE)
 
 
-def _api_switch(name, kwargs):
+def _api_switch(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=first id), value2(=second id)"""
     value = kwargs.get("value")
     value2 = kwargs.get("value2")
@@ -381,7 +381,7 @@ def _api_switch(name, kwargs):
         return report(_MSG_NO_VALUE2)
 
 
-def _api_change_cat(name, kwargs):
+def _api_change_cat(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id), value2(=category)"""
     nzo_ids = clean_comma_separated_list(kwargs.get("value"))
     cat = kwargs.get("value2")
@@ -394,7 +394,7 @@ def _api_change_cat(name, kwargs):
         return report(_MSG_NO_VALUE)
 
 
-def _api_change_script(name, kwargs):
+def _api_change_script(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id), value2(=script)"""
     nzo_ids = clean_comma_separated_list(kwargs.get("value"))
     script = kwargs.get("value2")
@@ -407,7 +407,7 @@ def _api_change_script(name, kwargs):
         return report(_MSG_NO_VALUE)
 
 
-def _api_change_opts(name, kwargs):
+def _api_change_opts(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id), value2(=pp)"""
     nzo_ids = clean_comma_separated_list(kwargs.get("value"))
     pp = kwargs.get("value2")
@@ -417,31 +417,31 @@ def _api_change_opts(name, kwargs):
     return report(_MSG_NO_ITEM)
 
 
-def _api_fullstatus(name, kwargs):
+def _api_fullstatus(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: full history status"""
     status = build_status(
-        calculate_performance=kwargs.get("calculate_performance", 0),
-        skip_dashboard=kwargs.get("skip_dashboard", 1),
+        calculate_performance=int_conv(kwargs.get("calculate_performance", 0)),
+        skip_dashboard=int_conv(kwargs.get("skip_dashboard", 1)),
     )
     return report(keyword="status", data=status)
 
 
-def _api_status(name, kwargs):
+def _api_status(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: Dispatcher for mode=status, passing on the value"""
     value = kwargs.get("value", "")
     return _api_status_table.get(name, (_api_fullstatus, 2))[0](value, kwargs)
 
 
-def _api_unblock_server(value, kwargs):
+def _api_unblock_server(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Unblock a blocked server"""
     sabnzbd.Downloader.unblock(value)
     return report()
 
 
-def _api_delete_orphan(path, kwargs):
+def _api_delete_orphan(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Remove orphaned job"""
-    if path:
-        path = os.path.join(cfg.download_dir.get_path(), path)
+    if value:
+        path = os.path.join(cfg.download_dir.get_path(), value)
         logging.info("Removing orphaned job %s", path)
         remove_all(path, recursive=True)
         return report()
@@ -449,7 +449,7 @@ def _api_delete_orphan(path, kwargs):
         return report(_MSG_NO_ITEM)
 
 
-def _api_delete_all_orphan(value, kwargs):
+def _api_delete_all_orphan(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Remove all orphaned jobs"""
     paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     for path in paths:
@@ -457,10 +457,10 @@ def _api_delete_all_orphan(value, kwargs):
     return report()
 
 
-def _api_add_orphan(path, kwargs):
+def _api_add_orphan(value: str, kwargs: Dict[str, Union[str, List[str]]]):
     """Add orphaned job"""
-    if path:
-        path = os.path.join(cfg.download_dir.get_path(), path)
+    if value:
+        path = os.path.join(cfg.download_dir.get_path(), value)
         logging.info("Re-adding orphaned job %s", path)
         sabnzbd.NzbQueue.repair_job(path, None, None)
         return report()
@@ -468,7 +468,7 @@ def _api_add_orphan(path, kwargs):
         return report(_MSG_NO_ITEM)
 
 
-def _api_add_all_orphan(value, kwargs):
+def _api_add_all_orphan(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Add all orphaned jobs"""
     paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     for path in paths:
@@ -476,7 +476,7 @@ def _api_add_all_orphan(value, kwargs):
     return report()
 
 
-def _api_history(name, kwargs):
+def _api_history(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id), start, limit, search, nzo_ids"""
     value = kwargs.get("value", "")
     start = int_conv(kwargs.get("start"))
@@ -543,12 +543,10 @@ def _api_history(name, kwargs):
 
         history = {}
         grand, month, week, day = sabnzbd.BPSMeter.get_sums()
-        history["total_size"], history["month_size"], history["week_size"], history["day_size"] = (
-            to_units(grand),
-            to_units(month),
-            to_units(week),
-            to_units(day),
-        )
+        history["total_size"] = to_units(grand)
+        history["month_size"] = to_units(month)
+        history["week_size"] = to_units(week)
+        history["day_size"] = to_units(day)
         history["slots"], history["ppslots"], history["noofslots"] = build_history(
             start=start,
             limit=limit,
@@ -565,7 +563,7 @@ def _api_history(name, kwargs):
         return report(_MSG_NOT_IMPLEMENTED)
 
 
-def _api_get_files(name, kwargs):
+def _api_get_files(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=nzo_id)"""
     value = kwargs.get("value")
     if value:
@@ -574,7 +572,7 @@ def _api_get_files(name, kwargs):
         return report(_MSG_NO_VALUE)
 
 
-def _api_move_nzf_bulk(name, kwargs):
+def _api_move_nzf_bulk(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts name(=top/up/down/bottom), value=(=nzo_id), nzf_ids, size (optional)"""
     nzo_id = kwargs.get("value")
     nzf_ids = clean_comma_separated_list(kwargs.get("nzf_ids"))
@@ -600,7 +598,7 @@ def _api_move_nzf_bulk(name, kwargs):
     return report(_MSG_NO_VALUE)
 
 
-def _api_addurl(name, kwargs):
+def _api_addurl(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts name, output, pp, script, cat, priority, nzbname"""
     pp = kwargs.get("pp")
     script = kwargs.get("script")
@@ -618,24 +616,24 @@ def _api_addurl(name, kwargs):
         return report(_MSG_NO_VALUE)
 
 
-def _api_pause(name, kwargs):
+def _api_pause(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sabnzbd.Scheduler.plan_resume(0)
     sabnzbd.Downloader.pause()
     return report()
 
 
-def _api_resume(name, kwargs):
+def _api_resume(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sabnzbd.Scheduler.plan_resume(0)
     sabnzbd.downloader.unpause_all()
     return report()
 
 
-def _api_shutdown(name, kwargs):
+def _api_shutdown(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sabnzbd.shutdown_program()
     return report()
 
 
-def _api_warnings(name, kwargs):
+def _api_warnings(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts name, output"""
     if name == "clear":
         return report(keyword="warnings", data=sabnzbd.GUIHANDLER.clear())
@@ -655,7 +653,7 @@ LOG_INI_HIDE_RE = re.compile(
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 
 
-def _api_showlog(name, kwargs):
+def _api_showlog(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Fetch the INI and the log-data and add a message at the top"""
     log_data = b"--------------------------------\n\n"
     log_data += b"The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
@@ -685,19 +683,19 @@ def _api_showlog(name, kwargs):
     return log_data
 
 
-def _api_get_cats(name, kwargs):
+def _api_get_cats(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     return report(keyword="categories", data=list_cats(False))
 
 
-def _api_get_scripts(name, kwargs):
+def _api_get_scripts(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     return report(keyword="scripts", data=list_scripts())
 
 
-def _api_version(name, kwargs):
+def _api_version(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     return report(keyword="version", data=sabnzbd.__version__)
 
 
-def _api_auth(name, kwargs):
+def _api_auth(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     key = kwargs.get("key", "")
     if not key:
         auth = "apikey"
@@ -710,14 +708,14 @@ def _api_auth(name, kwargs):
     return report(keyword="auth", data=auth)
 
 
-def _api_restart(name, kwargs):
+def _api_restart(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     logging.info("Restart requested by API")
     # Do the shutdown async to still send goodbye to browser
     Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
     return report()
 
 
-def _api_restart_repair(name, kwargs):
+def _api_restart_repair(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     logging.info("Queue repair requested by API")
     request_repair()
     # Do the shutdown async to still send goodbye to browser
@@ -725,12 +723,12 @@ def _api_restart_repair(name, kwargs):
     return report()
 
 
-def _api_disconnect(name, kwargs):
+def _api_disconnect(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sabnzbd.Downloader.disconnect()
     return report()
 
 
-def _api_eval_sort(name, kwargs):
+def _api_eval_sort(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: evaluate sorting expression"""
     sort_string = kwargs.get("sort_string", "")
     job_name = kwargs.get("job_name", "")
@@ -742,28 +740,28 @@ def _api_eval_sort(name, kwargs):
         return report(keyword="result", data=path)
 
 
-def _api_watched_now(name, kwargs):
+def _api_watched_now(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sabnzbd.DirScanner.scan()
     return report()
 
 
-def _api_resume_pp(name, kwargs):
+def _api_resume_pp(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sabnzbd.PostProcessor.paused = False
     return report()
 
 
-def _api_pause_pp(name, kwargs):
+def _api_pause_pp(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sabnzbd.PostProcessor.paused = True
     return report()
 
 
-def _api_rss_now(name, kwargs):
+def _api_rss_now(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     # Run RSS scan async, because it can take a long time
     sabnzbd.Scheduler.force_rss()
     return report()
 
 
-def _api_retry_all(name, kwargs):
+def _api_retry_all(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: Retry all failed items in History"""
     items = sabnzbd.api.build_history()[0]
     nzo_ids = []
@@ -773,13 +771,13 @@ def _api_retry_all(name, kwargs):
     return report(keyword="status", data=nzo_ids)
 
 
-def _api_reset_quota(name, kwargs):
+def _api_reset_quota(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Reset quota left"""
     sabnzbd.BPSMeter.reset_quota(force=True)
     return report()
 
 
-def _api_test_email(name, kwargs):
+def _api_test_email(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test email, return result"""
     logging.info("Sending test email")
     pack = {"download": ["action 1", "action 2"], "unpack": ["action 1", "action 2"]}
@@ -801,67 +799,67 @@ def _api_test_email(name, kwargs):
     return report(error=res)
 
 
-def _api_test_windows(name, kwargs):
+def _api_test_windows(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test to Windows, return result"""
     logging.info("Sending test notification")
     res = sabnzbd.notifier.send_windows("SABnzbd", T("Test Notification"), "other")
     return report(error=res)
 
 
-def _api_test_notif(name, kwargs):
+def _api_test_notif(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test to Notification Center, return result"""
     logging.info("Sending test notification")
     res = sabnzbd.notifier.send_notification_center("SABnzbd", T("Test Notification"), "other")
     return report(error=res)
 
 
-def _api_test_osd(name, kwargs):
+def _api_test_osd(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test OSD notification, return result"""
     logging.info("Sending OSD notification")
     res = sabnzbd.notifier.send_notify_osd("SABnzbd", T("Test Notification"))
     return report(error=res)
 
 
-def _api_test_prowl(name, kwargs):
+def _api_test_prowl(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Prowl notification, return result"""
     logging.info("Sending Prowl notification")
     res = sabnzbd.notifier.send_prowl("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
     return report(error=res)
 
 
-def _api_test_pushover(name, kwargs):
+def _api_test_pushover(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Pushover notification, return result"""
     logging.info("Sending Pushover notification")
     res = sabnzbd.notifier.send_pushover("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
     return report(error=res)
 
 
-def _api_test_pushbullet(name, kwargs):
+def _api_test_pushbullet(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Pushbullet notification, return result"""
     logging.info("Sending Pushbullet notification")
     res = sabnzbd.notifier.send_pushbullet("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
     return report(error=res)
 
 
-def _api_test_apprise(name, kwargs):
+def _api_test_apprise(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Apprise notification, return result"""
     logging.info("Sending Apprise notification")
     res = sabnzbd.notifier.send_apprise("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
     return report(error=res)
 
 
-def _api_test_nscript(name, kwargs):
+def _api_test_nscript(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: execute a test notification script, return result"""
     logging.info("Executing notification script")
     res = sabnzbd.notifier.send_nscript("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
     return report(error=res)
 
 
-def _api_undefined(name, kwargs):
+def _api_undefined(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     return report(_MSG_NOT_IMPLEMENTED)
 
 
-def _api_browse(name, kwargs):
+def _api_browse(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Return tree of local path"""
     compact = kwargs.get("compact")
 
@@ -875,14 +873,14 @@ def _api_browse(name, kwargs):
         return report(keyword="paths", data=paths)
 
 
-def _api_config(name, kwargs):
+def _api_config(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: Dispatcher for "config" """
     if cfg.configlock():
         return report(_MSG_CONFIG_LOCKED)
     return _api_config_table.get(name, (_api_config_undefined, 2))[0](kwargs)
 
 
-def _api_config_speedlimit(kwargs):
+def _api_config_speedlimit(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=speed)"""
     value = kwargs.get("value")
     if not value:
@@ -891,26 +889,26 @@ def _api_config_speedlimit(kwargs):
     return report()
 
 
-def _api_config_set_pause(kwargs):
+def _api_config_set_pause(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts value(=pause interval)"""
     value = kwargs.get("value")
     sabnzbd.Scheduler.plan_resume(int_conv(value))
     return report()
 
 
-def _api_config_set_apikey(kwargs):
+def _api_config_set_apikey(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     cfg.api_key.set(config.create_api_key())
     config.save_config()
     return report(keyword="apikey", data=cfg.api_key())
 
 
-def _api_config_set_nzbkey(kwargs):
+def _api_config_set_nzbkey(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     cfg.nzb_key.set(config.create_api_key())
     config.save_config()
     return report(keyword="nzbkey", data=cfg.nzb_key())
 
 
-def _api_config_regenerate_certs(kwargs):
+def _api_config_regenerate_certs(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     # Make sure we only over-write default locations
     result = False
     if (
@@ -924,27 +922,27 @@ def _api_config_regenerate_certs(kwargs):
     return report(data=result)
 
 
-def _api_config_test_server(kwargs):
+def _api_config_test_server(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: accepts server-params"""
     result, msg = test_nntp_server_dict(kwargs)
     return report(data={"result": result, "message": msg})
 
 
-def _api_config_create_backup(kwargs):
+def _api_config_create_backup(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     backup_file = config.create_config_backup()
     return report(data={"result": bool(backup_file), "message": backup_file})
 
 
-def _api_config_purge_log_files(kwargs):
+def _api_config_purge_log_files(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     purge_log_files()
     return report()
 
 
-def _api_config_undefined(kwargs):
+def _api_config_undefined(kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     return report(_MSG_NOT_IMPLEMENTED)
 
 
-def _api_server_stats(name, kwargs):
+def _api_server_stats(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     sum_t, sum_m, sum_w, sum_d = sabnzbd.BPSMeter.get_sums()
     stats = {"total": sum_t, "month": sum_m, "week": sum_w, "day": sum_d, "servers": {}}
 
@@ -963,7 +961,7 @@ def _api_server_stats(name, kwargs):
     return report(keyword="", data=stats)
 
 
-def _api_gc_stats(name, kwargs):
+def _api_gc_stats(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Function only intended for internal testing of the memory handling"""
     # Collect before we check
     gc.collect()
@@ -1073,9 +1071,9 @@ def api_level(mode: str, name: str) -> int:
     return 4
 
 
-def report(error: Optional[str] = None, keyword: str = "value", data: Any = None) -> bytes:
+def report(error: Optional[str] = None, keyword: str = "value", data: Optional[Any] = None) -> bytes:
     """Report message in json, xml or plain text
-    If error is set, only an status/error report is made.
+    If error is set, only a status/error report is made.
     If no error and no data, only a status report is made.
     Else, a data report is made (optional 'keyword' for outer XML section).
     """
@@ -1166,7 +1164,7 @@ class XmlOutputFactory:
         return text
 
 
-def handle_server_api(kwargs):
+def handle_server_api(kwargs: Dict[str, Union[str, List[str]]]) -> str:
     """Special handler for API-call 'set_config' [servers]"""
     name = kwargs.get("keyword")
     if not name:
@@ -1184,7 +1182,7 @@ def handle_server_api(kwargs):
     return name
 
 
-def handle_sorter_api(kwargs):
+def handle_sorter_api(kwargs: Dict[str, Union[str, List[str]]]) -> Optional[str]:
     """Special handler for API-call 'set_config' [sorters]"""
     name = kwargs.get("keyword")
     if not name:
@@ -1200,7 +1198,7 @@ def handle_sorter_api(kwargs):
     return name
 
 
-def handle_rss_api(kwargs):
+def handle_rss_api(kwargs: Dict[str, Union[str, List[str]]]) -> Optional[str]:
     """Special handler for API-call 'set_config' [rss]"""
     name = kwargs.get("keyword")
     if not name:
@@ -1234,7 +1232,7 @@ def handle_rss_api(kwargs):
     return name
 
 
-def handle_cat_api(kwargs):
+def handle_cat_api(kwargs: Dict[str, Union[str, List[str]]]) -> Optional[str]:
     """Special handler for API-call 'set_config' [categories]"""
     name = kwargs.get("keyword")
     if not name:
@@ -1251,7 +1249,7 @@ def handle_cat_api(kwargs):
     return name
 
 
-def build_status(calculate_performance: bool = False, skip_dashboard: bool = False) -> Dict[str, Any]:
+def build_status(calculate_performance: int = False, skip_dashboard: int = False) -> Dict[str, Any]:
     # build up header full of basic information
     info = build_header(trans_functions=False)
 
@@ -1264,7 +1262,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["warnings"] = sabnzbd.GUIHANDLER.content()
 
     # Calculate performance measures, if requested
-    if int_conv(calculate_performance):
+    if calculate_performance:
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
@@ -1294,7 +1292,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["internetbandwidth"] = sabnzbd.INTERNET_BANDWIDTH
 
     # Dashboard: Connection information
-    if not int_conv(skip_dashboard):
+    if not skip_dashboard:
         info["active_socks5_proxy"] = active_socks5_proxy()
         info["localipv4"] = local_ipv4()
         info["publicipv4"] = public_ipv4()
@@ -1357,7 +1355,7 @@ def build_queue(
     priorities: Optional[List[str]] = None,
     statuses: Optional[List[str]] = None,
     nzo_ids: Optional[List[str]] = None,
-):
+) -> Dict[str, Any]:
     info = build_header(for_template=False)
     (
         queue_bytes_total,
@@ -1472,7 +1470,7 @@ def fast_queue() -> Tuple[bool, int, float, str]:
     return paused, bytes_left, bpsnow, time_left
 
 
-def build_file_list(nzo_id: str):
+def build_file_list(nzo_id: str) -> List[Dict[str, Any]]:
     """Build file lists for specified job"""
     jobs = []
     nzo = sabnzbd.sabnzbd.NzbQueue.get_nzo(nzo_id)
@@ -1525,7 +1523,11 @@ def build_file_list(nzo_id: str):
     return jobs
 
 
-def retry_job(job, new_nzb=None, password=None):
+def retry_job(
+    job: str,
+    new_nzb: Optional[cherrypy._cpreqbody.Part] = None,
+    password: Optional[str] = None,
+) -> Optional[str]:
     """Re enter failed job in the download queue"""
     if job:
         history_db = sabnzbd.get_db_connection()
@@ -1542,14 +1544,14 @@ def retry_job(job, new_nzb=None, password=None):
     return None
 
 
-def del_job_files(job_paths):
+def del_job_files(job_paths: List[str]):
     """Remove files of each path in the list"""
     for path in job_paths:
         if path and clip_path(path).lower().startswith(cfg.download_dir.get_clipped_path().lower()):
             remove_all(path, recursive=True)
 
 
-def Tspec(txt):
+def Tspec(txt: str) -> str:
     """Translate special terms"""
     if is_none(txt):
         return T("None")
@@ -1562,7 +1564,7 @@ def Tspec(txt):
 _SKIN_CACHE = {}  # Stores pre-translated acronyms
 
 
-def Ttemplate(txt):
+def Ttemplate(txt: str) -> str:
     """Translation function for Skin texts
     This special is to be used in interface.py for template processing
     to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
@@ -1585,7 +1587,7 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(webdir: str = "", for_template: bool = True, trans_functions: bool = True) -> Dict:
+def build_header(webdir: str = "", for_template: bool = True, trans_functions: bool = True) -> Dict[str, Any]:
     """Build the basic header"""
     header = {}
 
@@ -1776,14 +1778,14 @@ def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, An
         items.append(item)
 
 
-def calc_timeleft(bytesleft, bps):
+def calc_timeleft(bytesleft: float, bps: float) -> str:
     """Based on bytesleft and bps calculate the time left in the format HH:MM:SS"""
     if bytesleft <= 0 or bps <= 0:
         return "0:00:00"
     return format_time_left(int(bytesleft / bps))
 
 
-def list_cats(default=True):
+def list_cats(default: bool = True) -> List[str]:
     """Return list of (ordered) categories,
     when default==False use '*' for Default category
     """
@@ -1812,7 +1814,7 @@ def plural_to_single(kw, def_kw=""):
         return def_kw
 
 
-def del_from_section(kwargs):
+def del_from_section(kwargs: Dict[str, Union[str, List[str]]]) -> bool:
     """Remove keyword in section"""
     section = kwargs.get("section", "")
     if section in ("sorters", "servers", "rss", "categories"):
