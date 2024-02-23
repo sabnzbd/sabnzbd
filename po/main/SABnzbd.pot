@@ -414,7 +414,7 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/downloader.py
-msgid "%s@%s recieved unknown status code %s for article %s: %s"
+msgid "%s@%s: Received unknown status code %s for article %s: %s"
 msgstr ""
 
 #: sabnzbd/downloader.py
@@ -961,6 +961,10 @@ msgstr ""
 #. Main menu item
 #: sabnzbd/newswrapper.py, sabnzbd/skintext.py
 msgid "Wiki"
+msgstr ""
+
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
 msgstr ""
 
 #. Notification

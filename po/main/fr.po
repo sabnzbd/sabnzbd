@@ -478,8 +478,8 @@ msgstr "Erreur fatale dans le Téléchargeur"
 
 #. Warning message
 #: sabnzbd/downloader.py
-msgid "%s@%s recieved unknown status code %s for article %s: %s"
-msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s : %s"
+msgid "%s@%s: Received unknown status code %s for article %s: %s"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -1083,6 +1083,10 @@ msgstr "Le serveur %s utilise un certificat peu fiable [%s]"
 #: sabnzbd/newswrapper.py, sabnzbd/skintext.py
 msgid "Wiki"
 msgstr "Wiki"
+
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
+msgstr ""
 
 #. Notification
 #: sabnzbd/notifier.py
