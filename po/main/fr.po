@@ -479,7 +479,7 @@ msgstr "Erreur fatale dans le Téléchargeur"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "%s@%s recieved unknown status code %s for article %s: %s"
-msgstr ""
+msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s : %s"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -1157,16 +1157,16 @@ msgstr "Échec d'envoi du message Prowl"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "One or more Apprise URLs could not be loaded."
-msgstr ""
+msgstr "Une ou plusieurs URL Apprise n'ont pas pu être chargées."
 
 #: sabnzbd/notifier.py
 msgid "Failed to send one or more Apprise Notifications"
-msgstr ""
+msgstr "Échec de l'envoi d'une ou plusieurs notifications Apprise."
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message"
-msgstr ""
+msgstr "Échec d'envoi du message Apprise"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -4171,31 +4171,35 @@ msgstr "Appareil sur lequel le message doit être envoyé"
 #. Header for Apprise notification section
 #: sabnzbd/skintext.py
 msgid "Apprise"
-msgstr ""
+msgstr "Apprise"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Enable Apprise notifications"
-msgstr ""
+msgstr "Activer les notifications Apprise"
 
 #: sabnzbd/skintext.py
 msgid "Send notifications using Apprise to almost any notification service"
 msgstr ""
+"Envoyer des notifications en utilisant Apprise vers presque n'importe quel "
+"service de notification"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Default Apprise URLs"
-msgstr ""
+msgstr "URLs par défaut d'Apprise"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use a comma and/or space to identify more than one URL."
-msgstr ""
+msgstr "Utilisez une virgule et/ou un espace pour identifier plusieurs URL."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Override the default URLs for specific notification types below, if desired."
 msgstr ""
+"Remplacez les URL par défaut pour les types de notifications spécifiques ci-"
+"dessous, si vous le souhaitez."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
