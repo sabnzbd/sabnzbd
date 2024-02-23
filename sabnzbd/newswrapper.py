@@ -383,7 +383,7 @@ class NNTP:
 
         # Ignore if the socket was already closed, resulting in errors
         if not self.closed:
-            msg = "Failed to connect: %s %s@%s:%s (%s)" % (
+            msg = T("Failed to connect: %s %s@%s:%s (%s)") % (
                 str(error),
                 self.nw.thrdnum,
                 self.nw.server.host,

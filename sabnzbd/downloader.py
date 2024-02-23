@@ -766,7 +766,7 @@ class Downloader(Thread):
 
             else:
                 logging.warning(
-                    T("%s@%s recieved unknown status code %s for article %s: %s"),
+                    T("%s@%s: Received unknown status code %s for article %s: %s"),
                     nw.thrdnum,
                     nw.server.host,
                     nw.status_code,
