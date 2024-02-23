@@ -644,7 +644,7 @@
             </div>
             <form data-bind="submit: queue.removeDownloads">
                 <div class="modal-body">
-                    $T('confirm')
+                    $T('confirm-delete')
 
                     <ul data-bind="foreach: queue.deleteItems">
                         <li data-bind="text: name"></li>
@@ -668,7 +668,7 @@
             </div>
             <form data-bind="submit: history.removeDownloads">
                 <div class="modal-body">
-                    $T('confirm')
+                    $T('confirm-delete')
 
                     <ul data-bind="foreach: history.deleteItems">
                         <li data-bind="text: historyStatus.name"></li>

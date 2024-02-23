@@ -175,6 +175,7 @@ SKIN_TEXT = {
     "eoq-scripts": TT("Scripts"),  #: Queue page table, script selection menu
     "purgeQueue": TT("Purge Queue"),  #: Queue page button
     "purgeQueueConf": TT("Delete all items from the queue?"),  #: Confirmation popup
+    "confirm-delete": TT("Are you sure you want to remove these jobs?"),  #: Delete confirmation popup
     "purgeNZBs": TT("Purge NZBs"),  #: Queue page button
     "purgeNZBs-Files": TT("Purge NZBs & Delete Files"),  #: Queue page button
     "removeNZB": TT("Remove NZB"),  #: Queue page button
