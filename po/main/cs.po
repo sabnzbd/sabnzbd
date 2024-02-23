@@ -1358,7 +1358,7 @@ msgstr "Vypnout"
 msgid "Queue First 10 Items"
 msgstr "Fronta prvních 10 položek"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Prázdný"
 
@@ -2075,6 +2075,11 @@ msgstr "Domů"
 
 #. Main menu item
 #: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
+
+#. Main menu item
+#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "Nastavení"
 
@@ -2252,6 +2257,11 @@ msgstr "Skripty"
 msgid "Delete all items from the queue?"
 msgstr "Smazat všechny položky z fronty?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr ""
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2271,6 +2281,11 @@ msgstr "Odstranit NZB"
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
 msgstr "Odstranit NZB a smazat soubory"
+
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr ""
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2310,6 +2325,11 @@ msgstr "Zobrazit neúspěšné"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "Zobrazit vše"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr ""
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py

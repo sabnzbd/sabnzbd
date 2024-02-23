@@ -1407,7 +1407,7 @@ msgstr "Afsluiten"
 msgid "Queue First 10 Items"
 msgstr "Wachtrij Eerste 10 Items"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Leeg"
 
@@ -2157,6 +2157,11 @@ msgstr "Startpagina"
 
 #. Main menu item
 #: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
+
+#. Main menu item
+#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "Instellingen"
 
@@ -2334,6 +2339,11 @@ msgstr "Scripts"
 msgid "Delete all items from the queue?"
 msgstr "Verwijder alle downloads uit de wachtrij?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr ""
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2353,6 +2363,11 @@ msgstr "Verwijder download"
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
 msgstr "Verwijder download incl. bestanden"
+
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr ""
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2392,6 +2407,11 @@ msgstr "Toon mislukte"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "Toon Alles"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr ""
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py

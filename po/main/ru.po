@@ -1353,7 +1353,7 @@ msgstr "Выйти"
 msgid "Queue First 10 Items"
 msgstr "Первые 10 элементов очереди"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Пусто"
 
@@ -2100,6 +2100,11 @@ msgstr "Главная"
 
 #. Main menu item
 #: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
+
+#. Main menu item
+#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "Настройка"
 
@@ -2277,6 +2282,11 @@ msgstr "Сценарии"
 msgid "Delete all items from the queue?"
 msgstr "Удалить из очереди все элементы?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr ""
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2296,6 +2306,11 @@ msgstr "Удалить NZB"
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
 msgstr "Удалить NZB и стереть файлы"
+
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr ""
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2335,6 +2350,11 @@ msgstr "Показать неудачные"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "Показать все"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr ""
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
