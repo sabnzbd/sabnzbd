@@ -488,12 +488,13 @@ def _api_history(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     failed_only = int_conv(kwargs.get("failed_only"))
     nzo_ids = clean_comma_separated_list(kwargs.get("nzo_ids"))
 
-    # Archive status is used for showing items and deleting
-    archive = False
-    if kwargs.get("archive") == "1":
-        archive = True
+    archive = True
 
     if name == "delete":
+        # Only skip archive if specifically requested
+        if kwargs.get("archive") == "0":
+            archive = False
+
         special = value.lower()
         del_files = bool(int_conv(kwargs.get("del_files")))
         if special in ("all", "failed", "completed"):
@@ -540,6 +541,10 @@ def _api_history(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
 
         if not limit:
             limit = cfg.history_limit()
+
+        # Only show archive if specifically requested
+        if not int_conv(kwargs.get("archive")):
+            archive = False
 
         history = {}
         grand, month, week, day = sabnzbd.BPSMeter.get_sums()
