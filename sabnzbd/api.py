@@ -23,6 +23,7 @@ import os
 import logging
 import re
 import gc
+import socket
 import time
 import getpass
 import cherrypy
@@ -53,6 +54,7 @@ from sabnzbd.constants import (
     AddNzbFileResult,
     PP_LOOKUP,
     STAGES,
+    DEF_TEST_TIMEOUT,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -74,14 +76,15 @@ from sabnzbd.misc import (
     request_repair,
     change_queue_complete_action,
     clean_comma_separated_list,
+    match_str,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files
 from sabnzbd.encoding import xml_name, utob
-from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
 from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.emailer
 import sabnzbd.sorting
 
@@ -1252,6 +1255,119 @@ def handle_cat_api(kwargs: Dict[str, Union[str, List[str]]]) -> Optional[str]:
     else:
         config.ConfigCat(name, kwargs)
     return name
+
+
+def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[bool, str]:
+    """Will connect (blocking) to the NNTP server and report back any errors"""
+    host = kwargs.get("host", "").strip()
+    port = int_conv(kwargs.get("port", 0))
+    username = kwargs.get("username", "").strip()
+    password = kwargs.get("password", "").strip()
+    server = kwargs.get("server", "").strip()
+    connections = int_conv(kwargs.get("connections", 0))
+    timeout = int_conv(kwargs.get("timeout", DEF_TEST_TIMEOUT))
+    ssl = int_conv(kwargs.get("ssl", 0))
+    ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
+    ssl_ciphers = kwargs.get("ssl_ciphers", "").strip()
+
+    if not host:
+        return False, T("The hostname is not set.")
+
+    if not connections:
+        return False, T("There are no connections set. Please set at least one connection.")
+
+    if not port:
+        if ssl:
+            port = 563
+        else:
+            port = 119
+
+    if not timeout:
+        # Lower value during new server testing
+        timeout = DEF_TEST_TIMEOUT
+
+    if "*" in password and not password.strip("*"):
+        # If the password is masked, try retrieving it from the config
+        srv = config.get_servers().get(server)
+        if srv:
+            password = srv.password()
+        else:
+            return False, T("Password masked in ******, please re-enter")
+
+    try:
+        s = sabnzbd.downloader.Server(
+            server_id=-1,
+            displayname="",
+            host=host,
+            port=port,
+            timeout=timeout,
+            threads=0,
+            priority=0,
+            use_ssl=ssl,
+            ssl_verify=ssl_verify,
+            ssl_ciphers=ssl_ciphers,
+            username=username,
+            password=password,
+        )
+    except:
+        return False, T("Invalid server details")
+
+    try:
+        s.request_addrinfo_blocking()
+        nw = NewsWrapper(server=s, thrdnum=-1, block=True)
+        nw.init_connect()
+        while not nw.connected:
+            nw.recv_chunk()
+            nw.finish_connect(nw.status_code)
+
+    except socket.timeout:
+        if port != 119 and not ssl:
+            return False, T("Timed out: Try enabling SSL or connecting on a different port.")
+        else:
+            return False, T("Timed out")
+
+    except socket.error as err:
+        # Trying SSL on non-SSL port?
+        if match_str(str(err), ("unknown protocol", "wrong version number")):
+            return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
+        return False, str(err)
+
+    except NNTPPermanentError:
+        # Handled by the code below
+        pass
+
+    except Exception as err:
+        return False, str(err)
+
+    if not username or not password:
+        nw.nntp.sock.sendall(b"ARTICLE <test@home>\r\n")
+        try:
+            nw.reset_data_buffer()
+            nw.recv_chunk()
+        except Exception as err:
+            # Some internal error, not always safe to close connection
+            return False, str(err)
+
+    # Parse result
+    return_status = ()
+    if nw.status_code:
+        if nw.status_code == 480:
+            return_status = (False, T("Server requires username and password."))
+        elif nw.status_code < 300 or nw.status_code in (411, 423, 430):
+            # If no username/password set and we requested fake-article, it will return 430 Not Found
+            return_status = (True, T("Connection Successful!"))
+        elif nw.status_code == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
+            return_status = (False, T("Authentication failed, check username/password."))
+        elif sabnzbd.downloader.clues_too_many(nw.nntp_msg):
+            return_status = (False, T("Too many connections, please pause downloading or try again later"))
+
+    # Fallback in case no data was received or unknown status
+    if not return_status:
+        return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
+
+    # Close the connection and return result
+    nw.hard_reset()
+    return return_status
 
 
 def build_status(calculate_performance: int = False, skip_dashboard: int = False) -> Dict[str, Any]:

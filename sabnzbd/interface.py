@@ -69,7 +69,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
-from sabnzbd.utils.servertests import test_nntp_server_dict
 import sabnzbd.utils.ssdp
 from sabnzbd.constants import (
     DEF_STD_CONFIG,
@@ -1082,11 +1081,6 @@ class ConfigServer:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveServer(self, **kwargs):
         return handle_server(kwargs, self.__root)
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def testServer(self, **kwargs):
-        _, msg = test_nntp_server_dict(kwargs)
-        return msg
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def delServer(self, **kwargs):
