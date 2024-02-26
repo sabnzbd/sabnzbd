@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.2.3 Release Candidate 1
+Release Notes - SABnzbd 4.2.3 Release Candidate 2
 =========================================================
 
 This is the third bug-fix release of SABnzbd 4.2.0.
@@ -8,6 +8,7 @@ This is the third bug-fix release of SABnzbd 4.2.0.
 * **Bug-fixes:**
     * Handle new status code for missing articles, which could result in timeouts.
     * Retry of failed job would not use the password provided.
+    * Optimize database handling in order to prevent locking errors.
     * macOS: System standby after finishing the queue would not always work.
 
 * **Changes:**
