@@ -183,6 +183,64 @@ msgid "Test Notification"
 msgstr "Benachrichtigungen testen"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Der Hostname wurde nicht angegeben"
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Keine Verbindungen angegeben. Bitte geben Sie mindestens eine Verbindung "
+"ein."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Passwort ist als ****** maskiert. Bitte erneut eingeben."
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Ungültige Server-Angaben"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Zeitüberschreitung: Versuche es mit eingeschalteten SSL oder einen anderen "
+"Port."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Zeitüberschreitung"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Unbekanntes SSL-Protokoll: SSL deaktivieren oder alternativen Port "
+"versuchen."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Server benötigt ein Benutzername und ein Passwort."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Verbindung erfolgreich hergestellt!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr ""
+"Authentifizierung fehlgeschlagen. Überprüfen Sie Benutzername und Passwort."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Zu viele Verbindungen. Bitte halten Sie die Downloads an oder versuchen Sie "
+"es später erneut."
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Die Verbindung konnte nicht überprüft werden. (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Adresse wird aufgelöst …"
 
@@ -709,11 +767,6 @@ msgid ""
 msgstr ""
 "API-Schlüssel ungültig. Bitte API-Schlüssel aus Einstellungen->Allgemein in "
 "die externe Anwendung eingeben:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr ""
-"Authentifizierung fehlgeschlagen. Überprüfen Sie Benutzername und Passwort."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4997,56 +5050,3 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "NZB-Datei wird versucht von %s abzurufen"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Der Hostname wurde nicht angegeben"
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Keine Verbindungen angegeben. Bitte geben Sie mindestens eine Verbindung "
-"ein."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Passwort ist als ****** maskiert. Bitte erneut eingeben."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ungültige Server-Angaben"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Zeitüberschreitung: Versuche es mit eingeschalteten SSL oder einen anderen "
-"Port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Zeitüberschreitung"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Unbekanntes SSL-Protokoll: SSL deaktivieren oder alternativen Port "
-"versuchen."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Server benötigt ein Benutzername und ein Passwort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Verbindung erfolgreich hergestellt!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Zu viele Verbindungen. Bitte halten Sie die Downloads an oder versuchen Sie "
-"es später erneut."
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Die Verbindung konnte nicht überprüft werden. (%s)"

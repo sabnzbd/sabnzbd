@@ -164,6 +164,57 @@ msgid "Test Notification"
 msgstr "Тестовое уведомление"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Не задано имя компьютера."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Подключения не настроены. Добавьте хотя бы одно подключение."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Пароль скрыт под ******. Повторите пароль."
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Недопустимые данные сервера"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Тайм-аут. Попробуйте включить SSL или использовать другой порт."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Время ожидания истекло"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Для сервера требуется имя пользователя и пароль."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Подключение установлено!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Ошибка проверки подлинности. Проверьте имя и пароль."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Слишком много подключений. Приостановите загрузку или повторите попытку "
+"позже"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Не удалось определить результат подключения (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Разрешение адреса"
 
@@ -658,10 +709,6 @@ msgid ""
 msgstr ""
 "Неправильный ключ API. Используйте в сторонней программе ключ API из раздела"
 " «Настройка -> Общие»:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Ошибка проверки подлинности. Проверьте имя и пароль."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4804,50 +4851,3 @@ msgstr "Не удалось загрузить URL: %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Попытка загрузить NZB с %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Не задано имя компьютера."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Подключения не настроены. Добавьте хотя бы одно подключение."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Пароль скрыт под ******. Повторите пароль."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Недопустимые данные сервера"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Тайм-аут. Попробуйте включить SSL или использовать другой порт."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Время ожидания истекло"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Для сервера требуется имя пользователя и пароль."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Подключение установлено!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Слишком много подключений. Приостановите загрузку или повторите попытку "
-"позже"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Не удалось определить результат подключения (%s)"

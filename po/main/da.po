@@ -166,6 +166,58 @@ msgid "Test Notification"
 msgstr "Afprøv notifikation"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Værtsnavnet er ikke indstillet."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Der er ingen forbindelser angivet. Angiv mindst én forbindelse."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Adgangskode maskeret med ******, forsøg igen"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Ugyldige serverdetaljer"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Timeout: Forsøg at aktivere SSL eller tilslut via en anden port."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Timeout"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Ukendt SSL protokol: Prøv at deaktivere SSL eller forbinder på en anden "
+"port."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Serveren kræver brugernavn og adgangskode."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Tilslutning lykkedes!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Godkendelse mislykkedes, kontrollere brugernavn/adgangskode."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Alt for mange forbindelser, pause en download eller forsøg igen senere"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Det lykkedes ikke at tilslutte (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Server løsning"
 
@@ -666,10 +718,6 @@ msgid ""
 msgstr ""
 "Forkert API-nøgle, anvend api-nøglen fra Konfiguration->Generelt i dit "
 "tredjepartsprogram:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Godkendelse mislykkedes, kontrollere brugernavn/adgangskode."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4817,51 +4865,3 @@ msgstr "URL hentning mislykkedes; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Forsøger at hente NZB fra %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Værtsnavnet er ikke indstillet."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Der er ingen forbindelser angivet. Angiv mindst én forbindelse."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Adgangskode maskeret med ******, forsøg igen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ugyldige serverdetaljer"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Timeout: Forsøg at aktivere SSL eller tilslut via en anden port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Timeout"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Ukendt SSL protokol: Prøv at deaktivere SSL eller forbinder på en anden "
-"port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Serveren kræver brugernavn og adgangskode."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Tilslutning lykkedes!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Alt for mange forbindelser, pause en download eller forsøg igen senere"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Det lykkedes ikke at tilslutte (%s)"

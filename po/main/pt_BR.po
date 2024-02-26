@@ -169,6 +169,58 @@ msgid "Test Notification"
 msgstr "Notificação de teste"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "O nome do host não foi definido."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Não há conexões definidas. Por favor, defina pelo menos uma conexão."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Senha mascarada em ******, digite novamente"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Detalhes inválidos do servidor"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Tempo esgotado: Tente habilitar o SSL ou conectar em uma porta diferente."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Tempo esgotado"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Servidor requer usuário e senha."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Conexão com Sucesso!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Falha de autenticação, verifique usuário / senha."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Excesso de conexões, por favor pause o download ou tente novamente mais "
+"tarde"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Não foi possível determinar o resultado da conexão (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Resolvendo endereço"
 
@@ -673,10 +725,6 @@ msgid ""
 msgstr ""
 "Chave de API incorreta. Use a chave de API de Configuração->Geral em seu "
 "programa de terceiros:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Falha de autenticação, verifique usuário / senha."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4818,51 +4866,3 @@ msgstr "A busca da URL falhou; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Tentando obter NZB de %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "O nome do host não foi definido."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Não há conexões definidas. Por favor, defina pelo menos uma conexão."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Senha mascarada em ******, digite novamente"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Detalhes inválidos do servidor"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Tempo esgotado: Tente habilitar o SSL ou conectar em uma porta diferente."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tempo esgotado"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Servidor requer usuário e senha."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Conexão com Sucesso!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Excesso de conexões, por favor pause o download ou tente novamente mais "
-"tarde"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Não foi possível determinar o resultado da conexão (%s)"

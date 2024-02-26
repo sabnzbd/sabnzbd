@@ -162,6 +162,56 @@ msgid "Test Notification"
 msgstr "Testa notifikation"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Adressen är inte angiven."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Inga anslutningar är aktiverade. Var vänlig aktivera minst en anslutning."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Lösenordet är dolt med ******, försök igen"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Ogiltiga serverdetaljer"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Timeout: Försök aktivera SSL eller anslut via en annan port."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Timeout"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Servern kräver användarnamn och lösenord."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Anslutning lyckades!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "För många anslutningar, pausa en nedladdning eller försök igen senare"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Det gick inte att ansluta (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Lösa adress"
 
@@ -657,10 +707,6 @@ msgid ""
 msgstr ""
 "API-nyckel felaktig, använd api-nyckeln från Konfiguration-> Allmänt i ditt "
 "tredjepartsprogram:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4796,49 +4842,3 @@ msgstr "URL hämtning misslyckades; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Försöker att hämta NZB från %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Adressen är inte angiven."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Inga anslutningar är aktiverade. Var vänlig aktivera minst en anslutning."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Lösenordet är dolt med ******, försök igen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ogiltiga serverdetaljer"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Timeout: Försök aktivera SSL eller anslut via en annan port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Timeout"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Servern kräver användarnamn och lösenord."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Anslutning lyckades!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "För många anslutningar, pausa en nedladdning eller försök igen senare"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Det gick inte att ansluta (%s)"

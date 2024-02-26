@@ -149,6 +149,54 @@ msgid "Test Notification"
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr ""
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr ""
 
@@ -607,10 +655,6 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
-msgstr ""
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
 msgstr ""
 
 #. Warning message
@@ -4506,49 +4550,5 @@ msgstr ""
 
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
 msgstr ""
 

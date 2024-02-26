@@ -162,6 +162,56 @@ msgid "Test Notification"
 msgstr "Probno obaveštenje"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Име хоста није унето."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Везе нису подешене. Подесити макар једну везу."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Лозинка сакривена испод ******, поновите унос"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Погрешни детаљи сервера"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Истекло време: Покушајте да упалите SSL или да се привежете на други порт."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Време је истекло"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Серверу су потребни име и лозинка."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Успешно привезивање!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Аутентификација погрешна, проверити име/лозинку."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "Превише конекција, паузирајте преузимање или поновите касније"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nemoguće odrediti rezultate konekcije (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Решавање адресе"
 
@@ -655,10 +705,6 @@ msgid ""
 "program:"
 msgstr ""
 "API кључ је погрешан, унети у спољни програм API кључ из Подешавања->Опште:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Аутентификација погрешна, проверити име/лозинку."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4782,49 +4828,3 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Pokušaj da se učita NZB sa %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Име хоста није унето."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Везе нису подешене. Подесити макар једну везу."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Лозинка сакривена испод ******, поновите унос"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Погрешни детаљи сервера"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Истекло време: Покушајте да упалите SSL или да се привежете на други порт."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Време је истекло"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Серверу су потребни име и лозинка."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Успешно привезивање!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "Превише конекција, паузирајте преузимање или поновите касније"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nemoguće odrediti rezultate konekcije (%s)"

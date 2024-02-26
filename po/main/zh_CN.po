@@ -161,6 +161,55 @@ msgid "Test Notification"
 msgstr "测试通知"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "主机名未设置。"
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "未设置连接。请设置至少一个连接。"
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "密码会以 ****** 显示，请重新输入"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "服务器信息无效"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "超时: 请尝试启用 SSL 或连接其他端口。"
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "超时"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "服务器需要用户名与密码。"
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "连接成功!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "身份认证失败，请检查用户名/密码。"
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "连接数过多，请先暂停下载或稍后再试"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "无法判断连接结果 (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "正在解析地址"
 
@@ -651,10 +700,6 @@ msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr "API Key 不正确，请在第三方程序中使用“配置”->“常规”中的 api key:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "身份认证失败，请检查用户名/密码。"
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4732,48 +4777,3 @@ msgstr "URL 装取失败; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "正在尝试从 %s 装取 NZB"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "主机名未设置。"
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "未设置连接。请设置至少一个连接。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "密码会以 ****** 显示，请重新输入"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "服务器信息无效"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "超时: 请尝试启用 SSL 或连接其他端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "超时"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "服务器需要用户名与密码。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "连接成功!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "连接数过多，请先暂停下载或稍后再试"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "无法判断连接结果 (%s)"

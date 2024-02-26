@@ -168,6 +168,56 @@ msgid "Test Notification"
 msgstr "Testaa ilmoitusta"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Isäntänimeä ei ole asetettu."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Yhteyksiä ei ole asetettu. Aktivoi ainakin yksi yhteys."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Salasana on piilotettu ******, syötä uudelleen"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Virheelliset palvelimen tiedot"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Aikakatkaistiin"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Yhdistäminen onnistui!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Selvitetään osoitetta"
 
@@ -663,10 +713,6 @@ msgid ""
 msgstr ""
 "API avain virheellinen, käytä Asetukset->Yleiset löytyvää api avainta "
 "käyttämääsi kolmannen osapuolen ohjelmaan:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4827,49 +4873,3 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Yritetään noutaa NZB osoitteesta %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Isäntänimeä ei ole asetettu."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Yhteyksiä ei ole asetettu. Aktivoi ainakin yksi yhteys."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Salasana on piilotettu ******, syötä uudelleen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Virheelliset palvelimen tiedot"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Aikakatkaistiin"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Yhdistäminen onnistui!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"

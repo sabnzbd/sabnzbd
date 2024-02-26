@@ -172,6 +172,59 @@ msgid "Test Notification"
 msgstr "Test melding"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Geen hostnaam opgegeven."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Ongeldige servergegevens"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Tijdslimiet overschreden"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Succesvol verbonden!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kan verbindingsresultaat niet bepalen (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Adres opzoeken"
 
@@ -701,10 +754,6 @@ msgid ""
 msgstr ""
 "API-sleutel incorrect; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
 "in bij het externe programma:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4952,52 +5001,3 @@ msgstr "URL ophalen mislukt; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Probeer NZB op te halen van %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Geen hostnaam opgegeven."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ongeldige servergegevens"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tijdslimiet overschreden"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Succesvol verbonden!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kan verbindingsresultaat niet bepalen (%s)"

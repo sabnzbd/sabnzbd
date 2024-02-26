@@ -177,6 +177,62 @@ msgid "Test Notification"
 msgstr "Test de Notification"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Le nom d'hôte n'est pas défini."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Aucune connexion n'est configurée. Veuillez définir au moins une connexion."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Mot de passe masqué en ******, veuillez le ressaisir."
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Paramètres serveur incorrects"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Délai dépassé : essayez d'activer SSL ou de vous connecter sur un port "
+"différent."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Délai dépassé"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Protocole SSL inconnu: essayez de désactiver SSL ou de vous connecter sur un"
+" autre port."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Le serveur requiert un identifiant et un mot de passe."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Connexion réussie!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
+"plus tard"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Impossible de déterminer le résultat de la connexion (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Résolution de l'adresse"
 
@@ -704,10 +760,6 @@ msgid ""
 msgstr ""
 "Clé API incorrecte, utilisez la clé API de la configuration générale dans "
 "votre application tierce :"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -5000,55 +5052,3 @@ msgstr "Échec de récupération de l'URL ; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Essai de récupération du NZB depuis %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Le nom d'hôte n'est pas défini."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Aucune connexion n'est configurée. Veuillez définir au moins une connexion."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Mot de passe masqué en ******, veuillez le ressaisir."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Paramètres serveur incorrects"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Délai dépassé : essayez d'activer SSL ou de vous connecter sur un port "
-"différent."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Délai dépassé"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Protocole SSL inconnu: essayez de désactiver SSL ou de vous connecter sur un"
-" autre port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Le serveur requiert un identifiant et un mot de passe."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Connexion réussie!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
-"plus tard"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Impossible de déterminer le résultat de la connexion (%s)"

@@ -169,6 +169,60 @@ msgid "Test Notification"
 msgstr "Notificări Test"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Numele gazdei nu este setat."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Detalii server invalide"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
+"port diferit."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "A depăşit timpul alocat"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Serverul necesită nume utilizator şi parolă"
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Conexiune Reuşită!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
+"din nou mai târziu"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nu pot determina reultatul conexiunii (%s)"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Reolvare adresă"
 
@@ -677,10 +731,6 @@ msgid ""
 msgstr ""
 "Cheie API incorectă, Folosiţi cheia api din Configurare->General în "
 "programul dumneavoastră terţ:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4838,53 +4888,3 @@ msgstr "Descărcare URL nereuşită; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Încerc să descarc NZB de la %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Numele gazdei nu este setat."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Detalii server invalide"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
-"port diferit."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "A depăşit timpul alocat"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Serverul necesită nume utilizator şi parolă"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Conexiune Reuşită!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
-"din nou mai târziu"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nu pot determina reultatul conexiunii (%s)"

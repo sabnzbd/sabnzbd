@@ -165,6 +165,55 @@ msgid "Test Notification"
 msgstr "בחן התראה"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "שם המארח לא נקבע."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "אין חיבורים שנקבעו. אנא קבע לפחות חיבור אחד."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "סיסמאות מוסוות באמצעות ******, אנא הכנס מחדש"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "פרטי שרת בלתי תקפים"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "פסק זמן חלף: נסה לאפשר SSL או להתחבר על פתחה שונה."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "אזל הזמן"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr "פרוטוקול SSL בלתי ידוע: נסה להשבית SSL או להתחבר על פתחה שונה."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr ".השרת דורש שם משתמש וסיסמה"
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "חיבור מוצלח!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "פותר כתובת"
 
@@ -667,10 +716,6 @@ msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr "מפתח API שגוי, השתמש במפתח ה־API מתצורה->כללי בתוכנית הצד השלישי שלך:"
-
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
 
 #. Warning message
 #: sabnzbd/interface.py
@@ -4842,48 +4887,3 @@ msgstr "משיכת כתובת נכשלה; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "מנסה למשוך קובץ NZB מן %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "שם המארח לא נקבע."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "אין חיבורים שנקבעו. אנא קבע לפחות חיבור אחד."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "סיסמאות מוסוות באמצעות ******, אנא הכנס מחדש"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "פרטי שרת בלתי תקפים"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "פסק זמן חלף: נסה לאפשר SSL או להתחבר על פתחה שונה."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "אזל הזמן"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr "פרוטוקול SSL בלתי ידוע: נסה להשבית SSL או להתחבר על פתחה שונה."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr ".השרת דורש שם משתמש וסיסמה"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "חיבור מוצלח!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
