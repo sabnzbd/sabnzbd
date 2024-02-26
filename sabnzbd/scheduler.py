@@ -212,15 +212,14 @@ class Scheduler:
             logging.info("Setting schedule for quota check daily at %s:%s", hour, minute)
             self.scheduler.add_daytime_task(action, "quota_reset", DAILY_RANGE, None, (hour, minute))
 
-        if sabnzbd.misc.int_conv(cfg.history_retention()) > 0:
-            logging.info("Setting schedule for midnight auto history-purge")
-            self.scheduler.add_daytime_task(
-                sabnzbd.database.scheduled_history_purge,
-                "midnight_history_purge",
-                DAILY_RANGE,
-                None,
-                (0, 0),
-            )
+        logging.info("Setting schedule for midnight auto history-purge")
+        self.scheduler.add_daytime_task(
+            sabnzbd.database.scheduled_history_purge,
+            "midnight_history_purge",
+            DAILY_RANGE,
+            None,
+            (0, 0),
+        )
 
         logging.info("Setting schedule for midnight BPS reset")
         self.scheduler.add_daytime_task(

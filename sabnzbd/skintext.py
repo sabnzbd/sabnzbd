@@ -122,7 +122,6 @@ SKIN_TEXT = {
     "menu-home": TT("Home"),  #: Main menu item
     "menu-queue": TT("Queue"),  #: Main menu item
     "menu-history": TT("History"),  #: Main menu item
-    "menu-archive": TT("Archive"),  #: Main menu item
     "menu-config": TT("Config"),  #: Main menu item
     "menu-cons": TT("Status"),  #: Main menu item
     "menu-help": TT("Help"),  #: Main menu item
@@ -186,6 +185,7 @@ SKIN_TEXT = {
     "manual": TT("manual"),  #: Manual reset of quota
     "link-resetQuota": TT("Reset Quota now"),
     # History page
+    "archive": TT("Archive"),
     "purgeHist": TT("Purge History"),  #: History page button
     "hideDetails": TT("Hide details"),  #: Button/link hiding History job details
     "showDetails": TT("Show details"),  #: Button/link showing History job details
@@ -315,13 +315,13 @@ SKIN_TEXT = {
         "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
     ),
     "opt-history_retention": TT("History Retention"),
-    "explain-history_retention": TT(
-        "Automatically delete completed jobs from History. Beware that Duplicate Detection and some external tools rely on History information."
-    ),
     "history_retention-all": TT("Keep all jobs"),
-    "history_retention-number": TT("Keep maximum number of completed jobs"),
-    "history_retention-days": TT("Keep completed jobs maximum number of days"),
-    "history_retention-none": TT("Do not keep any completed jobs"),
+    "history_retention-number-archive": TT("Move jobs to the archive if the history exceeds specified number of jobs"),
+    "history_retention-number-delete": TT("Delete jobs if the history exceeds specified number of jobs"),
+    "history_retention-days-archive": TT("Move jobs to the archive after specified number of days"),
+    "history_retention-days-delete": TT("Delete jobs after specified number of days"),
+    "history_retention-archive": TT("Move all completed jobs to archive"),
+    "history_retention-none": TT("Delete all completed jobs"),
     "history_retention-limit": TT("Jobs"),
     "button-saveChanges": TT("Save Changes"),
     "button-restoreDefaults": TT("Restore Defaults"),

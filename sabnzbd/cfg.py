@@ -403,7 +403,9 @@ unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
-history_retention = OptionStr("misc", "history_retention", "0")
+history_retention = OptionStr("misc", "history_retention", "0")  # Kept for converting to split option
+history_retention_option = OptionStr("misc", "history_retention_option", "all")
+history_retention_number = OptionNumber("misc", "history_retention_number", minval=1)
 
 quota_size = OptionStr("misc", "quota_size")
 quota_day = OptionStr("misc", "quota_day")

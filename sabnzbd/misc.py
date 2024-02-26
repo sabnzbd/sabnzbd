@@ -1489,3 +1489,18 @@ def convert_sorter_settings():
         # Configure the new sorter
         logging.debug("Converted old movie sorter config to '%s': %s", T("Movie Sorting"), movie_sorter)
         config.ConfigSorter(T("Movie Sorting"), movie_sorter)
+
+
+def convert_history_retention():
+    """Convert single-option to the split history retention setting"""
+    if "d" in cfg.history_retention():
+        days_to_keep = int_conv(cfg.history_retention().strip()[:-1])
+        cfg.history_retention_option.set("days-delete")
+        cfg.history_retention_number.set(days_to_keep)
+    else:
+        to_keep = int_conv(sabnzbd.cfg.history_retention())
+        if to_keep > 0:
+            cfg.history_retention_option.set("number-delete")
+            cfg.history_retention_number.set(to_keep)
+        elif to_keep < 0:
+            cfg.history_retention_option.set("all-delete")
