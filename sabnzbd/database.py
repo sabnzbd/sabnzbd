@@ -298,7 +298,7 @@ class HistoryDB:
             post += " AND archive IS NULL"
         if categories:
             categories = ["*" if c == "Default" else c for c in categories]
-            post = " AND (category = ?"
+            post += " AND (category = ?"
             post += " OR category = ? " * (len(categories) - 1)
             post += ")"
             command_args.extend(categories)
