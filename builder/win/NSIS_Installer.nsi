@@ -141,6 +141,7 @@ Unicode true
   !insertmacro MUI_LANGUAGE "Polish"
   !insertmacro MUI_LANGUAGE "Swedish"
   !insertmacro MUI_LANGUAGE "Danish"
+  !insertmacro MUI_LANGUAGE "Italian"
   !insertmacro MUI_LANGUAGE "Norwegian"
   !insertmacro MUI_LANGUAGE "Romanian"
   !insertmacro MUI_LANGUAGE "Spanish"
