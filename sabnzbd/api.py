@@ -1288,14 +1288,13 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
 
     if "*" in password and not password.strip("*"):
         # If the password is masked, try retrieving it from the config
-        srv = config.get_servers().get(server)
-        if srv:
+        if srv := config.get_servers().get(server):
             password = srv.password()
         else:
             return False, T("Password masked in ******, please re-enter")
 
     try:
-        s = sabnzbd.downloader.Server(
+        test_server = sabnzbd.downloader.Server(
             server_id=-1,
             displayname="",
             host=host,
@@ -1312,9 +1311,22 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     except:
         return False, T("Invalid server details")
 
+    # All exceptions are caught internally
+    test_server.request_addrinfo_blocking()
+    if not test_server.addrinfo:
+        # Try if we can connect on port 80 (so web server), forcing a short timeout
+        test_server.port = 80
+        test_server.timeout = DEF_TEST_TIMEOUT
+        test_server.request_addrinfo_blocking()
+        if test_server.addrinfo:
+            return False, T(
+                "Could not connect to %s on port %s. However, it seems %s is a web server (port 80). "
+                "Are you sure you configured a usenet server?"
+            ) % (host, port, host)
+        return False, T('Server address "%s:%s" is not valid.') % (host, port)
+
     try:
-        s.request_addrinfo_blocking()
-        nw = NewsWrapper(server=s, thrdnum=-1, block=True)
+        nw = NewsWrapper(server=test_server, thrdnum=-1, block=True)
         nw.init_connect()
         while not nw.connected:
             nw.recv_chunk()
