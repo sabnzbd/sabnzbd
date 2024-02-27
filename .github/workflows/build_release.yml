@@ -69,7 +69,7 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.12.1"
+      PYTHON_VERSION: "3.12.2"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
@@ -96,21 +96,12 @@ jobs:
       run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
       # We have to manually take a few steps:
-      # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
-      #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
-      #     https://github.com/pypa/pip/issues/5453
-      # 2.  We need to build the PyInstaller bootloader:
+      # 1.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-    
         pip3 install --upgrade -r requirements.txt --no-binary cffi,CT3,PyYAML --no-dependencies
-        
-        pip3 uninstall cryptography -y
-        pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-dependencies --dest .
-        pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
-
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
