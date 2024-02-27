@@ -179,6 +179,16 @@ msgid "Invalid server details"
 msgstr "Ogiltiga serverdetaljer"
 
 #: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. However, it seems %s is a web server "
+"(port 80). Are you sure you configured a usenet server?"
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "Serveradressen \"%s:%s\" är ej giltig."
+
+#: sabnzbd/api.py
 msgid "Timed out: Try enabling SSL or connecting on a different port."
 msgstr "Timeout: Försök aktivera SSL eller anslut via en annan port."
 
@@ -716,10 +726,6 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "Serveradressen \"%s:%s\" är ej giltig."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py

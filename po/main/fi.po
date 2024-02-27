@@ -184,6 +184,16 @@ msgid "Invalid server details"
 msgstr "Virheelliset palvelimen tiedot"
 
 #: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. However, it seems %s is a web server "
+"(port 80). Are you sure you configured a usenet server?"
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "Palvelimen osoite \"%s:%s\" ei ole kelvollinen."
+
+#: sabnzbd/api.py
 msgid "Timed out: Try enabling SSL or connecting on a different port."
 msgstr "Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
 
@@ -722,10 +732,6 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "Palvelimen osoite \"%s:%s\" ei ole kelvollinen."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py

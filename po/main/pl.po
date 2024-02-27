@@ -178,6 +178,16 @@ msgid "Invalid server details"
 msgstr "Niewłaściwe dane serwera"
 
 #: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. However, it seems %s is a web server "
+"(port 80). Are you sure you configured a usenet server?"
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "Nieprawidłowy adres serwera \"%s:%s\"."
+
+#: sabnzbd/api.py
 msgid "Timed out: Try enabling SSL or connecting on a different port."
 msgstr ""
 "Upłynął limit czasu odpowiedzi: spróbuj włączyć SSL lub połącz się z innym "
@@ -722,10 +732,6 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "Nieprawidłowy adres serwera \"%s:%s\"."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
