@@ -105,7 +105,7 @@ jobs:
         python3 --version
         pip3 install --upgrade pip wheel
     
-        pip3 install --upgrade -r requirements.txt --no-binary cffi,PyYAML --no-dependencies
+        pip3 install --upgrade -r requirements.txt --no-binary cffi,CT3,PyYAML --no-dependencies
         
         pip3 uninstall cryptography -y
         pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-dependencies --dest .
