@@ -2213,11 +2213,6 @@ msgstr "Startpagina"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "Archive"
-msgstr ""
-
-#. Main menu item
-#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "Instellingen"
 
@@ -2443,6 +2438,10 @@ msgstr "handmatig"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Quotum nu resetten"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2924,29 +2923,33 @@ msgid "History Retention"
 msgstr "Geschiedenis bewaren"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-"Automatisch verwijderen van voltooide downloads. Let er op dat Dubbele "
-"Download Detectie en andere externe tools Geschiedenis informatie nodig "
-"hebben."
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "Behoud alle downloads"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "Maximum aantal voltooide downloads"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "Behoud voltooide downloads maximaal aantal dagen"
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "Behoud geen enkele download"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"

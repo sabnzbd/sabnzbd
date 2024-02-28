@@ -2241,11 +2241,6 @@ msgstr "Startseite"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "Archive"
-msgstr ""
-
-#. Main menu item
-#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "Einstellungen"
 
@@ -2471,6 +2466,10 @@ msgstr "Manuell"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Kontingent jetzt zurücksetzen"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2956,28 +2955,33 @@ msgid "History Retention"
 msgstr "Verlaufsgröße"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-"Fertige Aufträge automatisch aus dem Verlauf entfernen. Duplikatserkennung "
-"und manche externe Skripte benötigen Informationen aus dem Verlauf."
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "Alle Aufträge behalten"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "Behalte maximale Anzahl an abgeschlossenen Aufträgen"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "Behalte abgeschlossene Aufträge maximal X Tage"
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "Fertige Aufträge nicht behalten"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"

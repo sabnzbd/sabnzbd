@@ -2218,11 +2218,6 @@ msgstr "Inicio"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "Archive"
-msgstr ""
-
-#. Main menu item
-#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "Config."
 
@@ -2448,6 +2443,10 @@ msgstr "manual"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Reinicializar Quota ahora"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2918,29 +2917,33 @@ msgid "History Retention"
 msgstr "Historial de retención"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-"Elimina tareas completas de forma automática del historial. Tenga en cuenta "
-"que la detección de duplicados y algunas herramientas externas dependen de "
-"la información del historial."
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "Mantener todas las tareas"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "Mantener un máximo de tareas completas"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "Mantener las tareas completas un máximo de días"
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "No mantener ninguna tarea completa"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"

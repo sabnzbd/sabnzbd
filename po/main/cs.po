@@ -2127,11 +2127,6 @@ msgstr "Domů"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "Archive"
-msgstr ""
-
-#. Main menu item
-#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "Nastavení"
 
@@ -2357,6 +2352,10 @@ msgstr "ručně"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Vynulovat kvótu"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2801,26 +2800,33 @@ msgid "History Retention"
 msgstr "Retence historie"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "Zachovat všechny úkoly"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "Maximální počet dokončených úkolů"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "Počet dnů pro zachování dokončených ukolů "
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "Nauchovávat dokončené úkoly"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"

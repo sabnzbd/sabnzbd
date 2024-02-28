@@ -2165,11 +2165,6 @@ msgstr "בית"
 
 #. Main menu item
 #: sabnzbd/skintext.py
-msgid "Archive"
-msgstr ""
-
-#. Main menu item
-#: sabnzbd/skintext.py
 msgid "Config"
 msgstr "תצורה"
 
@@ -2395,6 +2390,10 @@ msgstr "ידני"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "אפס מכסה כעת"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2861,28 +2860,33 @@ msgid "History Retention"
 msgstr "שימור היסטוריה"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-"מחק באופן אוטומטי עבודות שלמות מההיסטוריה. שים לב ששימור כפול ומספר כלים "
-"חיצוניים מסתמכים על מידע היסטוריה."
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "שמור את כל העבודות"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "שמור מספר מרבי של עבודות שלמות"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "שמור מספר ימים מרבי של עבודות שלמות"
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "אל תשמור עבודות שלמות כלשהן"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
