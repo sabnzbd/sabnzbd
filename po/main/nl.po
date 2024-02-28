@@ -190,8 +190,9 @@ msgstr "Ongeldige servergegevens"
 
 #: sabnzbd/api.py
 msgid ""
-"Could not connect to %s on port %s. However, it seems %s is a web server "
-"(port 80). Are you sure you configured a usenet server?"
+"Could not connect to %s on port %s. It appears that %s operates as a web "
+"server (port 80), possibly an indexer, not a usenet server. You have to fill"
+" a usenet server."
 msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/interface.py
