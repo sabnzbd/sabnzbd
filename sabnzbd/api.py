@@ -1320,8 +1320,8 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
         test_server.request_addrinfo_blocking()
         if test_server.addrinfo:
             return False, T(
-                "Could not connect to %s on port %s. However, it seems %s is a web server (port 80). "
-                "Are you sure you configured a usenet server?"
+                "Could not connect to %s on port %s. It appears that %s operates as a web server (port 80), "
+                "possibly an indexer, not a usenet server. You have to fill a usenet server."
             ) % (host, port, host)
         return False, T('Server address "%s:%s" is not valid.') % (host, port)
 
