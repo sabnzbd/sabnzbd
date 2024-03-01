@@ -676,7 +676,6 @@ SKIN_TEXT = {
     "explain-pushbullet_apikey": TT("Your personal Pushbullet API key (required)"),  #: Pushbullet settings
     "opt-pushbullet_device": TT("Device"),  #: Pushbullet settings
     "explain-pushbullet_device": TT("Device to which message should be sent"),  #: Pushbullet settings
-    "section-Apprise": TT("Apprise"),  #: Header for Apprise notification section
     "opt-apprise_enable": TT("Enable Apprise notifications"),  #: Apprise settings
     "explain-apprise_enable": TT(
         "Send notifications using Apprise to almost any notification service"
