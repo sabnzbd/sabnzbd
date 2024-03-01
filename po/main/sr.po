@@ -4067,11 +4067,6 @@ msgstr "Уређај"
 msgid "Device to which message should be sent"
 msgstr "Uređaj na koji bi poruka trebala biti poslata"
 
-#. Header for Apprise notification section
-#: sabnzbd/skintext.py
-msgid "Apprise"
-msgstr ""
-
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Enable Apprise notifications"

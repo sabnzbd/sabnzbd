@@ -4110,11 +4110,6 @@ msgstr "התקן"
 msgid "Device to which message should be sent"
 msgstr "מכשיר אליו הודעה תישלח"
 
-#. Header for Apprise notification section
-#: sabnzbd/skintext.py
-msgid "Apprise"
-msgstr "Apprise"
-
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Enable Apprise notifications"

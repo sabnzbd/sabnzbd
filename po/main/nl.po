@@ -194,6 +194,9 @@ msgid ""
 "server (port 80), possibly an indexer, not a usenet server. You have to fill"
 " a usenet server."
 msgstr ""
+"Kon geen verbinding maken met %s op poort %s. Het lijkt erop dat %s "
+"functioneert als een webserver (poort 80), mogelijk een indexer, geen "
+"usenetserver. Vul een usenetserver in."
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -540,7 +543,7 @@ msgstr "Onherstelbare fout in de Downloader"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "%s@%s: Received unknown status code %s for article %s: %s"
-msgstr ""
+msgstr "%s@%s: Onbekende statuscode %s ontvangen voor artikel %s: %s"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -1135,7 +1138,7 @@ msgstr "Wiki"
 
 #: sabnzbd/newswrapper.py
 msgid "Failed to connect: %s %s@%s:%s (%s)"
-msgstr ""
+msgstr "Kon geen verbinding maken: %s %s@%s:%s (%s)"
 
 #. Notification
 #: sabnzbd/notifier.py
@@ -1210,16 +1213,16 @@ msgstr "Verzenden van Prowl-bericht mislukt"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "One or more Apprise URLs could not be loaded."
-msgstr ""
+msgstr "Eén of meerdere Apprise-URL's konden niet worden geladen."
 
 #: sabnzbd/notifier.py
 msgid "Failed to send one or more Apprise Notifications"
-msgstr ""
+msgstr "Kon één of meerdere Apprise-meldingen niet verzenden"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message"
-msgstr ""
+msgstr "Verzenden van Apprise-bericht mislukt"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -2393,7 +2396,7 @@ msgstr "Verwijder alle downloads uit de wachtrij?"
 #. Delete confirmation popup
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to remove these jobs?"
-msgstr ""
+msgstr "Weet je zeker dat je deze downloads wilt verwijderen?"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2418,7 +2421,7 @@ msgstr "Verwijder download incl. bestanden"
 #. Checkbox if job should be added to Archive
 #: sabnzbd/skintext.py
 msgid "Permanently delete (skip archive)"
-msgstr ""
+msgstr "Permanent verwijderen (archief overslaan)"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2441,7 +2444,7 @@ msgstr "Quotum nu resetten"
 
 #: sabnzbd/skintext.py
 msgid "Archive"
-msgstr ""
+msgstr "Archief"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2466,7 +2469,7 @@ msgstr "Toon Alles"
 #. Button showing all archived jobs
 #: sabnzbd/skintext.py
 msgid "Show Archive"
-msgstr ""
+msgstr "Toon archief"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2930,26 +2933,31 @@ msgstr "Behoud alle downloads"
 msgid ""
 "Move jobs to the archive if the history exceeds specified number of jobs"
 msgstr ""
+"Verplaats voltooide downloads naar het archief als de geschiedenis het "
+"opgegeven aantal voltooide downloads overschrijdt."
 
 #: sabnzbd/skintext.py
 msgid "Delete jobs if the history exceeds specified number of jobs"
 msgstr ""
+"Verwijder voltooide downloads als de geschiedenis het opgegeven aantal "
+"voltooide downloads overschrijdt."
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
 msgstr ""
+"Verplaats voltooide downloads naar het archief na het opgegeven aantal dagen"
 
 #: sabnzbd/skintext.py
 msgid "Delete jobs after specified number of days"
-msgstr ""
+msgstr "Verwijder voltooide downloads na het opgegeven aantal dagen"
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"
-msgstr ""
+msgstr "Verplaats alle voltooide downloadsnaar het archief"
 
 #: sabnzbd/skintext.py
 msgid "Delete all completed jobs"
-msgstr ""
+msgstr "Verwijder alle voltooide downloads"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3351,7 +3359,7 @@ msgstr "Keur download af"
 
 #: sabnzbd/skintext.py
 msgid "Abort post-processing"
-msgstr ""
+msgstr "Nabewerking afbreken"
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
@@ -4101,7 +4109,7 @@ msgstr "Prowl"
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Enable Prowl notifications"
-msgstr "Prowl berichten activeren"
+msgstr "Prowl meldingen activeren"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
@@ -4216,34 +4224,32 @@ msgstr "Apparaat"
 msgid "Device to which message should be sent"
 msgstr "Apparaat dat de berichten moet ontvangen"
 
-#. Header for Apprise notification section
-#: sabnzbd/skintext.py
-msgid "Apprise"
-msgstr ""
-
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Enable Apprise notifications"
-msgstr ""
+msgstr "Apprise-meldingen activeren"
 
 #: sabnzbd/skintext.py
 msgid "Send notifications using Apprise to almost any notification service"
 msgstr ""
+"Stuur meldingen met behulp van Apprise naar bijna elke bestaande service."
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Default Apprise URLs"
-msgstr ""
+msgstr "Standaard Apprise-URL's"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use a comma and/or space to identify more than one URL."
-msgstr ""
+msgstr "Gebruik een komma en/of spatie om meer dan één URL op te geven."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Override the default URLs for specific notification types below, if desired."
 msgstr ""
+"Overschrijf hieronder, indien gewenst, de standaard-URL's voor specifieke "
+"meldingstypen."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py

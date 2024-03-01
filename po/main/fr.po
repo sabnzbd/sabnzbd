@@ -199,6 +199,9 @@ msgid ""
 "server (port 80), possibly an indexer, not a usenet server. You have to fill"
 " a usenet server."
 msgstr ""
+"Impossible de se connecter à %s sur le port %s. Il semble que %s fonctionne "
+"comme un serveur web (port 80), peut-être un indexeur, et non comme un "
+"serveur Usenet. Vous devez spécifier un serveur Usenet."
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -546,7 +549,7 @@ msgstr "Erreur fatale dans le Téléchargeur"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "%s@%s: Received unknown status code %s for article %s: %s"
-msgstr ""
+msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s : %s"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -1145,7 +1148,7 @@ msgstr "Wiki"
 
 #: sabnzbd/newswrapper.py
 msgid "Failed to connect: %s %s@%s:%s (%s)"
-msgstr ""
+msgstr "Échec de la connexion : %s %s@%s:%s (%s)"
 
 #. Notification
 #: sabnzbd/notifier.py
@@ -2411,7 +2414,7 @@ msgstr "Supprimer tous les éléments de la file d'attente ?"
 #. Delete confirmation popup
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to remove these jobs?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir supprimer ces tâches ?"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2436,7 +2439,7 @@ msgstr "Supprimer le NZB & supprimer les fichiers"
 #. Checkbox if job should be added to Archive
 #: sabnzbd/skintext.py
 msgid "Permanently delete (skip archive)"
-msgstr ""
+msgstr "Supprimer définitivement (ignorer l'archivage)"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2459,7 +2462,7 @@ msgstr "Réinitialiser le quota maintenant"
 
 #: sabnzbd/skintext.py
 msgid "Archive"
-msgstr ""
+msgstr "Archives"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2484,7 +2487,7 @@ msgstr "Afficher Tout"
 #. Button showing all archived jobs
 #: sabnzbd/skintext.py
 msgid "Show Archive"
-msgstr ""
+msgstr "Afficher les archives"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2951,26 +2954,30 @@ msgstr "Conserver toutes les tâches"
 msgid ""
 "Move jobs to the archive if the history exceeds specified number of jobs"
 msgstr ""
+"Déplacez les tâches vers les archives si l'historique dépasse le nombre de "
+"tâches spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Delete jobs if the history exceeds specified number of jobs"
 msgstr ""
+"Supprimer les tâches si l'historique dépasse le nombre de tâches spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
 msgstr ""
+"Déplacer les tâches vers les archives après le nombre de jours spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Delete jobs after specified number of days"
-msgstr ""
+msgstr "Supprimer les tâches après le nombre de jours spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"
-msgstr ""
+msgstr "Déplacer tous les tâches terminées vers les archives"
 
 #: sabnzbd/skintext.py
 msgid "Delete all completed jobs"
-msgstr ""
+msgstr "Supprimer toutes les tâches terminées"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -4253,11 +4260,6 @@ msgstr "Appareil"
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
 msgstr "Appareil sur lequel le message doit être envoyé"
-
-#. Header for Apprise notification section
-#: sabnzbd/skintext.py
-msgid "Apprise"
-msgstr "Apprise"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
