@@ -542,8 +542,8 @@ msgstr "Onherstelbare fout in de Downloader"
 
 #. Warning message
 #: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s: %s"
-msgstr "%s@%s: Onbekende statuscode %s ontvangen voor artikel %s: %s"
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"

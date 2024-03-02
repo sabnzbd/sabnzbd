@@ -548,8 +548,8 @@ msgstr "Erreur fatale dans le Téléchargeur"
 
 #. Warning message
 #: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s: %s"
-msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s : %s"
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
