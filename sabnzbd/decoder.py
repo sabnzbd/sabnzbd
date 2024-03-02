@@ -209,7 +209,7 @@ def decode_uu(article: Article, raw_data: bytes) -> bytes:
     """Try to uu-decode an article. The raw_data may or may not contain headers.
     If there are headers, they will be separated from the body by at least one
     empty line. In case of no headers, the first line seems to always be the nntp
-    response code (222) directly followed by the msg body."""
+    response code (220/222) directly followed by the msg body."""
     if not raw_data:
         logging.debug("No data to decode")
         raise BadUu
@@ -232,7 +232,7 @@ def decode_uu(article: Article, raw_data: bytes) -> bytes:
         uu_start = raw_data[:limit].index(b"") + 1
     except ValueError:
         # No empty line, look for a response code instead
-        if raw_data[0].startswith(b"222 "):
+        if raw_data[0].startswith(b"220 ") or raw_data[0].startswith(b"222 "):
             uu_start = 1
         else:
             # Invalid data?
