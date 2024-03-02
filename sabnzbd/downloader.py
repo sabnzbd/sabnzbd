@@ -729,7 +729,9 @@ class Downloader(Thread):
                     time.sleep(0.01)
                     sabnzbd.BPSMeter.update()
 
-        if nw.status_code != 222 and not done:
+        # Response code depends on request command:
+        # 220 = ARTICLE, 222 = BODY
+        if nw.status_code not in (220, 222) and not done:
             if not nw.connected or nw.status_code == 480:
                 if not self.__finish_connect_nw(nw):
                     return
