@@ -272,16 +272,7 @@ button:focus {
     outline: initial;
 }
 
-/* Placeholders - Will not work if grouped! */
-::-webkit-input-placeholder {
-   color: #EBEBEB !important;
-}
-
-::-moz-placeholder {
-   color: #EBEBEB !important;
-   opacity: 1 !important;
-}
-
-:-ms-input-placeholder {
-   color: #EBEBEB !important;
+::placeholder {
+    color: #EBEBEB !important;
+    opacity: 0.5 !important;
 }
