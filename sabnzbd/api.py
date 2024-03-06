@@ -61,7 +61,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.internetspeed import internetspeed
-from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.misc import (
     loadavg,
@@ -78,7 +77,7 @@ from sabnzbd.misc import (
     clean_comma_separated_list,
     match_str,
 )
-from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files
+from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
@@ -869,16 +868,19 @@ def _api_undefined(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes
 
 def _api_browse(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Return tree of local path"""
-    compact = kwargs.get("compact")
+    compact = bool(int_conv(kwargs.get("compact")))
+    show_files = bool(int_conv(kwargs.get("show_files")))
+    show_hidden = bool(int_conv(kwargs.get("show_hidden_folders")))
 
-    if compact and compact == "1":
-        name = kwargs.get("term", "")
-        paths = [entry["path"] for entry in folders_at_path(os.path.dirname(name)) if "path" in entry]
-        return report(keyword="", data=paths)
+    if compact:
+        # Used for typeahead
+        paths = []
+        for entry in pathbrowser(os.path.dirname(name), show_hidden, show_files):
+            if "path" in entry:
+                paths.append(entry["path"])
     else:
-        show_hidden = kwargs.get("show_hidden_folders")
-        paths = folders_at_path(name, True, show_hidden)
-        return report(keyword="paths", data=paths)
+        paths = pathbrowser(name, show_hidden, show_files)
+    return report(keyword="paths", data=paths)
 
 
 def _api_config(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:

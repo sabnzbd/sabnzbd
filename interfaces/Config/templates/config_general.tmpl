@@ -74,7 +74,7 @@
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="https_cert">$T('opt-https_cert')</label>
-                        <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
+                        <input type="text" name="https_cert" id="https_cert" value="$https_cert" class="fileBrowserField" data-initialdir="$my_lcldata" data-files="1" />
                         <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
                             <span class="glyphicon glyphicon-repeat"></span>
                         </button>
@@ -82,7 +82,7 @@
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="https_key">$T('opt-https_key')</label>
-                        <input type="text" name="https_key" id="https_key" value="$https_key" />
+                        <input type="text" name="https_key" id="https_key" value="$https_key" class="fileBrowserField" data-initialdir="$my_lcldata" data-files="1" />
                         <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
                             <span class="glyphicon glyphicon-repeat"></span>
                         </button>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="https_chain">$T('opt-https_chain')</label>
-                        <input type="text" name="https_chain" id="https_chain" value="$https_chain" />
+                        <input type="text" name="https_chain" id="https_chain" value="$https_chain" class="fileBrowserField" data-initialdir="$my_lcldata" data-files="1" />
                         <span class="desc">$T('explain-https_chain')</span>
                     </div>
                     <div class="field-pair">
@@ -136,14 +136,14 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="apikey_display">$T('opt-apikey')</label>
-                        <input type="text" id="apikey_display" class="fileBrowserField" value="$apikey" readonly />
+                        <input type="text" id="apikey_display" value="$apikey" readonly />
                         <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$apikey" ><span class="glyphicon glyphicon-qrcode"></span></button>
                         <button class="btn btn-default generate_key" id="generate_new_apikey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
                         <span class="desc">$T('explain-apikey')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="nzbkey">$T('opt-nzbkey')</label>
-                        <input type="text" id="nzbkey" class="fileBrowserField" value="$nzb_key" readonly />
+                        <input type="text" id="nzbkey" value="$nzb_key" readonly />
                         <button class="btn btn-default show_qrcode" title="$T('explain-qr-code')" rel="$nzb_key" ><span class="glyphicon glyphicon-qrcode"></span></button>
                         <button class="btn btn-default generate_key" id="generate_new_nzbkey" title="$T('button-apikey')"><span class="glyphicon glyphicon-repeat"></span></button>
                         <span class="desc">$T('explain-nzbkey')</span>
@@ -340,6 +340,9 @@ jQuery(document).ready(function(){
         });
       }
     });
+
+    // Add autocomplete and file-browser
+    jQuery('.fileBrowserField').typeahead().fileBrowser();
 
     jQuery('.show_qrcode').click(function (e) {
         // Show in modal

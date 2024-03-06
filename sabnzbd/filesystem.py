@@ -39,6 +39,7 @@ from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 try:
     import win32api
     import win32file
+    import win32con
 except ImportError:
     pass
 
@@ -1317,3 +1318,108 @@ def check_filesystem_capabilities(test_dir: str) -> bool:
         allgood = False
 
     return allgood
+
+
+def get_win_drives() -> List[str]:
+    """Return list of detected drives, adapted from:
+    http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
+    """
+    return filter(len, win32api.GetLogicalDriveStrings().split("\000"))
+
+
+PATHBROWSER_JUNKFOLDERS = (
+    "boot",
+    "bootmgr",
+    "cache",
+    "msocache",
+    "recovery",
+    "$recycle.bin",
+    "recycler",
+    "system volume information",
+    "temporary internet files",
+    "perflogs",  # windows specific
+    ".fseventd",
+    ".spotlight",
+    ".trashes",
+    ".vol",
+    "cachedmessages",
+    "caches",
+    "trash",  # osx specific
+)
+
+
+def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) -> List[Dict[str, str]]:
+    """Returns a list of dictionaries with the folders and folders contained at the given path
+    Give the empty string as the path to list the contents of the root path
+    under Unix this means "/", on Windows this will be a list of drive letters
+    """
+    if path == "":
+        if sabnzbd.WIN32:
+            entries = [{"name": letter, "path": letter} for letter in get_win_drives()]
+            entries.insert(0, {"current_path": "Root"})
+            return entries
+        else:
+            path = "/"
+
+    # Walk up the tree until we find a valid path
+    path = real_path(sabnzbd.DIR_HOME, path)
+    while path and not os.path.isdir(path):
+        if path == os.path.dirname(path):
+            return pathbrowser(path="")
+        else:
+            path = os.path.dirname(path)
+
+    # Fix up the path and find the parent
+    path = os.path.abspath(os.path.normpath(path))
+    parent_path = os.path.dirname(path)
+
+    # If we're at the root then the next step is the meta-node showing our drive letters
+    if path == parent_path and sabnzbd.WIN32:
+        parent_path = ""
+
+    # List all files and folders
+    file_list = []
+    for filename in os.listdir(path):
+        fpath = os.path.join(path, filename)
+        isdir = os.path.isdir(fpath)
+
+        # Skip unwanted folders
+        if isdir and filename.lower() in PATHBROWSER_JUNKFOLDERS:
+            continue
+
+        # Skip files
+        if not isdir and not show_files:
+            continue
+
+        # Skip hidden files
+        if not show_hidden:
+            if sabnzbd.WIN32:
+                if win32api.GetFileAttributes(fpath) & win32con.FILE_ATTRIBUTE_HIDDEN:
+                    continue
+            elif filename.startswith("."):
+                continue
+
+        file_list.append(
+            {
+                "name": clip_path(filename),
+                "path": clip_path(fpath),
+                "dir": isdir,
+            }
+        )
+
+    # Sort results, folders first (using string value of the bool)
+    file_list = sorted(file_list, key=lambda x: str(not x["dir"]) + os.path.basename(x["name"]).lower())
+
+    # Add current path
+    file_list.insert(0, {"current_path": clip_path(path)})
+    if parent_path != path:
+        file_list.insert(
+            1,
+            {
+                "name": "..",
+                "path": clip_path(parent_path),
+                "dir": True,
+            },
+        )
+
+    return file_list

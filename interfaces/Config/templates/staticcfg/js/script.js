@@ -60,6 +60,7 @@
         // Initialize
         this.element = $(element);
         this.initialDir = null;
+        this.showFiles = false;
         this.currentBrowserPath = null;
         this.currentRequest = null;
         this.fileBrowserDialog = $('#filebrowser_modal .modal-body');
@@ -97,6 +98,11 @@
         // If there's no seperator, it must be a relative path
         if(this.initialDir.split(folderSeperator).length < 2 && this.element.data('initialdir')) {
             this.initialDir = this.element.data('initialdir') + folderSeperator + this.element.val();
+        }
+
+        // Are we selecting files or folders
+        if(this.element.data('files')) {
+            this.showFiles = true
         }
 
         // Browse
@@ -144,12 +150,20 @@
         // Still loading
         if (this.currentRequest) this.currentRequest.abort();
 
-        // Show hidden folders on Linux?
-        var extraHidden = $('#show_hidden_folders').is(':checked') ? '&show_hidden_folders=1' : '';
+        // Show hidden folders
+        var params = { name: path}
+        if($('#show_hidden_folders').is(':checked')) {
+            params['show_hidden_folders'] = "1"
+        }
+
+        // Show files?
+        if(this.showFiles) {
+            params['show_files'] = "1"
+        }
 
         // Get current folders
         this.currentBrowserPath = path;
-        this.currentRequest = $.getJSON(endpoint + extraHidden, { name: path }, function (data) {
+        this.currentRequest = $.getJSON(endpoint, params, function (data) {
             // Clean
             self.fileBrowserDialog.empty();
 
@@ -163,8 +177,16 @@
                 }
                 // Regular link
                 link = $('<a class="list-group-item" href="javascript:void(0)" />').click(function () {
-                    self.browse(entry.path, endpoint); }
-                ).text(entry.name);
+                    // Are we looking for files and did we select a file?
+                    if(self.showFiles && !entry.dir) {
+                        // Trigger selection
+                        self.currentBrowserPath = entry.path
+                        $('#filebrowser_modal_accept').click()
+                    } else {
+                        self.browse(entry.path, endpoint);
+                    }
+                }).text(entry.name);
+
                 // Back image
                 if(entry.name === '..') {
                     $('<span class="glyphicon glyphicon-arrow-left"></span> ').prependTo(link);
@@ -307,7 +329,7 @@ function do_restart() {
     });
 }
 
-// Remove obfusication
+// Remove obfuscation
 function removeObfuscation() {
     $('input[data-hide]').each(function(index, objInput) {
         $(objInput).attr('name', $(objInput).data('hide'))
@@ -322,6 +344,36 @@ function addRowColor() {
         $(elmn).find('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
     })
 }
+
+// Set default functions for the autocomplete everywhere
+jQuery.extend(jQuery.fn.typeahead.defaults, {
+    source: function (query, process) {
+        // If there's no separator, it must be a relative path
+        if(query.split(folderSeperator).length < 2 && this.$element.data('initialdir')) {
+            query  = this.$element.data('initialdir') + folderSeperator + query;
+        }
+        var params = { compact: "1", name: query }
+        if($('#show_hidden_folders').is(':checked')) {
+            params['show_hidden_folders'] = "1"
+        }
+        if(this.$element.data('files')) {
+            params['show_files'] = "1"
+        }
+        // Get info from the API
+        return jQuery.get(folderBrowseUrl, params, function (data) {
+            return process(data["paths"]);
+        });
+    },
+    updater: function(item) {
+        // Is it a relative path?
+        if(item.indexOf(this.$element.data('initialdir')) === 0) {
+            // Remove start
+            return item.replace(this.$element.data('initialdir') + folderSeperator, '');
+        }
+        // Full path
+        return item
+    }
+})
 
 $(document).ready(function () {
     /**
