@@ -190,6 +190,8 @@
                 // Back image
                 if(entry.name === '..') {
                     $('<span class="glyphicon glyphicon-arrow-left"></span> ').prependTo(link);
+                } else if(!entry.dir) {
+                    $('<span class="glyphicon glyphicon-file"></span> ').prependTo(link);
                 } else {
                     $('<span class="glyphicon glyphicon-folder-open"></span> ').prependTo(link);
                 }
