@@ -3063,7 +3063,7 @@ msgstr "NZB Dateien hinzufügen "
 
 #: sabnzbd/skintext.py
 msgid "API (no Config)"
-msgstr "API (kein Einstellungen)"
+msgstr "API (ohne Einstellungen)"
 
 #: sabnzbd/skintext.py
 msgid "Full API"
