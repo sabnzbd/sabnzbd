@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.2.3 Release Candidate 3
+Release Notes - SABnzbd 4.2.3
 =========================================================
 
 This is the third bug-fix release of SABnzbd 4.2.0.
