@@ -288,18 +288,9 @@ col2 h3 a,
     fill: #555555;
 }
 
-/* Placeholders - Will not work if grouped! */
-::-webkit-input-placeholder {
+::placeholder {
     color: #EBEBEB !important;
-}
-
-::-moz-placeholder {
-    color: #EBEBEB !important;
-    opacity: 1 !important;
-}
-
-:-ms-input-placeholder {
-    color: #EBEBEB !important;
+    opacity: 0.5;
 }
 
 .tooltip-inner {

@@ -50,7 +50,6 @@ from sabnzbd.misc import (
     is_lan_addr,
     is_local_addr,
     is_loopback_addr,
-    helpful_warning,
     recursive_html_escape,
     is_none,
     get_cpu_name,
@@ -81,7 +80,7 @@ from sabnzbd.constants import (
     GUESSIT_SORT_TYPES,
     VALID_NZB_FILES,
     VALID_ARCHIVES,
-    DEF_TIMEOUT,
+    DEF_TEST_TIMEOUT,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -1144,7 +1143,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        if not happyeyeballs(host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_TIMEOUT)):
+        if not happyeyeballs(host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_TEST_TIMEOUT)):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
     # Default server name is just the host name
@@ -1162,7 +1161,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ("ssl", "send_group", "enable", "required", "optional"):
+    for kw in ("ssl", "enable", "required", "optional"):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:

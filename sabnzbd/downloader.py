@@ -80,7 +80,6 @@ class Server:
         "required",
         "optional",
         "retention",
-        "send_group",
         "username",
         "password",
         "busy_threads",
@@ -111,7 +110,6 @@ class Server:
         use_ssl,
         ssl_verify,
         ssl_ciphers,
-        send_group,
         username=None,
         password=None,
         required=False,
@@ -134,15 +132,6 @@ class Server:
         self.required: bool = required
         self.optional: bool = optional
         self.retention: int = retention
-        self.send_group: bool = send_group
-
-        # TODO: Remove after next release
-        if send_group:
-            helpful_warning(
-                "You have 'Send Group' enabled for %s. Could you let us know why? https://github.com/sabnzbd/sabnzbd/discussions/2715",
-                self.displayname,
-            )
-
         self.username: Optional[str] = username
         self.password: Optional[str] = password
 
@@ -331,7 +320,6 @@ class Downloader(Thread):
             required = srv.required()
             optional = srv.optional()
             retention = int(srv.retention() * 24 * 3600)  # days ==> seconds
-            send_group = srv.send_group()
             create = True
 
         if oldserver:
@@ -358,7 +346,6 @@ class Downloader(Thread):
                     ssl,
                     ssl_verify,
                     ssl_ciphers,
-                    send_group,
                     username,
                     password,
                     required,
@@ -742,7 +729,9 @@ class Downloader(Thread):
                     time.sleep(0.01)
                     sabnzbd.BPSMeter.update()
 
-        if nw.status_code != 222 and not done:
+        # Response code depends on request command:
+        # # 220 = ARTICLE, 222 = BODY
+        if nw.status_code not in (220, 222) and not done:
             if not nw.connected or nw.status_code == 480:
                 if not self.__finish_connect_nw(nw):
                     return
@@ -754,13 +743,7 @@ class Downloader(Thread):
                 done = True
                 logging.debug("Article <%s> is present", article.article)
 
-            elif nw.status_code == 211:
-                logging.debug("group command ok -> %s", nw.nntp_msg)
-                nw.group = nw.article.nzf.nzo.group
-                nw.reset_data_buffer()
-                self.__request_article(nw)
-
-            elif nw.status_code in (411, 423, 430):
+            elif nw.status_code in (411, 423, 430, 451):
                 done = True
                 logging.debug(
                     "Thread %s@%s: Article %s missing (error=%s)",
@@ -782,6 +765,17 @@ class Downloader(Thread):
                     logging.debug("Server %s does not support BODY", server.host)
                 nw.reset_data_buffer()
                 self.__request_article(nw)
+
+            else:
+                logging.warning(
+                    T("%s@%s: Received unknown status code %s for article %s"),
+                    nw.thrdnum,
+                    nw.server.host,
+                    nw.status_code,
+                    article.article,
+                )
+                done = True
+                nw.reset_data_buffer()
 
         if done:
             # Successful data, clear "bad" counter
@@ -975,16 +969,9 @@ class Downloader(Thread):
 
     def __request_article(self, nw: NewsWrapper):
         try:
-            nzo = nw.article.nzf.nzo
-            if nw.server.send_group and nzo.group != nw.group:
-                group = nzo.group
-                if sabnzbd.LOG_ALL:
-                    logging.debug("Thread %s@%s: GROUP <%s>", nw.thrdnum, nw.server.host, group)
-                nw.send_group(group)
-            else:
-                if sabnzbd.LOG_ALL:
-                    logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
-                nw.body()
+            if sabnzbd.LOG_ALL:
+                logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
+            nw.body()
             # Mark as ready to be read
             self.add_socket(nw.nntp.fileno, nw)
         except socket.error as err:

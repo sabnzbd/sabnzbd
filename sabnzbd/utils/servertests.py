@@ -20,9 +20,8 @@ sabnzbd.utils.servertests - Debugging server connections. Currently only NNTP se
 """
 
 import socket
-import sys
 
-from sabnzbd.constants import DEF_TIMEOUT
+from sabnzbd.constants import DEF_TEST_TIMEOUT
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 from sabnzbd.downloader import Server, clues_login, clues_too_many
 from sabnzbd.config import get_servers
@@ -37,7 +36,7 @@ def test_nntp_server_dict(kwargs):
     password = kwargs.get("password", "").strip()
     server = kwargs.get("server", "").strip()
     connections = int_conv(kwargs.get("connections", 0))
-    timeout = int_conv(kwargs.get("timeout", DEF_TIMEOUT))
+    timeout = int_conv(kwargs.get("timeout", DEF_TEST_TIMEOUT))
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
     ssl_ciphers = kwargs.get("ssl_ciphers", "").strip()
@@ -56,7 +55,7 @@ def test_nntp_server_dict(kwargs):
 
     if not timeout:
         # Lower value during new server testing
-        timeout = 10
+        timeout = DEF_TEST_TIMEOUT
 
     if "*" in password and not password.strip("*"):
         # If the password is masked, try retrieving it from the config
@@ -78,7 +77,6 @@ def test_nntp_server_dict(kwargs):
             use_ssl=ssl,
             ssl_verify=ssl_verify,
             ssl_ciphers=ssl_ciphers,
-            send_group=False,
             username=username,
             password=password,
         )
