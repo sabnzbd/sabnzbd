@@ -34,6 +34,7 @@ from sabnzbd.constants import DEF_TIMEOUT, NNTP_BUFFER_SIZE
 from sabnzbd.encoding import utob, ubtou
 from sabnzbd.happyeyeballs import AddrInfo
 from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
+from sabnzbd.misc import int_conv
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
@@ -95,7 +96,7 @@ class NewsWrapper:
     @property
     def status_code(self) -> Optional[int]:
         if self.data_position >= 3:
-            return int(self.data[:3])
+            return int_conv(self.data[:3])
 
     @property
     def nntp_msg(self) -> str:
@@ -177,8 +178,8 @@ class NewsWrapper:
         self.nntp.sock.sendall(command)
         self.reset_data_buffer()
 
-    def recv_chunk(self) -> Tuple[int, bool]:
-        """Receive data, return #bytes, done, skip"""
+    def recv_chunk(self) -> Tuple[int, bool, bool]:
+        """Receive data, return #bytes, end-of-line, end-of-article"""
         # Resize the buffer in the extremely unlikely case that it got full
         if self.data_position == len(self.data):
             self.nntp.nw.increase_data_buffer()
@@ -203,16 +204,19 @@ class NewsWrapper:
         # another recv_chunk so the buffer is increased and the data from the SSL-layer is read. See #2752.
         if self.nntp.nw.server.ssl and self.data_position == len(self.data) and self.nntp.sock.pending() > 0:
             # We do not perform error-handling, as we know there is data available to read
-            additional_bytes_recv, additional_result = self.recv_chunk()
-            return bytes_recv + additional_bytes_recv, additional_result
+            additional_bytes_recv, additional_end_of_line, additional_end_of_article = self.recv_chunk()
+            return bytes_recv + additional_bytes_recv, additional_end_of_line, additional_end_of_article
 
-        # Official end-of-article is "\r\n.\r\n"
+        # Check for end of line
         # Using the data directly seems faster than the memoryview
-        if self.data[self.data_position - 5 : self.data_position] == b"\r\n.\r\n":
-            return bytes_recv, True
+        if self.data[self.data_position - 2 : self.data_position] == b"\r\n":
+            # Official end-of-article is "\r\n.\r\n"
+            if self.data[self.data_position - 5 : self.data_position] == b"\r\n.\r\n":
+                return bytes_recv, True, True
+            return bytes_recv, True, False
 
         # Still in middle of data, so continue!
-        return bytes_recv, False
+        return bytes_recv, False, False
 
     def soft_reset(self):
         """Reset for the next article"""

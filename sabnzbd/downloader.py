@@ -700,7 +700,7 @@ class Downloader(Thread):
     def process_nw(self, nw: NewsWrapper):
         """Receive data from a NewsWrapper and handle the response"""
         try:
-            bytes_received, done = nw.recv_chunk()
+            bytes_received, end_of_line, article_done = nw.recv_chunk()
         except ssl.SSLWantReadError:
             return
         except (ConnectionError, ConnectionAbortedError):
@@ -717,7 +717,7 @@ class Downloader(Thread):
                 self.last_max_chunk_size = bytes_received
             # Update statistics only when we fetched a whole article
             # The side effect is that we don't count things like article-not-available messages
-            if done:
+            if article_done:
                 article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
             # Check speedlimit
             if (
@@ -729,9 +729,13 @@ class Downloader(Thread):
                     time.sleep(0.01)
                     sabnzbd.BPSMeter.update()
 
+        # If we are not at the end of a line, more data will follow
+        if not end_of_line:
+            return
+
         # Response code depends on request command:
         # 220 = ARTICLE, 222 = BODY
-        if nw.status_code not in (220, 222) and not done:
+        if nw.status_code not in (220, 222) and not article_done:
             if not nw.connected or nw.status_code == 480:
                 if not self.__finish_connect_nw(nw):
                     return
@@ -740,11 +744,11 @@ class Downloader(Thread):
                     self.__request_article(nw)
 
             elif nw.status_code == 223:
-                done = True
+                article_done = True
                 logging.debug("Article <%s> is present", article.article)
 
             elif nw.status_code in (411, 423, 430, 451):
-                done = True
+                article_done = True
                 logging.debug(
                     "Thread %s@%s: Article %s missing (error=%s)",
                     nw.thrdnum,
@@ -767,17 +771,21 @@ class Downloader(Thread):
                 self.__request_article(nw)
 
             else:
-                logging.warning(
-                    T("%s@%s: Received unknown status code %s for article %s"),
-                    nw.thrdnum,
-                    nw.server.host,
-                    nw.status_code,
-                    article.article,
-                )
-                done = True
-                nw.reset_data_buffer()
+                # Don't warn for (internal) server errors during downloading
+                if nw.status_code not in (400, 502, 503):
+                    logging.warning(
+                        T("%s@%s: Received unknown status code %s for article %s"),
+                        nw.thrdnum,
+                        nw.server.host,
+                        nw.status_code,
+                        article.article,
+                    )
 
-        if done:
+                # Ditch this thread, we don't know what data we got now so the buffer can be bad
+                self.__reset_nw(nw, f"Server error or unknown status code: {nw.status_code}", wait=False)
+                return
+
+        if article_done:
             # Successful data, clear "bad" counter
             server.bad_cons = 0
             server.errormsg = server.warning = ""
