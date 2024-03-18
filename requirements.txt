@@ -47,8 +47,8 @@ winrt-Windows.Foundation.Collections==2.0.0b2; sys_platform == 'win32' and pytho
 winrt-Windows.UI.Notifications==2.0.0b2; sys_platform == 'win32' and python_version > '3.8'
 
 # macOS system calls
-pyobjc-core==10.1; sys_platform == 'darwin'
-pyobjc-framework-Cocoa==10.1; sys_platform == 'darwin'
+pyobjc-core==10.2; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==10.2; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
@@ -57,7 +57,7 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 requests==2.31.0
 requests-oauthlib==1.4.0
 PyYAML==6.0.1
-markdown==3.5.2
+markdown==3.6
 paho-mqtt==2.0.0
 
 # Requests Requirements
