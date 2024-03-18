@@ -1355,8 +1355,15 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
     """
     if path == "":
         if sabnzbd.WIN32:
-            entries = [{"name": letter, "path": letter} for letter in get_win_drives()]
-            entries.insert(0, {"current_path": "Root"})
+            entries = [{"current_path": "Root"}]
+            for letter in get_win_drives():
+                entries.append(
+                    {
+                        "name": letter,
+                        "path": letter,
+                        "dir": True,
+                    }
+                )
             return entries
         else:
             path = "/"
@@ -1394,7 +1401,11 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
         # Skip hidden files
         if not show_hidden:
             if sabnzbd.WIN32:
-                if win32api.GetFileAttributes(fpath) & win32con.FILE_ATTRIBUTE_HIDDEN:
+                try:
+                    if win32api.GetFileAttributes(fpath) & win32con.FILE_ATTRIBUTE_HIDDEN:
+                        continue
+                except win32api.error:
+                    # Can be thrown if file is in use
                     continue
             elif filename.startswith("."):
                 continue
