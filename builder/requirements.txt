@@ -5,12 +5,12 @@ packaging==24.0
 pyinstaller-hooks-contrib==2024.3
 altgraph==0.17.4
 wrapt==1.16.0
-setuptools==69.1.1
+setuptools==69.2.0
 
 # Required on 32bit Windows, exclude it based on Python-version
 importlib_metadata==7.0.2; python_version < '3.10'
-importlib_resources==6.1.3; python_version < '3.10'
-zipp==3.17.0; python_version < '3.10'
+importlib_resources==6.3.1; python_version < '3.10'
+zipp==3.18.1; python_version < '3.10'
 
 # orjson does not support 32bit Windows, also exclude based on Python-version
 orjson==3.9.15; python_version > '3.8'
