@@ -51,11 +51,13 @@
     <control>touch</control>
   </supports>
   <recommends>
-    <display_length compare="ge">small</display_length>
+    <display_length compare="ge">640</display_length>
     <internet>always</internet>
   </recommends>
   <project_license>GPL-2.0-or-later</project_license>
-  <developer_name>The SABnzbd-Team</developer_name>
+  <developer id="org.sabnzbd">
+    <name>The SABnzbd-Team</name>
+  </developer>
   <screenshots>
     <screenshot type="default">
       <image>https://sabnzbd.org/images/landing/screenshots/interface.png</image>
