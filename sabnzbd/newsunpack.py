@@ -1968,6 +1968,7 @@ def sevenzip_check(sevenzip: str) -> str:
         try:
             seven_command_output = run_command([sevenzip])
             # Example: 7-Zip (z) 21.06 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-11-24
+            #          7-Zip (a) 24.03 (x86) : Copyright (c) 1999-2024 Igor Pavlov : 2024-03-23
             return re.search(r"(\d+\.\d+).*Copyright", seven_command_output).group(1)
         except:
             pass
