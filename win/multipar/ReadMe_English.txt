@@ -18,14 +18,14 @@ faster repairing, smaller recovery files, batch scripting, and so on.
  MultiPar supports both PAR 1.0 and PAR 2.0 specifications.
 See "http://parchive.sourceforge.net/" for details of Parchive.
 MultiPar uses UTF-8 or UTF-16 to treat filenames with non-ASCII characters.
-While MultiPar and par2_tbb can treat sub-directory and UTF-8 filename,
+While MultiPar and par2cmdline can treat sub-directory and UTF-8 filename,
 QuickPar and other PAR2 clients cannot treat them.
 Almost all PAR2 clients don't support UTF-16 filename and comment.
 Be careful to use those special features.
 
 [ System requirement ]
 
- MultiPar requires a PC with Windows XP or later (Windows Vista, 7, 8, 10, etc).
+ MultiPar requires a PC with Windows Vista or later (Windows 7, 8, 10).
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -71,14 +71,13 @@ Don't send current PAR3 files to others, who may not have the same version.
 
 [ How to install or uninstall with installer package ]
 
- Double click setup file ( MultiPar129_setup.exe or something like this name ),
+ Double click setup file ( MultiPar133_setup.exe or something like this name ),
 and follow the installer dialog.
 At version up, if you want to use previous setting, overwrite install is possible.
 Before overwrite install, you should un-check "Integrate MultiPar into Shell".
 You may need to re-start OS after overwrite install or uninstall rarely.
-To install under "Program Files" directory on Windows Vista/7/8,
-you must start the installer with administrative privileges by selecting
-"Run as administrator" on right-click menu.
+To install under "Program Files" or "Program Files (x86)" directory,
+you must select "Install for all users" at the first dialog.
 
  You can uninstall through the Windows OS's Control Panel,
 or double click unins000.exe in a folder which MultiPar was installed.
@@ -100,7 +99,7 @@ In either case, user made icons and association are available for the user only.
 
 [ How to install with archive version ]
 
- Unpack compressed file ( MultiPar129.zip or something like this name ) in a folder.
+ Unpack compressed file ( MultiPar133.zip or something like this name ) in a folder.
 MultiPar.exe is the interface of MultiPar.
 
  You can create short-cut icon or send-to link at Option window later.
@@ -119,8 +118,8 @@ so you need to delete the folder.
 you must clear the check before un-install.
 If you have deleted MultiPar.exe already, you can un-install the DLL manually.
 Open "Command Prompt" and change directory to MultiPar's folder,
-then type "RegSvr32.exe /u MultiParShlExt.dll" to remove shell extension.
-You cannot delete "MultiParShlExt.dll", while it is used by OS or Explorer.
+then type "RegSvr32.exe /u MultiParShlExt64.dll" to remove shell extension.
+You cannot delete "MultiParShlExt64.dll", while it is used by OS or Explorer.
 You may log-off and log-on again to OS before deleting the file. 
 
 [ How to change installed folder of archive version ]
@@ -142,7 +141,7 @@ They are written by Yutaka Sawada.
 Though console applications are open source (PAR clients are GPL),
 GUI application is closed source.
 Some article are available at my web site.
-(URL: "http://hp.vector.co.jp/authors/VA021385/")
+(URL: "https://hp.vector.co.jp/authors/VA021385/")
 If you want source code, contact with me by e-mail.
 
 
@@ -150,8 +149,8 @@ If you want source code, contact with me by e-mail.
 
 [ Support ]
 
- Because I cannot connect to the Internet so often, I may check mails once a week.
-Please wait very long to receive my mail reply.
+ I use GitHub issue's page as a web-forum for MultiPar users.
+(URL: "https://github.com/Yutaka-Sawada/MultiPar/issues")
 
  My name is Yutaka Sawada.
 E-mail address is "tenfon (at mark) outlook.jp".
@@ -165,15 +164,14 @@ The (at mark) is format to avoid junk mails, and replace it with "@".
  I get many spam mails from oversea.
 If an e-mail is detected as junk mail or suspicious,
 mail server may delete it automatically, and I won't see it.
-When you never get reply, you may ask at a web-forum.
 
 
 [ Link ]
 
  I use Vector 's author page to introduce MultiPar.
-(URL: "http://hp.vector.co.jp/authors/VA021385/")
+(URL: "https://hp.vector.co.jp/authors/VA021385/")
 Because there is another official download page,
-(URL: "http://www.vector.co.jp/soft/dl/winnt/util/se460801.html")
+(URL: "https://www.vector.co.jp/soft/dl/winnt/util/se460801.html")
 using direct link to files on the page isn't preferable.
 When you write a link on somewhere, please don't include filename.
 
