@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.3.0 Alpha 1
+Release Notes - SABnzbd 4.3.0 Beta 1
 =========================================================
 
 This is the first pre-release of SABnzbd 4.3.0.
@@ -24,6 +24,8 @@ This is the first pre-release of SABnzbd 4.3.0.
     * Handling of multiple inputs to several API methods was improved.
     * File browser dialog is available to select file paths in the Config.
     * Users will be warned if they configure an Indexer as a Server.
+    * Windows/macOS: Updated Python to 3.12.2, Multipar to v1.3.3.2,
+      Unrar to 7.00 and 7zip to 24.03.
 
 ## Bug fixes since 4.2.0
 
