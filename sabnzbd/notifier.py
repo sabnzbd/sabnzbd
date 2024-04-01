@@ -338,6 +338,10 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
         # Get a list of tags that are set to use the common list
         if target := get_targets(notification_type, "apprise"):
             if target is True:
+                if not urls:
+                    # Nothing to notify
+                    logging.warning(T("Failed to send Apprise message - no URLs defined"))
+                    return ""
                 # Use default list
                 apobj.add(urls)
             elif not apobj.add(target):
