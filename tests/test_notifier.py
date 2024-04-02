@@ -19,194 +19,165 @@
 tests.test_notifier - Testing notification functionality
 """
 import sys
-from sabnzbd.notifier import send_notification, send_apprise, NOTIFICATION_TYPES
-from unittest import mock, skipIf
+from sabnzbd.notifier import send_apprise, NOTIFICATION_TYPES
+from unittest import mock
 
+if sys.version_info[0] == 3 and sys.version_info[1] < 11:
 
-class TestNotifier:
+    class TestNotifier:
 
-    @skipIf((sys.version_info[0] != 3 or sys.version_info[1] <= 11), ">= Python v3.11 only")
-    @mock.patch("threading.Thread")
-    @mock.patch("sabnzbd.notifier.check_classes")
-    @mock.patch("sabnzbd.cfg.apprise_enable")
-    @mock.patch("sabnzbd.cfg.apprise_urls")
-    def test_to_thread_send_apprise_notification(self, mock_urls, mock_cfg, mock_check_classes, mock_thread):
-        """
-        Test up to threading call as mock does not carry forward inside; this is
-        done in another test
-        """
+        @mock.patch("sabnzbd.notifier.get_target")
+        @mock.patch("sabnzbd.DIR_PROG")
+        @mock.patch("apprise.Apprise.notify")
+        @mock.patch("apprise.Apprise.add")
+        @mock.patch("sabnzbd.cfg.apprise_urls")
+        def test_send_apprise_notification(self, mock_urls, mock_add, mock_notify, mock_sabdir, mock_get_target):
+            """
+            Test send_apprise() outside of threading call to verify it handles requests properly
+            """
 
-        #
-        # Underlining Notifier functions that should be tested in another unit test
-        #
-        # A return of >1 implies we have configuration ready
-        mock_check_classes.return_value = 1
+            #
+            # Underlining Notifier functions that should be tested in another unit test
+            #
+            mock_get_target.return_value = True
 
-        #
-        # Mocks below pertain to testing
-        #
-        mock_cfg.return_value = True
-        mock_urls.return_value = [
-            "json://localhost",
-            "xml://localhost",
-            "pbul://credentials",
-        ]
-        for t in NOTIFICATION_TYPES.keys():
-            # send notification doesn't return anything so there is nothing to test here other
-            # than the fact we didn't throw an exception if we made it this far and each
-            # iteration succeeds.
-            send_notification("title", "body", t)
+            #
+            # Mocks below pertain to testing
+            #
 
-    @skipIf((sys.version_info[0] != 3 or sys.version_info[1] <= 11), ">=Python v3.11 only")
-    @mock.patch("sabnzbd.notifier.get_target")
-    @mock.patch("sabnzbd.DIR_PROG")
-    @mock.patch("apprise.Apprise.notify")
-    @mock.patch("apprise.Apprise.add")
-    @mock.patch("sabnzbd.cfg.apprise_urls")
-    def test_send_apprise_notification_py10(self, mock_urls, mock_add, mock_notify, mock_sabdir, mock_get_target):
-        """
-        Test send_apprise() outside of threading call to verify it handles requests properly
-        """
+            # Asset just needs to be anything at all
+            mock_sabdir.return_value = "/tmp"
+            mock_notify.return_value = True
+            mock_urls.return_value = [
+                "json://localhost",
+                "xml://localhost",
+                "pbul://credentials",
+            ]
 
-        #
-        # Underlining Notifier functions that should be tested in another unit test
-        #
-        mock_get_target.return_value = True
+            for t in NOTIFICATION_TYPES.keys():
+                mock_notify.reset_mock()
+                mock_add.reset_mock()
+                assert send_apprise("title", "body", t) == ""
+                assert mock_notify.call_count == 1
+                mock_add.assert_called_once_with(mock_urls.return_value)
 
-        #
-        # Mocks below pertain to testing
-        #
-
-        # Asset just needs to be anything at all
-        mock_sabdir.return_value = "/tmp"
-        mock_notify.return_value = True
-        mock_urls.return_value = [
-            "json://localhost",
-            "xml://localhost",
-            "pbul://credentials",
-        ]
-
-        for t in NOTIFICATION_TYPES.keys():
+            # Garbage in, get's garbage out
             mock_notify.reset_mock()
             mock_add.reset_mock()
-            assert send_apprise("title", "body", t) == ""
-            assert mock_notify.call_count == 1
+            assert send_apprise("title", "body", "garbage_type") != ""
+            assert mock_notify.call_count == 0
             mock_add.assert_called_once_with(mock_urls.return_value)
 
-        # Garbage in, get's garbage out
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        assert send_apprise("title", "body", "garbage_type") != ""
-        assert mock_notify.call_count == 0
-        mock_add.assert_called_once_with(mock_urls.return_value)
+            # No URLs defined
+            mock_urls.return_value = []
+            assert send_apprise("title", "body", "other") == ""
 
-        # No URLs defined
-        mock_urls.return_value = []
-        assert send_apprise("title", "body", "other") == ""
-
-        # Special Targets
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        mock_get_target.return_value = "xml://localhost"
-        assert send_apprise("title", "body", "other") == ""
-        assert mock_notify.call_count == 1
-        # Target value over-rides; this tests that a user can provide
-        # over-rides to the Apprise URLs
-        mock_add.assert_called_once_with(mock_get_target.return_value)
-
-        # Test other exception handlings
-        mock_notify.return_value = None
-        mock_notify.side_effect = AttributeError
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        # A non-string is returned
-        assert send_apprise("title", "body", "other") != ""
-        assert mock_notify.call_count == 1
-
-        # Handle case where get_target() returns False (hence it failed for whatever reason)
-        mock_notify.return_value = True
-        mock_notify.side_effect = None
-        mock_get_target.return_value = False
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        # Nothing notified
-        assert send_apprise("title", "body", "other") == ""
-        assert mock_notify.call_count == 0
-        assert mock_add.call_count == 0
-
-    @skipIf((sys.version_info[0] != 3 or sys.version_info[1] < 11), "< Python v3.11 only")
-    @mock.patch("sabnzbd.notifier.get_target")
-    @mock.patch("sabnzbd.DIR_PROG")
-    @mock.patch("apprise.Apprise.Apprise.notify")
-    @mock.patch("apprise.Apprise.Apprise.add")
-    @mock.patch("sabnzbd.cfg.apprise_urls")
-    def test_send_apprise_notification_py11(self, mock_urls, mock_add, mock_notify, mock_sabdir, mock_get_target):
-        """
-        Test send_apprise() outside of threading call to verify it handles requests properly
-        """
-
-        #
-        # Underlining Notifier functions that should be tested in another unit test
-        #
-        mock_get_target.return_value = True
-
-        #
-        # Mocks below pertain to testing
-        #
-
-        # Asset just needs to be anything at all
-        mock_sabdir.return_value = "/tmp"
-        mock_notify.return_value = True
-        mock_urls.return_value = [
-            "json://localhost",
-            "xml://localhost",
-            "pbul://credentials",
-        ]
-
-        for t in NOTIFICATION_TYPES.keys():
+            # Special Targets
             mock_notify.reset_mock()
             mock_add.reset_mock()
-            assert send_apprise("title", "body", t) == ""
+            mock_get_target.return_value = "xml://localhost"
+            assert send_apprise("title", "body", "other") == ""
             assert mock_notify.call_count == 1
+            # Target value over-rides; this tests that a user can provide
+            # over-rides to the Apprise URLs
+            mock_add.assert_called_once_with(mock_get_target.return_value)
+
+            # Test other exception handlings
+            mock_notify.return_value = None
+            mock_notify.side_effect = AttributeError
+            mock_notify.reset_mock()
+            mock_add.reset_mock()
+            # A non-string is returned
+            assert send_apprise("title", "body", "other") != ""
+            assert mock_notify.call_count == 1
+
+            # Handle case where get_target() returns False (hence it failed for whatever reason)
+            mock_notify.return_value = True
+            mock_notify.side_effect = None
+            mock_get_target.return_value = False
+            mock_notify.reset_mock()
+            mock_add.reset_mock()
+            # Nothing notified
+            assert send_apprise("title", "body", "other") == ""
+            assert mock_notify.call_count == 0
+            assert mock_add.call_count == 0
+
+else:
+
+    class TestNotifier:
+
+        @mock.patch("sabnzbd.notifier.get_target")
+        @mock.patch("sabnzbd.DIR_PROG")
+        @mock.patch("apprise.Apprise.Apprise.notify")
+        @mock.patch("apprise.Apprise.Apprise.add")
+        @mock.patch("sabnzbd.cfg.apprise_urls")
+        def test_send_apprise_notification(self, mock_urls, mock_add, mock_notify, mock_sabdir, mock_get_target):
+            """
+            Test send_apprise() outside of threading call to verify it handles requests properly
+            """
+
+            #
+            # Underlining Notifier functions that should be tested in another unit test
+            #
+            mock_get_target.return_value = True
+
+            #
+            # Mocks below pertain to testing
+            #
+
+            # Asset just needs to be anything at all
+            mock_sabdir.return_value = "/tmp"
+            mock_notify.return_value = True
+            mock_urls.return_value = [
+                "json://localhost",
+                "xml://localhost",
+                "pbul://credentials",
+            ]
+
+            for t in NOTIFICATION_TYPES.keys():
+                mock_notify.reset_mock()
+                mock_add.reset_mock()
+                assert send_apprise("title", "body", t) == ""
+                assert mock_notify.call_count == 1
+                mock_add.assert_called_once_with(mock_urls.return_value)
+
+            # Garbage in, get's garbage out
+            mock_notify.reset_mock()
+            mock_add.reset_mock()
+            assert send_apprise("title", "body", "garbage_type") != ""
+            assert mock_notify.call_count == 0
             mock_add.assert_called_once_with(mock_urls.return_value)
 
-        # Garbage in, get's garbage out
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        assert send_apprise("title", "body", "garbage_type") != ""
-        assert mock_notify.call_count == 0
-        mock_add.assert_called_once_with(mock_urls.return_value)
+            # No URLs defined
+            mock_urls.return_value = []
+            assert send_apprise("title", "body", "other") == ""
 
-        # No URLs defined
-        mock_urls.return_value = []
-        assert send_apprise("title", "body", "other") == ""
+            # Special Targets
+            mock_notify.reset_mock()
+            mock_add.reset_mock()
+            mock_get_target.return_value = "xml://localhost"
+            assert send_apprise("title", "body", "other") == ""
+            assert mock_notify.call_count == 1
+            # Target value over-rides; this tests that a user can provide
+            # over-rides to the Apprise URLs
+            mock_add.assert_called_once_with(mock_get_target.return_value)
 
-        # Special Targets
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        mock_get_target.return_value = "xml://localhost"
-        assert send_apprise("title", "body", "other") == ""
-        assert mock_notify.call_count == 1
-        # Target value over-rides; this tests that a user can provide
-        # over-rides to the Apprise URLs
-        mock_add.assert_called_once_with(mock_get_target.return_value)
+            # Test other exception handlings
+            mock_notify.return_value = None
+            mock_notify.side_effect = AttributeError
+            mock_notify.reset_mock()
+            mock_add.reset_mock()
+            # A non-string is returned
+            assert send_apprise("title", "body", "other") != ""
+            assert mock_notify.call_count == 1
 
-        # Test other exception handlings
-        mock_notify.return_value = None
-        mock_notify.side_effect = AttributeError
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        # A non-string is returned
-        assert send_apprise("title", "body", "other") != ""
-        assert mock_notify.call_count == 1
-
-        # Handle case where get_target() returns False (hence it failed for whatever reason)
-        mock_notify.return_value = True
-        mock_notify.side_effect = None
-        mock_get_target.return_value = False
-        mock_notify.reset_mock()
-        mock_add.reset_mock()
-        # Nothing notified
-        assert send_apprise("title", "body", "other") == ""
-        assert mock_notify.call_count == 0
-        assert mock_add.call_count == 0
+            # Handle case where get_target() returns False (hence it failed for whatever reason)
+            mock_notify.return_value = True
+            mock_notify.side_effect = None
+            mock_get_target.return_value = False
+            mock_notify.reset_mock()
+            mock_add.reset_mock()
+            # Nothing notified
+            assert send_apprise("title", "body", "other") == ""
+            assert mock_notify.call_count == 0
+            assert mock_add.call_count == 0
