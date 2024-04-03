@@ -2,6 +2,8 @@
 <!--#set global $help_uri = $confighelpuri + "notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
+<!--#import apprise#-->
+
 <!--#def show_notify_checkboxes($section_label)#-->
     <!--#for $type in $notify_types#-->
         <div class="field-pair">
@@ -185,7 +187,9 @@
                     <td><label for="apprise_enable"> $T('opt-apprise_enable')</label></td>
                 </tr>
             </table>
-            <em>$T('explain-apprise_enable')</em>
+            <em>$T('explain-apprise_enable')</em><br>
+            <p>$T('version'): ${apprise.__version__}</p>
+
             $show_cat_box('apprise')
         </div>
         <div class="col1" <!--#if int($apprise_enable) > 0 then '' else 'style="display:none"'#-->>
