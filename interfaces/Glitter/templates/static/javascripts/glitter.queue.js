@@ -440,8 +440,6 @@ function QueueListModel(parent) {
             del_files: 1,
             value: strIDs
         }).then(function(response) {
-            // Make sure no flickering (if there are more items left) and then remove
-            self.isLoading(true)
             self.queueItems.removeAll(self.deleteItems());
             self.multiEditItems.removeAll(self.deleteItems())
             self.parent.refresh();

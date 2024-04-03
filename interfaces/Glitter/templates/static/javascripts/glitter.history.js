@@ -398,7 +398,6 @@ function HistoryListModel(parent) {
                 archive: (!skipArchive) * 1,
                 value: strIDsHistory
             }).then(function(response) {
-                // Make sure no flickering (if there are more items left) and then remove
                 self.historyItems.removeAll(self.deleteItems());
                 self.multiEditItems.removeAll(self.deleteItems())
                 self.parent.refresh();
