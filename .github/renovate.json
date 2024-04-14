@@ -18,6 +18,7 @@
   "ignoreDeps": [
     "jaraco.text",
     "jaraco.context",
+    "jaraco.collections",
     "sabctools",
     "werkzeug",
     "pyinstaller"
