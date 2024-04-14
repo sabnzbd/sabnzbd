@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.7.5
+apprise==1.7.6
 sabctools==8.1.0
 CT3==3.3.3.post1
 cffi==1.16.0
@@ -62,7 +62,7 @@ paho-mqtt==2.0.0
 
 # Requests Requirements
 charset_normalizer==3.3.2
-idna==3.6
+idna==3.7
 urllib3==2.2.1
 certifi==2024.2.2
 oauthlib==3.2.2
