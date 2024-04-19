@@ -40,6 +40,27 @@ Unicode true
   ; Remove the whole dir
   ; Users should not be putting stuff here!
   RMDir /r "${idir}"
+
+  ; Remove any shortuts, starting with current user ones (from old installs)
+  SetShellVarContext current
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
+  RMDir  "$SMPROGRAMS\$MUI_TEMP"
+  Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
+  Delete "$DESKTOP\SABnzbd.lnk"
+
+  SetShellVarContext all
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
+  RMDir  "$SMPROGRAMS\$MUI_TEMP"
+  Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
+  Delete "$DESKTOP\SABnzbd.lnk"
 !macroend
 
 ;------------------------------------------------------------------
@@ -47,7 +68,6 @@ Unicode true
   Name "${SAB_PRODUCT}"
   OutFile "${SAB_FILE}"
   InstallDir "$PROGRAMFILES\SABnzbd"
-
 
 ;------------------------------------------------------------------
 ; Some default compiler settings (uncomment and change at will):
@@ -285,16 +305,18 @@ Function .onInit
     ;------------------------------------------------------------------
     ; Check what the user has currently set for install options
     SetShellVarContext current
-    IfFileExists "$SMPROGRAMS\Startup\SABnzbd.lnk" 0 endCheckStartup
+    IfFileExists "$SMPROGRAMS\Startup\SABnzbd.lnk" 0 endCheckStartupCurrent
       SectionSetFlags ${startup} 1
+    endCheckStartupCurrent:
     SetShellVarContext all
     IfFileExists "$SMPROGRAMS\Startup\SABnzbd.lnk" 0 endCheckStartup
       SectionSetFlags ${startup} 1
     endCheckStartup:
 
     SetShellVarContext current
-    IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
+    IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktopCurrent 0
       SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
+    endCheckDesktopCurrent:
     SetShellVarContext all
     IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
       SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
@@ -356,34 +378,6 @@ Section "un.$(MsgDelProgram)" Uninstall
   ; Remove firewall entries
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd-console.exe" "SABnzbd-console"
-
-  SetShellVarContext all
-
-  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
-
-  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
-  RMDir  "$SMPROGRAMS\$MUI_TEMP"
-
-  Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
-
-  Delete "$DESKTOP\SABnzbd.lnk"
-
-  SetShellVarContext current
-
-  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
-
-  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
-  Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
-  RMDir  "$SMPROGRAMS\$MUI_TEMP"
-
-  Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
-
-  Delete "$DESKTOP\SABnzbd.lnk"
 
   ${unregisterExtension} ".nzb" "NZB File"
   ${RefreshShellIcons}
