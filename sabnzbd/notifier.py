@@ -116,7 +116,7 @@ def get_prio(notification_type: str, section: str) -> int:
         return -1000
 
 
-def get_target(notification_type: str, section: str) -> Union[str, bool, None]:
+def get_targets(notification_type: str, section: str) -> Union[str, bool, None]:
     """Check target of `notification_type` in `section` if enabled is set"""
     try:
         if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0:
@@ -182,7 +182,9 @@ def send_notification(
 
     # Apprise
     if sabnzbd.cfg.apprise_enable() and check_cat("apprise", job_cat):
-        if sabnzbd.cfg.apprise_urls() and check_classes(notification_type, "apprise"):
+        # it is possible to not define global apprise_urls() but only URLs for a specific type
+        # such as complete or disk_full.
+        if get_targets(notification_type, "apprise"):
             Thread(target=send_apprise, args=(title, msg, notification_type)).start()
 
     # Notification script.
@@ -336,7 +338,7 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
 
     if not test:
         # Get a list of tags that are set to use the common list
-        if target := get_target(notification_type, "apprise"):
+        if target := get_targets(notification_type, "apprise"):
             if target is True:
                 # Use default list
                 apobj.add(urls)
