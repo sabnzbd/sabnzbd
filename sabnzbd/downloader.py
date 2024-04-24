@@ -19,14 +19,14 @@
 sabnzbd.downloader - download engine
 """
 
-import time
 import select
 import logging
-from math import ceil
 from threading import Thread, RLock, current_thread
 import socket
 import sys
 import ssl
+import time
+from datetime import date
 from typing import List, Dict, Optional, Union, Set
 
 import sabnzbd
@@ -1120,9 +1120,12 @@ def check_server_expiration():
     """Check if user should get warning about server date expiration"""
     for server in config.get_servers().values():
         if server.expire_date():
-            days_to_expire = ceil(
-                (time.mktime(time.strptime(server.expire_date(), "%Y-%m-%d")) - time.time()) / (60 * 60 * 24)
-            )
+            try:
+                days_to_expire = (date.fromisoformat(server.expire_date()) - date.today()).days
+            except ValueError:
+                # In case of invalid date, just warn
+                days_to_expire = 0
+
             # Notify from 5 days in advance
             if days_to_expire < 6:
                 logging.warning(T("Server %s is expiring in %s day(s)"), server.displayname(), days_to_expire)
