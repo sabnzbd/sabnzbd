@@ -7,7 +7,7 @@ cffi==1.16.0
 pycparser==2.22
 feedparser==6.0.11
 configobj==5.0.8
-cheroot==10.0.0
+cheroot==10.0.1
 six==1.16.0
 cherrypy==18.9.0
 jaraco.functools==4.0.1
