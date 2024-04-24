@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 4.3.0 Release Candidate 1
+Release Notes - SABnzbd 4.3.0 Release Candidate 2
 =========================================================
 
-This is the first release candidate of SABnzbd 4.3.0.
+This is the second release candidate of SABnzbd 4.3.0.
 
 ## Key changes since 4.2.0
 
@@ -31,6 +31,8 @@ This is the first release candidate of SABnzbd 4.3.0.
 
 * Incorrect warnings of unknown status codes could be thrown.
 * Watched Folder would not work if Socks5 proxy was active.
+* Prevent crash on invalid Server Expiration Date.
+* Windows: Installer could create duplicate shortcuts.
 
 ## Upgrade notices
 
