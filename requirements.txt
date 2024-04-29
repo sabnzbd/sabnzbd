@@ -24,7 +24,7 @@ sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
 PySocks==1.7.1
-puremagic==1.21
+puremagic==1.22
 guessit==3.8.0
 babelfish==0.6.0
 rebulk==3.2.0
@@ -41,9 +41,9 @@ ujson==5.9.0
 pywin32==306; sys_platform == 'win32'
 windows-toasts==1.1.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-runtime==2.0.0b2; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Data.Xml.Dom==2.0.0b2; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation==2.0.0b2; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation.Collections==2.0.0b2; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Data.Xml.Dom==2.0.1; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation==2.0.1; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation.Collections==2.0.1; sys_platform == 'win32' and python_version > '3.8'
 winrt-Windows.UI.Notifications==2.0.0b2; sys_platform == 'win32' and python_version > '3.8'
 
 # macOS system calls
@@ -67,7 +67,7 @@ urllib3==2.2.1
 certifi==2024.2.2
 oauthlib==3.2.2
 PyJWT==2.8.0
-blinker==1.7.0
+blinker==1.8.1
 
 # Optional support for *nix tray icon.
 # Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.
