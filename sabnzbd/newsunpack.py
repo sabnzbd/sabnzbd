@@ -1783,6 +1783,8 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
     extra_env_fields.update(
         {
             "program_dir": sabnzbd.DIR_PROG,
+            "api_key": cfg.api_key(),
+            "api_url": f"{sabnzbd.BROWSER_URL}/api",
             "par2_command": sabnzbd.newsunpack.PAR2_COMMAND,
             "multipar_command": sabnzbd.newsunpack.MULTIPAR_COMMAND,
             "rar_command": sabnzbd.newsunpack.RAR_COMMAND,
