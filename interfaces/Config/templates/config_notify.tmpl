@@ -2,6 +2,8 @@
 <!--#set global $help_uri = $confighelpuri + "notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
+<!--#import apprise#-->
+
 <!--#def show_notify_checkboxes($section_label)#-->
     <!--#for $type in $notify_types#-->
         <div class="field-pair">
@@ -176,6 +178,51 @@
        </div>
     </div>
     <!--#end if#-->
+    <div class="section" id="apprise">
+        <div class="col2">
+            <h3>Apprise <a href="$help_uri#apprise" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+            <table>
+                <tr>
+                    <td><input type="checkbox" name="apprise_enable" id="apprise_enable" value="1" <!--#if int($apprise_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><label for="apprise_enable"> $T('opt-apprise_enable')</label></td>
+                </tr>
+            </table>
+            <em>$T('explain-apprise_enable')</em><br>
+            <p>$T('version'): ${apprise.__version__}</p>
+
+            $show_cat_box('apprise')
+        </div>
+        <div class="col1" <!--#if int($apprise_enable) > 0 then '' else 'style="display:none"'#-->>
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="apprise_urls">$T('opt-apprise_urls')</label>
+                    <input type="text" name="apprise_urls" id="apprise_urls" value="$apprise_urls" />
+                    <span class="desc">$T('explain-apprise_urls'). <br>$T('readwiki')</span>
+                </div>
+                <div class="field-pair">
+                    <span class="desc">$T('explain-apprise_extra_urls')</span>
+                </div>
+                <!--#set $section_label = 'apprise'#-->
+                <!--#for $type in $notify_types#-->
+                    <div class="field-pair">
+                        <label class="config" for="${section_label}_target_${type}">
+                            $T($notify_types[$type]).replace('/', ' / ')
+                        </label>
+                        <input type="checkbox" name="${section_label}_target_${type}_enable" id="${section_label}_target_${type}_enable" value="1" <!--#if int($getVar($section_label + '_target_' + $type + '_enable')) > 0 then 'checked="checked"' else ""#--> />
+                        <input type="text" name="${section_label}_target_${type}" id="${section_label}_target_${type}" value="$getVar($section_label + '_target_' + $type)"  placeholder="$T('opt-apprise_urls')" />
+                    </div>
+                <!--#end for#-->
+
+                <div class="field-pair no-field-pair-bg">
+                   <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                   <button class="btn btn-default" type="button" id="test_apprise"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
+           </fieldset>
+       </div>
+    </div>
     <div class="section" id="nscript">
         <div class="col2">
             <h3>$T('section-NScript') <a href="$help_uri#nscript" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
@@ -426,7 +473,7 @@ jQuery(document).ready(function(){
             }
         })
     }
-    jQuery('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_osd, #test_nscript').click(function () {
+    jQuery('#test_email, #test_notif, #test_windows, #test_apprise, #test_pushbullet, #test_pushover, #test_prowl, #test_osd, #test_nscript').click(function () {
         testNotification(this)
     })
 });

@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.2Beta1\n"
+"Project-Id-Version: SABnzbd-4.3.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -170,6 +170,73 @@ msgstr "E-mail verzonden"
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "Test Notification"
 msgstr "Test melding"
+
+#: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Geen hostnaam opgegeven."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Ongeldige servergegevens"
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. It appears that %s operates as a web "
+"server (port 80), possibly an indexer, not a usenet server. You have to fill"
+" a usenet server."
+msgstr ""
+"Kon geen verbinding maken met %s op poort %s. Het lijkt erop dat %s "
+"functioneert als een webserver (poort 80), mogelijk een indexer, geen "
+"usenetserver. Vul een usenetserver in."
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "Serveradres \"%s:%s\" is niet geldig."
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Tijdslimiet overschreden"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Succesvol verbonden!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -473,6 +540,11 @@ msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 msgid "Fatal error in Downloader"
 msgstr "Onherstelbare fout in de Downloader"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s: Onbekende statuscode %s ontvangen voor artikel %s"
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Te veel verbindingen met server %s [%s]"
@@ -697,10 +769,6 @@ msgstr ""
 "API-sleutel incorrect; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
 "in bij het externe programma:"
 
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
-
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -709,10 +777,6 @@ msgstr "Mislukte login poging van %s"
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr "Ongeldig backup bestand"
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "Serveradres \"%s:%s\" is niet geldig."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -1072,6 +1136,10 @@ msgstr "Server %s gebruikt een niet betrouwbaar certificaat [%s]"
 msgid "Wiki"
 msgstr "Wiki"
 
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
+msgstr "Kon geen verbinding maken: %s %s@%s:%s (%s)"
+
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
@@ -1141,6 +1209,20 @@ msgstr "Kon macOS notificatie niet verzenden"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Verzenden van Prowl-bericht mislukt"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "One or more Apprise URLs could not be loaded."
+msgstr "Eén of meerdere Apprise-URL's konden niet worden geladen."
+
+#: sabnzbd/notifier.py
+msgid "Failed to send one or more Apprise Notifications"
+msgstr "Kon één of meerdere Apprise-meldingen niet verzenden"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message"
+msgstr "Verzenden van Apprise-bericht mislukt"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1384,7 +1466,7 @@ msgstr "Afsluiten"
 msgid "Queue First 10 Items"
 msgstr "Wachtrij Eerste 10 Items"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Leeg"
 
@@ -2311,6 +2393,11 @@ msgstr "Scripts"
 msgid "Delete all items from the queue?"
 msgstr "Verwijder alle downloads uit de wachtrij?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr "Weet je zeker dat je deze downloads wilt verwijderen?"
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2331,6 +2418,11 @@ msgstr "Verwijder download"
 msgid "Remove NZB & Delete Files"
 msgstr "Verwijder download incl. bestanden"
 
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr "Permanent verwijderen (archief overslaan)"
+
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
 msgid "Missing articles"
@@ -2349,6 +2441,10 @@ msgstr "handmatig"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Quotum nu resetten"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr "Archief"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2369,6 +2465,11 @@ msgstr "Toon mislukte"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "Toon Alles"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr "Toon archief"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2825,29 +2926,38 @@ msgid "History Retention"
 msgstr "Geschiedenis bewaren"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-"Automatisch verwijderen van voltooide downloads. Let er op dat Dubbele "
-"Download Detectie en andere externe tools Geschiedenis informatie nodig "
-"hebben."
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "Behoud alle downloads"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "Maximum aantal voltooide downloads"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
+"Verplaats voltooide downloads naar het archief als de geschiedenis het "
+"opgegeven aantal voltooide downloads overschrijdt."
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "Behoud voltooide downloads maximaal aantal dagen"
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
+"Verwijder voltooide downloads als de geschiedenis het opgegeven aantal "
+"voltooide downloads overschrijdt."
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "Behoud geen enkele download"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+"Verplaats voltooide downloads naar het archief na het opgegeven aantal dagen"
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr "Verwijder voltooide downloads na het opgegeven aantal dagen"
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr "Verplaats alle voltooide downloadsnaar het archief"
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr "Verwijder alle voltooide downloads"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3239,18 +3349,17 @@ msgstr "Verwerpen"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
-msgstr "Keur download af"
-
-#. Four way switch for duplicates
-#: sabnzbd/skintext.py
 msgid "Tag job"
 msgstr "Label download"
 
-#. Three way switch for encrypted posts
+#. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Abort"
-msgstr "Afbreken"
+msgid "Fail job (move to History)"
+msgstr "Keur download af"
+
+#: sabnzbd/skintext.py
+msgid "Abort post-processing"
+msgstr "Nabewerking afbreken"
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
@@ -3727,14 +3836,6 @@ msgid "Bandwidth"
 msgstr "Bandbreedte"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Verzend groep"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Verzend de groepsnaam naar de server."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Persoonlijke aantekeningen"
 
@@ -4008,7 +4109,7 @@ msgstr "Prowl"
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Enable Prowl notifications"
-msgstr "Prowl berichten activeren"
+msgstr "Prowl meldingen activeren"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
@@ -4122,6 +4223,33 @@ msgstr "Apparaat"
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
 msgstr "Apparaat dat de berichten moet ontvangen"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Enable Apprise notifications"
+msgstr "Apprise-meldingen activeren"
+
+#: sabnzbd/skintext.py
+msgid "Send notifications using Apprise to almost any notification service"
+msgstr ""
+"Stuur meldingen met behulp van Apprise naar bijna elke bestaande service."
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Default Apprise URLs"
+msgstr "Standaard Apprise-URL's"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Use a comma and/or space to identify more than one URL."
+msgstr "Gebruik een komma en/of spatie om meer dan één URL op te geven."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Override the default URLs for specific notification types below, if desired."
+msgstr ""
+"Overschrijf hieronder, indien gewenst, de standaard-URL's voor specifieke "
+"meldingstypen."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
@@ -4889,52 +5017,3 @@ msgstr "URL ophalen mislukt; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Probeer NZB op te halen van %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Geen hostnaam opgegeven."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ongeldige servergegevens"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tijdslimiet overschreden"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Succesvol verbonden!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kan verbindingsresultaat niet bepalen (%s)"

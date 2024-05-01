@@ -39,6 +39,7 @@ import html
 import ipaddress
 import socks
 from threading import Thread
+from collections.abc import Iterable
 from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
 
 import sabnzbd
@@ -175,6 +176,18 @@ def safe_lower(txt: Any) -> str:
 def is_none(inp: Any) -> bool:
     """Check for 'not X' but also if it's maybe the string 'None'"""
     return not inp or (isinstance(inp, str) and inp.lower() == "none")
+
+
+def clean_comma_separated_list(inp: Any) -> List[str]:
+    """Return a list of stripped values from a string or list, empty ones removed"""
+    result_ids = []
+    if isinstance(inp, str):
+        inp = inp.split(",")
+    if isinstance(inp, Iterable):
+        for inp_id in inp:
+            if new_id := inp_id.strip():
+                result_ids.append(new_id)
+    return result_ids
 
 
 def cmp(x, y):
@@ -1476,3 +1489,18 @@ def convert_sorter_settings():
         # Configure the new sorter
         logging.debug("Converted old movie sorter config to '%s': %s", T("Movie Sorting"), movie_sorter)
         config.ConfigSorter(T("Movie Sorting"), movie_sorter)
+
+
+def convert_history_retention():
+    """Convert single-option to the split history retention setting"""
+    if "d" in cfg.history_retention():
+        days_to_keep = int_conv(cfg.history_retention().strip()[:-1])
+        cfg.history_retention_option.set("days-delete")
+        cfg.history_retention_number.set(days_to_keep)
+    else:
+        to_keep = int_conv(sabnzbd.cfg.history_retention())
+        if to_keep > 0:
+            cfg.history_retention_option.set("number-delete")
+            cfg.history_retention_number.set(to_keep)
+        elif to_keep < 0:
+            cfg.history_retention_option.set("all-delete")

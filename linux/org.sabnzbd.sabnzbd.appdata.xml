@@ -30,8 +30,8 @@
   <url type="faq">https://sabnzbd.org/wiki/faq</url>
   <url type="contact">https://sabnzbd.org/live-chat.html</url>
   <releases>
-    <release version="4.2.3" date="2024-03-10" type="stable"/>
-    <release version="4.2.2" date="2024-01-31" type="stable"/>
+    <release version="4.3.0" date="2024-05-01" type="stable"/>
+    <release version="4.2.2" date="2024-02-01" type="stable"/>
     <release version="4.2.1" date="2024-01-05" type="stable"/>
     <release version="4.2.0" date="2024-01-03" type="stable"/>
     <release version="4.1.0" date="2023-09-26" type="stable"/>
@@ -52,11 +52,13 @@
     <control>touch</control>
   </supports>
   <recommends>
-    <display_length compare="ge">small</display_length>
+    <display_length compare="ge">640</display_length>
     <internet>always</internet>
   </recommends>
   <project_license>GPL-2.0-or-later</project_license>
-  <developer_name>The SABnzbd-Team</developer_name>
+  <developer id="org.sabnzbd">
+    <name>The SABnzbd-Team</name>
+  </developer>
   <screenshots>
     <screenshot type="default">
       <image>https://sabnzbd.org/images/landing/screenshots/interface.png</image>

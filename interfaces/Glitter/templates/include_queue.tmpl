@@ -163,7 +163,7 @@
                         <!-- /ko -->
                     </div>
                     <!-- /ko -->
-                    <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: removeDownload"><span class="glyphicon glyphicon-trash"></span></a>
+                    <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: parent.triggerRemoveDownload"><span class="glyphicon glyphicon-trash"></span></a>
                 </td>
             </tr>
         </tbody>
@@ -174,7 +174,7 @@
             <label for="multiedit-checkall-queue">
                 <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall-queue" title="$T('Glitter-checkAll')" data-bind="click: queue.checkAllJobs" data-tooltip="true" data-placement="top" />
             </label>
-            <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: queue.doMultiDelete">
+            <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: queue.doMultiDelete" data-tooltip="true" data-placement="top">
                 <span class="glyphicon glyphicon-trash"></span>
             </a>
         </div>

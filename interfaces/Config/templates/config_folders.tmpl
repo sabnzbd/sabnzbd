@@ -77,7 +77,7 @@
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="password_file">$T('opt-password_file')</label>
-                    <input type="text" name="password_file" id="password_file" value="$password_file" />
+                    <input type="text" name="password_file" id="password_file" value="$password_file" class="fileBrowserField" data-initialdir="$my_home" data-files="1" />
                     <span class="desc">$T('explain-password_file')</span>
                 </div>
                 <div class="field-pair">
@@ -133,7 +133,7 @@
 <script type="text/javascript">
     jQuery(document).ready(function() {
         // Add autocomplete and file-browser
-        jQuery('.col1 input[name$="_dir"]').typeahead().fileBrowser();
+        jQuery('.col1 input[name$="_dir"], #password_file').typeahead().fileBrowser();
 
         jQuery('#purge_log_files').click(function () {
             if ( confirm("$T('confirm')") ) {

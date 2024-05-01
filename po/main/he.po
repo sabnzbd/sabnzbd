@@ -3,19 +3,19 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
-# ION, 2023
+# ION, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.1\n"
+"Project-Id-Version: SABnzbd-4.3.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: ION, 2023\n"
+"Last-Translator: ION, 2024\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: he\n"
-"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
+"Plural-Forms: nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;\n"
 
 #. Notification - Status page, table column header, actual message
 #: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
@@ -165,6 +165,66 @@ msgid "Test Notification"
 msgstr "בחן התראה"
 
 #: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "שם המארח לא נקבע."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "אין חיבורים שנקבעו. אנא קבע לפחות חיבור אחד."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "סיסמאות מוסוות באמצעות ******, אנא הכנס מחדש"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "פרטי שרת בלתי תקפים"
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. It appears that %s operates as a web "
+"server (port 80), possibly an indexer, not a usenet server. You have to fill"
+" a usenet server."
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "כתובת השרת \"%s:%s\" אינה תקפה."
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "פסק זמן חלף: נסה לאפשר SSL או להתחבר על פתחה שונה."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "אזל הזמן"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr "פרוטוקול SSL בלתי ידוע: נסה להשבית SSL או להתחבר על פתחה שונה."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr ".השרת דורש שם משתמש וסיסמה"
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "חיבור מוצלח!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
+
+#: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "פותר כתובת"
 
@@ -280,7 +340,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" should not be used here"
-msgstr ""
+msgstr "נתיב הרשת \"%s\" לא אמור להיות בשימוש כאן"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -448,6 +508,11 @@ msgstr "כישלון באתחול %s@%s עם סיבה: %s"
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
 msgstr "שגיאה גורלית במורידן"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -663,10 +728,6 @@ msgid ""
 "program:"
 msgstr "מפתח API שגוי, השתמש במפתח ה־API מתצורה->כללי בתוכנית הצד השלישי שלך:"
 
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
-
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -675,10 +736,6 @@ msgstr "ניסיון כניסה בלתי מוצלח מן %s"
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr "ארכיון בלתי תקף של גיבוי"
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "כתובת השרת \"%s:%s\" אינה תקפה."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -742,6 +799,7 @@ msgstr "הקודם"
 msgid ""
 "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
 msgstr ""
+"כדי למנוע את כל האזהרות המועילות, השבת את ההגדרה המיוחדת 'helpful_warnings'."
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -1028,6 +1086,10 @@ msgstr "השרת %s משתמש בתעודה בלתי מהימנה [%s]"
 msgid "Wiki"
 msgstr "וויקי"
 
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
+msgstr ""
+
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
@@ -1078,7 +1140,7 @@ msgstr "הודעות אחרות"
 #. Notification action
 #: sabnzbd/notifier.py
 msgid "Open folder"
-msgstr ""
+msgstr "פתח תיקייה"
 
 #. Notification action
 #: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
@@ -1097,6 +1159,20 @@ msgstr "כישלון בשליחת התראת macOS"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "כישלון בשליחת הודעת Prowl"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "One or more Apprise URLs could not be loaded."
+msgstr "כתובת Apprise אחת או יותר לא יכלו להיטען."
+
+#: sabnzbd/notifier.py
+msgid "Failed to send one or more Apprise Notifications"
+msgstr "כישלון בשליחת התראת Apprise אחת או יותר"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message"
+msgstr "כישלון בשליחת הודעת Apprise"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1340,7 +1416,7 @@ msgstr "צא"
 msgid "Queue First 10 Items"
 msgstr "הוסף לתור 10 פריטים ראשונים"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "ריק"
 
@@ -2110,7 +2186,7 @@ msgstr "פורום"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Live Chat"
-msgstr ""
+msgstr "צ'אט חי"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2266,6 +2342,11 @@ msgstr "תסריטים"
 msgid "Delete all items from the queue?"
 msgstr "למחוק את כל הפריטים מהתור?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr ""
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2286,6 +2367,11 @@ msgstr "הסר NZB"
 msgid "Remove NZB & Delete Files"
 msgstr "הסר NZB ומחק קבצים"
 
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr ""
+
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
 msgid "Missing articles"
@@ -2304,6 +2390,10 @@ msgstr "ידני"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "אפס מכסה כעת"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2324,6 +2414,11 @@ msgstr "הראה נכשלים"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "הראה הכל"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr ""
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2607,11 +2702,11 @@ msgstr "פתחה אשר SABnzbd צריך להאזין אליה."
 
 #: sabnzbd/skintext.py
 msgid "Web Interface Theme"
-msgstr ""
+msgstr "ערכת נושא של ממשק רשת"
 
 #: sabnzbd/skintext.py
 msgid "Choose a theme."
-msgstr ""
+msgstr "בחר ערכת נושא."
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -2765,28 +2860,33 @@ msgid "History Retention"
 msgstr "שימור היסטוריה"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-"מחק באופן אוטומטי עבודות שלמות מההיסטוריה. שים לב ששימור כפול ומספר כלים "
-"חיצוניים מסתמכים על מידע היסטוריה."
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "שמור את כל העבודות"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "שמור מספר מרבי של עבודות שלמות"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "שמור מספר ימים מרבי של עבודות שלמות"
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "אל תשמור עבודות שלמות כלשהן"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3162,18 +3262,17 @@ msgstr "השלך"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
-msgstr "הכשל עבודה (העבר להיסטוריה)"
-
-#. Four way switch for duplicates
-#: sabnzbd/skintext.py
 msgid "Tag job"
 msgstr "הצמד תג לעבודה"
 
-#. Three way switch for encrypted posts
+#. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Abort"
-msgstr "בטל"
+msgid "Fail job (move to History)"
+msgstr "הכשל עבודה (העבר להיסטוריה)"
+
+#: sabnzbd/skintext.py
+msgid "Abort post-processing"
+msgstr "בטל בתר־עיבוד"
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
@@ -3627,14 +3726,6 @@ msgid "Bandwidth"
 msgstr "רוחב פס"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "שלח קבוצה"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "פקודת שלח קבוצה לפני בקשת מאמרים."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "הערות אישיות"
 
@@ -4018,6 +4109,32 @@ msgstr "התקן"
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
 msgstr "מכשיר אליו הודעה תישלח"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Enable Apprise notifications"
+msgstr "אפשר התראות Apprise"
+
+#: sabnzbd/skintext.py
+msgid "Send notifications using Apprise to almost any notification service"
+msgstr "שלח התראות ע״י שימוש בשירות Apprise אל כמעט כל שירות התראות"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Default Apprise URLs"
+msgstr "כתובות Apprise ברירות מחדל"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Use a comma and/or space to identify more than one URL."
+msgstr "השתמש בפסיק, ברווח או בשניהם כדי לזהות יותר מכתובת אחת."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Override the default URLs for specific notification types below, if desired."
+msgstr ""
+"דרוס את כתובות ברירות המחדל עבור סוגי התראה מסויימים שמצויינים למטה, אם תרצה"
+" בכך."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
@@ -4505,6 +4622,8 @@ msgid ""
 "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
 "completed' are disabled."
 msgstr ""
+"כשאתה מנסה שוב עבודה, העבודות 'גילוי שכפולים' ו'בטל עבודות שאינן יכולות "
+"להיות שלמות' מושבתות."
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
@@ -4774,48 +4893,3 @@ msgstr "משיכת כתובת נכשלה; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "מנסה למשוך קובץ NZB מן %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "שם המארח לא נקבע."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "אין חיבורים שנקבעו. אנא קבע לפחות חיבור אחד."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "סיסמאות מוסוות באמצעות ******, אנא הכנס מחדש"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "פרטי שרת בלתי תקפים"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "פסק זמן חלף: נסה לאפשר SSL או להתחבר על פתחה שונה."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "אזל הזמן"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr "פרוטוקול SSL בלתי ידוע: נסה להשבית SSL או להתחבר על פתחה שונה."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr ".השרת דורש שם משתמש וסיסמה"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "חיבור מוצלח!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"

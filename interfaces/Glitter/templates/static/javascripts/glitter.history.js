@@ -9,10 +9,12 @@ function HistoryListModel(parent) {
     self.lastUpdate = 0;
     self.historyItems = ko.observableArray([])
     self.showFailed = ko.observable(false).extend({ persist: 'historyShowFailed' });
+    self.showArchive = ko.observable(false).extend({ persist: 'historyShowArchive' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
     self.totalItems = ko.observable(0);
+    self.deleteItems = ko.observableArray([]);
     self.ppItems = ko.observable(0);
     self.pagination = new paginationModel(self);
     self.isMultiEditing = ko.observable(false).extend({ persist: 'historyIsMultiEditing' });
@@ -118,6 +120,27 @@ function HistoryListModel(parent) {
         self.parent.refresh(true)
     });
 
+    self.triggerRemoveDownload = function(items) {
+        // Show and fill modal
+        self.deleteItems.removeAll()
+
+        // Single or multiple items?
+        if(items.length) {
+            ko.utils.arrayPushAll(self.deleteItems, items)
+        } else {
+            self.deleteItems.push(items)
+        }
+
+        // Show modal or delete right away
+        if(self.parent.confirmDeleteHistory()) {
+            // Open modal if desired
+            $('#modal-delete-history-job').modal("show")
+        } else {
+            // Otherwise just submit right away
+            $('#modal-delete-history-job form').submit()
+        }
+    }
+
     // Retry a job
     self.retryJob = function(form) {
         // Adding a extra retry file happens through this special function
@@ -176,10 +199,17 @@ function HistoryListModel(parent) {
 
     // Toggle showing failed
     self.toggleShowFailed = function(data, event) {
-        // Set the loader so it doesn't flicker and then switch
-        self.isLoading(true)
         self.showFailed(!self.showFailed())
-        // Forde hide tooltip so it doesn't linger
+        // Force hide tooltip so it doesn't linger
+        $('#history-options a').tooltip('hide')
+        // Force refresh
+        self.parent.refresh(true)
+    }
+
+    // Toggle showing archive
+    self.toggleShowArchive = function(data, event) {
+        self.showArchive(!self.showArchive())
+        // Force hide tooltip so it doesn't linger
         $('#history-options a').tooltip('hide')
         // Force refresh
         self.parent.refresh(true)
@@ -201,11 +231,9 @@ function HistoryListModel(parent) {
 
     // Empty history options
     self.emptyHistory = function(data, event) {
-        // Make sure no flickering
-        self.isLoading(true)
-
         // What event?
         var whatToRemove = $(event.target).data('action');
+        var skipArchive = $('#modal-purge-history input[type="checkbox"]').prop("checked")
         var del_files, value;
 
         // Purge failed
@@ -238,6 +266,7 @@ function HistoryListModel(parent) {
                 mode: 'history',
                 name: 'delete',
                 del_files: 1,
+                archive: (!skipArchive) * 1,
                 value: strIDs
             }).then(function() {
                 // Clear search, refresh and hide
@@ -252,8 +281,9 @@ function HistoryListModel(parent) {
         callAPI({
             mode: 'history',
             name: 'delete',
-            value: value,
-            del_files: del_files
+            del_files: del_files,
+            archive: (!skipArchive) * 1,
+            value: value
         }).then(function() {
             self.parent.refresh();
             $("#modal-purge-history").modal('hide');
@@ -328,42 +358,67 @@ function HistoryListModel(parent) {
         return true;
     }
 
+    // Remove downloads from history
+    self.removeDownloads = function(form) {
+        // Hide modal and show notification
+        $('#modal-delete-history-job').modal("hide")
+        showNotification('.main-notification-box-removing')
+
+        var strIDsPP = '';
+        var strIDsHistory = '';
+        $.each(self.deleteItems(), function(index) {
+            // Split in jobs that need post-processing aborted, and jobs that need to be deleted
+            if(this.processingDownload() === 2) {
+                strIDsPP = strIDsPP + this.id + ',';
+                // These items should not be listed in the deletedItems later on
+                // as active post-processing aren't removed from the history output
+                self.deleteItems.remove(this)
+            } else {
+                strIDsHistory = strIDsHistory + this.id + ',';
+            }
+        })
+
+        // Trigger post-processing aborting
+        if(strIDsPP !== "") {
+            callAPI({
+                mode: 'cancel_pp',
+                value: strIDsPP
+            }).then(function(response) {
+                // Only hide and refresh
+                self.parent.refresh();
+                hideNotification()
+            });
+        }
+        if(strIDsHistory !== "") {
+            var skipArchive = $('#modal-delete-history-job input[type="checkbox"]').prop("checked")
+            callAPI({
+                mode: 'history',
+                name: 'delete',
+                del_files: 1,
+                archive: (!skipArchive) * 1,
+                value: strIDsHistory
+            }).then(function(response) {
+                self.historyItems.removeAll(self.deleteItems());
+                self.multiEditItems.removeAll(self.deleteItems())
+                self.parent.refresh();
+                hideNotification()
+            });
+        }
+    };
+
     // Delete all selected
     self.doMultiDelete = function() {
         // Anything selected?
         if(self.multiEditItems().length < 1) return;
 
-        // Need confirm
-        if(!self.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDown)) {
-            // List all the ID's
-            var strIDs = '';
-            $.each(self.multiEditItems(), function(index) {
-                strIDs = strIDs + this.id + ',';
-            })
-
-            // Show notification
-            showNotification('.main-notification-box-removing-multiple', 0, self.multiEditItems().length)
-
-            // Remove
-            callAPI({
-                mode: 'history',
-                name: 'delete',
-                del_files: 1,
-                value: strIDs
-            }).then(function(response) {
-                if(response.status) {
-                    // Make sure the queue doesnt flicker and then fade-out
-                    // Make sure no flickering (if there are more items left) and then remove
-                    self.isLoading(self.totalItems() > 1)
-                    self.parent.refresh();
-                    // Empty it
-                    self.multiEditItems.removeAll();
-                    // Hide notification
-                    hideNotification()
-                }
-            })
-        }
+        // Trigger modal
+        self.triggerRemoveDownload(self.multiEditItems())
     }
+
+    // Focus on the confirm button
+    $('#modal-delete-history-job').on("shown.bs.modal", function() {
+        $('#modal-delete-history-job .btn[type="submit"]').focus()
+    })
 
     // On change of page we need to check all those that were in the list!
     self.historyItems.subscribe(function() {
@@ -542,36 +597,4 @@ function HistoryModel(parent, data) {
             return false;
         })
     }
-
-    // Delete button
-    self.deleteSlot = function(item, event) {
-        // Confirm?
-        if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.deleteMsg + ":\n" + item.historyStatus.name() + "\n\n" + glitterTranslate.removeDow1)) {
-            // Are we still processing and it can be stopped?
-            if(item.processingDownload() === 2) {
-                callAPI({
-                    mode: 'cancel_pp',
-                    value: self.id
-                })
-                // All we can do is wait
-            } else {
-                // Delete the item
-                callAPI({
-                    mode: 'history',
-                    name: 'delete',
-                    del_files: 1,
-                    value: self.id
-                }).then(function(response) {
-                    if(response.status) {
-                        // Make sure no flickering (if there are more items left) and then remove
-                        self.parent.isLoading(self.parent.totalItems() > 1)
-                        self.parent.historyItems.remove(self);
-                        self.parent.multiEditItems.remove(function(inList) { return inList.id === self.id; })
-                        self.parent.parent.refresh();
-                    }
-                });
-            }
-
-        }
-    };
 }

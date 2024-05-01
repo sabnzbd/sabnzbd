@@ -25,7 +25,8 @@ import socket
 import pytest
 from flaky import flaky
 
-from sabnzbd.happyeyeballs import happyeyeballs
+from sabnzbd.happyeyeballs import happyeyeballs, IPV6_MAPPING
+from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr
 
 
 @flaky
@@ -37,24 +38,23 @@ class TestHappyEyeballs:
 
     def test_google_http(self):
         addrinfo = happyeyeballs("www.google.com", port=80)
-        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
+        assert is_ipv4_addr(addrinfo.ipaddress) or is_ipv6_addr(addrinfo.ipaddress)
         assert "google" in addrinfo.canonname
 
     def test_google_https(self):
         addrinfo = happyeyeballs("www.google.com", port=443)
-        assert "." in addrinfo.ipaddress or ":" in addrinfo.ipaddress
+        assert is_ipv4_addr(addrinfo.ipaddress) or is_ipv6_addr(addrinfo.ipaddress)
         assert "google" in addrinfo.canonname
 
     def test_google_http_want_ipv4(self):
         addrinfo = happyeyeballs("www.google.com", port=80, family=socket.AF_INET)
-        assert "." in addrinfo.ipaddress and not ":" in addrinfo.ipaddress
+        assert is_ipv4_addr(addrinfo.ipaddress) and not is_ipv6_addr(addrinfo.ipaddress)
         assert "google" in addrinfo.canonname
 
     def test_google_http_want_ipv6(self):
         # TODO: timeout needed for IPv4-only CI environment?
-        addrinfo = happyeyeballs("www.google.com", port=80, timeout=2, family=socket.AF_INET6)
-        if addrinfo:
-            assert not "." in addrinfo.ipaddress and ":" in addrinfo.ipaddress
+        if addrinfo := happyeyeballs("www.google.com", port=80, timeout=2, family=socket.AF_INET6):
+            assert not is_ipv4_addr(addrinfo.ipaddress) and is_ipv6_addr(addrinfo.ipaddress)
             assert "google" in addrinfo.canonname
 
     def test_not_resolvable(self):
@@ -62,7 +62,7 @@ class TestHappyEyeballs:
 
     def test_ipv6_only(self):
         if addrinfo := happyeyeballs("ipv6.google.com", port=443, timeout=2):
-            assert ":" in addrinfo.ipaddress
+            assert is_ipv6_addr(addrinfo.ipaddress)
             assert "google" in addrinfo.canonname
 
     def test_google_unreachable_port(self):
@@ -70,5 +70,14 @@ class TestHappyEyeballs:
 
     @pytest.mark.xfail(reason="CI sometimes blocks this")
     def test_nntp(self):
-        ip = happyeyeballs("news.newshosting.com", port=119).ipaddress
-        assert "." in ip or ":" in ip
+        if ip := happyeyeballs("news.newshosting.com", port=119).ipaddress:
+            assert is_ipv4_addr(ip) or is_ipv6_addr(ip)
+
+    @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Resolves strangely on macOS CI")
+    @pytest.mark.parametrize("hostname", IPV6_MAPPING.keys())
+    def test_ipv6_mapping(self, hostname):
+        # This test will let us remove hostnames from the mapping
+        # once the providers add IPv6 to their main hostname
+        with pytest.raises(socket.gaierror):
+            # Print results for us to see the new information
+            print(socket.getaddrinfo(hostname, 119, socket.AF_INET6, socket.SOCK_STREAM))

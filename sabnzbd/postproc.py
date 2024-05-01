@@ -197,10 +197,11 @@ class PostProcessor(Thread):
         self.slow_queue.put(None)
         self.fast_queue.put(None)
 
-    def cancel_pp(self, nzo_id: str) -> Optional[bool]:
-        """Change the status, so that the PP is canceled"""
+    def cancel_pp(self, nzo_ids: List[str]) -> Optional[bool]:
+        """Abort Direct Unpack and change the status, so that the PP is canceled"""
+        result = None
         for nzo in self.history_queue:
-            if nzo.nzo_id == nzo_id:
+            if nzo.nzo_id in nzo_ids:
                 nzo.abort_direct_unpacker()
                 if nzo.pp_active:
                     nzo.pp_active = False
@@ -210,8 +211,9 @@ class PostProcessor(Thread):
                         logging.info("Killed external process %s", self.external_process.args[0])
                     except:
                         pass
-                return True
-        return None
+                result = True
+            return result
+        return result
 
     def empty(self) -> bool:
         """Return True if pp queue is empty"""
@@ -279,6 +281,15 @@ class PostProcessor(Thread):
         # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
         database.scheduled_history_purge()
 
+        # Check for Apprise notification script
+        # We don't have a much better place to do this, since there's no notifier-thread
+        # TODO: Remove in 4.4
+        if sabnzbd.cfg.nscript_script() == "sabnzbd-notify.py":
+            helpful_warning(
+                "NZB-Notify has been integrated into SABnzbd. You can now use the "
+                "Apprise section to configure the same notifications."
+            )
+
         # Start looping
         check_eoq = False
         while not self.__stop:
@@ -337,7 +348,7 @@ class PostProcessor(Thread):
 
             if nzo.to_be_removed:
                 with database.HistoryDB() as history_db:
-                    history_db.remove_history(nzo.nzo_id)
+                    history_db.remove(nzo.nzo_id)
                 nzo.purge_data()
 
             # Processing done

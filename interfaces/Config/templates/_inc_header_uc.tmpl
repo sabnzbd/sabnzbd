@@ -70,27 +70,7 @@
     <script type="text/javascript" src="${root}staticcfg/js/script.js?v=$version"></script>
     <script type="text/javascript">
         // Set default functions for the autocomplete everywhere
-        jQuery.extend(jQuery.fn.typeahead.defaults, {
-            source: function (query, process) {
-                // If there's no separator, it must be a relative path
-                if(query.split(folderSeperator).length < 2 && this.\$element.data('initialdir')) {
-                    query  = this.\$element.data('initialdir') + folderSeperator + query;
-                }
-                // Get info from the API
-                return jQuery.get(folderBrowseUrl + '&compact=1&term=' + query, function (data) {
-                    return process(data);
-                });
-            },
-            updater: function(item) {
-                // Is it a relative path?
-                if(item.indexOf(this.\$element.data('initialdir')) === 0) {
-                    // Remove start
-                    return item.replace(this.\$element.data('initialdir')+folderSeperator, '');
-                }
-                // Full path
-                return item
-            }
-        })
+
 
         // to top right away
         if(window.location.hash) {

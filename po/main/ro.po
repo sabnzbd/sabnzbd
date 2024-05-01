@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.1\n"
+"Project-Id-Version: SABnzbd-4.3.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -167,6 +167,71 @@ msgstr "Email reuşit"
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "Test Notification"
 msgstr "Notificări Test"
+
+#: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Numele gazdei nu este setat."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Detalii server invalide"
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. It appears that %s operates as a web "
+"server (port 80), possibly an indexer, not a usenet server. You have to fill"
+" a usenet server."
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "Adresa server \"%s:%s\" nu este validă"
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
+"port diferit."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "A depăşit timpul alocat"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Serverul necesită nume utilizator şi parolă"
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Conexiune Reuşită!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
+"din nou mai târziu"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nu pot determina reultatul conexiunii (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -459,6 +524,11 @@ msgstr "Nu am putu inițializa %s@%s din cauza următorului motiv: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Prea multe conexiuni la serverul %s [%s]"
@@ -673,10 +743,6 @@ msgstr ""
 "Cheie API incorectă, Folosiţi cheia api din Configurare->General în "
 "programul dumneavoastră terţ:"
 
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
-
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -685,10 +751,6 @@ msgstr "Încercare de conectare nereușită de la %s"
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "Adresa server \"%s:%s\" nu este validă"
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -1045,6 +1107,10 @@ msgstr "Serverul %s utilizează un certificat nesigur [%s]"
 msgid "Wiki"
 msgstr "Wiki"
 
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
+msgstr ""
+
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
@@ -1114,6 +1180,20 @@ msgstr "Eșuare la trimiterea notificării macOS"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Nu am putu trimite mesajul Prowl"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "One or more Apprise URLs could not be loaded."
+msgstr ""
+
+#: sabnzbd/notifier.py
+msgid "Failed to send one or more Apprise Notifications"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1357,7 +1437,7 @@ msgstr "Ieșire"
 msgid "Queue First 10 Items"
 msgstr "Pune la Coadă Primele 10 Obiecte"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Gol"
 
@@ -2287,6 +2367,11 @@ msgstr "Script-uri"
 msgid "Delete all items from the queue?"
 msgstr "Ştergeţi toate obiectele din coadă?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr ""
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2307,6 +2392,11 @@ msgstr "Şterge NZB"
 msgid "Remove NZB & Delete Files"
 msgstr "Şterge NZB & Fişiere Şterse"
 
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr ""
+
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
 msgid "Missing articles"
@@ -2325,6 +2415,10 @@ msgstr "manual"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Resetează Cota acum"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2345,6 +2439,11 @@ msgstr "Arată Nereuşite"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "Arată toate"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr ""
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2781,25 +2880,32 @@ msgid "History Retention"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
+msgid "Delete jobs if the history exceeds specified number of jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3174,18 +3280,17 @@ msgstr "Ignoră"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
+msgid "Tag job"
 msgstr ""
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Tag job"
+msgid "Fail job (move to History)"
 msgstr ""
 
-#. Three way switch for encrypted posts
 #: sabnzbd/skintext.py
-msgid "Abort"
-msgstr "Renunță"
+msgid "Abort post-processing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
@@ -3637,14 +3742,6 @@ msgid "Bandwidth"
 msgstr "Descărcat"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Trimite Grup"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Trimite comanda group înainte de a cere articole."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Note personale"
 
@@ -4027,6 +4124,30 @@ msgstr "Dispozitiv"
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
 msgstr "Dispozitiv la care să se trimită mesajul"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Enable Apprise notifications"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Send notifications using Apprise to almost any notification service"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Default Apprise URLs"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Use a comma and/or space to identify more than one URL."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Override the default URLs for specific notification types below, if desired."
+msgstr ""
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
@@ -4775,53 +4896,3 @@ msgstr "Descărcare URL nereuşită; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Încerc să descarc NZB de la %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Numele gazdei nu este setat."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Detalii server invalide"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
-"port diferit."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "A depăşit timpul alocat"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Serverul necesită nume utilizator şi parolă"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Conexiune Reuşită!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
-"din nou mai târziu"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nu pot determina reultatul conexiunii (%s)"

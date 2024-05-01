@@ -132,7 +132,7 @@ def public_ip(family=socket.AF_UNSPEC):
         # Make sure it's a valid IPv4 or IPv6 address
         if not sabnzbd.misc.is_ipv4_addr(client_ip) and not sabnzbd.misc.is_ipv6_addr(client_ip):
             raise ValueError
-    except urllib.error.URLError:
+    except:
         logging.debug(
             "Failed to get public address from %s (%s)",
             sabnzbd.cfg.selftest_host(),

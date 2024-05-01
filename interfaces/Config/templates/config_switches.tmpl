@@ -93,7 +93,7 @@
                             <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="4" <!--#if int($no_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="3" <!--#if int($no_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
+                            <option value="3" <!--#if int($no_dupes) == 3 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                             <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
                         </select>
                         <span class="desc">
@@ -107,7 +107,7 @@
                             <option value="0" <!--#if int($no_smart_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="4" <!--#if int($no_smart_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_smart_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="3" <!--#if int($no_smart_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
+                            <option value="3" <!--#if int($no_smart_dupes) == 3 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                             <option value="1" <!--#if int($no_smart_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
                         </select>
                         <span class="desc">
@@ -125,7 +125,7 @@
                         <select name="pause_on_pwrar" id="pause_on_pwrar">
                             <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="1" <!--#if int($pause_on_pwrar) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
+                            <option value="2" <!--#if int($pause_on_pwrar) == 2 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                         </select>
                         <span class="desc">$T('explain-pause_on_pwrar')</span>
                     </div>
@@ -143,7 +143,7 @@
                         <select name="action_on_unwanted_extensions" id="action_on_unwanted_extensions">
                             <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
                             <option value="1" <!--#if int($action_on_unwanted_extensions) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
-                            <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected"' else ""#--> >$T('abort')</option>
+                            <option value="2" <!--#if int($action_on_unwanted_extensions) == 2 then 'selected="selected"' else ""#--> >$T('fail-to-history')</option>
                         </select>
                         <span class="desc">$T('explain-action_on_unwanted_extensions')</span>
                     </div>
@@ -259,16 +259,17 @@
                         <span class="desc">$T('explain-cleanup_list')</span>
                     </div>
                     <div class="field-pair">
-                        <label class="config" for="history_retention_select">$T('opt-history_retention')</label>
-                        <input type="hidden" name="history_retention" id="history_retention" value="$history_retention">
-                        <select name="history_retention_select" id="history_retention_select">
-                            <option value="0">$T('history_retention-all')</option>
-                            <option value="n">$T('history_retention-number')</option>
-                            <option value="d">$T('history_retention-days')</option>
-                            <option value="-1">$T('history_retention-none')</option>
+                        <label class="config" for="history_retention_option">$T('opt-history_retention')</label>
+                        <select name="history_retention_option" id="history_retention_option">
+                            <option value="all" <!--#if $auto_sort == "all" then 'selected="selected"' else ""#-->>$T('history_retention-all')</option>
+                            <option value="number-archive" <!--#if $history_retention_option == "number-archive" then 'selected="selected"' else ""#-->>$T('history_retention-number-archive')</option>
+                            <option value="number-delete" <!--#if $history_retention_option == "number-delete" then 'selected="selected"' else ""#-->>$T('history_retention-number-delete')</option>
+                            <option value="days-archive" <!--#if $history_retention_option == "days-archive" then 'selected="selected"' else ""#-->>$T('history_retention-days-archive')</option>
+                            <option value="days-delete" <!--#if $history_retention_option == "days-delete" then 'selected="selected"' else ""#-->>$T('history_retention-days-delete')</option>
+                            <option value="all-archive" <!--#if $history_retention_option == "all-archive" then 'selected="selected"' else ""#-->>$T('history_retention-archive')</option>
+                            <option value="all-delete" <!--#if $history_retention_option == "all-delete" then 'selected="selected"' else ""#-->>$T('history_retention-none')</option>
                         </select>
-                        <input type="number" id="history_retention_number" name="history_retention_number" min="1">
-                        <span class="desc">$T('explain-history_retention').replace('. ', '.<br/>')</span>
+                        <input type="number" id="history_retention_number" name="history_retention_number" min="1" value="$history_retention_number">
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
@@ -359,52 +360,24 @@
 
 <script type="text/javascript">
 jQuery(document).ready(function() {
-    jQuery('#history_retention_select, #history_retention_number').on('change', updateHistoryRetention)
+    jQuery('#history_retention_option').on('change', updateHistoryRetention)
     function updateHistoryRetention() {
-        var retention_setting = jQuery('#history_retention')
-        var retention_select = jQuery('#history_retention_select').val()
+        var retention_option = jQuery('#history_retention_option').val()
         var retention_number = jQuery('#history_retention_number')
-        // Keep all or keep none
-        if(retention_select === "0" || retention_select === "-1") {
+
+        if(retention_option === "number-archive" || retention_option === "number-delete") {
+            retention_number.show()
+            retention_number.attr('placeholder', '$T('history_retention-limit')')
+        } else if(retention_option === "days-archive" || retention_option === "days-delete") {
+            retention_number.show()
+            retention_number.attr('placeholder', '$T('days').capitalize()')
+        } else {
             retention_number.hide()
             retention_number.val('')
             retention_number.attr('placeholder', '')
-            retention_setting.val(retention_select)
-        } else {
-            retention_number.show()
-            // Days or number?
-            if(retention_select.indexOf("d") !== -1) {
-                retention_number.attr('placeholder', '$T('days').capitalize()')
-                if(retention_number.val()) {
-                    retention_setting.val(retention_number.val() + 'd')
-                } else if(parseInt(retention_setting.val()) > 0) {
-                    retention_number.val(parseInt(retention_setting.val()))
-                }
-            } else {
-                retention_number.attr('placeholder', '$T('history_retention-limit')')
-                if(retention_number.val()) {
-                    retention_setting.val(retention_number.val())
-                } else if(parseInt(retention_setting.val()) > 0) {
-                    retention_number.val(parseInt(retention_setting.val()))
-                }
-            }
         }
     }
-    // Set the history-retention settig
-    var retention_setting_value = jQuery('#history_retention').val()
-    if(parseInt(retention_setting_value) > 0) {
-        // Days or number?
-        if(retention_setting_value.indexOf("d") !== -1) {
-            jQuery('#history_retention_select').val("d")
-        } else {
-            jQuery('#history_retention_select').val("n")
-        }
-        jQuery('#history_retention_number').val(parseInt(retention_setting_value))
-    } else {
-        // Keep all or keep none
-        jQuery('#history_retention_select').val(retention_setting_value)
-        jQuery('#history_retention_number').hide()
-    }
+    updateHistoryRetention()
 
     jQuery('.restoreDefaults').click(function(e) {
         // Get section name

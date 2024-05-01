@@ -104,6 +104,7 @@ SKIN_TEXT = {
     "parameters": TT("Parameters"),  #: Config: startup parameters of SABnzbd
     "pythonVersion": TT("Python Version"),
     "notAvailable": TT("Not available"),
+    "empty": TT("Empty"),
     "homePage": TT("Home page"),  #: Home page of the SABnzbd project
     "source": TT("Source"),  #: Where to find the SABnzbd sourcecode
     "or": TT("or"),
@@ -173,20 +174,24 @@ SKIN_TEXT = {
     "eoq-scripts": TT("Scripts"),  #: Queue page table, script selection menu
     "purgeQueue": TT("Purge Queue"),  #: Queue page button
     "purgeQueueConf": TT("Delete all items from the queue?"),  #: Confirmation popup
+    "confirm-delete": TT("Are you sure you want to remove these jobs?"),  #: Delete confirmation popup
     "purgeNZBs": TT("Purge NZBs"),  #: Queue page button
     "purgeNZBs-Files": TT("Purge NZBs & Delete Files"),  #: Queue page button
     "removeNZB": TT("Remove NZB"),  #: Queue page button
     "removeNZB-Files": TT("Remove NZB & Delete Files"),  #: Queue page button
+    "permanently-delete": TT("Permanently delete (skip archive)"),  #: Checkbox if job should be added to Archive
     "missingArt": TT("Missing articles"),  #: Caption for missing articles in Queue
     "quota-left": TT("Quota left"),  #: Remaining quota (displayed in Queue)
     "manual": TT("manual"),  #: Manual reset of quota
     "link-resetQuota": TT("Reset Quota now"),
     # History page
+    "archive": TT("Archive"),
     "purgeHist": TT("Purge History"),  #: History page button
     "hideDetails": TT("Hide details"),  #: Button/link hiding History job details
     "showDetails": TT("Show details"),  #: Button/link showing History job details
     "showFailedHis": TT("Show Failed"),  #: Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!
     "showAllHis": TT("Show All"),  #: Button or link showing all History jobs
+    "showArchive": TT("Show Archive"),  #: Button showing all archived jobs
     "size": TT("Size"),  #: History table header
     "status": TT("Status"),  #: History table header
     "purgeFailed": TT("Purge Failed NZBs"),  #: Button to delete all failed jobs in History
@@ -310,13 +315,13 @@ SKIN_TEXT = {
         "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
     ),
     "opt-history_retention": TT("History Retention"),
-    "explain-history_retention": TT(
-        "Automatically delete completed jobs from History. Beware that Duplicate Detection and some external tools rely on History information."
-    ),
     "history_retention-all": TT("Keep all jobs"),
-    "history_retention-number": TT("Keep maximum number of completed jobs"),
-    "history_retention-days": TT("Keep completed jobs maximum number of days"),
-    "history_retention-none": TT("Do not keep any completed jobs"),
+    "history_retention-number-archive": TT("Move jobs to the archive if the history exceeds specified number of jobs"),
+    "history_retention-number-delete": TT("Delete jobs if the history exceeds specified number of jobs"),
+    "history_retention-days-archive": TT("Move jobs to the archive after specified number of days"),
+    "history_retention-days-delete": TT("Delete jobs after specified number of days"),
+    "history_retention-archive": TT("Move all completed jobs to archive"),
+    "history_retention-none": TT("Delete all completed jobs"),
     "history_retention-limit": TT("Jobs"),
     "button-saveChanges": TT("Save Changes"),
     "button-restoreDefaults": TT("Restore Defaults"),
@@ -423,9 +428,9 @@ SKIN_TEXT = {
     "nodupes-off": TT("Off"),  #: Three way switch for duplicates
     "nodupes-ignore": TT("Discard"),  #: Four way switch for duplicates
     "nodupes-pause": TT("Pause"),  #: Four way switch for duplicates
-    "nodupes-fail": TT("Fail job (move to History)"),  #: Four way switch for duplicates
     "nodupes-tag": TT("Tag job"),  #: Four way switch for duplicates
-    "abort": TT("Abort"),  #: Three way switch for encrypted posts
+    "fail-to-history": TT("Fail job (move to History)"),  #: Four way switch for duplicates
+    "abort": TT("Abort post-processing"),
     "opt-action_on_unwanted_extensions": TT("Action when unwanted extension detected"),
     "explain-action_on_unwanted_extensions": TT("Action when an unwanted extension is detected"),
     "opt-unwanted_extensions": TT("Unwanted extensions"),
@@ -671,6 +676,15 @@ SKIN_TEXT = {
     "explain-pushbullet_apikey": TT("Your personal Pushbullet API key (required)"),  #: Pushbullet settings
     "opt-pushbullet_device": TT("Device"),  #: Pushbullet settings
     "explain-pushbullet_device": TT("Device to which message should be sent"),  #: Pushbullet settings
+    "opt-apprise_enable": TT("Enable Apprise notifications"),  #: Apprise settings
+    "explain-apprise_enable": TT(
+        "Send notifications using Apprise to almost any notification service"
+    ),  #: Apprise settings
+    "opt-apprise_urls": TT("Default Apprise URLs"),  #: Apprise settings
+    "explain-apprise_urls": TT("Use a comma and/or space to identify more than one URL."),  #: Apprise settings
+    "explain-apprise_extra_urls": TT(
+        "Override the default URLs for specific notification types below, if desired."
+    ),  #: Apprise settings
     "section-NScript": TT("Notification Script"),  #: Header for Notification Script notification section
     "opt-nscript_enable": TT("Enable notification script"),  #: Notification Script settings
     "opt-nscript_script": TT("Script"),  #: Notification Script settings

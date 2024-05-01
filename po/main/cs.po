@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.1\n"
+"Project-Id-Version: SABnzbd-4.3.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Czech (https://app.transifex.com/sabnzbd/teams/111101/cs/)\n"
@@ -164,6 +164,66 @@ msgstr "Email funční"
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "Test Notification"
 msgstr "Otestovat notifikace"
+
+#: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. It appears that %s operates as a web "
+"server (port 80), possibly an indexer, not a usenet server. You have to fill"
+" a usenet server."
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "Adresa serveru \"%s:%s\" není správná."
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr ""
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Přihlášené selhalo, zkontrolujte jméno a heslo."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr ""
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -450,6 +510,11 @@ msgstr ""
 msgid "Fatal error in Downloader"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Příliš mnoho spojení k serveru %s [%s]"
@@ -654,10 +719,6 @@ msgstr ""
 "Nesprávný API klíč, použijte api klíč z Nastavení->Obecné ve vašem programu "
 "třetí strany:"
 
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Přihlášené selhalo, zkontrolujte jméno a heslo."
-
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -666,10 +727,6 @@ msgstr "Nezdařený pokus o přihlášení od %s"
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr ""
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "Adresa serveru \"%s:%s\" není správná."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -1023,6 +1080,10 @@ msgstr "Server %s používá nedůvěryhodný certifikát [%s]"
 msgid "Wiki"
 msgstr "Wiki"
 
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
+msgstr ""
+
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
@@ -1092,6 +1153,20 @@ msgstr "Nepodařilo se odeslat macOS oznámení"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Nepodařilo se odeslat Prowl zprávu"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "One or more Apprise URLs could not be loaded."
+msgstr ""
+
+#: sabnzbd/notifier.py
+msgid "Failed to send one or more Apprise Notifications"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message"
+msgstr ""
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1335,7 +1410,7 @@ msgstr "Vypnout"
 msgid "Queue First 10 Items"
 msgstr "Fronta prvních 10 položek"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Prázdný"
 
@@ -2229,6 +2304,11 @@ msgstr "Skripty"
 msgid "Delete all items from the queue?"
 msgstr "Smazat všechny položky z fronty?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr ""
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2249,6 +2329,11 @@ msgstr "Odstranit NZB"
 msgid "Remove NZB & Delete Files"
 msgstr "Odstranit NZB a smazat soubory"
 
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr ""
+
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
 msgid "Missing articles"
@@ -2267,6 +2352,10 @@ msgstr "ručně"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Vynulovat kvótu"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr ""
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2287,6 +2376,11 @@ msgstr "Zobrazit neúspěšné"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "Zobrazit vše"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr ""
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2706,26 +2800,33 @@ msgid "History Retention"
 msgstr "Retence historie"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "Zachovat všechny úkoly"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "Maximální počet dokončených úkolů"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "Počet dnů pro zachování dokončených ukolů "
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "Nauchovávat dokončené úkoly"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3081,17 +3182,16 @@ msgstr ""
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
+msgid "Tag job"
 msgstr ""
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Tag job"
+msgid "Fail job (move to History)"
 msgstr ""
 
-#. Three way switch for encrypted posts
 #: sabnzbd/skintext.py
-msgid "Abort"
+msgid "Abort post-processing"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3528,14 +3628,6 @@ msgid "Bandwidth"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr ""
 
@@ -3913,6 +4005,30 @@ msgstr ""
 #. Pushbullet settings
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Enable Apprise notifications"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Send notifications using Apprise to almost any notification service"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Default Apprise URLs"
+msgstr ""
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Use a comma and/or space to identify more than one URL."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Override the default URLs for specific notification types below, if desired."
 msgstr ""
 
 #. Header for Notification Script notification section
@@ -4648,48 +4764,3 @@ msgstr ""
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Zkouším stáhnout NZB z %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr ""

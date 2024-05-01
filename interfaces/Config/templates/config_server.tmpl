@@ -131,7 +131,7 @@
                         <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
                     </div>
                     <div class="field-pair no-field-pair-bg">
-                        <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+                        <button class="btn btn-default addNewServer" disabled><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                         <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     </div>
                     <div class="field-pair result-box">
@@ -554,9 +554,19 @@
                 if(data.value.result) {
                     resultBox.addClass('alert-success')
                     resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+
+                    // Allow adding the new server if we are in the new-server section
+                    if(theButton.parents("form[action='addServer']").length) {
+                        jQuery(".addNewServer").removeAttr("disabled")
+                    }
                 } else {
                     resultBox.addClass('alert-danger')
                     resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
+
+                    // Disable the adding of new server, just to be sure
+                    if(theButton.parents("form[action='addServer']").length) {
+                        jQuery(".addNewServer").attr("disabled", "disabled")
+                    }
                 }
             });
         });

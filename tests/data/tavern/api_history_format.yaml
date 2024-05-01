@@ -12,7 +12,6 @@ stages:
       params:
         mode: history
         apikey: "{SAB_APIKEY}"
-        output: json
         limit: 1
     response:
       status_code: 200
@@ -59,42 +58,11 @@ stages:
               size: !re_match "[0-9][0-9.]*\ [A-Z]"
               loaded: !anybool
               retry: !anyint
+              archive: !anybool
           noofslots: !anyint
           ppslots: !anyint
           last_history_update: !anyint
           version: !anystr
-
-
----
-test_name: Check general history format (text output)
-
-stages:
-  - name: history format single entry
-    request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
-      method: GET
-      params:
-        mode: history
-        apikey: "{SAB_APIKEY}"
-        output: text
-        limit: 1
-    response:
-      status_code: 200
-      headers:
-        content-type: !re_match "text/plain"
-        content-type: !re_search "charset=(UTF|utf)-8"
-        pragma: "no-cache"
-        access-control-allow-origin: "*"
-        content-length: !re_match "[0-9]+"
-      verify_response_with:
-        function: tavern.helpers:validate_regex
-        extra_kwargs:
-          # Verify response parameters with a regex using positive looksaheads,
-          # so parameters match regardless of their order of appearance. Note
-          # that the content of 'slots' is checked in a separate expression.
-          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots': [0-9]+)(?=.*'ppslots': [0-9]+)(?=.*'last_history_update': '?[0-9]+'?)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': .+).*}}$"
-          expression: ".*'slots': \\[{{(?=.*'completed': [0-9]+)(?=.*'name': '.+')(?=.*'nzb_name': '.+')(?=.*'category': '.+')(?=.*'pp': '.?')(?=.*'script': '.+')(?=.*'report': '.+')(?=.*'url': '.+')(?=.*'status': '.+')(?=.*'nzo_id': 'SAB.+')(?=.*'storage': '.+')(?=.*'path': '.+')(?=.*'script_line': '.*')(?=.*'download_time': [0-9]+)(?=.*'postproc_time': [0-9]*)(?=.*'stage_log': \\[.*\\])(?=.*'downloaded': [0-9]+)(?=.*'completeness': None)(?=.*'fail_message': '.*')(?=.*'url_info': '.*')(?=.*'bytes': [0-9]+)(?=.*'meta': None)(?=.*'series': '?.*'?)(?=.*'duplicate_key': '?.*'?)(?=.*'md5sum': '[0-9a-fA-F]+')(?=.*'password': '.*')(?=.*'action_line': '.*')(?=.*'size': '[0-9].*')(?=.*'loaded': (True|False))(?=.*'retry': [0-9]+).*}}\\].*"
-
 
 ---
 test_name: Check general history format (xml output)
@@ -158,6 +126,7 @@ stages:
             <size>!anystr</size>
             <loaded>!anybool</loaded>
             <retry>!anyint</retry>
+            <archive>!anybool</archive>
             </slot>
             </slots>
             <noofslots>!anyint</noofslots>
@@ -181,7 +150,6 @@ stages:
       params:
         mode: history
         apikey: "{SAB_APIKEY}"
-        output: json
     response:
       status_code: 200
       headers:

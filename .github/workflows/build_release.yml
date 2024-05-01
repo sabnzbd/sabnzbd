@@ -12,21 +12,15 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python 3.12 (64bit)
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.12"
         architecture: "x64"
-    - name: Cache Python virtualenv (64bit)
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv-64bit
-      with:
-        custom_virtualenv_dir: "venv64"
-        custom_cache_key_element: "release"
-        requirement_files:  "**/requirements.txt"
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Install Python dependencies (64bit)
-      if: steps.cache-virtualenv-64bit.outputs.cache-hit != 'true'
       # Without dependencies to make sure everything is covered in the requirements.txt
       run: |
         python --version
@@ -36,29 +30,23 @@ jobs:
     - name: Build Windows standalone binary and installer (64bit)
       run: python builder/package.py installer
     - name: Upload Windows standalone binary (64bit)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: "*-win64-bin.zip"
         name: Windows standalone binary (64bit)
     - name: Upload Windows installer (64bit)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: "*-win-setup.exe"
         name: Windows installer
     - name: Set up Python 3.8 (32bit and legacy)
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.8"
         architecture: "x86"
-    - name: Cache Python virtualenv (32bit and legacy)
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv-32bit
-      with:
-        custom_virtualenv_dir: "venv32"
-        custom_cache_key_element: "release"
-        requirement_files: "**/requirements.txt"
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Install Python dependencies (32bit and legacy)
-      if: steps.cache-virtualenv-32bit.outputs.cache-hit != 'true'
       # We do not care about the extra dependencies for the legacy build
       run: |
         python --version
@@ -68,61 +56,52 @@ jobs:
     - name: Build Windows standalone binary (32bit and legacy)
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (32bit and legacy)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: "*-win32-bin.zip"
         name: Windows standalone binary (32bit and legacy)
 
   build_macos:
     name: Build macOS binary
-    runs-on: macos-11
+    runs-on: macos-14
     timeout-minutes: 30
     env:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.12.2"
+      PYTHON_VERSION: "3.12.3"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
       ARCHFLAGS: -arch x86_64 -arch arm64
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      # Only use this for the caching of pip packages!
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Cache Python download
       id: cache-python-download
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/python.pkg
         key: cache-macOS-Python-${{ env.PYTHON_VERSION }}
-    - name: Get Python
+    - name: Get Python from python.org
       if: steps.cache-python-download.outputs.cache-hit != 'true'
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
       run: sudo installer -pkg ~/python.pkg -target /
-    - name: Cache Python virtualenv
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv
-      with:
-        custom_cache_key_element: "release"
-        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies
       # We have to manually take a few steps:
-      # 1.  Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
-      #     first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
-      #     https://github.com/pypa/pip/issues/5453
-      # 2.  We need to build the PyInstaller bootloader:
+      # 1.  We need to build the PyInstaller bootloader:
       #     https://github.com/pyinstaller/pyinstaller/issues/6235
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-    
-        pip3 install --upgrade -r requirements.txt --no-binary cffi --no-dependencies
-        
-        pip3 uninstall cryptography -y
-        pip3 download -r builder/osx/requirements.txt --platform macosx_10_12_universal2 --only-binary :all: --no-dependencies --dest .
-        pip3 install -r builder/osx/requirements.txt --no-cache-dir --no-index --find-links .
-
+        pip3 install --upgrade -r requirements.txt --no-binary cffi,CT3,PyYAML --no-dependencies
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
@@ -143,7 +122,7 @@ jobs:
       # Run this on macOS so the line endings are correct by default
       run: python builder/package.py source
     - name: Upload source distribution
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: "*-src.tar.gz"
         name: Source distribution
@@ -156,7 +135,7 @@ jobs:
         python3 builder/package.py app
         python3 builder/make_dmg.py
     - name: Upload macOS binary
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
@@ -167,13 +146,13 @@ jobs:
     needs: [build_windows, build_macos]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.x"
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: dist
       - name: Move all artifacts to main folder

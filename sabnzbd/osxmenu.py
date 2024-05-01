@@ -488,7 +488,7 @@ class SABnzbdDelegate(NSObject):
         elif mode == "history":
             if not self.history_db:
                 self.history_db = sabnzbd.database.HistoryDB()
-            self.history_db.remove_history()
+            self.history_db.remove_with_status(Status.COMPLETED)
 
     def pauseAction_(self, sender):
         minutes = int(sender.representedObject())

@@ -64,7 +64,8 @@ class DirScanner(threading.Thread):
     def __init__(self):
         super().__init__()
 
-        self.loop: Optional[asyncio.AbstractEventLoop] = None
+        # Create loop right away, so socks5 proxy doesn't break it
+        self.loop = asyncio.new_event_loop()
         self.scanner_task: Optional[asyncio.Task] = None
         self.lock: Optional[asyncio.Lock] = None  # Prevents concurrent scans
         self.error_reported = False  # Prevents multiple reporting of missing watched folder
@@ -109,8 +110,6 @@ class DirScanner(threading.Thread):
     def run(self):
         """Start the scanner"""
         logging.info("Dirscanner starting up")
-        self.loop = asyncio.new_event_loop()
-
         try:
             self.start_scanner()
             self.loop.run_forever()

@@ -2,7 +2,6 @@
 
 """ Measure writing speed of disk specified (or working directory if not specified)"""
 
-import time
 import os
 import sys
 import logging
@@ -48,7 +47,7 @@ def diskspeedmeasure(dirname: str) -> float:
         logging.debug("Failed to measure disk speed on %s", dirname)
         return 0.0
 
-    megabyte_per_second = total_written / total_time / 1024 / 1024
+    megabyte_per_second = round(total_written / total_time / 1024 / 1024, 1)
     logging.debug("Disk speed of %s = %.2f MB/s (in %.2f seconds)", dirname, megabyte_per_second, time.time() - start)
     return megabyte_per_second
 

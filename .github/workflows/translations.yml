@@ -12,7 +12,7 @@ jobs:
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       - name: Generate translatable texts
@@ -30,7 +30,7 @@ jobs:
         run: |
           python3 tools/make_mo.py
       - name: Push translatable and translated texts back to repo
-        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        uses: stefanzweifel/git-auto-commit-action@v5.0.1
         if: env.TX_TOKEN
         with:
           commit_message: |

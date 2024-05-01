@@ -53,6 +53,7 @@ from sabnzbd.misc import (
     recursive_html_escape,
     is_none,
     get_cpu_name,
+    clean_comma_separated_list,
 )
 from sabnzbd.happyeyeballs import happyeyeballs
 from sabnzbd.filesystem import (
@@ -68,7 +69,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
-from sabnzbd.utils.servertests import test_nntp_server_dict
 import sabnzbd.utils.ssdp
 from sabnzbd.constants import (
     DEF_STD_CONFIG,
@@ -210,11 +210,14 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
     # Never check the XFF header unless access would have been granted based on the remote IP alone!
-    if is_allowed and cfg.verify_xff_header() and (xff_header := cherrypy.request.headers.get("X-Forwarded-For")):
-        xff_ips = [ip.strip() for ip in xff_header.split(",")]
+    if (
+        is_allowed
+        and cfg.verify_xff_header()
+        and (xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For")))
+    ):
         is_allowed = all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)
         if not is_allowed:
-            logging.debug("Denying access based on X-Forwarded-For header '%s'", xff_header)
+            logging.debug("Denying access based on X-Forwarded-For IPs '%s'", xff_ips)
 
     if not is_allowed and warn_user:
         log_warning_and_ip(T("Refused connection from:"))
@@ -772,7 +775,8 @@ SWITCH_LIST = (
     "quota_day",
     "quota_resume",
     "quota_period",
-    "history_retention",
+    "history_retention_option",
+    "history_retention_number",
     "pre_check",
     "max_art_tries",
     "fail_hopeless_jobs",
@@ -830,6 +834,7 @@ SPECIAL_BOOL_LIST = (
     "preserve_paused_state",
     "no_penalties",
     "ipv6_servers",
+    "ipv6_staging",
     "fast_fail",
     "overwrite_files",
     "enable_par_cleanup",
@@ -1077,11 +1082,6 @@ class ConfigServer:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveServer(self, **kwargs):
         return handle_server(kwargs, self.__root)
-
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def testServer(self, **kwargs):
-        _, msg = test_nntp_server_dict(kwargs)
-        return msg
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def delServer(self, **kwargs):
@@ -2089,6 +2089,35 @@ NOTIFY_OPTIONS = {
         "pushbullet_prio_queue_done",
         "pushbullet_prio_other",
         "pushbullet_prio_new_login",
+    ),
+    "apprise": (
+        "apprise_enable",
+        "apprise_cats",
+        "apprise_urls",
+        "apprise_target_startup",
+        "apprise_target_startup_enable",
+        "apprise_target_download",
+        "apprise_target_download_enable",
+        "apprise_target_pause_resume",
+        "apprise_target_pause_resume_enable",
+        "apprise_target_pp",
+        "apprise_target_pp_enable",
+        "apprise_target_complete",
+        "apprise_target_complete_enable",
+        "apprise_target_failed",
+        "apprise_target_failed_enable",
+        "apprise_target_disk_full",
+        "apprise_target_disk_full_enable",
+        "apprise_target_warning",
+        "apprise_target_warning_enable",
+        "apprise_target_error",
+        "apprise_target_error_enable",
+        "apprise_target_queue_done",
+        "apprise_target_queue_done_enable",
+        "apprise_target_other",
+        "apprise_target_other_enable",
+        "apprise_target_new_login",
+        "apprise_target_new_login_enable",
     ),
     "nscript": (
         "nscript_enable",

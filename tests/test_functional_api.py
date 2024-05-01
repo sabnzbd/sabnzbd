@@ -46,12 +46,6 @@ class ApiTestFunctions:
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
-    def _get_api_text(self, mode, extra_args={}):
-        """Wrapper for API calls with text output"""
-        extra = {"output": "text", "apikey": SAB_APIKEY}
-        extra.update(extra_args)
-        return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
-
     def _get_api_xml(self, mode, extra_args={}):
         """Wrapper for API calls with xml output"""
         extra = {"output": "xml", "apikey": SAB_APIKEY}
@@ -199,9 +193,6 @@ class TestOtherApi(ApiTestFunctions):
     def test_api_version_json(self):
         assert self._get_api_json("version")["version"] == sabnzbd.__version__
 
-    def test_api_version_text(self):
-        assert self._get_api_text("version").rstrip() == sabnzbd.__version__
-
     def test_api_version_xml(self):
         assert self._get_api_xml("version")["version"] == sabnzbd.__version__
 
@@ -319,7 +310,7 @@ class TestOtherApi(ApiTestFunctions):
     def test_api_get_clear_warnings(self):
         # Trigger warnings by sending requests with a truncated apikey
         for _ in range(0, 2):
-            assert interface._MSG_APIKEY_INCORRECT in self._get_api_text(
+            assert interface._MSG_APIKEY_INCORRECT in self._get_api_json(
                 "shutdown", extra_args={"apikey": SAB_APIKEY[:-1]}
             )
 
@@ -345,7 +336,7 @@ class TestOtherApi(ApiTestFunctions):
     def test_api_pause_resume_pp(self):  # TODO include this in the queue output, like the other pause states?
         # Very basic test only, pp pause state cannot be verified for now
         assert self._get_api_json("pause_pp")["status"] is True
-        assert self._get_api_text("resume_pp").startswith("ok")
+        assert self._get_api_json("resume_pp")["status"] is True
 
     @pytest.mark.parametrize("set_watched_dir", [False, True])
     def test_api_watched_now(self, set_watched_dir):
@@ -376,10 +367,6 @@ class TestOtherApi(ApiTestFunctions):
             )
 
         # Reset the quota and verify the response for all output types
-        text = self._get_api_text("reset_quota")
-        assert len(text) > 0  # Test for issue #1161
-        assert text.strip() == "ok"
-
         xml = self._get_api_xml("reset_quota")
         assert len(xml) > 0  # Test for issue #1161
         assert xml["result"]["status"] == "True"

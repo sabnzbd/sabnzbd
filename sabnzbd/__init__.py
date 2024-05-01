@@ -290,6 +290,11 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         cfg.no_smart_dupes.set(cfg.no_series_dupes())
         cfg.no_series_dupes.set(0)
 
+    # Convert history retention setting
+    if cfg.history_retention():
+        misc.convert_history_retention()
+        cfg.history_retention.set("")
+
     # Add hostname to the whitelist
     if not cfg.host_whitelist():
         cfg.host_whitelist.set(socket.gethostname())

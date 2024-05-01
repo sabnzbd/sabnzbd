@@ -1,14 +1,16 @@
 # Testing requirements
 pytest==7.4.4
+setuptools
 selenium
 requests
-pyfakefs
+pyfakefs<5.4.0
 werkzeug<2.1.0 # Breaks httpbin in newer versions
 pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict
-tavern>=2.0.0
+tavern
+flask
 tavalidate
 importlib_metadata
 lxml

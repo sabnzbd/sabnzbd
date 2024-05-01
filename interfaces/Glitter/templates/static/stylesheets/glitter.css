@@ -690,6 +690,10 @@ tbody.no-downloads tr td {
     border-bottom: 1px solid #F0F0F0 !important;
 }
 
+tbody.no-downloads tr td>span {
+    opacity: 0.7;
+}
+
 tbody.no-downloads tr td a {
     line-height: 2em;
     font-size: 1.5em;
@@ -1103,20 +1107,26 @@ tr.queue-item>td:first-child>a {
 }
 
 #history-options .hover-button {
-    padding: 7px 8px 7px 8px;
+    padding: 7px;
     line-height: 1.428571429;
     display: inline-block;
 }
 
+#history-options .hover-button.history-archive {
+    line-height: 1em;
+    vertical-align: middle;
+}
+
 #history-options div {
     display: inline-block;
+    vertical-align: middle;
     margin-left: 5px;
 }
 
 #history-options input[name="multieditCheckAll"] {
     vertical-align: middle;
     position: relative;
-    top: -1px;
+    top: -2px;
     margin-left: 8px;
 } 
 
@@ -1184,6 +1194,10 @@ tr.queue-item>td:first-child>a {
 
 .history-options-show-failed {
     color:  red !important;
+}
+
+.history-options-show-failed .archive-icon {
+    fill: #2bbd43;
 }
 
 .processing-download {
@@ -1519,6 +1533,34 @@ tr.queue-item>td:first-child>a {
 .btn-file,
 input[name="nzbURL"] {
     transition : border 500ms ease-out;
+}
+
+/* DELETE MODAL */
+.modal-delete-job ul {
+    margin-top: 10px;
+}
+
+.modal-delete-job li {
+    word-break: break-all;
+}
+
+.modal-delete-job .checkbox {
+    float: left;
+    margin: 8px 5px 0px;
+}
+
+#modal-purge-history .checkbox {
+    margin: 0;
+}
+
+.modal-delete-job .checkbox input,
+#modal-purge-history .checkbox input {
+    margin-top: 3px;
+}
+
+.modal-delete-job .checkbox input+span,
+#modal-purge-history .checkbox input+span {
+    font-weight: bold;
 }
 
 /* HELP MODAL */

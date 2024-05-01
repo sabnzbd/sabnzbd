@@ -1,79 +1,37 @@
-Release Notes - SABnzbd 4.2.3
+Release Notes - SABnzbd 4.3.0
 =========================================================
 
-This is the third bug-fix release of SABnzbd 4.2.0.
+## Key changes since 4.2.0
 
-## Bug-fixes and changes since 4.2.2:
+* **Archive:**
+    * When jobs are removed from the History, they are moved to the Archive.
+    * Keep your History clean and still be able to reliably use Duplicate Detection.
 
-* **Bug-fixes:**
-    * Handle new status code for missing articles, which would result in timeouts.
-      This specifically affects Giganews and its resellers.
-    * Retry of failed job would not use the password provided.
-    * Optimize database handling in order to prevent locking errors.
-    * macOS: System standby after finishing the queue would not always work.
+* **Apprise Integrated:**
+    * Send notifications using Apprise to almost any notification service.
+    * Supported notifications: https://github.com/caronc/apprise/wiki
+    * Notification Script `SABnzbd-notify.py` is no longer needed.
 
-* **Changes:**
-    * Remove `Send Group` option for Servers.
+* **Added IPv6-staging option:**
+    * Enable `ipv6_staging` in Config - Specials to get additional IPv6 features:
+        * Add IPv6 hostnames during address selection.
+        * Internet Bandwidth is measured separately for IPv4 and IPv6.
 
-## Bug-fixes and changes since 4.2.1:
+* **Other:**
+    * The `text` output format is removed from the API, `json` is the default.
+    * Handling of multiple inputs to several API methods was improved.
+    * File browser dialog is available to select file paths in the Config.
+    * Users will be warned if they configure an Indexer as a Server.
+    * Added `SAB_API_KEY` and `SAB_API_URL` to script environment variables.
+    * Windows/macOS: Updated Python to 3.12.3, Multipar to v1.3.3.2,
+      Unrar to 7.00 and 7zip to 24.03.
 
-* **Bug-fixes:**
-    * RSS readout could result in a crash if Duplicate Detection was enabled.
-    * Passwords were not always correctly parsed.
-    * Warnings could show even if `helpful_warnings` was disabled.
-    * Duplicate Detection would trigger again on URLs if they were resumed.
-    * Windows: Fatal crash could occur if ran as Service or on older Windows versions.
+## Bug fixes since 4.2.0
 
-* **Changes:**
-    * Parsing of filenames from the NZB was extended to allow more exotic formatting.
-    * Windows: Installer will automatically shutdown SABnzbd if it is running.
-
-## Bug-fixes and changes since 4.2.0:
-
-* **Bug-fixes:**
-    * New downloads did not appear in the History after the update to 4.2.0.
-
-* **Changes:**
-    * The external IPv6-address is shown, instead of the internal address.
-    * Windows: Network drives as `Download Folder` are no longer blocked, only warned against.
-
-## Key changes since 4.1.0
-
-* **Duplicate detection workflow overhaul:**
-    * `Series Duplicate Detection` was replaced by `Smart Duplicate Detection`
-      that can also detect `Movie` and `Daily Show` duplicates.
-    * Additionally, duplicates will also be detected if they are still in the queue.
-    * More information: https://sabnzbd.org/wiki/duplicate-detection
-
-* **Interface changes:**
-    * Added ability to filter the Queue and History by `status`.
-    * RSS-feed that provided the download is shown in History details.
-    * macOS/Windows 10 & 11: Added `Open Folder` button to `Job/Queue finished` notifications.
-      Clicking any type of notification will now open a browser with SABnzbd.
-
-* **Performance and usability improvements:**
-    * Numerous smaller performance improvements were made.
-    * Server IP-address selection was optimized.
-    * The `Internet Bandwidth` test was made more reliable.
-    * macOS/Windows: Updated to Python 3.12 and par2cmdline-turbo v1.1.1.
-
-* **Configuration changes:**
-    * The `On queue finish script` is now set in Switches.
-    * Reduced recursive unpacking to 2 levels, instead of 5.
-    * Duplicate detection related Pre-queue script input parameters were removed.
-      You will need to update your Pre-queue script.
-      More information: https://sabnzbd.org/wiki/configuration/4.2/scripts/pre-queue-scripts
-    * Stricter check if `Complete Folder` is inside `Download Folder`.
-    * Windows: Prevent use of network drive as `Download Folder`.
-
-## Bug fixes since 4.1.0
-
-* Fixed an issue where the multi-select option in the queue was not working for some users.
-* Prevented a crash that would occur during the saving of configuration settings.
-* Jobs with larger articles could stall the queue for several minutes.
-* Ensured that server warnings are always displayed to users.
-* If `weblogging` was enabled, output was also written to regular log.
-* Fixed an issue where removing a failed download from the History could break active downloads.
+* Incorrect warnings of unknown status codes could be thrown.
+* Watched Folder would not work if Socks5 proxy was active.
+* Prevent crash on invalid Server Expiration Date.
+* Windows: Installer could create duplicate shortcuts.
 
 ## Upgrade notices
 

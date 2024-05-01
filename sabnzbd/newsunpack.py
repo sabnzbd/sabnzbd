@@ -1783,6 +1783,8 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
     extra_env_fields.update(
         {
             "program_dir": sabnzbd.DIR_PROG,
+            "api_key": cfg.api_key(),
+            "api_url": f"{sabnzbd.BROWSER_URL}/api",
             "par2_command": sabnzbd.newsunpack.PAR2_COMMAND,
             "multipar_command": sabnzbd.newsunpack.MULTIPAR_COMMAND,
             "rar_command": sabnzbd.newsunpack.RAR_COMMAND,
@@ -1968,6 +1970,7 @@ def sevenzip_check(sevenzip: str) -> str:
         try:
             seven_command_output = run_command([sevenzip])
             # Example: 7-Zip (z) 21.06 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-11-24
+            #          7-Zip (a) 24.03 (x86) : Copyright (c) 1999-2024 Igor Pavlov : 2024-03-23
             return re.search(r"(\d+\.\d+).*Copyright", seven_command_output).group(1)
         except:
             pass

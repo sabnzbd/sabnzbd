@@ -1,7 +1,7 @@
-<div class="history" id="history-tab" data-bind="visible: hasHistory() || displayTabbed()" style="display: none">
+<div class="history" id="history-tab">
     <div class="history-header">
-        <h2>$T('menu-history')</h2>
-        <a href="#" data-bind="click: history.showMultiEdit">
+        <h2>$T('menu-history') <small data-bind="visible: history.showArchive()">($T('archive'))</small></h2>
+        <a href="#" data-bind="click: history.showMultiEdit, visible: hasHistory()">
             <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
         </a>
     </div>
@@ -18,7 +18,16 @@
                 <th style="width: 60px;"></th>
             </tr>
         </thead>
-        <tbody data-bind="foreach: history.historyItems">
+        <!-- ko if: !hasHistory() -->
+        <tbody class="no-downloads">
+            <tr>
+                <td colspan="6" data-bind="attr: { 'colspan': 5 + extraHistoryColumns().length }">
+                    <span>$T('empty')</span>
+                </td>
+            </tr>
+        </tbody>
+        <!-- /ko -->
+        <tbody data-bind="foreach: history.historyItems, visible: hasHistory()" style="display: none;">
             <tr class="history-item" data-bind="css: {'history-failed-download':failed()}">
                 <td>
                     <div data-bind="visible: processingWaiting()">
@@ -108,7 +117,7 @@
                         </div>
                         <!-- /ko -->
                     </div>
-                    <a href="#" data-bind="click: deleteSlot">
+                    <a href="#" data-bind="click: parent.triggerRemoveDownload">
                         <span class="hover-button glyphicon glyphicon-trash" data-bind="css: { 'glyphicon-stop' : processingDownload() == 2, disabled : processingDownload() == 1 }, attr: { title: processingDownload() == 2 ? '$T('abort')' : '$T('nzo-delete')' }"></span>
                     </a>
                 </td>
@@ -130,20 +139,21 @@
     </ul>
 
     <div class="multioperations-selector" id="history-options">
-        <a href="#" class="hover-button" title="$T('link-retryAll')" data-tooltip="true" data-placement="left" data-bind="click: history.retryAllFailed"><span class="glyphicon glyphicon-repeat"></span></a>
-        <a href="#" class="hover-button" title="$T('showAllHis') / $T('showFailedHis')" data-tooltip="true" data-placement="left" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
+        <a href="#" class="hover-button history-archive" title="$T('showArchive') / $T('showAllHis')" data-tooltip="true" data-placement="top" data-bind="click: history.toggleShowArchive, css: { 'history-options-show-failed': history.showArchive }"><svg viewBox="6 6 36 36" height="14" width="14" class="archive-icon"><path d="M41.09 10.45l-2.77-3.36c-.56-.66-1.39-1.09-2.32-1.09h-24c-.93 0-1.76.43-2.31 1.09l-2.77 3.36c-.58.7-.92 1.58-.92 2.55v25c0 2.21 1.79 4 4 4h28c2.21 0 4-1.79 4-4v-25c0-.97-.34-1.85-.91-2.55zm-17.09 24.55l-11-11h7v-4h8v4h7l-11 11zm-13.75-25l1.63-2h24l1.87 2h-27.5z"/></svg></a>
+        <a href="#" class="hover-button" title="$T('showFailedHis') / $T('showAllHis')" data-tooltip="true" data-placement="top" data-bind="click: history.toggleShowFailed, css: { 'history-options-show-failed': history.showFailed }"><span class="glyphicon glyphicon-exclamation-sign"></span></a>
+        <a href="#" class="hover-button" title="$T('link-retryAll')" data-tooltip="true" data-placement="top" data-bind="click: history.retryAllFailed"><span class="glyphicon glyphicon-repeat"></span></a>
 
-        <div data-bind="visible: history.isMultiEditing()">
+        <div data-bind="visible: (history.isMultiEditing() && hasHistory())">
             <span class="label label-default" data-bind="text: history.multiEditItems().length">0</span>
             <label for="multiedit-checkall-history">
                 <input type="checkbox" name="multieditCheckAll" id="multiedit-checkall-history" title="$T('Glitter-checkAll')" data-bind="click: history.checkAllJobs" data-tooltip="true" data-placement="top" />
             </label>
         </div>
 
-        <a href="#" class="hover-button" title="$T('nzo-delete')" data-bind="visible: history.isMultiEditing(), click: history.doMultiDelete">
+        <a href="#" class="hover-button" title="$T('nzo-delete')" data-bind="visible: (history.isMultiEditing() && hasHistory()), click: history.doMultiDelete"  data-tooltip="true" data-placement="top">
             <span class="glyphicon glyphicon-trash"></span>
         </a>
-        <a href="#modal-purge-history" class="hover-button" title="$T('purgeHist')" data-bind="visible: !history.isMultiEditing()" data-toggle="modal" data-tooltip="true" data-placement="left">
+        <a href="#modal-purge-history" class="hover-button" title="$T('purgeHist')" data-bind="visible: !(history.isMultiEditing() && hasHistory())" data-toggle="modal" data-tooltip="true" data-placement="top">
             <span class="glyphicon glyphicon-trash"></span>
         </a>
     </div>
@@ -154,10 +164,4 @@
         <span data-bind="text: history.downloadedMonth"></span>B $T('Glitter-thisMonth')
         <span data-bind="text: history.downloadedTotal"></span>B $T('Glitter-total')
     </div>
-</div>
-<div class="info-container history-info" data-bind="visible: !hasHistory() && !displayTabbed()" style="display: none">
-    <span class="glyphicon glyphicon-save"></span>
-    <span data-bind="text: history.downloadedToday"></span>B $T('Glitter-today')
-    <span data-bind="text: history.downloadedMonth"></span>B $T('Glitter-thisMonth')
-    <span data-bind="text: history.downloadedTotal"></span>B $T('Glitter-total')
 </div>

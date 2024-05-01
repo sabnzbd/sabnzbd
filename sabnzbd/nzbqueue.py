@@ -246,33 +246,33 @@ class NzbQueue:
     def set_top_only(self, value):
         self.__top_only = value
 
-    def change_opts(self, nzo_ids: str, pp: int) -> int:
+    def change_opts(self, nzo_ids: List[str], pp: int) -> int:
         result = 0
-        for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
+        for nzo_id in nzo_ids:
             if nzo_id in self.__nzo_table:
                 self.__nzo_table[nzo_id].set_pp(pp)
                 result += 1
         return result
 
-    def change_script(self, nzo_ids: str, script: str) -> int:
+    def change_script(self, nzo_ids: List[str], script: str) -> int:
         result = 0
         if (script is None) or is_valid_script(script):
-            for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
+            for nzo_id in nzo_ids:
                 if nzo_id in self.__nzo_table:
                     self.__nzo_table[nzo_id].script = script
                     logging.info("Set script=%s for job %s", script, self.__nzo_table[nzo_id].final_name)
                     result += 1
         return result
 
-    def change_cat(self, nzo_ids: str, cat: str) -> int:
+    def change_cat(self, nzo_ids: List[str], cat: str) -> int:
         result = 0
-        for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
+        for nzo_id in nzo_ids:
             if nzo_id in self.__nzo_table:
                 nzo = self.__nzo_table[nzo_id]
                 nzo.cat, pp, nzo.script, prio = cat_to_opts(cat)
                 logging.info("Set cat=%s for job %s", cat, nzo.final_name)
                 nzo.set_pp(pp)
-                self.set_priority(nzo_id, prio)
+                self.set_priority([nzo_id], prio)
                 # Abort any ongoing unpacking if the category changed
                 nzo.abort_direct_unpacker()
                 result += 1
@@ -660,10 +660,10 @@ class NzbQueue:
             return -1
 
     @NzbQueueLocker
-    def set_priority(self, nzo_ids: str, priority: int) -> int:
+    def set_priority(self, nzo_ids: List[str], priority: int) -> int:
         try:
             n = -1
-            for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
+            for nzo_id in nzo_ids:
                 n = self.__set_priority(nzo_id, priority)
             return n
         except:

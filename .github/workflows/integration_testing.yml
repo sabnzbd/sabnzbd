@@ -7,7 +7,7 @@ jobs:
     name: Black Code Formatter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Black Code Formatter
         uses: lgeiger/black-action@master
         with:
@@ -50,27 +50,22 @@ jobs:
             python-architecture: "x86"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }} ${{ matrix.python-architecture }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         architecture:  ${{ matrix.python-architecture }}
+        cache: pip
+        cache-dependency-path: "**/requirements.txt"
     - name: Install system dependencies
       if: runner.os == 'Linux'
       run: sudo apt-get install unrar p7zip-full par2
-    - name: Cache Python virtualenv
-      uses: syphar/restore-virtualenv@v1.3
-      id: cache-virtualenv
-      with:
-        custom_cache_key_element: ci-${{ matrix.python-architecture }}
-        requirement_files: "**/requirements.txt"
     - name: Install Python dependencies
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt
+        pip install --upgrade -r requirements.txt --no-dependencies
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
       run: pytest -s

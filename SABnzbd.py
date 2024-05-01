@@ -1414,21 +1414,15 @@ def main():
             if full_path := getattr(sabnzbd.cfg, setting).get_path():
                 sabnzbd.CONFIG_BACKUP_HTTPS_OK.append(full_path)
 
-    if sabnzbd.WIN32:
-        if enable_https:
-            mode = "s"
-        else:
-            mode = ""
-        api_url = "http%s://%s:%s%s/api?apikey=%s" % (
-            mode,
-            browserhost,
-            cherryport,
-            sabnzbd.cfg.url_base(),
-            sabnzbd.cfg.api_key(),
-        )
+    # Set URL for browser
+    if enable_https:
+        sabnzbd.BROWSER_URL = "https://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
+    else:
+        sabnzbd.BROWSER_URL = "http://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
 
-        # Write URL directly to registry
-        set_connection_info(api_url)
+    if sabnzbd.WIN32:
+        # Write URL for uploads and version check directly to registry
+        set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}")
 
     if pid_path or pid_file:
         sabnzbd.pid_file(pid_path, pid_file, cherryport)
@@ -1453,15 +1447,8 @@ def main():
         for upload_nzb in upload_nzbs:
             sabnzbd.nzbparser.add_nzbfile(upload_nzb)
 
-    # Set URL for browser
-    if enable_https:
-        browser_url = "https://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
-    else:
-        browser_url = "http://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
-    sabnzbd.BROWSER_URL = browser_url
-
     if not autorestarted:
-        launch_a_browser(browser_url)
+        launch_a_browser(sabnzbd.BROWSER_URL)
         notifier.send_notification("SABnzbd", T("SABnzbd %s started") % sabnzbd.__version__, "startup")
     autorestarted = False
 

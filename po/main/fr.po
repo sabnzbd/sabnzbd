@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.2.2Beta1\n"
+"Project-Id-Version: SABnzbd-4.3.0RC1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2024\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -175,6 +175,76 @@ msgstr "L'envoi de l'e-mail a réussi"
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "Test Notification"
 msgstr "Test de Notification"
+
+#: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Le nom d'hôte n'est pas défini."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Aucune connexion n'est configurée. Veuillez définir au moins une connexion."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Mot de passe masqué en ******, veuillez le ressaisir."
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Paramètres serveur incorrects"
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. It appears that %s operates as a web "
+"server (port 80), possibly an indexer, not a usenet server. You have to fill"
+" a usenet server."
+msgstr ""
+"Impossible de se connecter à %s sur le port %s. Il semble que %s fonctionne "
+"comme un serveur web (port 80), peut-être un indexeur, et non comme un "
+"serveur Usenet. Vous devez spécifier un serveur Usenet."
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "L' adresse du serveur \"%s:%s\" n'est pas valide."
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Délai dépassé : essayez d'activer SSL ou de vous connecter sur un port "
+"différent."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Délai dépassé"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Protocole SSL inconnu: essayez de désactiver SSL ou de vous connecter sur un"
+" autre port."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Le serveur requiert un identifiant et un mot de passe."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Connexion réussie!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
+"plus tard"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Impossible de déterminer le résultat de la connexion (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
@@ -476,6 +546,11 @@ msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
 msgid "Fatal error in Downloader"
 msgstr "Erreur fatale dans le Téléchargeur"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s"
+
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Trop de connexions au serveur %s [%s]"
@@ -700,10 +775,6 @@ msgstr ""
 "Clé API incorrecte, utilisez la clé API de la configuration générale dans "
 "votre application tierce :"
 
-#: sabnzbd/interface.py, sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
-
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -712,10 +783,6 @@ msgstr "Echec de la tentative de connexion de %s"
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
 msgstr "Archives de sauvegarde non valides"
-
-#: sabnzbd/interface.py
-msgid "Server address \"%s:%s\" is not valid."
-msgstr "L' adresse du serveur \"%s:%s\" n'est pas valide."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -1079,6 +1146,10 @@ msgstr "Le serveur %s utilise un certificat peu fiable [%s]"
 msgid "Wiki"
 msgstr "Wiki"
 
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
+msgstr "Échec de la connexion : %s %s@%s:%s (%s)"
+
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
@@ -1148,6 +1219,20 @@ msgstr "Échec de l'envoi de la notification macOS"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Échec d'envoi du message Prowl"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "One or more Apprise URLs could not be loaded."
+msgstr "Une ou plusieurs URL Apprise n'ont pas pu être chargées."
+
+#: sabnzbd/notifier.py
+msgid "Failed to send one or more Apprise Notifications"
+msgstr "Échec de l'envoi d'une ou plusieurs notifications Apprise."
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message"
+msgstr "Échec d'envoi du message Apprise"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1391,7 +1476,7 @@ msgstr "Quitter"
 msgid "Queue First 10 Items"
 msgstr "Mettre en file d'attente les 10 premiers articles"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Vide"
 
@@ -2326,6 +2411,11 @@ msgstr "Scripts"
 msgid "Delete all items from the queue?"
 msgstr "Supprimer tous les éléments de la file d'attente ?"
 
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr "Êtes-vous sûr de vouloir supprimer ces tâches ?"
+
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
@@ -2346,6 +2436,11 @@ msgstr "Supprimer NZB"
 msgid "Remove NZB & Delete Files"
 msgstr "Supprimer le NZB & supprimer les fichiers"
 
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr "Supprimer définitivement (ignorer l'archivage)"
+
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
 msgid "Missing articles"
@@ -2364,6 +2459,10 @@ msgstr "manuel"
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
 msgstr "Réinitialiser le quota maintenant"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr "Archives"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2384,6 +2483,11 @@ msgstr "Afficher les échoués"
 #: sabnzbd/skintext.py
 msgid "Show All"
 msgstr "Afficher Tout"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr "Afficher les archives"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2843,29 +2947,37 @@ msgid "History Retention"
 msgstr "Conservation de l'historique"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Automatically delete completed jobs from History. Beware that Duplicate "
-"Detection and some external tools rely on History information."
-msgstr ""
-"Supprimer automatiquement les tâches terminées de l'historique. Attention, "
-"la Détection des Doublons et certains outils externes s'appuient sur les "
-"informations de l'historique."
-
-#: sabnzbd/skintext.py
 msgid "Keep all jobs"
 msgstr "Conserver toutes les tâches"
 
 #: sabnzbd/skintext.py
-msgid "Keep maximum number of completed jobs"
-msgstr "Nombre maximum de tâches complétées historisées"
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr ""
+"Déplacez les tâches vers les archives si l'historique dépasse le nombre de "
+"tâches spécifié"
 
 #: sabnzbd/skintext.py
-msgid "Keep completed jobs maximum number of days"
-msgstr "Durée maximale d'historisation des tâches complétées"
+msgid "Delete jobs if the history exceeds specified number of jobs"
+msgstr ""
+"Supprimer les tâches si l'historique dépasse le nombre de tâches spécifié"
 
 #: sabnzbd/skintext.py
-msgid "Do not keep any completed jobs"
-msgstr "Ne conserver aucune tâche terminée"
+msgid "Move jobs to the archive after specified number of days"
+msgstr ""
+"Déplacer les tâches vers les archives après le nombre de jours spécifié"
+
+#: sabnzbd/skintext.py
+msgid "Delete jobs after specified number of days"
+msgstr "Supprimer les tâches après le nombre de jours spécifié"
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr "Déplacer tous les tâches terminées vers les archives"
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr "Supprimer toutes les tâches terminées"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3270,18 +3382,17 @@ msgstr "Rejeter"
 
 #. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Fail job (move to History)"
-msgstr "Faire échouer la tâche (déplacer vers l'historique)"
-
-#. Four way switch for duplicates
-#: sabnzbd/skintext.py
 msgid "Tag job"
 msgstr "Taguer la tâche"
 
-#. Three way switch for encrypted posts
+#. Four way switch for duplicates
 #: sabnzbd/skintext.py
-msgid "Abort"
-msgstr "Annuler"
+msgid "Fail job (move to History)"
+msgstr "Faire échouer la tâche (déplacer vers l'historique)"
+
+#: sabnzbd/skintext.py
+msgid "Abort post-processing"
+msgstr "Abandonner le post-traitement"
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
@@ -3761,14 +3872,6 @@ msgid "Bandwidth"
 msgstr "Bande passante"
 
 #: sabnzbd/skintext.py
-msgid "Send Group"
-msgstr "Envoyer 'Group'"
-
-#: sabnzbd/skintext.py
-msgid "Send group command before requesting articles."
-msgstr "Envoyer la commande 'group' avant la demande des articles."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Notes personnelles"
 
@@ -4157,6 +4260,34 @@ msgstr "Appareil"
 #: sabnzbd/skintext.py
 msgid "Device to which message should be sent"
 msgstr "Appareil sur lequel le message doit être envoyé"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Enable Apprise notifications"
+msgstr "Activer les notifications Apprise"
+
+#: sabnzbd/skintext.py
+msgid "Send notifications using Apprise to almost any notification service"
+msgstr ""
+"Envoyer des notifications en utilisant Apprise vers presque n'importe quel "
+"service de notification"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Default Apprise URLs"
+msgstr "URLs par défaut d'Apprise"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Use a comma and/or space to identify more than one URL."
+msgstr "Utilisez une virgule et/ou un espace pour identifier plusieurs URL."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Override the default URLs for specific notification types below, if desired."
+msgstr ""
+"Remplacez les URL par défaut pour les types de notifications spécifiques ci-"
+"dessous, si vous le souhaitez."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
@@ -4933,55 +5064,3 @@ msgstr "Échec de récupération de l'URL ; %s"
 #: sabnzbd/urlgrabber.py
 msgid "Trying to fetch NZB from %s"
 msgstr "Essai de récupération du NZB depuis %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Le nom d'hôte n'est pas défini."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Aucune connexion n'est configurée. Veuillez définir au moins une connexion."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Mot de passe masqué en ******, veuillez le ressaisir."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Paramètres serveur incorrects"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Délai dépassé : essayez d'activer SSL ou de vous connecter sur un port "
-"différent."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Délai dépassé"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Protocole SSL inconnu: essayez de désactiver SSL ou de vous connecter sur un"
-" autre port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Le serveur requiert un identifiant et un mot de passe."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Connexion réussie!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
-"plus tard"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Impossible de déterminer le résultat de la connexion (%s)"

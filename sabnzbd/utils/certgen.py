@@ -30,7 +30,6 @@ def generate_key(key_size=2048, output_file="key.pem"):
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
                 encryption_algorithm=serialization.NoEncryption(),
-                # encryption_algorithm=serialization.BestAvailableEncryption(b"passphrase")
             )
         )
 
