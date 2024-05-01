@@ -1,7 +1,5 @@
-Release Notes - SABnzbd 4.3.0 Release Candidate 2
+Release Notes - SABnzbd 4.3.0
 =========================================================
-
-This is the second release candidate of SABnzbd 4.3.0.
 
 ## Key changes since 4.2.0
 
@@ -24,6 +22,7 @@ This is the second release candidate of SABnzbd 4.3.0.
     * Handling of multiple inputs to several API methods was improved.
     * File browser dialog is available to select file paths in the Config.
     * Users will be warned if they configure an Indexer as a Server.
+    * Added `SAB_API_KEY` and `SAB_API_URL` to script environment variables.
     * Windows/macOS: Updated Python to 3.12.3, Multipar to v1.3.3.2,
       Unrar to 7.00 and 7zip to 24.03.
 
