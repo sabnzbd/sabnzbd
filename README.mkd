@@ -1,5 +1,7 @@
-Release Notes - SABnzbd 4.3.0
+Release Notes - SABnzbd 4.3.1
 =========================================================
+
+This is the first bug fix release of SABnzbd 4.3.0.
 
 ## Key changes since 4.2.0
 
