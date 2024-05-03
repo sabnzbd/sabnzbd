@@ -101,7 +101,7 @@ jobs:
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        pip3 install --upgrade -r requirements.txt --no-binary cffi,CT3,PyYAML --no-dependencies
+        pip3 install --upgrade -r requirements.txt --no-binary cffi,CT3,PyYAML,charset_normalizer --no-dependencies
         PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
