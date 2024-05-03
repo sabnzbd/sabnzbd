@@ -15,6 +15,7 @@ extra_pyinstaller_files = []
 
 # Add hidden imports
 extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
+extra_hiddenimports.extend(collect_submodules("apprise"))
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 extra_hiddenimports.extend(collect_submodules("guessit.data"))
 
@@ -40,7 +41,7 @@ else:
     )
 
     # Windows
-    extra_hiddenimports.append("win32timezone")
+    extra_hiddenimports.extend(["win32timezone", "winrt.windows.foundation.collections"])
     EXTRA_FOLDERS += ["win/multipar/", "win/par2/", "win/unrar/", "win/7zip/"]
     EXTRA_FILES += ["portable.cmd"]
 
@@ -91,12 +92,14 @@ for folder_item in EXTRA_FOLDERS:
 # Add babelfish data files
 extra_pyinstaller_files.extend(collect_data_files("babelfish"))
 extra_pyinstaller_files.extend(collect_data_files("guessit"))
+extra_pyinstaller_files.extend(collect_data_files("apprise"))
 
 pyi_analysis = Analysis(
     ["SABnzbd.py"],
     datas=extra_pyinstaller_files,
     hiddenimports=extra_hiddenimports,
     excludes=["ujson", "FixTk", "tcl", "tk", "_tkinter", "tkinter", "Tkinter", "pydoc", "pydoc_data.topics"],
+    module_collection_mode={"apprise.plugins": "py"},
 )
 
 pyz = PYZ(pyi_analysis.pure, pyi_analysis.zipped_data)

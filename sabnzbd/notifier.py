@@ -328,8 +328,6 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
         app_id="SABnzbd",
         app_desc="SABnzbd Notification",
         app_url="https://sabnzbd.org/",
-        image_path_mask=os.path.join(sabnzbd.DIR_PROG, "icons", "apprise", "apprise-{TYPE}.png"),
-        image_url_mask="https://sabnzbd.org/images/icons/apprise/{TYPE}.png",
         image_url_logo="https://sabnzbd.org/images/icons/apple-touch-icon-180x180-precomposed.png",
     )
 
