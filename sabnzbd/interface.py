@@ -164,7 +164,8 @@ def secured_expose(
         if not check_access(access_type=access_type, warn_user=True):
             cherrypy.response.status = 403
             if cfg.api_warnings():
-                return _MSG_ACCESS_DENIED
+                ipaddress = cherrypy.request.remote_label.split()[0]  # first item is the ip address
+                return f"{_MSG_ACCESS_DENIED} --- Request from {ipaddress}"
             return
 
         # Verify login status, only for non-key pages
