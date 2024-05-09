@@ -2889,7 +2889,8 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs if the history exceeds specified number of jobs"
+msgid ""
+"Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -2897,7 +2898,8 @@ msgid "Move jobs to the archive after specified number of days"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs after specified number of days"
+msgid ""
+"Delete jobs from the history and archive after specified number of days"
 msgstr ""
 
 #: sabnzbd/skintext.py
