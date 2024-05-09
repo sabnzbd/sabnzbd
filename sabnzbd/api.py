@@ -494,7 +494,7 @@ def _api_history(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
 
     if name == "delete":
         # Only skip archive if specifically requested
-        if kwargs.get("archive") == "0":
+        if kwargs.get("archive") == "0" or cfg.disable_archive():
             archive = False
 
         special = value.lower()
