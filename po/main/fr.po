@@ -2961,6 +2961,8 @@ msgstr ""
 msgid ""
 "Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
+"Supprimer les tâches si l'historique et les archives dépassent le nombre de "
+"tâches spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
@@ -2971,6 +2973,8 @@ msgstr ""
 msgid ""
 "Delete jobs from the history and archive after specified number of days"
 msgstr ""
+"Supprimer les tâches de l'historique et des archives après le nombre de "
+"jours spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"
