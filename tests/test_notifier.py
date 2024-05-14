@@ -146,6 +146,15 @@ class TestNotifier(TestCase):
         # over-rides to the Apprise URLs
         mock_add.assert_called_once_with("xml://custom/other")
 
+        # Test case where notify() fails
+        mock_notify.return_value = False
+        mock_notify.reset_mock()
+        mock_add.reset_mock()
+        # A non-string is returned
+        assert send_apprise("title", "body", "other") != ""
+        assert mock_notify.call_count == 1
+        assert mock_add.call_count == 1
+
         # Test other exception handlings
         mock_notify.return_value = None
         mock_notify.side_effect = AttributeError
@@ -155,6 +164,18 @@ class TestNotifier(TestCase):
         assert send_apprise("title", "body", "other") != ""
         assert mock_notify.call_count == 1
         assert mock_add.call_count == 1
+
+        # Test Mode
+        # Return the status to being a proper return value
+        mock_notify.return_value = True
+        mock_notify.side_effect = None
+        mock_notify.reset_mock()
+        mock_add.reset_mock()
+        # Download is enabled by default; set Test flag
+        assert send_apprise("title", "body", "download", test={"apprise_urls": urls}) == ""
+        assert mock_notify.call_count == 1
+        assert mock_add.call_count == 1
+        mock_add.assert_called_once_with(urls)
 
     @mock.patch("threading.Thread.start")
     def test_send_notification_as_apprise(self, mock_thread):
