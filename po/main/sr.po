@@ -1148,6 +1148,11 @@ msgstr "Неуспешно слање Prowl поруке"
 
 #. Warning message
 #: sabnzbd/notifier.py
+msgid "Failed to send Apprise message - no URLs defined"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/notifier.py
 msgid "One or more Apprise URLs could not be loaded."
 msgstr ""
 
