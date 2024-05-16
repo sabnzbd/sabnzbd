@@ -40,8 +40,11 @@ Unicode true
   ; Remove the whole dir
   ; Users should not be putting stuff here!
   RMDir /r "${idir}"
+!macroend
 
-  ; Remove any shortuts, starting with current user ones (from old installs)
+!define RemovePrevShortcuts "!insertmacro RemovePrevShortcuts"
+!macro RemovePrevShortcuts
+  ; Remove shortcuts, starting with current user ones (from old installs)
   SetShellVarContext current
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
   Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
@@ -314,13 +317,13 @@ Function .onInit
     endCheckStartup:
 
     SetShellVarContext current
-    IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktopCurrent 0
-      SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
-    endCheckDesktopCurrent:
-    SetShellVarContext all
     IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
-      SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
+      ; If not present for current user, first check all user folder
+      SetShellVarContext all
+      IfFileExists "$DESKTOP\SABnzbd.lnk" endCheckDesktop 0
+        SectionSetFlags ${desktop} 0 ; SAB is installed but desktop-icon not, so uncheck it
     endCheckDesktop:
+    SetShellVarContext all
 
     Push $1
     ReadRegStr $1 HKCR ".nzb" ""  ; read current file association
@@ -374,6 +377,7 @@ Section "un.$(MsgDelProgram)" Uninstall
   DeleteRegKey HKEY_CURRENT_USER "Software\SABnzbd"
 
   ${RemovePrev} "$INSTDIR"
+  ${RemovePrevShortcuts}
 
   ; Remove firewall entries
   liteFirewallW::RemoveRule "$INSTDIR\SABnzbd.exe" "SABnzbd"
