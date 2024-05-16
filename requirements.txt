@@ -1,7 +1,7 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 apprise==1.8.0
-sabctools==8.1.0
+sabctools==8.2.0
 CT3==3.3.3.post1
 cffi==1.16.0
 pycparser==2.22
