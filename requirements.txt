@@ -58,7 +58,7 @@ requests==2.31.0
 requests-oauthlib==2.0.0
 PyYAML==6.0.1
 markdown==3.6
-paho-mqtt==2.1.0
+paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
 charset_normalizer==3.3.2
