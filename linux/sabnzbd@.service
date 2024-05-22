@@ -22,6 +22,11 @@ ExecStart=/opt/sabnzbd/SABnzbd.py --disable-file-log --logging 1 --browser 0
 User=%I
 Type=simple
 Restart=on-failure
+ProtectSystem=full
+DeviceAllow=/dev/null rw
+DeviceAllow=/dev/urandom r
+DevicePolicy=strict
+NoNewPrivileges=yes
 
 [Install]
 WantedBy=multi-user.target
