@@ -6,18 +6,24 @@ Functions to check if the path filesystem uses FAT
 
 import sys
 import os
+import subprocess
+from typing import List
 
-debug = False
 
-
-def getcmdoutput(cmd):
+def getcmdoutput(cmd: List[str]) -> List[str]:
     """execectue cmd, and give back output lines as array"""
-    with os.popen(cmd) as p:
-        outputlines = p.readlines()
-    return outputlines
+    subprocess_kwargs = {
+        "bufsize": 0,
+        "shell": False,
+        "text": True,
+        "encoding": "utf8",
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+    }
+    return subprocess.run(cmd, **subprocess_kwargs).stdout.splitlines()
 
 
-def isFAT(check_dir):
+def isFAT(check_dir: str) -> bool:
     """Check if "check_dir" is on FAT. FAT considered harmful (for big files)
     Works for Linux, Windows, MacOS
     NB: On Windows, full path with drive letter is needed!
@@ -30,9 +36,6 @@ def isFAT(check_dir):
     # We're dealing with OS calls, so put everything in a try/except, just in case:
     try:
         if "linux" in sys.platform:
-            # On Linux:
-            # df -T /home/sander/weg
-
             """
             Example output of a 500GB external USB drive formatted with FAT:
             $ df -T /media/sander/INTENSO
@@ -40,18 +43,14 @@ def isFAT(check_dir):
             /dev/sda1      vfat 488263616 163545248 324718368  34% /media/sander/INTENSO
             """
 
-            dfcmd = "df -T " + check_dir + " 2>&1"
+            dfcmd = ["df", "-T", check_dir]
             for thisline in getcmdoutput(dfcmd):
                 if thisline.find("/") == 0:
                     # Starts with /, so a real, local device
                     fstype = thisline.split()[1]
-                    if debug:
-                        print(("File system type:", fstype))
                     if fstype.lower().find("fat") >= 0 and fstype.lower().find("exfat") < 0:
                         # FAT, but not EXFAT
                         FAT = True
-                        if debug:
-                            print("FAT found")
                         break
         elif "win32" in sys.platform:
             import win32api
@@ -61,14 +60,11 @@ def isFAT(check_dir):
                 check_dir = check_dir.replace("\\\\?\\UNC\\", "\\\\", 1).replace("\\\\?\\", "", 1)
             try:
                 result = win32api.GetVolumeInformation(os.path.splitdrive(check_dir)[0])
-                if debug:
-                    print(result)
                 if result[4].startswith("FAT"):
                     FAT = True
-            except:
+            except Exception:
                 pass
         elif "darwin" in sys.platform:
-            # MacOS formerly known as OSX
             """
             MacOS needs a two-step approach:
 
@@ -80,35 +76,34 @@ def isFAT(check_dir):
             # Then: device => filesystem type
             server:~ sander$ mount | grep /dev/disk9s1
             /dev/disk9s1 on /Volumes/CARTUNES (msdos, local, nodev, nosuid, noowners)
-
-
             """
-            dfcmd = "df " + check_dir
+            dfcmd = ["df", check_dir]
             for thisline in getcmdoutput(dfcmd):
                 if thisline.find("/") == 0:
-                    if debug:
-                        print(thisline)
                     # Starts with /, so a real, local device
                     device = thisline.split()[0]
-                    mountcmd = "mount | grep " + device
-                    mountoutput = os.popen(mountcmd).readline().strip()
-                    if debug:
-                        print(mountoutput)
+
+                    # Run the equivalent of "mount | grep $device"
+                    p_mount = subprocess.Popen(["mount"], stdout=subprocess.PIPE)
+                    p_grep = subprocess.Popen(
+                        ["grep", device + " "], stdin=p_mount.stdout, stdout=subprocess.PIPE, text=True, encoding="utf8"
+                    )
+                    p_mount.stdout.close()
+                    mountoutput = p_grep.communicate()[0].strip()
+
                     if "msdos" in mountoutput.split("(")[1]:
                         FAT = True
                     break
 
-    except:
+    except Exception:
         pass
     return FAT
 
 
 if __name__ == "__main__":
-    if debug:
-        print((sys.platform))
     try:
         dir_to_check = sys.argv[1]
-    except:
+    except Exception:
         print("Specify dir on the command line")
         sys.exit(0)
     if isFAT(dir_to_check):
