@@ -11,7 +11,7 @@ from typing import List
 
 
 def getcmdoutput(cmd: List[str]) -> List[str]:
-    """execectue cmd, and give back output lines as array"""
+    """execute cmd, and return a list of output lines"""
     subprocess_kwargs = {
         "bufsize": 0,
         "shell": False,
@@ -24,9 +24,8 @@ def getcmdoutput(cmd: List[str]) -> List[str]:
 
 
 def isFAT(check_dir: str) -> bool:
-    """Check if "check_dir" is on FAT. FAT considered harmful (for big files)
-    Works for Linux, Windows, MacOS
-    NB: On Windows, full path with drive letter is needed!
+    """Check if the given directory is on FAT, which has a maximum file size of only 4 GiB.
+    Works for Linux, Windows, MacOS; on Windows, a full path with drive letter is needed!
     """
     if not (os.path.isdir(check_dir) or os.path.isfile(check_dir)):
         # Not a dir, not a file ... so not FAT:
@@ -43,8 +42,7 @@ def isFAT(check_dir: str) -> bool:
             /dev/sda1      vfat 488263616 163545248 324718368  34% /media/sander/INTENSO
             """
 
-            dfcmd = ["df", "-T", check_dir]
-            for thisline in getcmdoutput(dfcmd):
+            for thisline in getcmdoutput(["df", "-T", check_dir]):
                 if thisline.find("/") == 0:
                     # Starts with /, so a real, local device
                     fstype = thisline.split()[1]
@@ -77,8 +75,7 @@ def isFAT(check_dir: str) -> bool:
             server:~ sander$ mount | grep /dev/disk9s1
             /dev/disk9s1 on /Volumes/CARTUNES (msdos, local, nodev, nosuid, noowners)
             """
-            dfcmd = ["df", check_dir]
-            for thisline in getcmdoutput(dfcmd):
+            for thisline in getcmdoutput(["df", check_dir]):
                 if thisline.find("/") == 0:
                     # Starts with /, so a real, local device
                     device = thisline.split()[0]
@@ -86,7 +83,7 @@ def isFAT(check_dir: str) -> bool:
                     # Run the equivalent of "mount | grep $device"
                     p_mount = subprocess.Popen(["mount"], stdout=subprocess.PIPE)
                     p_grep = subprocess.Popen(
-                        ["grep", device + " "], stdin=p_mount.stdout, stdout=subprocess.PIPE, text=True, encoding="utf8"
+                        ["grep", device + "[[:space:]]"], stdin=p_mount.stdout, stdout=subprocess.PIPE, text=True, encoding="utf8"
                     )
                     p_mount.stdout.close()
                     mountoutput = p_grep.communicate()[0].strip()
