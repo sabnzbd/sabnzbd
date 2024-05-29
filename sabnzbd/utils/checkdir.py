@@ -83,7 +83,11 @@ def isFAT(check_dir: str) -> bool:
                     # Run the equivalent of "mount | grep $device"
                     p_mount = subprocess.Popen(["mount"], stdout=subprocess.PIPE)
                     p_grep = subprocess.Popen(
-                        ["grep", device + "[[:space:]]"], stdin=p_mount.stdout, stdout=subprocess.PIPE, text=True, encoding="utf8"
+                        ["grep", device + "[[:space:]]"],
+                        stdin=p_mount.stdout,
+                        stdout=subprocess.PIPE,
+                        text=True,
+                        encoding="utf8",
                     )
                     p_mount.stdout.close()
                     mountoutput = p_grep.communicate()[0].strip()
