@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.3.1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: ION, 2024\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -186,6 +186,8 @@ msgid ""
 "server (port 80), possibly an indexer, not a usenet server. You have to fill"
 " a usenet server."
 msgstr ""
+"לא היה ניתן להתחבר אל %s על פתחה %s. נראה כי %s פועל כשרת רשת (פתחה 80), "
+"כנראה מדדן, לא שרת Usenet. אתה חייב למלא שרת Usenet."
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -512,7 +514,7 @@ msgstr "שגיאה גורלית במורידן"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
+msgstr "%s@%s: קוד בלתי ידוע של מעמד התקבל %s עבור מאמר %s"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -1088,7 +1090,7 @@ msgstr "וויקי"
 
 #: sabnzbd/newswrapper.py
 msgid "Failed to connect: %s %s@%s:%s (%s)"
-msgstr ""
+msgstr "כישלון בהתחברות: %s %s@%s:%s (%s)"
 
 #. Notification
 #: sabnzbd/notifier.py
@@ -1159,6 +1161,11 @@ msgstr "כישלון בשליחת התראת macOS"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "כישלון בשליחת הודעת Prowl"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message - no URLs defined"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -2345,7 +2352,7 @@ msgstr "למחוק את כל הפריטים מהתור?"
 #. Delete confirmation popup
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to remove these jobs?"
-msgstr ""
+msgstr "האם אתה בטוח שאתה רוצה להסיר עבודות אלו?"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2370,7 +2377,7 @@ msgstr "הסר NZB ומחק קבצים"
 #. Checkbox if job should be added to Archive
 #: sabnzbd/skintext.py
 msgid "Permanently delete (skip archive)"
-msgstr ""
+msgstr "מחק לצמיתות (דלג על ארכיון)"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2393,7 +2400,7 @@ msgstr "אפס מכסה כעת"
 
 #: sabnzbd/skintext.py
 msgid "Archive"
-msgstr ""
+msgstr "ארכיון"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2418,7 +2425,7 @@ msgstr "הראה הכל"
 #. Button showing all archived jobs
 #: sabnzbd/skintext.py
 msgid "Show Archive"
-msgstr ""
+msgstr "הראה ארכיון"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2866,27 +2873,29 @@ msgstr "שמור את כל העבודות"
 #: sabnzbd/skintext.py
 msgid ""
 "Move jobs to the archive if the history exceeds specified number of jobs"
-msgstr ""
+msgstr "העבר עבודות אל הארכיון אם ההיסטוריה חורגת ממספר מצוין של ימים"
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs if the history exceeds specified number of jobs"
+msgid ""
+"Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
-msgstr ""
+msgstr "העבר עבודות אל הארכיון לאחר מספר מצוין של ימים"
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs after specified number of days"
+msgid ""
+"Delete jobs from the history and archive after specified number of days"
 msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"
-msgstr ""
+msgstr "העבר את כל העבודות השלמות אל הארכיון"
 
 #: sabnzbd/skintext.py
 msgid "Delete all completed jobs"
-msgstr ""
+msgstr "מחק את כל העבודות השלמות"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"

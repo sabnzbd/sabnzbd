@@ -47,6 +47,7 @@ try:
     import feedparser
     import configobj
     import cherrypy
+    import cheroot.errors
     import portend
     import cryptography
     import chardet
@@ -1094,8 +1095,7 @@ def main():
         sys.exit(1)
 
     if clean_up:
-        xlist = globber_full(logdir)
-        for x in xlist:
+        for x in globber_full(logdir):
             if RSS_FILE_NAME not in x:
                 try:
                     os.remove(x)
@@ -1346,6 +1346,13 @@ def main():
             "error_page.404": sabnzbd.panic.error_page_404,
         }
     )
+
+    # Catch shutdown errors that can break cherrypy/cheroot
+    # See https://github.com/cherrypy/cheroot/issues/710
+    try:
+        cheroot.errors.acceptable_sock_shutdown_exceptions += (OSError,)
+    except AttributeError:
+        pass
 
     # Do we want CherryPy Logging? Cannot be done via the config
     cherrypy.log.screen = False

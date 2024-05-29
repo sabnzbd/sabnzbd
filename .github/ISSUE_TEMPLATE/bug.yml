@@ -21,6 +21,7 @@ body:
       options:
         - linuxserver
         - hotio
+        - binhex
         - Other
   - type: textarea
     attributes:

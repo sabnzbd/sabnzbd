@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.0RC1\n"
+"Project-Id-Version: SABnzbd-4.3.2RC1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2024\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -1219,6 +1219,11 @@ msgstr "Échec de l'envoi de la notification macOS"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Échec d'envoi du message Prowl"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message - no URLs defined"
+msgstr "Échec d'envoi du message Apprise - aucune URLs définies"
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -2958,9 +2963,11 @@ msgstr ""
 "tâches spécifié"
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs if the history exceeds specified number of jobs"
+msgid ""
+"Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
-"Supprimer les tâches si l'historique dépasse le nombre de tâches spécifié"
+"Supprimer les tâches si l'historique et les archives dépassent le nombre de "
+"tâches spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
@@ -2968,8 +2975,11 @@ msgstr ""
 "Déplacer les tâches vers les archives après le nombre de jours spécifié"
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs after specified number of days"
-msgstr "Supprimer les tâches après le nombre de jours spécifié"
+msgid ""
+"Delete jobs from the history and archive after specified number of days"
+msgstr ""
+"Supprimer les tâches de l'historique et des archives après le nombre de "
+"jours spécifié"
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"

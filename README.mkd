@@ -1,7 +1,16 @@
-Release Notes - SABnzbd 4.3.1
+Release Notes - SABnzbd 4.3.2 Release Candidate 2
 =========================================================
 
-This is the first bug fix release of SABnzbd 4.3.0.
+This is the second bug fix release of SABnzbd 4.3.0.
+
+## Bug fixes and changes since 4.3.1
+
+* Added Special option `disable_archive` for jobs to always be permanently deleted.
+* Specific AppRise notifications could fail to send.
+* Update of the article decoder core (`rapidyenc`).
+* Windows: After some time the interface would no longer load.
+* Windows: Custom shortcuts would be removed by the installer.
+* Windows/macOS: Updated Unrar to 7.01 and 7zip to 24.05.
 
 ## Key changes since 4.2.0
 

@@ -857,6 +857,7 @@ SPECIAL_BOOL_LIST = (
     "empty_postproc",
     "new_nzb_on_failure",
     "html_login",
+    "disable_archive",
     "wait_for_dfolder",
     "enable_broadcast",
     "warn_dupl_jobs",

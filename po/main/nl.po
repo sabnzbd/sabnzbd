@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.3.1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -1209,6 +1209,11 @@ msgstr "Kon macOS notificatie niet verzenden"
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Verzenden van Prowl-bericht mislukt"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message - no URLs defined"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -2937,10 +2942,9 @@ msgstr ""
 "opgegeven aantal voltooide downloads overschrijdt."
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs if the history exceeds specified number of jobs"
+msgid ""
+"Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
-"Verwijder voltooide downloads als de geschiedenis het opgegeven aantal "
-"voltooide downloads overschrijdt."
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
@@ -2948,8 +2952,9 @@ msgstr ""
 "Verplaats voltooide downloads naar het archief na het opgegeven aantal dagen"
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs after specified number of days"
-msgstr "Verwijder voltooide downloads na het opgegeven aantal dagen"
+msgid ""
+"Delete jobs from the history and archive after specified number of days"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"

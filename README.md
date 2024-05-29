@@ -2,7 +2,7 @@ SABnzbd - The automated Usenet download tool
 ============================================
 
 [![License](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Join our Discord](https://img.shields.io/discord/976737547558461480?color=7289DA&label=Discord&logo=Discord&logoColor=white)](https://discord.gg/KQzDe7fvNU)
+[![Join our Discord](https://img.shields.io/discord/976737547558461480?color=7289DA&label=Discord&logo=Discord&logoColor=white)](https://discord.sabnzbd.org)
 
 SABnzbd is an Open Source Binary Newsreader written in Python.
 

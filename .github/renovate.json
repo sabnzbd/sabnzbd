@@ -20,6 +20,7 @@
     "jaraco.context",
     "jaraco.collections",
     "sabctools",
+    "paho-mqtt",
     "werkzeug",
     "pyinstaller"
   ],

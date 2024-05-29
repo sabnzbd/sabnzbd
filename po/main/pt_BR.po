@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.3.1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/sabnzbd/teams/111101/pt_BR/)\n"
@@ -1164,6 +1164,11 @@ msgstr ""
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Falha ao enviar mensagem Prowl"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message - no URLs defined"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -2870,7 +2875,8 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs if the history exceeds specified number of jobs"
+msgid ""
+"Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -2878,7 +2884,8 @@ msgid "Move jobs to the archive after specified number of days"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs after specified number of days"
+msgid ""
+"Delete jobs from the history and archive after specified number of days"
 msgstr ""
 
 #: sabnzbd/skintext.py

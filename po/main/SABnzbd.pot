@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.1\n"
+"Project-Id-Version: SABnzbd-4.3.2RC1\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: team@sabnzbd.org\n"
 "Language-Team: SABnzbd <team@sabnzbd.org>\n"
@@ -1080,6 +1080,11 @@ msgstr ""
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message - no URLs defined"
 msgstr ""
 
 #. Warning message
@@ -2697,7 +2702,7 @@ msgid "Move jobs to the archive if the history exceeds specified number of jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs if the history exceeds specified number of jobs"
+msgid "Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -2705,7 +2710,7 @@ msgid "Move jobs to the archive after specified number of days"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Delete jobs after specified number of days"
+msgid "Delete jobs from the history and archive after specified number of days"
 msgstr ""
 
 #: sabnzbd/skintext.py
