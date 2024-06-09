@@ -250,6 +250,31 @@ class TestMisc:
         assert 1 == misc.int_conv(True)
         assert 0 == misc.int_conv(object)
 
+    def test_bool_conv(self):
+        test_cases = [
+            (None, False, "Test with None value"),
+            (0, False, "Test with zero value"),
+            ("0", False, "Test with zero string"),
+            (1, True, "Test with one value"),
+            (-1, True, "Test with negative one value"),
+            (100, True, "Test with 100 value"),
+            ("1", True, "Test with one string"),
+            ("100", True, "Test with 100 string"),
+            ("", False, "Test with empty string"),
+            ("abc", False, "Test with non-numeric string"),
+            ("true", False, "Test with 'true' string"),
+            (True, True, "Test with boolean True value"),
+            (False, False, "Test with boolean False value"),
+            (0.0, False, "Test with float zero value"),
+            (1.5, True, "Test with positive float value"),
+            (-2.7, True, "Test with negative float value"),
+            ("1.5", False, "Test with float string value"),
+            ("0.0", False, "Test with float zero string value"),
+        ]
+
+        for value, expected, description in test_cases:
+            assert misc.bool_conv(value) == expected, description
+
     def test_create_https_certificates(self):
         cert_file = "test.cert"
         key_file = "test.key"

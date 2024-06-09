@@ -884,10 +884,7 @@ def main():
         elif opt in ("-n", "--nobrowser"):
             autobrowser = False
         elif opt in ("-b", "--browser"):
-            try:
-                autobrowser = bool(int(arg))
-            except ValueError:
-                autobrowser = True
+            autobrowser = sabnzbd.misc.bool_conv(arg)
         elif opt == "--autorestarted":
             autorestarted = True
         elif opt in ("-c", "--clean"):

@@ -891,6 +891,12 @@ def int_conv(value: Any, default: Any = 0) -> int:
         return default
 
 
+def bool_conv(value: Any) -> bool:
+    """Safe conversion to bool (can handle None)
+    Returns False in case of None or non-convertable value"""
+    return bool(int_conv(value))
+
+
 def create_https_certificates(ssl_cert, ssl_key):
     """Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key'"""
     try:

@@ -35,7 +35,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status, PP_LOOKUP
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
-from sabnzbd.misc import int_conv, caller_name, opts_to_pp, to_units
+from sabnzbd.misc import caller_name, opts_to_pp, to_units, bool_conv
 from sabnzbd.filesystem import remove_file, clip_path
 
 DB_LOCK = threading.Lock()
@@ -596,7 +596,7 @@ def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
     item["archive"] = bool(item["archive"])
 
     # Retry and retry for failed URL-fetch
-    item["retry"] = int_conv(item["status"] == Status.FAILED and item["path"] and os.path.exists(item["path"]))
+    item["retry"] = bool_conv(item["status"] == Status.FAILED and item["path"] and os.path.exists(item["path"]))
     if item["report"] == "future":
         item["retry"] = True
 
