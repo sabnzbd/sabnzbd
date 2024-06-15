@@ -68,7 +68,18 @@ Unicode true
 
 ;------------------------------------------------------------------
 ; Define names of the product
-  Name "${SAB_PRODUCT}"
+  Name "SABnzbd ${SAB_VERSION}"
+  VIProductVersion "${SAB_VERSIONKEY}"
+  VIFileVersion "${SAB_VERSIONKEY}"
+
+  VIAddVersionKey "Comments" "SABnzbd ${SAB_VERSION}"
+  VIAddVersionKey "CompanyName" "The SABnzbd-Team"
+  VIAddVersionKey "FileDescription" "SABnzbd ${SAB_VERSION}"
+  VIAddVersionKey "FileVersion" "${SAB_VERSION}"
+  VIAddVersionKey "LegalCopyright" "The SABnzbd-Team"
+  VIAddVersionKey "ProductName" "SABnzbd ${SAB_VERSION}"
+  VIAddVersionKey "ProductVersion" "${SAB_VERSION}"
+
   OutFile "${SAB_FILE}"
   InstallDir "$PROGRAMFILES\SABnzbd"
 

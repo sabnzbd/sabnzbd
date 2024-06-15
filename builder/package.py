@@ -32,6 +32,7 @@ from typing import List
 
 from constants import (
     RELEASE_VERSION,
+    RELEASE_VERSION_TUPLE,
     VERSION_FILE,
     RELEASE_README,
     RELEASE_NAME,
@@ -258,8 +259,8 @@ if __name__ == "__main__":
                 [
                     "makensis.exe",
                     "/V3",
-                    "/DSAB_PRODUCT=%s" % RELEASE_NAME,
                     "/DSAB_VERSION=%s" % RELEASE_VERSION,
+                    "/DSAB_VERSIONKEY=%s" % ".".join(map(str, RELEASE_VERSION_TUPLE)),
                     "/DSAB_FILE=%s" % RELEASE_INSTALLER,
                     "NSIS_Installer.nsi.tmp",
                 ]

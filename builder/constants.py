@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os
+import re
 
 # Constants
 VERSION_FILE = "sabnzbd/version.py"
@@ -32,6 +33,10 @@ RELEASE_VERSION = __version__
 
 # Pre-releases are longer than 6 characters (e.g. 3.1.0Beta1 vs 3.1.0, but also 3.0.11)
 PRERELEASE = len(RELEASE_VERSION) > 5
+
+# Parse the version info for Windows file properties information
+version_regexed = re.search(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)", RELEASE_VERSION)
+RELEASE_VERSION_TUPLE = (int(version_regexed.group(1)), int(version_regexed.group(2)), int(version_regexed.group(3)), 0)
 
 # Define release name
 RELEASE_NAME = "SABnzbd-%s" % RELEASE_VERSION
