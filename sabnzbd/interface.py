@@ -2156,8 +2156,10 @@ class ConfigNotify:
 
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
-                # Use get_string to make sure lists are displayed correctly
-                conf[option] = config.get_config(section, option).get_string()
+                conf[option] = config.get_config(section, option)()
+
+        # Use get_string to make sure lists are displayed correctly
+        conf["email_to"] = cfg.email_to.get_string()
 
         return template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),

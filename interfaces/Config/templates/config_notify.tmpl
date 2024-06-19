@@ -10,13 +10,13 @@
             <label class="config wide" for="${section_label}_prio_$type">
                 $T($notify_types[$type]).replace('/', ' / ')
             </label>
-            <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
+            <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if $getVar($section_label + '_prio_' + $type) then 'checked="checked"' else ""#--> />
         </div>
     <!--#end for#-->
 <!--#end def#-->
 
 <!--#def show_cat_box($section_label)#-->
-    <div class="col2-cats" <!--#if int($getVar($section_label + '_enable')) > 0 then '' else 'style="display:none"'#-->>
+    <div class="col2-cats" <!--#if $getVar($section_label + '_enable') then '' else 'style="display:none"'#-->>
         <hr>
         <b>$T('affectedCat')</b><br/>
         <select name="${section_label}_cats" multiple="multiple" class="multiple_cats" size="$len($categories)">
@@ -58,12 +58,12 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="email_full">$T('opt-email_full')</label>
-                    <input type="checkbox" name="email_full" id="email_full" value="1" <!--#if int($email_full) > 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="email_full" id="email_full" value="1" <!--#if $email_full then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-email_full')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="email_rss">$T('opt-email_rss')</label>
-                    <input type="checkbox" name="email_rss" id="email_rss" value="1" <!--#if int($email_rss) > 0 then 'checked="checked"' else ""#--> />
+                    <input type="checkbox" name="email_rss" id="email_rss" value="1" <!--#if $email_rss then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-email_rss')</span>
                 </div>
                 <div class="field-pair">
@@ -107,12 +107,12 @@
             <h3>$T('section-NC')</h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="ncenter_enable" id="ncenter_enable" value="1" <!--#if int($ncenter_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="ncenter_enable" id="ncenter_enable" value="1" <!--#if $ncenter_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="ncenter_enable"> $T('opt-ncenter_enable')</label></td>
                 </tr>
             </table>
         </div>
-        <div class="col1" <!--#if int($ncenter_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $ncenter_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('ncenter')
                 <div class="field-pair no-field-pair-bg">
@@ -132,13 +132,13 @@
             <h3>$T('section-AC')</h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="acenter_enable" id="acenter_enable" value="1" <!--#if int($acenter_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="acenter_enable" id="acenter_enable" value="1" <!--#if $acenter_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="acenter_enable"> $T('opt-acenter_enable')</label></td>
                 </tr>
             </table>
             $show_cat_box('acenter')
         </div>
-        <div class="col1" <!--#if int($acenter_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $acenter_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('acenter')
                 <div class="field-pair no-field-pair-bg">
@@ -158,13 +158,13 @@
             <h3>$T('section-OSD') <a href="$help_uri#toc4" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="ntfosd_enable" id="ntfosd_enable" value="1" <!--#if int($ntfosd_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="ntfosd_enable" id="ntfosd_enable" value="1" <!--#if $ntfosd_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="ntfosd_enable"> $T('opt-ntfosd_enable')</label></td>
                 </tr>
             </table>
             $show_cat_box('ntfosd')
         </div>
-        <div class="col1" <!--#if int($ntfosd_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $ntfosd_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('ntfosd')
                 <div class="field-pair no-field-pair-bg">
@@ -183,7 +183,7 @@
             <h3>Apprise <a href="$help_uri#apprise" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="apprise_enable" id="apprise_enable" value="1" <!--#if int($apprise_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="apprise_enable" id="apprise_enable" value="1" <!--#if $apprise_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="apprise_enable"> $T('opt-apprise_enable')</label></td>
                 </tr>
             </table>
@@ -192,7 +192,7 @@
 
             $show_cat_box('apprise')
         </div>
-        <div class="col1" <!--#if int($apprise_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $apprise_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="apprise_urls">$T('opt-apprise_urls')</label>
@@ -208,7 +208,7 @@
                         <label class="config" for="${section_label}_target_${type}">
                             $T($notify_types[$type]).replace('/', ' / ')
                         </label>
-                        <input type="checkbox" name="${section_label}_target_${type}_enable" id="${section_label}_target_${type}_enable" value="1" <!--#if int($getVar($section_label + '_target_' + $type + '_enable')) > 0 then 'checked="checked"' else ""#--> />
+                        <input type="checkbox" name="${section_label}_target_${type}_enable" id="${section_label}_target_${type}_enable" value="1" <!--#if $getVar($section_label + '_target_' + $type + '_enable') then 'checked="checked"' else ""#--> />
                         <input type="text" name="${section_label}_target_${type}" id="${section_label}_target_${type}" value="$getVar($section_label + '_target_' + $type)"  placeholder="$T('opt-apprise_urls')" />
                     </div>
                 <!--#end for#-->
@@ -228,14 +228,14 @@
             <h3>$T('section-NScript') <a href="$help_uri#nscript" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if $nscript_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
                 </tr>
             </table>
             <em>$T('explain-nscript_enable')</em><br><a href="$help_uri#nscript" target="_blank">$T('readwiki')</a>
             $show_cat_box('nscript')
         </div>
-        <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $nscript_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
@@ -267,14 +267,14 @@
             <h3>$T('section-Prowl')</h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="prowl_enable" id="prowl_enable" value="1" <!--#if int($prowl_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="prowl_enable" id="prowl_enable" value="1" <!--#if $prowl_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="prowl_enable"> $T('opt-prowl_enable')</label></td>
                 </tr>
             </table>
             <em>$T('explain-prowl_enable')</em>
             $show_cat_box('prowl')
         </div>
-        <div class="col1" <!--#if int($prowl_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $prowl_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="prowl_apikey">$T('opt-prowl_apikey')</label>
@@ -313,14 +313,14 @@
             <h3>$T('section-Pushover')</h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="pushover_enable" id="pushover_enable" value="1" <!--#if int($pushover_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="pushover_enable" id="pushover_enable" value="1" <!--#if $pushover_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="pushover_enable"> $T('opt-pushover_enable')</label></td>
                 </tr>
             </table>
             <em>$T('explain-pushover_enable')</em>
             $show_cat_box('pushover')
         </div>
-        <div class="col1" <!--#if int($pushover_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $pushover_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="pushover_token">$T('opt-pushover_token')</label>
@@ -378,14 +378,14 @@
             <h3>$T('section-Pushbullet')</h3>
             <table>
                 <tr>
-                    <td><input type="checkbox" name="pushbullet_enable" id="pushbullet_enable" value="1" <!--#if int($pushbullet_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><input type="checkbox" name="pushbullet_enable" id="pushbullet_enable" value="1" <!--#if $pushbullet_enable then 'checked="checked"' else ""#--> /></td>
                     <td><label for="pushbullet_enable"> $T('opt-pushbullet_enable')</label></td>
                 </tr>
             </table>
             <em>$T('explain-pushbullet_enable')</em>
             $show_cat_box('pushbullet')
         </div>
-        <div class="col1" <!--#if int($pushbullet_enable) > 0 then '' else 'style="display:none"'#-->>
+        <div class="col1" <!--#if $pushbullet_enable then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="pushbullet_apikey">$T('opt-pushbullet_apikey')</label>
