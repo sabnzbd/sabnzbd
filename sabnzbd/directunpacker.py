@@ -326,6 +326,14 @@ class DirectUnpacker(threading.Thread):
                         self.cur_volume += 1
                         self.nzo.set_action_line(T("Direct Unpack"), self.get_formatted_stats(include_time_left=True))
                         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
+                        logging.debug("SJ1 intermediate_script() %s", cfg.intermediate_script())
+                        logging.debug("SJ1 cur_volume %s", self.cur_volume)
+                        if self.cur_volume == 1:
+                            # run intermediate_script
+                            logging.debug("SJ1 yes yes")
+                            if cfg.intermediate_script():
+                                logging.debug("SJ: running intermediate script %s on %s", cfg.intermediate_script(),
+                                              extraction_path)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
                     # In rare occasions we can get stuck forever with repeating lines
@@ -462,6 +470,13 @@ class DirectUnpacker(threading.Thread):
 
         # Doing the first
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
+        logging.debug("SJ2 intermediate_script() %s", cfg.intermediate_script())
+        logging.debug("SJ2 cur_volume %s", self.cur_volume)
+        if self.cur_volume == 1:
+            # run intermediate_script
+            if cfg.intermediate_script():
+                logging.debug("SJ: running pre stage")
+                logging.debug("SJ: running intermediate script %s on %s", cfg.intermediate_script(), extraction_path)
 
     @synchronized(START_STOP_LOCK)
     def abort(self):
