@@ -332,8 +332,11 @@ class DirectUnpacker(threading.Thread):
                             # run intermediate_script
                             logging.debug("SJ1 yes yes")
                             if cfg.intermediate_script():
-                                logging.debug("SJ: running intermediate script %s on %s", cfg.intermediate_script(),
-                                              extraction_path)
+                                logging.debug(
+                                    "SJ: running intermediate script %s on %s",
+                                    cfg.intermediate_script(),
+                                    extraction_path,
+                                )
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
                     # In rare occasions we can get stuck forever with repeating lines
