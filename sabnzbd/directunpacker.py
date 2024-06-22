@@ -463,9 +463,11 @@ class DirectUnpacker(threading.Thread):
 
         # Doing the first
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
+
+        # NB we only get if DirectUnpacker gets kicked in: with rar files in post (not with xpost post)
         logging.debug("SJ2 intermediate_script() %s", cfg.intermediate_script())
         logging.debug("SJ2 cur_volume %s", self.cur_volume)
-        if self.cur_volume == 1:
+        if self.cur_volume == 1:  # always True at this location, so remove? #TODO
             # run intermediate_script
             if cfg.intermediate_script():
                 logging.debug("SJ: running intermediate script %s on %s", cfg.intermediate_script(), extraction_path)
@@ -482,15 +484,13 @@ class DirectUnpacker(threading.Thread):
                 logging.info("Intermediate script returned %s and output=\n%s", ret, output)
                 if ret == 0:
                     split_output = output.splitlines()
-                    for index, line in enumerate(split_output):
-                        if index == 0:
-                            decision = int_conv(line, 0)
-                            if decision != 0:
-                                # there was a decision!
-                                logging.debug("SJ decision %s", decision)
-                                logging.debug("SJ prio was %s", self.nzo.priority)
-                                self.nzo.priority = decision
-                                logging.debug("SJ prio is %s", self.nzo.priority)
+                    decision = int(split_output[0])
+                    if decision != 0:
+                        # there was a decision, so use it!
+                        logging.debug("SJ decision %s", decision)
+                        logging.debug("SJ prio was %s", self.nzo.priority)
+                        self.nzo.priority = decision
+                        logging.debug("SJ prio is %s", self.nzo.priority)
 
     @synchronized(START_STOP_LOCK)
     def abort(self):
