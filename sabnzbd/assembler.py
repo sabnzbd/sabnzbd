@@ -28,7 +28,7 @@ import ctypes
 from typing import Tuple, Optional, List
 
 import sabnzbd
-from sabnzbd.misc import get_all_passwords, match_str
+from sabnzbd.misc import get_all_passwords, match_str, build_and_run_command
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -37,6 +37,7 @@ from sabnzbd.filesystem import (
     get_filename,
     has_unwanted_extension,
     get_basename,
+    make_script_path,
 )
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
@@ -79,6 +80,62 @@ class Assembler(Thread):
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
+
+                        # TODO: remove this ugly stuff
+
+                        nzo.blabla = 1
+                        try:
+                            nzo.intermediate_has_run
+                        except:
+                            nzo.intermediate_has_run = False
+
+                        logging.debug("SJ in assembler: %s bytes done of %s total", nzo.bytes_downloaded, nzo.bytes)
+                        # is_a_rarset = any(n.endswith('.rar') for n in nzo.files_table.values())
+                        is_a_rarset = False
+                        for n in nzo.files_table.values():
+                            if ".rar, " in str(n):
+                                # rar found!!
+                                is_a_rarset = True
+                        logging.debug("SJ is a rarset %s", is_a_rarset)
+                        if is_a_rarset:
+                            logging.debug("SJ rarset, so DirectUnpack will kick in")
+                        else:
+                            # no .rar (probably an "xpost"), so DirectUnpack will not kick in.
+                            logging.debug("SJ Alert: no rarset, so no Directunpack. Run intermediate script from there")
+                            if nzo.bytes_downloaded > 500_000_000 and not nzo.intermediate_has_run:
+                                # 500 MB needed before output is there?
+                                # run intermediate_script
+                                if cfg.intermediate_script():
+                                    logging.debug(
+                                        "SJ: running intermediate script %s on %s",
+                                        cfg.intermediate_script(),
+                                        nzo.download_path,
+                                    )
+                                    script_path = make_script_path(cfg.intermediate_script())
+                                    command = [
+                                        script_path,
+                                        nzo.download_path,
+                                    ]  # xpost, so download_path contains final file
+                                    try:
+                                        p = build_and_run_command(command)
+                                    except:
+                                        logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
+                                        return values  # TODO remove this line, and handle exception correctly
+
+                                    output = p.stdout.read()
+                                    ret = p.wait()
+                                    logging.info("Intermediate script returned %s and output=\n%s", ret, output)
+                                    if ret == 0:
+                                        split_output = output.splitlines()
+                                        decision = int(split_output[0])
+                                        if decision != 0:
+                                            # there was a decision, so use it!
+                                            logging.debug("SJ decision %s", decision)
+                                            logging.debug("SJ prio was %s", nzo.priority)  # no self.nzo...
+                                            nzo.priority = decision
+                                            logging.debug("SJ prio is %s", nzo.priority)
+
+                                nzo.intermediate_has_run = True  # just run once
 
                         # Continue after partly written data
                         if not file_done:
