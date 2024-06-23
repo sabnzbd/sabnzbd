@@ -466,8 +466,7 @@ class DirectUnpacker(threading.Thread):
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
         # code for intermediate_script. We get here if 1) traditional post with rar-set AND 2) directunpack is on
-        # (so not with xpost)
-        # NB we only get if DirectUnpacker gets kicked in: with rar files in post (not with xpost post)
+        # (so not with xpost, or with directunpack False)
         logging.debug("SJ2 intermediate_script() %s", cfg.intermediate_script())
         logging.debug("SJ2 cur_volume %s", self.cur_volume)
         if self.cur_volume == 1:  # always True at this location, so remove? #TODO

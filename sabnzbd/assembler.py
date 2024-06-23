@@ -81,7 +81,7 @@ class Assembler(Thread):
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
 
-                        # code for intermediate_script in case of an xpost, so no rar-set, but just a plain file
+                        # code for intermediate_script in case of an XPOST, so no rar-set, but just a plain file
                         # that plain file will appear automatically, without unrar, without need for DirectUnpack
                         # that is what we handle here
 
@@ -93,6 +93,8 @@ class Assembler(Thread):
                             nzo.intermediate_has_run = False
 
                         # logging.debug("SJ in assembler: %s bytes done of %s total", nzo.bytes_downloaded, nzo.bytes)
+
+                        # TODO: put this into initialisation of the nzo?
                         # is_a_rarset = any(n.endswith('.rar') for n in nzo.files_table.values())
                         is_a_rarset = False
                         for n in nzo.files_table.values():
@@ -100,9 +102,20 @@ class Assembler(Thread):
                                 # rar found!!
                                 is_a_rarset = True
                         logging.debug("SJ is a rarset %s", is_a_rarset)
+
+                        # TODO: first check if cfg.intermediate_script() and not nzo.intermediate_has_run
+
+                        if nzo.bytes_downloaded > 500_000_000:
+                            logging.debug("SJ 500 MB downloaded!")
+                            # if DirectUnpack is True, and has done some work, and
+                            # if we only knew the <complete_dir> and actual _UNPACK_ sub directory here,
+                            # ... we could handle it here
+
                         if is_a_rarset:
                             # here we do not do anything with rar-sets. Leave it to DirectUnpack.
                             logging.debug("SJ rarset, so DirectUnpack will kick in")
+                            # ... but maybe, if DirectUnpack is doing the unpacking of the rar-st elsewhere, we can do the intermediate_script here?
+
                         else:
                             # no .rar (probably an "xpost"), so DirectUnpack will not kick in, and the plain appears here
                             logging.debug("SJ Alert: no rarset, so no Directunpack. Run intermediate script from here")
