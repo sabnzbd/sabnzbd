@@ -81,15 +81,18 @@ class Assembler(Thread):
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
 
-                        # TODO: remove this ugly stuff
+                        # code for intermediate_script in case of an xpost, so no rar-set, but just a plain file
+                        # that plain file will appear automatically, without unrar, without need for DirectUnpack
+                        # that is what we handle here
 
-                        nzo.blabla = 1
+                        # TODO: put this somehwere in initialisation of the nzo ?
                         try:
+                            # does it exist already?
                             nzo.intermediate_has_run
                         except:
                             nzo.intermediate_has_run = False
 
-                        logging.debug("SJ in assembler: %s bytes done of %s total", nzo.bytes_downloaded, nzo.bytes)
+                        # logging.debug("SJ in assembler: %s bytes done of %s total", nzo.bytes_downloaded, nzo.bytes)
                         # is_a_rarset = any(n.endswith('.rar') for n in nzo.files_table.values())
                         is_a_rarset = False
                         for n in nzo.files_table.values():
@@ -98,12 +101,13 @@ class Assembler(Thread):
                                 is_a_rarset = True
                         logging.debug("SJ is a rarset %s", is_a_rarset)
                         if is_a_rarset:
+                            # here we do not do anything with rar-sets. Leave it to DirectUnpack.
                             logging.debug("SJ rarset, so DirectUnpack will kick in")
                         else:
-                            # no .rar (probably an "xpost"), so DirectUnpack will not kick in.
-                            logging.debug("SJ Alert: no rarset, so no Directunpack. Run intermediate script from there")
-                            if nzo.bytes_downloaded > 500_000_000 and not nzo.intermediate_has_run:
-                                # 500 MB needed before output is there?
+                            # no .rar (probably an "xpost"), so DirectUnpack will not kick in, and the plain appears here
+                            logging.debug("SJ Alert: no rarset, so no Directunpack. Run intermediate script from here")
+                            if nzo.bytes_downloaded > 200_000_000 and not nzo.intermediate_has_run:
+                                # 200 MB needed before output is there?
                                 # run intermediate_script
                                 if cfg.intermediate_script():
                                     logging.debug(

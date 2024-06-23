@@ -326,7 +326,8 @@ class DirectUnpacker(threading.Thread):
                         self.cur_volume += 1
                         self.nzo.set_action_line(T("Direct Unpack"), self.get_formatted_stats(include_time_left=True))
                         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
-                        # TODO: never intermediate_script needed here, because cur_volume > 1
+
+                        # TODO Note: never intermediate_script needed here, because cur_volume > 1
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
                     # In rare occasions we can get stuck forever with repeating lines
@@ -464,6 +465,8 @@ class DirectUnpacker(threading.Thread):
         # Doing the first
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
+        # code for intermediate_script. We get here if 1) traditional post with rar-set AND 2) directunpack is on
+        # (so not with xpost)
         # NB we only get if DirectUnpacker gets kicked in: with rar files in post (not with xpost post)
         logging.debug("SJ2 intermediate_script() %s", cfg.intermediate_script())
         logging.debug("SJ2 cur_volume %s", self.cur_volume)
@@ -481,7 +484,7 @@ class DirectUnpacker(threading.Thread):
 
                 output = p.stdout.read()
                 ret = p.wait()
-                logging.info("Intermediate script returned %s and output=\n%s", ret, output)
+                logging.debug("Intermediate script returned %s and output=\n%s", ret, output)
                 if ret == 0:
                     split_output = output.splitlines()
                     decision = int(split_output[0])
