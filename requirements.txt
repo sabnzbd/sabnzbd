@@ -18,13 +18,13 @@ jaraco.context==4.3.0
 more-itertools==10.3.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
-tempora==5.5.1
+tempora==5.6.0
 pytz==2024.1
 sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
 PySocks==1.7.1
-puremagic==1.24
+puremagic==1.25
 guessit==3.8.0
 babelfish==0.6.1
 rebulk==3.2.0
@@ -63,7 +63,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 # Requests Requirements
 charset_normalizer==3.3.2
 idna==3.7
-urllib3==2.2.1
+urllib3==2.2.2
 certifi==2024.6.2
 oauthlib==3.2.2
 PyJWT==2.8.0
