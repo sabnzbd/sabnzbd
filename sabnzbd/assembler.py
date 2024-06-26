@@ -81,17 +81,12 @@ class Assembler(Thread):
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
 
-                        # code for intermediate_script in case of an XPOST, so no rar-set, but just a plain file
+                        # code for intermediate_script in case of a post with plain files, without rar-set
                         # that plain file will appear automatically, without unrar, without need for DirectUnpack
                         # that is what we handle here
 
                         # logging.debug("SJ in assembler: %s bytes done of %s total", nzo.bytes_downloaded, nzo.bytes)
-                        # is_a_rarset = any(n.endswith('.rar') for n in nzo.files_table.values())
-                        is_a_rarset = False
-                        for n in nzo.files_table.values():
-                            if ".rar, " in str(n):
-                                # rar found!!
-                                is_a_rarset = True
+                        is_a_rarset = any(n.filename.endswith(".rar") for n in nzo.files_table.values())
                         logging.debug("SJ is a rarset %s", is_a_rarset)
 
                         # TODO: first check if cfg.intermediate_script() and not nzo.intermediate_has_run
