@@ -578,6 +578,7 @@ NzbObjectSaver = (
     "servercount",
     "unwanted_ext",
     "renames",
+    "intermediate_has_run",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -725,6 +726,7 @@ class NzbObject(TryList):
         self.url_tries = 0
         self.pp_active = False
         self.md5sum: Optional[str] = None
+        self.intermediate_has_run = False
 
         # Path is empty in case of a future NZB
         self.download_path = ""
