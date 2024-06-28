@@ -168,7 +168,7 @@ def local_ipv6():
 
 
 def public_ipv6():
-    if local_address := local_ipv6():
+    if (local_address := local_ipv6()) and not sabnzbd.misc.ip_in_subnet(local_address, "fe80::/10"):
         if public_address := public_ip(family=socket.AF_INET6):
             return public_address
         elif not sabnzbd.misc.is_lan_addr(local_address):
