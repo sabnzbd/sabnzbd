@@ -125,6 +125,7 @@ def find_programs(curdir: str):
             # refine if on Windows on ARM64: native ARM64 executables ... if available
             if sabnzbd.WIN64ARM64:
                 sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/arm64/par2.exe")
+                sabnzbd.newsunpack.MULTIPAR_COMMAND = None
 
         else:
             # 32 bit versions
