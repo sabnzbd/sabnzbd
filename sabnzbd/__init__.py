@@ -38,6 +38,8 @@ KERNEL32 = LIBC = MACOSLIBC = None
 if os.name == "nt":
     WIN32 = True
     WIN64 = platform.uname().machine in ["AMD64", "ARM64"]  # includes emulation of X86_64 on Windows ARM64
+    WIN64ARM64 = platform.uname().machine in ["ARM64"]
+
     from sabnzbd.utils.apireg import del_connection_info
 
     try:
