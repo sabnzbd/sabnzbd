@@ -39,7 +39,7 @@ ujson==5.10.0
 
 # Windows system integration
 pywin32==306; sys_platform == 'win32'
-windows-toasts==1.1.1; sys_platform == 'win32' and python_version > '3.8'
+windows-toasts==1.2.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-runtime==2.1.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-Windows.Data.Xml.Dom==2.1.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-Windows.Foundation==2.1.0; sys_platform == 'win32' and python_version > '3.8'
