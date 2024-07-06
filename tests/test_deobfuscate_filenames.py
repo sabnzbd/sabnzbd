@@ -18,7 +18,7 @@
 """
 Testing SABnzbd deobfuscate module
 """
-
+import os.path
 import random
 import shutil
 import zipfile
@@ -417,9 +417,19 @@ class TestDeobfuscateFinalResult:
         create_big_file(bigfile)
         assert os.path.isfile(bigfile)
 
+        already_correct_srt = os.path.join(dirname, "bigfile.srt")
+        create_small_file(already_correct_srt)
+        assert os.path.isfile(already_correct_srt)
+
         small_srt = os.path.join(dirname, "dut.srt")
         create_small_file(small_srt)
         assert os.path.isfile(small_srt)
+        expected_srt = os.path.join(dirname, "bigfile.dut.srt")
+
+        underscore_srt = os.path.join(dirname, "13_Deutsch.srt")
+        create_small_file(underscore_srt)
+        assert os.path.isfile(underscore_srt)
+        expected_underscore_srt = os.path.join(dirname, "bigfile.13.Deutsch.srt")
 
         small_txt = os.path.join(dirname, "readme.txt")
         create_small_file(small_txt)
@@ -428,10 +438,23 @@ class TestDeobfuscateFinalResult:
         # go
         deobfuscate_subtitles(dirname)
 
-        expected_srt = os.path.join(dirname, "bigfile.dut.srt")
         assert os.path.isfile(bigfile)  # unchanged
+        assert os.path.isfile(already_correct_srt) # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
         assert os.path.isfile(expected_srt)
+        assert not os.path.isfile(underscore_srt) # should be renamed to:
+        assert os.path.isfile(expected_underscore_srt)
+        assert os.path.isfile(small_txt)  # unchanged
+
+        # and if we go again ... nothing should happen
+        deobfuscate_subtitles(dirname)
+
+        assert os.path.isfile(bigfile)  # unchanged
+        assert os.path.isfile(already_correct_srt) # unchanged
+        assert not os.path.isfile(small_srt)  # should be renamed to:
+        assert os.path.isfile(expected_srt)
+        assert not os.path.isfile(underscore_srt) # should be renamed to:
+        assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
         shutil.rmtree(dirname)
