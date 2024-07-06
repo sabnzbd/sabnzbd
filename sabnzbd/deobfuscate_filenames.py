@@ -27,7 +27,7 @@ files to the job-name in the queue if the filename looks obfuscated
 Based on work by P1nGu1n
 
 """
-
+import glob
 import hashlib
 import logging
 import os
@@ -312,3 +312,49 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
 
     if nr_files_renamed:
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d file(s)") % nr_files_renamed)
+
+
+def without_extension(fullpathfilename):
+    return os.path.splitext(fullpathfilename)[0]
+
+
+def deobfuscate_subtitles(directory):
+    """
+    Find .srt subtitle files, and rename to match biggest file
+
+    Some_Big_File_2024.mp4       #### biggest file
+    Some_Big_File_2024.srt
+    14_English.srt
+    dut.srt
+    Something.else.txt
+
+    will result in
+
+    Some_Big_File_2024.mp4       #### biggest file
+    Some_Big_File_2024.srt
+    Some_Big_File_2024.14.English.srt
+    Some_Big_File_2024.dut.srt
+    Something.else.txt
+
+    """
+
+    largest_file = max(
+        (os.path.join(root, file) for root, dirs, files in os.walk(directory) for file in files), key=os.path.getsize
+    )  # /blabla/bla/subdir/Biggest_File.mp4
+    logging.debug(f"Largest_file {largest_file}")
+
+    # get srt files:
+    srt_files = glob.glob(os.path.join(directory, "*.srt"))
+    for srt_file in srt_files:
+        if without_extension(srt_file) == without_extension(largest_file):
+            # already the same, so skip
+            continue
+        # not the same, so rename the srt file
+        filename_only = os.path.basename(srt_file)  # like "14_English.srt", so no path
+        filename_only = filename_only.replace("_", ".")  # replace underscore with dot
+        # now put that name after the base name of the biggestfile:
+        base = without_extension(largest_file)  # get base name of largest files
+        new_full_name = f"{base}.{filename_only}"  # put (renamed) srt behind tat
+        unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique
+        logging.debug(f"Renaming subtitle {srt_file} to {unique_filename}")
+        renamer(srt_file, unique_filename)  # ... and rename actual file on disk
