@@ -404,3 +404,34 @@ class TestDeobfuscateFinalResult:
         assert not os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should now be gone
 
         shutil.rmtree(work_dir)
+
+    def test_deobfuscate_subtitles(self):
+        # input: a big file, and srt file(s), and non-related files
+        # result: srt file rename according to big file
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        bigfile = os.path.join(dirname, "bigfile.bin")
+        create_big_file(bigfile)
+        assert os.path.isfile(bigfile)
+
+        small_srt = os.path.join(dirname, "dut.srt")
+        create_small_file(small_srt)
+        assert os.path.isfile(small_srt)
+
+        small_txt = os.path.join(dirname, "readme.txt")
+        create_small_file(small_txt)
+        assert os.path.isfile(small_txt)
+
+        # go
+        deobfuscate_subtitles(dirname)
+
+        expected_srt = os.path.join(dirname, "bigfile.dut.srt")
+        assert os.path.isfile(bigfile)  # unchanged
+        assert not os.path.isfile(small_srt)  # should be renamed to:
+        assert os.path.isfile(expected_srt)
+        assert os.path.isfile(small_txt)  # unchanged
+
+        shutil.rmtree(dirname)
