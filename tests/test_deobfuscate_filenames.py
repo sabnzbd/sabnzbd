@@ -434,4 +434,12 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(expected_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
+        # and if we run it again ... nothing should happen
+        deobfuscate_subtitles(dirname)
+
+        assert os.path.isfile(bigfile)  # unchanged
+        assert not os.path.isfile(small_srt)  # should be renamed to:
+        assert os.path.isfile(expected_srt)
+        assert os.path.isfile(small_txt)  # unchanged
+
         shutil.rmtree(dirname)
