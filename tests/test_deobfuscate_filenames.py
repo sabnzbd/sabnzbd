@@ -407,7 +407,7 @@ class TestDeobfuscateFinalResult:
 
     def test_deobfuscate_subtitles(self):
         # input: a big file, and srt file(s), and non-related files
-        # result: srt file rename according to big file
+        # result: srt file renamed according to big file
 
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
