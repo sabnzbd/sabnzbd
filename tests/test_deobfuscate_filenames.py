@@ -466,3 +466,43 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(small_txt)  # unchanged
 
         shutil.rmtree(dirname)
+
+    def test_deobfuscate_subtitles_structured(self):
+        # input: a big file, and srt file(s), and non-related files
+        # result: srt file renamed according to big file
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        cases = []
+        cases.append(dict(type="big", start="bigfile.bin", expected="bigfile.bin"))
+        cases.append(dict(type="small", start="bigfile.srt", expected="bigfile.srt"))
+        cases.append(dict(type="small", start="dut.srt", expected="bigfile.dut.srt"))
+        cases.append(dict(type="small", start="13_English.srt", expected="bigfile.13.English.srt"))
+        cases.append(dict(type="small", start="some_info.txt", expected="some_info.txt"))
+
+        # Below: generic method. No touching needed, except for the call to the functionality itself
+
+        # create the cases / files:
+        for case in cases:
+            start_filename = os.path.join(dirname, case["start"])
+            if case["type"] == "big":
+                create_big_file(start_filename)
+            else:
+                create_small_file(start_filename)
+            assert os.path.isfile(start_filename)
+
+        # go:
+        deobfuscate_subtitles(dirname)
+
+        for case in cases:
+            expected_filename = os.path.join(dirname, case["expected"])
+            assert os.path.isfile(expected_filename)
+            # check if start filename should be gone:
+            start_filename = os.path.join(dirname, case["start"])
+            if not (start_filename == expected_filename):
+                assert not os.path.isfile(start_filename)
+
+        # one
+        shutil.rmtree(dirname)
