@@ -439,10 +439,10 @@ class TestDeobfuscateFinalResult:
         deobfuscate_subtitles(dirname)
 
         assert os.path.isfile(bigfile)  # unchanged
-        assert os.path.isfile(already_correct_srt) # unchanged
+        assert os.path.isfile(already_correct_srt)  # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
         assert os.path.isfile(expected_srt)
-        assert not os.path.isfile(underscore_srt) # should be renamed to:
+        assert not os.path.isfile(underscore_srt)  # should be renamed to:
         assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
@@ -450,10 +450,10 @@ class TestDeobfuscateFinalResult:
         deobfuscate_subtitles(dirname)
 
         assert os.path.isfile(bigfile)  # unchanged
-        assert os.path.isfile(already_correct_srt) # unchanged
+        assert os.path.isfile(already_correct_srt)  # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
         assert os.path.isfile(expected_srt)
-        assert not os.path.isfile(underscore_srt) # should be renamed to:
+        assert not os.path.isfile(underscore_srt)  # should be renamed to:
         assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
