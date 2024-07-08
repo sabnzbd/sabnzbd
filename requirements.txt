@@ -64,7 +64,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 charset_normalizer==3.3.2
 idna==3.7
 urllib3==2.2.2
-certifi==2024.6.2
+certifi==2024.7.4
 oauthlib==3.2.2
 PyJWT==2.8.0
 blinker==1.8.2
