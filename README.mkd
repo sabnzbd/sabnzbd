@@ -1,7 +1,14 @@
-Release Notes - SABnzbd 4.3.2
+Release Notes - SABnzbd 4.3.3 Beta 1
 =========================================================
 
-This is the second bug fix release of SABnzbd 4.3.0.
+This is the third bug fix release of SABnzbd 4.3.0.
+
+## Bug fixes and changes since 4.3.2
+* Correct handling of empty or `Default` category when adding a job.
+* History API-output could contain inconsistent variable types.
+* Skip external IPv6 check if only link local addresses are available.
+* Windows: Could not repair or extract on ARM platforms.
+* Windows: Add file version information to installer.
 
 ## Bug fixes and changes since 4.3.1
 
