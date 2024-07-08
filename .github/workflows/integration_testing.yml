@@ -38,7 +38,7 @@ jobs:
         include:
           - name: macOS
             os: macos-latest
-            python-version: "3.12.3"
+            python-version: "3.12"
             python-architecture: "x64"
           - name: Windows
             os: windows-latest
