@@ -407,7 +407,7 @@ class TestDeobfuscateFinalResult:
 
     def test_deobfuscate_subtitles(self):
         # input: a big file, and srt file(s), and non-related files
-        # result: srt file renamed according to big file
+        # result: srt file renamed according to the big file
 
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
@@ -424,7 +424,7 @@ class TestDeobfuscateFinalResult:
         small_srt = os.path.join(dirname, "dut.srt")
         create_small_file(small_srt)
         assert os.path.isfile(small_srt)
-        expected_srt = os.path.join(dirname, "bigfile.dut.srt")
+        expected_small_srt = os.path.join(dirname, "bigfile.dut.srt")
 
         underscore_srt = os.path.join(dirname, "13_Deutsch.srt")
         create_small_file(underscore_srt)
@@ -441,68 +441,20 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(bigfile)  # unchanged
         assert os.path.isfile(already_correct_srt)  # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
-        assert os.path.isfile(expected_srt)
+        assert os.path.isfile(expected_small_srt)
         assert not os.path.isfile(underscore_srt)  # should be renamed to:
         assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
-        # and if we go again ... nothing should happen
+        # and if we go again ... nothing should happen: all files are correct
         deobfuscate_subtitles(dirname)
 
         assert os.path.isfile(bigfile)  # unchanged
         assert os.path.isfile(already_correct_srt)  # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
-        assert os.path.isfile(expected_srt)
+        assert os.path.isfile(expected_small_srt)
         assert not os.path.isfile(underscore_srt)  # should be renamed to:
         assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
-        # and if we run it again ... nothing should happen
-        deobfuscate_subtitles(dirname)
-
-        assert os.path.isfile(bigfile)  # unchanged
-        assert not os.path.isfile(small_srt)  # should be renamed to:
-        assert os.path.isfile(expected_srt)
-        assert os.path.isfile(small_txt)  # unchanged
-
-        shutil.rmtree(dirname)
-
-    def test_deobfuscate_subtitles_structured(self):
-        # input: a big file, and srt file(s), and non-related files
-        # result: srt file renamed according to big file
-
-        # Create directory (with a random directory name)
-        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
-        os.mkdir(dirname)
-
-        cases = []
-        cases.append(dict(type="big", start="bigfile.bin", expected="bigfile.bin"))
-        cases.append(dict(type="small", start="bigfile.srt", expected="bigfile.srt"))
-        cases.append(dict(type="small", start="dut.srt", expected="bigfile.dut.srt"))
-        cases.append(dict(type="small", start="13_English.srt", expected="bigfile.13.English.srt"))
-        cases.append(dict(type="small", start="some_info.txt", expected="some_info.txt"))
-
-        # Below: generic method. No touching needed, except for the call to the functionality itself
-
-        # create the cases / files:
-        for case in cases:
-            start_filename = os.path.join(dirname, case["start"])
-            if case["type"] == "big":
-                create_big_file(start_filename)
-            else:
-                create_small_file(start_filename)
-            assert os.path.isfile(start_filename)
-
-        # go:
-        deobfuscate_subtitles(dirname)
-
-        for case in cases:
-            expected_filename = os.path.join(dirname, case["expected"])
-            assert os.path.isfile(expected_filename)
-            # check if start filename should be gone:
-            start_filename = os.path.join(dirname, case["start"])
-            if not (start_filename == expected_filename):
-                assert not os.path.isfile(start_filename)
-
-        # one
         shutil.rmtree(dirname)
