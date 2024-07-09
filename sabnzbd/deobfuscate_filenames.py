@@ -353,7 +353,7 @@ def deobfuscate_subtitles(directory):
             # already the same start as the largest file, so skip
             continue
         # not the same start, so rename the srt file
-        filename_only = os.path.basename(srt_file)  # like "14_English.srt", so no path
+        filename_only = os.path.basename(srt_file)  # like "14_English.srt", so without path
         filename_only = filename_only.replace("_", ".")  # replace underscore with dot
         # now put that name after the base name of the biggestfile:
         new_full_name = f"{largest_without_ext}.{filename_only}"  # put (renamed) srt behind that
