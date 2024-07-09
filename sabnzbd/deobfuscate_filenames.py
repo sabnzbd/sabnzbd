@@ -323,19 +323,19 @@ def deobfuscate_subtitles(directory):
     Find .srt subtitle files, and rename to match biggest file
 
     Some_Big_File_2024.mp4       #### largest file
-    Some_Big_File_2024.srt
-    Some_Big_File_2024.ger.srt   # no renaming wanted!
+    Some_Big_File_2024.srt       # no renaming wanted
+    Some_Big_File_2024.ger.srt   # no renaming wanted
     14_English.srt
     dut.srt
-    Something.else.txt
+    Something.else.txt           # no renaming wanted, because no .srt
 
     will result in
 
-    Some_Big_File_2024.mp4       #### largest file
+    Some_Big_File_2024.mp4
     Some_Big_File_2024.srt
-    Some_Big_File_2024.ger.srt   # no renaming, because same basename / start as largest file
-    Some_Big_File_2024.14.English.srt
-    Some_Big_File_2024.dut.srt
+    Some_Big_File_2024.ger.srt
+    Some_Big_File_2024.14.English.srt   # renamed by prepending base name (and replacing _)
+    Some_Big_File_2024.dut.srt          # renamed by prepending base name
     Something.else.txt
 
     """
@@ -343,20 +343,20 @@ def deobfuscate_subtitles(directory):
     largest_file = max(
         (os.path.join(root, file) for root, dirs, files in os.walk(directory) for file in files), key=os.path.getsize
     )  # /blabla/bla/subdir/Biggest_File.mp4
-    logging.debug(f"Largest_file {largest_file}")
+    largest_without_ext = without_extension(largest_file)  # get base name of largest file
+    logging.debug(f"Largest_file {largest_file} with base named {largest_without_ext}")
 
     # get srt files:
     srt_files = glob.glob(os.path.join(directory, "*.srt"))
     for srt_file in srt_files:
-        if without_extension(srt_file).startswith(without_extension(largest_file)):
+        if without_extension(srt_file).startswith(largest_without_ext):
             # already the same start as the largest file, so skip
             continue
-        # not the same, so rename the srt file
+        # not the same start, so rename the srt file
         filename_only = os.path.basename(srt_file)  # like "14_English.srt", so no path
         filename_only = filename_only.replace("_", ".")  # replace underscore with dot
         # now put that name after the base name of the biggestfile:
-        base = without_extension(largest_file)  # get base name of largest files
-        new_full_name = f"{base}.{filename_only}"  # put (renamed) srt behind tat
+        new_full_name = f"{largest_without_ext}.{filename_only}"  # put (renamed) srt behind that
         unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique
         logging.debug(f"Renaming subtitle {srt_file} to {unique_filename}")
         renamer(srt_file, unique_filename)  # ... and rename actual file on disk
