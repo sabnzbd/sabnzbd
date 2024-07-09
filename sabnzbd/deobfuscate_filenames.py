@@ -322,7 +322,7 @@ def deobfuscate_subtitles(directory):
     """
     Find .srt subtitle files, and rename to match largest file
 
-    Some_Big_File_2024.mp4      #### largest file
+    Some_Big_File_2024.mp4      # largest file
     Some_Big_File_2024.srt      # no renaming wanted
     Some_Big_File_2024.ger.srt  # no renaming wanted
     14_English.srt              # to be renamed
@@ -346,7 +346,7 @@ def deobfuscate_subtitles(directory):
     largest_without_ext = without_extension(largest_file)  # get full path base name of largest file
     logging.debug(f"Largest_file {largest_file} with base {largest_without_ext}")
 
-    # get srt files:
+    # get srt files and handle them one by one
     srt_files = glob.glob(os.path.join(directory, "*.srt"))
     for srt_file in srt_files:
         if without_extension(srt_file).startswith(largest_without_ext):
