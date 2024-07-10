@@ -748,7 +748,6 @@ class TestSortingSorter:
     @pytest.mark.parametrize("extension", [".mkv", ".data", ".mkv", ".vob"])
     @pytest.mark.parametrize("number_of_files", [0, 1, 2, 4])
     @pytest.mark.parametrize("generate_sequential_filenames", [True, False])
-    @pytest.mark.xfail(reason="Waiting for #2883")
     def test_sorter_rename(
         self,
         s_class,
