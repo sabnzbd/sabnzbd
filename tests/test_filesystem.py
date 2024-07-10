@@ -893,10 +893,11 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
 
     @set_config({"permissions": "0600"})
     def test_permissions_600(self):
-        self._permissions_runner("/test_base600")
+        with pytest.raises(OSError):  # pyfakefs checks fake permissions now...
+            self._permissions_runner("/test_base600")
         self._permissions_runner("/test_base600_nomask", apply_permissions=False)
 
-    @set_config({"permissions": "0700"})
+    @set_config({"permissions": "0450"})
     def test_permissions_450(self):
         with pytest.raises(OSError):
             self._permissions_runner("/test_base450", perms_base="0450")
@@ -904,15 +905,18 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
     def test_no_permissions(self):
         self._permissions_runner("/test_base_perm700", perms_base="0700")
         self._permissions_runner("/test_base_perm750", perms_base="0750")
+        with pytest.raises(OSError):  # pyfakefs checks fake permissions now...
+            self._permissions_runner("/test_base_perm600", perms_base="0600")
         self._permissions_runner("/test_base_perm777", perms_base="0777")
-        self._permissions_runner("/test_base_perm600", perms_base="0600")
 
     def _permissions_runner(self, test_base, perms_base="0700", apply_permissions=True):
         # Create base directory and set the base permissions
         perms_base_int = int(perms_base, 8)
         self.fs.create_dir(test_base, perms_base_int)
         assert os.path.exists(test_base) is True
-        self.assert_dir_perms(test_base, perms_base_int)
+        # Account for pyfakefs (>= 5.4.0) always applying the fake fs umask when creating dirs
+        perms_base_int_umasked = perms_base_int & ~self.fs.umask
+        self.assert_dir_perms(test_base, perms_base_int_umasked)
 
         # Create directories with permissions
         new_dir = os.path.join(test_base, "se 1", "ep1")
@@ -926,7 +930,7 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
             # Get the current permissions, since os.mkdir masks that out
             perms_test_int = int("0777", 8) & ~sabnzbd.ORG_UMASK
         self.assert_dir_perms(new_dir, perms_test_int)
-        self.assert_dir_perms(test_base, perms_base_int)
+        self.assert_dir_perms(test_base, perms_base_int_umasked)
 
 
 class TestSetPermissionsWin(ffs.TestCase):
@@ -943,7 +947,9 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
         self.setUpPyfakefs()
         self.fs.path_separator = "/"
         self.fs.is_case_sensitive = True
-        self.fs.umask = int("0755", 8)  # rwxr-xr-x
+        # All-permissive umask as a workaround for changes in pyfakefs (>= 5.4.0),
+        # causing it to always take the umask into account when creating dirs
+        self.fs.umask = int("0000", 8)  # rwxrwxrwx
 
     def _runner(self, perms_before_test):
         """
