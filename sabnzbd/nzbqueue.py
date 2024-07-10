@@ -897,10 +897,9 @@ class NzbQueue:
                         # Check for articles where all active servers have already been tried
                         for article in nzf.articles[:]:
                             if article.all_servers_in_try_list(active_servers):
+                                logging.debug("Removing article %s with bad trylist in file %s", article, nzf.filename)
                                 sabnzbd.NzbQueue.register_article(article, success=False)
                                 nzo.increase_bad_articles_counter("missing_articles")
-                        else:
-                            logging.debug("No bad trylists found for file %s in job %s", nzf.filename, nzo.final_name)
 
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()

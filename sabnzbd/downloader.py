@@ -198,7 +198,7 @@ class Server:
     def reset_article_queue(self):
         logging.debug("Resetting article queue for %s", self)
         for article in self.article_queue:
-            sabnzbd.NzbQueue.reset_try_lists(article, remove_fetcher_from_trylist=False)
+            sabnzbd.NzbQueue.reset_try_lists(article)
         self.article_queue = []
 
     def request_addrinfo(self):
