@@ -319,9 +319,11 @@ def without_extension(fullpathfilename):
     return os.path.splitext(fullpathfilename)[0]
 
 
-def deobfuscate_subtitles(directory):
+def deobfuscate_subtitles(input):
     """
-    Find .srt subtitle files, and rename to match largest file
+    input can be an existing directory or a list of existing filenames
+
+    Find .srt subtitle files, and rename to match largest file (if there is a clearly largest file)
 
     Some_Big_File_2024.mp4      # largest file
     Some_Big_File_2024.srt      # no renaming wanted
@@ -341,14 +343,33 @@ def deobfuscate_subtitles(directory):
 
     """
 
-    largest_file = max(
-        (os.path.join(root, file) for root, dirs, files in os.walk(directory) for file in files), key=os.path.getsize
-    )  # full path, so something like /some/dir/subdir/Some_Big_File_2024.mp4
+    # if directory, create list from that directory
+    if type(input) == str and os.path.isdir(input):
+        all_files = [os.path.join(root, file) for root, dirs, files in os.walk(input) for file in files]
+    elif type(input) == list:
+        # already a list, so nothing to do
+        all_files = input
+    else:
+        logging.debug(f"{input} no directory and no list")
+        return None
+    # sort the filelist, from big to small
+    all_files = sorted(all_files, key=os.path.getsize, reverse=True)
+
+    # find .srt files
+    srt_files = [string for string in all_files if string.endswith(".srt")]
+    if not srt_files:
+        logging.debug("No .srt files found, so nothing to do")
+        return None
+
+    # first check there is a clearly biggest file
+    if not first_file_is_much_bigger(all_files):
+        logging.debug("No clearly biggest file found")
+
+    largest_file = all_files[0]
     largest_without_ext = without_extension(largest_file)  # get full path base name of largest file
     logging.debug(f"Largest_file {largest_file} with base {largest_without_ext}")
 
-    # get srt files and handle them one by one
-    srt_files = glob.glob(os.path.join(directory, "*.srt"))
+    # handle srt files one by one
     for srt_file in srt_files:
         if without_extension(srt_file).startswith(largest_without_ext):
             # already the same start as the largest file, so skip

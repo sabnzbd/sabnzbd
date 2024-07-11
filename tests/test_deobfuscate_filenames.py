@@ -425,7 +425,7 @@ class TestDeobfuscateFinalResult:
         create_small_file(smallfile2)
         assert os.path.isfile(smallfile2)
 
-        # files of same size
+        # files of same size, so no biggest file
         myfilelist = [smallfile1, smallfile2]
         assert not first_file_is_much_bigger(myfilelist)
 
@@ -443,7 +443,7 @@ class TestDeobfuscateFinalResult:
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        bigfile = os.path.join(dirname, "bigfile.bin")
+        bigfile = os.path.join(dirname, "bigfile.avi")
         create_big_file(bigfile)
         assert os.path.isfile(bigfile)
 
@@ -476,7 +476,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
-        # and if we go again ... nothing should happen: all files are correct
+        # and if we go again ... nothing should happen: all files are already correct
         deobfuscate_subtitles(dirname)
 
         assert os.path.isfile(bigfile)  # unchanged
