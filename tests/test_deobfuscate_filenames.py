@@ -405,6 +405,36 @@ class TestDeobfuscateFinalResult:
 
         shutil.rmtree(work_dir)
 
+    def test_first_file_is_much_bigger(self):
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        assert first_file_is_much_bigger([])
+
+        smallfile1 = os.path.join(dirname, "AAAA.bin")
+        create_small_file(smallfile1)
+        assert os.path.isfile(smallfile1)
+
+        bigfile = os.path.join(dirname, "KKKK.bin")
+        create_big_file(bigfile)
+        assert os.path.isfile(bigfile)
+
+        smallfile2 = os.path.join(dirname, "LLLL.bin")
+        create_small_file(smallfile2)
+        assert os.path.isfile(smallfile2)
+
+        # files of same size
+        myfilelist = [smallfile1, smallfile2]
+        assert not first_file_is_much_bigger(myfilelist)
+
+        # now add the bigger file
+        myfilelist = [smallfile1, smallfile2, bigfile]
+        assert first_file_is_much_bigger(myfilelist)
+
+        shutil.rmtree(dirname)
+
     def test_deobfuscate_subtitles(self):
         # input: a big file, and srt file(s), and non-related files
         # result: srt file renamed according to the big file

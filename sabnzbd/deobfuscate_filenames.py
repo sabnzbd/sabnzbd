@@ -171,7 +171,8 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
 
 def first_file_is_much_bigger(filelist):
     # returns True if first file is much bigger than second file
-    # Note: input parameter filelist must ordered on size!
+    # sort from big to small
+    filelist = sorted(filelist, key=os.path.getsize)[::-1]  # reversed, so big to small. Format [start:stop:step]
     try:
         factor = os.path.getsize(filelist[0]) / os.path.getsize(filelist[1])
         if factor > 3:
