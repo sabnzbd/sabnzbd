@@ -411,7 +411,7 @@ class TestDeobfuscateFinalResult:
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        assert first_file_is_much_bigger([])
+        assert clearly_one_big_file([])
 
         smallfile1 = os.path.join(dirname, "AAAA.bin")
         create_small_file(smallfile1)
@@ -427,11 +427,11 @@ class TestDeobfuscateFinalResult:
 
         # files of same size, so no biggest file
         myfilelist = [smallfile1, smallfile2]
-        assert not first_file_is_much_bigger(myfilelist)
+        assert not clearly_one_big_file(myfilelist)
 
         # now add the bigger file
         myfilelist = [smallfile1, smallfile2, bigfile]
-        assert first_file_is_much_bigger(myfilelist)
+        assert clearly_one_big_file(myfilelist)
 
         shutil.rmtree(dirname)
 

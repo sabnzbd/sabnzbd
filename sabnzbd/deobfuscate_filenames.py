@@ -169,8 +169,8 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
-def first_file_is_much_bigger(filelist):
-    # returns True if first file is much bigger than second file
+def clearly_one_biggest_file(filelist):
+    # returns True if one file is much bigger than the other files
     # sort from big to small
     filelist = sorted(filelist, key=os.path.getsize)[::-1]  # reversed, so big to small. Format [start:stop:step]
     try:
@@ -280,7 +280,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
         logging.info("No file given, or not found (%s)", biggest_file)
         return
     logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
-    if not first_file_is_much_bigger(filelist):
+    if not clearly_one_biggest_file(filelist):
         logging.debug("%s excluded from deobfuscation because it is not much bigger than other file(s)", biggest_file)
         return
     if get_ext(biggest_file) in EXCLUDED_FILE_EXTS:
@@ -362,7 +362,7 @@ def deobfuscate_subtitles(input):
         return None
 
     # first check there is a clearly biggest file
-    if not first_file_is_much_bigger(all_files):
+    if not clearly_one_biggest_file(all_files):
         logging.debug("No clearly biggest file found")
 
     largest_file = all_files[0]
