@@ -59,7 +59,7 @@
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="port">$T('srv-port')</label>
-                        <input type="number" name="port" id="port" size="8" value="563" min="0" />
+                        <input type="number" name="port" id="port" size="8" value="563" min="0" max="65535" />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="ssl">$T('srv-ssl')</label>
@@ -185,7 +185,7 @@
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="port$cur">$T('srv-port')</label>
-                            <input type="number" name="port" id="port$cur" value="$server['port']" size="8" min="0" required />
+                            <input type="number" name="port" id="port$cur" value="$server['port']" size="8" min="0" max="65535" required />
                         </div>
                         <div class="field-pair">
                             <label class="config" for="ssl$cur">$T('srv-ssl')</label>
