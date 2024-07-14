@@ -83,6 +83,9 @@ def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socke
 
     try:
         addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family)
+        if not addrinfo:
+            # no addrinfo from happyeyeballs, so for example no connection
+            return 0.0 # no speed at all
         for _ in range(NR_CONNECTIONS):
             sock = socket.socket(addrinfo.family, addrinfo.type)
             sock.settimeout(SOCKET_TIMEOUT)
