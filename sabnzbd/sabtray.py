@@ -182,7 +182,7 @@ class SABTrayThread(SysTrayIconThread):
         sabnzbd.trigger_restart()
 
     def defhost(self, icon):
-        sabnzbd.cfg.cherryhost.set("127.0.0.1")
+        sabnzbd.cfg.web_host.set("127.0.0.1")
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
         self.hover_text = T("Restart")

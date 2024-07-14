@@ -245,8 +245,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
-    cfg.cherryhost.callback(cfg.guard_restart)
-    cfg.cherryport.callback(cfg.guard_restart)
+    cfg.web_host.callback(cfg.guard_restart)
+    cfg.web_port.callback(cfg.guard_restart)
     cfg.web_dir.callback(cfg.guard_restart)
     cfg.web_color.callback(cfg.guard_restart)
     cfg.username.callback(cfg.guard_restart)

@@ -297,14 +297,14 @@ def daemonize():
         os.dup2(f.fileno(), sys.stderr.fileno())
 
 
-def abort_and_show_error(browserhost, cherryport, err=""):
+def abort_and_show_error(browserhost, web_port, err=""):
     """Abort program because of CherryPy troubles"""
     logging.error(T("Failed to start web-interface") + " : " + str(err))
     if not sabnzbd.DAEMON:
         if "49" in err:
-            panic_host(browserhost, cherryport)
+            panic_host(browserhost, web_port)
         else:
-            panic_port(browserhost, cherryport)
+            panic_port(browserhost, web_port)
     sabnzbd.halt()
     exit_sab(2)
 
@@ -530,19 +530,19 @@ def check_resolve(host):
     return True
 
 
-def get_webhost(cherryhost, cherryport, https_port):
+def get_webhost(web_host, web_port, https_port):
     """Determine the webhost address and port,
     return (host, port, browserhost)
     """
-    if cherryhost == "0.0.0.0" and not check_resolve("127.0.0.1"):
-        cherryhost = ""
-    elif cherryhost == "::" and not check_resolve("::1"):
-        cherryhost = ""
+    if web_host == "0.0.0.0" and not check_resolve("127.0.0.1"):
+        web_host = ""
+    elif web_host == "::" and not check_resolve("::1"):
+        web_host = ""
 
-    if cherryhost is None:
-        cherryhost = sabnzbd.cfg.cherryhost()
+    if web_host is None:
+        web_host = sabnzbd.cfg.web_host()
     else:
-        sabnzbd.cfg.cherryhost.set(cherryhost)
+        sabnzbd.cfg.web_host.set(web_host)
 
     # Get IP address, but discard APIPA/IPV6
     # If only APIPA's or IPV6 are found, fall back to localhost
@@ -554,10 +554,10 @@ def get_webhost(cherryhost, cherryport, https_port):
         # Hostname does not resolve
         try:
             # Valid user defined name?
-            info = socket.getaddrinfo(cherryhost, None)
+            info = socket.getaddrinfo(web_host, None)
         except socket.error:
-            if not is_localhost(cherryhost):
-                cherryhost = "0.0.0.0"
+            if not is_localhost(web_host):
+                web_host = "0.0.0.0"
             try:
                 info = socket.getaddrinfo(localhost, None)
             except socket.error:
@@ -574,75 +574,75 @@ def get_webhost(cherryhost, cherryport, https_port):
             hostip = ip
 
     # A blank host will use the local ip address
-    if cherryhost == "":
+    if web_host == "":
         if ipv6 and ipv4:
             # To protect Firefox users, use numeric IP
-            cherryhost = hostip
+            web_host = hostip
             browserhost = hostip
         else:
-            cherryhost = socket.gethostname()
-            browserhost = cherryhost
+            web_host = socket.gethostname()
+            browserhost = web_host
 
     # 0.0.0.0 will listen on all ipv4 interfaces (no ipv6 addresses)
-    elif cherryhost == "0.0.0.0":
+    elif web_host == "0.0.0.0":
         # Just take the gamble for this
-        cherryhost = "0.0.0.0"
+        web_host = "0.0.0.0"
         browserhost = localhost
 
     # :: will listen on all ipv6 interfaces (no ipv4 addresses)
-    elif cherryhost in ("::", "[::]"):
-        cherryhost = cherryhost.strip("[").strip("]")
+    elif web_host in ("::", "[::]"):
+        web_host = web_host.strip("[").strip("]")
         # Assume '::1' == 'localhost'
         browserhost = localhost
 
     # IPV6 address
-    elif "[" in cherryhost or ":" in cherryhost:
-        browserhost = cherryhost
+    elif "[" in web_host or ":" in web_host:
+        browserhost = web_host
 
     # IPV6 numeric address
-    elif cherryhost.replace(".", "").isdigit():
+    elif web_host.replace(".", "").isdigit():
         # IPV4 numerical
-        browserhost = cherryhost
+        browserhost = web_host
 
-    elif cherryhost == localhost:
-        cherryhost = localhost
+    elif web_host == localhost:
+        web_host = localhost
         browserhost = localhost
 
     else:
         # If on APIPA, use numerical IP, to help FireFoxers
         if ipv6 and ipv4:
-            cherryhost = hostip
-        browserhost = cherryhost
+            web_host = hostip
+        browserhost = web_host
 
         # Some systems don't like brackets in numerical ipv6
         if sabnzbd.MACOS:
-            cherryhost = cherryhost.strip("[]")
+            web_host = web_host.strip("[]")
         else:
             try:
-                socket.getaddrinfo(cherryhost, None)
+                socket.getaddrinfo(web_host, None)
             except socket.error:
-                cherryhost = cherryhost.strip("[]")
+                web_host = web_host.strip("[]")
 
-    if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
+    if ipv6 and ipv4 and web_host == "" and sabnzbd.WIN32:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
-    if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.MACOS:
+    if web_host == "localhost" and not sabnzbd.WIN32 and not sabnzbd.MACOS:
         # On the Ubuntu family, localhost leads to problems for CherryPy
         ips = ip_extract()
         if "127.0.0.1" in ips and "::1" in ips:
-            cherryhost = "127.0.0.1"
+            web_host = "127.0.0.1"
             if ips[0] != "127.0.0.1":
                 browserhost = "127.0.0.1"
 
     # This is to please Chrome on macOS
-    if cherryhost == "localhost" and sabnzbd.MACOS:
-        cherryhost = "127.0.0.1"
+    if web_host == "localhost" and sabnzbd.MACOS:
+        web_host = "127.0.0.1"
         browserhost = "localhost"
 
-    if cherryport is None:
-        cherryport = sabnzbd.cfg.cherryport.get_int()
+    if web_port is None:
+        web_port = sabnzbd.cfg.web_port.get_int()
     else:
-        sabnzbd.cfg.cherryport.set(str(cherryport))
+        sabnzbd.cfg.web_port.set(str(web_port))
 
     if https_port is None:
         https_port = sabnzbd.cfg.https_port.get_int()
@@ -651,12 +651,12 @@ def get_webhost(cherryhost, cherryport, https_port):
         # if the https port was specified, assume they want HTTPS enabling also
         sabnzbd.cfg.enable_https.set(True)
 
-    if cherryport == https_port and sabnzbd.cfg.enable_https():
+    if web_port == https_port and sabnzbd.cfg.enable_https():
         sabnzbd.cfg.enable_https.set(False)
         # Should have a translated message, but that's not available yet
         logging.error(T("HTTP and HTTPS ports cannot be the same"))
 
-    return cherryhost, cherryport, browserhost, https_port
+    return web_host, web_port, browserhost, https_port
 
 
 def attach_server(host, port, cert=None, key=None, chain=None):
@@ -841,8 +841,8 @@ def main():
     fork = False
     pause = False
     inifile = None
-    cherryhost = None
-    cherryport = None
+    web_host = None
+    web_port = None
     https_port = None
     cherrypylogging = None
     clean_up = False
@@ -880,7 +880,7 @@ def main():
         elif opt in ("-t", "--templates"):
             web_dir = arg
         elif opt in ("-s", "--server"):
-            (cherryhost, cherryport) = split_host(arg)
+            (web_host, web_port) = split_host(arg)
         elif opt in ("-n", "--nobrowser"):
             autobrowser = False
         elif opt in ("-b", "--browser"):
@@ -1003,24 +1003,24 @@ def main():
         sabnzbd.cfg.ipv6_hosting.set(ipv6_hosting)
 
     # Determine web host address
-    cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
+    web_host, web_port, browserhost, https_port = get_webhost(web_host, web_port, https_port)
     enable_https = sabnzbd.cfg.enable_https()
 
     # When this is a daemon, just check and bail out if port in use
     if sabnzbd.DAEMON:
         if enable_https and https_port:
             try:
-                portend.free(cherryhost, https_port, timeout=0.05)
+                portend.free(web_host, https_port, timeout=0.05)
             except IOError:
-                abort_and_show_error(browserhost, cherryport)
+                abort_and_show_error(browserhost, web_port)
             except:
-                abort_and_show_error(browserhost, cherryport, "49")
+                abort_and_show_error(browserhost, web_port, "49")
         try:
-            portend.free(cherryhost, cherryport, timeout=0.05)
+            portend.free(web_host, web_port, timeout=0.05)
         except IOError:
-            abort_and_show_error(browserhost, cherryport)
+            abort_and_show_error(browserhost, web_port)
         except:
-            abort_and_show_error(browserhost, cherryport, "49")
+            abort_and_show_error(browserhost, web_port, "49")
 
     # Windows instance is reachable through registry
     url = None
@@ -1031,7 +1031,7 @@ def main():
 
     # SSL
     if enable_https:
-        port = https_port or cherryport
+        port = https_port or web_port
         try:
             portend.free(browserhost, port, timeout=0.05)
         except IOError as error:
@@ -1043,7 +1043,7 @@ def main():
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
-                        abort_and_show_error(browserhost, cherryport)
+                        abort_and_show_error(browserhost, web_port)
                     # Find free port to bind
                     newport = find_free_port(browserhost, port)
                     if newport > 0:
@@ -1053,34 +1053,34 @@ def main():
                             sabnzbd.cfg.https_port.set(newport)
                         else:
                             # In case HTTPS == HTTP port
-                            cherryport = newport
-                            sabnzbd.cfg.cherryport.set(newport)
+                            web_port = newport
+                            sabnzbd.cfg.web_port.set(newport)
         except:
             # Something else wrong, probably badly specified host
-            abort_and_show_error(browserhost, cherryport, "49")
+            abort_and_show_error(browserhost, web_port, "49")
 
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
         try:
-            portend.free(browserhost, cherryport, timeout=0.05)
+            portend.free(browserhost, web_port, timeout=0.05)
         except IOError as error:
             if str(error) == "Port not bound.":
                 pass
             else:
                 if not url:
-                    url = "http://%s:%s%s/api?" % (browserhost, cherryport, sabnzbd.cfg.url_base())
+                    url = "http://%s:%s%s/api?" % (browserhost, web_port, sabnzbd.cfg.url_base())
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
-                        abort_and_show_error(browserhost, cherryport)
+                        abort_and_show_error(browserhost, web_port)
                     # Find free port to bind
-                    port = find_free_port(browserhost, cherryport)
+                    port = find_free_port(browserhost, web_port)
                     if port > 0:
-                        sabnzbd.cfg.cherryport.set(port)
-                        cherryport = port
+                        sabnzbd.cfg.web_port.set(port)
+                        web_port = port
         except:
             # Something else wrong, probably badly specified host
-            abort_and_show_error(browserhost, cherryport, "49")
+            abort_and_show_error(browserhost, web_port, "49")
 
     # We found a port, now we never check again
     sabnzbd.cfg.fixed_ports.set(True)
@@ -1274,29 +1274,29 @@ def main():
     # Starting of the webserver
     # Determine if this system has multiple definitions for 'localhost'
     hosts = all_localhosts()
-    multilocal = len(hosts) > 1 and cherryhost in ("localhost", "0.0.0.0")
+    multilocal = len(hosts) > 1 and web_host in ("localhost", "0.0.0.0")
 
     # For 0.0.0.0 CherryPy will always pick IPv4, so make sure the secondary localhost is IPv6
-    if multilocal and cherryhost == "0.0.0.0" and hosts[1] == "127.0.0.1":
+    if multilocal and web_host == "0.0.0.0" and hosts[1] == "127.0.0.1":
         hosts[1] = "::1"
 
     # The Windows binary requires numeric localhost as primary address
-    if cherryhost == "localhost":
-        cherryhost = hosts[0]
+    if web_host == "localhost":
+        web_host = hosts[0]
 
     if enable_https:
         if https_port:
             # Extra HTTP port for primary localhost
-            attach_server(cherryhost, cherryport)
+            attach_server(web_host, web_port)
             if multilocal:
                 # Extra HTTP port for secondary localhost
-                attach_server(hosts[1], cherryport)
+                attach_server(hosts[1], web_port)
                 # Extra HTTPS port for secondary localhost
                 attach_server(hosts[1], https_port, https_cert, https_key, https_chain)
-            cherryport = https_port
+            web_port = https_port
         elif multilocal:
             # Extra HTTPS port for secondary localhost
-            attach_server(hosts[1], cherryport, https_cert, https_key, https_chain)
+            attach_server(hosts[1], web_port, https_cert, https_key, https_chain)
 
         cherrypy.config.update(
             {
@@ -1308,7 +1308,7 @@ def main():
         )
     elif multilocal:
         # Extra HTTP port for secondary localhost
-        attach_server(hosts[1], cherryport)
+        attach_server(hosts[1], web_port)
 
     if no_login:
         sabnzbd.cfg.username.set("")
@@ -1331,8 +1331,8 @@ def main():
     cherrypy.config.update(
         {
             "server.environment": "production",
-            "server.socket_host": cherryhost,
-            "server.socket_port": cherryport,
+            "server.socket_host": web_host,
+            "server.socket_port": web_port,
             "server.shutdown_timeout": 0,
             "engine.autoreload.on": False,
             "tools.encode.on": True,
@@ -1400,7 +1400,7 @@ def main():
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)
-    logging.info("Starting web-interface on %s:%s", cherryhost, cherryport)
+    logging.info("Starting web-interface on %s:%s", web_host, web_port)
 
     sabnzbd.cfg.log_level.callback(guard_loglevel)
 
@@ -1410,7 +1410,7 @@ def main():
         # Since the webserver is started by cherrypy in a separate thread, we can't really catch any
         # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
-        abort_and_show_error(browserhost, cherryport)
+        abort_and_show_error(browserhost, web_port)
 
     # Create a record of the active cert/key/chain files, for use with config.create_config_backup()
     if enable_https:
@@ -1420,16 +1420,16 @@ def main():
 
     # Set URL for browser
     if enable_https:
-        sabnzbd.BROWSER_URL = "https://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
+        sabnzbd.BROWSER_URL = "https://%s:%s%s" % (browserhost, web_port, sabnzbd.cfg.url_base())
     else:
-        sabnzbd.BROWSER_URL = "http://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
+        sabnzbd.BROWSER_URL = "http://%s:%s%s" % (browserhost, web_port, sabnzbd.cfg.url_base())
 
     if sabnzbd.WIN32:
         # Write URL for uploads and version check directly to registry
         set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}")
 
     if pid_path or pid_file:
-        sabnzbd.pid_file(pid_path, pid_file, cherryport)
+        sabnzbd.pid_file(pid_path, pid_file, web_port)
 
     # Stop here in case of fatal errors
     if sabnzbd.NO_DOWNLOADING:
@@ -1457,11 +1457,11 @@ def main():
     autorestarted = False
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
-    if sabnzbd.cfg.enable_broadcast() and not is_localhost(cherryhost):
+    if sabnzbd.cfg.enable_broadcast() and not is_localhost(web_host):
         # Try to find a LAN IP address for SSDP/Bonjour
-        if is_lan_addr(cherryhost):
+        if is_lan_addr(web_host):
             # A specific listening address was configured, use that
-            external_host = cherryhost
+            external_host = web_host
         else:
             # Fall back to the IPv4 address of the LAN interface
             external_host = local_ipv4()
@@ -1475,13 +1475,13 @@ def main():
             (not sabnzbd.cfg.local_ranges()) or any(ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges())
         ):
             # Start Bonjour and SSDP
-            sabnzbd.zconfig.set_bonjour(external_host, cherryport)
+            sabnzbd.zconfig.set_bonjour(external_host, web_port)
 
             # Set URL for browser for external hosts
             ssdp_url = "%s://%s:%s%s" % (
                 ("https" if enable_https else "http"),
                 external_host,
-                cherryport,
+                web_port,
                 sabnzbd.cfg.url_base(),
             )
             ssdp.start_ssdp(

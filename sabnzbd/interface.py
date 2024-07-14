@@ -577,7 +577,7 @@ class Wizard:
 def get_access_info():
     """Build up a list of url's that sabnzbd can be accessed from"""
     # Access_url is used to provide the user a link to SABnzbd depending on the host
-    cherryhost = cfg.cherryhost()
+    web_host = cfg.web_host()
     host = socket.gethostname().lower()
     logging.info("hostname is", host)
     socks = [host]
@@ -587,7 +587,7 @@ def get_access_info():
     except:
         addresses = []
 
-    if cherryhost == "0.0.0.0":
+    if web_host == "0.0.0.0":
         # Grab a list of all ips for the hostname
         for addr in addresses:
             address = addr[4][0]
@@ -595,7 +595,7 @@ def get_access_info():
             if ":" not in address and address not in socks:
                 socks.append(address)
         socks.insert(0, "localhost")
-    elif cherryhost == "::":
+    elif web_host == "::":
         # Grab a list of all ips for the hostname
         for addr in addresses:
             address = addr[4][0]
@@ -605,8 +605,8 @@ def get_access_info():
                 if address not in socks:
                     socks.append(address)
         socks.insert(0, "localhost")
-    elif cherryhost:
-        socks = [cherryhost]
+    elif web_host:
+        socks = [web_host]
 
     # Add the current requested URL as the base
     access_url = urllib.parse.urljoin(cherrypy.request.base, cfg.url_base())
@@ -617,9 +617,9 @@ def get_access_info():
             if cfg.enable_https() and cfg.https_port():
                 url = "https://%s:%s%s" % (sock, cfg.https_port(), cfg.url_base())
             elif cfg.enable_https():
-                url = "https://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
+                url = "https://%s:%s%s" % (sock, cfg.web_port(), cfg.url_base())
             else:
-                url = "http://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
+                url = "http://%s:%s%s" % (sock, cfg.web_port(), cfg.url_base())
             urls.append(url)
 
     # Return a unique list
