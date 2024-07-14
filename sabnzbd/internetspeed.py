@@ -38,13 +38,17 @@ TEST_FILE = "/tests/internetspeed/100MB.bin"
 TEST_FILE_SIZE = 100 * 1024 * 1024
 TEST_REQUEST = f"GET {TEST_FILE} HTTP/1.1\nHost: {TEST_HOSTNAME}\nUser-Agent: SABnzbd/{sabnzbd.__version__}\n\n"
 SOCKET_TIMEOUT = 3
-BUFFER_SIZE = 5 * 1024 * 1024  # Each connection will allocate its own buffer, so mind the memory usage!
+BUFFER_SIZE = (
+    5 * 1024 * 1024
+)  # Each connection will allocate its own buffer, so mind the memory usage!
 
 NR_CONNECTIONS = 5
 TIME_LIMIT = 3
 
 
-def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLSocket, float]):
+def internetspeed_worker(
+    secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLSocket, float]
+):
     """Worker to perform the requests in parallel"""
     secure_sock.sendall(TEST_REQUEST.encode())
     empty_buffer = memoryview(sabctools.bytearray_malloc(BUFFER_SIZE))
@@ -56,7 +60,9 @@ def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLS
     while diff_time < TIME_LIMIT:
         if data_received < TEST_FILE_SIZE:
             try:
-                if new_bytes := sabctools.unlocked_ssl_recv_into(secure_sock, empty_buffer):
+                if new_bytes := sabctools.unlocked_ssl_recv_into(
+                    secure_sock, empty_buffer
+                ):
                     # Update the speed after every loop
                     diff_time = time.perf_counter() - start_time
                     data_received += new_bytes
@@ -75,7 +81,9 @@ def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLS
         pass
 
 
-def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socket.AF_UNSPEC) -> float:
+def internetspeed_interal(
+    test_time_limit: int = TIME_LIMIT, family: int = socket.AF_UNSPEC
+) -> float:
     """Measure internet speed from a test-download using our optimized SSL-code"""
 
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
@@ -83,6 +91,9 @@ def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socke
 
     try:
         addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family)
+        if not addrinfo:
+            # no addrinfo from happyeyeballs, so for example no connection
+            return 0.0  # no speed at all
         for _ in range(NR_CONNECTIONS):
             sock = socket.socket(addrinfo.family, addrinfo.type)
             sock.settimeout(SOCKET_TIMEOUT)
@@ -92,7 +103,11 @@ def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socke
             socket_speed[secure_sock] = 0
 
         for secure_sock in socket_speed:
-            threading.Thread(target=internetspeed_worker, args=(secure_sock, socket_speed), daemon=True).start()
+            threading.Thread(
+                target=internetspeed_worker,
+                args=(secure_sock, socket_speed),
+                daemon=True,
+            ).start()
     except Exception:
         logging.info("Internet Bandwidth connection failure", exc_info=True)
         return 0.0
@@ -101,7 +116,12 @@ def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socke
     time.sleep(test_time_limit + 0.5)
 
     speed = sum(socket_speed.values()) / 1024 / 1024
-    logging.debug("Internet Bandwidth (%s) = %.2f MB/s - %.2f Mbps", family_type(family), speed, speed * 8.05)
+    logging.debug(
+        "Internet Bandwidth (%s) = %.2f MB/s - %.2f Mbps",
+        family_type(family),
+        speed,
+        speed * 8.05,
+    )
     return speed
 
 
