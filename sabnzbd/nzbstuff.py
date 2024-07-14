@@ -833,8 +833,9 @@ class NzbObject(TryList):
             self.password = self.meta.get("password", [None])[0]
 
         # Check if we expect propagation delay
-        if (propagation_delay := self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time():
-            self.propagation_delay = propagation_delay
+        if propagation_delay := cfg.propagation_delay():
+            if (propagation_delay := self.avg_stamp + float(propagation_delay * 60)) > time.time():
+                self.propagation_delay = propagation_delay
 
         # Run user pre-queue script if set and valid
         if not reuse and make_script_path(cfg.pre_script()):
