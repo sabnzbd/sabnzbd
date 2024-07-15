@@ -83,6 +83,9 @@ def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socke
 
     try:
         addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family)
+        if not addrinfo:
+            # no addrinfo from happyeyeballs, so no connection was possible
+            return 0.0  # no speed at all
         for _ in range(NR_CONNECTIONS):
             sock = socket.socket(addrinfo.family, addrinfo.type)
             sock.settimeout(SOCKET_TIMEOUT)
@@ -92,7 +95,11 @@ def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socke
             socket_speed[secure_sock] = 0
 
         for secure_sock in socket_speed:
-            threading.Thread(target=internetspeed_worker, args=(secure_sock, socket_speed), daemon=True).start()
+            threading.Thread(
+                target=internetspeed_worker,
+                args=(secure_sock, socket_speed),
+                daemon=True,
+            ).start()
     except Exception:
         logging.info("Internet Bandwidth connection failure", exc_info=True)
         return 0.0
@@ -101,7 +108,12 @@ def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socke
     time.sleep(test_time_limit + 0.5)
 
     speed = sum(socket_speed.values()) / 1024 / 1024
-    logging.debug("Internet Bandwidth (%s) = %.2f MB/s - %.2f Mbps", family_type(family), speed, speed * 8.05)
+    logging.debug(
+        "Internet Bandwidth (%s) = %.2f MB/s - %.2f Mbps",
+        family_type(family),
+        speed,
+        speed * 8.05,
+    )
     return speed
 
 
