@@ -24,7 +24,7 @@ sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
 PySocks==1.7.1
-puremagic==1.25
+puremagic==1.26
 guessit==3.8.0
 babelfish==0.6.1
 rebulk==3.2.0
