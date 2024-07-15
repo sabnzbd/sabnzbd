@@ -92,7 +92,7 @@ def internetspeed_interal(
     try:
         addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family)
         if not addrinfo:
-            # no addrinfo from happyeyeballs, so for example no connection
+            # no addrinfo from happyeyeballs, so no connection possible
             return 0.0  # no speed at all
         for _ in range(NR_CONNECTIONS):
             sock = socket.socket(addrinfo.family, addrinfo.type)
