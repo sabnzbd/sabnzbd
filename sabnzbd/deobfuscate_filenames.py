@@ -365,7 +365,8 @@ def deobfuscate_subtitles(input):
 
     # first check there is a clearly biggest file
     if not one_file_is_biggest(all_files):
-        logging.debug("No clearly biggest file found")
+        logging.debug("No clearly biggest file found, so no subtitle renaming feasible")
+        return None
 
     largest_file = all_files[0]
     largest_without_ext = without_extension(largest_file)  # get full path base name of largest file
