@@ -405,17 +405,18 @@ class TestDeobfuscateFinalResult:
 
         shutil.rmtree(work_dir)
 
-    def test_first_file_is_much_bigger(self):
+    def test_one_file_is_biggest(self):
 
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
-        assert clearly_one_big_file([])
+        assert one_file_is_biggest([])  # test for no error / traceback in case of empty list
 
         smallfile1 = os.path.join(dirname, "AAAA.bin")
         create_small_file(smallfile1)
         assert os.path.isfile(smallfile1)
+        assert one_file_is_biggest([smallfile1])  # test for no error / traceback in case of just 1 file
 
         bigfile = os.path.join(dirname, "KKKK.bin")
         create_big_file(bigfile)
@@ -427,11 +428,11 @@ class TestDeobfuscateFinalResult:
 
         # files of same size, so no biggest file
         myfilelist = [smallfile1, smallfile2]
-        assert not clearly_one_big_file(myfilelist)
+        assert not one_file_is_biggest(myfilelist)
 
         # now add the bigger file
         myfilelist = [smallfile1, smallfile2, bigfile]
-        assert clearly_one_big_file(myfilelist)
+        assert one_file_is_biggest(myfilelist)
 
         shutil.rmtree(dirname)
 
