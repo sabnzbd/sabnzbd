@@ -169,19 +169,26 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
-def one_file_is_biggest(filelist):
-    # returns True if one file is much bigger than the other files
+def get_biggest_file(filelist):
+    """Returns biggest file if that file is much bigger than the other files
+    If only one file exists, return that. If no file, return None
+    Note: the files in filelist must exist, because their sizes on disk are checked"""
+
     # sort from big to small
     filelist = sorted(filelist, key=os.path.getsize)[::-1]  # reversed, so big to small. Format [start:stop:step]
     try:
         factor = os.path.getsize(filelist[0]) / os.path.getsize(filelist[1])
         if factor > 3:
-            return True
+            return filelist[0]
         else:
             return False
     except:
-        # no second file at all
-        return True
+        if len(filelist) == 1:
+            # the only file, so biggest
+            return filelist[0]
+        else:
+            # no existing file(s)
+            return None
 
 
 def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
@@ -267,21 +274,21 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
     logging.debug("Trying to see if there are qualifying files to be deobfuscated")
     nr_files_renamed = 0
 
+    """
     # We pick the biggest file ... probably the most important file
     # so sort filelist on size:
     if filtered_filelist := sorted(filtered_filelist, key=os.path.getsize, reverse=True):
         biggest_file = filtered_filelist[0]
     else:
         biggest_file = None
+    """
+    biggest_file = get_biggest_file(filtered_filelist)
     if not biggest_file or not os.path.isfile(biggest_file):
         # no file found, which is weird
-        logging.info("No file given, or not found (%s)", biggest_file)
+        logging.info("No biggest file found, or not found (%s)", biggest_file)
         return filtered_filelist
 
     logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
-    if not one_file_is_biggest(filtered_filelist):
-        logging.debug("%s excluded from deobfuscation because it is not much bigger than other file(s)", biggest_file)
-        return filtered_filelist
     if get_ext(biggest_file) in EXCLUDED_FILE_EXTS:
         logging.debug("%s excluded from deobfuscation because of excluded extension", biggest_file)
         return filtered_filelist
@@ -318,6 +325,8 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
 
 
 def without_extension(fullpathfilename):
+    """Returns full file path, without extension
+    So '/some/dir/somefile.bin' resulst in '/some/dir/somefile'"""
     return os.path.splitext(fullpathfilename)[0]
 
 
@@ -325,9 +334,9 @@ def deobfuscate_subtitles(input):
     """
     input can be an existing directory or a list of existing filenames
 
-    Find .srt subtitle files, and rename to match largest file (if there is a clearly largest file)
+    Find .srt subtitle files, and rename to match the biggest file (if there is a clearly biggest file)
 
-    Some_Big_File_2024.mp4      # largest file
+    Some_Big_File_2024.mp4      # biggest file
     Some_Big_File_2024.srt      # no renaming wanted
     Some_Big_File_2024.ger.srt  # no renaming wanted
     14_English.srt              # to be renamed
@@ -354,34 +363,30 @@ def deobfuscate_subtitles(input):
     else:
         logging.debug(f"{input} no directory and no list")
         return None
-    # sort the filelist, from big to small
-    all_files = sorted(all_files, key=os.path.getsize, reverse=True)
 
     # find .srt files
-    srt_files = [string for string in all_files if string.endswith(".srt")]
-    if not srt_files:
+    if not (srt_files := [f for f in all_files if f.endswith(".srt")]):
         logging.debug("No .srt files found, so nothing to do")
         return None
 
-    # first check there is a clearly biggest file
-    if not one_file_is_biggest(all_files):
+    # check there is a clearly biggest file
+    if not (biggest_file := get_biggest_file(all_files)):
         logging.debug("No clearly biggest file found, so no subtitle renaming feasible")
         return None
 
-    largest_file = all_files[0]
-    largest_without_ext = without_extension(largest_file)  # get full path base name of largest file
-    logging.debug(f"Largest_file {largest_file} with base {largest_without_ext}")
+    biggest_file_without_ext = without_extension(biggest_file)  # get full path base name of biggest file
+    logging.debug(f"biggest_file {biggest_file} with base {biggest_file_without_ext}")
 
     # handle srt files one by one
     for srt_file in srt_files:
-        if without_extension(srt_file).startswith(largest_without_ext):
-            # already the same start as the largest file, so skip
+        if without_extension(srt_file).startswith(biggest_file_without_ext):
+            # already the same start as the biggest file, so skip
             continue
         # not the same start, so rename the srt file
         filename_only = os.path.basename(srt_file)  # like "14_English.srt", so without path
         filename_only = filename_only.replace("_", ".")  # replace underscore with dot
         # now put that name after the base name of the biggestfile:
-        new_full_name = f"{largest_without_ext}.{filename_only}"  # put (renamed) srt behind that
+        new_full_name = f"{biggest_file_without_ext}.{filename_only}"  # put (renamed) srt behind that
         unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique
         logging.debug(f"Renaming subtitle {srt_file} to {unique_filename}")
         renamer(srt_file, unique_filename)  # ... and rename actual file on disk
