@@ -317,7 +317,7 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
 
 def without_extension(fullpathfilename):
     """Returns full file path, without extension
-    So '/some/dir/somefile.bin' resulst in '/some/dir/somefile'"""
+    So '/some/dir/somefile.bin' results in '/some/dir/somefile'"""
     return os.path.splitext(fullpathfilename)[0]
 
 
