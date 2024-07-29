@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.8.0
+apprise==1.8.1
 sabctools==8.2.3
 CT3==3.3.3.post1
 cffi==1.16.0
@@ -18,7 +18,7 @@ jaraco.context==4.3.0
 more-itertools==10.3.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
-tempora==5.6.0
+tempora==5.7.0
 pytz==2024.1
 sgmllib3k==1.0.0
 portend==3.2.0
