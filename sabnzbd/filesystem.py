@@ -35,6 +35,7 @@ import ctypes
 import random
 import functools
 from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
+from pathlib import Path
 
 try:
     import win32api
@@ -751,19 +752,13 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
             if not os.path.exists(path):
                 os.makedirs(path)
         else:
-            # We need to build the directory recursively, so we can
-            # apply permissions to only the newly created folders
-            # We cannot use os.makedirs() as it could ignore the mode
-            path_part_combined = "/"
-            for path_part in path.split("/"):
-                if path_part:
-                    path_part_combined = os.path.join(path_part_combined, path_part)
-                    # Only create if it doesn't exist
-                    if not os.path.exists(path_part_combined):
-                        os.mkdir(path_part_combined)
-                        # Try to set permissions if desired, ignore failures
-                        if apply_permissions:
-                            set_permissions(path_part_combined, recursive=False)
+            # use pathlib to better handle symlinks & no lstat scenarios
+            if (custom_permissions := sabnzbd.cfg.permissions()) and apply_permissions:
+                # If user set permissions, parse them
+                custom_permissions = int(custom_permissions, 8)
+                Path(path).mkdir(mode=custom_permissions, parents=True, exist_ok=True)
+            else:
+                Path(path).mkdir(parents=True, exist_ok=True)
         return path
     except OSError:
         logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)
