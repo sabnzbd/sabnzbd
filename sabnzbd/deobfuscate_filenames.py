@@ -27,7 +27,6 @@ files to the job-name in the queue if the filename looks obfuscated
 Based on work by P1nGu1n
 
 """
-import glob
 import hashlib
 import logging
 import os
