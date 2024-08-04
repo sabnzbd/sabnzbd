@@ -467,7 +467,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(small_txt)
 
         # go
-        deobfuscate_subtitles(dirname)
+        deobfuscate_subtitles([bigfile, already_correct_srt, small_srt, underscore_srt, small_txt])
 
         assert os.path.isfile(bigfile)  # unchanged
         assert os.path.isfile(already_correct_srt)  # unchanged
@@ -478,7 +478,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(small_txt)  # unchanged
 
         # and if we go again ... nothing should happen: all files are already correct
-        deobfuscate_subtitles(dirname)
+        deobfuscate_subtitles([bigfile, already_correct_srt, expected_small_srt, expected_underscore_srt, small_txt])
 
         assert os.path.isfile(bigfile)  # unchanged
         assert os.path.isfile(already_correct_srt)  # unchanged

@@ -169,7 +169,7 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
-def get_biggest_file(filelist):
+def get_biggest_file(filelist: List[str]) -> str:
     """Returns biggest file if that file is much bigger than the other files
     If only one file exists, return that. If no file, return None
     Note: the files in filelist must exist, because their sizes on disk are checked"""
@@ -315,19 +315,19 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
     return filtered_filelist
 
 
-def without_extension(fullpathfilename):
+def without_extension(fullpathfilename: str) -> str:
     """Returns full file path, without extension
     So '/some/dir/somefile.bin' results in '/some/dir/somefile'"""
     return os.path.splitext(fullpathfilename)[0]
 
 
-def deobfuscate_subtitles(input):
+def deobfuscate_subtitles(filelist: List[str]):
     """
-    input can be an existing directory or a list of existing filenames
+    input must be a list of existing filenames
 
     Find .srt subtitle files, and rename to match the biggest file (if there is a clearly biggest file)
 
-    Some_Big_File_2024.mp4      # biggest file
+    Some_Big_File_2024.avi      # biggest file
     Some_Big_File_2024.srt      # no renaming wanted
     Some_Big_File_2024.ger.srt  # no renaming wanted
     14_English.srt              # to be renamed
@@ -336,7 +336,7 @@ def deobfuscate_subtitles(input):
 
     will result in
 
-    Some_Big_File_2024.mp4
+    Some_Big_File_2024.avi
     Some_Big_File_2024.srt
     Some_Big_File_2024.ger.srt
     Some_Big_File_2024.14.English.srt   # renamed by prepending base name (and replacing _)
@@ -345,28 +345,18 @@ def deobfuscate_subtitles(input):
 
     """
 
-    # if directory, create list from that directory
-    if type(input) == str and os.path.isdir(input):
-        all_files = [os.path.join(root, file) for root, dirs, files in os.walk(input) for file in files]
-    elif type(input) == list:
-        # already a list, so nothing to do
-        all_files = input
-    else:
-        logging.debug(f"{input} no directory and no list")
-        return None
-
     # find .srt files
-    if not (srt_files := [f for f in all_files if f.endswith(".srt")]):
+    if not (srt_files := [f for f in filelist if f.endswith(".srt")]):
         logging.debug("No .srt files found, so nothing to do")
         return None
 
     # check there is a clearly biggest file
-    if not (biggest_file := get_biggest_file(all_files)):
+    if not (biggest_file := get_biggest_file(filelist)):
         logging.debug("No clearly biggest file found, so no subtitle renaming feasible")
         return None
 
     biggest_file_without_ext = without_extension(biggest_file)  # get full path base name of biggest file
-    logging.debug(f"biggest_file {biggest_file} with base {biggest_file_without_ext}")
+    logging.debug(f"Using as base filename: {biggest_file_without_ext}")
 
     # handle srt files one by one
     for srt_file in srt_files:
@@ -375,9 +365,8 @@ def deobfuscate_subtitles(input):
             continue
         # not the same start, so rename the srt file
         filename_only = os.path.basename(srt_file)  # like "14_English.srt", so without path
-        filename_only = filename_only.replace("_", ".")  # replace underscore with dot
+        filename_only = filename_only.replace("_", ".")  # replace underscore with dot; better for VLC
         # now put that name after the base name of the biggestfile:
         new_full_name = f"{biggest_file_without_ext}.{filename_only}"  # put (renamed) srt behind that
         unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique
-        logging.debug(f"Renaming subtitle {srt_file} to {unique_filename}")
         renamer(srt_file, unique_filename)  # ... and rename actual file on disk
