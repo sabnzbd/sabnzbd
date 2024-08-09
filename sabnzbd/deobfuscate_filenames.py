@@ -270,8 +270,9 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate corrected the extension of %d file(s)") % nr_ext_renamed)
     filtered_filelist = new_filelist
 
-    logging.debug("Trying to see if there are qualifying files to be deobfuscated")
     nr_files_renamed = 0
+
+    logging.debug("Trying to see if there are qualifying files to be deobfuscated")
 
     if not (biggest_file := get_biggest_file(filtered_filelist)) or not os.path.isfile(biggest_file):
         # no file found, which is weird
@@ -320,9 +321,11 @@ def without_extension(fullpathfilename: str) -> str:
     return os.path.splitext(fullpathfilename)[0]
 
 
-def deobfuscate_subtitles(filelist: List[str]):
+def deobfuscate_subtitles(nzo, filelist: List[str]):
     """
-    input must be a list of existing filenames
+    input:
+    nzo, so we can update result via set_unpack_info()
+    filelist must be a List of existing filenames
 
     Find .srt subtitle files, and rename to match the biggest file (if there is a clearly biggest file)
 
@@ -338,11 +341,14 @@ def deobfuscate_subtitles(filelist: List[str]):
     Some_Big_File_2024.avi
     Some_Big_File_2024.srt
     Some_Big_File_2024.ger.srt
-    Some_Big_File_2024.14.English.srt   # renamed by prepending base name (and replacing _)
+    Some_Big_File_2024.14_English.srt   # renamed by prepending base name
     Some_Big_File_2024.dut.srt          # renamed by prepending base name
     Something.else.txt
 
     """
+
+    # Can't be imported directly due to circular import
+    nzo: sabnzbd.nzbstuff.NzbObject
 
     # find .srt files
     if not (srt_files := [f for f in filelist if f.endswith(".srt")]):
@@ -358,14 +364,18 @@ def deobfuscate_subtitles(filelist: List[str]):
     logging.debug(f"Using as base filename: {biggest_file_without_ext}")
 
     # handle srt files one by one
+    nr_files_renamed = 0
     for srt_file in srt_files:
         if without_extension(srt_file).startswith(biggest_file_without_ext):
             # already the same start as the biggest file, so skip
             continue
         # not the same start, so rename the srt file
+        nr_files_renamed += 1
         filename_only = os.path.basename(srt_file)  # like "14_English.srt", so without path
-        filename_only = filename_only.replace("_", ".")  # replace underscore with dot; better for VLC
         # now put that name after the base name of the biggestfile:
         new_full_name = f"{biggest_file_without_ext}.{filename_only}"  # put (renamed) srt behind that
         unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique
         renamer(srt_file, unique_filename)  # ... and rename actual file on disk
+    if nr_files_renamed > 0:
+        # and put it into history to be shown in GUI
+        nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d subtitle file(s)") % nr_files_renamed)

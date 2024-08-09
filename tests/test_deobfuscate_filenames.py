@@ -440,6 +440,10 @@ class TestDeobfuscateFinalResult:
         # input: a big file, and srt file(s), and non-related files
         # result: srt file renamed according to the big file
 
+        """Wrapper to avoid the need for NZO"""
+        nzo = mock.Mock()
+        nzo.set_unpack_info = mock.Mock()
+
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
@@ -457,35 +461,26 @@ class TestDeobfuscateFinalResult:
         assert os.path.isfile(small_srt)
         expected_small_srt = os.path.join(dirname, "bigfile.dut.srt")
 
-        underscore_srt = os.path.join(dirname, "13_Deutsch.srt")
-        create_small_file(underscore_srt)
-        assert os.path.isfile(underscore_srt)
-        expected_underscore_srt = os.path.join(dirname, "bigfile.13.Deutsch.srt")
-
         small_txt = os.path.join(dirname, "readme.txt")
         create_small_file(small_txt)
         assert os.path.isfile(small_txt)
 
         # go
-        deobfuscate_subtitles([bigfile, already_correct_srt, small_srt, underscore_srt, small_txt])
+        deobfuscate_subtitles(nzo, [bigfile, already_correct_srt, small_srt, small_txt])
 
         assert os.path.isfile(bigfile)  # unchanged
         assert os.path.isfile(already_correct_srt)  # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
         assert os.path.isfile(expected_small_srt)
-        assert not os.path.isfile(underscore_srt)  # should be renamed to:
-        assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
         # and if we go again ... nothing should happen: all files are already correct
-        deobfuscate_subtitles([bigfile, already_correct_srt, expected_small_srt, expected_underscore_srt, small_txt])
+        deobfuscate_subtitles(nzo, [bigfile, already_correct_srt, expected_small_srt, small_txt])
 
         assert os.path.isfile(bigfile)  # unchanged
         assert os.path.isfile(already_correct_srt)  # unchanged
         assert not os.path.isfile(small_srt)  # should be renamed to:
         assert os.path.isfile(expected_small_srt)
-        assert not os.path.isfile(underscore_srt)  # should be renamed to:
-        assert os.path.isfile(expected_underscore_srt)
         assert os.path.isfile(small_txt)  # unchanged
 
         shutil.rmtree(dirname)
