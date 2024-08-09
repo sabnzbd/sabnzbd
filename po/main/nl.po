@@ -463,6 +463,10 @@ msgstr "Extensie van %d bestand(en) gecorrigeerd"
 msgid "Deobfuscate renamed %d file(s)"
 msgstr "Bestandsnamen van %d bestand(en) aangepast."
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr "Direct Uitpakken"

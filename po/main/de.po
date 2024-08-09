@@ -477,6 +477,10 @@ msgstr "Entschleiern korrigierte die Erweiterung von %d Datei(en)"
 msgid "Deobfuscate renamed %d file(s)"
 msgstr "Entschleiern hat %dDatei(en) umbenannt"
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr "Direkt entpacken"

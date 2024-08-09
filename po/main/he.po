@@ -437,6 +437,10 @@ msgstr "אי־האפלה תיקנה את הסיומת של %d קבצים"
 msgid "Deobfuscate renamed %d file(s)"
 msgstr "אי־האפלה שינתה שם של %d קבצים"
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr "פריקה ישירה"

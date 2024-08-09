@@ -427,6 +427,10 @@ msgstr ""
 msgid "Deobfuscate renamed %d file(s)"
 msgstr ""
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr ""

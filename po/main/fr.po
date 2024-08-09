@@ -469,6 +469,10 @@ msgstr "La désobfuscation a corrigé l'extension de %d fichier(s)"
 msgid "Deobfuscate renamed %d file(s)"
 msgstr "La désobfuscation a renommé %d fichier(s)"
 
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr ""
+
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
 msgstr "Décompression Directe"
