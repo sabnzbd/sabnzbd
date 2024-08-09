@@ -573,7 +573,9 @@ def process_job(nzo: NzbObject) -> bool:
                 if cfg.deobfuscate_final_filenames():
                     # Deobfuscate the filenames
                     logging.info("Running deobfuscate")
-                    deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
+                    newfiles = deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
+                    # Deobfuscate the subtitles
+                    deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
                 # Run the user script
                 if script_path := make_script_path(script):
