@@ -65,7 +65,7 @@ import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
 from sabnzbd.constants import (
-    DEF_TIMEOUT,
+    DEF_NETWORKING_TIMEOUT,
     DEF_LOG_ERRFILE,
     DEF_MAIN_TMPL,
     DEF_STD_WEB_DIR,
@@ -170,7 +170,8 @@ class GUIHandler(logging.Handler):
         # This prevents endless looping if the notification service itself throws an error/warning
         # We don't check based on message content, because if it includes a timestamp it's not unique
         if not any(
-            stored_warning["origin"] == warning["origin"] and stored_warning["time"] + DEF_TIMEOUT > time.time()
+            stored_warning["origin"] == warning["origin"]
+            and stored_warning["time"] + DEF_NETWORKING_TIMEOUT > time.time()
             for stored_warning in self.store
         ):
             if record.levelno == logging.WARNING:
