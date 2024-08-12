@@ -3,7 +3,7 @@
 apprise==1.8.1
 sabctools==8.2.5
 CT3==3.3.3.post1
-cffi==1.16.0
+cffi==1.17.0
 pycparser==2.22
 feedparser==6.0.11
 configobj==5.0.8
@@ -15,7 +15,7 @@ jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
-more-itertools==10.3.0
+more-itertools==10.4.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
 tempora==5.7.0
@@ -24,7 +24,7 @@ sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
 PySocks==1.7.1
-puremagic==1.26
+puremagic==1.27
 guessit==3.8.0
 babelfish==0.6.1
 rebulk==3.2.0
@@ -56,7 +56,7 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 # Apprise Requirements
 requests==2.32.3
 requests-oauthlib==2.0.0
-PyYAML==6.0.1
+PyYAML==6.0.2
 markdown==3.6
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
