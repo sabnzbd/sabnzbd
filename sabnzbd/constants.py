@@ -101,6 +101,7 @@ SOFT_QUEUE_LIMIT = 0.5
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_WRITE_THRESHOLD = 5
 NNTP_BUFFER_SIZE = int(800 * KIBI)
+NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2

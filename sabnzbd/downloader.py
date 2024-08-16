@@ -704,8 +704,13 @@ class Downloader(Thread):
         except ssl.SSLWantReadError:
             return
         except (ConnectionError, ConnectionAbortedError):
-            # The ConnectionAbortedError is thrown by sabctools in case of fatal SSL-layer problems
+            # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
             self.__reset_nw(nw, "Server closed connection", wait=False)
+            return
+        except BufferError:
+            # The BufferError is thrown when exceeding maximum buffer size
+            # Make sure to discard the article
+            self.__reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
             return
 
         article = nw.article
