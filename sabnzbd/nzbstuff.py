@@ -1592,7 +1592,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, bad_article_type: str):
-        """Record information about bad articles"""
+        """Record information about bad articles. Should be called before
+        register_article, which triggers the availability check."""
         if bad_article_type not in self.nzo_info:
             self.nzo_info[bad_article_type] = 0
         self.nzo_info[bad_article_type] += 1
