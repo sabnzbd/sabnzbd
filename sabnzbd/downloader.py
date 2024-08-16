@@ -510,8 +510,8 @@ class Downloader(Thread):
         # Handle broken articles directly
         if not data_view:
             if not article.search_new_server():
-                sabnzbd.NzbQueue.register_article(article, success=False)
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
+                sabnzbd.NzbQueue.register_article(article, success=False)
             return
 
         # Decode and send to article cache
