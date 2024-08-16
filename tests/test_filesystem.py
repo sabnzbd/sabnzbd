@@ -912,11 +912,9 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
     def _permissions_runner(self, test_base, perms_base="0700", apply_permissions=True):
         # Create base directory and set the base permissions
         perms_base_int = int(perms_base, 8)
-        self.fs.create_dir(test_base, perms_base_int)
+        self.fs.create_dir(test_base, perms_base_int, apply_umask=False)
         assert os.path.exists(test_base) is True
-        # Account for pyfakefs (>= 5.4.0) always applying the fake fs umask when creating dirs
-        perms_base_int_umasked = perms_base_int & ~self.fs.umask
-        self.assert_dir_perms(test_base, perms_base_int_umasked)
+        self.assert_dir_perms(test_base, perms_base_int)
 
         # Create directories with permissions
         new_dir = os.path.join(test_base, "se 1", "ep1")
@@ -930,7 +928,7 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
             # Get the current permissions, since os.mkdir masks that out
             perms_test_int = int("0777", 8) & ~sabnzbd.ORG_UMASK
         self.assert_dir_perms(new_dir, perms_test_int)
-        self.assert_dir_perms(test_base, perms_base_int_umasked)
+        self.assert_dir_perms(test_base, perms_base_int)
 
 
 class TestSetPermissionsWin(ffs.TestCase):
@@ -947,9 +945,7 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
         self.setUpPyfakefs()
         self.fs.path_separator = "/"
         self.fs.is_case_sensitive = True
-        # All-permissive umask as a workaround for changes in pyfakefs (>= 5.4.0),
-        # causing it to always take the umask into account when creating dirs
-        self.fs.umask = int("0000", 8)  # rwxrwxrwx
+        self.fs.umask = int("0022", 8)  # rwxr-xr-x
 
     def _runner(self, perms_before_test):
         """
@@ -970,7 +966,7 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
 
         # Setup and verify fake dir
         test_dir = "/test"
-        self.fs.create_dir(test_dir, perms_before_test)
+        self.fs.create_dir(test_dir, perms_before_test, apply_umask=False)
         assert os.path.exists(test_dir) is True
         self.assert_dir_perms(test_dir, perms_before_test)
 
@@ -987,10 +983,10 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
             # Create the folder, so it has the expected permissions
             if not os.path.exists(basefolder):
                 try:
-                    self.fs.create_dir(basefolder, perms_before_test)
+                    self.fs.create_dir(basefolder, perms_before_test, apply_umask=False)
                 except PermissionError:
                     ffs.set_uid(0)
-                    self.fs.create_file(file, perms_before_test)
+                    self.fs.create_file(file, perms_before_test, apply_umask=False)
             assert os.path.exists(basefolder) is True
             self.assert_dir_perms(basefolder, perms_before_test)
 
@@ -1001,10 +997,10 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
 
             # Then, create the file
             try:
-                self.fs.create_file(file, file_perms_before_test)
+                self.fs.create_file(file, file_perms_before_test, apply_umask=False)
             except PermissionError:
                 ffs.set_uid(0)
-                self.fs.create_file(file, file_perms_before_test)
+                self.fs.create_file(file, file_perms_before_test, apply_umask=False)
 
             assert os.path.exists(file) is True
             assert stat.filemode(os.stat(file).st_mode)[1:] == stat.filemode(file_perms_before_test)[1:]
