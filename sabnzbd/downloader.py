@@ -960,14 +960,9 @@ class Downloader(Thread):
                 self.decode(nw.article)
                 nw.article.tries = 0
             else:
-                # Retry again with the same server
-                logging.debug(
-                    "Re-adding article %s from %s to server %s",
-                    nw.article.article,
-                    nw.article.nzf.filename,
-                    nw.article.fetcher,
-                )
-                nw.article.fetcher.article_queue.append(nw.article)
+                # Allow all servers again on this server
+                # Do not use the article_queue, as the server could already have been disabled when we get here!
+                sabnzbd.NzbQueue.reset_try_lists(nw.article)
 
         # Reset connection object
         nw.hard_reset(wait)
