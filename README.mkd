@@ -5,6 +5,7 @@ This is the third bug fix release of SABnzbd 4.3.0.
 
 ## Bug fixes and changes since 4.3.2
 * Reduced chance of jobs getting stuck at 99%.
+* Prevent crash in case of invalid articles.
 * Correct handling of empty or `Default` category when adding a job.
 * History API-output could contain inconsistent variable types.
 * Skip external IPv6 check if only link local addresses are available.
