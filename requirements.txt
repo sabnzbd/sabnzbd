@@ -57,7 +57,7 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 requests==2.32.3
 requests-oauthlib==2.0.0
 PyYAML==6.0.2
-markdown==3.6
+markdown==3.7
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
