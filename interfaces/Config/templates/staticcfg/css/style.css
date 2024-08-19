@@ -19,6 +19,7 @@ body {
     float: left;
     overflow: visible;
     border: 1px solid #dfdede;
+    border-bottom: none !important;
     background-color: #FFF;
     width: 100%
 }
@@ -1222,7 +1223,6 @@ input[type="checkbox"] {
 }
 .value-and-select select {
     min-width: 30px;
-    margin-top: 1px;
 }
 
 .dotOne, .dotTwo, .dotThree {

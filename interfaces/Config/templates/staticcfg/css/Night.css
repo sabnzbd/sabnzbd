@@ -208,7 +208,7 @@ ul.tabs a,
 #subscriptions,
 .RSS form[action="add_rss_feed"] tr:nth-child(even),
 .Config .table {
-    border: 1px solid #555555 !important;
+    border: 1px solid #555555;
 }
 
 .Categories form:first-of-type tr:last-of-type,
