@@ -1,6 +1,5 @@
 # -*- mode: python -*-
 import os
-import re
 import sys
 
 from PyInstaller.building.api import EXE, COLLECT, PYZ
@@ -8,13 +7,13 @@ from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION
+from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_VERSION_TUPLE
 
 # Add extra files in the PyInstaller-spec
 extra_pyinstaller_files = []
 
 # Add hidden imports
-extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
+extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi", "pkg_resources.extern"]
 extra_hiddenimports.extend(collect_submodules("apprise"))
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 extra_hiddenimports.extend(collect_submodules("guessit.data"))
@@ -45,16 +44,12 @@ else:
     EXTRA_FOLDERS += ["win/multipar/", "win/par2/", "win/unrar/", "win/7zip/"]
     EXTRA_FILES += ["portable.cmd"]
 
-    # Parse the version info
-    version_regexed = re.search(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)", RELEASE_VERSION)
-    version_tuple = (int(version_regexed.group(1)), int(version_regexed.group(2)), int(version_regexed.group(3)), 0)
-
     # Detailed instructions are in the PyInstaller documentation
     # We don't include the alpha/beta/rc in the counters
     version_info = VSVersionInfo(
         ffi=FixedFileInfo(
-            filevers=version_tuple,
-            prodvers=version_tuple,
+            filevers=RELEASE_VERSION_TUPLE,
+            prodvers=RELEASE_VERSION_TUPLE,
             mask=0x3F,
             flags=0x0,
             OS=0x40004,

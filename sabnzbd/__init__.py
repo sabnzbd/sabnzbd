@@ -37,7 +37,7 @@ KERNEL32 = LIBC = MACOSLIBC = None
 
 if os.name == "nt":
     WIN32 = True
-    WIN64 = platform.uname().machine == "AMD64"
+    WIN64 = platform.uname().machine in ["AMD64", "ARM64"]  # includes emulation of X86_64 on Windows ARM64
     from sabnzbd.utils.apireg import del_connection_info
 
     try:
@@ -245,8 +245,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
-    cfg.cherryhost.callback(cfg.guard_restart)
-    cfg.cherryport.callback(cfg.guard_restart)
+    cfg.web_host.callback(cfg.guard_restart)
+    cfg.web_port.callback(cfg.guard_restart)
     cfg.web_dir.callback(cfg.guard_restart)
     cfg.web_color.callback(cfg.guard_restart)
     cfg.username.callback(cfg.guard_restart)

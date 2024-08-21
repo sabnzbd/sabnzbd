@@ -57,7 +57,7 @@ stages:
               action_line: !anything
               size: !re_match "[0-9][0-9.]*\ [A-Z]"
               loaded: !anybool
-              retry: !anyint
+              retry: !anybool
               archive: !anybool
           noofslots: !anyint
           ppslots: !anyint
@@ -125,7 +125,7 @@ stages:
             <action_line>!anystr</action_line>
             <size>!anystr</size>
             <loaded>!anybool</loaded>
-            <retry>!anyint</retry>
+            <retry>!anybool</retry>
             <archive>!anybool</archive>
             </slot>
             </slots>

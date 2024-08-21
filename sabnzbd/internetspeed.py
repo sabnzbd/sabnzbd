@@ -30,6 +30,7 @@ from typing import Dict
 
 import sabctools
 import sabnzbd
+from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
 from sabnzbd.happyeyeballs import happyeyeballs, family_type
 
 TEST_HOSTNAME = "sabnzbd.org"
@@ -37,7 +38,6 @@ TEST_PORT = 443
 TEST_FILE = "/tests/internetspeed/100MB.bin"
 TEST_FILE_SIZE = 100 * 1024 * 1024
 TEST_REQUEST = f"GET {TEST_FILE} HTTP/1.1\nHost: {TEST_HOSTNAME}\nUser-Agent: SABnzbd/{sabnzbd.__version__}\n\n"
-SOCKET_TIMEOUT = 3
 BUFFER_SIZE = 5 * 1024 * 1024  # Each connection will allocate its own buffer, so mind the memory usage!
 
 NR_CONNECTIONS = 5
@@ -75,33 +75,45 @@ def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLS
         pass
 
 
-def internetspeed_interal(test_time_limit: int = TIME_LIMIT, family: int = socket.AF_UNSPEC) -> float:
+def internetspeed_interal(family: int = socket.AF_UNSPEC) -> float:
     """Measure internet speed from a test-download using our optimized SSL-code"""
 
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
     socket_speed = {}
 
     try:
-        addrinfo = happyeyeballs(TEST_HOSTNAME, TEST_PORT, SOCKET_TIMEOUT, family)
+        if not (addrinfo := happyeyeballs(TEST_HOSTNAME, TEST_PORT, DEF_NETWORKING_SHORT_TIMEOUT, family)):
+            # no addrinfo from happyeyeballs, so no connection was possible
+            return 0.0  # no speed at all
+
         for _ in range(NR_CONNECTIONS):
             sock = socket.socket(addrinfo.family, addrinfo.type)
-            sock.settimeout(SOCKET_TIMEOUT)
+            sock.settimeout(DEF_NETWORKING_SHORT_TIMEOUT)
             sock.connect(addrinfo.sockaddr)
             secure_sock = context.wrap_socket(sock, server_hostname=TEST_HOSTNAME)
             secure_sock.setblocking(False)
             socket_speed[secure_sock] = 0
 
         for secure_sock in socket_speed:
-            threading.Thread(target=internetspeed_worker, args=(secure_sock, socket_speed), daemon=True).start()
+            threading.Thread(
+                target=internetspeed_worker,
+                args=(secure_sock, socket_speed),
+                daemon=True,
+            ).start()
     except Exception:
         logging.info("Internet Bandwidth connection failure", exc_info=True)
         return 0.0
 
     # We let the workers finish
-    time.sleep(test_time_limit + 0.5)
+    time.sleep(TIME_LIMIT + 0.5)
 
     speed = sum(socket_speed.values()) / 1024 / 1024
-    logging.debug("Internet Bandwidth (%s) = %.2f MB/s - %.2f Mbps", family_type(family), speed, speed * 8.05)
+    logging.debug(
+        "Internet Bandwidth (%s) = %.2f MB/s - %.2f Mbps",
+        family_type(family),
+        speed,
+        speed * 8.05,
+    )
     return speed
 
 

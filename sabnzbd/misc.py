@@ -167,10 +167,9 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
 
 def safe_lower(txt: Any) -> str:
     """Return lowercased string. Return '' for None"""
-    if txt:
+    if txt := str_conv(txt):
         return txt.lower()
-    else:
-        return ""
+    return ""
 
 
 def is_none(inp: Any) -> bool:
@@ -219,16 +218,17 @@ def cat_pp_script_sanitizer(
     script: Optional[str] = None,
 ) -> Tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
     """Basic sanitizer from outside input to a bit more predictable values"""
+    # * and Default are valid values
+    if safe_lower(cat) in ("", "none"):
+        cat = None
+
     # Cannot use "not pp" because pp can also be 0
-    if pp in ("", "-1"):
+    if safe_lower(pp) in ("", "-1", "none"):
         pp = None
 
     # Check for valid script is performed in NzbObject init
-    if not script or script.lower() == "default":
+    if not script or safe_lower(script) == "default":
         script = None
-
-    if not cat or cat.lower() in ("default", "*"):
-        cat = None
 
     return cat, pp, script
 
@@ -281,7 +281,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str
 def pp_to_opts(pp: Optional[int]) -> Tuple[bool, bool, bool]:
     """Convert numeric processing options to (repair, unpack, delete)"""
     # Convert the pp to an int
-    pp = sabnzbd.interface.int_conv(pp)
+    pp = int_conv(pp)
     if pp == 0:
         return False, False, False
     if pp == 1:
@@ -882,13 +882,30 @@ def format_time_string(seconds: float) -> str:
     return " ".join(completestr)
 
 
-def int_conv(value: Any, default: Any = 0) -> int:
+def str_conv(value: Any, default: str = "") -> str:
+    """Safe conversion to str (None will be converted to empty string)
+    Returns empty string or requested default value"""
+    if value is None:
+        return default
+    try:
+        return str(value)
+    except:
+        return default
+
+
+def int_conv(value: Any, default: int = 0) -> int:
     """Safe conversion to int (can handle None)
     Returns 0 or requested default value"""
     try:
         return int(value)
     except:
         return default
+
+
+def bool_conv(value: Any) -> bool:
+    """Safe conversion to bool (can handle None)
+    Returns False in case of None or non-convertable value"""
+    return bool(int_conv(value))
 
 
 def create_https_certificates(ssl_cert, ssl_key):

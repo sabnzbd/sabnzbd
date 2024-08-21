@@ -54,7 +54,7 @@ from sabnzbd.constants import (
     AddNzbFileResult,
     PP_LOOKUP,
     STAGES,
-    DEF_TEST_TIMEOUT,
+    DEF_NETWORKING_TEST_TIMEOUT,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -76,6 +76,7 @@ from sabnzbd.misc import (
     change_queue_complete_action,
     clean_comma_separated_list,
     match_str,
+    bool_conv,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
 from sabnzbd.encoding import xml_name, utob
@@ -180,7 +181,7 @@ def _api_queue_delete(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> b
         removed = sabnzbd.NzbQueue.remove_all(kwargs.get("search"))
         return report(keyword="", data={"status": bool(removed), "nzo_ids": removed})
     elif items := clean_comma_separated_list(value):
-        delete_all_data = int_conv(kwargs.get("del_files"))
+        delete_all_data = bool_conv(kwargs.get("del_files"))
         removed = sabnzbd.NzbQueue.remove_multiple(items, delete_all_data=delete_all_data)
         return report(keyword="", data={"status": bool(removed), "nzo_ids": removed})
     else:
@@ -422,8 +423,8 @@ def _api_change_opts(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> byt
 def _api_fullstatus(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: full history status"""
     status = build_status(
-        calculate_performance=int_conv(kwargs.get("calculate_performance", 0)),
-        skip_dashboard=int_conv(kwargs.get("skip_dashboard", 1)),
+        calculate_performance=bool_conv(kwargs.get("calculate_performance")),
+        skip_dashboard=bool_conv(kwargs.get("skip_dashboard")),
     )
     return report(keyword="status", data=status)
 
@@ -487,7 +488,7 @@ def _api_history(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     search = kwargs.get("search")
     categories = clean_comma_separated_list(kwargs.get("cat") or kwargs.get("category"))
     statuses = clean_comma_separated_list(kwargs.get("status"))
-    failed_only = int_conv(kwargs.get("failed_only"))
+    failed_only = bool_conv(kwargs.get("failed_only"))
     nzo_ids = clean_comma_separated_list(kwargs.get("nzo_ids"))
 
     archive = True
@@ -498,7 +499,7 @@ def _api_history(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
             archive = False
 
         special = value.lower()
-        del_files = bool(int_conv(kwargs.get("del_files")))
+        del_files = bool_conv(kwargs.get("del_files"))
         if special in ("all", "failed", "completed"):
             history_db = sabnzbd.get_db_connection()
             if special in ("all", "failed"):
@@ -868,9 +869,9 @@ def _api_undefined(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes
 
 def _api_browse(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """Return tree of local path"""
-    compact = bool(int_conv(kwargs.get("compact")))
-    show_files = bool(int_conv(kwargs.get("show_files")))
-    show_hidden = bool(int_conv(kwargs.get("show_hidden_folders")))
+    compact = bool_conv(kwargs.get("compact"))
+    show_files = bool_conv(kwargs.get("show_files"))
+    show_hidden = bool_conv(kwargs.get("show_hidden_folders"))
 
     if compact:
         # Used for typeahead
@@ -1267,7 +1268,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     password = kwargs.get("password", "").strip()
     server = kwargs.get("server", "").strip()
     connections = int_conv(kwargs.get("connections", 0))
-    timeout = int_conv(kwargs.get("timeout", DEF_TEST_TIMEOUT))
+    timeout = int_conv(kwargs.get("timeout", DEF_NETWORKING_TEST_TIMEOUT))
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
     ssl_ciphers = kwargs.get("ssl_ciphers", "").strip()
@@ -1286,7 +1287,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
 
     if not timeout:
         # Lower value during new server testing
-        timeout = DEF_TEST_TIMEOUT
+        timeout = DEF_NETWORKING_TEST_TIMEOUT
 
     if "*" in password and not password.strip("*"):
         # If the password is masked, try retrieving it from the config
@@ -1318,7 +1319,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     if not test_server.addrinfo:
         # Try if we can connect on port 80 (so web server), forcing a short timeout
         test_server.port = 80
-        test_server.timeout = DEF_TEST_TIMEOUT
+        test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT
         test_server.request_addrinfo_blocking()
         if test_server.addrinfo:
             return False, T(
@@ -1384,7 +1385,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     return return_status
 
 
-def build_status(calculate_performance: int = False, skip_dashboard: int = False) -> Dict[str, Any]:
+def build_status(calculate_performance: bool = False, skip_dashboard: bool = False) -> Dict[str, Any]:
     # build up header full of basic information
     info = build_header(trans_functions=False)
 

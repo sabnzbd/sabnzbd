@@ -1,37 +1,37 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.8.0
-sabctools==8.2.0
+apprise==1.8.1
+sabctools==8.2.5
 CT3==3.3.3.post1
-cffi==1.16.0
+cffi==1.17.0
 pycparser==2.22
 feedparser==6.0.11
 configobj==5.0.8
 cheroot==10.0.1
 six==1.16.0
-cherrypy==18.9.0
-jaraco.functools==4.0.1
+cherrypy==18.10.0
+jaraco.functools==4.0.2
 jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
-more-itertools==10.2.0
+more-itertools==10.4.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
-tempora==5.5.1
+tempora==5.7.0
 pytz==2024.1
 sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
 PySocks==1.7.1
-puremagic==1.23
+puremagic==1.27
 guessit==3.8.0
 babelfish==0.6.1
 rebulk==3.2.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==42.0.7
+cryptography==43.0.0
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
@@ -39,34 +39,34 @@ ujson==5.10.0
 
 # Windows system integration
 pywin32==306; sys_platform == 'win32'
-windows-toasts==1.1.1; sys_platform == 'win32' and python_version > '3.8'
-winrt-runtime==2.0.1; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Data.Xml.Dom==2.0.1; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation==2.0.1; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation.Collections==2.0.1; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.UI.Notifications==2.0.1; sys_platform == 'win32' and python_version > '3.8'
+windows-toasts==1.2.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-runtime==2.1.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Data.Xml.Dom==2.1.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation==2.1.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation.Collections==2.1.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.UI.Notifications==2.1.0; sys_platform == 'win32' and python_version > '3.8'
 
 # macOS system calls
-pyobjc-core==10.2; sys_platform == 'darwin'
-pyobjc-framework-Cocoa==10.2; sys_platform == 'darwin'
+pyobjc-core==10.3.1; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==10.3.1; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 
 # Apprise Requirements
-requests==2.31.0
+requests==2.32.3
 requests-oauthlib==2.0.0
-PyYAML==6.0.1
+PyYAML==6.0.2
 markdown==3.6
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
 charset_normalizer==3.3.2
 idna==3.7
-urllib3==2.2.1
-certifi==2024.2.2
+urllib3==2.2.2
+certifi==2024.7.4
 oauthlib==3.2.2
-PyJWT==2.8.0
+PyJWT==2.9.0
 blinker==1.8.2
 
 # Optional support for *nix tray icon.

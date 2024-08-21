@@ -34,7 +34,7 @@ from typing import Tuple, Union, Optional
 from more_itertools import roundrobin
 
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import DEF_TIMEOUT
+from sabnzbd.constants import DEF_NETWORKING_TIMEOUT
 from sabnzbd.decorators import cache_maintainer
 
 # How long to delay between connection attempts? The RFC suggests 250ms, but this is
@@ -118,7 +118,12 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
 
 @cache_maintainer(clear_time=10)
 @functools.lru_cache(maxsize=None)
-def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socket.AF_UNSPEC) -> Optional[AddrInfo]:
+def happyeyeballs(
+    host: str,
+    port: int,
+    timeout: int = DEF_NETWORKING_TIMEOUT,
+    family=socket.AF_UNSPEC,
+) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
     by getaddrinfo or if no connection could be made to any of the addresses.

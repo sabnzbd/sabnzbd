@@ -129,13 +129,10 @@ class TryList:
         with TRYLIST_LOCK:
             return server in self.try_list
 
-    def all_servers_in_try_list(self, servers: List[Server]) -> bool:
+    def all_servers_in_try_list(self, all_servers: Set[Server]) -> bool:
         """Check if all servers have been tried"""
         with TRYLIST_LOCK:
-            for server in servers:
-                if server not in self.try_list:
-                    return False
-        return True
+            return all_servers.issubset(self.try_list)
 
     def add_to_try_list(self, server: Server):
         """Register server as having been tried already"""
@@ -836,8 +833,9 @@ class NzbObject(TryList):
             self.password = self.meta.get("password", [None])[0]
 
         # Check if we expect propagation delay
-        if (propagation_delay := self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time():
-            self.propagation_delay = propagation_delay
+        if propagation_delay := cfg.propagation_delay():
+            if (propagation_delay := self.avg_stamp + float(propagation_delay * 60)) > time.time():
+                self.propagation_delay = propagation_delay
 
         # Run user pre-queue script if set and valid
         if not reuse and make_script_path(cfg.pre_script()):
@@ -1594,7 +1592,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, bad_article_type: str):
-        """Record information about bad articles"""
+        """Record information about bad articles. Should be called before
+        register_article, which triggers the availability check."""
         if bad_article_type not in self.nzo_info:
             self.nzo_info[bad_article_type] = 0
         self.nzo_info[bad_article_type] += 1

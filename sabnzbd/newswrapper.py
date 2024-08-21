@@ -30,14 +30,14 @@ from typing import Optional, Tuple, Union
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DEF_TIMEOUT, NNTP_BUFFER_SIZE
+from sabnzbd.constants import DEF_NETWORKING_TIMEOUT, NNTP_BUFFER_SIZE, NTTP_MAX_BUFFER_SIZE
 from sabnzbd.encoding import utob, ubtou
 from sabnzbd.happyeyeballs import AddrInfo
 from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 from sabnzbd.misc import int_conv
 
 # Set pre-defined socket timeout
-socket.setdefaulttimeout(DEF_TIMEOUT)
+socket.setdefaulttimeout(DEF_NETWORKING_TIMEOUT)
 
 
 class NNTPPermanentError(Exception):
@@ -230,6 +230,10 @@ class NewsWrapper:
 
     def increase_data_buffer(self):
         """Resize the buffer in the extremely unlikely case that it overflows"""
+        # Sanity check before we go any further
+        if len(self.data) > NTTP_MAX_BUFFER_SIZE:
+            raise BufferError("Maximum data buffer size exceeded")
+
         # Input needs to be integer, floats don't work
         new_buffer = sabctools.bytearray_malloc(len(self.data) + NNTP_BUFFER_SIZE // 2)
         new_buffer[: len(self.data)] = self.data

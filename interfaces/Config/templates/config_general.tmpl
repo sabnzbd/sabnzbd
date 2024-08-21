@@ -26,7 +26,7 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="port">$T('opt-port')</label>
-                        <input type="number" name="port" id="port" value="$port" size="8" data-original="$port" />
+                        <input type="number" name="port" id="port" value="$port" size="8" data-original="$port" min="0" max="65535" />
                         <span class="desc">$T('explain-port')</span>
                     </div>
                     <div class="field-pair">
@@ -69,7 +69,7 @@
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="https_port">$T('opt-https_port')</label>
-                        <input type="number" name="https_port" id="https_port" value="$https_port" size="8" data-original="$https_port" />
+                        <input type="number" name="https_port" id="https_port" value="$https_port" size="8" data-original="$https_port" min="0" max="65535" />
                         <span class="desc">$T('explain-https_port')</span>
                     </div>
                     <div class="field-pair advanced-settings">

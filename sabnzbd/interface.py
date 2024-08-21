@@ -80,7 +80,7 @@ from sabnzbd.constants import (
     GUESSIT_SORT_TYPES,
     VALID_NZB_FILES,
     VALID_ARCHIVES,
-    DEF_TEST_TIMEOUT,
+    DEF_NETWORKING_TEST_TIMEOUT,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -434,6 +434,7 @@ class MainPage:
 
             info["cpumodel"] = get_cpu_name()
             info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
+            info["docker"] = "Docker" if sabnzbd.DOCKER else ""
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
@@ -577,7 +578,7 @@ class Wizard:
 def get_access_info():
     """Build up a list of url's that sabnzbd can be accessed from"""
     # Access_url is used to provide the user a link to SABnzbd depending on the host
-    cherryhost = cfg.cherryhost()
+    web_host = cfg.web_host()
     host = socket.gethostname().lower()
     logging.info("hostname is", host)
     socks = [host]
@@ -587,7 +588,7 @@ def get_access_info():
     except:
         addresses = []
 
-    if cherryhost == "0.0.0.0":
+    if web_host == "0.0.0.0":
         # Grab a list of all ips for the hostname
         for addr in addresses:
             address = addr[4][0]
@@ -595,7 +596,7 @@ def get_access_info():
             if ":" not in address and address not in socks:
                 socks.append(address)
         socks.insert(0, "localhost")
-    elif cherryhost == "::":
+    elif web_host == "::":
         # Grab a list of all ips for the hostname
         for addr in addresses:
             address = addr[4][0]
@@ -605,8 +606,8 @@ def get_access_info():
                 if address not in socks:
                     socks.append(address)
         socks.insert(0, "localhost")
-    elif cherryhost:
-        socks = [cherryhost]
+    elif web_host:
+        socks = [web_host]
 
     # Add the current requested URL as the base
     access_url = urllib.parse.urljoin(cherrypy.request.base, cfg.url_base())
@@ -617,9 +618,9 @@ def get_access_info():
             if cfg.enable_https() and cfg.https_port():
                 url = "https://%s:%s%s" % (sock, cfg.https_port(), cfg.url_base())
             elif cfg.enable_https():
-                url = "https://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
+                url = "https://%s:%s%s" % (sock, cfg.web_port(), cfg.url_base())
             else:
-                url = "http://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
+                url = "http://%s:%s%s" % (sock, cfg.web_port(), cfg.url_base())
             urls.append(url)
 
     # Return a unique list
@@ -1144,7 +1145,9 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        if not happyeyeballs(host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_TEST_TIMEOUT)):
+        if not happyeyeballs(
+            host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
+        ):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
     # Default server name is just the host name
@@ -2156,8 +2159,10 @@ class ConfigNotify:
 
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
-                # Use get_string to make sure lists are displayed correctly
-                conf[option] = config.get_config(section, option).get_string()
+                conf[option] = config.get_config(section, option)()
+
+        # Use get_string to make sure lists are displayed correctly
+        conf["email_to"] = cfg.email_to.get_string()
 
         return template_filtered_response(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),

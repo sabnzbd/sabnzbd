@@ -205,7 +205,7 @@ class OptionBool(Option):
 
     def set(self, value: Any):
         # Store the value as integer, easier to parse when reading the config.
-        super().set(sabnzbd.misc.int_conv(value))
+        super().set(sabnzbd.misc.bool_conv(value))
 
     def __call__(self) -> int:
         """get() replacement"""

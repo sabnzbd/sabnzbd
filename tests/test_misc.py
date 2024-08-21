@@ -88,6 +88,27 @@ class TestMisc:
         assert misc.cmp(2, 1) > 0
         assert misc.cmp(1, 1) == 0
 
+    @pytest.mark.parametrize(
+        "cat, pp, script, expected",
+        [
+            (None, None, None, (None, None, None)),
+            ("", "", "", (None, None, None)),
+            ("none", "-1", "default", (None, None, None)),
+            ("SomeCategory", "5", "SomeScript", ("SomeCategory", "5", "SomeScript")),
+            ("none", 0, "default", (None, 0, None)),
+            ("Movies", "", "default", ("Movies", None, None)),
+            ("", "10", "default", (None, "10", None)),
+            ("none", "15", "", (None, "15", None)),
+            ("none", 0, "Default", (None, 0, None)),
+            ("other", "-1", "Default", ("other", None, None)),
+            ("none", "None", "default", (None, None, None)),
+            ("some", "none", "script", ("some", None, "script")),
+            ("none", "NONE", "Default", (None, None, None)),
+        ],
+    )
+    def test_cat_pp_script_sanitizer(self, cat, pp, script, expected):
+        assert misc.cat_pp_script_sanitizer(cat, pp, script) == expected
+
     def test_cat_to_opts(self):
         # Need to create the Default category, as we would in normal instance
         # Otherwise it will try to save the config
@@ -241,6 +262,33 @@ class TestMisc:
         assert "13:11:10" == misc.format_time_left(60 * 60 * 13 + 60 * 11 + 10, short_format=True)
         assert "1:09:11:10" == misc.format_time_left(60 * 60 * 33 + 60 * 11 + 10, short_format=True)
 
+    @pytest.mark.parametrize(
+        "value, default, expected, description",
+        [
+            (None, "", "", "Test with None value and default empty string"),
+            (None, "default", "default", "Test with None value and default 'default'"),
+            (0, "", "0", "Test with zero value"),
+            (1, "", "1", "Test with one value"),
+            (-1, "", "-1", "Test with negative one value"),
+            (100, "", "100", "Test with 100 value"),
+            ("abc", "", "abc", "Test with alphabetic string"),
+            ("", "", "", "Test with empty string"),
+            (True, "", "True", "Test with boolean True value"),
+            (False, "", "False", "Test with boolean False value"),
+            (0.0, "", "0.0", "Test with float zero value"),
+            (1.5, "", "1.5", "Test with positive float value"),
+            (-2.7, "", "-2.7", "Test with negative float value"),
+            (complex(1, 1), "", "(1+1j)", "Test with complex number"),
+            ([], "", "[]", "Test with empty list"),
+            ([1, 2, 3], "", "[1, 2, 3]", "Test with list of integers"),
+            ({}, "", "{}", "Test with empty dictionary"),
+            ({"key": "value"}, "", "{'key': 'value'}", "Test with dictionary"),
+            (set(), "", "set()", "Test with empty set"),
+        ],
+    )
+    def test_str_conv(self, value, default, expected, description):
+        assert misc.str_conv(value, default) == expected
+
     def test_int_conv(self):
         assert 0 == misc.int_conv("0")
         assert 10 == misc.int_conv("10")
@@ -249,6 +297,32 @@ class TestMisc:
         assert 0 == misc.int_conv(None)
         assert 1 == misc.int_conv(True)
         assert 0 == misc.int_conv(object)
+
+    @pytest.mark.parametrize(
+        "value, expected, description",
+        [
+            (None, False, "Test with None value"),
+            (0, False, "Test with zero value"),
+            ("0", False, "Test with zero string"),
+            (1, True, "Test with one value"),
+            (-1, True, "Test with negative one value"),
+            (100, True, "Test with 100 value"),
+            ("1", True, "Test with one string"),
+            ("100", True, "Test with 100 string"),
+            ("", False, "Test with empty string"),
+            ("abc", False, "Test with non-numeric string"),
+            ("true", False, "Test with 'true' string"),
+            (True, True, "Test with boolean True value"),
+            (False, False, "Test with boolean False value"),
+            (0.0, False, "Test with float zero value"),
+            (1.5, True, "Test with positive float value"),
+            (-2.7, True, "Test with negative float value"),
+            ("1.5", False, "Test with float string value"),
+            ("0.0", False, "Test with float zero string value"),
+        ],
+    )
+    def test_bool_conv(self, value, expected, description):
+        assert misc.bool_conv(value) == expected, description
 
     def test_create_https_certificates(self):
         cert_file = "test.cert"

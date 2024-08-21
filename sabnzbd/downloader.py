@@ -198,7 +198,7 @@ class Server:
     def reset_article_queue(self):
         logging.debug("Resetting article queue for %s", self)
         for article in self.article_queue:
-            sabnzbd.NzbQueue.reset_try_lists(article, remove_fetcher_from_trylist=False)
+            sabnzbd.NzbQueue.reset_try_lists(article)
         self.article_queue = []
 
     def request_addrinfo(self):
@@ -510,8 +510,8 @@ class Downloader(Thread):
         # Handle broken articles directly
         if not data_view:
             if not article.search_new_server():
-                sabnzbd.NzbQueue.register_article(article, success=False)
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
+                sabnzbd.NzbQueue.register_article(article, success=False)
             return
 
         # Decode and send to article cache
@@ -704,8 +704,13 @@ class Downloader(Thread):
         except ssl.SSLWantReadError:
             return
         except (ConnectionError, ConnectionAbortedError):
-            # The ConnectionAbortedError is thrown by sabctools in case of fatal SSL-layer problems
+            # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
             self.__reset_nw(nw, "Server closed connection", wait=False)
+            return
+        except BufferError:
+            # The BufferError is thrown when exceeding maximum buffer size
+            # Make sure to discard the article
+            self.__reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
             return
 
         article = nw.article
@@ -960,14 +965,9 @@ class Downloader(Thread):
                 self.decode(nw.article)
                 nw.article.tries = 0
             else:
-                # Retry again with the same server
-                logging.debug(
-                    "Re-adding article %s from %s to server %s",
-                    nw.article.article,
-                    nw.article.nzf.filename,
-                    nw.article.fetcher,
-                )
-                nw.article.fetcher.article_queue.append(nw.article)
+                # Allow all servers again on this server
+                # Do not use the article_queue, as the server could already have been disabled when we get here!
+                sabnzbd.NzbQueue.reset_try_lists(nw.article)
 
         # Reset connection object
         nw.hard_reset(wait)
