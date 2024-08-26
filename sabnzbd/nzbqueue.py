@@ -900,6 +900,8 @@ class NzbQueue:
                                 logging.debug("Removing article %s with bad trylist in file %s", article, nzf.filename)
                                 nzo.increase_bad_articles_counter("missing_articles")
                                 sabnzbd.NzbQueue.register_article(article, success=False)
+                            else:
+                                logging.debug("Active %s: %s", article, article.fetcher)
 
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
@@ -907,6 +909,13 @@ class NzbQueue:
                 # Reset main trylist, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)
                 nzo.reset_try_list()
+
+                # Debug logging to fix user issue
+                logging.debug("Active articles for all servers:")
+                for server in sabnzbd.Downloader.servers[:]:
+                    logging.debug("Server: %s", server)
+                    for article in server.article_queue[:]:
+                        logging.debug("%s: %s", article, article.nzf)
 
         for nzo in empty:
             self.end_job(nzo)

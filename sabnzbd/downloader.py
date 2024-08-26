@@ -569,6 +569,7 @@ class Downloader(Thread):
                     if server.restart:
                         if not server.busy_threads:
                             server.stop()
+                            server.reset_article_queue()
                             self.servers.remove(server)
                             if newid := server.newid:
                                 self.init_server(None, newid)
@@ -628,6 +629,8 @@ class Downloader(Thread):
                     for server in self.servers:
                         for nw in server.idle_threads | server.busy_threads:
                             # Send goodbye if we have open socket
+                            if nw.article:
+                                logging.debug("Have article for nw: %s", article)
                             if nw.nntp:
                                 self.__reset_nw(nw, "Forcing disconnect", wait=False, count_article_try=False)
                         # Make sure server address resolution is refreshed
@@ -971,6 +974,9 @@ class Downloader(Thread):
                 # Allow all servers again on this server
                 # Do not use the article_queue, as the server could already have been disabled when we get here!
                 sabnzbd.NzbQueue.reset_try_lists(nw.article)
+            logging.debug("Reset nw: %s", nw.article)
+        elif nw.article:
+            logging.debug("Strange reset nw: %s", nw.article)
 
         # Reset connection object
         nw.hard_reset(wait)
