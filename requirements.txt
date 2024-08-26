@@ -40,11 +40,11 @@ ujson==5.10.0
 # Windows system integration
 pywin32==306; sys_platform == 'win32'
 windows-toasts==1.2.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-runtime==2.1.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Data.Xml.Dom==2.1.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation==2.1.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation.Collections==2.1.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.UI.Notifications==2.1.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-runtime==2.2.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Data.Xml.Dom==2.2.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation==2.2.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation.Collections==2.2.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.UI.Notifications==2.2.0; sys_platform == 'win32' and python_version > '3.8'
 
 # macOS system calls
 pyobjc-core==10.3.1; sys_platform == 'darwin'
@@ -62,7 +62,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
 charset_normalizer==3.3.2
-idna==3.7
+idna==3.8
 urllib3==2.2.2
 certifi==2024.7.4
 oauthlib==3.2.2
