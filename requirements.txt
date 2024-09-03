@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.8.1
+apprise==1.9.0
 sabctools==8.2.5
 CT3==3.3.3.post1
 cffi==1.17.0
@@ -39,7 +39,7 @@ ujson==5.10.0
 
 # Windows system integration
 pywin32==306; sys_platform == 'win32'
-windows-toasts==1.2.0; sys_platform == 'win32' and python_version > '3.8'
+windows-toasts==1.3.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-runtime==2.2.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-Windows.Data.Xml.Dom==2.2.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-Windows.Foundation==2.2.0; sys_platform == 'win32' and python_version > '3.8'
@@ -64,7 +64,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 charset_normalizer==3.3.2
 idna==3.8
 urllib3==2.2.2
-certifi==2024.7.4
+certifi==2024.8.30
 oauthlib==3.2.2
 PyJWT==2.9.0
 blinker==1.8.2
