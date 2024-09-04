@@ -641,7 +641,7 @@ class LoginPage:
 
         # Check if there's even a username/password set
         if check_login():
-            raise Raiser()
+            raise Raiser("/")
 
         # Check login info
         if kwargs.get("username") == cfg.username() and kwargs.get("password") == cfg.password():
@@ -650,7 +650,7 @@ class LoginPage:
             # Log the success
             logging.info("Successful login from %s", cherrypy.request.remote_label)
             # Redirect
-            raise Raiser()
+            raise Raiser("/")
         elif kwargs.get("username") or kwargs.get("password"):
             info["error"] = T("Authentication failed, check username/password.")
             # Warn about the potential security problem

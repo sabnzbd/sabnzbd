@@ -7,7 +7,7 @@ strict:
 stages:
   - name: version (json output)
     request:
-      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/api
       method: GET
       params:
         mode: version
@@ -22,7 +22,7 @@ stages:
 
   - name: version (xml output)
     request:
-      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/api
       method: GET
       params:
         mode: version
