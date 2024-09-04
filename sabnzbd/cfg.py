@@ -115,9 +115,11 @@ def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
     return None, value
 
 
-def validate_strip_right_slash(value: str) -> Tuple[None, str]:
-    """Strips the right slash"""
-    if value:
+def validate_url_base(value: str) -> Tuple[None, str]:
+    """Strips the right slash and adds starting slash, if not present"""
+    if value and isinstance(value, str):
+        if not value.startswith("/"):
+            value = "/" + value
         return None, value.rstrip("/")
     return None, value
 
@@ -489,7 +491,7 @@ wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, minval=1, maxval=60)
 max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000)
 marker_file = OptionStr("misc", "nomedia_marker")
 ipv6_servers = OptionBool("misc", "ipv6_servers", True)
-url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)
+url_base = OptionStr("misc", "url_base", validation=validate_url_base)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)

@@ -1396,7 +1396,6 @@ def main():
     # Make available from both URLs
     main_page = sabnzbd.interface.MainPage()
     cherrypy.Application.relative_urls = "server"
-    cherrypy.tree.mount(main_page, "/", config=appconfig)
     cherrypy.tree.mount(main_page, sabnzbd.cfg.url_base(), config=appconfig)
 
     # Set authentication for CherryPy
