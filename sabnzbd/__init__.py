@@ -249,6 +249,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.web_port.callback(cfg.guard_restart)
     cfg.web_dir.callback(cfg.guard_restart)
     cfg.web_color.callback(cfg.guard_restart)
+    cfg.url_base.callback(trigger_restart)
     cfg.username.callback(cfg.guard_restart)
     cfg.password.callback(cfg.guard_restart)
     cfg.log_dir.callback(cfg.guard_restart)
@@ -274,30 +275,8 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Set end-of-queue action
     sabnzbd.misc.change_queue_complete_action(cfg.queue_complete(), new=False)
 
-    # Convert auto-sort
-    if cfg.auto_sort() == "0":
-        cfg.auto_sort.set("")
-    elif cfg.auto_sort() == "1":
-        cfg.auto_sort.set("avg_age asc")
-
-    # Convert old series/date/movie sorters
-    if not cfg.sorters_converted():
-        misc.convert_sorter_settings()
-        cfg.sorters_converted.set(True)
-
-    # Convert duplicate settings
-    if cfg.no_series_dupes():
-        cfg.no_smart_dupes.set(cfg.no_series_dupes())
-        cfg.no_series_dupes.set(0)
-
-    # Convert history retention setting
-    if cfg.history_retention():
-        misc.convert_history_retention()
-        cfg.history_retention.set("")
-
-    # Add hostname to the whitelist
-    if not cfg.host_whitelist():
-        cfg.host_whitelist.set(socket.gethostname())
+    # Do any config conversions
+    cfg.config_conversions()
 
     # Do repair if requested
     if misc.check_repair_request():
@@ -319,10 +298,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Run startup tasks
     sabnzbd.NzbQueue.read_queue(repair)
     sabnzbd.Scheduler.analyse(pause_downloader)
-
-    # Set cache limit for new users
-    if not cfg.cache_limit():
-        cfg.cache_limit.set(misc.get_cache_limit())
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
     logging.info("All processes started")

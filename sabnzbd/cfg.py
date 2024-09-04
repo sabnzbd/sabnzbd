@@ -277,6 +277,9 @@ def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None
 # Special settings
 ##############################################################################
 
+# Increase everytime we do a configuration conversion
+config_conversion_version = OptionNumber("misc", "config_conversion_version", default_val=0)
+
 # This should be here so it's initialized first when the config is read
 helpful_warnings = OptionBool("misc", "helpful_warnings", True)
 
@@ -691,7 +694,9 @@ def set_root_folders2():
 ##############################################################################
 def new_limit():
     """Callback for article cache changes"""
-    sabnzbd.ArticleCache.new_limit(cache_limit.get_int())
+    if sabnzbd.__INITIALIZED__:
+        # Only update after full startup
+        sabnzbd.ArticleCache.new_limit(cache_limit.get_int())
 
 
 def guard_restart():
@@ -732,3 +737,55 @@ def guard_language():
 def guard_https_ver():
     """Callback for change of https verification"""
     sabnzbd.misc.set_https_verification(enable_https_verification())
+
+
+##############################################################################
+# Conversions
+##############################################################################
+
+
+def config_conversions():
+    """Update sections of the config, only once"""
+    # Basic old conversions
+    if config_conversion_version() < 1:
+        logging.info("Config conversion set 1")
+        # Convert auto-sort
+        if auto_sort() == "0":
+            auto_sort.set("")
+        elif auto_sort() == "1":
+            auto_sort.set("avg_age asc")
+
+        # Convert old series/date/movie sorters
+        if not sorters_converted():
+            sabnzbd.misc.convert_sorter_settings()
+            sorters_converted.set(True)
+
+        # Convert duplicate settings
+        if no_series_dupes():
+            no_smart_dupes.set(no_series_dupes())
+            no_series_dupes.set(0)
+
+        # Convert history retention setting
+        if history_retention():
+            sabnzbd.misc.convert_history_retention()
+            history_retention.set("")
+
+        # Add hostname to the whitelist
+        if not host_whitelist():
+            host_whitelist.set(socket.gethostname())
+
+        # Set cache limit for new users
+        if not cache_limit():
+            cache_limit.set(sabnzbd.misc.get_cache_limit())
+
+        # Done
+        config_conversion_version.set(1)
+
+    # url_base conversion
+    if config_conversion_version() < 2:
+        logging.info("Config conversion set 2")
+        if url_base() == "/sabnzbd":
+            url_base.set("")
+
+        # Done
+        config_conversion_version.set(2)
