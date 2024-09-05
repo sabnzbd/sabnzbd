@@ -34,7 +34,7 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         python-architecture: ["x64"]
         name: ["Linux"]
-        os: [ubuntu-20.04]
+        os: [ubuntu-latest]
         include:
           - name: macOS
             os: macos-latest
@@ -60,7 +60,7 @@ jobs:
         cache-dependency-path: "**/requirements.txt"
     - name: Install system dependencies
       if: runner.os == 'Linux'
-      run: sudo apt-get install unrar p7zip-full par2
+      run: sudo apt-get install unrar 7zip par2
     - name: Install Python dependencies
       run: |
         python --version
