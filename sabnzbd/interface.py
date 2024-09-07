@@ -414,10 +414,11 @@ async def shutdown(request: Request):
     # Check for PID
     pid_in = request.query_params.get("pid")
     if pid_in and int(pid_in) != os.getpid():
-        return "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
+        return PlainTextResponse("Incorrect PID for this instance, remove PID from URL to initiate shutdown.")
 
-    sabnzbd.shutdown_program()
-    return T("SABnzbd shutdown finished")
+    # In separate thread, because the server thread cannot shut down itself
+    threading.Thread(target=sabnzbd.shutdown_program).start()
+    return PlainTextResponse(T("SABnzbd shutdown finished"))
 
 
 @secured_expose(route="/api", check_api_key=True, access_type=1)
@@ -475,7 +476,7 @@ async def wizard_index(request: Request):
 
 
 @secured_expose(route="/wizard/one", check_configlock=True)
-async def one(request: Request):
+async def wizard_page_one(request: Request):
     """Accept language and show server page"""
     if request.query_params.get("lang"):
         cfg.language.set(request.query_params.get("lang"))
@@ -517,7 +518,7 @@ async def one(request: Request):
 
 
 @secured_expose(route="/wizard/two", check_configlock=True)
-async def two(request: Request):
+async def wizard_page_two(request: Request):
     """Accept server and show the final page for restart"""
     # Save server details
     if request.query_params:
@@ -704,11 +705,6 @@ async def config_folder_save(request: Request):
                 # return sabnzbd.api.report('json', error=msg)
                 return badParameterResponse(msg, request.query_params.get("ajax"))
 
-    if not sabnzbd.filesystem.check_incomplete_vs_complete():
-        return badParameterResponse(
-            T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
-            request.query_params.get("ajax"),
-        )
     config.save_config()
     test = await request.form()
     if request.query_params.get("ajax"):

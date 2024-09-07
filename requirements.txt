@@ -30,15 +30,14 @@ babelfish==0.6.1
 rebulk==3.2.0
 
 # New for starlette/uvicorn
-starlette==0.38.4
+starlette==0.38.5
 anyio==4.4.0
-idna==3.4
-sniffio==1.3.0
+sniffio==1.3.1
 uvicorn==0.30.6
-click==8.1.3
+click==8.1.7
 h11==0.14.0
-python-multipart==0.0.6
-httptools==0.5.0
+python-multipart==0.0.9
+httptools==0.6.1
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
