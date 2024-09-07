@@ -1305,48 +1305,6 @@ def main():
         sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
         cherrypy.log.access_file = str(sabnzbd.WEBLOGFILE)
 
-    # Force mimetypes (OS might overwrite them)
-    forced_mime_types = {"css": "text/css", "js": "application/javascript"}
-
-    static = {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": os.path.join(sabnzbd.WEB_DIR, "static"),
-        "tools.staticdir.content_types": forced_mime_types,
-    }
-    staticcfg = {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg"),
-        "tools.staticdir.content_types": forced_mime_types,
-    }
-    wizard_static = {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": os.path.join(sabnzbd.WIZARD_DIR, "static"),
-        "tools.staticdir.content_types": forced_mime_types,
-    }
-
-    appconfig = {
-        "/api": {
-            "tools.auth_basic.on": False,
-            "tools.response_headers.on": True,
-            "tools.response_headers.headers": [("Access-Control-Allow-Origin", "*")],
-        },
-        "/static": static,
-        "/wizard/static": wizard_static,
-        "/favicon.ico": {
-            "tools.staticfile.on": True,
-            "tools.staticfile.filename": os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg", "ico", "favicon.ico"),
-        },
-        "/staticcfg": staticcfg,
-    }
-
-    # Make available from both URLs
-    main_page = sabnzbd.interface.MainPage()
-    cherrypy.Application.relative_urls = "server"
-    cherrypy.tree.mount(main_page, "/", config=appconfig)
-    cherrypy.tree.mount(main_page, sabnzbd.cfg.url_base(), config=appconfig)
-
-    # Set authentication for CherryPy
-    sabnzbd.interface.set_auth(cherrypy.config)
     logging.info("Starting web-interface on %s:%s", web_host, web_port)
 
     sabnzbd.cfg.log_level.callback(guard_loglevel)
@@ -1364,7 +1322,7 @@ def main():
         "loggers": {
             "uvicorn": {"propagate": True},
             "uvicorn.error": {"propagate": True},
-            "uvicorn.access": {"propagate": True},
+            "uvicorn.access": {"propagate": False},
         },
     }
 
