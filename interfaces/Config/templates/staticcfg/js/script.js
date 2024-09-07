@@ -262,9 +262,10 @@ function do_restart() {
     // Show overlay
     $('.main-restarting').show()
 
-    // What template
+    // Check if we need redirect
+    // Uses == on purpose, because val() returns string and data() returns int!
     var switchedHTTPS = ($('#enable_https').is(':checked') === ($('#enable_https').data('original') === undefined))
-    var portsUnchanged  = ($('#port').val() === $('#port').data('original')) && ($('#https_port').val() === $('#https_port').data('original'))
+    var portsUnchanged  = ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))
 
     // Are we on settings page or did nothing change?
     if(!$('body').hasClass('General') || (!switchedHTTPS && portsUnchanged)) {
