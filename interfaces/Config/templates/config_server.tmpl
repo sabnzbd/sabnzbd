@@ -28,7 +28,7 @@
         </label>
 
         <div class="advanced-buttonSeperator"></div>
-        <div class="chart-selector-container" title="$T('selectedDates')">
+        <div class="chart-selector-container" title="$T('selectedDates')" data-placement="bottom">
             <span class="glyphicon glyphicon-signal"></span>
             <!--#set today = datetime.date.today()#-->
             <input type="date" name="chart-start" id="chart-start" value="<!--#echo (today-datetime.timedelta(days=30)).strftime('%Y-%m-%d')#-->"> -

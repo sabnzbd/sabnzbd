@@ -490,6 +490,9 @@ $(document).ready(function () {
         addRowColor()
     }
     addRowColor()
+
+    // Add tooltips
+    jQuery('[title]').tooltip()
 });
 
 /*
