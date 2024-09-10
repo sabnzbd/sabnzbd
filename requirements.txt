@@ -3,7 +3,7 @@
 apprise==1.9.0
 sabctools==8.2.5
 CT3==3.3.3.post1
-cffi==1.17.0
+cffi==1.17.1
 pycparser==2.22
 feedparser==6.0.11
 configobj==5.0.8
@@ -15,7 +15,7 @@ jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
-more-itertools==10.4.0
+more-itertools==10.5.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
 tempora==5.7.0
@@ -31,7 +31,7 @@ rebulk==3.2.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==43.0.0
+cryptography==43.0.1
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
