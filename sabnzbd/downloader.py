@@ -165,11 +165,12 @@ class Server:
         self.reset_article_queue()
 
     def stop(self):
-        """Remove all connections from server"""
+        """Remove all connections and cached articles from server"""
         for nw in self.idle_threads:
             sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset()
         self.idle_threads = set()
+        self.reset_article_queue()
 
     @synchronized(DOWNLOADER_LOCK)
     def get_article(self):
@@ -195,8 +196,11 @@ class Server:
                 self.next_article_search = time.time() + _SERVER_CHECK_DELAY
         return None
 
+    @synchronized(DOWNLOADER_LOCK)
     def reset_article_queue(self):
-        logging.debug("Resetting article queue for %s", self)
+        """Reset articles queued for the Server. Locked to prevent
+        articles getting stuck in the Server when enabled/disabled"""
+        logging.debug("Resetting article queue for %s (%s)", self, self.article_queue)
         for article in self.article_queue:
             sabnzbd.NzbQueue.reset_try_lists(article)
         self.article_queue = []
@@ -229,7 +233,7 @@ class Server:
         sabnzbd.Downloader.wakeup()
 
     def __repr__(self):
-        return "<Server: %s:%s>" % (self.host, self.port)
+        return "<Server: id=%s, host=%s:%s>" % (self.id, self.host, self.port)
 
 
 class Downloader(Thread):
@@ -329,7 +333,6 @@ class Downloader(Thread):
                     create = False
                     server.newid = newserver
                     server.restart = True
-                    server.reset_article_queue()
                     self.server_restarts += 1
                     break
 
