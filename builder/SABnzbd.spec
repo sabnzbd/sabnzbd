@@ -165,7 +165,7 @@ if sys.platform == "darwin":
                 "NSPersistentStoreTypeKey": "Binary",
             }
         ],
-        "LSMinimumSystemVersion": "10.9",
+        "LSMinimumSystemVersion": "10.13",
         "LSEnvironment": {"LANG": "en_US.UTF-8", "LC_ALL": "en_US.UTF-8"},
     }
 
