@@ -215,7 +215,7 @@ class Server:
 
     def request_addrinfo_blocking(self):
         """Blocking attempt to run getaddrinfo() and Happy Eyeballs for specified server"""
-        logging.debug("Retrieving server address information for %s", self.host)
+        logging.debug("Retrieving server address information for %s", self)
 
         # Disable IPV6 if desired
         family = socket.AF_UNSPEC
