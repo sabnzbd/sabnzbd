@@ -19,7 +19,7 @@ more-itertools==10.5.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
 tempora==5.7.0
-pytz==2024.1
+pytz==2024.2
 sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
@@ -62,8 +62,8 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
 charset_normalizer==3.3.2
-idna==3.8
-urllib3==2.2.2
+idna==3.10
+urllib3==2.2.3
 certifi==2024.8.30
 oauthlib==3.2.2
 PyJWT==2.9.0
