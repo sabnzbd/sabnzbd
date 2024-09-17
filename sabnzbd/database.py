@@ -604,6 +604,5 @@ def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
 
 
 def scheduled_history_purge():
-    logging.info("Scheduled history purge")
     with HistoryDB() as history_db:
         history_db.auto_history_purge()
