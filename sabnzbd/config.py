@@ -120,7 +120,8 @@ class Option:
         """Set new value, no validation"""
         global CFG_MODIFIED
         if value is not None:
-            if isinstance(value, list) or isinstance(value, dict) or value != self.__value:
+            # Use get() to make sure we use default if nothing was set yet
+            if isinstance(value, list) or isinstance(value, dict) or value != self.get():
                 self.__value = value
                 CFG_MODIFIED = True
                 if self.__callback:
