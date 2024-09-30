@@ -10,7 +10,7 @@ configobj==5.0.9
 cheroot==10.0.1
 six==1.16.0
 cherrypy==18.10.0
-jaraco.functools==4.0.2
+jaraco.functools==4.1.0
 jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
@@ -24,7 +24,7 @@ sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
 PySocks==1.7.1
-puremagic==1.27
+puremagic==1.28
 guessit==3.8.0
 babelfish==0.6.1
 rebulk==3.2.0
