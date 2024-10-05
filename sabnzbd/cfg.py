@@ -786,8 +786,5 @@ def config_conversions():
     # url_base conversion
     if config_conversion_version() < 2:
         logging.info("Config conversion set 2")
-        if url_base() == "/sabnzbd":
-            url_base.set("")
-
-        # Done
-        config_conversion_version.set(2)
+        # We did not end up applying this conversion, so we skip this conversion_version
+        pass

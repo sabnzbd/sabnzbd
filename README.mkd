@@ -6,9 +6,6 @@ This is the first test release of SABnzbd 4.4.0.
 ## New features since 4.3.0
 
 * Subtitle files will be deobfuscated if required.
-* Interface is no longer hosted on `http://hostname:port/sabnzbd` but only
-  on `http://hostname:port/`, in preparation for new internal web server.
-  Custom `url_base` can be configured in Special settings.
 * macOS: Dropped support for macOS 10.12 and below.
 
 ## Bug fixes since 4.3.0
