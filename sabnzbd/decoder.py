@@ -92,7 +92,7 @@ def decode(article: Article, data_view: memoryview):
         sabnzbd.Downloader.pause()
 
         # This article should be fetched again
-        sabnzbd.NzbQueue.reset_try_lists(article)
+        article.allow_new_fetcher()
         return
 
     except BadData as error:
