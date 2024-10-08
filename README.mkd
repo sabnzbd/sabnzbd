@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.4.0 Alpha 1
+Release Notes - SABnzbd 4.4.0 Alpha 2
 =========================================================
 
 This is the first test release of SABnzbd 4.4.0.
