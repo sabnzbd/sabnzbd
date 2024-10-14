@@ -289,17 +289,6 @@ class Article(TryList):
         self.fetcher_priority = 0
         self.tries = 0
 
-    def __eq__(self, other):
-        """Articles with the same usenet address are the same"""
-        return self.article == other.article
-
-    def __hash__(self):
-        """Required because we implement eq. Articles with the same
-        usenet address can appear in different NZF's. So we make every
-        article object unique, even though it is bad practice.
-        """
-        return id(self)
-
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % (self.article, self.bytes, self.art_id)
 
@@ -497,10 +486,12 @@ class NzbFile(TryList):
         """Assume it's the same file if the number bytes and first article
         are the same or if there are no articles left, use the filenames.
         Some NZB's are just a mess and report different sizes for the same article.
+        We used to compare (__eq__) articles based on article-ID, however, this failed
+        because some NZB's had the same article-ID twice within one NZF.
         """
         if other and (self.bytes == other.bytes or len(self.decodetable) == len(other.decodetable)):
             if self.decodetable and other.decodetable:
-                return self.decodetable[0] == other.decodetable[0]
+                return self.decodetable[0].article == other.decodetable[0].article
             # Fallback to filename comparison
             return self.filename == other.filename
         return False
