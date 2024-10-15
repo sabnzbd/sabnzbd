@@ -22,8 +22,7 @@
     "jaraco.collections",
     "sabctools",
     "paho-mqtt",
-    "werkzeug",
-    "pyinstaller"
+    "werkzeug"
   ],
   "packageRules": [
     {
