@@ -202,7 +202,7 @@ class Server:
         articles getting stuck in the Server when enabled/disabled"""
         logging.debug("Resetting article queue for %s (%s)", self, self.article_queue)
         for article in self.article_queue:
-            sabnzbd.NzbQueue.reset_try_lists(article)
+            article.allow_new_fetcher()
         self.article_queue = []
 
     def request_addrinfo(self):
@@ -968,9 +968,9 @@ class Downloader(Thread):
                 self.decode(nw.article)
                 nw.article.tries = 0
             else:
-                # Allow all servers again on this server
+                # Allow all servers again for this article
                 # Do not use the article_queue, as the server could already have been disabled when we get here!
-                sabnzbd.NzbQueue.reset_try_lists(nw.article)
+                nw.article.allow_new_fetcher()
 
         # Reset connection object
         nw.hard_reset(wait)

@@ -111,7 +111,7 @@ RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
 # Trylist
 ##############################################################################
 
-TRYLIST_LOCK = threading.Lock()
+TRYLIST_LOCK = threading.RLock()
 
 
 class TryList:
@@ -203,11 +203,24 @@ class Article(TryList):
         self.crc32: Optional[int] = None
         self.nzf: NzbFile = nzf
 
+    @synchronized(TRYLIST_LOCK)
     def reset_try_list(self):
-        """In addition to resetting the try list, also reset fetcher so all servers are tried again"""
+        """In addition to resetting the try list, also reset fetcher so all servers
+        are tried again. Locked so fetcher setting changes are also protected."""
         self.fetcher = None
         self.fetcher_priority = 0
         super().reset_try_list()
+
+    @synchronized(TRYLIST_LOCK)
+    def allow_new_fetcher(self, remove_fetcher_from_try_list: bool = True):
+        """Let article get new fetcher and reset try lists of file and job.
+        Locked so all resets are performed at once"""
+        if remove_fetcher_from_try_list:
+            self.remove_from_try_list(self.fetcher)
+        self.fetcher = None
+        self.tries = 0
+        self.nzf.reset_try_list()
+        self.nzf.nzo.reset_try_list()
 
     def get_article(self, server: Server, servers: List[Server]):
         """Return article when appropriate for specified server"""
@@ -249,7 +262,7 @@ class Article(TryList):
                 if server.priority >= self.fetcher.priority:
                     self.tries = 0
                     # Allow all servers for this nzo and nzf again (but not this fetcher for this article)
-                    sabnzbd.NzbQueue.reset_try_lists(self, remove_fetcher_from_trylist=False)
+                    self.allow_new_fetcher(remove_fetcher_from_try_list=False)
                     return True
 
         logging.info("Article %s unavailable on all servers, discarding", self.article)
@@ -431,8 +444,11 @@ class NzbFile(TryList):
         self.add_to_try_list(server)
         return articles
 
+    @synchronized(TRYLIST_LOCK)
     def reset_all_try_lists(self):
-        """Clear all lists of visited servers"""
+        """Reset all try lists. Locked so reset is performed
+        for all items at the same time without chance of another
+        thread changing any of the items while we are resetting"""
         for art in self.articles:
             art.reset_try_list()
         self.reset_try_list()
@@ -1001,7 +1017,11 @@ class NzbObject(TryList):
                 except:
                     logging.debug("The lastrar swap did not go well")
 
+    @synchronized(TRYLIST_LOCK)
     def reset_all_try_lists(self):
+        """Reset all try lists. Locked so reset is performed
+        for all items at the same time without chance of another
+        thread changing any of the items while we are resetting"""
         for nzf in self.files:
             nzf.reset_all_try_lists()
         self.reset_try_list()
@@ -1442,7 +1462,7 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def add_parfile(self, parfile: NzbFile) -> bool:
         """Add parfile to the files to be downloaded
-        Resets trylist just to be sure
+        Resets try list just to be sure
         Adjust download-size accordingly
         Returns False when the file couldn't be added
         """
