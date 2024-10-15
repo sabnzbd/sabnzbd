@@ -2,7 +2,7 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 apprise==1.9.0
 sabctools==8.2.5
-CT3==3.3.3.post1
+CT3==3.4.0b4
 cffi==1.17.1
 pycparser==2.22
 feedparser==6.0.11
