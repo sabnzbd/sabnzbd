@@ -73,6 +73,7 @@ from sabnzbd.filesystem import (
     get_filename,
     directory_is_writable,
     check_filesystem_capabilities,
+    listdir_normalized,
 )
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import Sorter
@@ -961,7 +962,7 @@ def rar_renamer(nzo: NzbObject) -> int:
     volnrext = {}
 
     # Scan rar files in workdir, but not subdirs
-    workdir_files = os.listdir(nzo.download_path)
+    workdir_files = listdir_normalized(nzo.download_path)
     for file_to_check in workdir_files:
         file_to_check = os.path.join(nzo.download_path, file_to_check)
 
@@ -1185,7 +1186,7 @@ def one_file_or_folder(folder: str) -> str:
     """If the dir only contains one file or folder, join that file/folder onto the path"""
     if os.path.exists(folder) and os.path.isdir(folder):
         try:
-            cont = os.listdir(folder)
+            cont = listdir_normalized(folder)
             if len(cont) == 1:
                 folder = os.path.join(folder, cont[0])
                 folder = one_file_or_folder(folder)

@@ -37,6 +37,7 @@ from sabnzbd.filesystem import (
     renamer,
     sanitize_foldername,
     clip_path,
+    listdir_normalized,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -616,7 +617,7 @@ def move_to_parent_directory(workdir: str) -> Tuple[str, bool]:
     logging.debug("Moving all files from %s to %s", workdir, dest)
 
     # Check for DVD folders and bail out if found
-    for item in os.listdir(workdir):
+    for item in listdir_normalized(workdir):
         if item.lower() in IGNORED_MOVIE_FOLDERS:
             return workdir, True
 

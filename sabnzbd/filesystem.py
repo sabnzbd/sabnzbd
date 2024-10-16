@@ -46,7 +46,7 @@ except ImportError:
 import sabnzbd
 from sabnzbd.decorators import synchronized, cache_maintainer
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS, DEF_LOG_FILE
-from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
+from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou, normalize_utf8
 from sabnzbd.utils import rarfile
 
 
@@ -561,7 +561,7 @@ def globber(path: str, pattern: str = "*") -> List[str]:
     """Return matching base file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        return [f for f in os.listdir(path) if safe_fnmatch(f, pattern)]
+        return [f for f in listdir_normalized(path) if safe_fnmatch(f, pattern)]
     return []
 
 
@@ -569,7 +569,8 @@ def globber_full(path: str, pattern: str = "*") -> List[str]:
     """Return matching full file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        return [os.path.join(path, f) for f in os.listdir(path) if safe_fnmatch(f, pattern)]
+        path = normalize_utf8(path)
+        return [os.path.join(path, f) for f in listdir_normalized(path) if safe_fnmatch(f, pattern)]
     return []
 
 
@@ -581,7 +582,7 @@ def fix_unix_encoding(folder: str):
     if not sabnzbd.WIN32 and not sabnzbd.MACOS:
         for root, dirs, files in os.walk(folder):
             for name in files:
-                new_name = correct_unknown_encoding(name)
+                new_name = normalize_utf8(correct_unknown_encoding(name))
                 if name != new_name:
                     try:
                         renamer(os.path.join(root, name), os.path.join(root, new_name))
@@ -804,6 +805,12 @@ def get_unique_filename(path: str) -> str:
     return path
 
 
+def listdir_normalized(input_dir: str) -> List[str]:
+    """On macOS, the OS returns un-normalized results.
+    Always use the same normalization on all platforms"""
+    return [normalize_utf8(path) for path in os.listdir(input_dir)]
+
+
 @synchronized(DIR_LOCK)
 def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
     """List all files in dirs and sub-dirs"""
@@ -812,7 +819,7 @@ def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
         for file in files:
             # Ignore special folders and resources files created by macOS
             if not sabnzbd.misc.match_str(root, IGNORED_FILES_AND_FOLDERS) and not file.startswith("._"):
-                filelist.append(os.path.join(root, file))
+                filelist.append(normalize_utf8(os.path.join(root, file)))
         if not recursive:
             break
     return filelist
@@ -1386,7 +1393,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
 
     # List all files and folders
     file_list = []
-    for filename in os.listdir(path):
+    for filename in listdir_normalized(path):
         fpath = os.path.join(path, filename)
         isdir = os.path.isdir(fpath)
 

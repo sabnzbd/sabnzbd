@@ -63,6 +63,7 @@ from sabnzbd.filesystem import (
     SEVENMULTI_RE,
     is_size,
     get_basename,
+    listdir_normalized,
 )
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
@@ -1020,7 +1021,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
         return False, True
 
     parfile = os.path.join(nzo.download_path, parfile_nzf.filename)
-    old_dir_content = os.listdir(nzo.download_path)
+    old_dir_content = listdir_normalized(nzo.download_path)
     used_joinables = ()
     joinables = ()
     used_for_repair = ()
@@ -1080,7 +1081,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
     try:
         if cfg.enable_par_cleanup():
             deletables = []
-            new_dir_content = os.listdir(nzo.download_path)
+            new_dir_content = listdir_normalized(nzo.download_path)
 
             # If Multipar or par2cmdline repairs a broken part of a joinable, it doesn't list it as such.
             # So we need to manually add all joinables of the set to the list of used joinables.

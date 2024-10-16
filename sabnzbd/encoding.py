@@ -20,11 +20,17 @@ sabnzbd.encoding - Unicode/byte translation functions
 """
 
 import locale
+import pyunormalize
 import chardet
 from xml.sax.saxutils import escape
 from typing import AnyStr
 
 CODEPAGE = locale.getpreferredencoding()
+
+
+def normalize_utf8(inputstring: str) -> str:
+    """Make sure we return an utf8 normalized version"""
+    return pyunormalize.NFC(inputstring)
 
 
 def utob(str_in: AnyStr) -> bytes:
@@ -37,22 +43,19 @@ def utob(str_in: AnyStr) -> bytes:
 def ubtou(str_in: AnyStr) -> str:
     """Shorthand for converting unicode bytes to UTF-8 string"""
     if isinstance(str_in, str):
-        return str_in
-    return str_in.decode("utf-8")
+        return normalize_utf8(str_in)
+    return normalize_utf8(str_in.decode("utf-8"))
 
 
 def platform_btou(str_in: AnyStr) -> str:
-    """Return Unicode string, if not already Unicode, decode with locale encoding.
-    NOTE: Used for POpen because universal_newlines/text parameter doesn't
-    always work! We cannot use encoding-parameter because it's Python 3.7+
-    """
+    """Return Unicode string, if not already Unicode, decode with locale encoding"""
     if isinstance(str_in, bytes):
         try:
             return ubtou(str_in)
         except UnicodeDecodeError:
-            return str_in.decode(CODEPAGE, errors="replace").replace("?", "!")
+            return normalize_utf8(str_in.decode(CODEPAGE, errors="replace").replace("?", "!"))
     else:
-        return str_in
+        return normalize_utf8(str_in)
 
 
 def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
@@ -71,10 +74,10 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
     except UnicodeDecodeError:
         try:
             # Try using 8-bit ASCII, if came from Windows
-            return str_or_bytes_in.decode("ISO-8859-1")
+            return normalize_utf8(str_or_bytes_in.decode("ISO-8859-1"))
         except ValueError:
             # Last resort we use the slow chardet package
-            return str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)["encoding"])
+            return normalize_utf8(str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)["encoding"]))
 
 
 def correct_cherrypy_encoding(inputstring: str) -> str:

@@ -33,7 +33,7 @@ import os
 import re
 
 import sabnzbd
-from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, get_basename
+from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, get_basename, listdir_normalized
 from sabnzbd.par2file import is_parfile, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
 from sabnzbd.misc import match_str
@@ -59,7 +59,7 @@ def decode_par2(parfile: str) -> List[str]:
     # Parse all files in the folder
     dirname = os.path.dirname(parfile)
     new_files = []  # list of new files generated
-    for fn in os.listdir(dirname):
+    for fn in listdir_normalized(dirname):
         filepath = os.path.join(dirname, fn)
         # Only check files
         if os.path.isfile(filepath):
