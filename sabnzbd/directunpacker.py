@@ -214,7 +214,7 @@ class DirectUnpacker(threading.Thread):
                         "in the encrypted file",
                         "CRC failed",
                         "checksum failed",
-                        "You need to start extraction from a previous volume",
+                        "not enough space on the disk",
                         "password is incorrect",
                         "Incorrect password",
                         "Write error",
