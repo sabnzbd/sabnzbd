@@ -28,7 +28,7 @@ import ctypes
 from typing import Tuple, Optional, List
 
 import sabnzbd
-from sabnzbd.misc import get_all_passwords, match_str
+from sabnzbd.misc import get_all_passwords, match_str, build_and_run_command
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -37,6 +37,7 @@ from sabnzbd.filesystem import (
     get_filename,
     has_unwanted_extension,
     get_basename,
+    make_script_path,
 )
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
@@ -79,6 +80,65 @@ class Assembler(Thread):
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
+
+                        # code for intermediate_script in case of a post with plain files, without rar-set
+                        # that plain file will appear automatically, without unrar, without need for DirectUnpack
+                        # that is what we handle here
+
+                        # logging.debug("SJ in assembler: %s bytes done of %s total", nzo.bytes_downloaded, nzo.bytes)
+                        is_a_rarset = any(n.filename.endswith(".rar") for n in nzo.files_table.values())
+                        logging.debug("SJ is a rarset %s", is_a_rarset)
+
+                        # TODO: first check if cfg.intermediate_script() and not nzo.intermediate_has_run
+
+                        if nzo.bytes_downloaded > 500_000_000:
+                            logging.debug("SJ 500 MB downloaded!")
+                            # if DirectUnpack is True, and has done some work, and
+                            # if we only knew the <complete_dir> and actual _UNPACK_ sub directory here,
+                            # ... we could handle it here
+
+                        if is_a_rarset:
+                            # here we do not do anything with rar-sets. Leave it to DirectUnpack.
+                            logging.debug("SJ rarset, so DirectUnpack will kick in")
+                            # ... but maybe, if DirectUnpack is doing the unpacking of the rar-st elsewhere, we can do the intermediate_script here?
+
+                        else:
+                            # no .rar (probably an "xpost"), so DirectUnpack will not kick in, and the plain appears here
+                            logging.debug("SJ Alert: no rarset, so no Directunpack. Run intermediate script from here")
+                            if nzo.bytes_downloaded > 200_000_000 and not nzo.intermediate_has_run:
+                                # 200 MB needed before output is there?
+                                # run intermediate_script
+                                if cfg.intermediate_script():
+                                    logging.debug(
+                                        "SJ: running intermediate script %s on %s",
+                                        cfg.intermediate_script(),
+                                        nzo.download_path,
+                                    )
+                                    script_path = make_script_path(cfg.intermediate_script())
+                                    command = [
+                                        script_path,
+                                        nzo.download_path,
+                                    ]  # xpost, so download_path contains final file
+                                    try:
+                                        p = build_and_run_command(command)
+                                    except:
+                                        logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
+                                        return values  # TODO remove this line, and handle exception correctly
+
+                                    output = p.stdout.read()
+                                    ret = p.wait()
+                                    logging.info("Intermediate script returned %s and output=\n%s", ret, output)
+                                    if ret == 0:
+                                        split_output = output.splitlines()
+                                        decision = int(split_output[0])
+                                        if decision != 0:
+                                            # there was a decision, so use it!
+                                            logging.debug("SJ decision %s", decision)
+                                            logging.debug("SJ prio was %s", nzo.priority)  # no self.nzo...
+                                            nzo.priority = decision
+                                            logging.debug("SJ prio is %s", nzo.priority)
+
+                                nzo.intermediate_has_run = True  # just run once
 
                         # Continue after partly written data
                         if not file_done:

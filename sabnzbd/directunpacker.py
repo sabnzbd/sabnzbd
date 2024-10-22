@@ -30,7 +30,7 @@ from typing import Optional, Dict, List, Tuple
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
-from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file, get_basename
+from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file, get_basename, make_script_path
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
@@ -327,6 +327,8 @@ class DirectUnpacker(threading.Thread):
                         self.nzo.set_action_line(T("Direct Unpack"), self.get_formatted_stats(include_time_left=True))
                         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
+                        # TODO Note: never intermediate_script needed here, because cur_volume > 1
+
                     # If lines did not change and we don't have the next volume, this download is missing files!
                     # In rare occasions we can get stuck forever with repeating lines
                     if last_volume_linebuf == linebuf:
@@ -462,6 +464,35 @@ class DirectUnpacker(threading.Thread):
 
         # Doing the first
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
+
+        # code for intermediate_script. We get here if 1) traditional post with rar-set AND 2) directunpack is on
+        # (so not with xpost, or with directunpack False)
+        logging.debug("SJ2 intermediate_script() %s", cfg.intermediate_script())
+        logging.debug("SJ2 cur_volume %s", self.cur_volume)
+        if self.cur_volume == 1:  # always True at this location, so remove? #TODO
+            # run intermediate_script
+            if cfg.intermediate_script():
+                logging.debug("SJ: running intermediate script %s on %s", cfg.intermediate_script(), extraction_path)
+                script_path = make_script_path(cfg.intermediate_script())
+                command = [script_path, extraction_path]
+                try:
+                    p = build_and_run_command(command)
+                except:
+                    logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
+                    return values  # TODO remove this line, and handle exception correctly
+
+                output = p.stdout.read()
+                ret = p.wait()
+                logging.debug("Intermediate script returned %s and output=\n%s", ret, output)
+                if ret == 0:
+                    split_output = output.splitlines()
+                    decision = int(split_output[0])
+                    if decision != 0:
+                        # there was a decision, so use it!
+                        logging.debug("SJ decision %s", decision)
+                        logging.debug("SJ prio was %s", self.nzo.priority)
+                        self.nzo.priority = decision
+                        logging.debug("SJ prio is %s", self.nzo.priority)
 
     @synchronized(START_STOP_LOCK)
     def abort(self):
