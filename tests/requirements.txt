@@ -1,5 +1,5 @@
 # Testing requirements
-pytest==7.4.4
+pytest
 setuptools
 selenium
 requests
