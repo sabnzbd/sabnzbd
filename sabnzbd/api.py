@@ -1340,6 +1340,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
         # - generic network problem (?)
 
         test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT  # force a short timeout
+
         # let's try well-known ports: HTTP and NTTP(S)
         test_server.port = 80
         test_server.request_addrinfo_blocking()
