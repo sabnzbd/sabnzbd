@@ -78,9 +78,23 @@ from sabnzbd.misc import (
     match_str,
     bool_conv,
 )
-from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
+from sabnzbd.filesystem import (
+    diskspace,
+    get_ext,
+    clip_path,
+    remove_all,
+    list_scripts,
+    purge_log_files,
+    pathbrowser,
+)
 from sabnzbd.encoding import xml_name, utob
-from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
+from sabnzbd.getipaddress import (
+    local_ipv4,
+    public_ipv4,
+    public_ipv6,
+    dnslookup,
+    active_socks5_proxy,
+)
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
 from sabnzbd.nzbstuff import NzbObject
@@ -144,7 +158,9 @@ def _api_set_config(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> byte
     return report(keyword="config", data=data)
 
 
-def _api_set_config_default(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
+def _api_set_config_default(
+    name: str, kwargs: Dict[str, Union[str, List[str]]]
+) -> bytes:
     """API: Reset requested config variables back to defaults. Currently only for misc-section"""
     if cfg.configlock():
         return report(_MSG_CONFIG_LOCKED)
@@ -182,13 +198,17 @@ def _api_queue_delete(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> b
         return report(keyword="", data={"status": bool(removed), "nzo_ids": removed})
     elif items := clean_comma_separated_list(value):
         delete_all_data = bool_conv(kwargs.get("del_files"))
-        removed = sabnzbd.NzbQueue.remove_multiple(items, delete_all_data=delete_all_data)
+        removed = sabnzbd.NzbQueue.remove_multiple(
+            items, delete_all_data=delete_all_data
+        )
         return report(keyword="", data={"status": bool(removed), "nzo_ids": removed})
     else:
         return report(_MSG_NO_VALUE)
 
 
-def _api_queue_delete_nzf(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
+def _api_queue_delete_nzf(
+    value: str, kwargs: Dict[str, Union[str, List[str]]]
+) -> bytes:
     """API: accepts value(=nzo_id), value2(=nzf_ids)"""
     nzf_ids = clean_comma_separated_list(kwargs.get("value2"))
     if value and nzf_ids:
@@ -209,7 +229,9 @@ def _api_queue_rename(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> b
         return report(_MSG_NO_VALUE2)
 
 
-def _api_queue_change_complete_action(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
+def _api_queue_change_complete_action(
+    value: str, kwargs: Dict[str, Union[str, List[str]]]
+) -> bytes:
     """API: accepts value(=action)"""
     change_queue_complete_action(value)
     return report()
@@ -317,7 +339,9 @@ def _api_addfile(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
             nzbname=kwargs.get("nzbname"),
             password=kwargs.get("password"),
         )
-        return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
+        return report(
+            keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids}
+        )
     else:
         return report(_MSG_NO_VALUE)
 
@@ -360,9 +384,14 @@ def _api_addlocalfile(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> by
                     nzbname=kwargs.get("nzbname"),
                     password=kwargs.get("password"),
                 )
-                return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
+                return report(
+                    keyword="",
+                    data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids},
+                )
             else:
-                logging.info('API-call addlocalfile: "%s" is not a supported file', name)
+                logging.info(
+                    'API-call addlocalfile: "%s" is not a supported file', name
+                )
                 return report(_MSG_NO_FILE)
         else:
             logging.info('API-call addlocalfile: file "%s" not found', name)
@@ -452,7 +481,9 @@ def _api_delete_orphan(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> 
         return report(_MSG_NO_ITEM)
 
 
-def _api_delete_all_orphan(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
+def _api_delete_all_orphan(
+    value: str, kwargs: Dict[str, Union[str, List[str]]]
+) -> bytes:
     """Remove all orphaned jobs"""
     paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     for path in paths:
@@ -617,8 +648,12 @@ def _api_addurl(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
 
     if name:
         # Reporting a list of NZO's, for compatibility with other add-methods
-        res, nzo_ids = sabnzbd.urlgrabber.add_url(name, pp, script, cat, priority, nzbname, password)
-        return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
+        res, nzo_ids = sabnzbd.urlgrabber.add_url(
+            name, pp, script, cat, priority, nzbname, password
+        )
+        return report(
+            keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids}
+        )
     else:
         logging.info("API-call addurl: no URLs received")
         return report(_MSG_NO_VALUE)
@@ -687,7 +722,9 @@ def _api_showlog(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
 
     # Set headers
     cherrypy.response.headers["Content-Type"] = "application/x-download;charset=utf-8"
-    cherrypy.response.headers["Content-Disposition"] = 'attachment;filename="sabnzbd.log"'
+    cherrypy.response.headers["Content-Disposition"] = (
+        'attachment;filename="sabnzbd.log"'
+    )
     return log_data
 
 
@@ -793,7 +830,9 @@ def _api_test_email(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> byte
         "I had a d\xe8ja vu",
         "unknown",
         True,
-        os.path.normpath(os.path.join(cfg.complete_dir.get_path(), "/unknown/I had a d\xe8ja vu")),
+        os.path.normpath(
+            os.path.join(cfg.complete_dir.get_path(), "/unknown/I had a d\xe8ja vu")
+        ),
         123 * MEBI,
         None,
         pack,
@@ -817,7 +856,9 @@ def _api_test_windows(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> by
 def _api_test_notif(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test to Notification Center, return result"""
     logging.info("Sending test notification")
-    res = sabnzbd.notifier.send_notification_center("SABnzbd", T("Test Notification"), "other")
+    res = sabnzbd.notifier.send_notification_center(
+        "SABnzbd", T("Test Notification"), "other"
+    )
     return report(error=res)
 
 
@@ -831,35 +872,45 @@ def _api_test_osd(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
 def _api_test_prowl(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Prowl notification, return result"""
     logging.info("Sending Prowl notification")
-    res = sabnzbd.notifier.send_prowl("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
+    res = sabnzbd.notifier.send_prowl(
+        "SABnzbd", T("Test Notification"), "other", force=True, test=kwargs
+    )
     return report(error=res)
 
 
 def _api_test_pushover(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Pushover notification, return result"""
     logging.info("Sending Pushover notification")
-    res = sabnzbd.notifier.send_pushover("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
+    res = sabnzbd.notifier.send_pushover(
+        "SABnzbd", T("Test Notification"), "other", force=True, test=kwargs
+    )
     return report(error=res)
 
 
 def _api_test_pushbullet(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Pushbullet notification, return result"""
     logging.info("Sending Pushbullet notification")
-    res = sabnzbd.notifier.send_pushbullet("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
+    res = sabnzbd.notifier.send_pushbullet(
+        "SABnzbd", T("Test Notification"), "other", force=True, test=kwargs
+    )
     return report(error=res)
 
 
 def _api_test_apprise(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: send a test Apprise notification, return result"""
     logging.info("Sending Apprise notification")
-    res = sabnzbd.notifier.send_apprise("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
+    res = sabnzbd.notifier.send_apprise(
+        "SABnzbd", T("Test Notification"), "other", force=True, test=kwargs
+    )
     return report(error=res)
 
 
 def _api_test_nscript(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     """API: execute a test notification script, return result"""
     logging.info("Executing notification script")
-    res = sabnzbd.notifier.send_nscript("SABnzbd", T("Test Notification"), "other", force=True, test=kwargs)
+    res = sabnzbd.notifier.send_nscript(
+        "SABnzbd", T("Test Notification"), "other", force=True, test=kwargs
+    )
     return report(error=res)
 
 
@@ -958,7 +1009,9 @@ def _api_server_stats(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> by
     stats = {"total": sum_t, "month": sum_m, "week": sum_w, "day": sum_d, "servers": {}}
 
     for svr in config.get_servers():
-        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
+        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(
+            svr
+        )
         stats["servers"][svr] = {
             "total": t,
             "month": m,
@@ -977,7 +1030,13 @@ def _api_gc_stats(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     # Collect before we check
     gc.collect()
     # We cannot create any lists/dicts, as they would create a reference
-    return report(data=[str(obj) for obj in gc.get_objects() if isinstance(obj, sabnzbd.nzbstuff.TryList)])
+    return report(
+        data=[
+            str(obj)
+            for obj in gc.get_objects()
+            if isinstance(obj, sabnzbd.nzbstuff.TryList)
+        ]
+    )
 
 
 ##############################################################################
@@ -1082,7 +1141,9 @@ def api_level(mode: str, name: str) -> int:
     return 4
 
 
-def report(error: Optional[str] = None, keyword: str = "value", data: Optional[Any] = None) -> bytes:
+def report(
+    error: Optional[str] = None, keyword: str = "value", data: Optional[Any] = None
+) -> bytes:
     """Report message in json, xml or plain text
     If error is set, only a status/error report is made.
     If no error and no data, only a status report is made.
@@ -1277,7 +1338,9 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
         return False, T("The hostname is not set.")
 
     if not connections:
-        return False, T("There are no connections set. Please set at least one connection.")
+        return False, T(
+            "There are no connections set. Please set at least one connection."
+        )
 
     if not port:
         if ssl:
@@ -1317,22 +1380,22 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     # All exceptions are caught internally
     test_server.request_addrinfo_blocking()
     if not test_server.addrinfo:
-        # so NNTP connection tried, but did not succeed. Possible causes:
+        # so NNTP connection was tried, but did not succeed: no addrinfo. Possible causes:
         # - user has filled out an indexer as newsserver. Not good.
         # - user has filled out a weird port on which there is no newsserver
         # - generic network problem (?)
 
-        test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT # force a short timeout
+        test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT  # force a short timeout
         # let's try well-known ports
         test_server.port = 80
         test_server.request_addrinfo_blocking()
         port80working = bool(test_server.addrinfo)
 
-        test_server.port = 119 # NNTP
+        test_server.port = 119  # NNTP
         test_server.request_addrinfo_blocking()
         port119working = bool(test_server.addrinfo)
 
-        test_server.port = 563 #NNTPS
+        test_server.port = 563  # NNTPS
         test_server.request_addrinfo_blocking()
         port563working = bool(test_server.addrinfo)
 
@@ -1360,14 +1423,18 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
 
     except socket.timeout:
         if port != 119 and not ssl:
-            return False, T("Timed out: Try enabling SSL or connecting on a different port.")
+            return False, T(
+                "Timed out: Try enabling SSL or connecting on a different port."
+            )
         else:
             return False, T("Timed out")
 
     except socket.error as err:
         # Trying SSL on non-SSL port?
         if match_str(str(err), ("unknown protocol", "wrong version number")):
-            return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
+            return False, T(
+                "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+            )
         return False, str(err)
 
     except NNTPPermanentError:
@@ -1395,20 +1462,31 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
         elif nw.status_code == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
-            return_status = (False, T("Authentication failed, check username/password."))
+            return_status = (
+                False,
+                T("Authentication failed, check username/password."),
+            )
         elif sabnzbd.downloader.clues_too_many(nw.nntp_msg):
-            return_status = (False, T("Too many connections, please pause downloading or try again later"))
+            return_status = (
+                False,
+                T("Too many connections, please pause downloading or try again later"),
+            )
 
     # Fallback in case no data was received or unknown status
     if not return_status:
-        return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
+        return_status = (
+            False,
+            T("Could not determine connection result (%s)") % nw.nntp_msg,
+        )
 
     # Close the connection and return result
     nw.hard_reset()
     return return_status
 
 
-def build_status(calculate_performance: bool = False, skip_dashboard: bool = False) -> Dict[str, Any]:
+def build_status(
+    calculate_performance: bool = False, skip_dashboard: bool = False
+) -> Dict[str, Any]:
     # build up header full of basic information
     info = build_header(trans_functions=False)
 
@@ -1426,8 +1504,12 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         sabnzbd.PYSTONE_SCORE = getpystone()
 
         # Disk speed of download (aka incomplete) and complete directory:
-        sabnzbd.DOWNLOAD_DIR_SPEED = diskspeedmeasure(sabnzbd.cfg.download_dir.get_path())
-        sabnzbd.COMPLETE_DIR_SPEED = diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path())
+        sabnzbd.DOWNLOAD_DIR_SPEED = diskspeedmeasure(
+            sabnzbd.cfg.download_dir.get_path()
+        )
+        sabnzbd.COMPLETE_DIR_SPEED = diskspeedmeasure(
+            sabnzbd.cfg.complete_dir.get_path()
+        )
 
         # Internet bandwidth
         sabnzbd.INTERNET_BANDWIDTH = internetspeed()
@@ -1575,11 +1657,17 @@ def build_queue(
         slot["mb"] = "%.2f" % mb
         slot["size"] = to_units(nzo.bytes, "B")
         slot["sizeleft"] = to_units(nzo.remaining, "B")
-        slot["percentage"] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else "0"
+        slot["percentage"] = (
+            "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else "0"
+        )
         slot["mbmissing"] = "%.2f" % (nzo.bytes_missing / MEBI)
         slot["direct_unpack"] = nzo.direct_unpack_progress
 
-        if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
+        if not sabnzbd.Downloader.paused and nzo.status not in (
+            Status.PAUSED,
+            Status.FETCHING,
+            Status.GRABBING,
+        ):
             if nzo.propagation_delay_left:
                 slot["status"] = Status.PROPAGATING
             elif nzo.status == Status.CHECKING:
@@ -1706,7 +1794,9 @@ def retry_job(
 def del_job_files(job_paths: List[str]):
     """Remove files of each path in the list"""
     for path in job_paths:
-        if path and clip_path(path).lower().startswith(cfg.download_dir.get_clipped_path().lower()):
+        if path and clip_path(path).lower().startswith(
+            cfg.download_dir.get_clipped_path().lower()
+        ):
             remove_all(path, recursive=True)
 
 
@@ -1746,7 +1836,9 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(webdir: str = "", for_template: bool = True, trans_functions: bool = True) -> Dict[str, Any]:
+def build_header(
+    webdir: str = "", for_template: bool = True, trans_functions: bool = True
+) -> Dict[str, Any]:
     """Build the basic header"""
     header = {}
 
@@ -1759,7 +1851,9 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
-        header["confighelpuri"] = f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
+        header["confighelpuri"] = (
+            f"https://sabnzbd.org/wiki/configuration/{sabnzbd.__version__[:3]}/"
+        )
 
         header["pid"] = os.getpid()
         header["active_lang"] = cfg.language()
@@ -1780,7 +1874,9 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
         header["new_release"], header["new_rel_url"] = sabnzbd.NEW_VERSION
 
     header["version"] = sabnzbd.__version__
-    header["paused"] = bool(sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc)
+    header["paused"] = bool(
+        sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc
+    )
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
@@ -1916,7 +2012,8 @@ def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, An
             "downloaded": nzo.bytes_downloaded,
             "completeness": None,
             "fail_message": nzo.fail_msg,
-            "url_info": nzo.nzo_info.get("details", "") or nzo.nzo_info.get("more_info", ""),
+            "url_info": nzo.nzo_info.get("details", "")
+            or nzo.nzo_info.get("more_info", ""),
             "bytes": nzo.bytes_downloaded,
             "size": to_units(nzo.bytes_downloaded, "B"),
             "meta": None,
@@ -1932,7 +2029,9 @@ def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, An
         # Add stage information, in the correct order
         for stage in STAGES:
             if stage in nzo.unpack_info:
-                item["stage_log"].append({"name": stage, "actions": nzo.unpack_info[stage]})
+                item["stage_log"].append(
+                    {"name": stage, "actions": nzo.unpack_info[stage]}
+                )
 
         items.append(item)
 
