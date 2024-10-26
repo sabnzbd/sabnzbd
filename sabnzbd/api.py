@@ -78,9 +78,23 @@ from sabnzbd.misc import (
     match_str,
     bool_conv,
 )
-from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
+from sabnzbd.filesystem import (
+    diskspace,
+    get_ext,
+    clip_path,
+    remove_all,
+    list_scripts,
+    purge_log_files,
+    pathbrowser,
+)
 from sabnzbd.encoding import xml_name, utob
-from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
+from sabnzbd.getipaddress import (
+    local_ipv4,
+    public_ipv4,
+    public_ipv6,
+    dnslookup,
+    active_socks5_proxy,
+)
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
 from sabnzbd.nzbstuff import NzbObject
@@ -360,7 +374,10 @@ def _api_addlocalfile(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> by
                     nzbname=kwargs.get("nzbname"),
                     password=kwargs.get("password"),
                 )
-                return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
+                return report(
+                    keyword="",
+                    data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids},
+                )
             else:
                 logging.info('API-call addlocalfile: "%s" is not a supported file', name)
                 return report(_MSG_NO_FILE)
@@ -1317,22 +1334,22 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     # All exceptions are caught internally
     test_server.request_addrinfo_blocking()
     if not test_server.addrinfo:
-        # so NNTP connection tried, but did not succeed. Possible causes:
+        # so NNTP connection was tried, but did not succeed: no addrinfo. Possible causes:
         # - user has filled out an indexer as newsserver. Not good.
         # - user has filled out a weird port on which there is no newsserver
         # - generic network problem (?)
 
-        test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT # force a short timeout
-        # let's try well-known ports
+        test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT  # force a short timeout
+        # let's try well-known ports: HTTP and NTTP(S)
         test_server.port = 80
         test_server.request_addrinfo_blocking()
         port80working = bool(test_server.addrinfo)
 
-        test_server.port = 119 # NNTP
+        test_server.port = 119  # NNTP
         test_server.request_addrinfo_blocking()
         port119working = bool(test_server.addrinfo)
 
-        test_server.port = 563 #NNTPS
+        test_server.port = 563  # NNTPS
         test_server.request_addrinfo_blocking()
         port563working = bool(test_server.addrinfo)
 
@@ -1344,9 +1361,10 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
             ) % (host, port, host)
         elif (port119working or port563working) and port not in [119, 563]:
             # it's a newsserver (good), but the user has specified a weird port
-            return False, T(
-                "Could not connect to %s on port %s. Use the default ports 119 (NNTP) or 563 (NNTPS) "
-            ) % (host, port)
+            return False, T("Could not connect to %s on port %s. Use the default ports 119 (NNTP) or 563 (NNTPS) ") % (
+                host,
+                port,
+            )
 
         # Sorry, no clever analysis:
         return False, T('Server address "%s:%s" is not valid.') % (host, port)
@@ -1395,13 +1413,22 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
         elif nw.status_code == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
-            return_status = (False, T("Authentication failed, check username/password."))
+            return_status = (
+                False,
+                T("Authentication failed, check username/password."),
+            )
         elif sabnzbd.downloader.clues_too_many(nw.nntp_msg):
-            return_status = (False, T("Too many connections, please pause downloading or try again later"))
+            return_status = (
+                False,
+                T("Too many connections, please pause downloading or try again later"),
+            )
 
     # Fallback in case no data was received or unknown status
     if not return_status:
-        return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
+        return_status = (
+            False,
+            T("Could not determine connection result (%s)") % nw.nntp_msg,
+        )
 
     # Close the connection and return result
     nw.hard_reset()
@@ -1579,7 +1606,11 @@ def build_queue(
         slot["mbmissing"] = "%.2f" % (nzo.bytes_missing / MEBI)
         slot["direct_unpack"] = nzo.direct_unpack_progress
 
-        if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
+        if not sabnzbd.Downloader.paused and nzo.status not in (
+            Status.PAUSED,
+            Status.FETCHING,
+            Status.GRABBING,
+        ):
             if nzo.propagation_delay_left:
                 slot["status"] = Status.PROPAGATING
             elif nzo.status == Status.CHECKING:
