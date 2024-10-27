@@ -1410,26 +1410,17 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     if nw.status_code:
         if nw.status_code == 480:
             return_status = (False, T("Server requires username and password."))
-        elif nw.status_code < 300 or nw.status_code in (411, 423, 430):
+        elif nw.status_code < 300 or nw.staBtus_code in (411, 423, 430):
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
         elif nw.status_code == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
-            return_status = (
-                False,
-                T("Authentication failed, check username/password."),
-            )
+            return_status = (False, T("Authentication failed, check username/password."))
         elif sabnzbd.downloader.clues_too_many(nw.nntp_msg):
-            return_status = (
-                False,
-                T("Too many connections, please pause downloading or try again later"),
-            )
+            return_status = (False, T("Too many connections, please pause downloading or try again later"))
 
     # Fallback in case no data was received or unknown status
     if not return_status:
-        return_status = (
-            False,
-            T("Could not determine connection result (%s)") % nw.nntp_msg,
-        )
+        return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
 
     # Close the connection and return result
     nw.hard_reset()
@@ -1607,11 +1598,7 @@ def build_queue(
         slot["mbmissing"] = "%.2f" % (nzo.bytes_missing / MEBI)
         slot["direct_unpack"] = nzo.direct_unpack_progress
 
-        if not sabnzbd.Downloader.paused and nzo.status not in (
-            Status.PAUSED,
-            Status.FETCHING,
-            Status.GRABBING,
-        ):
+        if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if nzo.propagation_delay_left:
                 slot["status"] = Status.PROPAGATING
             elif nzo.status == Status.CHECKING:
