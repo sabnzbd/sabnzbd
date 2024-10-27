@@ -1392,7 +1392,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     if nw.status_code:
         if nw.status_code == 480:
             return_status = (False, T("Server requires username and password."))
-        elif nw.status_code < 300 or nw.staBtus_code in (411, 423, 430):
+        elif nw.status_code < 300 or nw.status_code in (411, 423, 430):
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
         elif nw.status_code == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
