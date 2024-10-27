@@ -78,23 +78,9 @@ from sabnzbd.misc import (
     match_str,
     bool_conv,
 )
-from sabnzbd.filesystem import (
-    diskspace,
-    get_ext,
-    clip_path,
-    remove_all,
-    list_scripts,
-    purge_log_files,
-    pathbrowser,
-)
+from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
 from sabnzbd.encoding import xml_name, utob
-from sabnzbd.getipaddress import (
-    local_ipv4,
-    public_ipv4,
-    public_ipv6,
-    dnslookup,
-    active_socks5_proxy,
-)
+from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
 from sabnzbd.nzbstuff import NzbObject
@@ -374,10 +360,7 @@ def _api_addlocalfile(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> by
                     nzbname=kwargs.get("nzbname"),
                     password=kwargs.get("password"),
                 )
-                return report(
-                    keyword="",
-                    data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids},
-                )
+                return report(keyword="", data={"status": res is AddNzbFileResult.OK, "nzo_ids": nzo_ids})
             else:
                 logging.info('API-call addlocalfile: "%s" is not a supported file', name)
                 return report(_MSG_NO_FILE)
@@ -1414,22 +1397,13 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
         elif nw.status_code == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
-            return_status = (
-                False,
-                T("Authentication failed, check username/password."),
-            )
+            return_status = (False, T("Authentication failed, check username/password."))
         elif sabnzbd.downloader.clues_too_many(nw.nntp_msg):
-            return_status = (
-                False,
-                T("Too many connections, please pause downloading or try again later"),
-            )
+            return_status = (False, T("Too many connections, please pause downloading or try again later"))
 
     # Fallback in case no data was received or unknown status
     if not return_status:
-        return_status = (
-            False,
-            T("Could not determine connection result (%s)") % nw.nntp_msg,
-        )
+        return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
 
     # Close the connection and return result
     nw.hard_reset()
@@ -1607,11 +1581,7 @@ def build_queue(
         slot["mbmissing"] = "%.2f" % (nzo.bytes_missing / MEBI)
         slot["direct_unpack"] = nzo.direct_unpack_progress
 
-        if not sabnzbd.Downloader.paused and nzo.status not in (
-            Status.PAUSED,
-            Status.FETCHING,
-            Status.GRABBING,
-        ):
+        if not sabnzbd.Downloader.paused and nzo.status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if nzo.propagation_delay_left:
                 slot["status"] = Status.PROPAGATING
             elif nzo.status == Status.CHECKING:
