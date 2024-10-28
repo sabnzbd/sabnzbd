@@ -1324,17 +1324,29 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
 
         test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT  # force a short timeout
         # let's try well-known ports: HTTP and NTTP(S)
-        test_server.port = 80
-        test_server.request_addrinfo_blocking()
-        port80working = bool(test_server.addrinfo)
+        if port == 80:
+            # already tried, and not working
+            port80working = False
+        else:
+            test_server.port = 80
+            test_server.request_addrinfo_blocking()
+            port80working = bool(test_server.addrinfo)
 
-        test_server.port = 119  # NNTP
-        test_server.request_addrinfo_blocking()
-        port119working = bool(test_server.addrinfo)
+        if port == 119:
+            # already tried, and not working
+            port119working = False
+        else:
+            test_server.port = 119  # NNTP
+            test_server.request_addrinfo_blocking()
+            port119working = bool(test_server.addrinfo)
 
-        test_server.port = 563  # NNTPS
-        test_server.request_addrinfo_blocking()
-        port563working = bool(test_server.addrinfo)
+        if port == 563:
+            # already tried, and not working
+            port563working = False
+        else:
+            test_server.port = 563  # NNTPS
+            test_server.request_addrinfo_blocking()
+            port563working = bool(test_server.addrinfo)
 
         if (not port119working) and (not port563working) and port80working:
             # That's a webserver, not a newsserver!
@@ -1342,9 +1354,15 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
                 "Could not connect to %s on port %s. It appears that %s operates as a web server (port 80), "
                 "possibly an indexer, not a usenet server. You have to fill a usenet server."
             ) % (host, port, host)
-        elif (port119working or port563working) and port not in [119, 563]:
+        elif port563working and port not in [119, 563]:
             # it's a newsserver (good), but the user has specified a weird port
-            return False, T("Could not connect to %s on port %s. Use the default ports 119 (NNTP) or 563 (NNTPS) ") % (
+            return False, T("Could not connect to %s on port %s. Use the default usenet settings, with SSL") % (
+                host,
+                port,
+            )
+        elif port119working and not port563working and port not in [119, 563]:
+            # it's a newsserver (good), but the user has specified a weird port
+            return False, T("Could not connect to %s on port %s. Use the default usenet settings, without SSL") % (
                 host,
                 port,
             )
