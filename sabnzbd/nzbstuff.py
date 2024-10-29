@@ -1223,7 +1223,7 @@ class NzbObject(TryList):
         # Abort the job due to failure
         if not job_can_succeed:
             self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
-            self.set_unpack_info("Download", self.fail_msg, unique=False)
+            self.set_unpack_info("Download", self.fail_msg)
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
             return True, True, True
 
