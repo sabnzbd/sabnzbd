@@ -208,12 +208,16 @@ msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "563 and SSL turned on"
 msgstr ""
+"Impossible de se connecter à %s sur le port %s. Utilisez les paramètres "
+"usenet par défaut : port 563 et SSL activés"
 
 #: sabnzbd/api.py
 msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "119 and SSL turned off"
 msgstr ""
+"Impossible de se connecter à %s sur le port %s. Utilisez les paramètres "
+"usenet par défaut : port 119 et SSL désactivés"
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
