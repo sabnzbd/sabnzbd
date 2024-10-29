@@ -198,6 +198,18 @@ msgstr ""
 "functioneert als een webserver (poort 80), mogelijk een indexer, geen "
 "usenetserver. Vul een usenetserver in."
 
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"563 and SSL turned on"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
+msgstr ""
+
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradres \"%s:%s\" is niet geldig."

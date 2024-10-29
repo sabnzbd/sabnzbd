@@ -203,6 +203,18 @@ msgstr ""
 "comme un serveur web (port 80), peut-être un indexeur, et non comme un "
 "serveur Usenet. Vous devez spécifier un serveur Usenet."
 
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"563 and SSL turned on"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
+msgstr ""
+
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "L' adresse du serveur \"%s:%s\" n'est pas valide."
