@@ -88,6 +88,7 @@ for folder_item in EXTRA_FOLDERS:
 extra_pyinstaller_files.extend(collect_data_files("babelfish"))
 extra_pyinstaller_files.extend(collect_data_files("guessit"))
 extra_pyinstaller_files.extend(collect_data_files("apprise"))
+extra_pyinstaller_files.extend(collect_data_files("dateutil"))
 
 pyi_analysis = Analysis(
     ["SABnzbd.py"],
