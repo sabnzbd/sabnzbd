@@ -70,10 +70,12 @@ class AddrInfo:
     canonname: str
     sockaddr: Union[Tuple[str, int], Tuple[str, int, int, int]]
     ipaddress: str = ""
+    port: int = 0
 
     def __post_init__(self):
         # For easy access
         self.ipaddress = self.sockaddr[0]
+        self.port = self.sockaddr[1]
 
 
 def family_type(family) -> str:
@@ -98,16 +100,18 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
             s.connect(addrinfo.sockaddr)
             result_queue.put(addrinfo)
             logging.debug(
-                "Happy Eyeballs connected to %s (%s) in %dms",
+                "Happy Eyeballs connected to %s (%s, port=%d) in %dms",
                 addrinfo.ipaddress,
                 addrinfo.canonname,
+                addrinfo.port,
                 1000 * (time.time() - start),
             )
         except socket.error:
             logging.debug(
-                "Happy Eyeballs failed to connect to %s (%s) in %dms",
+                "Happy Eyeballs failed to connect to %s (%s, port=%d) in %dms",
                 addrinfo.ipaddress,
                 addrinfo.canonname,
+                addrinfo.port,
                 1000 * (time.time() - start),
             )
         finally:
