@@ -1015,6 +1015,10 @@ msgstr ""
 "Échec de l'extraction, erreur d'écriture ou espace disque insuffisant ?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Extraction échoué, le chemin est trop long"
 

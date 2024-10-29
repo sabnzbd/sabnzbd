@@ -949,6 +949,10 @@ msgid "Unpacking failed, write error or disk is full?"
 msgstr "Rozpakowywanie nie powiodło się, błąd zapisu lub zapełniony dysk?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Rozpakowywanie nie powiodło się, zbyt długa ścieżka"
 

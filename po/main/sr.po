@@ -941,6 +941,10 @@ msgid "Unpacking failed, write error or disk is full?"
 msgstr "Neuspašno raspakivanje, greška u pisanju ili je disk pun?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Neuspešno raspakivanje, putanja je predugačka"
 

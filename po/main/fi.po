@@ -949,6 +949,10 @@ msgid "Unpacking failed, write error or disk is full?"
 msgstr "Purkaminen epäonnistui, kirjoitusvirhe tai levy täynnä?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Purkaminen epäonnistui, polku on liian pitkä"
 

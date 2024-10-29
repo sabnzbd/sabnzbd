@@ -881,6 +881,10 @@ msgid "Unpacking failed, write error or disk is full?"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr ""
 

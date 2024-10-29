@@ -961,6 +961,10 @@ msgid "Unpacking failed, write error or disk is full?"
 msgstr "A descompactação falhou. Erro de escrita ou disco cheio?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Descompactação falhou, o caminho é muito extenso"
 

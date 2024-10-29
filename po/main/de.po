@@ -1017,6 +1017,10 @@ msgstr ""
 "Entpacken fehlgeschlagen. Fehler beim Schreiben oder volle Festplatte?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Entpacken fehlgeschlagen, Pfad ist zu lang"
 

@@ -957,6 +957,10 @@ msgid "Unpacking failed, write error or disk is full?"
 msgstr "פריקה נכשלה, שגיאת כתיבה או דיסק מלא?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "פריקה נכשלה, נתיב ארוך מדי"
 

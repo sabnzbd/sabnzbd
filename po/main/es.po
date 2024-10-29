@@ -987,6 +987,10 @@ msgstr ""
 "Error al descomprimir; ¿Error de escritura, o tal vez el disco está lleno?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Aperture de archivo fallo, la via es muy larga"
 

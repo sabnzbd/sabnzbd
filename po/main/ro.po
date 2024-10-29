@@ -972,6 +972,10 @@ msgid "Unpacking failed, write error or disk is full?"
 msgstr "Dezarhivare nereuşită, eroare scriere sau disc plin?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Dezarhivare eșuată, calea este prea lungă"
 
