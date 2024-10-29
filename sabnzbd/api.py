@@ -1355,14 +1355,18 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
                 "possibly an indexer, not a usenet server. You have to fill a usenet server."
             ) % (host, port, host)
         elif port563working and port not in [119, 563]:
-            # it's a newsserver (good), but the user has specified a weird port
-            return False, T("Could not connect to %s on port %s. Use the default usenet settings, with SSL") % (
+            # it's a newsserver (good), on port 563, but the user has specified a weird port
+            return False, T(
+                "Could not connect to %s on port %s. Use the default usenet settings: port 563 and SSL turned on"
+            ) % (
                 host,
                 port,
             )
         elif port119working and not port563working and port not in [119, 563]:
-            # it's a newsserver (good), but the user has specified a weird port
-            return False, T("Could not connect to %s on port %s. Use the default usenet settings, without SSL") % (
+            # it's a newsserver (good), only on port 119, but the user has specified a weird port
+            return False, T(
+                "Could not connect to %s on port %s. Use the default usenet settings: port 119 and SSL turned off"
+            ) % (
                 host,
                 port,
             )
