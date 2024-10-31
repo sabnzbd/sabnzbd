@@ -13,7 +13,7 @@ from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEA
 extra_pyinstaller_files = []
 
 # Add hidden imports
-extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi", "pkg_resources.extern"]
+extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
 extra_hiddenimports.extend(collect_submodules("apprise"))
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 extra_hiddenimports.extend(collect_submodules("guessit.data"))
@@ -40,7 +40,7 @@ else:
     )
 
     # Windows
-    extra_hiddenimports.extend(["win32timezone", "winrt.windows.foundation.collections"])
+    extra_hiddenimports.extend(["win32timezone"])
     EXTRA_FOLDERS += ["win/multipar/", "win/par2/", "win/unrar/", "win/7zip/"]
     EXTRA_FILES += ["portable.cmd"]
 
