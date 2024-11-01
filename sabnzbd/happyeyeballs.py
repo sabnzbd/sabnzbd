@@ -34,7 +34,7 @@ from typing import Tuple, Union, Optional
 from more_itertools import roundrobin
 
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import DEF_TIMEOUT
+from sabnzbd.constants import DEF_NETWORKING_TIMEOUT
 from sabnzbd.decorators import cache_maintainer
 
 # How long to delay between connection attempts? The RFC suggests 250ms, but this is
@@ -70,10 +70,12 @@ class AddrInfo:
     canonname: str
     sockaddr: Union[Tuple[str, int], Tuple[str, int, int, int]]
     ipaddress: str = ""
+    port: int = 0
 
     def __post_init__(self):
         # For easy access
         self.ipaddress = self.sockaddr[0]
+        self.port = self.sockaddr[1]
 
 
 def family_type(family) -> str:
@@ -98,16 +100,18 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
             s.connect(addrinfo.sockaddr)
             result_queue.put(addrinfo)
             logging.debug(
-                "Happy Eyeballs connected to %s (%s) in %dms",
+                "Happy Eyeballs connected to %s (%s, port=%d) in %dms",
                 addrinfo.ipaddress,
                 addrinfo.canonname,
+                addrinfo.port,
                 1000 * (time.time() - start),
             )
         except socket.error:
             logging.debug(
-                "Happy Eyeballs failed to connect to %s (%s) in %dms",
+                "Happy Eyeballs failed to connect to %s (%s, port=%d) in %dms",
                 addrinfo.ipaddress,
                 addrinfo.canonname,
+                addrinfo.port,
                 1000 * (time.time() - start),
             )
         finally:
@@ -118,7 +122,12 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
 
 @cache_maintainer(clear_time=10)
 @functools.lru_cache(maxsize=None)
-def happyeyeballs(host: str, port: int, timeout: int = DEF_TIMEOUT, family=socket.AF_UNSPEC) -> Optional[AddrInfo]:
+def happyeyeballs(
+    host: str,
+    port: int,
+    timeout: int = DEF_NETWORKING_TIMEOUT,
+    family=socket.AF_UNSPEC,
+) -> Optional[AddrInfo]:
     """Return the fastest result of getaddrinfo() based on RFC 6555/8305 (Happy Eyeballs),
     including IPv6 addresses if desired. Returns None in case no addresses were returned
     by getaddrinfo or if no connection could be made to any of the addresses.

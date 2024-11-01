@@ -15,6 +15,7 @@
       "builder/release-requirements.txt"
     ]
   },
+  "ignorePaths": [],
   "ignoreDeps": [
     "jaraco.text",
     "jaraco.context",

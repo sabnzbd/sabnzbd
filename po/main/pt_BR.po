@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.3Beta2\n"
+"Project-Id-Version: SABnzbd-4.4.0Alpha2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/sabnzbd/teams/111101/pt_BR/)\n"
@@ -189,6 +189,18 @@ msgid ""
 "Could not connect to %s on port %s. It appears that %s operates as a web "
 "server (port 80), possibly an indexer, not a usenet server. You have to fill"
 " a usenet server."
+msgstr ""
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"563 and SSL turned on"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
 msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/interface.py
@@ -442,6 +454,10 @@ msgstr ""
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
+msgstr ""
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
 msgstr ""
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
@@ -943,6 +959,10 @@ msgstr ""
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "A descompactação falhou. Erro de escrita ou disco cheio?"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"

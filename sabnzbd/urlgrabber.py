@@ -34,7 +34,14 @@ import base64
 from typing import Tuple, Optional, Union, List, Dict, Any
 
 import sabnzbd
-from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES, DuplicateStatus
+from sabnzbd.constants import (
+    DEF_NETWORKING_TIMEOUT,
+    FUTURE_Q_FOLDER,
+    VALID_NZB_FILES,
+    Status,
+    VALID_ARCHIVES,
+    DuplicateStatus,
+)
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
 import sabnzbd.cfg as cfg
@@ -360,7 +367,7 @@ def _analyse(fetch_request: HTTPResponse, future_nzo: NzbObject):
             msg = ""
 
         # Increasing wait-time in steps for standard errors
-        when = DEF_TIMEOUT * (future_nzo.url_tries + 1)
+        when = DEF_NETWORKING_TIMEOUT * (future_nzo.url_tries + 1)
         logging.debug("No usable response from indexer, retry after %s sec", when)
         return None, msg, True, when, data
 

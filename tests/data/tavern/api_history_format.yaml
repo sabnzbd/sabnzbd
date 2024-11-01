@@ -7,7 +7,7 @@ strict:
 stages:
   - name: history format single entry
     request:
-      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/api
       method: GET
       params:
         mode: history
@@ -70,7 +70,7 @@ test_name: Check general history format (xml output)
 stages:
   - name: history format single entry
     request:
-      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/api
       method: GET
       params:
         mode: history
@@ -145,7 +145,7 @@ strict:
 stages:
   - name: history slot count
     request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/api"
       method: GET
       params:
         mode: history

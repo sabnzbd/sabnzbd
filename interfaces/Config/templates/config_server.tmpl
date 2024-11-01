@@ -28,7 +28,7 @@
         </label>
 
         <div class="advanced-buttonSeperator"></div>
-        <div class="chart-selector-container" title="$T('selectedDates')">
+        <div class="chart-selector-container" title="$T('selectedDates')" data-placement="bottom">
             <span class="glyphicon glyphicon-signal"></span>
             <!--#set today = datetime.date.today()#-->
             <input type="date" name="chart-start" id="chart-start" value="<!--#echo (today-datetime.timedelta(days=30)).strftime('%Y-%m-%d')#-->"> -
@@ -142,7 +142,7 @@
         </div>
     </div>
 
-    <!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
+    <!--#set $prio_colors = ["#59cc33", "#26a69a", "#3366cc", "#7f33cc", "#cc33a6", "#f39c12", "#cc3333", "#8d6e63"] #-->
     <!--#set $cur_prio_color = -1 #-->
     <!--#set $last_prio = -1 #-->
     <!--#for $cur, $server in enumerate($servers) #-->

@@ -7,7 +7,7 @@ strict:
 stages:
   - name: queue format empty
     request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/api"
       method: GET
       params:
         mode: queue
@@ -61,7 +61,7 @@ test_name: Check empty queue format (xml output)
 stages:
   - name: queue format empty
     request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/api"
       method: GET
       params:
         mode: queue

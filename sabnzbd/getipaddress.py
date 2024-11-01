@@ -25,7 +25,7 @@ import socket
 import time
 import urllib.error
 import urllib.request
-from typing import Callable
+from typing import Callable, Optional
 
 import socks
 
@@ -33,9 +33,10 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
 from sabnzbd.happyeyeballs import happyeyeballs, family_type
+from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
 
 
-def timeout(max_timeout: float):
+def timeout(max_timeout: int):
     """Timeout decorator, parameter in seconds."""
 
     def timeout_decorator(item: Callable) -> Callable:
@@ -56,29 +57,29 @@ def timeout(max_timeout: float):
     return timeout_decorator
 
 
-@timeout(3.0)
+@timeout(DEF_NETWORKING_SHORT_TIMEOUT)
 def addresslookup(myhost):
     return socket.getaddrinfo(myhost, 80)
 
 
-@timeout(3.0)
+@timeout(DEF_NETWORKING_SHORT_TIMEOUT)
 def addresslookup4(myhost):
     return socket.getaddrinfo(myhost, 80, socket.AF_INET)
 
 
-@timeout(3.0)
+@timeout(DEF_NETWORKING_SHORT_TIMEOUT)
 def addresslookup6(myhost):
     return socket.getaddrinfo(myhost, 80, socket.AF_INET6)
 
 
-def active_socks5_proxy():
+def active_socks5_proxy() -> Optional[str]:
     """Return the active proxy"""
     if socket.socket == socks.socksocket:
         return "%s:%s" % socks.socksocket.default_proxy[1:3]
     return None
 
 
-def dnslookup():
+def dnslookup() -> bool:
     """Perform a basic DNS lookup"""
     start = time.time()
     try:
@@ -90,7 +91,7 @@ def dnslookup():
     return result
 
 
-def local_ipv4():
+def local_ipv4() -> Optional[str]:
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
             # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
@@ -103,12 +104,17 @@ def local_ipv4():
     return ipv4
 
 
-def public_ip(family=socket.AF_UNSPEC):
+def public_ip(family: int = socket.AF_UNSPEC) -> Optional[str]:
     """
     Reports the client's public IP address (IPv4 or IPv6, if specified by family), as reported by selftest host
     """
     start = time.time()
-    if resolvehostaddress := happyeyeballs(sabnzbd.cfg.selftest_host(), port=443, family=family):
+    if resolvehostaddress := happyeyeballs(
+        sabnzbd.cfg.selftest_host(),
+        port=443,
+        timeout=DEF_NETWORKING_SHORT_TIMEOUT,
+        family=family,
+    ):
         resolvehostip = resolvehostaddress.ipaddress
     else:
         logging.debug("Error resolving my IP address: resolvehost not found")
@@ -126,7 +132,7 @@ def public_ip(family=socket.AF_UNSPEC):
         req = urllib.request.Request(resolveurl)
         req.add_header("Host", sabnzbd.cfg.selftest_host())
         req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
-        with urllib.request.urlopen(req, timeout=2) as open_req:
+        with urllib.request.urlopen(req, timeout=DEF_NETWORKING_SHORT_TIMEOUT) as open_req:
             client_ip = ubtou(open_req.read().strip())
 
         # Make sure it's a valid IPv4 or IPv6 address
@@ -146,11 +152,11 @@ def public_ip(family=socket.AF_UNSPEC):
     return client_ip
 
 
-def public_ipv4():
+def public_ipv4() -> Optional[str]:
     return public_ip(family=socket.AF_INET)
 
 
-def local_ipv6():
+def local_ipv6() -> Optional[str]:
     """
     return IPv6 address on local LAN interface. So a first check if there is IPv6 connectivity
     """
@@ -167,7 +173,7 @@ def local_ipv6():
     return ipv6_address
 
 
-def public_ipv6():
+def public_ipv6() -> Optional[str]:
     if (local_address := local_ipv6()) and not sabnzbd.misc.ip_in_subnet(local_address, "fe80::/10"):
         if public_address := public_ip(family=socket.AF_INET6):
             return public_address

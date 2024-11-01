@@ -165,11 +165,12 @@ class Server:
         self.reset_article_queue()
 
     def stop(self):
-        """Remove all connections from server"""
+        """Remove all connections and cached articles from server"""
         for nw in self.idle_threads:
             sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset()
         self.idle_threads = set()
+        self.reset_article_queue()
 
     @synchronized(DOWNLOADER_LOCK)
     def get_article(self):
@@ -195,10 +196,13 @@ class Server:
                 self.next_article_search = time.time() + _SERVER_CHECK_DELAY
         return None
 
+    @synchronized(DOWNLOADER_LOCK)
     def reset_article_queue(self):
-        logging.debug("Resetting article queue for %s", self)
+        """Reset articles queued for the Server. Locked to prevent
+        articles getting stuck in the Server when enabled/disabled"""
+        logging.debug("Resetting article queue for %s (%s)", self, self.article_queue)
         for article in self.article_queue:
-            sabnzbd.NzbQueue.reset_try_lists(article)
+            article.allow_new_fetcher()
         self.article_queue = []
 
     def request_addrinfo(self):
@@ -211,7 +215,7 @@ class Server:
 
     def request_addrinfo_blocking(self):
         """Blocking attempt to run getaddrinfo() and Happy Eyeballs for specified server"""
-        logging.debug("Retrieving server address information for %s", self.host)
+        logging.debug("Retrieving server address information for %s", self)
 
         # Disable IPV6 if desired
         family = socket.AF_UNSPEC
@@ -229,7 +233,7 @@ class Server:
         sabnzbd.Downloader.wakeup()
 
     def __repr__(self):
-        return "<Server: %s:%s>" % (self.host, self.port)
+        return "<Server: id=%s, host=%s:%s>" % (self.id, self.host, self.port)
 
 
 class Downloader(Thread):
@@ -329,7 +333,6 @@ class Downloader(Thread):
                     create = False
                     server.newid = newserver
                     server.restart = True
-                    server.reset_article_queue()
                     self.server_restarts += 1
                     break
 
@@ -510,8 +513,8 @@ class Downloader(Thread):
         # Handle broken articles directly
         if not data_view:
             if not article.search_new_server():
-                sabnzbd.NzbQueue.register_article(article, success=False)
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
+                sabnzbd.NzbQueue.register_article(article, success=False)
             return
 
         # Decode and send to article cache
@@ -704,8 +707,13 @@ class Downloader(Thread):
         except ssl.SSLWantReadError:
             return
         except (ConnectionError, ConnectionAbortedError):
-            # The ConnectionAbortedError is thrown by sabctools in case of fatal SSL-layer problems
+            # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
             self.__reset_nw(nw, "Server closed connection", wait=False)
+            return
+        except BufferError:
+            # The BufferError is thrown when exceeding maximum buffer size
+            # Make sure to discard the article
+            self.__reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
             return
 
         article = nw.article
@@ -960,14 +968,9 @@ class Downloader(Thread):
                 self.decode(nw.article)
                 nw.article.tries = 0
             else:
-                # Retry again with the same server
-                logging.debug(
-                    "Re-adding article %s from %s to server %s",
-                    nw.article.article,
-                    nw.article.nzf.filename,
-                    nw.article.fetcher,
-                )
-                nw.article.fetcher.article_queue.append(nw.article)
+                # Allow all servers again for this article
+                # Do not use the article_queue, as the server could already have been disabled when we get here!
+                nw.article.allow_new_fetcher()
 
         # Reset connection object
         nw.hard_reset(wait)

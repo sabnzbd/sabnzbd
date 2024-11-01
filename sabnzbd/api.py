@@ -54,7 +54,7 @@ from sabnzbd.constants import (
     AddNzbFileResult,
     PP_LOOKUP,
     STAGES,
-    DEF_TEST_TIMEOUT,
+    DEF_NETWORKING_TEST_TIMEOUT,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -1268,7 +1268,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     password = kwargs.get("password", "").strip()
     server = kwargs.get("server", "").strip()
     connections = int_conv(kwargs.get("connections", 0))
-    timeout = int_conv(kwargs.get("timeout", DEF_TEST_TIMEOUT))
+    timeout = int_conv(kwargs.get("timeout", DEF_NETWORKING_TEST_TIMEOUT))
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
     ssl_ciphers = kwargs.get("ssl_ciphers", "").strip()
@@ -1287,7 +1287,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
 
     if not timeout:
         # Lower value during new server testing
-        timeout = DEF_TEST_TIMEOUT
+        timeout = DEF_NETWORKING_TEST_TIMEOUT
 
     if "*" in password and not password.strip("*"):
         # If the password is masked, try retrieving it from the config
@@ -1317,15 +1317,39 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     # All exceptions are caught internally
     test_server.request_addrinfo_blocking()
     if not test_server.addrinfo:
-        # Try if we can connect on port 80 (so web server), forcing a short timeout
-        test_server.port = 80
-        test_server.timeout = DEF_TEST_TIMEOUT
-        test_server.request_addrinfo_blocking()
-        if test_server.addrinfo:
+        # so NNTP connection was tried, but did not succeed: no addrinfo. Possible causes:
+        # - user has filled out an indexer as newsserver. Not good.
+        # - user has filled out a weird port on which there is no newsserver
+        # - generic network problem (?)
+        test_server.timeout = DEF_NETWORKING_TEST_TIMEOUT  # force a short timeout
+
+        # let's try well-known ports: HTTP and NTTP(S)
+        port_working = {80: False, 119: False, 563: False}
+        for port_to_check in port_working:
+            # Don't re-check if it was already tried by user
+            if port_to_check != port:
+                test_server.port = port_to_check
+                test_server.request_addrinfo_blocking()
+                port_working[port_to_check] = bool(test_server.addrinfo)
+
+        if not port_working[119] and not port_working[563] and port_working[80]:
+            # That's a webserver, not a newsserver!
             return False, T(
                 "Could not connect to %s on port %s. It appears that %s operates as a web server (port 80), "
                 "possibly an indexer, not a usenet server. You have to fill a usenet server."
             ) % (host, port, host)
+        elif port not in (119, 563):
+            # User specified a weird port, so check if regular ones do work
+            if port_working[563]:
+                return False, T(
+                    "Could not connect to %s on port %s. Use the default usenet settings: port 563 and SSL turned on"
+                ) % (host, port)
+            if port_working[119]:
+                return False, T(
+                    "Could not connect to %s on port %s. Use the default usenet settings: port 119 and SSL turned off"
+                ) % (host, port)
+
+        # Sorry, no clever analysis:
         return False, T('Server address "%s:%s" is not valid.') % (host, port)
 
     try:

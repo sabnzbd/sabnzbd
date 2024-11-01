@@ -7,7 +7,7 @@ strict:
 stages:
   - name: queue format single entry
     request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/api"
       method: GET
       params:
         mode: queue
@@ -81,7 +81,7 @@ test_name: Check general queue format (xml output)
 stages:
   - name: queue format single entry
     request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/api"
       method: GET
       params:
         mode: queue

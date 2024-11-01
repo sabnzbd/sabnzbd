@@ -486,12 +486,12 @@ def process_job(nzo: NzbObject) -> bool:
             if all_ok:
                 # Move any (left-over) files to destination
                 nzo.status = Status.MOVING
-                nzo.set_action_line(T("Moving"), "...")
                 for root, _, files in os.walk(nzo.download_path):
                     if not root.endswith(JOB_ADMIN):
                         for file in files:
                             path = os.path.join(root, file)
                             new_path = path.replace(nzo.download_path, tmp_workdir_complete)
+                            nzo.set_action_line(T("Moving"), file)
                             ok, new_path = move_to_path(path, new_path)
                             if new_path:
                                 newfiles.append(new_path)
@@ -573,7 +573,9 @@ def process_job(nzo: NzbObject) -> bool:
                 if cfg.deobfuscate_final_filenames():
                     # Deobfuscate the filenames
                     logging.info("Running deobfuscate")
-                    deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
+                    newfiles = deobfuscate.deobfuscate(nzo, newfiles, nzo.final_name)
+                    # Deobfuscate the subtitles
+                    deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
                 # Run the user script
                 if script_path := make_script_path(script):

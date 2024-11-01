@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.3Beta2\n"
+"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2024\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -202,6 +202,22 @@ msgstr ""
 "Impossible de se connecter à %s sur le port %s. Il semble que %s fonctionne "
 "comme un serveur web (port 80), peut-être un indexeur, et non comme un "
 "serveur Usenet. Vous devez spécifier un serveur Usenet."
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"563 and SSL turned on"
+msgstr ""
+"Impossible de se connecter à %s sur le port %s. Utilisez les paramètres "
+"usenet par défaut : port 563 et SSL activés"
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
+msgstr ""
+"Impossible de se connecter à %s sur le port %s. Utilisez les paramètres "
+"usenet par défaut : port 119 et SSL désactivés"
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -468,6 +484,10 @@ msgstr "La désobfuscation a corrigé l'extension de %d fichier(s)"
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
 msgstr "La désobfuscation a renommé %d fichier(s)"
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr "Désobfusquer le(s) fichier(s) de sous-titres renommé(s) %d"
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -993,6 +1013,10 @@ msgstr ""
 msgid "Unpacking failed, write error or disk is full?"
 msgstr ""
 "Échec de l'extraction, erreur d'écriture ou espace disque insuffisant ?"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr "Échec de l'extraction, disque plein"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"

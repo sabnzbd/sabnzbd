@@ -287,7 +287,7 @@ class DownloadFlowBasics(SABnzbdBaseTest):
 
     def start_wizard(self):
         # Language-selection
-        self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/wizard/" % (SAB_HOST, SAB_PORT))
         self.selenium_wrapper(self.driver.find_element, By.ID, "en").click()
         self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "button.btn.btn-default").click()
 
@@ -317,7 +317,7 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element, By.ID, "next-button").click()
         self.no_page_crash()
         check_result = self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "quoteBlock").text
-        assert "http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT) in check_result
+        assert "http://%s:%s/" % (SAB_HOST, SAB_PORT) in check_result
 
         # Go to SAB!
         self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, ".btn.btn-success").click()
@@ -342,7 +342,7 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         os.remove(nzb_path)
 
         # See how it's doing
-        self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/" % (SAB_HOST, SAB_PORT))
 
         # We wait for 20 seconds to let it complete
         for _ in range(20):
