@@ -95,14 +95,7 @@ from sabnzbd.constants import (
     DEF_PIPELINING_REQUESTS,
 )
 from sabnzbd.lang import list_languages
-from sabnzbd.api import (
-    list_scripts,
-    list_cats,
-    del_from_section,
-    api_handler,
-    build_header,
-    Ttemplate,
-)
+from sabnzbd.api import list_scripts, list_cats, del_from_section, api_handler, build_header, Ttemplate
 
 ##############################################################################
 # Security functions
@@ -329,8 +322,8 @@ def check_apikey(kwargs):
     """Check API-key or NZB-key
     Return None when OK, otherwise an error message
     """
-    mode = kwargs.get("mode", "")
-    name = kwargs.get("name", "")
+    mode = request.query_params.get("mode", "")
+    name = request.query_params.get("name", "")
 
     # Lookup required access level for the specific api-call
     req_access = sabnzbd.api.api_level(mode, name)
@@ -342,7 +335,7 @@ def check_apikey(kwargs):
         return None
 
     # First check API-key, if OK that's sufficient
-    key = kwargs.get("apikey")
+    key = request.query_params.get("apikey")
     if not key:
         log_warning_and_ip(
             T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
@@ -394,7 +387,7 @@ def Raiser(root: str = "", **kwargs):
 
 
 def rssRaiser(root, kwargs):
-    return Raiser(root, feed=kwargs.get("feed"))
+    return Raiser(root, feed=request.query_params.get("feed"))
 
 
 ##############################################################################
@@ -415,7 +408,7 @@ async def main_index(request: Request):
         info["have_watched_dir"] = bool(cfg.dirscan_dir())
         info["cpumodel"] = get_cpu_name()
         info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
-        info["docker"] = "Docker" if sabnzbd.DOCKER else ""
+        info["platform"] = sabnzbd.PLATFORM
 
         # Have logout only with HTML and if inet=5, only when we are external
         info["have_logout"] = (
@@ -490,7 +483,7 @@ async def description_xml(request: Request):
 @secured_expose(route="/wizard", check_configlock=True)
 async def wizard_index(request: Request):
     """Show the language selection page"""
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         from sabnzbd.utils.apireg import get_install_lng
 
         cfg.language.set(get_install_lng())
@@ -622,42 +615,42 @@ def get_access_info():
 ##############################################################################
 
 
-class LoginPage:
-    @secured_expose(check_for_login=False)
-    def index(request: Request):
-        # Base output var
-        info = build_header(sabnzbd.WEB_DIR_CONFIG)
-        info["error"] = ""
+@secured_expose(route="/login", check_for_login=False)
+async def login_index(request: Request):
+    # Base output var
+    info = build_header(sabnzbd.WEB_DIR_CONFIG)
+    info["error"] = ""
 
-        # Logout?
-        if kwargs.get("logout"):
-            set_login_cookie(remove=True)
-            raise Raiser()
+    # Logout?
+    if request.query_params.get("logout"):
+        set_login_cookie(remove=True)
+        raise Raiser()
 
-        # Check if there's even a username/password set
-        if check_login():
-            raise Raiser("/")
+    # Check if there's even a username/password set
+    if check_login():
+        raise Raiser("/")
 
-        # Check login info
-        if kwargs.get("username") == cfg.username() and kwargs.get("password") == cfg.password():
-            # Save login cookie
-            set_login_cookie(remember_me=kwargs.get("remember_me", False))
-            # Log the success
-            logging.info("Successful login from %s", cherrypy.request.remote_label)
-            # Notify about new login
-            notifier.send_notification(T("User logged in"), T("User logged in to the web interface"), "new_login")
-            # Redirect
-            raise Raiser("/")
-        elif kwargs.get("username") or kwargs.get("password"):
-            info["error"] = T("Authentication failed, check username/password.")
-            # Warn about the potential security problem
-            logging.warning(T("Unsuccessful login attempt from %s"), cherrypy.request.remote_label)
+    # Check login info
+    if (
+        request.query_params.get("username") == cfg.username()
+        and request.query_params.get("password") == cfg.password()
+    ):
+        # Save login cookie
+        set_login_cookie(remember_me=request.query_params.get("remember_me", False))
+        # Log the success
+        logging.info("Successful login from %s", cherrypy.request.remote_label)
+        # Redirect
+        raise Raiser("/")
+    elif request.query_params.get("username") or request.query_params.get("password"):
+        info["error"] = T("Authentication failed, check username/password.")
+        # Warn about the potential security problem
+        logging.warning(T("Unsuccessful login attempt from %s"), cherrypy.request.remote_label)
 
-        # Show login
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "login", "main.tmpl"),
-            search_list=info,
-        )
+    # Show login
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "login", "main.tmpl"),
+        search_list=info,
+    )
 
 
 ##############################################################################
@@ -743,6 +736,8 @@ async def config_folder_save(request: Request):
 
 
 ##############################################################################
+# Page definitions - Config - Switches
+##############################################################################
 SWITCH_LIST = (
     "par_option",
     "top_only",
@@ -789,39 +784,36 @@ SWITCH_LIST = (
 )
 
 
-class ConfigSwitches:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/switches", check_configlock=True)
+async def index_config_switches(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
+    conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
 
-    @secured_expose(check_configlock=True)
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
-        conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
+    for kw in SWITCH_LIST:
+        conf[kw] = config.get_config("misc", kw)()
+    conf["cleanup_list"] = cfg.cleanup_list.get_string()
+    conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
 
-        for kw in SWITCH_LIST:
-            conf[kw] = config.get_config("misc", kw)()
-        conf["cleanup_list"] = cfg.cleanup_list.get_string()
-        conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
+    conf["scripts"] = list_scripts() or ["None"]
 
-        conf["scripts"] = list_scripts() or ["None"]
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_switches.tmpl"),
+        search_list=conf,
+    )
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_switches.tmpl"),
-            search_list=conf,
-        )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSwitches(request: Request):
-        for kw in SWITCH_LIST:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
-                return badParameterResponse(msg, kwargs.get("ajax"))
+@secured_expose(route="/config/switches/save", check_api_key=True, check_configlock=True)
+async def config_switches_save(request: Request):
+    for kw in SWITCH_LIST:
+        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
+            return badParameterResponse(msg, request.query_params.get("ajax"))
 
-        config.save_config()
-        if kwargs.get("ajax"):
-            return sabnzbd.api.report()
-        else:
-            raise Raiser(self.__root)
+    config.save_config()
+    if request.query_params.get("ajax"):
+        return sabnzbd.api.report()
+    else:
+        raise Raiser("/config")
 
 
 ##############################################################################
@@ -918,13 +910,15 @@ class ConfigSpecial:
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSpecial(request: Request):
         for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
+            if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
                 return badParameterResponse(msg)
 
         config.save_config()
         raise Raiser(self.__root)
 
 
+##############################################################################
+# Page definitions - Config - General
 ##############################################################################
 GENERAL_LIST = (
     "host",
@@ -947,80 +941,78 @@ GENERAL_LIST = (
 )
 
 
-class ConfigGeneral:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/general", check_configlock=True)
+async def index_config_general(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-    @secured_expose(check_configlock=True)
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    web_list = []
+    for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
+        # Ignore the config
+        if not interface_dir.endswith(DEF_STD_CONFIG):
+            # Check the available templates
+            for colorscheme in globber(
+                os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
+            ):
+                web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
 
-        web_list = []
-        for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
-            # Ignore the config
-            if not interface_dir.endswith(DEF_STD_CONFIG):
-                # Check the available templates
-                for colorscheme in globber(
-                    os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
-                ):
-                    web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
+    conf["web_list"] = web_list
+    conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
+    conf["password"] = cfg.password.get_stars()
 
-        conf["web_list"] = web_list
-        conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
-        conf["password"] = cfg.password.get_stars()
+    conf["language"] = cfg.language()
+    conf["lang_list"] = list_languages()
+    conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
 
-        conf["language"] = cfg.language()
-        conf["lang_list"] = list_languages()
-        conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
+    for kw in GENERAL_LIST:
+        conf[kw] = config.get_config("misc", kw)()
 
-        for kw in GENERAL_LIST:
-            conf[kw] = config.get_config("misc", kw)()
+    conf["nzb_key"] = cfg.nzb_key()
+    conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 
-        conf["nzb_key"] = cfg.nzb_key()
-        conf["caller_url"] = cherrypy.request.base + cfg.url_base()
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
+        search_list=conf,
+    )
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
-            search_list=conf,
-        )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveGeneral(request: Request):
-        # Handle general options
-        for kw in GENERAL_LIST:
-            if msg := config.get_config("misc", kw).set(kwargs.get(kw)):
-                return badParameterResponse(msg, ajax=kwargs.get("ajax"))
+@secured_expose(route="/config/general/save", check_api_key=True, check_configlock=True)
+async def config_general_save(request: Request):
+    # Handle general options
+    for kw in GENERAL_LIST:
+        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
+            return badParameterResponse(msg, ajax=request.query_params.get("ajax"))
 
-        # Handle special options
-        cfg.password.set(kwargs.get("password"))
+    # Handle special options
+    cfg.password.set(request.query_params.get("password"))
 
-        web_dir = kwargs.get("web_dir")
+    if web_dir := request.query_params.get("web_dir"):
         change_web_dir(web_dir)
 
-        config.save_config()
+    config.save_config()
 
-        # Update CherryPy authentication
-        set_auth(cherrypy.config)
-        if kwargs.get("ajax"):
-            return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
-        else:
-            raise Raiser(self.__root)
+    # Update CherryPy authentication
+    set_auth(cherrypy.config)
+    if request.query_params.get("ajax"):
+        return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
+    else:
+        raise Raiser("/config")
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def uploadConfig(request: Request):
-        """Restore a config backup"""
-        config_backup_file = kwargs.get("config_backup_file")
 
-        # Only accept the backup file if it can be opened as a zip archive and only contains a config file
-        try:
-            config_backup_data = config_backup_file.file.read()
-            config_backup_file.file.close()
-            if config.validate_config_backup(config_backup_data):
-                sabnzbd.RESTORE_DATA = config_backup_data
-                return sabnzbd.api.report(data={"success": True, "restart_req": True})
-        except Exception:
-            pass
-        return sabnzbd.api.report(error=T("Invalid backup archive"))
+@secured_expose(route="/config/general/uploadConfig", check_api_key=True, check_configlock=True)
+async def config_upload_backup(request: Request):
+    """Restore a config backup"""
+    form_data = await request.form()
+    config_backup_file = form_data.get("config_backup_file")
+
+    # Only accept the backup file if it can be opened as a zip archive and only contains a config file
+    try:
+        config_backup_data = await config_backup_file.read()
+        if config.validate_config_backup(config_backup_data):
+            sabnzbd.RESTORE_DATA = config_backup_data
+            return sabnzbd.api.report(data={"success": True, "restart_req": True})
+    except Exception:
+        pass
+    return sabnzbd.api.report(error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):
@@ -1090,20 +1082,20 @@ class ConfigServer:
     @secured_expose(check_api_key=True, check_configlock=True)
     def delServer(request: Request):
         kwargs["section"] = "servers"
-        kwargs["keyword"] = kwargs.get("server")
+        kwargs["keyword"] = request.query_params.get("server")
         del_from_section(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def clrServer(request: Request):
-        server = kwargs.get("server")
+        server = request.query_params.get("server")
         if server:
             sabnzbd.BPSMeter.clear_server(server)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggleServer(request: Request):
-        server = kwargs.get("server")
+        server = request.query_params.get("server")
         if server:
             svr = config.get_config("servers", server)
             if svr:
@@ -1130,25 +1122,25 @@ def unique_svr_name(server):
 
 def handle_server(kwargs, root=None, new_svr=False):
     """Internal server handler"""
-    ajax = kwargs.get("ajax")
-    host = kwargs.get("host", "").strip()
+    ajax = request.query_params.get("ajax")
+    host = request.query_params.get("host", "").strip()
     if not host:
         return badParameterResponse(T("Server address required"), ajax)
 
-    port = kwargs.get("port", "").strip()
+    port = request.query_params.get("port", "").strip()
     if not port:
-        if not kwargs.get("ssl", "").strip():
+        if not request.query_params.get("ssl", "").strip():
             port = "119"
         else:
             port = "563"
         kwargs["port"] = port
 
-    if kwargs.get("connections", "").strip() == "":
+    if request.query_params.get("connections", "").strip() == "":
         kwargs["connections"] = "1"
 
-    if kwargs.get("enable") == "1":
-        if not get_fastest_addrinfo(
-            host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
+    if request.query_params.get("enable") == "1":
+        if not happyeyeballs(
+            host, int_conv(port), int_conv(request.query_params.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
         ):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
@@ -1156,7 +1148,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     server = host
 
     svr = None
-    old_server = kwargs.get("server")
+    old_server = request.query_params.get("server")
     if old_server:
         svr = config.get_config("servers", old_server)
     if svr:
@@ -1168,7 +1160,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         server = unique_svr_name(server)
 
     for kw in ("ssl", "enable", "required", "optional"):
-        if kw not in kwargs.keys():
+        if kw not in request.query_params.keys():
             kwargs[kw] = None
     if svr and not new_svr:
         svr.set_dict(kwargs)
@@ -1224,7 +1216,7 @@ class ConfigRss:
             rss[feed]["baselink"] = [get_base_url(uri) for uri in rss[feed]["uri"]]
             rss[feed]["uris"] = feeds[feed].uri.get_string()
 
-        active_feed = kwargs.get("feed", "")
+        active_feed = request.query_params.get("feed", "")
         conf["active_feed"] = active_feed
         conf["rss"] = rss
         conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.RSSReader.next_run))
@@ -1275,7 +1267,7 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_rate(request: Request):
         """Save changed RSS automatic readout rate"""
-        cfg.rss_rate.set(kwargs.get("rss_rate"))
+        cfg.rss_rate.set(request.query_params.get("rss_rate"))
         config.save_config()
         sabnzbd.Scheduler.restart()
         raise Raiser(self.__root)
@@ -1285,13 +1277,13 @@ class ConfigRss:
         """Update Feed level attributes,
         legacy version: ignores 'enable' parameter
         """
-        if kwargs.get("enable") is not None:
+        if request.query_params.get("enable") is not None:
             del kwargs["enable"]
         try:
-            cf = config.get_rss()[kwargs.get("feed")]
+            cf = config.get_rss()[request.query_params.get("feed")]
         except KeyError:
             cf = None
-        uri = Strip(kwargs.get("uri"))
+        uri = Strip(request.query_params.get("uri"))
         if cf and uri:
             kwargs["uri"] = uri
             cf.set_dict(kwargs)
@@ -1304,20 +1296,20 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_feed(request: Request):
         """Update Feed level attributes"""
-        feed_name = kwargs.get("feed")
+        feed_name = request.query_params.get("feed")
         try:
             cf = config.get_rss()[feed_name]
         except KeyError:
             cf = None
         if "enable" not in kwargs:
             kwargs["enable"] = 0
-        uri = Strip(kwargs.get("uri"))
+        uri = Strip(request.query_params.get("uri"))
         if cf and uri:
             kwargs["uri"] = uri
             cf.set_dict(kwargs)
 
             # Did we get a new name for this feed?
-            new_name = kwargs.get("feed_new_name")
+            new_name = request.query_params.get("feed_new_name")
             if new_name and new_name != feed_name:
                 # Update the feed name for the redirect
                 kwargs["feed"] = cf.rename(new_name)
@@ -1330,13 +1322,13 @@ class ConfigRss:
     def toggle_rss_feed(request: Request):
         """Toggle automatic read-out flag of Feed"""
         try:
-            item = config.get_rss()[kwargs.get("feed")]
+            item = config.get_rss()[request.query_params.get("feed")]
         except KeyError:
             item = None
         if cfg:
             item.enable.set(not item.enable())
             config.save_config()
-        if kwargs.get("table"):
+        if request.query_params.get("table"):
             raise Raiser(self.__root)
         else:
             raise rssRaiser(self.__root, kwargs)
@@ -1344,8 +1336,8 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def add_rss_feed(request: Request):
         """Add one new RSS feed definition"""
-        feed = Strip(kwargs.get("feed")).strip("[]")
-        uri = Strip(kwargs.get("uri"))
+        feed = Strip(request.query_params.get("feed")).strip("[]")
+        uri = Strip(request.query_params.get("uri"))
         if feed and uri:
             try:
                 rss_cfg = config.get_rss()[feed]
@@ -1378,27 +1370,28 @@ class ConfigRss:
     def internal_upd_rss_filter(request: Request):
         """Save updated filter definition"""
         try:
-            feed_cfg = config.get_rss()[kwargs.get("feed")]
+            feed_cfg = config.get_rss()[request.query_params.get("feed")]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
-        pp = kwargs.get("pp", "")
+        pp = request.query_params.get("pp", "")
         if is_none(pp):
             pp = ""
-        script = ConvertSpecials(kwargs.get("script"))
-        cat = ConvertSpecials(kwargs.get("cat"))
-        prio = ConvertSpecials(kwargs.get("priority"))
-        filt = kwargs.get("filter_text")
-        enabled = kwargs.get("enabled", "0")
+        script = ConvertSpecials(request.query_params.get("script"))
+        cat = ConvertSpecials(request.query_params.get("cat"))
+        prio = ConvertSpecials(request.query_params.get("priority"))
+        filt = request.query_params.get("filter_text")
+        enabled = request.query_params.get("enabled", "0")
 
         if filt:
             feed_cfg.filters.update(
-                int(kwargs.get("index", 0)), [cat, pp, script, kwargs.get("filter_type"), filt, prio, enabled]
+                int(request.query_params.get("index", 0)),
+                [cat, pp, script, request.query_params.get("filter_type"), filt, prio, enabled],
             )
 
             # Move filter if requested
-            index = int_conv(kwargs.get("index", ""))
-            new_index = kwargs.get("new_index", "")
+            index = int_conv(request.query_params.get("index", ""))
+            new_index = request.query_params.get("new_index", "")
             if new_index and int_conv(new_index) != index:
                 feed_cfg.filters.move(int(index), int_conv(new_index))
 
@@ -1411,9 +1404,9 @@ class ConfigRss:
     def del_rss_feed(self, *args, **kwargs):
         """Remove complete RSS feed"""
         kwargs["section"] = "rss"
-        kwargs["keyword"] = kwargs.get("feed")
+        kwargs["keyword"] = request.query_params.get("feed")
         del_from_section(kwargs)
-        sabnzbd.RSSReader.clear_feed(kwargs.get("feed"))
+        sabnzbd.RSSReader.clear_feed(request.query_params.get("feed"))
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1424,11 +1417,11 @@ class ConfigRss:
     def internal_del_rss_filter(request: Request):
         """Remove one RSS filter"""
         try:
-            feed_cfg = config.get_rss()[kwargs.get("feed")]
+            feed_cfg = config.get_rss()[request.query_params.get("feed")]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
-        feed_cfg.filters.delete(int(kwargs.get("index", 0)))
+        feed_cfg.filters.delete(int(request.query_params.get("index", 0)))
         config.save_config()
         self.__evaluate = False
         self.__show_eval_button = True
@@ -1481,10 +1474,10 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def download(request: Request):
         """Download NZB from provider (Download button)"""
-        feed = kwargs.get("feed")
-        url = kwargs.get("url")
+        feed = request.query_params.get("feed")
+        url = request.query_params.get("url")
         if att := sabnzbd.RSSReader.lookup_url(feed, url):
-            nzbname = kwargs.get("nzbname")
+            nzbname = request.query_params.get("nzbname")
             pp = att.get("pp")
             cat = att.get("cat")
             script = att.get("script")
@@ -1656,13 +1649,13 @@ class ConfigScheduling:
     @secured_expose(check_api_key=True, check_configlock=True)
     def addSchedule(request: Request):
         servers = config.get_servers()
-        minute = kwargs.get("minute")
-        hour = kwargs.get("hour")
-        days_of_week = "".join([str(x) for x in kwargs.get("daysofweek", "")])
+        minute = request.query_params.get("minute")
+        hour = request.query_params.get("hour")
+        days_of_week = "".join([str(x) for x in request.query_params.get("daysofweek", "")])
         if not days_of_week:
             days_of_week = "1234567"
-        action = kwargs.get("action")
-        arguments = kwargs.get("arguments")
+        action = request.query_params.get("action")
+        arguments = request.query_params.get("arguments")
 
         arguments = arguments.strip().lower()
         if arguments in ("on", "enable"):
@@ -1703,7 +1696,7 @@ class ConfigScheduling:
     @secured_expose(check_api_key=True, check_configlock=True)
     def delSchedule(request: Request):
         schedules = cfg.schedules()
-        line = kwargs.get("line")
+        line = request.query_params.get("line")
         if line and line in schedules:
             schedules.remove(line)
             cfg.schedules.set(schedules)
@@ -1714,7 +1707,7 @@ class ConfigScheduling:
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggleSchedule(request: Request):
         schedules = cfg.schedules()
-        line = kwargs.get("line")
+        line = request.query_params.get("line")
         if line:
             for i, schedule in enumerate(schedules):
                 if schedule == line:
@@ -1765,14 +1758,14 @@ class ConfigCats:
     @secured_expose(check_api_key=True, check_configlock=True)
     def delete(request: Request):
         kwargs["section"] = "categories"
-        kwargs["keyword"] = kwargs.get("name")
+        kwargs["keyword"] = request.query_params.get("name")
         del_from_section(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save(request: Request):
-        name = kwargs.get("name", "*")
-        newname = kwargs.get("newname", "")
+        name = request.query_params.get("name", "*")
+        newname = request.query_params.get("newname", "")
         if name == "*":
             newname = name
 
@@ -1827,14 +1820,14 @@ class ConfigSorting:
     @secured_expose(check_api_key=True, check_configlock=True)
     def delete(request: Request):
         kwargs["section"] = "sorters"
-        kwargs["keyword"] = kwargs.get("name")
+        kwargs["keyword"] = request.query_params.get("name")
         del_from_section(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_sorter(request: Request):
-        name = kwargs.get("name", "*")
-        newname = kwargs.get("newname", "")
+        name = request.query_params.get("name", "*")
+        newname = request.query_params.get("newname", "")
         newname = config.clean_section_name(newname)
 
         if name == "*":
@@ -1852,7 +1845,7 @@ class ConfigSorting:
     def toggle_sorter(request: Request):
         """Toggle is_active flag of a sorter"""
         try:
-            sorter = config.get_sorters()[kwargs.get("sorter")]
+            sorter = config.get_sorters()[request.query_params.get("sorter")]
             sorter.is_active.set(not sorter.is_active())
             config.save_config()
         except Exception:
@@ -2184,10 +2177,10 @@ class ConfigNotify:
     def saveNotify(request: Request):
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
-                if msg := config.get_config(section, option).set(kwargs.get(option)):
-                    return badParameterResponse(msg, kwargs.get("ajax"))
+                if msg := config.get_config(section, option).set(request.query_params.get(option)):
+                    return badParameterResponse(msg, request.query_params.get("ajax"))
         config.save_config()
-        if kwargs.get("ajax"):
+        if request.query_params.get("ajax"):
             return sabnzbd.api.report()
         else:
             raise Raiser(self.__root)
