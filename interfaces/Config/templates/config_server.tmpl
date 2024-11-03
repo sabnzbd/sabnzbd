@@ -171,6 +171,9 @@
                     </table>
                     <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
                     <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
+                    <!--#if $server['notes'] #-->
+                    <p>$server['notes'].replace('\n', '<br>')</p>
+                    <!--#end if#-->
                 </div>
                 <div class="col1" style="display:none;">
                     <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
@@ -459,8 +462,8 @@
         When finished loading
     **/
     jQuery(document).ready(function(){
-        // Exception when change of priority, reload
-        jQuery('input[name="priority"], input[name="displayname"]').on('change', function() {
+        // Reload form in case we change items that make the servers appear different
+        jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function() {
             jQuery('.fullform').submit(function() {
                 // No ajax this time
                 jQuery('input[name="ajax"]').val('')

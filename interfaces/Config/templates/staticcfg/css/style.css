@@ -165,6 +165,9 @@ input[type="checkbox"]+.desc {
     color: #666;
     margin: 1em 0;
 }
+.col2 p {
+    margin-left: 3px;
+}
 .field-pair {
     padding: 6px;
     clear: both;
