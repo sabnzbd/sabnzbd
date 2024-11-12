@@ -68,7 +68,7 @@ certifi==2024.8.30
 oauthlib==3.2.2
 PyJWT==2.9.0
 blinker==1.9.0; python_version > '3.8'
-blinker==1.8.2; python_version == '3.8'
+blinker==1.8.2; python_version < '3.9'
 
 # Optional support for *nix tray icon.
 # Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.

@@ -24,7 +24,9 @@
     "sabctools",
     "paho-mqtt",
     "werkzeug",
-    "pyinstaller"
+    "pyinstaller",
+    "zipp",
+    "blinker"
   ],
   "packageRules": [
     {
