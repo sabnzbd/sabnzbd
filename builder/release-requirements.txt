@@ -1,2 +1,2 @@
-PyGithub==2.4.0
+PyGithub==2.5.0
 praw==7.8.1
