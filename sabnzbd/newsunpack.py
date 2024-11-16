@@ -1069,7 +1069,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2cmdline on the other platforms
-            if cfg.enable_multipar() and sabnzbd.WIN32:
+            if cfg.disable_par2cmdline() and sabnzbd.WIN32:
                 finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
                 finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
