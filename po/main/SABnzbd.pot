@@ -336,6 +336,11 @@ msgid "Do not use a folder in the application folder as your Scripts Folder, it 
 msgstr ""
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid "The par2 application was switched, any custom par2 parameters were removed"
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr ""

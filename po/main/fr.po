@@ -412,6 +412,12 @@ msgstr ""
 "stocker les scripts, il pourrait être vidé lors des mises à jour."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"The par2 application was switched, any custom par2 parameters were removed"
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr "Configuration verrouillée, impossible de sauvegarder les paramètres"

@@ -18,7 +18,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Alpha2\n"
+"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Stefan Rodriguez Galeano, 2024\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -413,6 +413,12 @@ msgid ""
 msgstr ""
 "Verwenden Sie keinen Ordner im Anwendungsordner als Ihren Skriptordner, er "
 "könnte während Updates geleert werden."
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"The par2 application was switched, any custom par2 parameters were removed"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/config.py
