@@ -785,6 +785,17 @@ def config_conversions():
 
     # url_base conversion
     if config_conversion_version() < 2:
-        logging.info("Config conversion set 2")
         # We did not end up applying this conversion, so we skip this conversion_version
-        pass
+        logging.info("Config conversion set 2")
+        config_conversion_version.set(2)
+
+    # Switch to par2cmdline-turbo on Windows
+    if config_conversion_version() < 3:
+        logging.info("Config conversion set 3")
+        if sabnzbd.WIN32 and par_option():
+            # Just empty it, so we don't pass the wrong parameters
+            logging.warning(T("The par2 application was switched, any custom par2 parameters were removed"))
+            par_option.set("")
+
+        # Done
+        config_conversion_version.set(3)
