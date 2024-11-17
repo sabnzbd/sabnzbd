@@ -1160,13 +1160,7 @@ def par2cmdline_verify(
     else:
         # Normal case, everything is named after set
         wildcard = setname + "*"
-
-    if sabnzbd.MACOS or sabnzbd.WIN32:
-        command.append(os.path.join(parfolder, wildcard))
-    else:
-        # For Unix systems, remove folders, due to bug in some par2cmdline versions
-        flist = [item for item in globber_full(parfolder, wildcard) if os.path.isfile(item)]
-        command.extend(flist)
+    command.append(os.path.join(parfolder, wildcard))
 
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
