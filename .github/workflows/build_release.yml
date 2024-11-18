@@ -139,10 +139,9 @@ jobs:
         name: macOS binary (not notarized)
 
   release:
-    name: Publish Release
+    name: Prepare Release
     runs-on: ubuntu-latest
     needs: [build_windows, build_macos]
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -163,6 +162,7 @@ jobs:
           pip3 install -r builder/release-requirements.txt
           python3 builder/release.py
       - name: Release latest available Snap
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
         run: |
