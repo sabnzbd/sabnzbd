@@ -1,12 +1,14 @@
-Release Notes - SABnzbd 4.4.0 Beta 1
+Release Notes - SABnzbd 4.4.0 Beta 2
 =========================================================
 
-This is the first beta release of SABnzbd 4.4.0.
+This is the second beta release of SABnzbd 4.4.0.
 
 ## New features since 4.3.0
-
 * Subtitle files will be deobfuscated if required.
+* Show server `Personal notes` on the main servers display.
+* Windows: Use par2cmdline-turbo by default (thanks to @dnzbk).
 * macOS: Dropped support for macOS 10.12 and below.
+* macOS and Windows: Use Python 3.13 for release.
 
 ## Bug fixes since 4.3.0
 
