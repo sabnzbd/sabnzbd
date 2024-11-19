@@ -136,7 +136,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: "*-osx.dmg"
-        name: macOS binary (not notarized)
+        name: macOS binary
 
   release:
     name: Prepare Release
