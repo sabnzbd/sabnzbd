@@ -66,7 +66,7 @@ idna==3.10
 urllib3==2.2.3
 certifi==2024.8.30
 oauthlib==3.2.2
-PyJWT==2.9.0
+PyJWT==2.10.0
 blinker # List version-less for Python 3.8 to just get latest supported
 blinker==1.9.0; python_version > '3.8'
 
