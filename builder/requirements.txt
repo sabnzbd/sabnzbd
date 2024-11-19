@@ -6,7 +6,7 @@ pyinstaller-hooks-contrib==2024.10
 altgraph==0.17.4
 wrapt==1.16.0
 setuptools # List version-less for Python 3.8 to just get latest supported
-setuptools==75.4.0; python_version > '3.8'
+setuptools==75.5.0; python_version > '3.8'
 
 # Required on 32bit Windows, exclude it based on Python-version
 importlib_metadata==8.5.0; python_version < '3.10'
