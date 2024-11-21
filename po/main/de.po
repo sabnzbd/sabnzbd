@@ -2483,7 +2483,7 @@ msgstr "NZBs und Dateien löschen"
 #. Checkbox if job should be added to Archive
 #: sabnzbd/skintext.py
 msgid "Permanently delete (skip archive)"
-msgstr "erhaft löschen (Archiv überspringen)"
+msgstr "Endgültig löschen (Archiv überspringen)"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
