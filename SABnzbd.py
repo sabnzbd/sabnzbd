@@ -1496,6 +1496,10 @@ def main():
                 ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
             )
 
+    # TODO: Remove in 4.5
+    if hasattr(sys, "frozen") and sabnzbd.WIN32 and not sabnzbd.WIN64:
+        logging.warning("SABnzbd 4.5.0 will not have a legacy release, because Python no longer support it!")
+
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
