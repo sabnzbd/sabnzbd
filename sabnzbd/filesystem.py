@@ -435,6 +435,7 @@ def same_directory(a: str, b: str) -> int:
 
     logging.debug(f"samedir 100: a is {a}, b is {b}")
 
+
     if sabnzbd.WIN32 or sabnzbd.MACOS:
         a = clip_path(a.lower())
         b = clip_path(b.lower())
