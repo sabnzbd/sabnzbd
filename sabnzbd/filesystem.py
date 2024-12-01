@@ -432,12 +432,19 @@ def same_directory(a: str, b: str) -> int:
     return 1 if A and B are actually the same path
     return 2 if B is a sub-folder of A
     """
+
+    logging.debug(f"samedir 100 a {a} b{b}")
+
     if sabnzbd.WIN32 or sabnzbd.MACOS:
         a = clip_path(a.lower())
         b = clip_path(b.lower())
 
+    logging.debug(f"samedir 200 a {a} b{b}")
+
     a = os.path.normpath(os.path.abspath(a))
     b = os.path.normpath(os.path.abspath(b))
+
+    logging.debug(f"samedir 300 a {a} b{b}")
 
     # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     # But only if it doesn't already end in a slash, for example C:\
@@ -446,21 +453,30 @@ def same_directory(a: str, b: str) -> int:
     if not b.endswith(os.sep):
         b = b + os.sep
 
+    logging.debug(f"samedir 400 a {a} b{b}")
+
     # If it's the same file, it's also a sub-folder
     is_subfolder = 0
     if b.startswith(a):
         is_subfolder = 2
 
+    logging.debug(f"samedir 500 is_subfolder {is_subfolder}")
+
     try:
         # Only available on Linux
         if os.path.samefile(a, b) is True:
+            logging.debug(f"samedir 600")
             return 1
+        logging.debug(f"samedir 700")
         return is_subfolder
     except:
         if int(a == b):
+            logging.debug(f"samedir 800")
             return 1
         else:
+            logging.debug(f"samedir 900")
             return is_subfolder
+    logging.debug(f"samedir 1000")
 
 
 def is_network_path(path: str) -> bool:
