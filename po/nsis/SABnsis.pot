@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0RC1\n"
+"Project-Id-Version: SABnzbd-4.5.0-develop\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: team@sabnzbd.org\n"
 "Language-Team: SABnzbd <team@sabnzbd.org>\n"
@@ -25,11 +25,11 @@ msgid "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
-msgid "The installer only supports 64-bit Windows, use the standalone version to run on 32-bit Windows."
+msgid "SABnzbd only supports 64-bit Windows."
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
-msgid "The installer only supports Windows 8.1 and above, use the standalone legacy version to run on older Windows version."
+msgid "SABnzbd only supports Windows 8.1 and above."
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
@@ -58,13 +58,5 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
-msgstr ""
-
-#: builder/win/NSIS_Installer.nsi
-msgid "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
-msgstr ""
-
-#: builder/win/NSIS_Installer.nsi
-msgid "Your settings and data will be preserved."
 msgstr ""
 

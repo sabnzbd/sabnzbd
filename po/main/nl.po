@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -203,12 +203,16 @@ msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "563 and SSL turned on"
 msgstr ""
+"Kon geen verbinding maken met %s op poort %s. Gebruik de gangbare "
+"instellingen voor usenetservers: poort 563 met SSL aan."
 
 #: sabnzbd/api.py
 msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "119 and SSL turned off"
 msgstr ""
+"Kon geen verbinding maken met %s op poort %s. Gebruik de gangbare "
+"instellingen voor usenetservers: poort 119 met SSL uit."
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -403,6 +407,8 @@ msgstr ""
 msgid ""
 "The par2 application was switched, any custom par2 parameters were removed"
 msgstr ""
+"De par2-applicatie is gewijzigd, handmatig ingestelde Extra PAR2 parameters "
+"zijn verwijderd"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -483,7 +489,7 @@ msgstr "Bestandsnamen van %d bestand(en) aangepast."
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d subtitle file(s)"
-msgstr ""
+msgstr "Bestandsnamen van %d ondertitelingbestand(en) aangepast."
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -1007,7 +1013,7 @@ msgstr "Uitpakken mislukt,  schrijffout of schijf vol?"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
-msgstr ""
+msgstr "Uitpakken mislukt, de schijf is vol"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
@@ -1239,7 +1245,7 @@ msgstr "Verzenden van Prowl-bericht mislukt"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message - no URLs defined"
-msgstr ""
+msgstr "Verzenden van Apprise-bericht mislukt - geen Apprise-URL's ingevuld"
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -2971,6 +2977,8 @@ msgstr ""
 msgid ""
 "Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
+"Verwijder voltooide downloads als de geschiedenis en het archief het "
+"opgegeven aantal voltooide downloads overschrijdt"
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
@@ -2981,6 +2989,8 @@ msgstr ""
 msgid ""
 "Delete jobs from the history and archive after specified number of days"
 msgstr ""
+"Verwijder voltooide downloads als de geschiedenis en het archief het "
+"opgegeven aantal voltooide downloads overschrijdt."
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"

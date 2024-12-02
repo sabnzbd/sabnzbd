@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta2\n"
+"Project-Id-Version: SABnzbd-4.5.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2024\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -36,21 +36,12 @@ msgstr ""
 "services existants ou sur 'Annuler' pour annuler cette mise à niveau."
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports 64-bit Windows, use the standalone version to "
-"run on 32-bit Windows."
+msgid "SABnzbd only supports 64-bit Windows."
 msgstr ""
-"Le programme d'installation ne prend en charge que Windows 64 bits, utilisez"
-" la version standalone pour l'exécuter sur Windows 32 bits."
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports Windows 8.1 and above, use the standalone legacy"
-" version to run on older Windows version."
+msgid "SABnzbd only supports Windows 8.1 and above."
 msgstr ""
-"Le programme d'installation ne prend en charge que Windows 8.1 et supérieur,"
-" utilisez la version autonome legacy pour les versions antérieures de "
-"Windows."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
@@ -79,16 +70,3 @@ msgstr "Supprimer le programme"
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "Supprimer les paramètres"
-
-#: builder/win/NSIS_Installer.nsi
-msgid ""
-"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
-"the previous version or `Cancel` to cancel this upgrade."
-msgstr ""
-"Vous ne pouvez pas remplacer une installation existante. \\n\\nCliquez `OK` "
-"pour supprimer la version précédente ou `Annuler` pour annuler cette mise à "
-"niveau."
-
-#: builder/win/NSIS_Installer.nsi
-msgid "Your settings and data will be preserved."
-msgstr "Vos paramètres et données seront conservés."
