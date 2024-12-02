@@ -29,8 +29,7 @@ from constants import (
     RELEASE_VERSION_BASE,
     PRERELEASE,
     RELEASE_SRC,
-    RELEASE_BINARY_32,
-    RELEASE_BINARY_64,
+    RELEASE_BINARY,
     RELEASE_INSTALLER,
     RELEASE_MACOS,
     RELEASE_README,
@@ -43,8 +42,7 @@ from constants import (
 # Verify we have all assets
 files_to_check = (
     RELEASE_SRC,
-    RELEASE_BINARY_32,
-    RELEASE_BINARY_64,
+    RELEASE_BINARY,
     RELEASE_INSTALLER,
     RELEASE_MACOS,
     RELEASE_README,

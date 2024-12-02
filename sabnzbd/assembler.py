@@ -107,7 +107,7 @@ class Assembler(Thread):
                             else:
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
-                            if sabnzbd.WIN32:
+                            if sabnzbd.WINDOWS:
                                 logging.info(
                                     "Winerror: %s - %s",
                                     err.winerror,
@@ -289,7 +289,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
         # These checks should not break the assembler
         try:
             # Rarfile freezes on Windows special names, so don't try those!
-            if sabnzbd.WIN32 and has_win_device(filepath):
+            if sabnzbd.WINDOWS and has_win_device(filepath):
                 return encrypted, unwanted
 
             # Is it even a rarfile?

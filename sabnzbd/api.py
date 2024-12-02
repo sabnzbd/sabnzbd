@@ -1771,10 +1771,10 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
         header["webdir"] = webdir or sabnzbd.WEB_DIR
         header["url_base"] = cfg.url_base()
 
-        header["windows"] = sabnzbd.WIN32
+        header["windows"] = sabnzbd.WINDOWS
         header["macos"] = sabnzbd.MACOS
 
-        header["power_options"] = sabnzbd.WIN32 or sabnzbd.MACOS or sabnzbd.LINUX_POWER
+        header["power_options"] = sabnzbd.WINDOWS or sabnzbd.MACOS or sabnzbd.LINUX_POWER
         header["pp_pause_event"] = sabnzbd.Scheduler.pp_pause_event
 
         header["apikey"] = cfg.api_key()

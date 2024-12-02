@@ -75,7 +75,7 @@ def add_nzbfile(
         path = nzbfile
         filename = os.path.basename(path)
         keep_default = True
-        if not sabnzbd.WIN32:
+        if not sabnzbd.WINDOWS:
             # If windows client sends file to Unix server backslashes may
             # be included, so convert these
             path = path.replace("\\", "/")

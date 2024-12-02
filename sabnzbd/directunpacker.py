@@ -415,7 +415,7 @@ class DirectUnpacker(threading.Thread):
 
         # Generate command
         rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # On Windows, UnRar uses a custom argument parser
             # See: https://github.com/sabnzbd/sabnzbd/issues/1043
             # The -scf forces the output to be UTF8

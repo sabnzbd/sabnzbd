@@ -115,18 +115,10 @@ def find_programs(curdir: str):
         # The 7zip binary is universal2
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7zz")
 
-    if sabnzbd.WIN32:
-        if sabnzbd.WIN64:
-            # 64 bit versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/x64/par2.exe")
-            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j64.exe")
-            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/x64/UnRAR.exe")
-        else:
-            # 32 bit versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
-            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
-            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
-        # We just use the 32 bit version
+    if sabnzbd.WINDOWS:
+        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
+        sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j64.exe")
+        sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -163,7 +155,7 @@ def find_programs(curdir: str):
                 )
             )
 
-    if not (sabnzbd.WIN32 or sabnzbd.MACOS):
+    if not (sabnzbd.WINDOWS or sabnzbd.MACOS):
         # Run check on rar version
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < sabnzbd.constants.REC_RAR_VERSION
@@ -344,7 +336,7 @@ def unpacker(
 
     # We can't recursive unpack on long paths on Windows
     # See: https://github.com/sabnzbd/sabnzbd/pull/771
-    if sabnzbd.WIN32 and len(workdir_complete) > 256:
+    if sabnzbd.WINDOWS and len(workdir_complete) > 256:
         rerun = False
 
     # Double-check that we didn't miss any files in workdir
@@ -676,7 +668,7 @@ def rar_extract_core(
         overwrite = "-o-"  # Disable overwrite
         rename = "-or"  # Auto renaming
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         # On Windows, UnRar uses a custom argument parser
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         # The -scf forces the output to be UTF8
@@ -959,7 +951,7 @@ def seven_extract_core(
         method = "e"  # Unpack without folders
     else:
         method = "x"  # Unpack with folders
-    if sabnzbd.WIN32 or sabnzbd.MACOS:
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
         case = "-ssc-"  # Case insensitive
     else:
         case = "-ssc"  # Case sensitive
@@ -1069,7 +1061,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2cmdline on the other platforms
-            if cfg.disable_par2cmdline() and sabnzbd.WIN32:
+            if cfg.disable_par2cmdline() and sabnzbd.WINDOWS:
                 finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
                 finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
@@ -1143,7 +1135,7 @@ def par2cmdline_verify(
     start = time.time()
 
     # Long-path notation isn't supported by par2cmdline
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         parfile = clip_path(parfile)
 
     # Build command and add extra options

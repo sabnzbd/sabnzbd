@@ -534,7 +534,7 @@ ncenter_prio_queue_done = OptionBool("ncenter", "ncenter_prio_queue_done", False
 ncenter_prio_other = OptionBool("ncenter", "ncenter_prio_other", True)
 
 # [acenter]
-acenter_enable = OptionBool("acenter", "acenter_enable", sabnzbd.WIN32)
+acenter_enable = OptionBool("acenter", "acenter_enable", sabnzbd.WINDOWS)
 acenter_cats = OptionList("acenter", "acenter_cats", ["*"])
 acenter_prio_startup = OptionBool("acenter", "acenter_prio_startup", False)
 acenter_prio_download = OptionBool("acenter", "acenter_prio_download", False)
@@ -550,7 +550,7 @@ acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", False
 acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
-ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.MACOS)
+ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WINDOWS and not sabnzbd.MACOS)
 ntfosd_cats = OptionList("ntfosd", "ntfosd_cats", ["*"])
 ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", False)
 ntfosd_prio_download = OptionBool("ntfosd", "ntfosd_prio_download", False)
@@ -792,7 +792,7 @@ def config_conversions():
     # Switch to par2cmdline-turbo on Windows
     if config_conversion_version() < 3:
         logging.info("Config conversion set 3")
-        if sabnzbd.WIN32 and par_option():
+        if sabnzbd.WINDOWS and par_option():
             # Just empty it, so we don't pass the wrong parameters
             logging.warning(T("The par2 application was switched, any custom par2 parameters were removed"))
             par_option.set("")

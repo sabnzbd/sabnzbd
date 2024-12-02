@@ -100,25 +100,25 @@ def set_platform(platform):
     def set_platform_decorator(func):
         def wrapper_func(*args, **kwargs):
             # Save original values
-            is_windows = sabnzbd.WIN32
+            is_windows = sabnzbd.WINDOWS
             is_macos = sabnzbd.MACOS
 
             # Set current platform
             if platform == "win32":
-                sabnzbd.WIN32 = True
+                sabnzbd.WINDOWS = True
                 sabnzbd.MACOS = False
             elif platform == "macos":
-                sabnzbd.WIN32 = False
+                sabnzbd.WINDOWS = False
                 sabnzbd.MACOS = True
             elif platform == "linux":
-                sabnzbd.WIN32 = False
+                sabnzbd.WINDOWS = False
                 sabnzbd.MACOS = False
 
             # Perform test
             value = func(*args, **kwargs)
 
             # Reset values
-            sabnzbd.WIN32 = is_windows
+            sabnzbd.WINDOWS = is_windows
             sabnzbd.MACOS = is_macos
 
             return value

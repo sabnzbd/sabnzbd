@@ -36,8 +36,7 @@ from constants import (
     VERSION_FILE,
     RELEASE_README,
     RELEASE_NAME,
-    RELEASE_BINARY_32,
-    RELEASE_BINARY_64,
+    RELEASE_BINARY,
     RELEASE_INSTALLER,
     ON_GITHUB_ACTIONS,
     RELEASE_THIS,
@@ -215,13 +214,6 @@ if __name__ == "__main__":
         if sys.platform != "win32":
             raise RuntimeError("Binary should be created on Windows")
 
-        # Check what architecture we are on
-        RELEASE_BINARY = RELEASE_BINARY_32
-        BUILDING_64BIT = False
-        if platform.architecture()[0] == "64bit":
-            RELEASE_BINARY = RELEASE_BINARY_64
-            BUILDING_64BIT = True
-
         # Remove any leftovers
         safe_remove(RELEASE_BINARY)
 
@@ -233,21 +225,10 @@ if __name__ == "__main__":
 
         # Remove unwanted DLL's
         shutil.rmtree("dist/SABnzbd/Pythonwin")
-        if BUILDING_64BIT:
-            # These are only present on 64bit (Python 3.9+)
-            delete_files_glob("dist/SABnzbd/api-ms-win*.dll", allow_no_matches=True)
-            delete_files_glob("dist/SABnzbd/ucrtbase.dll", allow_no_matches=True)
-
-            # Remove 32bit external executables
-            delete_files_glob("dist/SABnzbd/win/par2/par2.exe")
-            delete_files_glob("dist/SABnzbd/win/multipar/par2j.exe")
-            delete_files_glob("dist/SABnzbd/win/unrar/UnRAR.exe")
+        delete_files_glob("dist/SABnzbd/api-ms-win*.dll", allow_no_matches=True)
+        delete_files_glob("dist/SABnzbd/ucrtbase.dll", allow_no_matches=True)
 
         if "installer" in sys.argv:
-            # Needs to be run on 64 bit
-            if not BUILDING_64BIT:
-                raise RuntimeError("Installer should be created on 64bit Python")
-
             # Compile NSIS translations
             safe_remove("NSIS_Installer.nsi")
             safe_remove("NSIS_Installer.nsi.tmp")

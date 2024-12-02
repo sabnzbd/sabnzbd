@@ -58,7 +58,7 @@ from sabnzbd.decorators import cache_maintainer
 from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file
 
-if sabnzbd.WIN32:
+if sabnzbd.WINDOWS:
     try:
         import winreg
         import win32process
@@ -689,7 +689,7 @@ def get_cache_limit():
     """
     # Calculate, if possible
     try:
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # Windows
             mem_bytes = get_windows_memory()
         elif sabnzbd.MACOS:
@@ -713,7 +713,7 @@ def get_cache_limit():
         pass
 
     # Always at least minimum on Windows/macOS
-    if sabnzbd.WIN32 and sabnzbd.MACOS:
+    if sabnzbd.WINDOWS and sabnzbd.MACOS:
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
@@ -761,7 +761,7 @@ def get_cpu_name():
     cputype = None
 
     try:
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0")
             cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
             winreg.CloseKey(key)
@@ -836,7 +836,7 @@ _HAVE_STATM = _PAGE_SIZE and memory_usage()
 def loadavg():
     """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
-    if not sabnzbd.WIN32 and not sabnzbd.MACOS:
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
         try:
             p = "%.2f | %.2f | %.2f" % os.getloadavg()
         except:
@@ -989,7 +989,7 @@ def is_sample(filename: str) -> bool:
 
 def find_on_path(targets):
     """Search the PATH for a program and return full path"""
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         paths = os.getenv("PATH").split(";")
     else:
         paths = os.getenv("PATH").split(":")
@@ -1117,7 +1117,7 @@ def ip_extract() -> List[str]:
         if program:
             program = [program]
 
-    if sabnzbd.WIN32 or not program:
+    if sabnzbd.WINDOWS or not program:
         try:
             info = socket.getaddrinfo(socket.gethostname(), None)
         except:
@@ -1206,7 +1206,7 @@ def build_and_run_command(command: List[str], windows_unrar_command: bool = Fals
         logging.error(T("[%s] The command in build_command is undefined."), caller_name())
         raise IOError
 
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WINDOWS:
         if command[0].endswith(".py"):
             with open(command[0], "r") as script_file:
                 if not userxbit(command[0]):
@@ -1338,7 +1338,7 @@ def system_shutdown():
     while sabnzbd.__INITIALIZED__:
         time.sleep(1.0)
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_shutdown()
     elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_shutdown()
@@ -1349,7 +1349,7 @@ def system_shutdown():
 def system_hibernate():
     """Hibernate system"""
     logging.info("Performing system hybernation")
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_hibernate()
     elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_hibernate()
@@ -1360,7 +1360,7 @@ def system_hibernate():
 def system_standby():
     """Standby system"""
     logging.info("Performing system standby")
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_standby()
     elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_standby()

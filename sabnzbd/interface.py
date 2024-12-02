@@ -502,7 +502,7 @@ class Wizard:
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         """Show the language selection page"""
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             from sabnzbd.utils.apireg import get_install_lng
 
             cfg.language.set(get_install_lng())

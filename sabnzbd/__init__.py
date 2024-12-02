@@ -32,12 +32,16 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WIN32 = WIN64 = MACOS = MACOSARM64 = FOUNDATION = DOCKER = False
+WINDOWS = MACOS = MACOSARM64 = FOUNDATION = DOCKER = False
 KERNEL32 = LIBC = MACOSLIBC = None
 
 if os.name == "nt":
-    WIN32 = True
-    WIN64 = platform.uname().machine in ["AMD64", "ARM64"]  # includes emulation of X86_64 on Windows ARM64
+    WINDOWS = True
+
+    if platform.uname().machine not in ["AMD64", "ARM64"]:
+        print("SABnzbd only supports 64-bit Windows")
+        sys.exit(1)
+
     from sabnzbd.utils.apireg import del_connection_info
 
     try:
@@ -192,7 +196,7 @@ __SHUTTING_DOWN__ = False
 # Signal Handler
 ##############################################################################
 def sig_handler(signum=None, frame=None):
-    if sabnzbd.WIN32 and signum is not None and DAEMON and signum == 5:
+    if sabnzbd.WINDOWS and signum is not None and DAEMON and signum == 5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if signum is not None:
@@ -338,7 +342,7 @@ def halt():
             sabnzbd.WINTRAY.stop()
 
         # Remove registry information
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             del_connection_info()
 
         sabnzbd.zconfig.remove_server()
@@ -492,7 +496,7 @@ def check_all_tasks():
 
 def pid_file(pid_path=None, pid_file=None, port=0):
     """Create or remove pid file"""
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WINDOWS:
         if pid_path and pid_path.startswith("/"):
             sabnzbd.DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
         elif pid_file and pid_file.startswith("/"):

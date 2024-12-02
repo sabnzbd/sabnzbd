@@ -212,7 +212,7 @@ def sanitize_filename(name: str) -> str:
     illegal = CH_ILLEGAL
     legal = CH_LEGAL
 
-    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
+    if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
@@ -228,7 +228,7 @@ def sanitize_filename(name: str) -> str:
         lst.append(ch)
     name = "".join(lst)
 
-    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
+    if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
 
     if not name:
@@ -277,7 +277,7 @@ def sanitize_foldername(name: str) -> str:
     illegal = CH_ILLEGAL + ':"'
     legal = CH_LEGAL + "-'"
 
-    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
+    if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
@@ -291,7 +291,7 @@ def sanitize_foldername(name: str) -> str:
             lst.append(ch)
     name = "".join(lst)
 
-    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
+    if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
 
     if len(name) >= sabnzbd.cfg.max_foldername_length():
@@ -314,7 +314,7 @@ def sanitize_and_trim_path(path: str) -> str:
     """Remove illegal characters and trim element size"""
     path = path.strip()
     new_path = ""
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         if path.startswith("\\\\?\\UNC\\"):
             new_path = "\\\\?\\UNC\\"
             path = path[8:]
@@ -324,7 +324,7 @@ def sanitize_and_trim_path(path: str) -> str:
 
     path = path.replace("\\", "/")
     parts = path.split("/")
-    if sabnzbd.WIN32 and len(parts[0]) == 2 and ":" in parts[0]:
+    if sabnzbd.WINDOWS and len(parts[0]) == 2 and ":" in parts[0]:
         new_path += parts[0] + "/"
         parts.pop(0)
     elif path.startswith("//"):
@@ -373,9 +373,9 @@ def real_path(loc: str, path: str) -> str:
     else:
         path = ""
     if path:
-        if not sabnzbd.WIN32 and path.startswith("~/"):
+        if not sabnzbd.WINDOWS and path.startswith("~/"):
             path = path.replace("~", os.environ.get("HOME", sabnzbd.DIR_HOME), 1)
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # The Windows-functions work differently on long-path
             # So we bring it back to normal and make it long-path at the end
             loc = clip_path(loc)
@@ -432,7 +432,7 @@ def same_directory(a: str, b: str) -> int:
     return 1 if A and B are actually the same path
     return 2 if B is a sub-folder of A
     """
-    if sabnzbd.WIN32 or sabnzbd.MACOS:
+    if sabnzbd.WINDOWS or sabnzbd.MACOS:
         a = clip_path(a.lower())
         b = clip_path(b.lower())
 
@@ -470,7 +470,7 @@ def is_network_path(path: str) -> bool:
     path = clip_path(path)
     if path.startswith(r"\\"):
         return True
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         drive_letter, _ = os.path.splitdrive(path)
         return win32file.GetDriveType(drive_letter) == win32file.DRIVE_REMOTE
     return False
@@ -483,7 +483,7 @@ def mount_is_available(path: str) -> bool:
     """
     if sabnzbd.MACOS:
         m = re.search(r"^(/Volumes/[^/]+)", path, re.I)
-    elif sabnzbd.WIN32:
+    elif sabnzbd.WINDOWS:
         m = re.search(r"^([a-z]:\\)", path, re.I)
     else:
         m = re.search(r"^(/(?:mnt|media)/[^/]+)", path)
@@ -578,7 +578,7 @@ def fix_unix_encoding(folder: str):
     This happens for example when files are created
     on Windows but unpacked/repaired on linux
     """
-    if not sabnzbd.WIN32 and not sabnzbd.MACOS:
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
         for root, dirs, files in os.walk(folder):
             for name in files:
                 new_name = correct_unknown_encoding(name)
@@ -603,12 +603,12 @@ def list_scripts(default: bool = False, none: bool = True) -> List[str]:
             if os.path.isfile(script):
                 if (
                     (
-                        sabnzbd.WIN32
+                        sabnzbd.WINDOWS
                         and get_ext(script) in PATHEXT
                         and not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN
                     )
                     or script.endswith(".py")
-                    or (not sabnzbd.WIN32 and userxbit(script) and not os.path.basename(script).startswith("."))
+                    or (not sabnzbd.WINDOWS and userxbit(script) and not os.path.basename(script).startswith("."))
                 ):
                     lst.append(os.path.basename(script))
             # Make sure capitalization is ignored to avoid strange results
@@ -660,7 +660,7 @@ def set_chmod(path: str, permissions: int, allow_failures: bool = False):
 
 def set_permissions(path: str, recursive: bool = True):
     """Give folder tree and its files their proper permissions"""
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WINDOWS:
         if custom_permissions := sabnzbd.cfg.permissions():
             # If user set permissions, parse them
             custom_permissions = int(custom_permissions, 8)
@@ -714,14 +714,14 @@ def userxbit(path: str) -> bool:
 
 def clip_path(path: str) -> str:
     r"""Remove \\?\ or \\?\UNC\ prefix from Windows path"""
-    if sabnzbd.WIN32 and path and "?" in path:
+    if sabnzbd.WINDOWS and path and "?" in path:
         path = path.replace("\\\\?\\UNC\\", "\\\\", 1).replace("\\\\?\\", "", 1)
     return path
 
 
 def long_path(path: str) -> str:
     """For Windows, convert to long style path; others, return same path"""
-    if sabnzbd.WIN32 and path and not path.startswith("\\\\?\\"):
+    if sabnzbd.WINDOWS and path and not path.startswith("\\\\?\\"):
         if path.startswith("\\\\"):
             # Special form for UNC paths
             path = path.replace("\\\\", "\\\\?\\UNC\\", 1)
@@ -745,7 +745,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
     """
     try:
         logging.info("Creating directories: %s", path)
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # On Windows it can fail on UNC-paths in long-path notation
             # https://bugs.python.org/issue41705
             if not os.path.exists(path):
@@ -915,7 +915,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
             create_all_dirs(path)
 
     logging.debug('Renaming "%s" to "%s"', old, new)
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         retries = 10
         while retries > 0:
             try:
@@ -958,7 +958,7 @@ def remove_file(path: str):
 def remove_dir(path: str):
     """Remove directory with retries for Win32"""
     logging.debug("[%s] Removing dir %s", sabnzbd.misc.caller_name(), path)
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         retries = 15
         while retries > 0:
             try:
@@ -991,7 +991,7 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
         else:
             # Get files based on pattern
             files = globber_full(path, pattern)
-            if pattern == "*" and not sabnzbd.WIN32:
+            if pattern == "*" and not sabnzbd.WINDOWS:
                 files.extend(globber_full(path, ".*"))
 
             for f in files:
@@ -1063,7 +1063,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
     while x and not os.path.exists(dir_to_check):
         dir_to_check, x = os.path.split(dir_to_check)
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         # windows diskfree
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
@@ -1311,7 +1311,7 @@ def check_filesystem_capabilities(test_dir: str) -> bool:
         allgood = False
 
     # if not on Windows, check special chars like \ and :
-    if not sabnzbd.WIN32 and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
+    if not sabnzbd.WINDOWS and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
         sabnzbd.misc.helpful_warning(
             T("%s is not writable with special character filenames. This can cause problems."), test_dir
         )
@@ -1354,7 +1354,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
     under Unix this means "/", on Windows this will be a list of drive letters
     """
     if path == "":
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             entries = [{"current_path": "Root"}]
             for letter in get_win_drives():
                 entries.append(
@@ -1381,7 +1381,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
     parent_path = os.path.dirname(path)
 
     # If we're at the root then the next step is the meta-node showing our drive letters
-    if path == parent_path and sabnzbd.WIN32:
+    if path == parent_path and sabnzbd.WINDOWS:
         parent_path = ""
 
     # List all files and folders
@@ -1400,7 +1400,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
 
         # Skip hidden files
         if not show_hidden:
-            if sabnzbd.WIN32:
+            if sabnzbd.WINDOWS:
                 try:
                     if win32api.GetFileAttributes(fpath) & win32con.FILE_ATTRIBUTE_HIDDEN:
                         continue

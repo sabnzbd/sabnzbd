@@ -157,7 +157,7 @@ class DirScanner(threading.Thread):
                             # https://docs.python.org/3/library/os.html#os.DirEntry.stat
                             # On Windows, the st_ino, st_dev and st_nlink attributes of the stat_result are always set
                             # to zero. Call os.stat() to get these attributes.
-                            if sabnzbd.WIN32:
+                            if sabnzbd.WINDOWS:
                                 stat_tuple = os.stat(path)
                             else:
                                 stat_tuple = entry.stat()

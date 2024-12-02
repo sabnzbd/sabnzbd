@@ -122,7 +122,7 @@ try:
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         print("Sorry, requires Python module PyWin32.")
         sys.exit(1)
 
@@ -210,7 +210,7 @@ def print_help():
     print("  -w  --weblogging            Enable cherrypy access logging")
     print()
     print("  -b  --browser <0..1>        Auto browser launch (0= off, 1= on) [*]")
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         print("  -d  --daemon                Use when run as a service")
     else:
         print("  -d  --daemon                Fork daemon process")
@@ -375,14 +375,14 @@ def get_user_profile_paths():
         # just assume that everything defaults to the program dir
         sabnzbd.DIR_LCLDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_HOME = sabnzbd.DIR_PROG
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # Ignore Win32 "logoff" signal
             # This should work, but it doesn't
             # Instead the signal_handler will ignore the "logoff" signal
             # signal.signal(5, signal.SIG_IGN)
             pass
         return
-    elif sabnzbd.WIN32:
+    elif sabnzbd.WINDOWS:
         try:
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
             sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
@@ -446,7 +446,7 @@ def print_modules():
 
     logging.info("Cryptography module (v%s)... found!", cryptography.__version__)
 
-    if sabnzbd.WIN32 and sabnzbd.newsunpack.MULTIPAR_COMMAND:
+    if sabnzbd.WINDOWS and sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
 
     if sabnzbd.newsunpack.PAR2_COMMAND:
@@ -464,7 +464,7 @@ def print_modules():
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
             helpful_warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
-        elif not (sabnzbd.WIN32 or sabnzbd.MACOS):
+        elif not (sabnzbd.WINDOWS or sabnzbd.MACOS):
             logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
         logging.error(T("unrar binary... NOT found"))
@@ -473,12 +473,12 @@ def print_modules():
 
     if sabnzbd.newsunpack.SEVENZIP_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        if not (sabnzbd.WIN32 or sabnzbd.MACOS):
+        if not (sabnzbd.WINDOWS or sabnzbd.MACOS):
             logging.info("7za binary version %s", sabnzbd.newsunpack.SEVENZIP_VERSION)
     else:
         logging.warning(T("7za binary... NOT found!"))
 
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WINDOWS:
         if sabnzbd.newsunpack.NICE_COMMAND:
             logging.info("nice binary... found (%s)", sabnzbd.newsunpack.NICE_COMMAND)
         else:
@@ -624,10 +624,10 @@ def get_webhost(web_host, web_port, https_port):
             except socket.error:
                 web_host = web_host.strip("[]")
 
-    if ipv6 and ipv4 and web_host == "" and sabnzbd.WIN32:
+    if ipv6 and ipv4 and web_host == "" and sabnzbd.WINDOWS:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
-    if web_host == "localhost" and not sabnzbd.WIN32 and not sabnzbd.MACOS:
+    if web_host == "localhost" and not sabnzbd.WINDOWS and not sabnzbd.MACOS:
         # On the Ubuntu family, localhost leads to problems for CherryPy
         ips = ip_extract()
         if "127.0.0.1" in ips and "::1" in ips:
@@ -866,7 +866,7 @@ def main():
         if opt == "--servicecall":
             sabnzbd.MY_FULLNAME = arg
         elif opt in ("-d", "--daemon"):
-            if not sabnzbd.WIN32:
+            if not sabnzbd.WINDOWS:
                 fork = True
             autobrowser = False
             sabnzbd.DAEMON = True
@@ -1025,7 +1025,7 @@ def main():
 
     # Windows instance is reachable through registry
     url = None
-    if sabnzbd.WIN32 and not new_instance:
+    if sabnzbd.WINDOWS and not new_instance:
         url = get_connection_info()
         if url and check_for_sabnzbd(url, upload_nzbs, autobrowser):
             exit_sab(0)
@@ -1127,7 +1127,7 @@ def main():
         exit_sab(2)
 
     # Fork on non-Windows processes
-    if fork and not sabnzbd.WIN32:
+    if fork and not sabnzbd.WINDOWS:
         daemonize()
     else:
         if console_logging:
@@ -1168,7 +1168,7 @@ def main():
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
-    if not sabnzbd.WIN32 and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
         helpful_warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
@@ -1177,7 +1177,7 @@ def main():
         )
 
     # Verify umask, we need at least 700
-    if not sabnzbd.WIN32 and sabnzbd.ORG_UMASK > int("077", 8):
+    if not sabnzbd.WINDOWS and sabnzbd.ORG_UMASK > int("077", 8):
         sabnzbd.misc.helpful_warning(
             T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
             sabnzbd.ORG_UMASK,
@@ -1226,7 +1226,7 @@ def main():
 
     # Handle the several tray icons
     if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
             try:
@@ -1425,7 +1425,7 @@ def main():
     else:
         sabnzbd.BROWSER_URL = "http://%s:%s%s" % (browserhost, web_port, sabnzbd.cfg.url_base())
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         # Write URL for uploads and version check directly to registry
         set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}")
 
@@ -1496,10 +1496,6 @@ def main():
                 ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
             )
 
-    # TODO: Remove in 4.5
-    if hasattr(sys, "frozen") and sabnzbd.WIN32 and not sabnzbd.WIN64:
-        logging.warning("SABnzbd 4.5.0 will not have a legacy release, because Python no longer support it!")
-
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
@@ -1567,7 +1563,7 @@ def main():
                     # Use external service handler to do the restart
                     # Wait 5 seconds to clean up
                     subprocess.Popen("timeout 5 & sc start SABnzbd", shell=True)
-                elif sabnzbd.WIN32:
+                elif sabnzbd.WINDOWS:
                     # Just a simple restart of the exe
                     os.execv(sys.executable, ['"%s"' % arg for arg in sys.argv])
             else:
@@ -1604,7 +1600,7 @@ def main():
 ##############################################################################
 
 
-if sabnzbd.WIN32:
+if sabnzbd.WINDOWS:
 
     class SABnzbd(win32serviceutil.ServiceFramework):
         """Win32 Service Handler"""
@@ -1720,7 +1716,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, sabnzbd.sig_handler)
     signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         if not handle_windows_service():
             main()
 
