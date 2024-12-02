@@ -490,7 +490,7 @@ class Downloader(Thread):
 
         # Optional and active server had too many problems.
         # Disable it now and send a re-enable plan to the scheduler
-        if server.optional and server.active and (server.bad_cons / server.threads) > 3:
+        if server.optional and server.active and (server.threads < 1 or (server.bad_cons / server.threads) > 3):
             # Deactivate server
             server.bad_cons = 0
             server.deactivate()
