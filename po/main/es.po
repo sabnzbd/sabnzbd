@@ -4,13 +4,14 @@
 # Translators:
 # Ester Molla Aragones <moarages@gmail.com>, 2020
 # 1024mb <angelb2203@gmail.com>, 2023
-# Safihre <safihre@sabnzbd.org>, 2023
+# Carmen Gonzalez, 2024
+# Safihre <safihre@sabnzbd.org>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.4.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -196,18 +197,25 @@ msgid ""
 "server (port 80), possibly an indexer, not a usenet server. You have to fill"
 " a usenet server."
 msgstr ""
+"No se pudo conectar a %s en el puerto %s. Parece que %s funciona como un "
+"servidor web (puerto 80), posiblemente un indexador, no un servidor Usenet. "
+"Debe agregar un servidor Usenet."
 
 #: sabnzbd/api.py
 msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "563 and SSL turned on"
 msgstr ""
+"No se pudo conectar a %s en el puerto %s. Utilice la configuración de Usenet"
+" predeterminada: puerto 563 y SSL activado"
 
 #: sabnzbd/api.py
 msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "119 and SSL turned off"
 msgstr ""
+"No se pudo conectar a %s en el puerto %s. Utilice la configuración de Usenet"
+" predeterminada: puerto 119 y SSL desactivado"
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -357,7 +365,7 @@ msgstr "Dirección del servidor no válida."
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
-msgstr ""
+msgstr "%s no es un script válido"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a correct octal value"
@@ -369,11 +377,13 @@ msgid ""
 "Permissions setting of %s might deny SABnzbd access to the files and folders"
 " it creates."
 msgstr ""
+"La configuración de permisos de %s podría negar a SABnzbd el acceso a los "
+"archivos y carpetas que crea."
 
 #. Warning message
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" should not be used here"
-msgstr ""
+msgstr "La ruta de red \"%s\" no debe usarse aquí"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
