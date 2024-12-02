@@ -2,7 +2,7 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 apprise==1.9.0
 sabctools==8.2.5
-CT3==3.4.0b5
+CT3==3.4.0b6
 cffi==1.17.1
 pycparser==2.22
 feedparser==6.0.11
@@ -31,7 +31,7 @@ rebulk==3.2.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==43.0.3
+cryptography==44.0.0
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
@@ -47,8 +47,8 @@ winrt-Windows.Foundation.Collections==2.3.0; sys_platform == 'win32' and python_
 winrt-Windows.UI.Notifications==2.3.0; sys_platform == 'win32' and python_version > '3.8'
 
 # macOS system calls
-pyobjc-core==10.3.1; sys_platform == 'darwin'
-pyobjc-framework-Cocoa==10.3.1; sys_platform == 'darwin'
+pyobjc-core==10.3.2; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==10.3.2; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
@@ -67,7 +67,7 @@ urllib3==2.2.3
 certifi==2024.8.30
 oauthlib==3.2.2
 PyJWT # List version-less for Python 3.8 to just get latest supported
-PyJWT==2.10.0; python_version > '3.8'
+PyJWT==2.10.1; python_version > '3.8'
 blinker # List version-less for Python 3.8 to just get latest supported
 blinker==1.9.0; python_version > '3.8'
 
