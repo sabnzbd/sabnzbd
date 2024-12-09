@@ -1,58 +1,23 @@
-Release Notes - SABnzbd 4.3.3
+Release Notes - SABnzbd 4.4.0
 =========================================================
 
-This is the third bug fix release of SABnzbd 4.3.0.
+## New features in 4.4.0
 
-## Bug fixes and changes since 4.3.2
-* Reduced chance of jobs getting stuck at 99%.
-* Prevent crash in case of invalid articles.
-* Correct handling of empty or `Default` category when adding a job.
-* History API-output could contain inconsistent variable types.
-* Skip external IPv6 check if only link local addresses are available.
-* Shortened timeouts when resolving addresses during checks.
-* Windows: Could not repair or extract on ARM platforms.
-* Windows: Add file version information to installer.
+* Subtitle files will be deobfuscated if required.
+* Show server `Personal notes` on the main servers display.
+* Windows: Use par2cmdline-turbo by default (thanks to @dnzbk).
+* macOS: Dropped support for macOS 10.12 and below.
+* macOS and Windows: Use Python 3.13 for release.
+* Windows: The next release will no longer support Windows 32bit or Windows 7.
 
-## Bug fixes and changes since 4.3.1
+## Bug fixes in 4.4.0
 
-* Added Special option `disable_archive` for jobs to always be permanently deleted.
-* Specific AppRise notifications could fail to send.
-* Update of the article decoder core (`rapidyenc`).
-* Windows: After some time the interface would no longer load.
-* Windows: Custom shortcuts would be removed by the installer.
-* Windows/macOS: Updated Unrar to 7.01 and 7zip to 24.05.
-
-## Key changes since 4.2.0
-
-* **Archive:**
-    * When jobs are removed from the History, they are moved to the Archive.
-    * Keep your History clean and still be able to reliably use Duplicate Detection.
-
-* **Apprise Integrated:**
-    * Send notifications using Apprise to almost any notification service.
-    * Supported notifications: https://github.com/caronc/apprise/wiki
-    * Notification Script `SABnzbd-notify.py` is no longer needed.
-
-* **Added IPv6-staging option:**
-    * Enable `ipv6_staging` in Config - Specials to get additional IPv6 features:
-        * Add IPv6 hostnames during address selection.
-        * Internet Bandwidth is measured separately for IPv4 and IPv6.
-
-* **Other:**
-    * The `text` output format is removed from the API, `json` is the default.
-    * Handling of multiple inputs to several API methods was improved.
-    * File browser dialog is available to select file paths in the Config.
-    * Users will be warned if they configure an Indexer as a Server.
-    * Added `SAB_API_KEY` and `SAB_API_URL` to script environment variables.
-    * Windows/macOS: Updated Python to 3.12.3, Multipar to v1.3.3.2,
-      Unrar to 7.00 and 7zip to 24.03.
-
-## Bug fixes since 4.2.0
-
-* Incorrect warnings of unknown status codes could be thrown.
-* Watched Folder would not work if Socks5 proxy was active.
-* Prevent crash on invalid Server Expiration Date.
-* Windows: Installer could create duplicate shortcuts.
+* Toggling of Servers could result in jobs being stuck at 99%.
+* Corrupt NZB's could also result in jobs being stuck at 99%.
+* Config restart would always determine redirect URL instead of using current.
+* Correctly handle `disk full` errors from Unrar.
+* Create new history database in case of `no such table` error.
+* Interface could load in tabbed mode even though it was not enabled.
 
 ## Upgrade notices
 

@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.3Beta2\n"
+"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -197,6 +197,18 @@ msgstr ""
 "Kon geen verbinding maken met %s op poort %s. Het lijkt erop dat %s "
 "functioneert als een webserver (poort 80), mogelijk een indexer, geen "
 "usenetserver. Vul een usenetserver in."
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"563 and SSL turned on"
+msgstr ""
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -387,6 +399,12 @@ msgstr ""
 "locatie te gebruiken voor je scripts."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"The par2 application was switched, any custom par2 parameters were removed"
+msgstr ""
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr "Configuratie geblokkeerd, kan instellingen niet opslaan"
@@ -462,6 +480,10 @@ msgstr "Extensie van %d bestand(en) gecorrigeerd"
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
 msgstr "Bestandsnamen van %d bestand(en) aangepast."
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr ""
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -982,6 +1004,10 @@ msgstr "Uitplakken mislukt, bestand te groot voor het bestandssysteem (FAT?)"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Uitpakken mislukt,  schrijffout of schijf vol?"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"

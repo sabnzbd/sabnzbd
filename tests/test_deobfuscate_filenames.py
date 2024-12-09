@@ -18,7 +18,7 @@
 """
 Testing SABnzbd deobfuscate module
 """
-
+import os.path
 import random
 import shutil
 import zipfile
@@ -404,3 +404,83 @@ class TestDeobfuscateFinalResult:
         assert not os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should now be gone
 
         shutil.rmtree(work_dir)
+
+    def test_get_biggest_file(self):
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        smallfile1 = os.path.join(dirname, "AAAA.bin")
+        create_small_file(smallfile1)
+        assert os.path.isfile(smallfile1)
+
+        bigfile = os.path.join(dirname, "KKKK.bin")
+        create_big_file(bigfile)
+        assert os.path.isfile(bigfile)
+
+        smallfile2 = os.path.join(dirname, "LLLL.bin")
+        create_small_file(smallfile2)
+        assert os.path.isfile(smallfile2)
+
+        # empty list should return None
+        assert not get_biggest_file([])
+
+        # just 1 file as input is always the biggest file
+        assert get_biggest_file([smallfile1]) == smallfile1  # just 1 file, so that's the biggest
+
+        # files with same small size, so no biggest file
+        assert not get_biggest_file([smallfile1, smallfile2])
+
+        # now including the bigger file
+        assert get_biggest_file([smallfile1, smallfile2, bigfile]) == bigfile
+
+        shutil.rmtree(dirname)
+
+    def test_deobfuscate_subtitles(self):
+        # input: a big file, and srt file(s), and non-related files
+        # result: srt file renamed according to the big file
+
+        """Wrapper to avoid the need for NZO"""
+        nzo = mock.Mock()
+        nzo.set_unpack_info = mock.Mock()
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_CACHE_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        bigfile = os.path.join(dirname, "bigfile.avi")
+        create_big_file(bigfile)
+        assert os.path.isfile(bigfile)
+
+        already_correct_srt = os.path.join(dirname, "bigfile.srt")
+        create_small_file(already_correct_srt)
+        assert os.path.isfile(already_correct_srt)
+
+        small_srt = os.path.join(dirname, "dut.srt")
+        create_small_file(small_srt)
+        assert os.path.isfile(small_srt)
+        expected_small_srt = os.path.join(dirname, "bigfile.dut.srt")
+
+        small_txt = os.path.join(dirname, "readme.txt")
+        create_small_file(small_txt)
+        assert os.path.isfile(small_txt)
+
+        # go
+        deobfuscate_subtitles(nzo, [bigfile, already_correct_srt, small_srt, small_txt])
+
+        assert os.path.isfile(bigfile)  # unchanged
+        assert os.path.isfile(already_correct_srt)  # unchanged
+        assert not os.path.isfile(small_srt)  # should be renamed to:
+        assert os.path.isfile(expected_small_srt)
+        assert os.path.isfile(small_txt)  # unchanged
+
+        # and if we go again ... nothing should happen: all files are already correct
+        deobfuscate_subtitles(nzo, [bigfile, already_correct_srt, expected_small_srt, small_txt])
+
+        assert os.path.isfile(bigfile)  # unchanged
+        assert os.path.isfile(already_correct_srt)  # unchanged
+        assert not os.path.isfile(small_srt)  # should be renamed to:
+        assert os.path.isfile(expected_small_srt)
+        assert os.path.isfile(small_txt)  # unchanged
+
+        shutil.rmtree(dirname)

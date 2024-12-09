@@ -79,7 +79,7 @@ class TestBasicPages(SABnzbdBaseTest):
 class TestConfigLogin(SABnzbdBaseTest):
     def test_login(self):
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
 
         # Set the username and password
         username_imp = self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "input[data-hide='username']")
@@ -102,7 +102,7 @@ class TestConfigLogin(SABnzbdBaseTest):
                 pass
 
         # Open any page and check if we get redirected
-        self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/general" % (SAB_HOST, SAB_PORT))
         assert "/login/" in self.driver.current_url
 
         # Fill nonsense and submit
@@ -130,7 +130,7 @@ class TestConfigLogin(SABnzbdBaseTest):
         self.driver.find_element(By.TAG_NAME, "button").click()
 
         # Can we now go to the page and empty the settings again?
-        self.open_page("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
         assert "/login/" not in self.driver.current_url
 
         # Set the username and password
@@ -152,7 +152,7 @@ class TestConfigLogin(SABnzbdBaseTest):
                 pass
 
         # Open any page and check if we get redirected
-        self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/general" % (SAB_HOST, SAB_PORT))
         assert "/login/" not in self.driver.current_url
 
 
@@ -161,7 +161,7 @@ class TestConfigCategories(SABnzbdBaseTest):
 
     def test_page(self):
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/categories" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/config/categories" % (SAB_HOST, SAB_PORT))
 
         # Add new category
         self.driver.find_elements(By.NAME, "newname")[1].send_keys("testCat")
@@ -189,7 +189,7 @@ class TestConfigRSS(SABnzbdBaseTest):
         rss_url = httpserver.url_for("/rss_feed.xml")
 
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/rss" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/config/rss" % (SAB_HOST, SAB_PORT))
 
         # Uncheck enabled-checkbox for new feeds
         self.selenium_wrapper(
@@ -256,7 +256,7 @@ class TestConfigServers(SABnzbdBaseTest):
 
     def open_config_servers(self):
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/server" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/config/server" % (SAB_HOST, SAB_PORT))
         self.scroll_to_top()
 
         # Show advanced options

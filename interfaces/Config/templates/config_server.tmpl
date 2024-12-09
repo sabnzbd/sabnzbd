@@ -28,7 +28,7 @@
         </label>
 
         <div class="advanced-buttonSeperator"></div>
-        <div class="chart-selector-container" title="$T('selectedDates')">
+        <div class="chart-selector-container" title="$T('selectedDates')" data-placement="bottom">
             <span class="glyphicon glyphicon-signal"></span>
             <!--#set today = datetime.date.today()#-->
             <input type="date" name="chart-start" id="chart-start" value="<!--#echo (today-datetime.timedelta(days=30)).strftime('%Y-%m-%d')#-->"> -
@@ -142,7 +142,7 @@
         </div>
     </div>
 
-    <!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
+    <!--#set $prio_colors = ["#59cc33", "#26a69a", "#3366cc", "#7f33cc", "#cc33a6", "#f39c12", "#cc3333", "#8d6e63"] #-->
     <!--#set $cur_prio_color = -1 #-->
     <!--#set $last_prio = -1 #-->
     <!--#for $cur, $server in enumerate($servers) #-->
@@ -171,6 +171,9 @@
                     </table>
                     <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
                     <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
+                    <!--#if $server['notes'] #-->
+                    <p>$server['notes'].replace('\n', '<br>')</p>
+                    <!--#end if#-->
                 </div>
                 <div class="col1" style="display:none;">
                     <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
@@ -459,8 +462,8 @@
         When finished loading
     **/
     jQuery(document).ready(function(){
-        // Exception when change of priority, reload
-        jQuery('input[name="priority"], input[name="displayname"]').on('change', function() {
+        // Reload form in case we change items that make the servers appear different
+        jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function() {
             jQuery('.fullform').submit(function() {
                 // No ajax this time
                 jQuery('input[name="ajax"]').val('')

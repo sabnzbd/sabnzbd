@@ -13,7 +13,7 @@ function ViewModel() {
     self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
     self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
     self.dateFormat = ko.observable('fromNow').extend({ persist: 'pageDateFormat' });
-    self.displayTabbed = ko.observable().extend({ persist: 'displayTabbed' });
+    self.displayTabbed = ko.observable(false).extend({ persist: 'displayTabbed' });
     self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
     self.displayFullWidth = ko.observable(false).extend({ persist: 'displayFullWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });

@@ -395,9 +395,8 @@ def Raiser(root: str = "", **kwargs):
     if kwargs:
         root = "%s?%s" % (root, urllib.parse.urlencode(kwargs))
 
-    # Optionally add the leading /sabnzbd/ (or what the user set)
-    if not root.startswith(cfg.url_base()):
-        root = cherrypy.request.script_name + root
+    # Add the leading /sabnzbd/ (or what the user set)
+    root = cfg.url_base() + root
 
     # Log the redirect
     if cfg.api_logging():
@@ -642,7 +641,7 @@ class LoginPage:
 
         # Check if there's even a username/password set
         if check_login():
-            raise Raiser(cherrypy.request.script_name + "/")
+            raise Raiser("/")
 
         # Check login info
         if kwargs.get("username") == cfg.username() and kwargs.get("password") == cfg.password():
@@ -651,7 +650,7 @@ class LoginPage:
             # Log the success
             logging.info("Successful login from %s", cherrypy.request.remote_label)
             # Redirect
-            raise Raiser(cherrypy.request.script_name + "/")
+            raise Raiser("/")
         elif kwargs.get("username") or kwargs.get("password"):
             info["error"] = T("Authentication failed, check username/password.")
             # Warn about the potential security problem
@@ -844,7 +843,7 @@ SPECIAL_BOOL_LIST = (
     "api_warnings",
     "helpful_warnings",
     "ampm",
-    "enable_multipar",
+    "disable_par2cmdline",
     "enable_unrar",
     "enable_7zip",
     "enable_filejoin",

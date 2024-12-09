@@ -27,7 +27,6 @@ files to the job-name in the queue if the filename looks obfuscated
 Based on work by P1nGu1n
 
 """
-
 import hashlib
 import logging
 import os
@@ -169,21 +168,29 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
-def first_file_is_much_bigger(filelist):
-    # returns True if first file is much bigger than second file
-    # Note: input parameter filelist must ordered on size!
+def get_biggest_file(filelist: List[str]) -> str:
+    """Returns biggest file if that file is much bigger than the other files
+    If only one file exists, return that. If no file, return None
+    Note: the files in filelist must exist, because their sizes on disk are checked"""
+
+    # sort from big to small
+    filelist = sorted(filelist, key=os.path.getsize)[::-1]  # reversed, so big to small. Format [start:stop:step]
     try:
         factor = os.path.getsize(filelist[0]) / os.path.getsize(filelist[1])
         if factor > 3:
-            return True
+            return filelist[0]
         else:
             return False
     except:
-        # no second file at all
-        return True
+        if len(filelist) == 1:
+            # the only file, so biggest
+            return filelist[0]
+        else:
+            # no existing file(s)
+            return None
 
 
-def deobfuscate(nzo, filelist: List[str], usefulname: str):
+def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
     """
     For files in filelist:
     1. if a file has no meaningful extension, add it (for example ".txt" or ".png")
@@ -225,69 +232,60 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
     nzo: sabnzbd.nzbstuff.NzbObject
 
     # to be sure, only keep really existing files and remove any duplicates:
-    filelist = set(f for f in filelist if os.path.isfile(f))
+    filtered_filelist = list(set(f for f in filelist if os.path.isfile(f)))
 
     # Do not deobfuscate/rename anything if there is a typical DVD or Bluray directory:
     ignored_movie_folders_with_dir_sep = tuple(os.path.sep + f + os.path.sep for f in IGNORED_MOVIE_FOLDERS)
-    match_ignored_movie_folders = [f for f in filelist if match_str(f, ignored_movie_folders_with_dir_sep)]
+    match_ignored_movie_folders = [f for f in filtered_filelist if match_str(f, ignored_movie_folders_with_dir_sep)]
     if match_ignored_movie_folders:
         logging.info(
             "Skipping deobfuscation because of DVD/Bluray directory name(s), like: %s",
             str(match_ignored_movie_folders)[:200],
         )
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate skipped due to DVD/Bluray directories"))
-        return
+        return filtered_filelist
 
     # If needed, add a useful extension (by looking at file contents)
     # Example: if 'kjladsflkjadf.adsflkjads' is probably a PNG, rename to 'kjladsflkjadf.adsflkjads.png'
-    newlist = []
+    new_filelist = []
     nr_ext_renamed = 0
-    for file in filelist:
+    for file in filtered_filelist:
         if file_extension.has_popular_extension(file):
             # common extension, like .doc or .iso, so assume OK and change nothing
             logging.debug("Extension of %s looks common", file)
-            newlist.append(file)
+            new_filelist.append(file)
         else:
             # uncommon (so: obfuscated) extension
-            new_extension_to_add = file_extension.what_is_most_likely_extension(file)
-            if new_extension_to_add:
+            if new_extension_to_add := file_extension.what_is_most_likely_extension(file):
                 new_name = get_unique_filename("%s%s" % (file, new_extension_to_add))
                 logging.info("Deobfuscate renaming (adding extension) %s to %s", file, new_name)
-                renamer(file, new_name)
-                newlist.append(new_name)
+                # Use output of renamer, just in case it's somehow modified by sanitization
+                new_filelist.append(renamer(file, new_name))
                 nr_ext_renamed += 1
             else:
                 # no new extension found
-                newlist.append(file)
+                new_filelist.append(file)
 
     if nr_ext_renamed:
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate corrected the extension of %d file(s)") % nr_ext_renamed)
-        filelist = newlist
+    filtered_filelist = new_filelist
 
-    logging.debug("Trying to see if there are qualifying files to be deobfuscated")
     nr_files_renamed = 0
 
-    # We pick the biggest file ... probably the most important file
-    # so sort filelist on size:
-    filelist = sorted(filelist, key=os.path.getsize, reverse=True)
-    if filelist:
-        biggest_file = filelist[0]
-    else:
-        biggest_file = None
-    if not biggest_file or not os.path.isfile(biggest_file):
+    logging.debug("Trying to see if there are qualifying files to be deobfuscated")
+
+    if not (biggest_file := get_biggest_file(filtered_filelist)) or not os.path.isfile(biggest_file):
         # no file found, which is weird
-        logging.info("No file given, or not found (%s)", biggest_file)
-        return
+        logging.info("No biggest file found, or not found (%s)", biggest_file)
+        return filtered_filelist
+
     logging.debug("Deobfuscate inspecting biggest file%s", biggest_file)
-    if not first_file_is_much_bigger(filelist):
-        logging.debug("%s excluded from deobfuscation because it is not much bigger than other file(s)", biggest_file)
-        return
     if get_ext(biggest_file) in EXCLUDED_FILE_EXTS:
         logging.debug("%s excluded from deobfuscation because of excluded extension", biggest_file)
-        return
+        return filtered_filelist
     if not is_probably_obfuscated(biggest_file):
         logging.debug("%s excluded from deobfuscation because filename does not look obfuscated", biggest_file)
-        return
+        return filtered_filelist
 
     # if we get here, the biggest_file is relatively big, has no excluded extension, and is obfuscated
     # Rename the biggest_file and make sure the new filename is unique
@@ -295,20 +293,89 @@ def deobfuscate(nzo, filelist: List[str], usefulname: str):
     # construct new_name: <path><usefulname><extension>
     new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), get_ext(biggest_file)))
     logging.info("Deobfuscate renaming %s to %s", biggest_file, new_name)
-    renamer(biggest_file, new_name)
+    filtered_filelist.remove(biggest_file)
+    filtered_filelist.append(renamer(biggest_file, new_name))
     nr_files_renamed += 1
 
     # Now find other files with the same basename in filelist, and rename them in the same way:
     basedirfile = get_basename(biggest_file)  # something like "/home/this/myiso"
-    for otherfile in filelist:
+    for otherfile in filtered_filelist[:]:
         if otherfile.startswith(basedirfile) and os.path.isfile(otherfile):
             # yes, same basedirfile, only different ending
             remaining_ending = otherfile.replace(basedirfile, "")  # might be long ext, like ".dut.srt" or "-sample.iso"
             new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), remaining_ending))
             logging.info("Deobfuscate renaming %s to %s", otherfile, new_name)
-            # Rename and make sure the new filename is unique
-            renamer(otherfile, new_name)
+            filtered_filelist.remove(otherfile)
+            filtered_filelist.append(renamer(otherfile, new_name))
             nr_files_renamed += 1
 
     if nr_files_renamed:
         nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d file(s)") % nr_files_renamed)
+
+    return filtered_filelist
+
+
+def without_extension(fullpathfilename: str) -> str:
+    """Returns full file path, without extension
+    So '/some/dir/somefile.bin' results in '/some/dir/somefile'"""
+    return os.path.splitext(fullpathfilename)[0]
+
+
+def deobfuscate_subtitles(nzo, filelist: List[str]):
+    """
+    input:
+    nzo, so we can update result via set_unpack_info()
+    filelist must be a List of existing filenames
+
+    Find .srt subtitle files, and rename to match the biggest file (if there is a clearly biggest file)
+
+    Some_Big_File_2024.avi      # biggest file
+    Some_Big_File_2024.srt      # no renaming wanted
+    Some_Big_File_2024.ger.srt  # no renaming wanted
+    14_English.srt              # to be renamed
+    dut.srt                     # to be renamed
+    Something.else.txt          # no renaming wanted, because no .srt
+
+    will result in
+
+    Some_Big_File_2024.avi
+    Some_Big_File_2024.srt
+    Some_Big_File_2024.ger.srt
+    Some_Big_File_2024.14_English.srt   # renamed by prepending base name
+    Some_Big_File_2024.dut.srt          # renamed by prepending base name
+    Something.else.txt
+
+    """
+
+    # Can't be imported directly due to circular import
+    nzo: sabnzbd.nzbstuff.NzbObject
+
+    # find .srt files
+    if not (srt_files := [f for f in filelist if f.endswith(".srt")]):
+        logging.debug("No .srt files found, so nothing to do")
+        return None
+
+    # check there is a clearly biggest file
+    if not (biggest_file := get_biggest_file(filelist)):
+        logging.debug("No clearly biggest file found, so no subtitle renaming feasible")
+        return None
+
+    biggest_file_without_ext = without_extension(biggest_file)  # get full path base name of biggest file
+    logging.debug(f"Using as base filename: {biggest_file_without_ext}")
+
+    # handle srt files one by one
+    nr_files_renamed = 0
+    for srt_file in srt_files:
+        if without_extension(srt_file).startswith(biggest_file_without_ext):
+            # already the same start as the biggest file, so skip
+            continue
+        # not the same start, so rename the srt file
+        nr_files_renamed += 1
+        filename_only = os.path.basename(srt_file)  # like "14_English.srt", so without path
+        # now put that name after the base name of the biggestfile:
+        new_full_name = f"{biggest_file_without_ext}.{filename_only}"  # put (renamed) srt behind that
+        unique_filename = get_unique_filename(new_full_name)  # make sure it's really unique
+        renamer(srt_file, unique_filename)  # ... and rename actual file on disk
+    if nr_files_renamed > 0:
+        # and put it into history to be shown in GUI
+        nzo.set_unpack_info("Deobfuscate", T("Deobfuscate renamed %d subtitle file(s)") % nr_files_renamed)

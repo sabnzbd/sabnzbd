@@ -35,7 +35,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status, PP_LOOKUP
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
-from sabnzbd.misc import caller_name, opts_to_pp, to_units, bool_conv
+from sabnzbd.misc import caller_name, opts_to_pp, to_units, bool_conv, match_str
 from sabnzbd.filesystem import remove_file, clip_path
 
 DB_LOCK = threading.Lock()
@@ -129,7 +129,7 @@ class HistoryDB:
                     logging.error(T("Cannot write to History database, check access rights!"))
                     # Report back success, because there's no recovery possible
                     return True
-                elif "not a database" in error or "malformed" in error or "duplicate column name" in error:
+                elif match_str(error, ("not a database", "malformed", "no such table", "duplicate column name")):
                     logging.error(T("Damaged History database, created empty replacement"))
                     logging.info("Traceback: ", exc_info=True)
                     self.close()
@@ -141,7 +141,7 @@ class HistoryDB:
                     self.connect()
                     # Return False in case of "duplicate column" error
                     # because the column addition in connect() must be terminated
-                    return "duplicate column name" not in error
+                    return True
                 else:
                     logging.error(T("SQL Command Failed, see log"))
                     logging.info("SQL: %s", command)
@@ -604,6 +604,5 @@ def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
 
 
 def scheduled_history_purge():
-    logging.info("Scheduled history purge")
     with HistoryDB() as history_db:
         history_db.auto_history_purge()

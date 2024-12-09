@@ -165,11 +165,12 @@ class Server:
         self.reset_article_queue()
 
     def stop(self):
-        """Remove all connections from server"""
+        """Remove all connections and cached articles from server"""
         for nw in self.idle_threads:
             sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset()
         self.idle_threads = set()
+        self.reset_article_queue()
 
     @synchronized(DOWNLOADER_LOCK)
     def get_article(self):
@@ -195,10 +196,13 @@ class Server:
                 self.next_article_search = time.time() + _SERVER_CHECK_DELAY
         return None
 
+    @synchronized(DOWNLOADER_LOCK)
     def reset_article_queue(self):
-        logging.debug("Resetting article queue for %s", self)
+        """Reset articles queued for the Server. Locked to prevent
+        articles getting stuck in the Server when enabled/disabled"""
+        logging.debug("Resetting article queue for %s (%s)", self, self.article_queue)
         for article in self.article_queue:
-            sabnzbd.NzbQueue.reset_try_lists(article)
+            article.allow_new_fetcher()
         self.article_queue = []
 
     def request_addrinfo(self):
@@ -211,7 +215,7 @@ class Server:
 
     def request_addrinfo_blocking(self):
         """Blocking attempt to run getaddrinfo() and Happy Eyeballs for specified server"""
-        logging.debug("Retrieving server address information for %s", self.host)
+        logging.debug("Retrieving server address information for %s", self)
 
         # Disable IPV6 if desired
         family = socket.AF_UNSPEC
@@ -229,7 +233,7 @@ class Server:
         sabnzbd.Downloader.wakeup()
 
     def __repr__(self):
-        return "<Server: %s:%s>" % (self.host, self.port)
+        return "<Server: id=%s, host=%s:%s>" % (self.id, self.host, self.port)
 
 
 class Downloader(Thread):
@@ -329,7 +333,6 @@ class Downloader(Thread):
                     create = False
                     server.newid = newserver
                     server.restart = True
-                    server.reset_article_queue()
                     self.server_restarts += 1
                     break
 
@@ -487,7 +490,7 @@ class Downloader(Thread):
 
         # Optional and active server had too many problems.
         # Disable it now and send a re-enable plan to the scheduler
-        if server.optional and server.active and (server.bad_cons / server.threads) > 3:
+        if server.optional and server.active and (server.threads < 1 or (server.bad_cons / server.threads) > 3):
             # Deactivate server
             server.bad_cons = 0
             server.deactivate()
@@ -965,9 +968,9 @@ class Downloader(Thread):
                 self.decode(nw.article)
                 nw.article.tries = 0
             else:
-                # Allow all servers again on this server
+                # Allow all servers again for this article
                 # Do not use the article_queue, as the server could already have been disabled when we get here!
-                sabnzbd.NzbQueue.reset_try_lists(nw.article)
+                nw.article.allow_new_fetcher()
 
         # Reset connection object
         nw.hard_reset(wait)

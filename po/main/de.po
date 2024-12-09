@@ -14,12 +14,14 @@
 # HandyDandy04, 2024
 # Safihre <safihre@sabnzbd.org>, 2024
 # Gjelbrim Haskaj, 2024
+# Stefan Rodriguez Galeano, 2024
+# M Z, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.3.3Beta2\n"
+"Project-Id-Version: SABnzbd-4.4.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Gjelbrim Haskaj, 2024\n"
+"Last-Translator: M Z, 2024\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -211,6 +213,22 @@ msgstr ""
 "als sei %s ein Webserver (Port 80), vielleicht ein Indexer, aber kein "
 "Usenet-Server. Trage einen Usenet-Server ein."
 
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"563 and SSL turned on"
+msgstr ""
+"Konnte keine Verbindung zu %s auf Port %s herstellen. Verwenden Sie die "
+"Standard-Usenet-Einstellungen: Port 563 und aktiviertes SSL."
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
+msgstr ""
+"Konnte keine Verbindung zu %s auf Port %s herstellen. Verwenden Sie die "
+"Standard-Usenet-Einstellungen: Port 119 und deaktiviertes SSL."
+
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Server-Adresse \"%s:%s\" ist ungültig."
@@ -257,7 +275,7 @@ msgstr "Die Verbindung konnte nicht überprüft werden. (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
-msgstr "Adresse wird aufgelöst …"
+msgstr "Adresse wird aufgelöst"
 
 #. No value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/skintext.py
@@ -402,6 +420,14 @@ msgstr ""
 "könnte während Updates geleert werden."
 
 #. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"The par2 application was switched, any custom par2 parameters were removed"
+msgstr ""
+"Die Par2-Anwendung wurde geändert, benutzerdefinierte Par2-Parameter wurden "
+"entfernt."
+
+#. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
 msgstr ""
@@ -476,6 +502,10 @@ msgstr "Entschleiern korrigierte die Erweiterung von %d Datei(en)"
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
 msgstr "Entschleiern hat %dDatei(en) umbenannt"
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr "Umbenannte Untertiteldatei(en)%d verschleiern"
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -557,7 +587,7 @@ msgstr "Schwerer Fehler im Downloader"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
+msgstr "%s@%s:Unbekannter Statuscode%s für Artikel erhalten %s"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -1000,6 +1030,10 @@ msgstr ""
 "Entpacken fehlgeschlagen. Fehler beim Schreiben oder volle Festplatte?"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr "Fehler beim Entpacken: Festplatte voll"
+
+#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
 msgstr "Entpacken fehlgeschlagen, Pfad ist zu lang"
 
@@ -1231,21 +1265,22 @@ msgstr "Prowl-Nachricht konnte nicht versendet werden"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message - no URLs defined"
-msgstr ""
+msgstr "Übertragung der Info-Nachricht fehlgeschlagen - keine URLs definiert"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "One or more Apprise URLs could not be loaded."
-msgstr ""
+msgstr "Eine oder mehrere Informations-URLs konnten nicht geladen werden."
 
 #: sabnzbd/notifier.py
 msgid "Failed to send one or more Apprise Notifications"
 msgstr ""
+"Eine oder mehrere Info-Benachrichtigungen konnten nicht gesendet werden"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message"
-msgstr ""
+msgstr "Info-Nachricht konnte nicht gesendet werden"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -2430,7 +2465,7 @@ msgstr "Alle Elemente in der Warteschlange löschen?"
 #. Delete confirmation popup
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to remove these jobs?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie diese Aufträge entfernen wollen?"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2455,7 +2490,7 @@ msgstr "NZBs und Dateien löschen"
 #. Checkbox if job should be added to Archive
 #: sabnzbd/skintext.py
 msgid "Permanently delete (skip archive)"
-msgstr ""
+msgstr "Endgültig löschen (Archiv überspringen)"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2478,7 +2513,7 @@ msgstr "Kontingent jetzt zurücksetzen"
 
 #: sabnzbd/skintext.py
 msgid "Archive"
-msgstr ""
+msgstr "Archiv"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2503,7 +2538,7 @@ msgstr "Alle anzeigen"
 #. Button showing all archived jobs
 #: sabnzbd/skintext.py
 msgid "Show Archive"
-msgstr ""
+msgstr "Zeige Archiv"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2796,11 +2831,11 @@ msgstr "Port, auf dem SABnzbd auf Anfragen warten soll."
 
 #: sabnzbd/skintext.py
 msgid "Web Interface Theme"
-msgstr ""
+msgstr "Benutzeroberfläche"
 
 #: sabnzbd/skintext.py
 msgid "Choose a theme."
-msgstr ""
+msgstr "Wählen Sie ein Theme."
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -2971,28 +3006,36 @@ msgstr "Alle Aufträge behalten"
 msgid ""
 "Move jobs to the archive if the history exceeds specified number of jobs"
 msgstr ""
+"Verschieben von Aufträgen in das Archiv, wenn der Verlauf die angegebene "
+"Anzahl von Aufträgen überschreitet."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Delete jobs if the history and archive exceeds specified number of jobs"
 msgstr ""
+"Löschen von Aufträgen, wenn der Verlauf und das Archiv die angegebene Anzahl"
+" von Aufträgen überschreiten"
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
 msgstr ""
+"Verschieben von Aufträgen in das Archiv nach einer bestimmten Anzahl von "
+"Tagen"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Delete jobs from the history and archive after specified number of days"
 msgstr ""
+"Löschen von Aufträgen aus der Historie und dem Archiv nach einer bestimmten "
+"Anzahl von Tagen"
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"
-msgstr ""
+msgstr "Alle abgeschlossenen Aufträge ins Archiv verschieben"
 
 #: sabnzbd/skintext.py
 msgid "Delete all completed jobs"
-msgstr ""
+msgstr "Alle abgeschlossenen Aufträge löschen"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3281,7 +3324,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Purge Logs"
-msgstr ""
+msgstr "Protokolle bereinigen"
 
 #: sabnzbd/skintext.py
 msgid ".nzb Backup Folder"
@@ -3406,7 +3449,7 @@ msgstr "Aufgabe abgebrochen (verschoben in die Historie)"
 
 #: sabnzbd/skintext.py
 msgid "Abort post-processing"
-msgstr ""
+msgstr "Nachbearbeitung abbrechen"
 
 #: sabnzbd/skintext.py
 msgid "Action when unwanted extension detected"
@@ -3479,7 +3522,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "On queue finish script"
-msgstr ""
+msgstr "Skript zur Beendigung der Warteschlange"
 
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
@@ -4280,26 +4323,32 @@ msgstr "Geräte, welche die Benachrichtigungen empfangen sollen"
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Enable Apprise notifications"
-msgstr ""
+msgstr "Aktivieren Sie Info-Benachrichtigungen"
 
 #: sabnzbd/skintext.py
 msgid "Send notifications using Apprise to almost any notification service"
 msgstr ""
+"Senden Sie Benachrichtigungen mit Anfragen an fast jeden "
+"Benachrichtigungsdienst"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Default Apprise URLs"
-msgstr ""
+msgstr "Standard Apprise URLs"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use a comma and/or space to identify more than one URL."
 msgstr ""
+"Verwenden Sie ein Komma und/oder ein Leerzeichen, um mehr als eine URL zu "
+"kennzeichnen."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Override the default URLs for specific notification types below, if desired."
 msgstr ""
+"Falls gewünscht, können Sie die Standard-URLs für bestimmte "
+"Benachrichtigungstypen unten überschreiben."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py
@@ -4798,6 +4847,9 @@ msgid ""
 "When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
 "completed' are disabled."
 msgstr ""
+"Wenn Sie einen Auftrag wiederholen, sind die Funktionen „Erkennung von "
+"Duplikaten“ und „Abbruch von Aufträgen, die nicht abgeschlossen werden "
+"können“ deaktiviert."
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
@@ -5032,7 +5084,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/sorting.py
 msgid "Failed to rename %s to %s"
-msgstr "Fehler beim umbennenen von %s nach %s"
+msgstr "Fehler beim Umbenennen von %s nach %s"
 
 #. Error message
 #: sabnzbd/sorting.py

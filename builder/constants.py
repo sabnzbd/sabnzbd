@@ -37,6 +37,7 @@ PRERELEASE = len(RELEASE_VERSION) > 5
 # Parse the version info for Windows file properties information
 version_regexed = re.search(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)", RELEASE_VERSION)
 RELEASE_VERSION_TUPLE = (int(version_regexed.group(1)), int(version_regexed.group(2)), int(version_regexed.group(3)), 0)
+RELEASE_VERSION_BASE = f"{RELEASE_VERSION_TUPLE[0]}.{RELEASE_VERSION_TUPLE[1]}.{RELEASE_VERSION_TUPLE[2]}"
 
 # Define release name
 RELEASE_NAME = "SABnzbd-%s" % RELEASE_VERSION

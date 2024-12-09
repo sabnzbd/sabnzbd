@@ -669,16 +669,6 @@ class NzbQueue:
         except:
             return -1
 
-    @staticmethod
-    def reset_try_lists(article: Article, remove_fetcher_from_trylist: bool = True):
-        """Let article get new fetcher and reset trylists"""
-        if remove_fetcher_from_trylist:
-            article.remove_from_try_list(article.fetcher)
-        article.fetcher = None
-        article.tries = 0
-        article.nzf.reset_try_list()
-        article.nzf.nzo.reset_try_list()
-
     def has_forced_jobs(self) -> bool:
         """Check if the queue contains any Forced
         Priority jobs to download while paused
@@ -885,7 +875,7 @@ class NzbQueue:
                 logging.info("Found idle job %s", nzo.final_name)
                 empty.append(nzo)
 
-            # Stall prevention by checking if all servers are in the trylist
+            # Stall prevention by checking if all servers are in the try list
             # This is a CPU-cheaper alternative to prevent stalling
             if nzo.all_servers_in_try_list(active_servers):
                 # Maybe the NZF's need a reset too?
@@ -904,7 +894,7 @@ class NzbQueue:
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
 
-                # Reset main trylist, minimal performance impact
+                # Reset main try list, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)
                 nzo.reset_try_list()
 

@@ -734,6 +734,7 @@ def rar_extract_core(
     extracted = []
     rarfiles = []
     fail = 0
+    requires_kill = False
     inrecovery = False
     lines = []
 
@@ -789,6 +790,14 @@ def rar_extract_core(
             nzo.set_unpack_info("Unpack", msg, setname)
             fail = 1
 
+        elif line.startswith("There is not enough space on the disk"):
+            msg = T("Unpacking failed, disk full")
+            nzo.fail_msg = msg
+            nzo.set_unpack_info("Unpack", msg, setname)
+            fail = 1
+            # After this is a line that requires user input ([R]etry, [A]bort), which hangs, so we need a kill
+            requires_kill = True
+
         elif line.startswith("Cannot create"):
             line2 = p.stdout.readline()
             if "must not exceed 260" in line2:
@@ -799,7 +808,7 @@ def rar_extract_core(
             nzo.set_unpack_info("Unpack", msg, setname)
             fail = 1
             # Kill the process (can stay in endless loop on Windows Server)
-            p.kill()
+            requires_kill = True
 
         elif line.startswith("ERROR: "):
             nzo.fail_msg = line
@@ -844,9 +853,10 @@ def rar_extract_core(
             extracted.append(real_path(extraction_path, unpacked_file))
 
         if fail:
-            if p.stdout:
-                p.stdout.close()
-            p.wait()
+            if requires_kill:
+                p.kill()
+            else:
+                p.wait()
             logging.debug("UNRAR output: \n%s", "\n".join(lines))
             return fail, [], []
 
@@ -1059,7 +1069,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             # Multipar on Windows, par2cmdline on the other platforms
-            if cfg.enable_multipar() and sabnzbd.WIN32:
+            if cfg.disable_par2cmdline() and sabnzbd.WIN32:
                 finished, readd, used_joinables, used_for_repair = multipar_verify(parfile, nzo, setname, joinables)
             else:
                 finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
@@ -1150,13 +1160,7 @@ def par2cmdline_verify(
     else:
         # Normal case, everything is named after set
         wildcard = setname + "*"
-
-    if sabnzbd.MACOS or sabnzbd.WIN32:
-        command.append(os.path.join(parfolder, wildcard))
-    else:
-        # For Unix systems, remove folders, due to bug in some par2cmdline versions
-        flist = [item for item in globber_full(parfolder, wildcard) if os.path.isfile(item)]
-        command.extend(flist)
+    command.append(os.path.join(parfolder, wildcard))
 
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath

@@ -356,8 +356,8 @@ if __name__ == "__main__":
                 if authority not in sign_result or "adhoc" in sign_result or "invalid" in sign_result:
                     raise RuntimeError("Signature of %s seems invalid!" % file_to_check)
 
-            # Only notarize for real builds that we want to deploy
-            if notarization_user and notarization_pass and RELEASE_THIS:
+            # Always notarize, as newer macOS versions don't allow any code without it
+            if notarization_user and notarization_pass:
                 # Prepare zip to upload to notarization service
                 print("Creating zip to send to Apple notarization service")
                 # We need to use ditto, otherwise the signature gets lost!
@@ -391,8 +391,6 @@ if __name__ == "__main__":
                 # Staple the notarization!
                 print("Approved! Stapling the result to the app")
                 run_external_command(["xcrun", "stapler", "staple", "dist/SABnzbd.app"])
-            elif notarization_user and notarization_pass:
-                print("Notarization skipped, tag commit to trigger notarization!")
             else:
                 print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:

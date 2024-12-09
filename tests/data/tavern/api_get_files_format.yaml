@@ -7,7 +7,7 @@ strict:
 stages:
   - name: get_files format (json)
     request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/api"
       method: GET
       params:
         mode: get_files
@@ -39,7 +39,7 @@ strict:
 stages:
   - name: get_files format (xml)
     request:
-      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/api"
       method: GET
       params:
         mode: get_files

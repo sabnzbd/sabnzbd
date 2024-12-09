@@ -25,7 +25,13 @@ Be careful to use those special features.
 
 [ System requirement ]
 
- MultiPar requires a PC with Windows Vista or later (Windows 7, 8, 10).
+ MultiPar requires a PC with Windows Vista or later (Windows 7, 8, 10, 11).
+
+[ Usage manual or Help documents ]
+
+ There are some usage manual or help documents in "help" folder.
+English pages exists in "help/0409" folder.
+You may open the manual by pushing "F1-key", while using MultiPar.
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -7,6 +7,7 @@
   "schedule": [
     "before 8am on Monday"
   ],
+  "baseBranches": ["develop", "feature/uvicorn"],
   "pip_requirements": {
     "fileMatch": [
       "requirements.txt",
@@ -15,14 +16,14 @@
       "builder/release-requirements.txt"
     ]
   },
+  "ignorePaths": [],
   "ignoreDeps": [
     "jaraco.text",
     "jaraco.context",
     "jaraco.collections",
     "sabctools",
     "paho-mqtt",
-    "werkzeug",
-    "pyinstaller"
+    "werkzeug"
   ],
   "packageRules": [
     {

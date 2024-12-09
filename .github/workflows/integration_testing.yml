@@ -31,18 +31,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
         python-architecture: ["x64"]
         name: ["Linux"]
-        os: [ubuntu-20.04]
+        os: [ubuntu-latest]
         include:
           - name: macOS
             os: macos-latest
-            python-version: "3.12"
+            python-version: "3.13"
             python-architecture: "x64"
           - name: Windows
             os: windows-latest
-            python-version: "3.12"
+            python-version: "3.13"
             python-architecture: "x64"
           - name: Windows (32bit)
             os: windows-latest
@@ -60,7 +60,7 @@ jobs:
         cache-dependency-path: "**/requirements.txt"
     - name: Install system dependencies
       if: runner.os == 'Linux'
-      run: sudo apt-get install unrar p7zip-full par2
+      run: sudo apt-get install unrar 7zip par2
     - name: Install Python dependencies
       run: |
         python --version

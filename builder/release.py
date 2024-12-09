@@ -26,6 +26,7 @@ import praw
 
 from constants import (
     RELEASE_VERSION,
+    RELEASE_VERSION_BASE,
     PRERELEASE,
     RELEASE_SRC,
     RELEASE_BINARY_32,
@@ -36,6 +37,7 @@ from constants import (
     RELEASE_THIS,
     RELEASE_TITLE,
     APPDATA_FILE,
+    ON_GITHUB_ACTIONS,
 )
 
 # Verify we have all assets
@@ -53,9 +55,14 @@ for file_to_check in files_to_check:
 print("All release files are present")
 
 # Verify that appdata file is updated
-if not PRERELEASE:
-    if not isinstance(ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION}']"), ET.Element):
-        raise RuntimeError(f"Could not find {RELEASE_VERSION} in {APPDATA_FILE}")
+if not isinstance(ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION_BASE}']"), ET.Element):
+    release_missing = f"Could not find {RELEASE_VERSION_BASE} in {APPDATA_FILE}"
+    if RELEASE_THIS:
+        raise RuntimeError(release_missing)
+    elif ON_GITHUB_ACTIONS:
+        print(f"::warning file={APPDATA_FILE},title=Missing release::{release_missing}")
+    else:
+        print(release_missing)
 
 # Calculate hashes for Synology release
 with open(RELEASE_SRC, "rb") as inp_file:
