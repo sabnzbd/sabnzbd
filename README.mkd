@@ -1,9 +1,7 @@
-Release Notes - SABnzbd 4.4.0 Release Candidate 1
+Release Notes - SABnzbd 4.4.0
 =========================================================
 
-This is the first release candidate of SABnzbd 4.4.0.
-
-## New features since 4.3.0
+## New features in 4.4.0
 
 * Subtitle files will be deobfuscated if required.
 * Show server `Personal notes` on the main servers display.
@@ -12,7 +10,7 @@ This is the first release candidate of SABnzbd 4.4.0.
 * macOS and Windows: Use Python 3.13 for release.
 * Windows: The next release will no longer support Windows 32bit or Windows 7.
 
-## Bug fixes since 4.3.0
+## Bug fixes in 4.4.0
 
 * Toggling of Servers could result in jobs being stuck at 99%.
 * Corrupt NZB's could also result in jobs being stuck at 99%.
