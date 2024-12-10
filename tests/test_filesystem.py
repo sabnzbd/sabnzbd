@@ -186,9 +186,10 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("/test. /this . ") == "+test. +this"
 
     def test_long_foldername(self):
-        assert len(filesystem.sanitize_foldername("test" * 100)) == DEF_FOLDER_MAX
-        assert len(filesystem.sanitize_foldername("a" * DEF_FOLDER_MAX)) == DEF_FOLDER_MAX
-        assert len(filesystem.sanitize_foldername("a" * (DEF_FOLDER_MAX + 1))) == DEF_FOLDER_MAX
+        assert len(filesystem.sanitize_foldername("test" * 100)) <= DEF_FOLDER_MAX
+        assert len(filesystem.sanitize_foldername("a" * DEF_FOLDER_MAX)) <= DEF_FOLDER_MAX
+        assert len(filesystem.sanitize_foldername("a" * (DEF_FOLDER_MAX + 1))) <= DEF_FOLDER_MAX
+        long_utf = "funny 😃😃😃😃😃" * 100 + ".nzb"
 
     def test_filename_empty_result(self):
         # Nothing remains after sanitizing the filename

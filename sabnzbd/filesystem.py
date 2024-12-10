@@ -263,9 +263,9 @@ def sanitize_filename(name: str) -> str:
     if not name:
         name = "unknown"
 
-    name = limit_filename_length(name)  # limit so certainly fits on filesystem (max 255 bytes)
+    name = limit_filename_length(name)  # limit so fits on filesystem: max 255 bytes for name + ext
 
-    name, ext = os.path.splitext(name)
+    name, ext = os.path.splitext(name)  # split it
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
         ext = lowext
@@ -299,8 +299,7 @@ def sanitize_foldername(name: str) -> str:
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
 
-    if len(name) >= sabnzbd.cfg.max_foldername_length():
-        name = name[: sabnzbd.cfg.max_foldername_length()]
+    name = limit_filename_length(name)  # limit so certainly fits on filesystem (max 255 bytes)
 
     # And finally, make sure it doesn't end in a dot or a space
     # This is invalid on Windows and can cause trouble for some other tools
