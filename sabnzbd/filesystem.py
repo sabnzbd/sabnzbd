@@ -94,6 +94,7 @@ def limit_filename_length(filename: str) -> int:
     # then: the basename. It can use the remaining byte space
     basename = get_basename(filename)
     basename = basename[:DEF_FILE_MAX]  # DEF_FILE_MAX chars: ASCII or UTF8
+    # now take care of possible UTF8
     while get_bytelength(basename) + extension_bytelength > DEF_FILE_MAX:
         basename = basename[:-1]  # utf8 safe
 
