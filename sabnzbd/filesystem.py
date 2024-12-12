@@ -86,12 +86,14 @@ def limit_filename_length(filename: str) -> int:
 
     # first: extension. Normally just 4 chars (like .ext), but let's hard limit to max 20
     extension = get_ext(filename)
+    extension = extension[:20]
     while get_bytelength(extension) >= 20:
         extension = extension[:-1]  # utf8 safe
     extension_bytelength = get_bytelength(extension)
 
     # then: the basename. It can use the remaining byte space
     basename = get_basename(filename)
+    basename = basename[:DEF_FILE_MAX]  # DEF_FILE_MAX chars: ASCII or UTF8
     while get_bytelength(basename) + extension_bytelength > DEF_FILE_MAX:
         basename = basename[:-1]  # utf8 safe
 
