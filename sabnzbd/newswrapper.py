@@ -285,6 +285,11 @@ class NNTP:
             # Setup the SSL socket
             self.nw.server.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 
+            if sabnzbd.WIN32:
+                # Allow those pesky virus-scanners to inject their scanning certificates
+                self.nw.server.ssl_context.verify_flags &= ~ssl.VERIFY_X509_PARTIAL_CHAIN
+                self.nw.server.ssl_context.verify_flags &= ~ssl.VERIFY_X509_STRICT
+
             # Only verify hostname when we're strict
             if self.nw.server.ssl_verify < 2:
                 self.nw.server.ssl_context.check_hostname = False

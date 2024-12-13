@@ -77,8 +77,13 @@ def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLS
 
 def internetspeed_interal(family: int = socket.AF_UNSPEC) -> float:
     """Measure internet speed from a test-download using our optimized SSL-code"""
-
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+
+    if sabnzbd.WIN32:
+        # Allow those pesky virus-scanners to inject their scanning certificates
+        context.verify_flags &= ~ssl.VERIFY_X509_PARTIAL_CHAIN
+        context.verify_flags &= ~ssl.VERIFY_X509_STRICT
+
     socket_speed = {}
 
     try:
