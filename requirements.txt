@@ -65,7 +65,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 charset_normalizer==3.4.0
 idna==3.10
 urllib3==2.2.3
-certifi==2024.8.30
+certifi==2024.12.14
 oauthlib==3.2.2
 PyJWT # List version-less for Python 3.8 to just get latest supported
 PyJWT==2.10.1; python_version > '3.8'
