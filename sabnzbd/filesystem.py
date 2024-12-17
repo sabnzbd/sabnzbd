@@ -70,6 +70,37 @@ def get_basename(filename: str) -> str:
     return os.path.splitext(filename)[0]
 
 
+def get_bytelength(mystring: str):
+    """Return length in bytes. Relevant for UTF-8 encoded strings: >1 byte per char"""
+    return len(str.encode(mystring))
+
+
+def limit_filename_length(filename: str) -> int:
+    """returns filename limited to DEF_FILE_MAX bytes in lenth in total. UTF-8 safe"""
+
+    if get_bytelength(filename) <= DEF_FILE_MAX:
+        # all good
+        return filename
+
+    # overall too long, so limit the length
+
+    # first: extension. Normally just 4 chars (like .ext), but let's hard limit to max 20
+    extension = get_ext(filename)
+    extension = extension[:20]
+    while get_bytelength(extension) >= 20:
+        extension = extension[:-1]  # utf8 safe
+    extension_bytelength = get_bytelength(extension)
+
+    # then: the basename. It can use the remaining byte space
+    basename = get_basename(filename)
+    basename = basename[:DEF_FILE_MAX]  # DEF_FILE_MAX chars: ASCII or UTF8
+    # now take care of possible UTF8
+    while get_bytelength(basename) + extension_bytelength > DEF_FILE_MAX:
+        basename = basename[:-1]  # utf8 safe
+
+    return f"{basename}{extension}"
+
+
 def is_listed_ext(ext: str, ext_list: list) -> bool:
     """Check if the extension is listed. In case of a regexp the entire extension must be matched;
     partial matches aren't accepted (e.g. 'r[0-9]{2}' will be treated the same as '^r[0-9]{2}$' and
@@ -203,7 +234,8 @@ for i in range(1, 32):
 
 
 def sanitize_filename(name: str) -> str:
-    """Return filename with illegal chars converted to legal ones
+    """Return filename with illegal chars converted to legal ones,
+    limited to filename length that will always fit,
     and with the par2 extension always in lowercase
     """
     if not name:
@@ -234,33 +266,9 @@ def sanitize_filename(name: str) -> str:
     if not name:
         name = "unknown"
 
-    # now split name into name, ext
-    name, ext = os.path.splitext(name)
+    name = limit_filename_length(name)  # limit so fits on filesystem: max 255 bytes for name + ext
 
-    # If filename is too long (more than DEF_FILE_MAX bytes), brute-force truncate it,
-    # preserving the extension (max ext length 20)
-    # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
-    # but we stay on the safe side: max DEF_FILE_MAX bytes
-    try:
-        if len(utob(name)) + len(utob(ext)) > DEF_FILE_MAX:
-            logging.debug("Filename %s is too long, so truncating", name + ext)
-            # Too long filenames are often caused by incorrect non-ascii chars,
-            # so brute-force remove those non-ascii chars
-            name = ubtou(name.encode("ascii", "ignore"))
-            # Now it's plain ASCII, so no need for len(str.encode()) anymore; plain len() is enough
-            if len(name) + len(ext) > DEF_FILE_MAX:
-                # still too long, limit the extension
-                maxextlength = 20  # max length of an extension
-                if len(ext) > maxextlength:
-                    # allow first <maxextlength> chars, including the starting dot
-                    ext = ext[:maxextlength]
-                if len(name) + len(ext) > DEF_FILE_MAX:
-                    # Still too long, limit the basename
-                    name = name[: DEF_FILE_MAX - len(ext)]
-    except UnicodeError:
-        # Just in case of strange encoding problems, like #2714
-        pass
-
+    name, ext = os.path.splitext(name)  # split it
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
         ext = lowext
@@ -294,8 +302,7 @@ def sanitize_foldername(name: str) -> str:
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
 
-    if len(name) >= sabnzbd.cfg.max_foldername_length():
-        name = name[: sabnzbd.cfg.max_foldername_length()]
+    name = limit_filename_length(name)  # limit so certainly fits on filesystem (max 255 bytes)
 
     # And finally, make sure it doesn't end in a dot or a space
     # This is invalid on Windows and can cause trouble for some other tools
