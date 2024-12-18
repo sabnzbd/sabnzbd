@@ -1175,9 +1175,11 @@ msgstr ""
 "enthalten. Dies ist ein Serverproblem."
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
 msgstr ""
-"Zertifikat ist nicht gültig. Dies ist wahrscheinlich ein Serverproblem."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -3857,11 +3859,14 @@ msgstr "Zertifikat überprüfung"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
 msgstr ""
-"Minimum: Wenn SSL aktiviert, prüft die Serveridentität und Benutzung seiner "
-"Zertifikate. Strikt: Prüft und stelle sicher das der Hostname stimmt."
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3870,6 +3875,10 @@ msgstr "Deaktiviert"
 #: sabnzbd/skintext.py
 msgid "Minimal"
 msgstr "Minimum"
+
+#: sabnzbd/skintext.py
+msgid "Medium"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Strict"

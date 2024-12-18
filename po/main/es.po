@@ -3,13 +3,13 @@
 # 
 # Translators:
 # Ester Molla Aragones <moarages@gmail.com>, 2020
-# 1024mb <angelb2203@gmail.com>, 2023
+# Angel, 2023
 # Carmen Gonzalez, 2024
 # Safihre <safihre@sabnzbd.org>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta2\n"
+"Project-Id-Version: SABnzbd-4.5.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
@@ -1149,10 +1149,11 @@ msgstr ""
 "servidor."
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
 msgstr ""
-"El certificado no es válido. Probablemente se trate de un problema con el "
-"servidor."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -3771,12 +3772,14 @@ msgstr "Verificación del certificado"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
 msgstr ""
-"Mínimo: cuando se habilita el SSL, verifica la identidad del servidor "
-"utilizando sus certificados. Estricto: verifica y obliga a que el nombre de "
-"equipo sea equivalente."
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3785,6 +3788,10 @@ msgstr "Deshabilitado"
 #: sabnzbd/skintext.py
 msgid "Minimal"
 msgstr "Mínimo"
+
+#: sabnzbd/skintext.py
+msgid "Medium"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Strict"
