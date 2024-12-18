@@ -88,6 +88,10 @@ label {
     float: right;
     margin: 0;
 }
+.desc {
+    font-size: 12px;
+    font-style: italic;
+}
 .align-right {
     text-align: right;
 }

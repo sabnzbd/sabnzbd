@@ -1270,7 +1270,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
     connections = int_conv(kwargs.get("connections", 0))
     timeout = int_conv(kwargs.get("timeout", DEF_NETWORKING_TEST_TIMEOUT))
     ssl = int_conv(kwargs.get("ssl", 0))
-    ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
+    ssl_verify = int_conv(kwargs.get("ssl_verify", 3))
     ssl_ciphers = kwargs.get("ssl_ciphers", "").strip()
 
     if not host:
