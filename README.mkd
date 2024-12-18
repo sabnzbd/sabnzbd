@@ -1,5 +1,10 @@
-Release Notes - SABnzbd 4.4.0
+Release Notes - SABnzbd 4.4.1 Release Candidate 1
 =========================================================
+
+## Bugfixes and changes since 4.4.0
+* Added `Certificate verification` level `Medium` to allow
+  certificates injected by firewall or virus scanner.
+* Windows: Windows notifications did not work.
 
 ## New features in 4.4.0
 
