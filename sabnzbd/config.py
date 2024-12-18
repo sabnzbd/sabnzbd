@@ -438,8 +438,8 @@ class ConfigServer:
         self.password = OptionPassword(name, "password", add=False)
         self.connections = OptionNumber(name, "connections", 1, 0, 500, add=False)
         self.ssl = OptionBool(name, "ssl", False, add=False)
-        # 0=No, 1=Normal, 2=Strict (hostname verification)
-        self.ssl_verify = OptionNumber(name, "ssl_verify", 2, add=False)
+        # 0=No, 1=Minimal, 2=Medium, 3=Strict
+        self.ssl_verify = OptionNumber(name, "ssl_verify", 3, add=False)
         self.ssl_ciphers = OptionStr(name, "ssl_ciphers", add=False)
         self.enable = OptionBool(name, "enable", True, add=False)
         self.required = OptionBool(name, "required", False, add=False)

@@ -36,6 +36,8 @@ from sabnzbd.config import (
     OptionStr,
     OptionList,
     create_api_key,
+    get_servers,
+    save_config,
 )
 from sabnzbd.constants import (
     DEF_HOST,
@@ -799,3 +801,18 @@ def config_conversions():
 
         # Done
         config_conversion_version.set(3)
+
+    # Convert Certificate Validation
+    if config_conversion_version() < 4:
+        logging.info("Config conversion set 4")
+
+        all_servers = get_servers()
+        for server in all_servers:
+            if all_servers[server].ssl_verify() == 2:
+                all_servers[server].ssl_verify.set(3)
+
+        # Done
+        config_conversion_version.set(4)
+
+    # Make sure we store the new values
+    save_config()

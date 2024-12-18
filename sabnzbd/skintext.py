@@ -550,10 +550,15 @@ SKIN_TEXT = {
     "explain-ssl": TT("Secure connection to server"),  #: Server SSL tickbox
     "opt-ssl_verify": TT("Certificate verification"),
     "explain-ssl_verify": TT(
-        "Minimal: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname."
+        "When SSL is enabled: "
+        "- Strict: enforce full certificate verification. This is the most secure setting. "
+        "- Medium: verify that the certificate is valid and matches the server address, but allow certificates locally injected (for example by firewall or virus scanner)."
+        "- Minimal: verify that the certificate is valid. This is not secure, any valid certificate could be used. "
+        "- Disabled: no certification verification. This is not secure at all, anyone could intercept your connection. "
     ),
     "ssl_verify-disabled": TT("Disabled"),
-    "ssl_verify-normal": TT("Minimal"),
+    "ssl_verify-minimal": TT("Minimal"),
+    "ssl_verify-medium": TT("Medium"),
     "ssl_verify-strict": TT("Strict"),
     "srv-priority": TT("Priority"),  #: Server priority
     "explain-svrprio": TT("0 is highest priority, 100 is the lowest priority"),  #: Explain server priority
