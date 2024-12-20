@@ -283,14 +283,29 @@ class NNTP:
         # Create SSL-context if it is needed and not created yet
         if self.nw.server.ssl and not self.nw.server.ssl_context:
             # Setup the SSL socket
+            # Set Certificate validation: 0=Disabled, 1=Minimal, 2=Medium, 3=Strict
             self.nw.server.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 
-            # Only verify hostname when we're strict
-            if self.nw.server.ssl_verify < 2:
+            # Allow those pesky virus-scanners to inject their scanning certificates
+            if self.nw.server.ssl_verify <= 2:
+                self.nw.server.ssl_context.verify_flags &= ~ssl.VERIFY_X509_STRICT
+                # This flag is only available for Python 3.10 and above
+                if hasattr(ssl, "VERIFY_X509_PARTIAL_CHAIN"):
+                    self.nw.server.ssl_context.verify_flags &= ~ssl.VERIFY_X509_PARTIAL_CHAIN
+            else:
+                # Make sure it's enabled for Strict mode, also pre-3.13
+                self.nw.server.ssl_context.verify_flags |= ssl.VERIFY_X509_STRICT
+                # This flag is only available for Python 3.10 and above
+                if hasattr(ssl, "VERIFY_X509_PARTIAL_CHAIN"):
+                    self.nw.server.ssl_context.verify_flags |= ssl.VERIFY_X509_PARTIAL_CHAIN
+
+            # Only verify hostname when Medium or Strict
+            if self.nw.server.ssl_verify <= 1:
                 self.nw.server.ssl_context.check_hostname = False
-                # Certificates optional
-                if self.nw.server.ssl_verify == 0:
-                    self.nw.server.ssl_context.verify_mode = ssl.CERT_NONE
+
+            # Certificates optional
+            if self.nw.server.ssl_verify <= 0:
+                self.nw.server.ssl_context.verify_mode = ssl.CERT_NONE
 
             # Did the user set a custom cipher-string?
             if self.nw.server.ssl_ciphers:
@@ -370,7 +385,9 @@ class NNTP:
                     "Certificate hostname mismatch: the server hostname is not listed in the certificate. This is a server issue."
                 )
             elif "certificate verify failed" in raw_error_str:
-                raw_error_str = T("Certificate not valid. This is most probably a server issue.")
+                raw_error_str = T(
+                    "Certificate could not be validated. This could be a server issue or due to a locally injected certificate (for example by firewall or virus scanner). Try setting Certificate verification to Medium."
+                )
 
             # Reformat error and overwrite str-representation
             error_str = T("Server %s uses an untrusted certificate [%s]") % (self.nw.server.host, raw_error_str)

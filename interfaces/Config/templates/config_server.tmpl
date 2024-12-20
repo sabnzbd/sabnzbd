@@ -94,11 +94,12 @@
                     <div class="field-pair advanced-settings">
                         <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
                         <select name="ssl_verify" id="ssl_verify">
-                            <option value="2" selected>$T('ssl_verify-strict')</option>
-                            <option value="1">$T('ssl_verify-normal')</option>
+                            <option value="3" selected>$T('ssl_verify-strict')</option>
+                            <option value="2">$T('ssl_verify-medium')</option>
+                            <option value="1">$T('ssl_verify-minimal')</option>
                             <option value="0">$T('ssl_verify-disabled')</option>
                         </select>
-                        <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
+                        <span class="desc">$T('explain-ssl_verify').replace('-', '<br/>-')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
@@ -224,11 +225,12 @@
                         <div class="field-pair advanced-settings">
                             <label class="config" for="ssl_verify$cur">$T('opt-ssl_verify')</label>
                             <select name="ssl_verify" id="ssl_verify$cur">
-                                <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
-                                <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
+                                <option value="3" <!--#if $server['ssl_verify'] == 3 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
+                                <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-medium')</option>
+                                <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-minimal')</option>
                                 <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>
                             </select>
-                            <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
+                            <span class="desc">$T('explain-ssl_verify').replace('-', '<br/>-')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="ssl_ciphers$cur">$T('opt-ssl_ciphers')</label>
