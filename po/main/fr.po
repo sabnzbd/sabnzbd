@@ -1170,6 +1170,9 @@ msgid ""
 " locally injected certificate (for example by firewall or virus scanner). "
 "Try setting Certificate verification to Medium."
 msgstr ""
+"Le certificat n'a pas pu être validé. Il peut s'agir d'un problème de "
+"serveur ou d'un certificat injecté localement (par exemple par un pare-feu "
+"ou un antivirus). Essayez de régler la vérification du certificat sur Moyen."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -3848,6 +3851,14 @@ msgid ""
 "used. - Disabled: no certification verification. This is not secure at all, "
 "anyone could intercept your connection. "
 msgstr ""
+"Lorsque SSL est activé : - Strict : applique la vérification complète du "
+"certificat. Il s'agit du paramètre le plus sûr. - Moyen : vérifie que le "
+"certificat est valide et qu'il correspond à l'adresse du serveur, mais "
+"autorise l'injection locale de certificats (par exemple par un pare-feu ou "
+"un antivirus). - Minimal : vérifie que le certificat est valide. Il ne "
+"s'agit pas d'une mesure de sécurité, car n'importe quel certificat valide "
+"peut être utilisé. - Désactivé : pas de vérification de la certification. Ce"
+" n'est pas sûr du tout, n'importe qui peut intercepter votre connexion. "
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3859,7 +3870,7 @@ msgstr "Minimal"
 
 #: sabnzbd/skintext.py
 msgid "Medium"
-msgstr ""
+msgstr "Moyen"
 
 #: sabnzbd/skintext.py
 msgid "Strict"
