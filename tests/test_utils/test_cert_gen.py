@@ -64,4 +64,4 @@ class TestCertGen:
             cert = x509.load_pem_x509_certificate(cert_content, default_backend())
 
             # Validate that the timestamp at which the certificate stops being valid (expiration date) is in future
-            assert datetime.datetime.now() < cert.not_valid_after
+            assert datetime.datetime.now(datetime.timezone.utc) < cert.not_valid_after_utc
