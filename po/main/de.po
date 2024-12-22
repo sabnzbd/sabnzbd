@@ -12,16 +12,16 @@
 # reloxx13 <reloxx@interia.pl>, 2022
 # kameb, 2023
 # HandyDandy04, 2024
-# Safihre <safihre@sabnzbd.org>, 2024
-# Gjelbrim Haskaj, 2024
 # Stefan Rodriguez Galeano, 2024
 # M Z, 2024
+# Gjelbrim Haskaj, 2024
+# Safihre <safihre@sabnzbd.org>, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.5.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: M Z, 2024\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1180,6 +1180,10 @@ msgid ""
 " locally injected certificate (for example by firewall or virus scanner). "
 "Try setting Certificate verification to Medium."
 msgstr ""
+"Das Zertifikat konnte nicht validiert werden. Dies könnte ein Serverproblem "
+"sein oder auf ein lokal eingefügtes Zertifikat zurückzuführen sein (z. B. "
+"durch eine Firewall oder einen Virenscanner). Versuche, die "
+"Zertifikatsüberprüfung auf Mittel einzustellen."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -3867,6 +3871,14 @@ msgid ""
 "used. - Disabled: no certification verification. This is not secure at all, "
 "anyone could intercept your connection. "
 msgstr ""
+"Wenn SSL aktiviert ist: - Streng: Erzwingt eine vollständige "
+"Zertifikatsüberprüfung. Dies ist die sicherste Einstellung. - Mittel: "
+"Überprüft, ob das Zertifikat gültig ist und mit der Serveradresse "
+"übereinstimmt, aber erlaubt lokal eingefügte (z. B. durch eine Firewall oder"
+" einen Virenscanner) Zertifikate.- Minimal: Überprüft, ob das Zertifikat "
+"gültig ist. Dies ist nicht sicher, es kann jedes gültige Zertifikat "
+"verwendet werden. - Deaktiviert: keine Überprüfung des Zertifikats. Dies ist"
+" überhaupt nicht sicher, jeder könnte deine Verbindung abfangen. "
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3878,7 +3890,7 @@ msgstr "Minimum"
 
 #: sabnzbd/skintext.py
 msgid "Medium"
-msgstr ""
+msgstr "mittel"
 
 #: sabnzbd/skintext.py
 msgid "Strict"
@@ -3949,7 +3961,7 @@ msgstr "Verfügbarkeit der Artikel"
 
 #: sabnzbd/skintext.py
 msgid "%f% available of %d requested articles"
-msgstr "%f vorhanden von %d angefragten Artikeln"
+msgstr "%f% vorhanden von %d angefragten Artikeln"
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py
