@@ -94,7 +94,7 @@ class Assembler(Thread):
                             self.check_encrypted_and_unwanted(nzo, nzf)
                             nzo.add_to_direct_unpacker(nzf)
 
-                        elif par2file.is_parfile(filepath):
+                        elif par2file.is_par2_file(filepath):
                             # Parse par2 files, cloaked or not
                             nzo.handle_par2(nzf, filepath)
 

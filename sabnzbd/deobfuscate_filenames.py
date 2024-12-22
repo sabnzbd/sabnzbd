@@ -34,7 +34,7 @@ import re
 
 import sabnzbd
 from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, get_basename
-from sabnzbd.par2file import is_parfile, parse_par2_file
+from sabnzbd.par2file import is_par2_file, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
 from sabnzbd.misc import match_str
 from sabnzbd.constants import IGNORED_MOVIE_FOLDERS
@@ -48,7 +48,7 @@ MIN_FILE_SIZE = 10 * 1024 * 1024
 def decode_par2(parfile: str) -> List[str]:
     """Parse a par2 file and rename files listed in the par2 to their real name. Return list of generated files"""
     # Check if really a par2 file
-    if not is_parfile(parfile):
+    if not is_par2_file(parfile):
         logging.info("Par2 file %s was not really a par2 file")
         return []
 

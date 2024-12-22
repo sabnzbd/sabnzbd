@@ -29,7 +29,7 @@ from typing import Dict, Optional, Tuple
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
-from sabnzbd.filesystem import get_basename
+from sabnzbd.filesystem import get_basename, get_ext
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -52,19 +52,22 @@ class FilePar2Info:
     has_duplicate: bool = False
 
 
-def is_parfile(filename: str) -> bool:
-    """Check quickly whether file has par2 signature
-    or if the filename has '.par2' in it
-    """
-    if os.path.exists(filename):
+def is_par2_filename(filename: str) -> bool:
+    """Check quickly whether filename has '.par2' in it"""
+    if ".par2" in filename.lower():
+        return True
+    return False
+
+
+def is_par2_file(filepath: str) -> bool:
+    """Check whether file has par2 signature"""
+    if os.path.exists(filepath):
         try:
-            with open(filename, "rb") as f:
+            with open(filepath, "rb") as f:
                 buf = f.read(8)
                 return buf.startswith(PAR_PKT_ID)
         except:
             pass
-    elif ".par2" in filename.lower():
-        return True
     return False
 
 
