@@ -64,7 +64,8 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 # Requests Requirements
 charset_normalizer==3.4.1
 idna==3.10
-urllib3==2.3.0
+urllib3 # List version-less for Python 3.8 to just get latest supported
+urllib3==2.3.0; python_version > '3.8'
 certifi==2024.12.14
 oauthlib==3.2.2
 PyJWT # List version-less for Python 3.8 to just get latest supported
