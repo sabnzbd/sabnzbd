@@ -426,7 +426,7 @@ class NzbQueue:
                         # Force-remove all trace and update counters
                         nzo.bytes -= nzf.bytes
                         nzo.bytes_tried -= nzf.bytes - nzf.bytes_left
-                        if nzf.is_par2 or sabnzbd.par2file.is_par2_filename(nzf.filename):
+                        if nzf.is_par2 or sabnzbd.par2file.has_par2_in_filename(nzf.filename):
                             nzo.bytes_par2 -= nzf.bytes
                         del nzo.files_table[nzf_id]
                         nzo.finished_files.remove(nzf)
@@ -728,11 +728,10 @@ class NzbQueue:
             or (articles_left and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0)
         ):
             if not nzo.precheck:
-                # Only start decoding if we have a filename and type
                 # The type is only set if sabctools could decode the article
-                if nzf.filename and nzf.type:
+                if nzf.type:
                     sabnzbd.Assembler.process(nzo, nzf, file_done)
-                elif sabnzbd.par2file.is_par2_filename(nzf.filename):
+                elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
                     # Broken par2 file, try to get another one
                     nzo.promote_par2(nzf)
 

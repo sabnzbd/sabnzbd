@@ -52,7 +52,7 @@ class FilePar2Info:
     has_duplicate: bool = False
 
 
-def is_par2_filename(filename: str) -> bool:
+def has_par2_in_filename(filename: str) -> bool:
     """Check quickly whether filename has '.par2' in it"""
     if ".par2" in filename.lower():
         return True

@@ -37,11 +37,9 @@ from sabnzbd import nzbstuff
 from sabnzbd.encoding import utob, correct_cherrypy_encoding
 from sabnzbd.filesystem import (
     get_filename,
-    is_valid_script,
     get_ext,
     clip_path,
     remove_file,
-    remove_data,
 )
 from sabnzbd.misc import name_to_cat, cat_pp_script_sanitizer
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES, AddNzbFileResult
@@ -454,28 +452,25 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                             # In case of missing attributes
                             pass
 
+                # Skip any empty files
+                if not raw_article_db:
+                    logging.info("No valid articles in %s, skipping", file_name)
+                    continue
+
                 # Sort the articles by part number, compatible with Python 3.5
                 raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
                 # Create NZF
-                nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
-
-                # Check if we already have this exact NZF (see custom eq-checks)
-                if nzf in nzo.files:
-                    logging.info("File %s occurred twice in NZB, skipping", nzf.filename)
-                    remove_data(nzf.nzf_id, nzo.admin_path)
+                try:
+                    nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
+                except sabnzbd.nzbstuff.SkippedNzbFile:
+                    # Did not meet requirements, so continue
                     continue
 
-                # Add valid NZF's
-                if file_name and nzf.valid and nzf.nzf_id:
-                    nzo.add_nzf(nzf)
-                    valid_files += 1
-                    avg_age_sum += file_timestamp
-                else:
-                    logging.info("Error importing %s, skipping", file_name)
-                    if nzf.nzf_id:
-                        remove_data(nzf.nzf_id, nzo.admin_path)
-                    skipped_files += 1
+                nzo.add_nzf(nzf)
+                valid_files += 1
+                avg_age_sum += file_timestamp
+
                 element.clear()
 
     # Final bookkeeping
