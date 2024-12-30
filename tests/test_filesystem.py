@@ -47,23 +47,23 @@ class TestFileFolderNameSanitizer:
 
     @set_platform("win32")
     def test_colon_handling_windows(self):
-        assert filesystem.sanitize_filename("test:aftertest") == "test-aftertest"
-        assert filesystem.sanitize_filename(":") == "-"
-        assert filesystem.sanitize_filename("test:") == "test-"
-        assert filesystem.sanitize_filename("test: ") == "test-"
+        assert filesystem.sanitize_filename("test:aftertest") == "test_aftertest"
+        assert filesystem.sanitize_filename(":") == "_"
+        assert filesystem.sanitize_filename("test:") == "test_"
+        assert filesystem.sanitize_filename("test: ") == "test_"
         # They should act the same
         assert filesystem.sanitize_filename("test:aftertest") == filesystem.sanitize_foldername("test:aftertest")
 
     @set_platform("macos")
     def test_colon_handling_macos(self):
-        assert filesystem.sanitize_filename("test:aftertest") == "aftertest"
-        assert filesystem.sanitize_filename(":aftertest") == "aftertest"
-        assert filesystem.sanitize_filename("::aftertest") == "aftertest"
-        assert filesystem.sanitize_filename(":after:test") == "test"
+        assert filesystem.sanitize_filename("test:aftertest") == "test_aftertest"
+        assert filesystem.sanitize_filename(":aftertest") == "_aftertest"
+        assert filesystem.sanitize_filename("::aftertest") == "__aftertest"
+        assert filesystem.sanitize_filename(":after:test") == "_after_test"
         # Empty after sanitising with macos colon handling
-        assert filesystem.sanitize_filename(":") == "unknown"
-        assert filesystem.sanitize_filename("test:") == "unknown"
-        assert filesystem.sanitize_filename("test: ") == "unknown"
+        assert filesystem.sanitize_filename(":") == "_"
+        assert filesystem.sanitize_filename("test:") == "test_"
+        assert filesystem.sanitize_filename("test: ") == "test_"
 
     @set_platform("linux")
     def test_colon_handling_other(self):
@@ -92,7 +92,7 @@ class TestFileFolderNameSanitizer:
     @set_platform("win32")
     def test_file_illegal_chars_win32(self):
         assert filesystem.sanitize_filename("test" + filesystem.CH_ILLEGAL_WIN + "aftertest") == (
-            "test" + filesystem.CH_LEGAL_WIN + "aftertest"
+            "test" + (len(filesystem.CH_ILLEGAL_WIN) * "_") + "aftertest"
         )
         assert (
             filesystem.sanitize_filename("test" + chr(0) + chr(1) + chr(15) + chr(31) + "aftertest")
@@ -108,24 +108,20 @@ class TestFileFolderNameSanitizer:
 
     @set_platform("linux")
     def test_file_illegal_chars_linux(self):
-        assert filesystem.sanitize_filename("test/aftertest") == "test+aftertest"
-        assert filesystem.sanitize_filename("/test") == "+test"
-        assert filesystem.sanitize_filename("test/") == "test+"
-        assert filesystem.sanitize_filename(r"/test\/aftertest/") == r"+test\+aftertest+"
-        assert filesystem.sanitize_filename("/") == "+"
-        assert filesystem.sanitize_filename("///") == "+++"
-        assert filesystem.sanitize_filename("../") == "..+"
-        assert filesystem.sanitize_filename("../test") == "..+test"
+        assert filesystem.sanitize_filename("test/aftertest") == "test_aftertest"
+        assert filesystem.sanitize_filename("/test") == "_test"
+        assert filesystem.sanitize_filename("test/") == "test_"
+        assert filesystem.sanitize_filename(r"/test\/aftertest/") == r"_test\_aftertest_"
+        assert filesystem.sanitize_filename("/") == "_"
+        assert filesystem.sanitize_filename("///") == "___"
+        assert filesystem.sanitize_filename("../") == ".._"
+        assert filesystem.sanitize_filename("../test") == ".._test"
 
     @set_platform("linux")
     def test_folder_illegal_chars_linux(self):
-        assert filesystem.sanitize_foldername('test"aftertest') == "test'aftertest"
-        assert filesystem.sanitize_foldername("test:") == "test-"
+        assert filesystem.sanitize_foldername('test"aftertest') == "test_aftertest"
+        assert filesystem.sanitize_foldername("test:") == "test_"
         assert filesystem.sanitize_foldername("test<>?*|aftertest") == "test<>?*|aftertest"
-
-    def test_char_collections(self):
-        assert len(filesystem.CH_ILLEGAL) == len(filesystem.CH_LEGAL)
-        assert len(filesystem.CH_ILLEGAL_WIN) == len(filesystem.CH_LEGAL_WIN)
 
     @set_platform("linux")
     def test_legal_chars_linux(self):
@@ -144,20 +140,17 @@ class TestFileFolderNameSanitizer:
     def test_sanitize_safe_linux(self):
         # Set sanitize_safe to on, simulating Windows-style restrictions.
         assert filesystem.sanitize_filename("test" + filesystem.CH_ILLEGAL_WIN + "aftertest") == (
-            "test" + filesystem.CH_LEGAL_WIN + "aftertest"
+            "test" + (len(filesystem.CH_ILLEGAL_WIN) * "_") + "aftertest"
         )
         for index in range(0, len(filesystem.CH_ILLEGAL_WIN)):
-            char_leg = filesystem.CH_LEGAL_WIN[index]
             char_ill = filesystem.CH_ILLEGAL_WIN[index]
-            assert filesystem.sanitize_filename("test" + char_ill * 2 + "aftertest") == (
-                "test" + char_leg * 2 + "aftertest"
-            )
+            assert filesystem.sanitize_filename("test" + char_ill * 2 + "aftertest") == ("test__aftertest")
             # Illegal chars that also get caught by strip() never make it far
             # enough to be replaced by their legal equivalents if they appear
             # on either end of the filename.
             if char_ill.strip():
-                assert filesystem.sanitize_filename("test" + char_ill * 2) == ("test" + char_leg * 2)
-                assert filesystem.sanitize_filename(char_ill * 2 + "test") == (char_leg * 2 + "test")
+                assert filesystem.sanitize_filename("test" + char_ill * 2) == "test__"
+                assert filesystem.sanitize_filename(char_ill * 2 + "test") == "__test"
 
     def test_filename_dot(self):
         # All dots should survive in filenames
@@ -181,9 +174,9 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("test.aftertest.") == "test.aftertest"
         assert filesystem.sanitize_foldername("test.aftertest..") == "test.aftertest"
         assert filesystem.sanitize_foldername("test. aftertest. . . .") == "test. aftertest"
-        assert filesystem.sanitize_foldername("/test/this.") == "+test+this"
-        assert filesystem.sanitize_foldername("/test./this.") == "+test.+this"
-        assert filesystem.sanitize_foldername("/test. /this . ") == "+test. +this"
+        assert filesystem.sanitize_foldername("/test/this.") == "_test_this"
+        assert filesystem.sanitize_foldername("/test./this.") == "_test._this"
+        assert filesystem.sanitize_foldername("/test. /this . ") == "_test. _this"
 
     def test_long_foldername(self):
         # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the foldername,
@@ -333,7 +326,7 @@ class TestSanitizeFiles(ffs.TestCase):
         # The very specific tests of sanitize_filename() are above
         # Here we just want to see that sanitize_files() works as expected
         input_list = [r"c:\test\con.man", r"c:\test\foo:bar"]
-        output_list = [r"c:\test\_con.man", r"c:\test\foo-bar"]
+        output_list = [r"c:\test\_con.man", r"c:\test\foo_bar"]
 
         # Test both the "folder" and "filelist" based calls
         for kwargs in ({"folder": r"c:\test"}, {"filelist": input_list}):

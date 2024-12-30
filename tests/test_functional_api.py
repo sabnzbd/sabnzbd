@@ -862,7 +862,7 @@ class TestQueueApi(ApiTestFunctions):
             ("thư điện tử password=mật_khẩu", None, "thư điện tử", "mật_khẩu", True),
             ("{{Jobname{{PassWord}}", None, "{{Jobname", "PassWord", True),  # Issue #1659
             ("password=PartOfTheJobname", None, "password=PartOfTheJobname", None, True),  # Issue #1659
-            ("/Jobname", None, "+Jobname", None, True),  # Issue #1659
+            ("/Jobname", None, "_Jobname", None, True),  # Issue #1659
             ("", None, None, None, False),
             ("", "PassWord", None, "PassWord", False),
             (None, None, None, None, False),

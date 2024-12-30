@@ -202,12 +202,9 @@ def has_win_device(filename: str) -> bool:
 
 
 CH_ILLEGAL = "\0/"
-CH_LEGAL = "_+"
 CH_ILLEGAL_WIN = '\\/<>?*|":'
-CH_LEGAL_WIN = "++{}!@#'-"
 for i in range(1, 32):
     CH_ILLEGAL_WIN += chr(i)
-    CH_LEGAL_WIN += "_"
 
 
 def sanitize_filename(filename: str) -> str:
@@ -218,23 +215,16 @@ def sanitize_filename(filename: str) -> str:
         return filename
 
     illegal = CH_ILLEGAL
-    legal = CH_LEGAL
-
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
         illegal += CH_ILLEGAL_WIN
-        legal += CH_LEGAL_WIN
 
-    if ":" in filename and sabnzbd.MACOS:
+    if sabnzbd.MACOS:
         # Compensate for the foolish way par2 on macOS handles a colon character
-        filename = filename[filename.rfind(":") + 1 :]
+        illegal += ":"
 
-    lst = []
-    for ch in filename.strip():
-        if ch in illegal:
-            ch = legal[illegal.find(ch)]
-        lst.append(ch)
-    filename = "".join(lst)
+    # Replace all illegal characters by an underscore
+    filename = filename.strip().translate(str.maketrans(illegal, "_" * len(illegal)))
 
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         filename = replace_win_devices(filename)
@@ -263,48 +253,40 @@ def sanitize_filename(filename: str) -> str:
     return basename + ext
 
 
-def sanitize_foldername(name: str) -> str:
+def sanitize_foldername(foldername: str) -> str:
     """Return foldername with dodgy chars converted to safe ones
     Remove any leading and trailing dot and space characters
     """
-    if not name:
-        return name
+    if not foldername:
+        return foldername
 
     illegal = CH_ILLEGAL + ':"'
-    legal = CH_LEGAL + "-'"
 
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
         illegal += CH_ILLEGAL_WIN
-        legal += CH_LEGAL_WIN
 
-    lst = []
-    for ch in name.strip():
-        if ch in illegal:
-            ch = legal[illegal.find(ch)]
-            lst.append(ch)
-        else:
-            lst.append(ch)
-    name = "".join(lst)
+    # Replace all illegal characters by an underscore
+    foldername = foldername.strip().translate(str.maketrans(illegal, "_" * len(illegal)))
 
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
-        name = replace_win_devices(name)
+        foldername = replace_win_devices(foldername)
 
     # Make sure we check the underlying unicode length!
-    if len(utob(name)) >= sabnzbd.cfg.max_foldername_length():
-        name = limit_encoded_length(name, sabnzbd.cfg.max_foldername_length())
+    if len(utob(foldername)) >= sabnzbd.cfg.max_foldername_length():
+        foldername = limit_encoded_length(foldername, sabnzbd.cfg.max_foldername_length())
 
     # And finally, make sure it doesn't end in a dot or a space
     # This is invalid on Windows and can cause trouble for some other tools
-    if name != "." and name != "..":
-        while len(name) > len(name := name.strip().rstrip(".")):
+    if foldername != "." and foldername != "..":
+        while len(foldername) > len(foldername := foldername.strip().rstrip(".")):
             continue
 
     # Just to be sure we don't return nothing
-    if not name:
-        name = "unknown"
+    if not foldername:
+        foldername = "unknown"
 
-    return name
+    return foldername
 
 
 def sanitize_and_trim_path(path: str) -> str:
