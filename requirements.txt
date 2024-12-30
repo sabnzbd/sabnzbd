@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.9.0
+apprise==1.9.1
 sabctools==8.2.5
 CT3==3.4.0
 cffi==1.17.1
@@ -36,7 +36,7 @@ cryptography==44.0.0
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
 ujson==5.10.0
-orjson==3.10.12
+orjson==3.10.13
 
 # Windows system integration
 pywin32==308; sys_platform == 'win32'
@@ -62,9 +62,9 @@ markdown==3.7
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
-charset_normalizer==3.4.0
+charset_normalizer==3.4.1
 idna==3.10
-urllib3==2.2.3
+urllib3==2.3.0
 certifi==2024.12.14
 oauthlib==3.2.2
 PyJWT # List version-less for Python 3.8 to just get latest supported
