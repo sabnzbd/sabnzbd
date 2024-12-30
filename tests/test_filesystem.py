@@ -186,9 +186,51 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("/test. /this . ") == "+test. +this"
 
     def test_long_foldername(self):
+        # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the foldername,
+        # but we stay on the safe side: max DEF_FILE_MAX bytes
         assert len(filesystem.sanitize_foldername("test" * 100)) == DEF_FOLDER_MAX
         assert len(filesystem.sanitize_foldername("a" * DEF_FOLDER_MAX)) == DEF_FOLDER_MAX
         assert len(filesystem.sanitize_foldername("a" * (DEF_FOLDER_MAX + 1))) == DEF_FOLDER_MAX
+
+        # Adapted from filename tests
+
+        # PART 1: Base cases: Nothing should happen:
+        # normal filename
+        name = "a" * 200
+        sanitizedname = filesystem.sanitize_foldername(name)
+        assert sanitizedname == name
+
+        # Unicode / UTF8 is OK ... as total filename length is not too long
+        name = "BASE" + "你" * 50 + "blabla"
+        sanitizedname = filesystem.sanitize_foldername(name)
+        assert sanitizedname == name
+
+        # PART 2: base truncating
+        name = "BASE" + "a" * 300
+        sanitizedname = filesystem.sanitize_foldername(name)
+        assert len(sanitizedname) <= DEF_FOLDER_MAX
+        assert sanitizedname.startswith("BASEaaaaaaaaaaaaaaa")
+
+        # PART 3: more exotic cases
+
+        # insert NON-ASCII chars, which should stay in place because overall length is no problem
+        name = "aaaa" + 10 * chr(188) + 10 * chr(222) + "bbbb"
+        sanitizedname = filesystem.sanitize_foldername(name)
+        assert sanitizedname == name
+
+        # insert NON-ASCII chars
+        name = "aaaa" + 200 * chr(188) + 200 * chr(222)
+        sanitizedname = filesystem.sanitize_foldername(name)
+        assert (
+            sanitizedname
+            == "aaaa¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼"
+        )
+
+        # Unicode / UTF8 ... total filename length might be too long for certain filesystems
+        name = "BASE" + "你" * 200
+        sanitizedname = filesystem.sanitize_foldername(name)
+        assert sanitizedname.startswith("BASE")
+        assert sanitizedname.endswith("你")
 
     def test_filename_empty_result(self):
         # Nothing remains after sanitizing the filename
@@ -253,10 +295,13 @@ class TestFileFolderNameSanitizer:
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name
 
-        # insert NON-ASCII chars, which should get removed because overall length is too long
+        # insert NON-ASCII chars
         name = "aaaa" + 200 * chr(188) + 200 * chr(222) + "bbbb.ext"
         sanitizedname = filesystem.sanitize_filename(name)
-        assert sanitizedname == "aaaabbbb.ext"
+        assert (
+            sanitizedname
+            == "aaaa¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼¼.ext"
+        )
 
         # Unicode / UTF8 ... total filename length might be too long for certain filesystems
         name = "BASE" + "你" * 200 + ".ext"

@@ -45,8 +45,16 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, cache_maintainer
-from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX, IGNORED_FILES_AND_FOLDERS, DEF_LOG_FILE
-from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
+from sabnzbd.constants import (
+    FUTURE_Q_FOLDER,
+    JOB_ADMIN,
+    GIGI,
+    DEF_FILE_MAX,
+    IGNORED_FILES_AND_FOLDERS,
+    DEF_LOG_FILE,
+    DEX_FILE_EXTENSION_MAX,
+)
+from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
 from sabnzbd.utils import rarfile
 
 
@@ -202,12 +210,12 @@ for i in range(1, 32):
     CH_LEGAL_WIN += "_"
 
 
-def sanitize_filename(name: str) -> str:
+def sanitize_filename(filename: str) -> str:
     """Return filename with illegal chars converted to legal ones
     and with the par2 extension always in lowercase
     """
-    if not name:
-        return name
+    if not filename:
+        return filename
 
     illegal = CH_ILLEGAL
     legal = CH_LEGAL
@@ -217,46 +225,34 @@ def sanitize_filename(name: str) -> str:
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
 
-    if ":" in name and sabnzbd.MACOS:
+    if ":" in filename and sabnzbd.MACOS:
         # Compensate for the foolish way par2 on macOS handles a colon character
-        name = name[name.rfind(":") + 1 :]
+        filename = filename[filename.rfind(":") + 1 :]
 
     lst = []
-    for ch in name.strip():
+    for ch in filename.strip():
         if ch in illegal:
             ch = legal[illegal.find(ch)]
         lst.append(ch)
-    name = "".join(lst)
+    filename = "".join(lst)
 
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
-        name = replace_win_devices(name)
+        filename = replace_win_devices(filename)
 
-    if not name:
-        name = "unknown"
+    if not filename:
+        filename = "unknown"
 
     # now split name into name, ext
-    name, ext = os.path.splitext(name)
+    basename, ext = os.path.splitext(filename)
 
-    # If filename is too long (more than DEF_FILE_MAX bytes), brute-force truncate it,
-    # preserving the extension (max ext length 20)
+    # If filename is too long (more than DEF_FILE_MAX bytes), brute-force truncate it, preserving the extension
     # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
     # but we stay on the safe side: max DEF_FILE_MAX bytes
     try:
-        if len(utob(name)) + len(utob(ext)) > DEF_FILE_MAX:
-            logging.debug("Filename %s is too long, so truncating", name + ext)
-            # Too long filenames are often caused by incorrect non-ascii chars,
-            # so brute-force remove those non-ascii chars
-            name = ubtou(name.encode("ascii", "ignore"))
-            # Now it's plain ASCII, so no need for len(str.encode()) anymore; plain len() is enough
-            if len(name) + len(ext) > DEF_FILE_MAX:
-                # still too long, limit the extension
-                maxextlength = 20  # max length of an extension
-                if len(ext) > maxextlength:
-                    # allow first <maxextlength> chars, including the starting dot
-                    ext = ext[:maxextlength]
-                if len(name) + len(ext) > DEF_FILE_MAX:
-                    # Still too long, limit the basename
-                    name = name[: DEF_FILE_MAX - len(ext)]
+        if len(utob(filename)) > DEF_FILE_MAX:
+            logging.debug("Filename %s is too long, so truncating", filename + ext)
+            ext = limit_encoded_length(ext, DEX_FILE_EXTENSION_MAX)
+            basename = limit_encoded_length(basename, DEF_FILE_MAX - len(ext))
     except UnicodeError:
         # Just in case of strange encoding problems, like #2714
         pass
@@ -264,7 +260,7 @@ def sanitize_filename(name: str) -> str:
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
         ext = lowext
-    return name + ext
+    return basename + ext
 
 
 def sanitize_foldername(name: str) -> str:
@@ -294,8 +290,9 @@ def sanitize_foldername(name: str) -> str:
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
 
-    if len(name) >= sabnzbd.cfg.max_foldername_length():
-        name = name[: sabnzbd.cfg.max_foldername_length()]
+    # Make sure we check the underlying unicode length!
+    if len(utob(name)) >= sabnzbd.cfg.max_foldername_length():
+        name = limit_encoded_length(name, sabnzbd.cfg.max_foldername_length())
 
     # And finally, make sure it doesn't end in a dot or a space
     # This is invalid on Windows and can cause trouble for some other tools

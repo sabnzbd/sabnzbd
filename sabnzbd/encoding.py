@@ -91,3 +91,8 @@ def xml_name(input_value) -> str:
     if input_value is not None:
         return escape(str(input_value))
     return ""
+
+
+def limit_encoded_length(inputstring: str, max_length: int) -> str:
+    """Limit the actual codepoint length of a string"""
+    return inputstring.encode("utf-8", errors="replace")[:max_length].decode(errors="ignore")
