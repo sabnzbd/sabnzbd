@@ -1149,11 +1149,6 @@ msgstr "Überprüfe zusätzliche Dateien"
 msgid "Verifying"
 msgstr "Überprüfen"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Wird überprüft"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Versuche SFV-Überprüfung"
@@ -2027,6 +2022,11 @@ msgstr "Schnelle Überprüfung …"
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Überprüfung läuft …"
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Wird überprüft"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py

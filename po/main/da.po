@@ -1077,11 +1077,6 @@ msgstr "Tjekker ekstra filer"
 msgid "Verifying"
 msgstr "Bekræfter"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Kontrollerer"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Forsøger SFV verifikation"
@@ -1932,6 +1927,11 @@ msgstr "Hurtig kontrol..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Bekræftelse..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Kontrollerer"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py

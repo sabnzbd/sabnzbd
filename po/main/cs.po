@@ -1068,11 +1068,6 @@ msgstr "Kontroluji další soubory"
 msgid "Verifying"
 msgstr "Ověřuji"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Kontroluji"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Zkouším SFV ověření"
@@ -1897,6 +1892,11 @@ msgstr "Rychlá kontrola..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Kontroluji..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Kontroluji"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py

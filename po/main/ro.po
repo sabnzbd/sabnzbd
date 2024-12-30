@@ -1095,11 +1095,6 @@ msgstr "Se verifică fișierele extra"
 msgid "Verifying"
 msgstr "Se verifică"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Se verifică"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Încerc verificare SFV"
@@ -1960,6 +1955,11 @@ msgstr "Verificare Rapidă..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Verificare..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Se verifică"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py

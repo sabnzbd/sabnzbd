@@ -1062,11 +1062,6 @@ msgstr ""
 msgid "Verifying"
 msgstr "Проверавање"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Провера"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Pokušaj SFV provere"
@@ -1917,6 +1912,11 @@ msgstr "Брза провера..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Проверавање..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Провера"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py

@@ -1066,11 +1066,6 @@ msgstr ""
 msgid "Verifying"
 msgstr "Verifierar"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Kontrollerar"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Försöker verifiera SFV"
@@ -1923,6 +1918,11 @@ msgstr "Snabbkontroll..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Verifierar..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Kontrollerar"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py

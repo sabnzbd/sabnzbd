@@ -1069,11 +1069,6 @@ msgstr ""
 msgid "Verifying"
 msgstr "Varmennetaan"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Tarkistetaan"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Yritetään SFV varmennusta"
@@ -1924,6 +1919,11 @@ msgstr "Pikatarkistus..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Varmennetaan..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Tarkistetaan"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py

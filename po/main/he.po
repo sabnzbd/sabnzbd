@@ -1076,11 +1076,6 @@ msgstr "בודק קבצי תוספת"
 msgid "Verifying"
 msgstr "מוודא"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "בודק"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "מנסה וידוא SFV"
@@ -1937,6 +1932,11 @@ msgstr "בדוק זריז…"
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "מוודא…"
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "בודק"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
