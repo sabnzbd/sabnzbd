@@ -446,9 +446,6 @@ def print_modules():
 
     logging.info("Cryptography module (v%s)... found!", cryptography.__version__)
 
-    if sabnzbd.WINDOWS and sabnzbd.newsunpack.MULTIPAR_COMMAND:
-        logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
-
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
