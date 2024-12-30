@@ -457,7 +457,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                     logging.info("No valid articles in %s, skipping", file_name)
                     continue
 
-                # Sort the articles by part number, compatible with Python 3.5
+                # Get the articles, making sure to sort the articles by part number
                 raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
                 # Create NZF
@@ -465,12 +465,12 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                     nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
                 except sabnzbd.nzbstuff.SkippedNzbFile:
                     # Did not meet requirements, so continue
+                    skipped_files += 1
                     continue
 
                 nzo.add_nzf(nzf)
                 valid_files += 1
                 avg_age_sum += file_timestamp
-
                 element.clear()
 
     # Final bookkeeping
