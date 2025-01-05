@@ -83,20 +83,6 @@ msgstr "HTTP i HTTPS portovi ne mogu biti isti"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -132,6 +118,27 @@ msgstr "Signal %s primljen, snimanje i napuštanje..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Fatalna greška pri snimanju trenutnog stanja"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1580,13 +1587,6 @@ msgstr "Стари ред је нађен, употребити Статус->П
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "Neuspešna kompilacija regularne ekspresije za termin pretrage: %s"
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

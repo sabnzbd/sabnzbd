@@ -85,22 +85,6 @@ msgstr "HTTP a HTTPS porty nemohou být stejné"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd spuštěno s kódováním %s, zatímco doporučené je UTF-8. Očekávejte "
-"problémy se jmény souborů a adresářů při stahování."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Nezdařilo se nahrát dodatečné certifikáty z balíku certifi."
 
@@ -136,6 +120,29 @@ msgstr "Zachycen signál %s, ukládám a ukončuji..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Neopravitelná chyba při ukládání  stavového souboru"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd spuštěno s kódováním %s, zatímco doporučené je UTF-8. Očekávejte "
+"problémy se jmény souborů a adresářů při stahování."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1560,13 +1567,6 @@ msgstr "Stará fronta nalezena, použijte Status->Repair pro konverzi fronty"
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "Nepodařilo se zkompilovat regex pro hledaný výraz: %s"
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

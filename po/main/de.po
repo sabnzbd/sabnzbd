@@ -101,25 +101,6 @@ msgstr "HTTP und HTTPS Ports dürfen nicht identisch sein!"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd wurde mit Encoder/Zeichensatz %s gestartet, Dieser sollte UTF-8 "
-"sein. Es werden Probleme mit Unicode codierten Dateien und "
-"Ordnerbezeichnungen in Downloads erwartet."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-"Die aktuellen Zugriffseinstellungen (%o) könnte SABnzbd den Zugriff auf die "
-"erstellten Dateien und Ordner von SABnzbd verweigern."
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Konnte weitere Zertifikate vom Paket certifi nicht laden."
 
@@ -156,6 +137,34 @@ msgstr "Signal %s erkannt. Wird gespeichert und beendet …"
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Schwerer Fehler beim Speichern des Zustands"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd wurde mit Encoder/Zeichensatz %s gestartet, Dieser sollte UTF-8 "
+"sein. Es werden Probleme mit Unicode codierten Dateien und "
+"Ordnerbezeichnungen in Downloads erwartet."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+"Die aktuellen Zugriffseinstellungen (%o) könnte SABnzbd den Zugriff auf die "
+"erstellten Dateien und Ordner von SABnzbd verweigern."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+"Download-Ordner %s für abgeschlossene Downloads auf  FAT Dateisystem, ist "
+"auf maximale Dateigröße von 4GB begrenzt."
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1687,15 +1696,6 @@ msgstr ""
 msgid "Failed to compile regex for search term: %s"
 msgstr ""
 "Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen."
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-"Download-Ordner %s für abgeschlossene Downloads auf  FAT Dateisystem, ist "
-"auf maximale Dateigröße von 4GB begrenzt."
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

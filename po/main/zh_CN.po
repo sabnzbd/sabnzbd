@@ -82,20 +82,6 @@ msgstr "HTTP 与 HTTPS 端口不能相同"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载文件夹中统一标准编码的文件和文件夹名称出现问题。"
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -131,6 +117,27 @@ msgstr "捕捉到 %s 信号，正在保存并退出..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "保存状态时遇到致命错误"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载文件夹中统一标准编码的文件和文件夹名称出现问题。"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr "已完成文件夹 %s 位于 FAT 文件系统上，这样会有最大文件为 4GB 的限制。"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1573,13 +1580,6 @@ msgstr "侦测到旧版队列，请使用“状态”→“修复”转换队列
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "为搜索关键词编译正则表达式失败: %s"
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr "已完成文件夹 %s 位于 FAT 文件系统上，这样会有最大文件为 4GB 的限制。"
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

@@ -88,25 +88,6 @@ msgstr "HTTP- en HTTPS-poort kunnen niet hetzelfde zijn"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd is gestart met de codering %s, dit zou UTF-8 moeten zijn. Je kunt, "
-"bij het downloaden, problemen krijgen met Unicode namen van bestanden en "
-"mappen."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-"Huidige umask (%o) zou kunnen beletten dat SABnzbd toegang heeft tot de "
-"aangemaakte bestanden en mappen."
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Extra certificaten uit het certifi pakket konden niet geladen worden"
 
@@ -142,6 +123,34 @@ msgstr "Signaal %s ontvangen, opslaan en afsluiten..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Onherstelbare fout bij opslaan status"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd is gestart met de codering %s, dit zou UTF-8 moeten zijn. Je kunt, "
+"bij het downloaden, problemen krijgen met Unicode namen van bestanden en "
+"mappen."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+"Huidige umask (%o) zou kunnen beletten dat SABnzbd toegang heeft tot de "
+"aangemaakte bestanden en mappen."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+"De map voor voltooide downloads %s staat op een FAT systeem, de maximale "
+"file omvang is dan maar 4G"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1651,15 +1660,6 @@ msgstr "Oude wachtrij gevonden, gebruik Status->Reparatie om te converteren"
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "Het compileren van 'regex' voor de zoekterm lukt niet: %s"
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-"De map voor voltooide downloads %s staat op een FAT systeem, de maximale "
-"file omvang is dan maar 4G"
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

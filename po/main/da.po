@@ -85,22 +85,6 @@ msgstr "HTTP og HTTPS porte kan ikke være de samme"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd blev startet med kodning %s, dette bør være UTF-8. Forvent problemer"
-" med Unicoded fil- og mappenavne i downloads."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -136,6 +120,29 @@ msgstr "Signal %s modtaget, gemmer og lukker..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Fatal fejl ved lagring af state"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd blev startet med kodning %s, dette bør være UTF-8. Forvent problemer"
+" med Unicoded fil- og mappenavne i downloads."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1595,13 +1602,6 @@ msgstr "Gamle kø opdaget, brug Status->Reparation for at konvertere kø"
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "Det lykkedes ikke at kompilere regex for søgestreng: %s"
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

@@ -88,22 +88,6 @@ msgstr "Porturile HTTP și HTTPS nu pot fi aceleași"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd a fost pornit cu encodarea %s, aceasta trebuie să fie UTF-8. Pot "
-"apărea probleme cu denumiri de fișiere și directoare Unicode în descărcări."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Nu pot încărca certificate adiționale din pachetul certifi"
 
@@ -139,6 +123,31 @@ msgstr "Semnal %s  prins, salvez şi ies..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Eroare fatală la salvare"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd a fost pornit cu encodarea %s, aceasta trebuie să fie UTF-8. Pot "
+"apărea probleme cu denumiri de fișiere și directoare Unicode în descărcări."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+"Directorul de descărcări finalizate %s se află pe sistem de fișiere FAT, "
+"limitând dimensiunea maximă a fișierului la 4GB"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1621,15 +1630,6 @@ msgstr ""
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "Compilarea unei căutări regex nereuşită: %s"
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-"Directorul de descărcări finalizate %s se află pe sistem de fișiere FAT, "
-"limitând dimensiunea maximă a fișierului la 4GB"
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

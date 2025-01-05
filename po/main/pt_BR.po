@@ -86,24 +86,6 @@ msgstr "Portas HTTP e HTTPS não podem ser iguais"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd iniciou com codificado %s, deveria ser UFT-8. Esperado problemas com"
-" arquivos e nomes de diretórios Unicode nos downloades."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-"Mascara atual (%o) pode negar ao SABnzbd acesso aos arquivos e diretórios "
-"criados."
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Não foi possível carregar certificado do pacote certifi."
 
@@ -139,6 +121,31 @@ msgstr "Sinal %s encontrado. Salvando e saindo..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Erro fatal ao salvar estado"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd iniciou com codificado %s, deveria ser UFT-8. Esperado problemas com"
+" arquivos e nomes de diretórios Unicode nos downloades."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+"Mascara atual (%o) pode negar ao SABnzbd acesso aos arquivos e diretórios "
+"criados."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1603,13 +1610,6 @@ msgstr ""
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
 msgstr "Falha ao compilar a expressão para o termo pesquisado: %s"
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

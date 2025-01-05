@@ -74,16 +74,6 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
-msgid "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
-msgid "Current umask (%o) might deny SABnzbd access to the files and folders it creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -118,6 +108,21 @@ msgstr ""
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Current umask (%o) might deny SABnzbd access to the files and folders it creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB"
 msgstr ""
 
 #. Warning message
@@ -1474,11 +1479,6 @@ msgstr ""
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Failed to compile regex for search term: %s"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/postproc.py
-msgid "Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB"
 msgstr ""
 
 #: sabnzbd/postproc.py
