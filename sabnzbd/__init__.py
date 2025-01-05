@@ -32,8 +32,8 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WINDOWS = MACOS = MACOSARM64 = FOUNDATION = DOCKER = False
-KERNEL32 = LIBC = MACOSLIBC = None
+WINDOWS = MACOS = MACOSARM64 = FOUNDATION = False
+KERNEL32 = LIBC = MACOSLIBC = PLATFORM = None
 
 if os.name == "nt":
     WINDOWS = True
@@ -51,9 +51,6 @@ if os.name == "nt":
 elif os.name == "posix":
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
-
-    # Check if running in a Docker container. Note: fake-able, but good enough for normal setups
-    DOCKER = os.path.exists("/.dockerenv")
 
     # See if we have the GNU glibc malloc_trim() memory release function
     try:
@@ -449,6 +446,8 @@ def save_state():
 
 
 def delayed_startup_actions():
+    """Checks and logging that are not required for main function"""
+
     # See if we can get version from git when running an unknown revision
     if sabnzbd.__baseline__ == "unknown":
         try:
@@ -457,19 +456,13 @@ def delayed_startup_actions():
             ).strip()
         except:
             pass
+
     logging.info("Commit = %s", sabnzbd.__baseline__)
     logging.info("Python-version = %s", sys.version)
     logging.info("CPU architecture = %s", platform.uname().machine)
-
-    try:
-        logging.info("Platform = %s - %s", os.name, platform.platform())
-    except:
-        # Can fail on special platforms (like Snapcraft or embedded)
-        pass
-
-    logging.debug("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
+    logging.info("Platform = %s", misc.get_platform_description())
+    logging.info("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
-    logging.info("Dockerized = %s", sabnzbd.DOCKER)
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:

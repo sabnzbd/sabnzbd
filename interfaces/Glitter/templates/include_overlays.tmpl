@@ -135,7 +135,7 @@
                             <div class="col-sm-6 col-dot-overflow" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.pystone"></span>
                                 <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest') (~10 $T('seconds'))"><span class="glyphicon glyphicon-repeat"></span></a>
-                                <small title="$cpumodel $cpusimd $docker" data-tooltip="true">$cpumodel $cpusimd $docker</small>
+                                <small title="$cpumodel $cpusimd" data-tooltip="true">$cpumodel $cpusimd</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
@@ -165,6 +165,12 @@
                                 <small><span data-bind="text: statusInfo.internetbandwidth()*8"></span> Mbps</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">$T('platform') &nbsp; </div>
+                            <div class="col-sm-6">
+                                $platform
+                            </div>
                         </div>
                         <div class="row test-download">
                             <div class="col-sm-6">$T('dashboard-testDownload') &nbsp; </div>

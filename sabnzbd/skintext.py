@@ -242,6 +242,7 @@ SKIN_TEXT = {
     # Configuration
     "confgFile": TT("Config File"),
     "cache": TT("Used cache"),  #: Main config page, how much cache is in use
+    "platform": TT("Platform"),  #: What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
     "explain-Restart": TT(
         "This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards."
     ),

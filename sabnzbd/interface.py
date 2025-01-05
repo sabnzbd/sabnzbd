@@ -433,7 +433,7 @@ class MainPage:
 
             info["cpumodel"] = get_cpu_name()
             info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
-            info["docker"] = "Docker" if sabnzbd.DOCKER else ""
+            info["platform"] = sabnzbd.PLATFORM
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (

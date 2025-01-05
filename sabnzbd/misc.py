@@ -797,6 +797,49 @@ def get_cpu_name():
     return cputype
 
 
+def get_platform_description() -> str:
+    """Get a nicer description of what platform we are on"""
+    platform_tags = []
+    # We dig deeper for Linux
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
+        # Check if running in a Docker container
+        # Note: fake-able, but good enough for normal setups
+        if os.path.exists("/.dockerenv"):
+            platform_tags.append("Docker")
+            # See if we are on Unraid
+            if "HOST_OS" in os.environ and os.environ["HOST_OS"].lower() == "unraid":
+                platform_tags.append("Unraid")
+        elif "container" in os.environ:
+            platform_tags.append("Flatpak")
+        elif "APPIMAGE" in os.environ:
+            platform_tags.append("AppImage")
+        elif "SNAP" in os.environ:
+            platform_tags.append("Snap")
+        else:
+            # Check for other forms of virtualization
+            try:
+                if virt := run_command(["systemd-detect-virt"]).strip():
+                    if virt != "none":
+                        platform_tags.append(virt)
+            except:
+                pass
+
+            try:
+                # Only present in Python 3.10+
+                # Can print nicer description like "Ubuntu 24.02 LTS"
+                platform_tags.append(platform.freedesktop_os_release()["PRETTY_NAME"])
+            except:
+                pass
+
+    if not platform_tags:
+        # Fallback if we found nothing or on Windows/macOS
+        platform_tags.append(platform.platform(terse=True))
+
+    # Add all together
+    sabnzbd.PLATFORM = " ".join(platform_tags)
+    return sabnzbd.PLATFORM
+
+
 def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
     """Return True if a filename matches the clean-up list"""
     cleanup_list = cfg.cleanup_list()
