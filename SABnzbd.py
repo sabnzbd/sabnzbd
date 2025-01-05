@@ -32,13 +32,13 @@ import traceback
 import getopt
 import signal
 import socket
-import platform
 import subprocess
 import multiprocessing
 import ssl
 import time
 import re
 import gc
+import threading
 from typing import List, Dict, Any
 
 try:
@@ -93,8 +93,6 @@ from sabnzbd.misc import (
     get_from_url,
     upload_file_to_sabnzbd,
     is_localhost,
-    is_lan_addr,
-    ip_in_subnet,
     helpful_warning,
     set_https_verification,
 )
@@ -104,8 +102,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-from sabnzbd.getipaddress import local_ipv4
-import sabnzbd.utils.ssdp as ssdp
 
 try:
     import win32api
@@ -1138,53 +1134,8 @@ def main():
     # Start SABnzbd
     logging.info("--------------------------------")
     logging.info("%s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
-
-    # See if we can get version from git when running an unknown revision
-    if sabnzbd.__baseline__ == "unknown":
-        try:
-            sabnzbd.__baseline__ = sabnzbd.misc.run_command(
-                ["git", "rev-parse", "--short", "HEAD"], cwd=sabnzbd.DIR_PROG
-            ).strip()
-        except:
-            pass
-    logging.info("Commit = %s", sabnzbd.__baseline__)
-
     logging.info("Full executable path = %s", sabnzbd.MY_FULLNAME)
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
-    logging.info("Python-version = %s", sys.version)
-    logging.info("Dockerized = %s", sabnzbd.DOCKER)
-    logging.info("CPU architecture = %s", platform.uname().machine)
-
-    try:
-        logging.info("Platform = %s - %s", os.name, platform.platform())
-    except:
-        # Can fail on special platforms (like Snapcraft or embedded)
-        pass
-
-    # Find encoding; relevant for external processing activities
-    logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
-
-    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
-    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
-        helpful_warning(
-            T(
-                "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
-            ),
-            sabnzbd.encoding.CODEPAGE,
-        )
-
-    # Verify umask, we need at least 700
-    if not sabnzbd.WINDOWS and sabnzbd.ORG_UMASK > int("077", 8):
-        sabnzbd.misc.helpful_warning(
-            T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
-            sabnzbd.ORG_UMASK,
-        )
-
-    # Log JSON module in case of problems
-    logging.debug("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
-
-    # SSL Information
-    logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
     # Load (extra) certificates if supplied by certifi
     # This is optional and provided in the binaries
@@ -1199,10 +1150,6 @@ def main():
             # Sometimes the certificate file is blocked
             logging.warning(T("Could not load additional certificates from certifi package"))
             logging.info("Traceback: ", exc_info=True)
-
-    # List the number of certificates available (can take up to 1.5 seconds)
-    if sabnzbd.cfg.log_level() > 1:
-        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
 
     logging.info("Using INI file %s", inifile)
 
@@ -1454,44 +1401,8 @@ def main():
         notifier.send_notification("SABnzbd", T("SABnzbd %s started") % sabnzbd.__version__, "startup")
     autorestarted = False
 
-    # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
-    if sabnzbd.cfg.enable_broadcast() and not is_localhost(web_host):
-        # Try to find a LAN IP address for SSDP/Bonjour
-        if is_lan_addr(web_host):
-            # A specific listening address was configured, use that
-            external_host = web_host
-        else:
-            # Fall back to the IPv4 address of the LAN interface
-            external_host = local_ipv4()
-        logging.debug("Using %s as host address for Bonjour and SSDP", external_host)
-
-        # Only broadcast to local network addresses. If local ranges have been defined, further
-        # restrict broadcasts to those specific ranges in order to avoid broadcasting to the "wrong"
-        # private network when the system is connected to multiple such networks (e.g. a corporate
-        # VPN in addition to a standard household LAN).
-        if is_lan_addr(external_host) and (
-            (not sabnzbd.cfg.local_ranges()) or any(ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges())
-        ):
-            # Start Bonjour and SSDP
-            sabnzbd.zconfig.set_bonjour(external_host, web_port)
-
-            # Set URL for browser for external hosts
-            ssdp_url = "%s://%s:%s%s" % (
-                ("https" if enable_https else "http"),
-                external_host,
-                web_port,
-                sabnzbd.cfg.url_base(),
-            )
-            ssdp.start_ssdp(
-                external_host,
-                "SABnzbd",
-                ssdp_url,
-                "SABnzbd %s" % sabnzbd.__version__,
-                "SABnzbd Team",
-                "https://sabnzbd.org/",
-                "SABnzbd %s" % sabnzbd.__version__,
-                ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
-            )
+    # Do checks and miscellaneous logging in separate thread for performance
+    threading.Thread(target=sabnzbd.delayed_startup_actions).start()
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
@@ -1719,7 +1630,6 @@ if __name__ == "__main__":
 
     elif sabnzbd.MACOS and sabnzbd.FOUNDATION:
         # macOS binary runner
-        from threading import Thread
         from PyObjCTools import AppHelper
         from AppKit import NSApplication
         from sabnzbd.osxmenu import SABnzbdDelegate
@@ -1727,7 +1637,7 @@ if __name__ == "__main__":
         # Need to run the main application in separate thread because the eventLoop
         # has to be in the main thread. The eventLoop is required for the menu.
         # This code is made with trial-and-error, please feel free to improve!
-        class startApp(Thread):
+        class startApp(threading.Thread):
             def run(self):
                 main()
                 AppHelper.stopEventLoop()

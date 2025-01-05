@@ -20,7 +20,7 @@ import logging
 import datetime
 import ctypes.util
 import time
-import socket
+import ssl
 
 import cherrypy
 import platform
@@ -114,6 +114,8 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.notifier as notifier
 import sabnzbd.sorting
 from sabnzbd.decorators import synchronized
+import sabnzbd.utils.ssdp
+import sabnzbd.utils.checkdir
 import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization
@@ -277,7 +279,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.api.clear_trans_cache()
 
     # Set end-of-queue action
-    sabnzbd.misc.change_queue_complete_action(cfg.queue_complete(), new=False)
+    misc.change_queue_complete_action(cfg.queue_complete(), new=False)
 
     # Do any config conversions
     cfg.config_conversions()
@@ -444,6 +446,109 @@ def save_state():
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
     sabnzbd.RSSReader.save()
+
+
+def delayed_startup_actions():
+    # See if we can get version from git when running an unknown revision
+    if sabnzbd.__baseline__ == "unknown":
+        try:
+            sabnzbd.__baseline__ = sabnzbd.misc.run_command(
+                ["git", "rev-parse", "--short", "HEAD"], cwd=sabnzbd.DIR_PROG
+            ).strip()
+        except:
+            pass
+    logging.info("Commit = %s", sabnzbd.__baseline__)
+    logging.info("Python-version = %s", sys.version)
+    logging.info("CPU architecture = %s", platform.uname().machine)
+
+    try:
+        logging.info("Platform = %s - %s", os.name, platform.platform())
+    except:
+        # Can fail on special platforms (like Snapcraft or embedded)
+        pass
+
+    logging.debug("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
+    logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
+    logging.info("Dockerized = %s", sabnzbd.DOCKER)
+    logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
+
+    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
+        misc.helpful_warning(
+            T(
+                "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
+            ),
+            sabnzbd.encoding.CODEPAGE,
+        )
+
+    # Verify umask, we need at least 700
+    if not sabnzbd.WINDOWS and sabnzbd.ORG_UMASK > int("077", 8):
+        misc.helpful_warning(
+            T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
+            sabnzbd.ORG_UMASK,
+        )
+
+    # List the number of certificates available (can take up to 1.5 seconds)
+    if cfg.log_level() > 1:
+        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
+
+    # First we do a dircheck
+    complete_dir = sabnzbd.cfg.complete_dir.get_path()
+    if sabnzbd.utils.checkdir.isFAT(complete_dir):
+        misc.helpful_warning(
+            T("Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB") % complete_dir
+        )
+    else:
+        logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
+
+    if filesystem.directory_is_writable(sabnzbd.cfg.download_dir.get_path()):
+        filesystem.check_filesystem_capabilities(sabnzbd.cfg.download_dir.get_path())
+    if filesystem.directory_is_writable(sabnzbd.cfg.complete_dir.get_path()):
+        filesystem.check_filesystem_capabilities(sabnzbd.cfg.complete_dir.get_path())
+
+    # Do an extra purge of the history on startup to ensure timely removal on systems that
+    # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
+    database.scheduled_history_purge()
+
+    # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
+    if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):
+        # Try to find a LAN IP address for SSDP/Bonjour
+        if misc.is_lan_addr(cfg.web_host()):
+            # A specific listening address was configured, use that
+            external_host = cfg.web_host()
+        else:
+            # Fall back to the IPv4 address of the LAN interface
+            external_host = sabnzbd.getipaddress.local_ipv4()
+        logging.debug("Using %s as host address for Bonjour and SSDP", external_host)
+
+        # Only broadcast to local network addresses. If local ranges have been defined, further
+        # restrict broadcasts to those specific ranges in order to avoid broadcasting to the "wrong"
+        # private network when the system is connected to multiple such networks (e.g. a corporate
+        # VPN in addition to a standard household LAN).
+        if misc.is_lan_addr(external_host) and (
+            (not sabnzbd.cfg.local_ranges())
+            or any(misc.ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges())
+        ):
+            # Start Bonjour and SSDP
+            sabnzbd.zconfig.set_bonjour(external_host, cfg.web_port())
+
+            # Set URL for browser for external hosts
+            ssdp_url = "%s://%s:%s%s" % (
+                ("https" if cfg.enable_https() else "http"),
+                external_host,
+                cfg.web_port(),
+                sabnzbd.cfg.url_base(),
+            )
+            sabnzbd.utils.ssdp.start_ssdp(
+                external_host,
+                "SABnzbd",
+                ssdp_url,
+                "SABnzbd %s" % sabnzbd.__version__,
+                "SABnzbd Team",
+                "https://sabnzbd.org/",
+                "SABnzbd %s" % sabnzbd.__version__,
+                ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
+            )
 
 
 def check_all_tasks():
