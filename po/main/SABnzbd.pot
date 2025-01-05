@@ -2500,6 +2500,11 @@ msgstr ""
 msgid "Used cache"
 msgstr ""
 
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards."
 msgstr ""

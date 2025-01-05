@@ -2619,6 +2619,11 @@ msgstr "Asetustiedosto"
 msgid "Used cache"
 msgstr "Käytetty välimuisti"
 
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid ""
 "This will restart SABnzbd.<br />Use it when you think the program has a "

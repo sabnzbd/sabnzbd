@@ -2619,6 +2619,11 @@ msgstr "Файл конфигурации"
 msgid "Used cache"
 msgstr "Используемый кэш"
 
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid ""
 "This will restart SABnzbd.<br />Use it when you think the program has a "
