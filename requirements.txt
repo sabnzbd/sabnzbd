@@ -18,7 +18,7 @@ jaraco.context==4.3.0
 more-itertools==10.5.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
-tempora==5.7.0
+tempora==5.8.0
 pytz==2024.2
 sgmllib3k==1.0.0
 portend==3.2.0
