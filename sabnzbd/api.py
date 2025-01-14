@@ -652,7 +652,7 @@ def _api_warnings(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     return report(keyword="warnings", data=sabnzbd.GUIHANDLER.content())
 
 
-LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password)': '(.*?)'", re.I)
+LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password|email_(server|to|from|account|pwd))': '(.*?)'", re.I)
 LOG_INI_HIDE_RE = re.compile(
     rb"(apikey|api|user|username|password|email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey"
     rb"|apprise_(target_[a-z_]+|urls)|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address|Public address IPv[4|6]-only|Local IPv6 address)\s?=.*",
