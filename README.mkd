@@ -1,30 +1,18 @@
-Release Notes - SABnzbd 4.4.1 Release Candidate 1
+Release Notes - SABnzbd 4.5.0 Beta 1
 =========================================================
 
-## Bugfixes and changes since 4.4.0
-* Added `Certificate verification` level `Medium` to allow
-  certificates injected by firewall or virus scanner.
-* Windows: Windows notifications did not work.
+This is the first Beta release of 4.5.0.
+Additional features will be added before the final release.
 
-## New features in 4.4.0
+## New features in 4.5.0
 
-## New features since 4.3.0
+* Improved failure detection by downloading additional par2 files right away.
+* Added more diagnostic information about the system.
+* Windows: Removed MultiPar support.
 
-* Subtitle files will be deobfuscated if required.
-* Show server `Personal notes` on the main servers display.
-* Windows: Use par2cmdline-turbo by default (thanks to @dnzbk).
-* macOS: Dropped support for macOS 10.12 and below.
-* macOS and Windows: Use Python 3.13 for release.
-* Windows: The next release will no longer support Windows 32bit or Windows 7.
+## Bug fixes since 4.4.0
 
-## Bug fixes since 4.3.0
-
-* Toggling of Servers could result in jobs being stuck at 99%.
-* Corrupt NZB's could also result in jobs being stuck at 99%.
-* Config restart would always determine redirect URL instead of using current.
-* Correctly handle `disk full` errors from Unrar.
-* Create new history database in case of `no such table` error.
-* Interface could load in tabbed mode even though it was not enabled.
+* Handle filenames that exceed maximum filesystem lengths.
 
 ## Upgrade notices
 
