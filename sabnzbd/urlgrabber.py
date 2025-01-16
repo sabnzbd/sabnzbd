@@ -27,6 +27,7 @@ import queue
 import urllib.request
 import urllib.parse
 import urllib.error
+import gzip
 from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
@@ -119,6 +120,7 @@ class URLGrabber(Thread):
                         continue
 
                 filename = None
+                gzipped = False
                 nzo_info = future_nzo.nzo_info
                 wait = 0
                 retry = True
@@ -161,7 +163,9 @@ class URLGrabber(Thread):
                         if not value:
                             continue
 
-                        if item in ("category_id", "x-dnzb-category"):
+                        if item == "content-encoding" and "gzip" in value:
+                            gzipped = True
+                        elif item in ("category_id", "x-dnzb-category"):
                             # Use indexer category in case no specific one was set
                             if value and future_nzo.cat in (None, "*"):
                                 if indexer_cat := misc.cat_convert(value):
@@ -230,6 +234,12 @@ class URLGrabber(Thread):
                         fetch_request.close()
                         continue
                 fetch_request.close()
+
+                if gzipped:
+                    try:
+                        data = gzip.decompress(data)
+                    except Exception as e:
+                        logging.info("Unable to decompress response: %s", e)
 
                 if b"<nzb" in data and sabnzbd.filesystem.get_ext(filename) != ".nzb":
                     filename += ".nzb"
