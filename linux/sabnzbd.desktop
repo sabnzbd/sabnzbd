@@ -1,11 +1,17 @@
 [Desktop Entry]
 Name=SABnzbd
 GenericName=Binary newsreader
+GenericName[fr]=Lecteur de newsgroups binaires
+GenericName[tr]=İkili haber grupları okuyucusu
 Comment=Download from Usenet
+Comment[fr]=Télécharger depuis Usenet
+Comment[tr]=Usenet ağından dosya indir
 Exec=/opt/sabnzbd/SABnzbd.py --browser 1 %F
 Icon=sabnzbd
 Terminal=false
 Type=Application
 Categories=Network;FileTransfer;
 Keywords=usenet;binaries;download;nzb;nntp;newsreader;
+Keywords[fr]=usenet;binaires;télécharger;nzb;nntp;newsreader;
+Keywords[tr]=usenet;ikililer;indir;nzb;nntp;okuyucu;
 MimeType=application/x-nzb;application/x-compressed-nzb;
