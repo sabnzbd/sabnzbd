@@ -1,0 +1,72 @@
+# SABnzbd Translation Template file NSIS
+# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# 
+# Translators:
+# mauron, 2025
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: SABnzbd-4.5.0Beta1\n"
+"PO-Revision-Date: 2020-06-27 15:56+0000\n"
+"Last-Translator: mauron, 2025\n"
+"Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Show Release Notes"
+msgstr "Yayın Notlarını Göster"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Support the project, Donate!"
+msgstr "Projeye destek olun, Bağış Yapın!"
+
+#: builder/win/NSIS_Installer.nsi
+msgid ""
+"The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
+"reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
+"services or `Cancel` to cancel this upgrade."
+msgstr ""
+"SABnzbd Windows Servisi SABnzbd 3.0.0.0 ile değişmiştir.\\nSABnzbd servisini"
+" yeniden kurmanız gerekecektir.\\n\\nMevcut servisleri kaldırmak için "
+"`Tamam` üzerine veya bu güncellemeyi iptal etmek için `İptal` üzerine "
+"tıklayın."
+
+#: builder/win/NSIS_Installer.nsi
+msgid "SABnzbd only supports 64-bit Windows."
+msgstr "SABnzbd sadece 64 bit Windows'u destekler."
+
+#: builder/win/NSIS_Installer.nsi
+msgid "SABnzbd only supports Windows 8.1 and above."
+msgstr "SABnzbd sadece Windows 8.1 ve üzerini destekler."
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Shutting down SABnzbd"
+msgstr "SABnzbd kapatılıyor"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "This will uninstall SABnzbd from your system"
+msgstr "Bu, SABnzbd'yi sisteminizden kaldıracaktır"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Run at startup"
+msgstr "Başlangıçta Çalıştır"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Desktop Icon"
+msgstr "Masaüstü İkonu"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "NZB File association"
+msgstr "NZB Dosya ilişkilendirmesi"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Delete Program"
+msgstr "Programı Sil"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Delete Settings"
+msgstr "Ayarları Sil"
