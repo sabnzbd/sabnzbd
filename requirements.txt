@@ -21,7 +21,7 @@ zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
 tempora # List version-less for Python 3.8 to just get latest supported
 tempora==5.8.0; python_version > '3.8'
-pytz==2024.2
+pytz==2025.1
 sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
@@ -68,7 +68,7 @@ charset_normalizer==3.4.1
 idna==3.10
 urllib3 # List version-less for Python 3.8 to just get latest supported
 urllib3==2.3.0; python_version > '3.8'
-certifi==2024.12.14
+certifi==2025.1.31
 oauthlib==3.2.2
 PyJWT # List version-less for Python 3.8 to just get latest supported
 PyJWT==2.10.1; python_version > '3.8'
