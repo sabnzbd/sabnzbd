@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-""" function to check and find correct extension of a (deobfuscated) file
+"""function to check and find correct extension of a (deobfuscated) file
 Note: extension always contains a leading dot
 """
 
