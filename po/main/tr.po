@@ -2332,7 +2332,7 @@ msgstr "Ara"
 
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to shutdown SABnzbd?"
-msgstr "SABnzbd'yi kapatmak istediğinizden emin misiniz?"
+msgstr "SABnzbd’yi kapatmak istediğinizden emin misiniz?"
 
 #. Add NZB to queue (button) - Add NZB to queue (header)
 #: sabnzbd/skintext.py
@@ -2693,7 +2693,7 @@ msgid ""
 "stability problem.<br />Downloading will be paused before the restart and "
 "resume afterwards."
 msgstr ""
-"Bu, SABnzbd'yi tekrar başlatacaktır.<br />Bunu, programın bir kararlılık "
+"Bu, SABnzbd’yi tekrar başlatacaktır.<br />Bunu, programın bir kararlılık "
 "sorunu olduğunu düşündüğünüzde kullanın.<br />İndirme, tekrar başlatmadan "
 "evvel duraklatılacak ve sonradan devam edecektir."
 
@@ -2722,7 +2722,7 @@ msgid ""
 "/>reconstruction of the queue content, preserving already downloaded "
 "files.<br />This will modify the queue order."
 msgstr ""
-"\"Tamir\" düğmesi SABnzbd'yi tekrar başlatacak ve kuyruk içeriğinin<br />tam"
+"\"Tamir\" düğmesi SABnzbd’yi tekrar başlatacak ve kuyruk içeriğinin<br />tam"
 " bir yeniden inşasını yapacaktır, zaten indirilmiş dosyalar muhafaza "
 "edilecektir.<br />Bu, kuyruk sıralamasını değiştirecektir."
 
@@ -2740,7 +2740,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"
-msgstr "7zip'i Etkileştir"
+msgstr "7zip'i Etkinleştir"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2773,7 +2773,7 @@ msgstr "SABnzbd tekrar başlatılıyor..."
 
 #: sabnzbd/skintext.py
 msgid "Changes will require a SABnzbd restart!"
-msgstr "Değişiklikler SABnzbd'nin tekrar başlatılmasını gerektirecek!"
+msgstr "Değişiklikler SABnzbd’nin tekrar başlatılmasını gerektirecek!"
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Web Server"
@@ -2870,7 +2870,7 @@ msgstr "HTTPS Sertifikası için dosya ismi veya yol."
 msgid ""
 "Generate new self-signed certificate and key. Requires SABnzbd restart!"
 msgstr ""
-"Yeni kendinden imzalı sertifika ve anahtar oluştur. SABnzbd'nin tekrar "
+"Yeni kendinden imzalı sertifika ve anahtar oluştur. SABnzbd’nin tekrar "
 "başlatılmasını gerektirir!"
 
 #: sabnzbd/skintext.py
