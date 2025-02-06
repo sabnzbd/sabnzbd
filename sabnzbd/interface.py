@@ -263,6 +263,7 @@ def check_hostname():
 # Create a more unique ID for each instance
 COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 
+
 def remote_ip_from_xff(xff_ips):
     # Use the requst IP if no XFF headers are present
     if not xff_ips:
@@ -279,6 +280,7 @@ def remote_ip_from_xff(xff_ips):
     # If no non-local/non-trusted IPs found, return the first IP in the list
     return xff_ips[0]
 
+
 def set_login_cookie(remove=False, remember_me=False):
     """We try to set a cookie as unique as possible
     to the current user. Based on it's IP and the
@@ -288,9 +290,8 @@ def set_login_cookie(remove=False, remember_me=False):
     salt = randint(1, 1000)
 
     # If we are using XFF headers, get remote IP from XFF if possible
-    if (
-        cfg.verify_xff_header()
-        and (xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For")))
+    if cfg.verify_xff_header() and (
+        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
     ):
         remote_ip = remote_ip_from_xff(xff_ips)
     else:
@@ -324,9 +325,8 @@ def check_login_cookie():
         return False
 
     # If we are using XFF headers, get remote IP from XFF if possible
-    if (
-        cfg.verify_xff_header()
-        and (xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For")))
+    if cfg.verify_xff_header() and (
+        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
     ):
         remote_ip = remote_ip_from_xff(xff_ips)
     else:
