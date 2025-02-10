@@ -265,10 +265,6 @@ COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 
 
 def remote_ip_from_xff(xff_ips):
-    # Use the requst IP if no XFF headers are present
-    if not xff_ips:
-        return cherrypy.request.remote.ip
-
     # Per MDN docs, the first non-local/non-trusted IP (rtl) is our "client"
     # However, it's possible that all IPs are local/trusted, so we may also
     # return the first ip in the list as it "should" be the client
@@ -276,9 +272,9 @@ def remote_ip_from_xff(xff_ips):
     for ip in reversed(xff_ips):
         if not is_local_addr(ip) and not is_loopback_addr(ip):
             return ip
-
-    # If no non-local/non-trusted IPs found, return the first IP in the list
-    return xff_ips[0]
+    else:
+        # If no non-local/non-trusted IPs found, return the first IP in the list
+        return xff_ips[0]
 
 
 def set_login_cookie(remove=False, remember_me=False):
