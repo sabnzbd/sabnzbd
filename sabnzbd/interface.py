@@ -264,6 +264,19 @@ def check_hostname():
 COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 
 
+def remote_ip_from_xff(xff_ips):
+    # Per MDN docs, the first non-local/non-trusted IP (rtl) is our "client"
+    # However, it's possible that all IPs are local/trusted, so we may also
+    # return the first ip in the list as it "should" be the client
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For#selecting_an_ip_address
+    for ip in reversed(xff_ips):
+        if not is_local_addr(ip) and not is_loopback_addr(ip):
+            return ip
+    else:
+        # If no non-local/non-trusted IPs found, return the first IP in the list
+        return xff_ips[0]
+
+
 def set_login_cookie(remove=False, remember_me=False):
     """We try to set a cookie as unique as possible
     to the current user. Based on it's IP and the
@@ -271,7 +284,16 @@ def set_login_cookie(remove=False, remember_me=False):
     number, so cookies cannot be re-used
     """
     salt = randint(1, 1000)
-    cookie_str = utob(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET)
+
+    # If we are using XFF headers, get remote IP from XFF if possible
+    if cfg.verify_xff_header() and (
+        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
+    ):
+        remote_ip = remote_ip_from_xff(xff_ips)
+    else:
+        remote_ip = cherrypy.request.remote.ip
+
+    cookie_str = utob(str(salt) + remote_ip + COOKIE_SECRET)
     cherrypy.response.cookie["login_cookie"] = hashlib.sha1(cookie_str).hexdigest()
     cherrypy.response.cookie["login_cookie"]["path"] = "/"
     cherrypy.response.cookie["login_cookie"]["httponly"] = 1
@@ -298,7 +320,15 @@ def check_login_cookie():
     if "login_cookie" not in cherrypy.request.cookie or "login_salt" not in cherrypy.request.cookie:
         return False
 
-    cookie_str = utob(str(cherrypy.request.cookie["login_salt"].value) + cherrypy.request.remote.ip + COOKIE_SECRET)
+    # If we are using XFF headers, get remote IP from XFF if possible
+    if cfg.verify_xff_header() and (
+        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
+    ):
+        remote_ip = remote_ip_from_xff(xff_ips)
+    else:
+        remote_ip = cherrypy.request.remote.ip
+
+    cookie_str = utob(str(cherrypy.request.cookie["login_salt"].value) + remote_ip + COOKIE_SECRET)
     return cherrypy.request.cookie["login_cookie"].value == hashlib.sha1(cookie_str).hexdigest()
 
 
