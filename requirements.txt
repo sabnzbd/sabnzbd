@@ -33,7 +33,7 @@ rebulk==3.2.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==44.0.0
+cryptography==44.0.1
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
