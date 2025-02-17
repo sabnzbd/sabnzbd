@@ -1,6 +1,6 @@
 #
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 msgid ""
 msgstr ""
