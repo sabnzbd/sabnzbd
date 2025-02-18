@@ -1129,10 +1129,6 @@ def par2cmdline_verify(
     nzo.status = Status.VERIFYING
     start = time.time()
 
-    # Long-path notation isn't supported by par2cmdline
-    if sabnzbd.WINDOWS:
-        parfile = clip_path(parfile)
-
     # Build command and add extra options
     command = [str(PAR2_COMMAND), "r", parfile]
     if options := cfg.par_option().strip().split():
