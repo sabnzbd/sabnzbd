@@ -1,18 +1,23 @@
-Release Notes - SABnzbd 4.5.0 Beta 1
+Release Notes - SABnzbd 4.5.0 Beta 2
 =========================================================
 
-This is the first Beta release of 4.5.0.
+This is the second Beta release of 4.5.0.
 Additional features will be added before the final release.
 
 ## New features in 4.5.0
 
 * Improved failure detection by downloading additional par2 files right away.
 * Added more diagnostic information about the system.
+* Use XFF headers for login validation if `verify_xff_header` is enabled.
+* Added Turkish translation (by @cardpuncher).
 * Windows: Removed MultiPar support.
+* Windows and macOS: Updated Python to 3.13.2, 7zip to 24.09,
+  Unrar to 7.10 and par2cmdline-turbo to 1.2.0.
 
 ## Bug fixes since 4.4.0
 
 * Handle filenames that exceed maximum filesystem lengths.
+* Directly decompress gzip responses when retrieving NZB's.
 
 ## Upgrade notices
 
