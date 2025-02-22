@@ -494,7 +494,7 @@ class NzbQueue:
             # to determine whether to change the priority
             nzo3 = self.__nzo_table[item_id_3]
             nzo3_priority = nzo3.priority
-            # if id1 is surrounded by items of a different priority then change it's pririty to match
+            # if id1 is surrounded by items of a different priority then change its priority to match
             if nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority or nzo2_priority > nzo1_priority:
                 nzo1.priority = nzo2_priority
         except:

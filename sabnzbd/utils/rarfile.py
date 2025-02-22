@@ -105,7 +105,7 @@ except ImportError:
             return self._DST
 
 
-# only needed for encryped headers
+# only needed for encrypted headers
 try:
     try:
         from cryptography.hazmat.primitives.ciphers import algorithms, modes, Cipher
@@ -2136,7 +2136,7 @@ class RarExtFile(RawIOBase):
 
         On uncompressed files, the seeking works by actual
         seeks so it's fast.  On compresses files its slow
-        - forward seeking happends by reading ahead,
+        - forward seeking happens by reading ahead,
         backwards by re-opening and decompressing from the start.
         """
 

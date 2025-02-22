@@ -258,7 +258,7 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
 
 def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
     """Warn users to not use the Program Files folder for their scripts"""
-    # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
+    # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
         # Warn, but do not block
         sabnzbd.misc.helpful_warning(
