@@ -39,7 +39,7 @@ from sabnzbd.decorators import cache_maintainer
 
 # How long to delay between connection attempts? The RFC suggests 250ms, but this is
 # quite long and might give us a slow host that just happened to be on top of the list.
-# The absolute minium specified in RFC 8305 is 10ms, so we use that.
+# The absolute minimum specified in RFC 8305 is 10ms, so we use that.
 CONNECTION_ATTEMPT_DELAY = 0.01
 
 # While providers are afraid to add IPv6 to their standard hostnames

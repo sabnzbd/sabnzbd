@@ -222,7 +222,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                     )
                 par2info.filehash = crc32
 
-                # We found hash data, add it to final tabel
+                # We found hash data, add it to final table
                 table[par2info.filename] = par2info
 
                 # Check for md5of16k duplicates

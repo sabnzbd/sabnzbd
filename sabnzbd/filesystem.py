@@ -418,7 +418,7 @@ def same_directory(a: str, b: str) -> int:
     a = os.path.normpath(os.path.abspath(a))
     b = os.path.normpath(os.path.abspath(b))
 
-    # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
+    # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     # But only if it doesn't already end in a slash, for example C:\
     if not a.endswith(os.sep):
         a = a + os.sep
