@@ -1,12 +1,12 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Pavel C <quoing_transifex@mess.cz>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.5.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2022\n"
 "Language-Team: Czech (https://app.transifex.com/sabnzbd/teams/111101/cs/)\n"
