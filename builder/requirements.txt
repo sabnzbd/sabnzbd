@@ -5,7 +5,7 @@ packaging==24.2
 pyinstaller-hooks-contrib==2025.1
 altgraph==0.17.4
 wrapt==1.17.2
-setuptools==75.8.0
+setuptools==75.8.2
 
 # For the Windows build
 pefile==2024.8.26; sys_platform == 'win32'
