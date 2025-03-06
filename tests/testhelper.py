@@ -269,11 +269,12 @@ class SABnzbdBaseTest:
             try:
                 return func(*args)
             except WebDriverException as e:
+                prior_exception = e
                 # Try again in 2 seconds!
                 time.sleep(2)
                 pass
         else:
-            raise e
+            raise prior_exception
 
 
 class DownloadFlowBasics(SABnzbdBaseTest):
