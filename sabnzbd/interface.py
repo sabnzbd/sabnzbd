@@ -911,6 +911,7 @@ SPECIAL_VALUE_LIST = (
     "direct_unpack_threads",
     "selftest_host",
     "ssdp_broadcast_interval",
+    "unrar_parameters",
 )
 SPECIAL_LIST_LIST = (
     "rss_odd_titles",

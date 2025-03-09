@@ -89,6 +89,100 @@ class TestValidators:
         assert_blocked("-c'echo'")
         assert_blocked("--classdata=;/bin/echo")
 
+    @pytest.mark.parametrize(
+        "setting, is_correct_win, is_correct_unix",
+        [
+            ("-mlp", True, True),
+            ("-om", True, False),  # -om variants without argument
+            ("-om1", True, False),
+            ("-om-", True, False),
+            ("-om=foo", True, False),  # -om variants with argument
+            ("-om1=foo,bar", True, False),
+            ("-om-=f,o,o,b,a,r", True, False),
+            ("-ri0", True, False),  # -ri without sleep time
+            ("-ri6", True, False),
+            ("-ri15", True, False),
+            ("-ri0:0", True, False),  # -ri with sleep time
+            ("-ri6:42", True, False),
+            ("-ri15:666", True, False),
+            ("-ri0:1000", True, False),
+            ("-ri6:666", True, False),
+            ("-ri15:1", True, False),
+            ("-mlp -ri0", True, False),  # combinations of valid parameters
+            ("-mlp -ri0 -om", True, False),
+            ("-om -mlp -ri0", True, False),
+            ("-om -mlp", True, False),
+            ("-ri15:200 -mlp", True, False),
+            (None, True, True),  # empty setting
+            ("", True, True),
+            (" ", True, True),  # effectively empty; not a problem as none of these survive str.split()
+            ("\t", True, True),
+            ("\r\n", True, True),
+            ("mlp", False, False),  # missing "-"
+            ("om-=foobar", False, False),
+            ("ri0", False, False),
+            ("ri0:1000", False, False),
+            ("--mlp", False, False),  # too many "-"
+            ("--om-=foobar", False, False),
+            ("--ri0", False, False),
+            ("--ri0:1000", False, False),
+            ("-ri0:-1", False, False),  # -ri with invalid sleep time
+            ("-ri0:1001", False, False),
+            ("-ri0:9876", False, False),
+            ("-ri0:0123", False, False),
+            ("-ri0:-1001", False, False),
+            ("-ri0:blabla", False, False),
+            ("-ri0:-1", False, False),  # -ri with invalid priority
+            ("-ri-1:100", False, False),
+            ("-ri16:42", False, False),
+            ("-ri1000:10", False, False),
+            ("-ri06:66", False, False),
+            ("-ri6=42", False, False),  # -ri with invalid sleep time separator
+            ("-ri15 666", False, False),
+            ("-mlp -ri42", False, False),  # combinations of partially invalid parameters
+            ("-mlp -ri0:12345 -om", False, False),
+            ("-mlp --ri12:345 -om", False, False),
+            ("-om -mlp=nope", False, False),
+            ("-ri15=200 -mlp", False, False),
+            ("-ri16:200 -mlp", False, False),
+            ("-greed -is -good", False, False),  # non-existent parameters
+            ("-waddup?", False, False),
+            ("-psecret", False, False),  # unsupported parameters
+            ("-p-", False, False),
+            ("-o+ -psecret", False, False),
+            ("-p- -ai", False, False),
+            ("-vp -ri6:666", False, False),
+            ("-ri15:1 -huuuuuge", False, False),  # triggers a bug in argparse >=3.11 without add_help=False?
+            ("-mlp -scf -ri0", False, False),
+            ("-mlp -ri0 -ppassword -om", False, False),
+            ("-ommlp -ri0", False, False),  # missing spacing
+            ("-om-mlp", False, False),
+            ("-ri15:200-mlp", False, False),
+            ("-om mlp -ri0", True, False),  # corner case: everything after -om gets interpreted as its argument
+            ("/bin/sh /tmp/test.sh", False, False),  # script kiddies
+            ("'/evil.sh' 11", False, False),
+            ("; 11", False, False),
+            ("python evil.py", False, False),
+            ("-mlp /bin/echo 666", False, False),
+            ("4 && test.sh", False, False),
+            ("-mlp | bla.py", False, False),
+            ("5 || now", False, False),
+            ("echo 'how;now;brown;cow'", False, False),
+            ("-mlp'echo'", False, False),
+        ],
+    )
+    def test_supported_unrar_parameters(self, setting, is_correct_win, is_correct_unix):
+        msg, value = cfg.supported_unrar_parameters(setting)
+        is_correct = is_correct_win if sys.platform.startswith("win") else is_correct_unix
+
+        if is_correct:
+            assert msg == None
+            assert value == setting
+        else:
+            assert msg
+            assert msg.startswith("Incorrect parameter")
+            assert value == None
+
     def test_validate_single_tag(self):
         assert cfg.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
         assert cfg.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
