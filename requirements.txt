@@ -41,7 +41,7 @@ ujson==5.10.0
 orjson==3.10.15
 
 # Windows system integration
-pywin32==308; sys_platform == 'win32'
+pywin32==309; sys_platform == 'win32'
 windows-toasts==1.3.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-runtime==2.3.0; sys_platform == 'win32' and python_version > '3.8'
 winrt-Windows.Data.Xml.Dom==2.3.0; sys_platform == 'win32' and python_version > '3.8'
