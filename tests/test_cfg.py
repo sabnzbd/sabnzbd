@@ -93,14 +93,19 @@ class TestValidators:
         "setting, is_correct_win, is_correct_unix",
         [
             ("-mlp", True, True),
+            ("-Mlp", True, True),  # matching is case-insensitive
+            ("-mlP", True, True),
+            ("-MLP", True, True),
             ("-om", True, False),  # -om variants without argument
             ("-om1", True, False),
+            ("-OM1", True, False),
             ("-om-", True, False),
             ("-om=foo", True, False),  # -om variants with argument
             ("-om1=foo,bar", True, False),
             ("-om-=f,o,o,b,a,r", True, False),
             ("-ri0", True, False),  # -ri without sleep time
             ("-ri6", True, False),
+            ("-rI6", True, False),
             ("-ri15", True, False),
             ("-ri0:0", True, False),  # -ri with sleep time
             ("-ri6:42", True, False),
@@ -132,7 +137,7 @@ class TestValidators:
             ("-ri0:0123", False, False),
             ("-ri0:-1001", False, False),
             ("-ri0:blabla", False, False),
-            ("-ri0:-1", False, False),  # -ri with invalid priority
+            ("-ri00:0", False, False),  # -ri with invalid priority
             ("-ri-1:100", False, False),
             ("-ri16:42", False, False),
             ("-ri1000:10", False, False),
@@ -153,6 +158,10 @@ class TestValidators:
             ("-p- -ai", False, False),
             ("-vp -ri6:666", False, False),
             ("-ri15:1 -huuuuuge", False, False),  # triggers a bug in argparse >=3.11 without add_help=False?
+            ("-h", False, False),  # ensure argparse's automatic -h/--help is off
+            ("-mlp -h", False, False),
+            ("--help", False, False),
+            ("--help -mlp", False, False),
             ("-mlp -scf -ri0", False, False),
             ("-mlp -ri0 -ppassword -om", False, False),
             ("-ommlp -ri0", False, False),  # missing spacing
