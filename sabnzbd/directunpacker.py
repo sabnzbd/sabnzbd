@@ -448,6 +448,9 @@ class DirectUnpacker(threading.Thread):
 
         if cfg.ignore_unrar_dates():
             command.insert(3, "-tsm-")
+        if unrar_parameters := cfg.unrar_parameters().strip().split():
+            for param in unrar_parameters:
+                command.insert(-2, param)
 
         # Let's start from the first one!
         self.cur_volume = 1

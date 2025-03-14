@@ -93,6 +93,35 @@ def clean_nice_ionice_parameters(value: str) -> ValidateResult:
     return None, value
 
 
+def supported_unrar_parameters(value: str) -> ValidateResult:
+    """Verify the user-set extra parameters are valid and supported"""
+    if value:
+        parser = ErrorCatchingArgumentParser(add_help=False)
+
+        # Large memory pages
+        parser.add_argument("-mlp", action="store_true")
+        if sabnzbd.WINDOWS:
+            # Mark of the web propagation: -om[-|1][=list]
+            parser.add_argument("-om", "-om1", "-om-", nargs="?", type=str)
+            # Priority and sleep time: -ri<p>[:<s>] (p: 0-15, s: 0-1000)
+            parser.add_argument(*("-ri" + str(p) for p in range(16)), action="store_true")
+
+        try:
+            # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
+            # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
+            parser.parse_args(
+                re.sub(r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)", r"\1\2\3", value)
+                .lower()
+                .split()
+            )
+        except ValueError:
+            # Also log at start-up if invalid parameter was set in the ini
+            msg = "%s: %s" % (T("Incorrect parameter"), value)
+            logging.error(msg)
+            return msg, None
+    return None, value
+
+
 def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
     """Lowercase and strip everything!"""
     if isinstance(value, list):
@@ -501,6 +530,7 @@ receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
 switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
+unrar_parameters = OptionStr("misc", "unrar_parameters", validation=supported_unrar_parameters)
 
 
 ##############################################################################

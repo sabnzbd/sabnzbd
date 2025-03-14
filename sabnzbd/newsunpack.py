@@ -712,6 +712,9 @@ def rar_extract_core(
 
     if cfg.ignore_unrar_dates():
         command.insert(3, "-tsm-")
+    if not RAR_PROBLEM and (unrar_parameters := cfg.unrar_parameters().strip().split()):
+        for param in unrar_parameters:
+            command.insert(-2, param)
 
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
