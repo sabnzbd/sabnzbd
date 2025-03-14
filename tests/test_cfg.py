@@ -88,6 +88,10 @@ class TestValidators:
         assert_blocked("echo 'how;now;brown;cow'")
         assert_blocked("-c'echo'")
         assert_blocked("--classdata=;/bin/echo")
+        assert_blocked("-h")
+        assert_blocked("--help")
+        assert_blocked("-h -c1")
+        assert_blocked("-c1 --help")
 
     @pytest.mark.parametrize(
         "setting, is_correct_win, is_correct_unix",

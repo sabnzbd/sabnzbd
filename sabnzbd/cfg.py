@@ -73,7 +73,7 @@ class ErrorCatchingArgumentParser(argparse.ArgumentParser):
 def clean_nice_ionice_parameters(value: str) -> ValidateResult:
     """Verify that the passed parameters are not exploits"""
     if value:
-        parser = ErrorCatchingArgumentParser()
+        parser = ErrorCatchingArgumentParser(add_help=False)
 
         # Nice parameters
         parser.add_argument("-n", "--adjustment", type=int)
