@@ -4,13 +4,13 @@
 # Translators:
 # Rik Brouwer, 2022
 # Robert Lampe, 2023
-# Safihre <safihre@sabnzbd.org>, 2024
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
+"Project-Id-Version: SABnzbd-4.5.0RC1\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1164,6 +1164,10 @@ msgid ""
 " locally injected certificate (for example by firewall or virus scanner). "
 "Try setting Certificate verification to Medium."
 msgstr ""
+"Certificaat kon niet worden gevalideerd. Dit kan een probleem zijn aan de "
+"kant van de server, of doordat er een ander certificaat lokaal is toegevoegd"
+" (bijvoorbeeld door een firewall of virusscanner). Probeer het nogmaals met "
+"Certificaatverificatie op Gemiddeld."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -2693,7 +2697,7 @@ msgstr "Gebruikte buffer"
 #. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
 #: sabnzbd/skintext.py
 msgid "Platform"
-msgstr ""
+msgstr "Platform"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3815,6 +3819,11 @@ msgid ""
 "used. - Disabled: no certification verification. This is not secure at all, "
 "anyone could intercept your connection. "
 msgstr ""
+"Wanneer SSL is ingeschakeld:\n"
+"- Strikt: volledige controle van het servercertificaat, waarbij geen enkele afwijking is toegestaan. Dit is de meest veilig keuze.\n"
+"- Gemiddeld: controleert of het servercertificaat geldig is en of het servercertificaat hoort bij het adres van de server. Lokale certificaten zijn toegestaan (bijvoorbeeld van een firewall of virusscanner).\n"
+"- Minimaal: controleert alleen of het servercertificaat geldig is. Dit is geen veilige instelling, omdat elk geldig certificaat gebruikt kan worden.\n"
+"- Uit: geen enkele controle van het servercertificaat. Dit is niet veilig, iedereen kan je verbinding onderscheppen."
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3826,7 +3835,7 @@ msgstr "Minimaal"
 
 #: sabnzbd/skintext.py
 msgid "Medium"
-msgstr ""
+msgstr "Gemiddeld"
 
 #: sabnzbd/skintext.py
 msgid "Strict"
