@@ -43,11 +43,11 @@ orjson==3.10.15
 # Windows system integration
 pywin32==310; sys_platform == 'win32'
 windows-toasts==1.3.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-runtime==3.0.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Data.Xml.Dom==3.0.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation==3.0.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.Foundation.Collections==3.0.0; sys_platform == 'win32' and python_version > '3.8'
-winrt-Windows.UI.Notifications==3.0.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-runtime==2.3.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Data.Xml.Dom==2.3.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation==2.3.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.Foundation.Collections==2.3.0; sys_platform == 'win32' and python_version > '3.8'
+winrt-Windows.UI.Notifications==2.3.0; sys_platform == 'win32' and python_version > '3.8'
 
 # macOS system calls
 pyobjc-core==11.0; sys_platform == 'darwin'
