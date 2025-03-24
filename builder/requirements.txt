@@ -2,17 +2,17 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 pyinstaller==6.12.0
 packaging==24.2
-pyinstaller-hooks-contrib==2025.1
+pyinstaller-hooks-contrib==2025.2
 altgraph==0.17.4
 wrapt==1.17.2
-setuptools==76.0.0
+setuptools==77.0.3
 
 # For the Windows build
 pefile==2024.8.26; sys_platform == 'win32'
 pywin32-ctypes==0.2.3; sys_platform == 'win32'
 
 # For the macOS build
-dmgbuild==1.6.4; sys_platform == 'darwin'
+dmgbuild==1.6.5; sys_platform == 'darwin'
 mac-alias==2.2.2; sys_platform == 'darwin'
 macholib==1.16.3; sys_platform == 'darwin'
 ds-store==1.3.1; sys_platform == 'darwin'
