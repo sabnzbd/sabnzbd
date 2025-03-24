@@ -23,8 +23,12 @@ import os
 import sys
 import re
 
-# Import version.py without the sabnzbd overhead
-with open("sabnzbd/version.py") as version_file:
+# Make sure it's run as "python tools/extract_pot.py"
+if not os.path.exists("builder"):
+    raise RuntimeError("Make sure to run from root directory of SABnzbd")
+
+# Import a nicely parsed version file
+with open("builder/constants.py") as version_file:
     exec(version_file.read())
 
 # Fixed information for the POT header
@@ -43,7 +47,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 """
-    % __version__
+    % RELEASE_VERSION_BASE
 )
 
 PO_DIR = "po/main"
