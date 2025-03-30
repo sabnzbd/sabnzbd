@@ -1,7 +1,5 @@
-Release Notes - SABnzbd 4.5.0 Release Candidate 1
+Release Notes - SABnzbd 4.5.0
 =========================================================
-
-This is the first Release Candidate for the 4.5.0 release.
 
 ## New features in 4.5.0
 
