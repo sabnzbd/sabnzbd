@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -652,7 +652,7 @@ def _api_warnings(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     return report(keyword="warnings", data=sabnzbd.GUIHANDLER.content())
 
 
-LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password)': '(.*?)'", re.I)
+LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password|email_(server|to|from|account|pwd))': '(.*?)'", re.I)
 LOG_INI_HIDE_RE = re.compile(
     rb"(apikey|api|user|username|password|email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey"
     rb"|apprise_(target_[a-z_]+|urls)|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address|Public address IPv[4|6]-only|Local IPv6 address)\s?=.*",
@@ -1771,10 +1771,10 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
         header["webdir"] = webdir or sabnzbd.WEB_DIR
         header["url_base"] = cfg.url_base()
 
-        header["windows"] = sabnzbd.WIN32
+        header["windows"] = sabnzbd.WINDOWS
         header["macos"] = sabnzbd.MACOS
 
-        header["power_options"] = sabnzbd.WIN32 or sabnzbd.MACOS or sabnzbd.LINUX_POWER
+        header["power_options"] = sabnzbd.WINDOWS or sabnzbd.MACOS or sabnzbd.LINUX_POWER
         header["pp_pause_event"] = sabnzbd.Scheduler.pp_pause_event
 
         header["apikey"] = cfg.api_key()

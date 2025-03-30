@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -100,25 +100,25 @@ def set_platform(platform):
     def set_platform_decorator(func):
         def wrapper_func(*args, **kwargs):
             # Save original values
-            is_windows = sabnzbd.WIN32
+            is_windows = sabnzbd.WINDOWS
             is_macos = sabnzbd.MACOS
 
             # Set current platform
             if platform == "win32":
-                sabnzbd.WIN32 = True
+                sabnzbd.WINDOWS = True
                 sabnzbd.MACOS = False
             elif platform == "macos":
-                sabnzbd.WIN32 = False
+                sabnzbd.WINDOWS = False
                 sabnzbd.MACOS = True
             elif platform == "linux":
-                sabnzbd.WIN32 = False
+                sabnzbd.WINDOWS = False
                 sabnzbd.MACOS = False
 
             # Perform test
             value = func(*args, **kwargs)
 
             # Reset values
-            sabnzbd.WIN32 = is_windows
+            sabnzbd.WINDOWS = is_windows
             sabnzbd.MACOS = is_macos
 
             return value
@@ -269,11 +269,12 @@ class SABnzbdBaseTest:
             try:
                 return func(*args)
             except WebDriverException as e:
+                prior_exception = e
                 # Try again in 2 seconds!
                 time.sleep(2)
                 pass
         else:
-            raise e
+            raise prior_exception
 
 
 class DownloadFlowBasics(SABnzbdBaseTest):

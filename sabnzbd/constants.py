@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@ ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 # Or, when extra ".1", ".2" etc. are added for identically named jobs
 DEF_FOLDER_MAX = 256 - 10
 DEF_FILE_MAX = 255 - 10  # max filename length on modern filesystems, minus some room for extra chars later on
+DEX_FILE_EXTENSION_MAX = 20
 
 GIGI = float(2**30)
 MEBI = float(2**20)

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -73,7 +73,7 @@ class ErrorCatchingArgumentParser(argparse.ArgumentParser):
 def clean_nice_ionice_parameters(value: str) -> ValidateResult:
     """Verify that the passed parameters are not exploits"""
     if value:
-        parser = ErrorCatchingArgumentParser()
+        parser = ErrorCatchingArgumentParser(add_help=False)
 
         # Nice parameters
         parser.add_argument("-n", "--adjustment", type=int)
@@ -85,6 +85,35 @@ def clean_nice_ionice_parameters(value: str) -> ValidateResult:
 
         try:
             parser.parse_args(value.split())
+        except ValueError:
+            # Also log at start-up if invalid parameter was set in the ini
+            msg = "%s: %s" % (T("Incorrect parameter"), value)
+            logging.error(msg)
+            return msg, None
+    return None, value
+
+
+def supported_unrar_parameters(value: str) -> ValidateResult:
+    """Verify the user-set extra parameters are valid and supported"""
+    if value:
+        parser = ErrorCatchingArgumentParser(add_help=False)
+
+        # Large memory pages
+        parser.add_argument("-mlp", action="store_true")
+        if sabnzbd.WINDOWS:
+            # Mark of the web propagation: -om[-|1][=list]
+            parser.add_argument("-om", "-om1", "-om-", nargs="?", type=str)
+            # Priority and sleep time: -ri<p>[:<s>] (p: 0-15, s: 0-1000)
+            parser.add_argument(*("-ri" + str(p) for p in range(16)), action="store_true")
+
+        try:
+            # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
+            # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
+            parser.parse_args(
+                re.sub(r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)", r"\1\2\3", value)
+                .lower()
+                .split()
+            )
         except ValueError:
             # Also log at start-up if invalid parameter was set in the ini
             msg = "%s: %s" % (T("Incorrect parameter"), value)
@@ -258,7 +287,7 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
 
 def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
     """Warn users to not use the Program Files folder for their scripts"""
-    # Need to add seperator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
+    # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
         # Warn, but do not block
         sabnzbd.misc.helpful_warning(
@@ -450,7 +479,6 @@ start_paused = OptionBool("misc", "start_paused", False)
 preserve_paused_state = OptionBool("misc", "preserve_paused_state", False)
 enable_par_cleanup = OptionBool("misc", "enable_par_cleanup", True)
 process_unpacked_par2 = OptionBool("misc", "process_unpacked_par2", True)
-disable_par2cmdline = OptionBool("misc", "disable_par2cmdline", False)
 enable_unrar = OptionBool("misc", "enable_unrar", True)
 enable_7zip = OptionBool("misc", "enable_7zip", True)
 enable_filejoin = OptionBool("misc", "enable_filejoin", True)
@@ -502,6 +530,7 @@ receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
 switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
+unrar_parameters = OptionStr("misc", "unrar_parameters", validation=supported_unrar_parameters)
 
 
 ##############################################################################
@@ -536,7 +565,7 @@ ncenter_prio_queue_done = OptionBool("ncenter", "ncenter_prio_queue_done", False
 ncenter_prio_other = OptionBool("ncenter", "ncenter_prio_other", True)
 
 # [acenter]
-acenter_enable = OptionBool("acenter", "acenter_enable", sabnzbd.WIN32)
+acenter_enable = OptionBool("acenter", "acenter_enable", sabnzbd.WINDOWS)
 acenter_cats = OptionList("acenter", "acenter_cats", ["*"])
 acenter_prio_startup = OptionBool("acenter", "acenter_prio_startup", False)
 acenter_prio_download = OptionBool("acenter", "acenter_prio_download", False)
@@ -552,7 +581,7 @@ acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", False
 acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
-ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.MACOS)
+ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WINDOWS and not sabnzbd.MACOS)
 ntfosd_cats = OptionList("ntfosd", "ntfosd_cats", ["*"])
 ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", False)
 ntfosd_prio_download = OptionBool("ntfosd", "ntfosd_prio_download", False)
@@ -794,7 +823,7 @@ def config_conversions():
     # Switch to par2cmdline-turbo on Windows
     if config_conversion_version() < 3:
         logging.info("Config conversion set 3")
-        if sabnzbd.WIN32 and par_option():
+        if sabnzbd.WINDOWS and par_option():
             # Just empty it, so we don't pass the wrong parameters
             logging.warning(T("The par2 application was switched, any custom par2 parameters were removed"))
             par_option.set("")

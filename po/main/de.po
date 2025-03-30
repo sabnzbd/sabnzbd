@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # C E <githubce@eiselt.ch>, 2020
@@ -12,16 +12,16 @@
 # reloxx13 <reloxx@interia.pl>, 2022
 # kameb, 2023
 # HandyDandy04, 2024
-# Safihre <safihre@sabnzbd.org>, 2024
-# Gjelbrim Haskaj, 2024
 # Stefan Rodriguez Galeano, 2024
 # M Z, 2024
+# Gjelbrim Haskaj, 2024
+# Safihre <safihre@sabnzbd.org>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta2\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: M Z, 2024\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -101,25 +101,6 @@ msgstr "HTTP und HTTPS Ports dürfen nicht identisch sein!"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd wurde mit Encoder/Zeichensatz %s gestartet, Dieser sollte UTF-8 "
-"sein. Es werden Probleme mit Unicode codierten Dateien und "
-"Ordnerbezeichnungen in Downloads erwartet."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-"Die aktuellen Zugriffseinstellungen (%o) könnte SABnzbd den Zugriff auf die "
-"erstellten Dateien und Ordner von SABnzbd verweigern."
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Konnte weitere Zertifikate vom Paket certifi nicht laden."
 
@@ -156,6 +137,34 @@ msgstr "Signal %s erkannt. Wird gespeichert und beendet …"
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Schwerer Fehler beim Speichern des Zustands"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd wurde mit Encoder/Zeichensatz %s gestartet, Dieser sollte UTF-8 "
+"sein. Es werden Probleme mit Unicode codierten Dateien und "
+"Ordnerbezeichnungen in Downloads erwartet."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+"Die aktuellen Zugriffseinstellungen (%o) könnte SABnzbd den Zugriff auf die "
+"erstellten Dateien und Ordner von SABnzbd verweigern."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+"Download-Ordner %s für abgeschlossene Downloads auf  FAT Dateisystem, ist "
+"auf maximale Dateigröße von 4GB begrenzt."
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1149,11 +1158,6 @@ msgstr "Überprüfe zusätzliche Dateien"
 msgid "Verifying"
 msgstr "Überprüfen"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Wird überprüft"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Versuche SFV-Überprüfung"
@@ -1175,9 +1179,15 @@ msgstr ""
 "enthalten. Dies ist ein Serverproblem."
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
 msgstr ""
-"Zertifikat ist nicht gültig. Dies ist wahrscheinlich ein Serverproblem."
+"Das Zertifikat konnte nicht validiert werden. Dies könnte ein Serverproblem "
+"sein oder auf ein lokal eingefügtes Zertifikat zurückzuführen sein (z. B. "
+"durch eine Firewall oder einen Virenscanner). Versuche, die "
+"Zertifikatsüberprüfung auf Mittel einzustellen."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -1687,15 +1697,6 @@ msgid "Failed to compile regex for search term: %s"
 msgstr ""
 "Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen."
 
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-"Download-Ordner %s für abgeschlossene Downloads auf  FAT Dateisystem, ist "
-"auf maximale Dateigröße von 4GB begrenzt."
-
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
 msgstr ""
@@ -2021,6 +2022,11 @@ msgstr "Schnelle Überprüfung …"
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Überprüfung läuft …"
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Wird überprüft"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2720,6 +2726,11 @@ msgstr "Konfigurationsdatei"
 #: sabnzbd/skintext.py
 msgid "Used cache"
 msgstr "Verwendeter Cache"
+
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3857,11 +3868,22 @@ msgstr "Zertifikat überprüfung"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
 msgstr ""
-"Minimum: Wenn SSL aktiviert, prüft die Serveridentität und Benutzung seiner "
-"Zertifikate. Strikt: Prüft und stelle sicher das der Hostname stimmt."
+"Wenn SSL aktiviert ist: - Streng: Erzwingt eine vollständige "
+"Zertifikatsüberprüfung. Dies ist die sicherste Einstellung. - Mittel: "
+"Überprüft, ob das Zertifikat gültig ist und mit der Serveradresse "
+"übereinstimmt, aber erlaubt lokal eingefügte (z. B. durch eine Firewall oder"
+" einen Virenscanner) Zertifikate.- Minimal: Überprüft, ob das Zertifikat "
+"gültig ist. Dies ist nicht sicher, es kann jedes gültige Zertifikat "
+"verwendet werden. - Deaktiviert: keine Überprüfung des Zertifikats. Dies ist"
+" überhaupt nicht sicher, jeder könnte deine Verbindung abfangen. "
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3870,6 +3892,10 @@ msgstr "Deaktiviert"
 #: sabnzbd/skintext.py
 msgid "Minimal"
 msgstr "Minimum"
+
+#: sabnzbd/skintext.py
+msgid "Medium"
+msgstr "mittel"
 
 #: sabnzbd/skintext.py
 msgid "Strict"
@@ -3940,7 +3966,7 @@ msgstr "Verfügbarkeit der Artikel"
 
 #: sabnzbd/skintext.py
 msgid "%f% available of %d requested articles"
-msgstr "%f vorhanden von %d angefragten Artikeln"
+msgstr "%f% vorhanden von %d angefragten Artikeln"
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py

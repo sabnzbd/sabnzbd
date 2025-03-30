@@ -41,7 +41,7 @@ else:
 
     # Windows
     extra_hiddenimports.extend(["win32timezone", "winrt.windows.foundation.collections"])
-    EXTRA_FOLDERS += ["win/multipar/", "win/par2/", "win/unrar/", "win/7zip/"]
+    EXTRA_FOLDERS += ["win/par2/", "win/unrar/", "win/7zip/"]
     EXTRA_FILES += ["portable.cmd"]
 
     # Detailed instructions are in the PyInstaller documentation

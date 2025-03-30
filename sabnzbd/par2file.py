@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ from typing import Dict, Optional, Tuple
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
-from sabnzbd.filesystem import get_basename
+from sabnzbd.filesystem import get_basename, get_ext
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -52,19 +52,22 @@ class FilePar2Info:
     has_duplicate: bool = False
 
 
-def is_parfile(filename: str) -> bool:
-    """Check quickly whether file has par2 signature
-    or if the filename has '.par2' in it
-    """
-    if os.path.exists(filename):
+def has_par2_in_filename(filename: str) -> bool:
+    """Check quickly whether filename has '.par2' in it"""
+    if ".par2" in filename.lower():
+        return True
+    return False
+
+
+def is_par2_file(filepath: str) -> bool:
+    """Check whether file has par2 signature"""
+    if os.path.exists(filepath):
         try:
-            with open(filename, "rb") as f:
+            with open(filepath, "rb") as f:
                 buf = f.read(8)
                 return buf.startswith(PAR_PKT_ID)
         except:
             pass
-    elif ".par2" in filename.lower():
-        return True
     return False
 
 
@@ -219,7 +222,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                     )
                 par2info.filehash = crc32
 
-                # We found hash data, add it to final tabel
+                # We found hash data, add it to final table
                 table[par2info.filename] = par2info
 
                 # Check for md5of16k duplicates

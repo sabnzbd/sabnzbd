@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Eduard Baniceru <war4peace@gmail.com>, 2021
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
@@ -88,22 +88,6 @@ msgstr "Porturile HTTP și HTTPS nu pot fi aceleași"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd a fost pornit cu encodarea %s, aceasta trebuie să fie UTF-8. Pot "
-"apărea probleme cu denumiri de fișiere și directoare Unicode în descărcări."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "Nu pot încărca certificate adiționale din pachetul certifi"
 
@@ -139,6 +123,31 @@ msgstr "Semnal %s  prins, salvez şi ies..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Eroare fatală la salvare"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd a fost pornit cu encodarea %s, aceasta trebuie să fie UTF-8. Pot "
+"apărea probleme cu denumiri de fișiere și directoare Unicode în descărcări."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+"Directorul de descărcări finalizate %s se află pe sistem de fișiere FAT, "
+"limitând dimensiunea maximă a fișierului la 4GB"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1095,11 +1104,6 @@ msgstr "Se verifică fișierele extra"
 msgid "Verifying"
 msgstr "Se verifică"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Se verifică"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Încerc verificare SFV"
@@ -1121,8 +1125,11 @@ msgstr ""
 "Aceasta este o problemă de server."
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
-msgstr "Certificat invalid. Este cel mai probabil o problemă de server."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
+msgstr ""
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -1624,15 +1631,6 @@ msgstr ""
 msgid "Failed to compile regex for search term: %s"
 msgstr "Compilarea unei căutări regex nereuşită: %s"
 
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-"Directorul de descărcări finalizate %s se află pe sistem de fișiere FAT, "
-"limitând dimensiunea maximă a fișierului la 4GB"
-
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
 msgstr "Descărcarea ar putea eşua, doar %s din %s disponibil"
@@ -1957,6 +1955,11 @@ msgstr "Verificare Rapidă..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Verificare..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Se verifică"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2651,6 +2654,11 @@ msgstr "Fişier Configurare"
 #: sabnzbd/skintext.py
 msgid "Used cache"
 msgstr "Cache Folosit"
+
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3704,8 +3712,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3714,6 +3727,10 @@ msgstr "Dezactivat"
 
 #: sabnzbd/skintext.py
 msgid "Minimal"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Medium"
 msgstr ""
 
 #: sabnzbd/skintext.py

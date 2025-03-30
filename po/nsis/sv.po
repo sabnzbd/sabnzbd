@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Petter Ramme, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/sabnzbd/teams/111101/sv/)\n"
@@ -36,20 +36,12 @@ msgstr ""
 "tjänsten, eller välj `Cancel`för att avbryta uppdateringen."
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports 64-bit Windows, use the standalone version to "
-"run on 32-bit Windows."
+msgid "SABnzbd only supports 64-bit Windows."
 msgstr ""
-"Installationen stödjer endast 64-bitars Windows, använd den fristående "
-"versionen för att köra installationen på 32-bitars Windows."
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports Windows 8.1 and above, use the standalone legacy"
-" version to run on older Windows version."
+msgid "SABnzbd only supports Windows 8.1 and above."
 msgstr ""
-"Installationen kräver Windows 8.1 eller högre. Använd en fristående äldre "
-"version av installationen för en äldre version av Windows."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
@@ -78,16 +70,3 @@ msgstr "Radera programmet"
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "Radera inställningar"
-
-#: builder/win/NSIS_Installer.nsi
-msgid ""
-"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
-"the previous version or `Cancel` to cancel this upgrade."
-msgstr ""
-"Kan inte skriva över en existerande installation. \\n\\nKlicka 'OK' för att "
-"avinstallera tidigare version eller 'Avbryt' för att avbryta denna "
-"uppgradering."
-
-#: builder/win/NSIS_Installer.nsi
-msgid "Your settings and data will be preserved."
-msgstr "Dina inställningar och ditt data kommer att bevaras."

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -175,58 +175,32 @@ class TestPar2Repair:
             ]
         )
 
-        if sabnzbd.WIN32 and cfg.disable_par2cmdline():
-            # Multipar output status updates
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repair", "Quick Checking"),
-                    call("Repair", "Starting Repair"),
-                    call("Checking", "01/06"),
-                    call("Checking", "02/06"),
-                    call("Checking", "03/06"),
-                    call("Checking", "04/06"),
-                    call("Checking", "05/06"),
-                    call("Checking", "06/06"),
-                    # We only know total of missing files, so not how many will be found
-                    call("Checking extra files", "01/05"),
-                    call("Checking extra files", "02/05"),
-                    call("Verifying", "01/03"),
-                    call("Verifying", "02/03"),
-                    call("Verifying", "03/03"),
-                    call("Repairing", " 0%"),
-                    call("Repairing", "100% "),
-                    call("Verifying repair", "01/03"),
-                    call("Verifying repair", "02/03"),
-                    call("Verifying repair", "03/03"),
-                ]
-            )
-        else:
-            # par2cmdline output status updates
-            # Verify output in chunks, as it outputs every single % during repair
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repair", "Quick Checking"),
-                    call("Repair", "Starting Repair"),
-                    call("Verifying", "01/06"),
-                    call("Verifying", "02/06"),
-                    call("Verifying", "03/06"),
-                    call("Verifying", "04/06"),
-                    call("Verifying", "05/06"),
-                    call("Verifying", "06/06"),
-                    call("Checking extra files", "01"),
-                    call("Checking extra files", "02"),
-                    call("Checking extra files", "03"),
-                    call("Repairing", " 0%"),
-                ]
-            )
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repairing", "100% "),
-                    call("Verifying repair", "01/03"),
-                    call("Verifying repair", "02/03"),
-                    call("Verifying repair", "03/03"),
-                ]
-            )
+        # par2cmdline output status updates
+        # Verify output in chunks, as it outputs every single % during repair
+        nzo.set_action_line.assert_has_calls(
+            [
+                call("Repair", "Quick Checking"),
+                call("Repair", "Starting Repair"),
+                call("Verifying", "01/06"),
+                call("Verifying", "02/06"),
+                call("Verifying", "03/06"),
+                call("Verifying", "04/06"),
+                call("Verifying", "05/06"),
+                call("Verifying", "06/06"),
+                call("Checking extra files", "01"),
+                call("Checking extra files", "02"),
+                call("Checking extra files", "03"),
+                call("Repairing", " 0%"),
+            ]
+        )
+        nzo.set_action_line.assert_has_calls(
+            [
+                call("Repairing", "100% "),
+                call("Verifying repair", "01/03"),
+                call("Verifying repair", "02/03"),
+                call("Verifying repair", "03/03"),
+            ]
+        )
 
     def test_filejoin(self, caplog):
         # Run code
@@ -238,56 +212,33 @@ class TestPar2Repair:
         # There are no renames in case of filejoin by par2repair!
         nzo.renamed_file.assert_not_called()
 
-        if sabnzbd.WIN32 and cfg.disable_par2cmdline():
-            # Multipar output status updates, which is limited because Multipar doesn't say much..
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repair", "Quick Checking"),
-                    call("Repair", "Starting Repair"),
-                    call("Checking", "01/01"),
-                    call("Verifying", "01"),
-                    call("Verifying", "02"),
-                    call("Verifying", "03"),
-                    call("Verifying", "04"),
-                    call("Verifying", "05"),
-                    call("Verifying", "06"),
-                    call("Verifying", "07"),
-                    call("Verifying", "08"),
-                    call("Verifying", "09"),
-                    call("Verifying", "10"),
-                    call("Verifying", "11"),
-                    call("Joining", "11"),
-                    call("Verifying repair", "01/01"),
-                ]
-            )
-        else:
-            # par2cmdline output status updates
-            # Verify output in chunks, as it outputs every single % during repair
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repair", "Quick Checking"),
-                    call("Repair", "Starting Repair"),
-                    call("Verifying", "01/01"),
-                    call("Checking extra files", "01"),
-                    call("Checking extra files", "02"),
-                    call("Checking extra files", "03"),
-                    call("Checking extra files", "04"),
-                    call("Checking extra files", "05"),
-                    call("Checking extra files", "06"),
-                    call("Checking extra files", "07"),
-                    call("Checking extra files", "08"),
-                    call("Checking extra files", "09"),
-                    call("Checking extra files", "10"),
-                    call("Checking extra files", "11"),
-                    call("Repairing", " 0%"),
-                ]
-            )
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repairing", "100% "),
-                    call("Verifying repair", "01/01"),
-                ]
-            )
+        # par2cmdline output status updates
+        # Verify output in chunks, as it outputs every single % during repair
+        nzo.set_action_line.assert_has_calls(
+            [
+                call("Repair", "Quick Checking"),
+                call("Repair", "Starting Repair"),
+                call("Verifying", "01/01"),
+                call("Checking extra files", "01"),
+                call("Checking extra files", "02"),
+                call("Checking extra files", "03"),
+                call("Checking extra files", "04"),
+                call("Checking extra files", "05"),
+                call("Checking extra files", "06"),
+                call("Checking extra files", "07"),
+                call("Checking extra files", "08"),
+                call("Checking extra files", "09"),
+                call("Checking extra files", "10"),
+                call("Checking extra files", "11"),
+                call("Repairing", " 0%"),
+            ]
+        )
+        nzo.set_action_line.assert_has_calls(
+            [
+                call("Repairing", "100% "),
+                call("Verifying repair", "01/01"),
+            ]
+        )
 
     def test_broken_filejoin(self, caplog):
         # Run code
@@ -301,49 +252,27 @@ class TestPar2Repair:
         # All joinable files should be removed
         assert dir_contents == ["__ADMIN__", "par2test.bin"]
 
-        if sabnzbd.WIN32 and cfg.disable_par2cmdline():
-            # Multipar output status updates, which is limited because Multipar doesn't say much..
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repair", "Quick Checking"),
-                    call("Repair", "Starting Repair"),
-                    call("Checking", "01/01"),
-                    call("Verifying", "01"),
-                    call("Verifying", "02"),
-                    call("Verifying", "03"),
-                    call("Verifying", "04"),
-                    call("Verifying", "05"),
-                    call("Verifying", "06"),
-                    call("Verifying", "07"),
-                    call("Verifying", "08"),
-                    call("Verifying", "09"),
-                    call("Repairing", " 0%"),
-                    call("Repairing", "100% "),
-                    call("Verifying repair", "01/01"),
-                ]
-            )
-        else:
-            # Verify output in chunks, as it outputs every single % during repair
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repair", "Quick Checking"),
-                    call("Repair", "Starting Repair"),
-                    call("Verifying", "01/01"),
-                    call("Checking extra files", "01"),
-                    call("Checking extra files", "02"),
-                    call("Checking extra files", "03"),
-                    call("Checking extra files", "04"),
-                    call("Checking extra files", "05"),
-                    call("Checking extra files", "06"),
-                    call("Checking extra files", "07"),
-                    call("Checking extra files", "08"),
-                    call("Checking extra files", "09"),
-                    call("Repairing", " 0%"),
-                ]
-            )
-            nzo.set_action_line.assert_has_calls(
-                [
-                    call("Repairing", "100% "),
-                    call("Verifying repair", "01/01"),
-                ]
-            )
+        # Verify output in chunks, as it outputs every single % during repair
+        nzo.set_action_line.assert_has_calls(
+            [
+                call("Repair", "Quick Checking"),
+                call("Repair", "Starting Repair"),
+                call("Verifying", "01/01"),
+                call("Checking extra files", "01"),
+                call("Checking extra files", "02"),
+                call("Checking extra files", "03"),
+                call("Checking extra files", "04"),
+                call("Checking extra files", "05"),
+                call("Checking extra files", "06"),
+                call("Checking extra files", "07"),
+                call("Checking extra files", "08"),
+                call("Checking extra files", "09"),
+                call("Repairing", " 0%"),
+            ]
+        )
+        nzo.set_action_line.assert_has_calls(
+            [
+                call("Repairing", "100% "),
+                call("Verifying repair", "01/01"),
+            ]
+        )

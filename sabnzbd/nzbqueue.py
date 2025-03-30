@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -426,7 +426,7 @@ class NzbQueue:
                         # Force-remove all trace and update counters
                         nzo.bytes -= nzf.bytes
                         nzo.bytes_tried -= nzf.bytes - nzf.bytes_left
-                        if nzf.is_par2 or sabnzbd.par2file.is_parfile(nzf.filename):
+                        if nzf.is_par2 or sabnzbd.par2file.has_par2_in_filename(nzf.filename):
                             nzo.bytes_par2 -= nzf.bytes
                         del nzo.files_table[nzf_id]
                         nzo.finished_files.remove(nzf)
@@ -494,7 +494,7 @@ class NzbQueue:
             # to determine whether to change the priority
             nzo3 = self.__nzo_table[item_id_3]
             nzo3_priority = nzo3.priority
-            # if id1 is surrounded by items of a different priority then change it's pririty to match
+            # if id1 is surrounded by items of a different priority then change its priority to match
             if nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority or nzo2_priority > nzo1_priority:
                 nzo1.priority = nzo2_priority
         except:
@@ -728,11 +728,10 @@ class NzbQueue:
             or (articles_left and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0)
         ):
             if not nzo.precheck:
-                # Only start decoding if we have a filename and type
                 # The type is only set if sabctools could decode the article
-                if nzf.filename and nzf.type:
+                if nzf.type:
                     sabnzbd.Assembler.process(nzo, nzf, file_done)
-                elif nzf.filename.lower().endswith(".par2"):
+                elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
                     # Broken par2 file, try to get another one
                     nzo.promote_par2(nzf)
 

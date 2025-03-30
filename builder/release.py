@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2008-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,8 +29,7 @@ from constants import (
     RELEASE_VERSION_BASE,
     PRERELEASE,
     RELEASE_SRC,
-    RELEASE_BINARY_32,
-    RELEASE_BINARY_64,
+    RELEASE_BINARY,
     RELEASE_INSTALLER,
     RELEASE_MACOS,
     RELEASE_README,
@@ -43,8 +42,7 @@ from constants import (
 # Verify we have all assets
 files_to_check = (
     RELEASE_SRC,
-    RELEASE_BINARY_32,
-    RELEASE_BINARY_64,
+    RELEASE_BINARY,
     RELEASE_INSTALLER,
     RELEASE_MACOS,
     RELEASE_README,

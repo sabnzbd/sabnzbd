@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@ import logging
 import datetime
 import ctypes.util
 import time
-import socket
+import ssl
 
 import cherrypy
 import platform
@@ -32,12 +32,16 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WIN32 = WIN64 = MACOS = MACOSARM64 = FOUNDATION = DOCKER = False
-KERNEL32 = LIBC = MACOSLIBC = None
+WINDOWS = MACOS = MACOSARM64 = FOUNDATION = False
+KERNEL32 = LIBC = MACOSLIBC = PLATFORM = None
 
 if os.name == "nt":
-    WIN32 = True
-    WIN64 = platform.uname().machine in ["AMD64", "ARM64"]  # includes emulation of X86_64 on Windows ARM64
+    WINDOWS = True
+
+    if platform.uname().machine not in ["AMD64", "ARM64"]:
+        print("SABnzbd only supports 64-bit Windows")
+        sys.exit(1)
+
     from sabnzbd.utils.apireg import del_connection_info
 
     try:
@@ -47,9 +51,6 @@ if os.name == "nt":
 elif os.name == "posix":
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
-
-    # Check if running in a Docker container. Note: fake-able, but good enough for normal setups
-    DOCKER = os.path.exists("/.dockerenv")
 
     # See if we have the GNU glibc malloc_trim() memory release function
     try:
@@ -110,6 +111,8 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.notifier as notifier
 import sabnzbd.sorting
 from sabnzbd.decorators import synchronized
+import sabnzbd.utils.ssdp
+import sabnzbd.utils.checkdir
 import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization
@@ -192,7 +195,7 @@ __SHUTTING_DOWN__ = False
 # Signal Handler
 ##############################################################################
 def sig_handler(signum=None, frame=None):
-    if sabnzbd.WIN32 and signum is not None and DAEMON and signum == 5:
+    if sabnzbd.WINDOWS and signum is not None and DAEMON and signum == 5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if signum is not None:
@@ -273,7 +276,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.api.clear_trans_cache()
 
     # Set end-of-queue action
-    sabnzbd.misc.change_queue_complete_action(cfg.queue_complete(), new=False)
+    misc.change_queue_complete_action(cfg.queue_complete(), new=False)
 
     # Do any config conversions
     cfg.config_conversions()
@@ -338,7 +341,7 @@ def halt():
             sabnzbd.WINTRAY.stop()
 
         # Remove registry information
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             del_connection_info()
 
         sabnzbd.zconfig.remove_server()
@@ -442,6 +445,105 @@ def save_state():
     sabnzbd.RSSReader.save()
 
 
+def delayed_startup_actions():
+    """Checks and logging that are not required for main function"""
+
+    # See if we can get version from git when running an unknown revision
+    if sabnzbd.__baseline__ == "unknown":
+        try:
+            sabnzbd.__baseline__ = sabnzbd.misc.run_command(
+                ["git", "rev-parse", "--short", "HEAD"], cwd=sabnzbd.DIR_PROG
+            ).strip()
+        except:
+            pass
+
+    logging.info("Commit = %s", sabnzbd.__baseline__)
+    logging.info("Python-version = %s", sys.version)
+    logging.info("CPU architecture = %s", platform.uname().machine)
+    logging.info("Platform = %s", misc.get_platform_description())
+    logging.info("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
+    logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
+    logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
+
+    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
+        misc.helpful_warning(
+            T(
+                "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
+            ),
+            sabnzbd.encoding.CODEPAGE,
+        )
+
+    # Verify umask, we need at least 700
+    if not sabnzbd.WINDOWS and sabnzbd.ORG_UMASK > int("077", 8):
+        misc.helpful_warning(
+            T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
+            sabnzbd.ORG_UMASK,
+        )
+
+    # List the number of certificates available (can take up to 1.5 seconds)
+    if cfg.log_level() > 1:
+        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
+
+    # First we do a dircheck
+    complete_dir = sabnzbd.cfg.complete_dir.get_path()
+    if sabnzbd.utils.checkdir.isFAT(complete_dir):
+        misc.helpful_warning(
+            T("Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB") % complete_dir
+        )
+    else:
+        logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
+
+    if filesystem.directory_is_writable(sabnzbd.cfg.download_dir.get_path()):
+        filesystem.check_filesystem_capabilities(sabnzbd.cfg.download_dir.get_path())
+    if filesystem.directory_is_writable(sabnzbd.cfg.complete_dir.get_path()):
+        filesystem.check_filesystem_capabilities(sabnzbd.cfg.complete_dir.get_path())
+
+    # Do an extra purge of the history on startup to ensure timely removal on systems that
+    # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
+    database.scheduled_history_purge()
+
+    # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
+    if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):
+        # Try to find a LAN IP address for SSDP/Bonjour
+        if misc.is_lan_addr(cfg.web_host()):
+            # A specific listening address was configured, use that
+            external_host = cfg.web_host()
+        else:
+            # Fall back to the IPv4 address of the LAN interface
+            external_host = sabnzbd.getipaddress.local_ipv4()
+        logging.debug("Using %s as host address for Bonjour and SSDP", external_host)
+
+        # Only broadcast to local network addresses. If local ranges have been defined, further
+        # restrict broadcasts to those specific ranges in order to avoid broadcasting to the "wrong"
+        # private network when the system is connected to multiple such networks (e.g. a corporate
+        # VPN in addition to a standard household LAN).
+        if misc.is_lan_addr(external_host) and (
+            (not sabnzbd.cfg.local_ranges())
+            or any(misc.ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges())
+        ):
+            # Start Bonjour and SSDP
+            sabnzbd.zconfig.set_bonjour(external_host, cfg.web_port())
+
+            # Set URL for browser for external hosts
+            ssdp_url = "%s://%s:%s%s" % (
+                ("https" if cfg.enable_https() else "http"),
+                external_host,
+                cfg.web_port(),
+                sabnzbd.cfg.url_base(),
+            )
+            sabnzbd.utils.ssdp.start_ssdp(
+                external_host,
+                "SABnzbd",
+                ssdp_url,
+                "SABnzbd %s" % sabnzbd.__version__,
+                "SABnzbd Team",
+                "https://sabnzbd.org/",
+                "SABnzbd %s" % sabnzbd.__version__,
+                ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
+            )
+
+
 def check_all_tasks():
     """Check every task and restart safe ones, else restart program
     Return True when everything is under control
@@ -492,7 +594,7 @@ def check_all_tasks():
 
 def pid_file(pid_path=None, pid_file=None, port=0):
     """Create or remove pid file"""
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WINDOWS:
         if pid_path and pid_path.startswith("/"):
             sabnzbd.DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
         elif pid_file and pid_file.startswith("/"):

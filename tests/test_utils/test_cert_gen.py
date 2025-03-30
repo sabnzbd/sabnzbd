@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -64,4 +64,4 @@ class TestCertGen:
             cert = x509.load_pem_x509_certificate(cert_content, default_backend())
 
             # Validate that the timestamp at which the certificate stops being valid (expiration date) is in future
-            assert datetime.datetime.now() < cert.not_valid_after
+            assert datetime.datetime.now(datetime.timezone.utc) < cert.not_valid_after_utc

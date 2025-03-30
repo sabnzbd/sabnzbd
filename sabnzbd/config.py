@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -244,7 +244,7 @@ class OptionDir(Option):
     def get(self) -> str:
         """Return value, corrected for platform"""
         p = super().get()
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             return p.replace("/", "\\") if "/" in p else p
         else:
             return p.replace("\\", "/") if "\\" in p else p
@@ -887,11 +887,11 @@ def _read_config(path, try_backup=False):
     if not os.path.exists(path):
         # No file found, create default INI file
         try:
-            if not sabnzbd.WIN32:
+            if not sabnzbd.WINDOWS:
                 prev = os.umask(0o77)
             with open(path, "w") as fp:
                 fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
-            if not sabnzbd.WIN32:
+            if not sabnzbd.WINDOWS:
                 os.umask(prev)
         except IOError:
             return False, "Cannot create INI file %s" % path

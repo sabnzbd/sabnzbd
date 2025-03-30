@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -58,7 +58,7 @@ from sabnzbd.decorators import cache_maintainer
 from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file
 
-if sabnzbd.WIN32:
+if sabnzbd.WINDOWS:
     try:
         import winreg
         import win32process
@@ -689,7 +689,7 @@ def get_cache_limit():
     """
     # Calculate, if possible
     try:
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # Windows
             mem_bytes = get_windows_memory()
         elif sabnzbd.MACOS:
@@ -713,7 +713,7 @@ def get_cache_limit():
         pass
 
     # Always at least minimum on Windows/macOS
-    if sabnzbd.WIN32 and sabnzbd.MACOS:
+    if sabnzbd.WINDOWS and sabnzbd.MACOS:
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
@@ -761,7 +761,7 @@ def get_cpu_name():
     cputype = None
 
     try:
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0")
             cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
             winreg.CloseKey(key)
@@ -795,6 +795,49 @@ def get_cpu_name():
 
     logging.debug("CPU model = %s", cputype)
     return cputype
+
+
+def get_platform_description() -> str:
+    """Get a nicer description of what platform we are on"""
+    platform_tags = []
+    # We dig deeper for Linux
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
+        # Check if running in a Docker container
+        # Note: fake-able, but good enough for normal setups
+        if os.path.exists("/.dockerenv"):
+            platform_tags.append("Docker")
+            # See if we are on Unraid
+            if "HOST_OS" in os.environ and os.environ["HOST_OS"].lower() == "unraid":
+                platform_tags.append("Unraid")
+        elif "container" in os.environ:
+            platform_tags.append("Flatpak")
+        elif "APPIMAGE" in os.environ:
+            platform_tags.append("AppImage")
+        elif "SNAP" in os.environ:
+            platform_tags.append("Snap")
+        else:
+            # Check for other forms of virtualization
+            try:
+                if virt := run_command(["systemd-detect-virt"]).strip():
+                    if virt != "none":
+                        platform_tags.append(virt)
+            except:
+                pass
+
+            try:
+                # Only present in Python 3.10+
+                # Can print nicer description like "Ubuntu 24.02 LTS"
+                platform_tags.append(platform.freedesktop_os_release()["PRETTY_NAME"])
+            except:
+                pass
+
+    if not platform_tags:
+        # Fallback if we found nothing or on Windows/macOS
+        platform_tags.append(platform.platform(terse=True))
+
+    # Add all together
+    sabnzbd.PLATFORM = " ".join(platform_tags)
+    return sabnzbd.PLATFORM
 
 
 def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
@@ -836,7 +879,7 @@ _HAVE_STATM = _PAGE_SIZE and memory_usage()
 def loadavg():
     """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
-    if not sabnzbd.WIN32 and not sabnzbd.MACOS:
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
         try:
             p = "%.2f | %.2f | %.2f" % os.getloadavg()
         except:
@@ -989,7 +1032,7 @@ def is_sample(filename: str) -> bool:
 
 def find_on_path(targets):
     """Search the PATH for a program and return full path"""
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         paths = os.getenv("PATH").split(";")
     else:
         paths = os.getenv("PATH").split(":")
@@ -1117,7 +1160,7 @@ def ip_extract() -> List[str]:
         if program:
             program = [program]
 
-    if sabnzbd.WIN32 or not program:
+    if sabnzbd.WINDOWS or not program:
         try:
             info = socket.getaddrinfo(socket.gethostname(), None)
         except:
@@ -1206,7 +1249,7 @@ def build_and_run_command(command: List[str], windows_unrar_command: bool = Fals
         logging.error(T("[%s] The command in build_command is undefined."), caller_name())
         raise IOError
 
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WINDOWS:
         if command[0].endswith(".py"):
             with open(command[0], "r") as script_file:
                 if not userxbit(command[0]):
@@ -1338,7 +1381,7 @@ def system_shutdown():
     while sabnzbd.__INITIALIZED__:
         time.sleep(1.0)
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_shutdown()
     elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_shutdown()
@@ -1349,7 +1392,7 @@ def system_shutdown():
 def system_hibernate():
     """Hibernate system"""
     logging.info("Performing system hybernation")
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_hibernate()
     elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_hibernate()
@@ -1360,7 +1403,7 @@ def system_hibernate():
 def system_standby():
     """Standby system"""
     logging.info("Performing system standby")
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_standby()
     elif sabnzbd.MACOS:
         sabnzbd.powersup.osx_standby()

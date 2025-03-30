@@ -1,12 +1,12 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Norwegian Bokmål (https://app.transifex.com/sabnzbd/teams/111101/nb/)\n"
@@ -83,22 +83,6 @@ msgstr "HTTP og HTTPS-portene kan ikke være det samme"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd ble startet med koding %s, dette burde være UTF-8. Forvent problemer"
-" med Unicode filer- og katalognavn i nedlastinger."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -134,6 +118,29 @@ msgstr "Signal %s mottatt, lagrer og avslutter..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Kritisk feil ved lagring av tilstand"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd ble startet med koding %s, dette burde være UTF-8. Forvent problemer"
+" med Unicode filer- og katalognavn i nedlastinger."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1067,11 +1074,6 @@ msgstr ""
 msgid "Verifying"
 msgstr "Verifiserer"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Undersøker"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Prøver SFV-verifisering"
@@ -1091,7 +1093,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
 msgstr ""
 
 #: sabnzbd/newswrapper.py
@@ -1588,13 +1593,6 @@ msgstr "Gammel kø oppdaget. Bruk Status -> Reparer for å konvertere køen"
 msgid "Failed to compile regex for search term: %s"
 msgstr "Kunne ikke lage regex for søkestreng: %s"
 
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
 msgstr "Nedlasting kan feile, kun %s av kravet på %s tilgjengelig"
@@ -1919,6 +1917,11 @@ msgstr "Hurtigkontroll..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Verifserer..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Undersøker"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2613,6 +2616,11 @@ msgstr "Konfig fil"
 #: sabnzbd/skintext.py
 msgid "Used cache"
 msgstr "Brukt hurtigbuffer"
+
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3661,8 +3669,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3671,6 +3684,10 @@ msgstr "Deaktivert"
 
 #: sabnzbd/skintext.py
 msgid "Minimal"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Medium"
 msgstr ""
 
 #: sabnzbd/skintext.py

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@ from sabnzbd.filesystem import make_script_path
 from sabnzbd.misc import build_and_run_command, int_conv
 from sabnzbd.newsunpack import create_env
 
-if sabnzbd.WIN32:
+if sabnzbd.WINDOWS:
     try:
         from win32comext.shell import shell
         from windows_toasts import InteractableWindowsToaster, Toast, ToastActivatedEventArgs, ToastButton
@@ -161,7 +161,7 @@ def send_notification(
             send_notification_center(title, msg, notification_type, actions)
 
     # Windows
-    if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
+    if sabnzbd.WINDOWS and sabnzbd.cfg.acenter_enable():
         if check_classes(notification_type, "acenter") and check_cat("acenter", job_cat):
             send_windows(title, msg, notification_type, actions)
 

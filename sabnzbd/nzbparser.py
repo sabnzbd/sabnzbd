@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2008-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,11 +37,9 @@ from sabnzbd import nzbstuff
 from sabnzbd.encoding import utob, correct_cherrypy_encoding
 from sabnzbd.filesystem import (
     get_filename,
-    is_valid_script,
     get_ext,
     clip_path,
     remove_file,
-    remove_data,
 )
 from sabnzbd.misc import name_to_cat, cat_pp_script_sanitizer
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES, AddNzbFileResult
@@ -75,7 +73,7 @@ def add_nzbfile(
         path = nzbfile
         filename = os.path.basename(path)
         keep_default = True
-        if not sabnzbd.WIN32:
+        if not sabnzbd.WINDOWS:
             # If windows client sends file to Unix server backslashes may
             # be included, so convert these
             path = path.replace("\\", "/")
@@ -454,28 +452,25 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                             # In case of missing attributes
                             pass
 
-                # Sort the articles by part number, compatible with Python 3.5
+                # Skip any empty files
+                if not raw_article_db:
+                    logging.info("No valid articles in %s, skipping", file_name)
+                    continue
+
+                # Get the articles, making sure to sort the articles by part number
                 raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
                 # Create NZF
-                nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
-
-                # Check if we already have this exact NZF (see custom eq-checks)
-                if nzf in nzo.files:
-                    logging.info("File %s occurred twice in NZB, skipping", nzf.filename)
-                    remove_data(nzf.nzf_id, nzo.admin_path)
+                try:
+                    nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
+                except sabnzbd.nzbstuff.SkippedNzbFile:
+                    # Did not meet requirements, so continue
+                    skipped_files += 1
                     continue
 
-                # Add valid NZF's
-                if file_name and nzf.valid and nzf.nzf_id:
-                    nzo.add_nzf(nzf)
-                    valid_files += 1
-                    avg_age_sum += file_timestamp
-                else:
-                    logging.info("Error importing %s, skipping", file_name)
-                    if nzf.nzf_id:
-                        remove_data(nzf.nzf_id, nzo.admin_path)
-                    skipped_files += 1
+                nzo.add_nzf(nzf)
+                valid_files += 1
+                avg_age_sum += file_timestamp
                 element.clear()
 
     # Final bookkeeping

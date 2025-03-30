@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -115,7 +115,7 @@ class TestSortingFunctions:
     def test_is_full_path(self, platform, path, result_unix, result_win):
         @set_platform(platform)
         def _func():
-            result = result_win if sabnzbd.WIN32 else result_unix
+            result = result_win if sabnzbd.WINDOWS else result_unix
             assert sorting.is_full_path(path) == result
 
         _func()
@@ -329,7 +329,7 @@ class TestSortingFunctions:
         ],
     )
     def test_eval_sort(self, sort_string, job_name, multipart_label, result):
-        if sabnzbd.WIN32 and result:
+        if sabnzbd.WINDOWS and result:
             result = result.replace("/", "\\")
         assert sorting.eval_sort(sort_string, job_name, multipart_label) == result
 

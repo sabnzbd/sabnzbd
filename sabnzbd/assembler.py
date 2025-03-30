@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -94,7 +94,7 @@ class Assembler(Thread):
                             self.check_encrypted_and_unwanted(nzo, nzf)
                             nzo.add_to_direct_unpacker(nzf)
 
-                        elif par2file.is_parfile(filepath):
+                        elif par2file.is_par2_file(filepath):
                             # Parse par2 files, cloaked or not
                             nzo.handle_par2(nzf, filepath)
 
@@ -107,7 +107,7 @@ class Assembler(Thread):
                             else:
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
-                            if sabnzbd.WIN32:
+                            if sabnzbd.WINDOWS:
                                 logging.info(
                                     "Winerror: %s - %s",
                                     err.winerror,
@@ -289,7 +289,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
         # These checks should not break the assembler
         try:
             # Rarfile freezes on Windows special names, so don't try those!
-            if sabnzbd.WIN32 and has_win_device(filepath):
+            if sabnzbd.WINDOWS and has_win_device(filepath):
                 return encrypted, unwanted
 
             # Is it even a rarfile?

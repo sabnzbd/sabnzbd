@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -149,7 +149,7 @@ def MSG_SQLITE():
 
 def panic_message(panic_code, a=None, b=None):
     """Create the panic message from templates"""
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         os_str = T("Press Startkey+R and type the line (example):")
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
     else:
@@ -253,7 +253,7 @@ def show_error_dialog(msg):
     """Show a pop-up when program cannot start
     Windows-only, otherwise only print to console
     """
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         ctypes.windll.user32.MessageBoxW(0, msg, T("Fatal error"), 0)
     print(msg)
 

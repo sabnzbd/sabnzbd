@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@ import traceback
 import getopt
 import signal
 import socket
-import platform
 import subprocess
 import multiprocessing
 import ssl
 import time
 import re
 import gc
+import threading
 from typing import List, Dict, Any
 
 try:
@@ -93,8 +93,6 @@ from sabnzbd.misc import (
     get_from_url,
     upload_file_to_sabnzbd,
     is_localhost,
-    is_lan_addr,
-    ip_in_subnet,
     helpful_warning,
     set_https_verification,
 )
@@ -104,8 +102,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-from sabnzbd.getipaddress import local_ipv4
-import sabnzbd.utils.ssdp as ssdp
 
 try:
     import win32api
@@ -122,7 +118,7 @@ try:
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         print("Sorry, requires Python module PyWin32.")
         sys.exit(1)
 
@@ -210,7 +206,7 @@ def print_help():
     print("  -w  --weblogging            Enable cherrypy access logging")
     print()
     print("  -b  --browser <0..1>        Auto browser launch (0= off, 1= on) [*]")
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         print("  -d  --daemon                Use when run as a service")
     else:
         print("  -d  --daemon                Fork daemon process")
@@ -244,7 +240,7 @@ def print_version():
             """
 %s-%s
 
-(C) Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+(C) Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -375,14 +371,14 @@ def get_user_profile_paths():
         # just assume that everything defaults to the program dir
         sabnzbd.DIR_LCLDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_HOME = sabnzbd.DIR_PROG
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # Ignore Win32 "logoff" signal
             # This should work, but it doesn't
             # Instead the signal_handler will ignore the "logoff" signal
             # signal.signal(5, signal.SIG_IGN)
             pass
         return
-    elif sabnzbd.WIN32:
+    elif sabnzbd.WINDOWS:
         try:
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
             sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
@@ -446,9 +442,6 @@ def print_modules():
 
     logging.info("Cryptography module (v%s)... found!", cryptography.__version__)
 
-    if sabnzbd.WIN32 and sabnzbd.newsunpack.MULTIPAR_COMMAND:
-        logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
-
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
@@ -464,7 +457,7 @@ def print_modules():
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
             helpful_warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
-        elif not (sabnzbd.WIN32 or sabnzbd.MACOS):
+        elif not (sabnzbd.WINDOWS or sabnzbd.MACOS):
             logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
         logging.error(T("unrar binary... NOT found"))
@@ -473,12 +466,12 @@ def print_modules():
 
     if sabnzbd.newsunpack.SEVENZIP_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVENZIP_COMMAND)
-        if not (sabnzbd.WIN32 or sabnzbd.MACOS):
+        if not (sabnzbd.WINDOWS or sabnzbd.MACOS):
             logging.info("7za binary version %s", sabnzbd.newsunpack.SEVENZIP_VERSION)
     else:
         logging.warning(T("7za binary... NOT found!"))
 
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WINDOWS:
         if sabnzbd.newsunpack.NICE_COMMAND:
             logging.info("nice binary... found (%s)", sabnzbd.newsunpack.NICE_COMMAND)
         else:
@@ -624,10 +617,10 @@ def get_webhost(web_host, web_port, https_port):
             except socket.error:
                 web_host = web_host.strip("[]")
 
-    if ipv6 and ipv4 and web_host == "" and sabnzbd.WIN32:
+    if ipv6 and ipv4 and web_host == "" and sabnzbd.WINDOWS:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
-    if web_host == "localhost" and not sabnzbd.WIN32 and not sabnzbd.MACOS:
+    if web_host == "localhost" and not sabnzbd.WINDOWS and not sabnzbd.MACOS:
         # On the Ubuntu family, localhost leads to problems for CherryPy
         ips = ip_extract()
         if "127.0.0.1" in ips and "::1" in ips:
@@ -866,7 +859,7 @@ def main():
         if opt == "--servicecall":
             sabnzbd.MY_FULLNAME = arg
         elif opt in ("-d", "--daemon"):
-            if not sabnzbd.WIN32:
+            if not sabnzbd.WINDOWS:
                 fork = True
             autobrowser = False
             sabnzbd.DAEMON = True
@@ -1025,7 +1018,7 @@ def main():
 
     # Windows instance is reachable through registry
     url = None
-    if sabnzbd.WIN32 and not new_instance:
+    if sabnzbd.WINDOWS and not new_instance:
         url = get_connection_info()
         if url and check_for_sabnzbd(url, upload_nzbs, autobrowser):
             exit_sab(0)
@@ -1127,7 +1120,7 @@ def main():
         exit_sab(2)
 
     # Fork on non-Windows processes
-    if fork and not sabnzbd.WIN32:
+    if fork and not sabnzbd.WINDOWS:
         daemonize()
     else:
         if console_logging:
@@ -1141,53 +1134,8 @@ def main():
     # Start SABnzbd
     logging.info("--------------------------------")
     logging.info("%s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
-
-    # See if we can get version from git when running an unknown revision
-    if sabnzbd.__baseline__ == "unknown":
-        try:
-            sabnzbd.__baseline__ = sabnzbd.misc.run_command(
-                ["git", "rev-parse", "--short", "HEAD"], cwd=sabnzbd.DIR_PROG
-            ).strip()
-        except:
-            pass
-    logging.info("Commit = %s", sabnzbd.__baseline__)
-
     logging.info("Full executable path = %s", sabnzbd.MY_FULLNAME)
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
-    logging.info("Python-version = %s", sys.version)
-    logging.info("Dockerized = %s", sabnzbd.DOCKER)
-    logging.info("CPU architecture = %s", platform.uname().machine)
-
-    try:
-        logging.info("Platform = %s - %s", os.name, platform.platform())
-    except:
-        # Can fail on special platforms (like Snapcraft or embedded)
-        pass
-
-    # Find encoding; relevant for external processing activities
-    logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
-
-    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
-    if not sabnzbd.WIN32 and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
-        helpful_warning(
-            T(
-                "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
-            ),
-            sabnzbd.encoding.CODEPAGE,
-        )
-
-    # Verify umask, we need at least 700
-    if not sabnzbd.WIN32 and sabnzbd.ORG_UMASK > int("077", 8):
-        sabnzbd.misc.helpful_warning(
-            T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
-            sabnzbd.ORG_UMASK,
-        )
-
-    # Log JSON module in case of problems
-    logging.debug("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
-
-    # SSL Information
-    logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
     # Load (extra) certificates if supplied by certifi
     # This is optional and provided in the binaries
@@ -1202,10 +1150,6 @@ def main():
             # Sometimes the certificate file is blocked
             logging.warning(T("Could not load additional certificates from certifi package"))
             logging.info("Traceback: ", exc_info=True)
-
-    # List the number of certificates available (can take up to 1.5 seconds)
-    if sabnzbd.cfg.log_level() > 1:
-        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
 
     logging.info("Using INI file %s", inifile)
 
@@ -1226,7 +1170,7 @@ def main():
 
     # Handle the several tray icons
     if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
             try:
@@ -1425,7 +1369,7 @@ def main():
     else:
         sabnzbd.BROWSER_URL = "http://%s:%s%s" % (browserhost, web_port, sabnzbd.cfg.url_base())
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         # Write URL for uploads and version check directly to registry
         set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}")
 
@@ -1457,48 +1401,8 @@ def main():
         notifier.send_notification("SABnzbd", T("SABnzbd %s started") % sabnzbd.__version__, "startup")
     autorestarted = False
 
-    # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
-    if sabnzbd.cfg.enable_broadcast() and not is_localhost(web_host):
-        # Try to find a LAN IP address for SSDP/Bonjour
-        if is_lan_addr(web_host):
-            # A specific listening address was configured, use that
-            external_host = web_host
-        else:
-            # Fall back to the IPv4 address of the LAN interface
-            external_host = local_ipv4()
-        logging.debug("Using %s as host address for Bonjour and SSDP", external_host)
-
-        # Only broadcast to local network addresses. If local ranges have been defined, further
-        # restrict broadcasts to those specific ranges in order to avoid broadcasting to the "wrong"
-        # private network when the system is connected to multiple such networks (e.g. a corporate
-        # VPN in addition to a standard household LAN).
-        if is_lan_addr(external_host) and (
-            (not sabnzbd.cfg.local_ranges()) or any(ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges())
-        ):
-            # Start Bonjour and SSDP
-            sabnzbd.zconfig.set_bonjour(external_host, web_port)
-
-            # Set URL for browser for external hosts
-            ssdp_url = "%s://%s:%s%s" % (
-                ("https" if enable_https else "http"),
-                external_host,
-                web_port,
-                sabnzbd.cfg.url_base(),
-            )
-            ssdp.start_ssdp(
-                external_host,
-                "SABnzbd",
-                ssdp_url,
-                "SABnzbd %s" % sabnzbd.__version__,
-                "SABnzbd Team",
-                "https://sabnzbd.org/",
-                "SABnzbd %s" % sabnzbd.__version__,
-                ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
-            )
-
-    # TODO: Remove in 4.5
-    if hasattr(sys, "frozen") and sabnzbd.WIN32 and not sabnzbd.WIN64:
-        logging.warning("SABnzbd 4.5.0 will not have a legacy release, because Python no longer support it!")
+    # Do checks and miscellaneous logging in separate thread for performance
+    threading.Thread(target=sabnzbd.delayed_startup_actions).start()
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
@@ -1567,7 +1471,7 @@ def main():
                     # Use external service handler to do the restart
                     # Wait 5 seconds to clean up
                     subprocess.Popen("timeout 5 & sc start SABnzbd", shell=True)
-                elif sabnzbd.WIN32:
+                elif sabnzbd.WINDOWS:
                     # Just a simple restart of the exe
                     os.execv(sys.executable, ['"%s"' % arg for arg in sys.argv])
             else:
@@ -1604,7 +1508,7 @@ def main():
 ##############################################################################
 
 
-if sabnzbd.WIN32:
+if sabnzbd.WINDOWS:
 
     class SABnzbd(win32serviceutil.ServiceFramework):
         """Win32 Service Handler"""
@@ -1720,13 +1624,12 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, sabnzbd.sig_handler)
     signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         if not handle_windows_service():
             main()
 
     elif sabnzbd.MACOS and sabnzbd.FOUNDATION:
         # macOS binary runner
-        from threading import Thread
         from PyObjCTools import AppHelper
         from AppKit import NSApplication
         from sabnzbd.osxmenu import SABnzbdDelegate
@@ -1734,7 +1637,7 @@ if __name__ == "__main__":
         # Need to run the main application in separate thread because the eventLoop
         # has to be in the main thread. The eventLoop is required for the menu.
         # This code is made with trial-and-error, please feel free to improve!
-        class startApp(Thread):
+        class startApp(threading.Thread):
             def run(self):
                 main()
                 AppHelper.stopEventLoop()

@@ -1,12 +1,12 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Pavel C <quoing_transifex@mess.cz>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2022\n"
 "Language-Team: Czech (https://app.transifex.com/sabnzbd/teams/111101/cs/)\n"
@@ -32,15 +32,11 @@ msgid ""
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports 64-bit Windows, use the standalone version to "
-"run on 32-bit Windows."
+msgid "SABnzbd only supports 64-bit Windows."
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports Windows 8.1 and above, use the standalone legacy"
-" version to run on older Windows version."
+msgid "SABnzbd only supports Windows 8.1 and above."
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
@@ -69,14 +65,4 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
-msgstr ""
-
-#: builder/win/NSIS_Installer.nsi
-msgid ""
-"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
-"the previous version or `Cancel` to cancel this upgrade."
-msgstr ""
-
-#: builder/win/NSIS_Installer.nsi
-msgid "Your settings and data will be preserved."
 msgstr ""

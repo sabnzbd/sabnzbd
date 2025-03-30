@@ -1,0 +1,5074 @@
+# SABnzbd Translation Template file MAIN
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# 
+# Translators:
+# Taylan Tatlı, 2025
+# mauron, 2025
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
+"PO-Revision-Date: 2020-06-27 15:49+0000\n"
+"Last-Translator: mauron, 2025\n"
+"Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. Notification - Status page, table column header, actual message
+#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Warning"
+msgstr "İkaz"
+
+#. Notification
+#: SABnzbd.py, sabnzbd/notifier.py
+msgid "Error"
+msgstr "Hata"
+
+#. Error message
+#: SABnzbd.py
+msgid "Failed to start web-interface"
+msgstr "Web arayüzünün başlatılması başarısız oldu"
+
+#. Warning message
+#: SABnzbd.py
+msgid "Cannot find web template: %s, trying standard template"
+msgstr "Web şablonu bulunamadı: %s, standart şablon denenecek"
+
+#. Error message
+#: SABnzbd.py
+msgid ""
+"SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"
+msgstr ""
+"SABCTools devre dışı bırakıldı: hiçbir doğru sürüm bulunamadı! (v%s bulundu,"
+" v%s bekleniyordu)"
+
+#. Error message
+#: SABnzbd.py
+msgid "par2 binary... NOT found!"
+msgstr "par2 ikilisi... bulunamadı!"
+
+#. Warning message
+#: SABnzbd.py
+msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
+msgstr ""
+"UNRAR sürümünüz %s, %s sürümü veya daha üstünü tavsiye ediyoruz.<br />"
+
+#. Error message
+#: SABnzbd.py
+msgid "unrar binary... NOT found"
+msgstr "unrar ikilisi... bulunamadı"
+
+#. Warning message
+#: SABnzbd.py
+msgid "7za binary... NOT found!"
+msgstr "7za ikilisi... bulunamadı!"
+
+#. Error message
+#: SABnzbd.py
+msgid "Essential modules are missing, downloading cannot start."
+msgstr "Temel modüller eksik, indirme başlayamaz."
+
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
+"access"
+msgstr ""
+"0.0.0.0 makine isminin harici erişim için bir IPv6 adrese ihtiyaç duyacağını"
+" unutmayınız"
+
+#. Error message
+#: SABnzbd.py
+msgid "HTTP and HTTPS ports cannot be the same"
+msgstr "HTTP ve HTTPS bağlantı noktaları (portlar) aynı olamaz"
+
+#. Warning message
+#: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
+msgstr "Certifi paketinden ilave sertifikalar yüklenemedi"
+
+#. Warning message
+#: SABnzbd.py
+msgid "Disabled HTTPS because of missing CERT and KEY files"
+msgstr "Eksik CERT ve KEY dosyaları sebebiyle HTTPS devre dışı bırakıldı"
+
+#. Warning message
+#: SABnzbd.py
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr "Geçersiz CERT ve KEY dosyaları sebebiyle HTTPS devre dışı bırakıldı"
+
+#. Error message
+#: SABnzbd.py
+msgid "Failed to start web-interface: "
+msgstr "Web arayüzünün başlatılması başarısız oldu: "
+
+#: SABnzbd.py
+msgid "SABnzbd %s started"
+msgstr "SABnzbd %s başlatıldı"
+
+#: SABnzbd.py, sabnzbd/interface.py
+msgid "SABnzbd shutdown finished"
+msgstr "SABnzbd kapatılması tamamlandı"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Signal %s caught, saving and exiting..."
+msgstr "%s sinyali yakalandı, kaydediliyor ve çıkılıyor..."
+
+#. Error message
+#: sabnzbd/__init__.py
+msgid "Fatal error at saving state"
+msgstr "Durumun kaydedilmesinde ölümcül hata"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd %s kodlaması ile başlatıldı, bu UTF-8 olmalıdır. İndirmelerde "
+"Unicoded dosya ve dizin adlarıyla ilgili sorunlar beklenebilir."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+"Güncel umask (%o), SABnzbd'nin oluşturduğu dosya ve dizinlere erişimini "
+"reddedebilir."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+"Tamamlanmış İndirmeler Dizini %s bir FAT dosya sistemindedir, ki bu azami "
+"dosya boyutunu 4 Gb ile sınırlar"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed postprocessor"
+msgstr "Çökmüş postprocessor sebebiyle yeniden başlatılıyor"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed downloader"
+msgstr "Çökmüş indirmeci sebebiyle yeniden başlatılıyor"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed assembler"
+msgstr "Çökmüş birleştirici sebebiyle yeniden başlatılıyor"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr "PID dosyası %s unsuruna erişilemiyor"
+
+#: sabnzbd/api.py, sabnzbd/emailer.py
+msgid "Email succeeded"
+msgstr "E-posta başarılı oldu"
+
+#: sabnzbd/api.py, sabnzbd/skintext.py
+msgid "Test Notification"
+msgstr "Deneme Bildirimi"
+
+#: sabnzbd/api.py
+msgid "The hostname is not set."
+msgstr "Makine ismi ayarlanmamış."
+
+#: sabnzbd/api.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Hiçbir bağlantı ayarlanmamış. Lütfen asgari bir bağlantı ayarlayın."
+
+#: sabnzbd/api.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Parola ****** ile maskelendi, lütfen tekrar girin"
+
+#: sabnzbd/api.py
+msgid "Invalid server details"
+msgstr "Geçersiz sunucu ayrıntıları"
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. It appears that %s operates as a web "
+"server (port 80), possibly an indexer, not a usenet server. You have to fill"
+" a usenet server."
+msgstr ""
+"%s unsuruna %s bağlantı noktası yani portta bağlanılamadı. %s unsuru bir web"
+" sunucusu olarak çalışıyor gibi görünüyor (bağlantı noktası 80), bir usenet "
+"sunucusu olarak değil. Bir usenet sunucusu girmeniz gerekmektedir."
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"563 and SSL turned on"
+msgstr ""
+"%s unsuruna %s bağlantı noktasında bağlanılamadı. Varsayılan usenet "
+"ayarlarını kullanın: bağlantı noktası 563 ve SSL etkinleştirilmiş olarak"
+
+#: sabnzbd/api.py
+msgid ""
+"Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
+msgstr ""
+"%s unsuruna %s bağlantı noktasında bağlanılamadı. Varsayılan usenet "
+"ayarlarını kullanın: bağlantı noktası 119 ve SSL devre dışı bırakılmış "
+"olarak"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Server address \"%s:%s\" is not valid."
+msgstr "\"%s:%s\" sunucu adresi geçerli değil."
+
+#: sabnzbd/api.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Zaman aşımına uğradı: SSL etkinleştirmeyi veya başka bir bağlantı noktasına "
+"bağlanmayı deneyin."
+
+#: sabnzbd/api.py
+msgid "Timed out"
+msgstr "Zaman aşımına uğradı"
+
+#: sabnzbd/api.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Bilinmeyen SSL protokolü: SSL'i devre dışı bırakmayı veya başka bir bağlantı"
+" noktasını deneyin."
+
+#: sabnzbd/api.py
+msgid "Server requires username and password."
+msgstr "Sunucu kullanıcı ismi ve parola gerektiriyor."
+
+#: sabnzbd/api.py
+msgid "Connection Successful!"
+msgstr "Bağlantı Başarılı!"
+
+#: sabnzbd/api.py, sabnzbd/interface.py
+msgid "Authentication failed, check username/password."
+msgstr ""
+"Kimlik doğrulaması başarısız oldu, kullanıcı ismi/parola kontrolü yapın."
+
+#: sabnzbd/api.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Çok fazla bağlantı, lütfen indirmeyi duraklatın veya daha sonra tekrar "
+"deneyin"
+
+#: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Bağlantı sonucu belirlenemedi (%s)"
+
+#: sabnzbd/api.py
+msgid "Resolving address"
+msgstr "Adres çözümleniyor"
+
+#. No value, used in dropdown menus
+#: sabnzbd/api.py, sabnzbd/skintext.py
+msgid "None"
+msgstr "Hiçbiri"
+
+#. Default value, used in dropdown menus
+#: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Default"
+msgstr "Varsayılan"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk full! Forcing Pause"
+msgstr "Disk dolu! Duraklatma Zorlanıyor"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Disk error on creating file %s"
+msgstr "%s dosyasının oluşturulmasında disk hatası"
+
+#. Error message
+#: sabnzbd/assembler.py
+msgid "Fatal error in Assembler"
+msgstr "Birleştiricide ölümcül hata"
+
+#. Warning message
+#: sabnzbd/assembler.py
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Çok az disk alanı, DURAKLATMA zorlanıyor"
+
+#. Warning message
+#: sabnzbd/assembler.py
+msgid ""
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
+"were tried)"
+msgstr ""
+"\"%s\" işi şifrelenmiş RAR dosyası sebebiyle duraklatıldı (şayet "
+"sağlandıysa, tüm parolalar denendi)"
+
+#. Warning message
+#: sabnzbd/assembler.py
+msgid ""
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
+" were tried)"
+msgstr ""
+"\"%s\" işi şifrelenmiş RAR dosyası sebebiyle iptal edildi (şayet "
+"sağlandıysa, tüm parolalar denendi)"
+
+#: sabnzbd/assembler.py
+msgid "Aborted, encryption detected"
+msgstr "İptal edildi, şifreleme tespit edildi"
+
+#. Warning message
+#: sabnzbd/assembler.py
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgstr ""
+"\"%s\" unsurunda RAR dosyasında istenmeyen uzantı. İstenmeyen dosya şudur: "
+"%s "
+
+#: sabnzbd/assembler.py
+msgid "Unwanted extension is in rar file %s"
+msgstr "İstenmeyen uzantı %s rar dosyasındadır"
+
+#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+msgid "Aborted, unwanted extension detected"
+msgstr "İptal edildi, istenmeyen uzantı tespit edildi"
+
+#. Warning message
+#: sabnzbd/assembler.py
+msgid "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
+msgstr ""
+"\"%s\" işi muhtemelen bu RAR'ın içindeki aynı isimli RAR sebebiyle "
+"şifrelenmiştir"
+
+#. Warning message
+#: sabnzbd/assembler.py
+msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
+msgstr "\"%s\" işi muhtemelen şifrelenmiştir: \"parola\", \"%s\" dosya ismindedir"
+
+#. Warning message
+#: sabnzbd/bpsmeter.py
+msgid "Quota spent, pausing downloading"
+msgstr "Kota kullanıldı, indirme duraklatılıyor"
+
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Incorrect parameter"
+msgstr "Yanlış parametre"
+
+#: sabnzbd/cfg.py
+msgid "%s is not a valid email address"
+msgstr "%s geçerli bir e-posta adresi değil"
+
+#: sabnzbd/cfg.py, sabnzbd/interface.py
+msgid "Server address required"
+msgstr "Sunucu adresine ihtiyaç var"
+
+#: sabnzbd/cfg.py, sabnzbd/newswrapper.py
+msgid "Invalid server address."
+msgstr "Geçersiz sunucu adresi."
+
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr "%s geçerli bir betik değil"
+
+#: sabnzbd/cfg.py
+msgid "%s is not a correct octal value"
+msgstr "%s doğru bir sekizlik değer değil"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Permissions setting of %s might deny SABnzbd access to the files and folders"
+" it creates."
+msgstr ""
+"%s unsurunun izin ayarları SABnzbd'nin oluşturduğu dosya ve dizinlere "
+"erişimini reddedebilir."
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid "Network path \"%s\" should not be used here"
+msgstr "\"%s\" şebeke yolu burada kullanılmamalıdır"
+
+#: sabnzbd/cfg.py
+msgid "Queue not empty, cannot change folder."
+msgstr "Kuyruk boş değil, dizin değiştirilemez."
+
+#: sabnzbd/cfg.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+"Tamamlanmış İndirmeler Dizini, Geçici İndirmeler Dizini ile aynı veya onun "
+"bir alt dizini olamaz"
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"Do not use a folder in the application folder as your Scripts Folder, it "
+"might be emptied during updates."
+msgstr ""
+"Betik Dizini olarak uygulama dizinindeki bir dizini kullanmayın, "
+"güncellemeler esnasında boşaltılabilir."
+
+#. Warning message
+#: sabnzbd/cfg.py
+msgid ""
+"The par2 application was switched, any custom par2 parameters were removed"
+msgstr "par2 uygulaması değiştirildi, tüm özel par2 parametreleri kaldırıldı"
+
+#. Warning message
+#: sabnzbd/config.py
+msgid "Configuration locked, cannot save settings"
+msgstr "Yapılandırma kilitlenmiş, ayarlar kaydedilemez"
+
+#. Error message
+#: sabnzbd/config.py
+msgid "Cannot write to INI file %s"
+msgstr "%s INI dosyasına yazılamıyor"
+
+#. Error message
+#: sabnzbd/config.py
+msgid "Cannot create backup file for %s"
+msgstr "%s için yedekleme dosyası oluşturulamıyor"
+
+#. Warning message
+#: sabnzbd/config.py
+msgid "Could not restore backup"
+msgstr "Yedekleme geri getirilemedi"
+
+#. Error message
+#: sabnzbd/config.py
+msgid "Incorrectly encoded password %s"
+msgstr "%s parolası yanlış kodlanmış"
+
+#. Error message
+#: sabnzbd/database.py
+msgid "Cannot write to History database, check access rights!"
+msgstr "Tarihçe veri tabanına yazılamıyor, erişim izinlerini kontrol edin!"
+
+#. Error message
+#: sabnzbd/database.py
+msgid "Damaged History database, created empty replacement"
+msgstr "Hasarlı Tarihçe veri tabanı, boş bir yedek oluşturuldu"
+
+#. Error message
+#: sabnzbd/database.py
+msgid "SQL Command Failed, see log"
+msgstr "SQL komutu başarısız oldu, kütüğe bakın"
+
+#. Error message
+#: sabnzbd/database.py
+msgid "Failed to close database, see log"
+msgstr "Veri tabanının kapatılması başarısız oldu, kütüğe bakın"
+
+#. Warning message
+#: sabnzbd/database.py
+msgid "Invalid stage logging in history for %s"
+msgstr "Tarihçede %s için geçersiz aşama kütük kaydı"
+
+#. Warning message
+#: sabnzbd/decoder.py
+msgid "Decoder failure: Out of memory"
+msgstr "Kod çözücü başarısız oldu: bellek yetersiz"
+
+#. Warning message
+#: sabnzbd/decoder.py
+msgid "Unknown Error while decoding %s"
+msgstr "%s kodlaması açılırken Bilinmeyen Hata"
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate skipped due to DVD/Bluray directories"
+msgstr ""
+"DVD/Bluray dizinleri sebebiyle karartma kaldırması (deobfuscate) atlandı"
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate corrected the extension of %d file(s)"
+msgstr "Karartma kaldırması (deobfuscate) %d dosyanın uzantısını düzeltti"
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d file(s)"
+msgstr "Karartma kaldırması (deobfuscate) %d dosyayı yeniden isimlendirdi"
+
+#: sabnzbd/deobfuscate_filenames.py
+msgid "Deobfuscate renamed %d subtitle file(s)"
+msgstr ""
+"Karartma kaldırması (deobfuscate) %d altyazı dosyasını tekrar isimlendirdi"
+
+#: sabnzbd/directunpacker.py, sabnzbd/skintext.py
+msgid "Direct Unpack"
+msgstr "Doğrudan Açma"
+
+#. PP status
+#: sabnzbd/directunpacker.py, sabnzbd/skintext.py
+msgid "Completed"
+msgstr "Tamamlandı"
+
+#: sabnzbd/directunpacker.py, sabnzbd/newsunpack.py
+msgid "Unpacked %s files/folders in %s"
+msgstr "%s içinde %s dosya/dizin paketlemesi açıldı"
+
+#. Warning message
+#: sabnzbd/directunpacker.py
+msgid "Direct Unpack was automatically enabled."
+msgstr "Doğrudan Açma otomatik olarak etkinleştirildi."
+
+#: sabnzbd/directunpacker.py, sabnzbd/skintext.py
+msgid ""
+"Jobs will start unpacking during the downloading to reduce post-processing "
+"time. Only works for jobs that do not need repair."
+msgstr ""
+"İşler, indirme sonradan işleme süresini azaltmak için indirme esnasında "
+"paketleme açmaya başlayacaktır. Sadece tamir gerektirmeyen işler için "
+"çalışır."
+
+#. Error message
+#: sabnzbd/dirscanner.py
+msgid "Cannot read Watched Folder %s"
+msgstr "İzlenen Dizin %s okunamıyor"
+
+#: sabnzbd/downloader.py
+msgid "Resuming"
+msgstr "Sürdürülüyor"
+
+#. PP status - Priority pick list
+#: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Paused"
+msgstr "Duraklatılmış"
+
+#. Warning message
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
+msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
+msgstr ""
+"Bir bant genişliği sınırı ayarlamadan evvel azami bir bant genişliği "
+"ayarlamanız gerekir"
+
+#: sabnzbd/downloader.py
+msgid "Cannot connect to server %s [%s]"
+msgstr "%s [%s] sunucusuna bağlanılamaz"
+
+#: sabnzbd/downloader.py, sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr "Sunucu ismi çözümlenemiyor"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s will be ignored for %s minutes"
+msgstr "%s sunucusu %s dakika boyunca dikkate alınmayacak"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "There are no active servers!"
+msgstr "Hiçbir faal sunucu yok!"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Failed to initialize %s@%s with reason: %s"
+msgstr "%s@%s başlatması şu sebepten dolayı başarısız oldu: %s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Fatal error in Downloader"
+msgstr "İndirici'de ölümcül hata"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s: bilinmeyen durum kodu %s, şu makale için alındı: %s"
+
+#: sabnzbd/downloader.py
+msgid "Too many connections to server %s [%s]"
+msgstr "%s [%s] sunucusuna çok fazla bağlantı"
+
+#: sabnzbd/downloader.py
+msgid ""
+"Login from too many different IP addresses to server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
+msgstr ""
+"%s [%s] sunucusuna çok fazla farklı IP adreslerinden oturum açılışı yapıldı "
+"- https://sabnzbd.org/multiple-adresses"
+
+#: sabnzbd/downloader.py
+msgid "Failed login for server %s [%s]"
+msgstr "%s [%s] sunucusunda oturum açılışı başarısız oldu"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Connecting %s@%s failed, message=%s"
+msgstr "%s@%s bağlantısı başarısız oldu, mesaj=%s"
+
+#. Error message
+#: sabnzbd/downloader.py
+msgid "Suspect error in downloader"
+msgstr "İndiricide şüpheli hata"
+
+#: sabnzbd/downloader.py, sabnzbd/skintext.py
+msgid "Shutting down"
+msgstr "Kapatılıyor"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr "%s sunucusu %s gün sonra sona eriyor"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr "%s sunucusu belirtilen kotayı kullandı"
+
+#: sabnzbd/emailer.py
+msgid "Failed to connect to mail server"
+msgstr "E-posta sunucusuna bağlantı başarısız oldu"
+
+#: sabnzbd/emailer.py
+msgid "Failed to initiate TLS connection"
+msgstr "TLS bağlantı başlatılması başarısız oldu"
+
+#: sabnzbd/emailer.py
+msgid "The server didn't reply properly to the helo greeting"
+msgstr "Sunucu, helo merhabasına gerektiği gibi cevap vermedi"
+
+#: sabnzbd/emailer.py
+msgid "Failed to authenticate to mail server"
+msgstr "E-posta sunucusunda kimlik doğrulaması başarısız oldu"
+
+#: sabnzbd/emailer.py
+msgid "No suitable authentication method was found"
+msgstr "Hiçbir uygun kimlik doğrulama yöntemi bulunamadı"
+
+#: sabnzbd/emailer.py
+msgid "Unknown authentication failure in mail server"
+msgstr "E-posta sunucusunda bilinmeyen kimlik doğrulama hatası"
+
+#: sabnzbd/emailer.py
+msgid "Failed to send e-mail"
+msgstr "E-posta gönderilmesi başarısız oldu"
+
+#: sabnzbd/emailer.py
+msgid "Failed to close mail connection"
+msgstr "E-posta bağlantısının kapatılması başarısız oldu"
+
+#: sabnzbd/emailer.py, sabnzbd/notifier.py
+msgid "Cannot send, missing required data"
+msgstr "Gönderilemez, eksik gerekli veri"
+
+#. Error message
+#: sabnzbd/emailer.py
+msgid "Cannot find email templates in %s"
+msgstr "%s konumunda e-posta şablonları bulunamadı"
+
+#: sabnzbd/emailer.py
+msgid "No recipients given, no email sent"
+msgstr "Hiçbir alıcı girilmedi, hiçbir e-posta gönderilmedi"
+
+#. Error message - Warning message
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
+msgid "Cannot read %s"
+msgstr "%s okunamıyor"
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
+msgstr "Hiçbir e-posta şablonu bulunamadı"
+
+#: sabnzbd/emailer.py
+msgid ""
+"To: %s\n"
+"From: %s\n"
+"Date: %s\n"
+"Subject: SABnzbd reports Disk Full\n"
+"\n"
+"Hi,\n"
+"\n"
+"SABnzbd has stopped downloading, because the disk is almost full.\n"
+"Please make room and resume SABnzbd manually.\n"
+"\n"
+msgstr ""
+"Kime: %s\n"
+"Kimden: %s\n"
+"Tarih: %s\n"
+"Konu: SABnzbd, diskin dolduğunu belirtiyor\n"
+"\n"
+"Merhaba,\n"
+"\n"
+"SABnzbd indrimeleri durdurdu çünkü disk neredeyse tamamen doldu.\n"
+"Lütfen alan açın ve SABnzbd'yi elle devam ettirin.\n"
+"\n"
+
+#: sabnzbd/filesystem.py
+msgid "Cannot create directory %s"
+msgstr "%s dizini oluşturulamıyor"
+
+#: sabnzbd/filesystem.py
+msgid "%s directory: %s error accessing"
+msgstr "%s dizini: erişimde %s hatası"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Cannot change permissions of %s"
+msgstr "%s izinleri değiştirilemiyor"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failed making (%s)"
+msgstr "Oluşturma hatası (%s)"
+
+#. Error message
+#: sabnzbd/filesystem.py, sabnzbd/postproc.py
+msgid "Failed moving %s to %s"
+msgstr "%s unsurunun %s konumuna taşınması başarısız oldu"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr "%s dizinini oluşturma teşebbüsü engellendi"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Failure in tempfile.mkstemp"
+msgstr "tempfile.mkstemp'de başarısızlık"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Saving %s failed"
+msgstr "%s unsurunun kaydedilmesi başarısız oldu"
+
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Loading %s failed"
+msgstr "%s unsurunun yüklenmesi başarısız oldu"
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s is not writable at all. This blocks downloads."
+msgstr "%s hiçbir şekilde yazılabilir değil. Bu, indirmelere mani oluyor."
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a long filename to %s. This can cause problems."
+msgstr "%s konumuna uzun bir dosya ismi yazılamıyor. Bu, sorun oluşturabilir."
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "Cannot write a unicode filename to %s. This can cause problems."
+msgstr ""
+"%s konumuna Unicode bir dosya ismi yazılamıyor. Bu, sorun oluşturabilir."
+
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"%s is not writable with special character filenames. This can cause "
+"problems."
+msgstr ""
+"%s özel karakterli dosya isimleri ile yazılamıyor. Bu, sorun oluşturabilir."
+
+#: sabnzbd/interface.py
+msgid "Refused connection from:"
+msgstr "Şuradan bağlantı reddedildi:"
+
+#: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr "Şuradan \"%s\" makine ismi ile bağlantı reddedildi:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Kullanıcı web arayüzünde oturum açtı"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Kullanıcı oturum açtı"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key missing, please enter the api key from Config->General into your 3rd"
+" party program:"
+msgstr ""
+"API anahtarı eksik, lütfen api anahtarını Yapılandırma->Genel'den 3. taraf "
+"programınıza girin:"
+
+#: sabnzbd/interface.py
+msgid ""
+"API Key incorrect, Use the api key from Config->General in your 3rd party "
+"program:"
+msgstr ""
+"API anahtarı yanlış, 3. taraf programınızda Yapılandırma->Genel'den api "
+"anahtarını kullanın:"
+
+#. Warning message
+#: sabnzbd/interface.py
+msgid "Unsuccessful login attempt from %s"
+msgstr "%s konumundan başarısız oturum açma teşebbüsü"
+
+#: sabnzbd/interface.py
+msgid "Invalid backup archive"
+msgstr "Geçersiz yedekleme arşivi"
+
+#. Config->RSS, tab header
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Feed"
+msgstr "Besleme"
+
+#: sabnzbd/interface.py
+msgid "Daily"
+msgstr "Günlük"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Monday"
+msgstr "Pazartesi"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Tuesday"
+msgstr "Salı"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Wednesday"
+msgstr "Çarşamba"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Thursday"
+msgstr "Perşembe"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Friday"
+msgstr "Cuma"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Saturday"
+msgstr "Cumartesi"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "Sunday"
+msgstr "Pazar"
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "off"
+msgstr "kapalı"
+
+#: sabnzbd/interface.py
+msgid "Undefined server!"
+msgstr "Tanımlanmamış sunucu!"
+
+#: sabnzbd/interface.py
+msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr "Kategori dizini Geçici İndirme Dizini'nin bir alt dizini olamaz."
+
+#: sabnzbd/interface.py, sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "HATA:"
+
+#: sabnzbd/interface.py
+msgid "Back"
+msgstr "Geri"
+
+#: sabnzbd/misc.py
+msgid ""
+"To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
+msgstr ""
+"Bütün yardımcı ikazları engellemek için 'helpful_warnings' Özel ayarını "
+"devre dışı bırakın."
+
+#: sabnzbd/misc.py
+msgid "d"
+msgstr "g"
+
+#: sabnzbd/misc.py
+msgid "h"
+msgstr "s"
+
+#: sabnzbd/misc.py
+msgid "m"
+msgstr "d"
+
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Güncelleme Mevcut!"
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr "Dosyanın gönderilmesi başarısız oldu: %s"
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Error creating SSL key and certificate"
+msgstr "SSL anahtar ve sertifikasının oluşturulması başarısız oldu"
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+"Parola dosyanız 30'dan fazla parola içeriyor, bütün bu parolaları denemek "
+"uzun süre alır. Sadece faydalı parolaları listelemeyi deneyin."
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr "%s parola dosyasının okunması başarısız oldu"
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr "[%s] build_command unsurundaki komut tanımlanmamış."
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
+msgstr "\"%s\" Python betiğinin çalıştırma izni (+x) ayarlanmamış"
+
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Series Sorting"
+msgstr "Dizi Sıralaması"
+
+#: sabnzbd/misc.py
+msgid "Date Sorting"
+msgstr "Tarih Sıralaması"
+
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Movie Sorting"
+msgstr "Film Sıralaması"
+
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Betik çalıştırılıyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpack nesting too deep [%s]"
+msgstr "Paket açma yuvalaması çok derin [%s]"
+
+#: sabnzbd/newsunpack.py
+msgid "Joining"
+msgstr "Birleştiriliyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Incomplete sequence of joinable files"
+msgstr "Eksik birleştirilebilecek dosyalar dizisi"
+
+#: sabnzbd/newsunpack.py
+msgid "File join of %s failed"
+msgstr "%s dosya birleştirmesi başarısız oldu"
+
+#: sabnzbd/newsunpack.py
+msgid "[%s] Error \"%s\" while joining files"
+msgstr "[%s] dosyaların birleştirilmeleri esnasında \"%s\" hatası"
+
+#. Error message
+#: sabnzbd/newsunpack.py
+msgid "Error \"%s\" while running file_join on %s"
+msgstr "\"%s\" hatası, %s üzerinde file_join çalıştırılırken"
+
+#: sabnzbd/newsunpack.py
+msgid "[%s] Joined %s files"
+msgstr "[%s] %s dosya birleştirildi"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, %s"
+msgstr "Açma başarısız oldu, %s"
+
+#: sabnzbd/newsunpack.py
+msgid "[%s] Error \"%s\" while unpacking RAR files"
+msgstr "[%s] RAR dosyaları açılırken \"%s\" hatası"
+
+#. Error message
+#: sabnzbd/newsunpack.py
+msgid "Error \"%s\" while running rar_unpack on %s"
+msgstr "\"%s\" hatası, %s üzerinde rar_unpack çalıştırılırken"
+
+#. Warning message
+#: sabnzbd/newsunpack.py
+msgid "Deleting %s failed!"
+msgstr "%s unsurunun silinmesi başarısız oldu!"
+
+#: sabnzbd/newsunpack.py
+msgid "Trying unrar with password \"%s\""
+msgstr "\"%s\" parolası ile unrar deneniyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking"
+msgstr "Açılıyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, unable to find %s"
+msgstr "Açma başarısız oldu, %s bulunamıyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, CRC error"
+msgstr "Açma başarısız oldu, CRC hatası"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, file too large for filesystem (FAT?)"
+msgstr "Açma başarısız oldu, dosya dosya sistemi (FAT?) için çok büyük"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, write error or disk is full?"
+msgstr "Açma başarısız oldu, yazma hatası mı yoksa disk doldu mu?"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, disk full"
+msgstr "Açma başarısız oldu, disk dolu"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, path is too long"
+msgstr "Açma başarısız oldu, yok çok uzun"
+
+#: sabnzbd/newsunpack.py
+msgid "Unpacking failed, archive requires a password"
+msgstr "Açma başarısız oldu, arşiv bir parola gerektiriyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Unusable RAR file"
+msgstr "Kullanılamaz RAR dosyası"
+
+#: sabnzbd/newsunpack.py
+msgid "Corrupt RAR file"
+msgstr "Bozuk RAR dosyası"
+
+#: sabnzbd/newsunpack.py
+msgid "Trying 7zip with password \"%s\""
+msgstr "\"%s\" parolası ile 7zip deneniyor"
+
+#. Error message
+#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
+msgid "see logfile"
+msgstr "kütük dosyasına bakın"
+
+#: sabnzbd/newsunpack.py
+msgid "Quick Checking"
+msgstr "Hızlı Kontrol"
+
+#. PP phase "repair"
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "Repair"
+msgstr "Tamir Et"
+
+#: sabnzbd/newsunpack.py
+msgid "[%s] Quick Check OK"
+msgstr "[%s] Hızlı Kontrol Tamam"
+
+#: sabnzbd/newsunpack.py
+msgid "Starting Repair"
+msgstr "Tamire Başlanıyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Repairing failed, %s"
+msgstr "Tamir başarısız oldu, %s"
+
+#. Error message
+#: sabnzbd/newsunpack.py
+msgid "Error %s while running par2_repair on set %s"
+msgstr "%s hatası, %s kümesi üzerinde par2_repair çalıştırılırken"
+
+#. Error message
+#: sabnzbd/newsunpack.py
+msgid "Error \"%s\" while running par2_repair on set %s"
+msgstr "\"%s\" hatası, %s kümesi üzerinde par2_repair çalıştırılırken"
+
+#: sabnzbd/newsunpack.py
+msgid ""
+"[%s] PAR2 received incorrect options, check your Config->Switches settings"
+msgstr ""
+"[%s] PAR2 yanlış seçenekler aldı, Yapılandırma-> Anahtarlar ayarlarınızı "
+"kontrol edin"
+
+#: sabnzbd/newsunpack.py
+msgid "[%s] Verified in %s, all files correct"
+msgstr "[%s] %s içinde kontrol edildi, tüm dosyalar doğru"
+
+#: sabnzbd/newsunpack.py
+msgid "[%s] Verified in %s, repair is required"
+msgstr "[%s] %s içinde kontrol edildi, tamir gerekli"
+
+#: sabnzbd/newsunpack.py
+msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
+"Geçersiz par2 dosyaları veya geçersiz PAR2 parametreleri, kontrol veya tamir"
+" edilemez"
+
+#: sabnzbd/newsunpack.py
+msgid "Fetching %s blocks..."
+msgstr "%s blok alınıyor..."
+
+#: sabnzbd/newsunpack.py
+msgid "Fetching"
+msgstr "Alınıyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "Tamir başarısız oldu, kafi derecede tamir bloku yok (%s eksik)"
+
+#: sabnzbd/newsunpack.py
+msgid "Repairing"
+msgstr "Tamir ediliyor"
+
+#: sabnzbd/newsunpack.py
+msgid "[%s] Repaired in %s"
+msgstr "[%s] %s içinde tamir edildi"
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr "Tamir kontrol ediliyor"
+
+#. Notification
+#: sabnzbd/newsunpack.py, sabnzbd/notifier.py
+msgid "Disk full"
+msgstr "Disk dolu"
+
+#: sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr "Ekstra dosyalar kontrol ediliyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Verifying"
+msgstr "Kontrol ediliyor"
+
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "SFV doğrulaması deneniyor"
+
+#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
+msgid "left"
+msgstr "kaldı"
+
+#: sabnzbd/newswrapper.py
+msgid "This server does not allow SSL on this port"
+msgstr "Bu sunucu, bu bağlantı noktasında SSL kullanımına izin vermiyor"
+
+#: sabnzbd/newswrapper.py
+msgid ""
+"Certificate hostname mismatch: the server hostname is not listed in the "
+"certificate. This is a server issue."
+msgstr ""
+"Sertifika makine ismi uyumsuzluğu: sunucu makine ismi sertifikada listeli "
+"değil.Bu, bir sunucu sorunudur."
+
+#: sabnzbd/newswrapper.py
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
+msgstr ""
+"Sertifika teyit edilemedi.Bu, bir sunucu sorunu veya yerel olarak "
+"zerkedilmiş bir sertifika yüzünden (mesela bir güvenlik duvarı veya virüs "
+"tarayıcı tarafından) olabilir. Sertifika kontrolünü Orta ayarında getirmeyi "
+"deneyin."
+
+#: sabnzbd/newswrapper.py
+msgid "Server %s uses an untrusted certificate [%s]"
+msgstr "%s sunucusu güvenilir olmayan bir sertifika kullanıyor [%s]"
+
+#. Main menu item
+#: sabnzbd/newswrapper.py, sabnzbd/skintext.py
+msgid "Wiki"
+msgstr "Viki"
+
+#: sabnzbd/newswrapper.py
+msgid "Failed to connect: %s %s@%s:%s (%s)"
+msgstr "Bağlantı başarısız oldu: %s %s@%s:%s (%s)"
+
+#. Notification
+#: sabnzbd/notifier.py
+msgid "Startup/Shutdown"
+msgstr "Başlatma/Kapatma"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Duraklat"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Sürdür"
+
+#. Notification - Config->RSS after adding to queue
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Added NZB"
+msgstr "NZB Eklendi"
+
+#: sabnzbd/notifier.py
+msgid "Post-processing started"
+msgstr "Post-processing başlatıldı"
+
+#. Notification
+#: sabnzbd/notifier.py
+msgid "Job finished"
+msgstr "İş tamamlandı"
+
+#. Notification
+#: sabnzbd/notifier.py
+msgid "Job failed"
+msgstr "İş başarısız oldu"
+
+#. Notification
+#: sabnzbd/notifier.py, sabnzbd/postproc.py
+msgid "Queue finished"
+msgstr "Kuyruk bitti"
+
+#. Notification
+#: sabnzbd/notifier.py
+msgid "Other Messages"
+msgstr "Diğer Mesajlar"
+
+#. Notification action
+#: sabnzbd/notifier.py
+msgid "Open folder"
+msgstr "Dizin aç"
+
+#. Notification action
+#: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Open complete folder"
+msgstr "Tamamlanmışlar dizinini aç"
+
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Not available"
+msgstr "Mevcut değil"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr "macOS bildirimi gönderme başarısız oldu"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Prowl message"
+msgstr "Prowl mesajı gönderimi başarısız oldu"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message - no URLs defined"
+msgstr "Apprise mesajı gönderimi başarısız oldu - hiçbir URL tanımlanmamış"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "One or more Apprise URLs could not be loaded."
+msgstr "Bir veya daha fazla Apprise URL'i yüklenemedi."
+
+#: sabnzbd/notifier.py
+msgid "Failed to send one or more Apprise Notifications"
+msgstr "Bir veya daha fazla Apprise bildirimi gönderme başarısız oldu"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send Apprise message"
+msgstr "Apprise mesajı gönderimi başarısız oldu"
+
+#. Error message
+#: sabnzbd/notifier.py
+msgid "Bad response from Pushover (%s): %s"
+msgstr "Pushover'dan yanlış cevap (%s): %s"
+
+#. Error message - Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send pushover message"
+msgstr "Pushover mesajı gönderimi başarısız oldu"
+
+#. Error message
+#: sabnzbd/notifier.py
+msgid "Bad response from Pushbullet (%s): %s"
+msgstr "Pushbullet'ten yanlış cevap (%s): %s"
+
+#. Warning message
+#: sabnzbd/notifier.py
+msgid "Failed to send pushbullet message"
+msgstr "Pushbullet mesajının gönderimi başarısız oldu"
+
+#. Error message
+#: sabnzbd/notifier.py
+msgid "Script returned exit code %s and output \"%s\""
+msgstr "Betik, %s çıkış kodu ve \"%s\" çıktısını gönderdi"
+
+#: sabnzbd/notifier.py
+msgid "Notification script \"%s\" does not exist"
+msgstr "\"%s\" bildirim betiği mevcut değil"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send Windows notification"
+msgstr "Windows bildiriminin gönderimi başarısız oldu"
+
+#. Error message
+#: sabnzbd/nzbparser.py
+msgid "Cannot create temp file for %s"
+msgstr "%s için geçici dosya oluşturulamıyor"
+
+#. Error message
+#: sabnzbd/nzbparser.py
+msgid "Error while adding %s, removing"
+msgstr "%s eklenmesi esnasında hata, kaldırılıyor"
+
+#. Error message
+#: sabnzbd/nzbparser.py
+msgid "Error removing %s"
+msgstr "%s unsurunun kaldırılmasında hata"
+
+#. Warning message
+#: sabnzbd/nzbparser.py
+msgid "Failed to import %s files from %s"
+msgstr "%s dosyanın %s unsurundan içe aktarımı başarısız oldu"
+
+#. Error message
+#: sabnzbd/nzbqueue.py
+msgid "Incompatible queuefile found, cannot proceed"
+msgstr "Uyumsuz kuyruk dosyası bulundu, devam edilemez"
+
+#. Error message
+#: sabnzbd/nzbqueue.py
+msgid "Error loading %s, corrupt file detected"
+msgstr "%s yüklenirken hata, bozuk dosya tespit edildi"
+
+#: sabnzbd/nzbqueue.py
+msgid "NZB added to queue"
+msgstr "NZB kuyruğa ilave edildi"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Yinelenmiş NZB \"%s\" dikkate alınmıyor"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "\"%s\" NSB dosyasının yinelenmesi başarısız"
+
+#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+msgid "Duplicate NZB"
+msgstr "Yinelenmiş NZB"
+
+#. Warning message
+#: sabnzbd/nzbstuff.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "Geçersiz NZB dosyası %s, atlanıyor (hata: %s)"
+
+#. Warning message
+#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Boş NZB dosyası %s"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pre-queue script marked job as failed"
+msgstr "Kuyruk öncesi betiği işi başarısız oldu olarak işaretlemiş"
+
+#. Warning message
+#: sabnzbd/nzbstuff.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "%s (%s) dosyasında İstenmeyen Uzantı"
+
+#: sabnzbd/nzbstuff.py
+msgid "Aborted, cannot be completed"
+msgstr "İptal edildi, tamamlanamıyor"
+
+#. Error message
+#: sabnzbd/nzbstuff.py
+msgid "Error importing %s"
+msgstr "%s unsurunun içe aktarılmasında hata"
+
+#: sabnzbd/nzbstuff.py
+msgid "DUPLICATE"
+msgstr "YİNELENMİŞ"
+
+#: sabnzbd/nzbstuff.py
+msgid "ALTERNATIVE"
+msgstr "ALTERNATİF"
+
+#: sabnzbd/nzbstuff.py
+msgid "ENCRYPTED"
+msgstr "ŞİFRELENMİŞ"
+
+#: sabnzbd/nzbstuff.py
+msgid "TOO LARGE"
+msgstr "ÇOK BÜYÜK"
+
+#: sabnzbd/nzbstuff.py
+msgid "INCOMPLETE"
+msgstr "TAMAMLANMAMIŞ"
+
+#: sabnzbd/nzbstuff.py
+msgid "UNWANTED"
+msgstr "İSTENMEYEN"
+
+#: sabnzbd/nzbstuff.py
+msgid "WAIT %s sec"
+msgstr "%s saniye BEKLEYİN"
+
+#: sabnzbd/nzbstuff.py
+msgid "PROPAGATING %s min"
+msgstr "YAYINLANIYOR %s dakika"
+
+#: sabnzbd/nzbstuff.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "%s içinde ortalama %sB/s hızında indirildi"
+
+#. Job details page, file age column header
+#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Yaş"
+
+#: sabnzbd/nzbstuff.py
+msgid "%s articles were malformed"
+msgstr "%s makale yanlış şekillendirilmişti"
+
+#: sabnzbd/nzbstuff.py
+msgid "%s articles were missing"
+msgstr "%s makale eksikti"
+
+#: sabnzbd/nzbstuff.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s makale eşleşmeyen yinelenmişler bulunduruyordu"
+
+#: sabnzbd/nzbstuff.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Yinelenmiş NZB \"%s\" duraklatılıyor"
+
+#. Footer: indicator of warnings
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "Warnings"
+msgstr "İkazlar"
+
+#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Idle"
+msgstr "Boşta"
+
+#. Main menu item
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "Queue"
+msgstr "Kuyruk"
+
+#. Queue page button
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "Purge Queue"
+msgstr "Kuyruğu Temizle"
+
+#. Main menu item
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "History"
+msgstr "Tarihçe"
+
+#. History page button
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "Purge History"
+msgstr "Tarihçeyi Temizle"
+
+#: sabnzbd/osxmenu.py
+msgid "Limit Speed"
+msgstr "Hızı Sınırla"
+
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "dakika"
+
+#. #: Config->Scheduler
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "Scan watched folder"
+msgstr "İzlenen dizini tara"
+
+#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Read all RSS feeds"
+msgstr "Tüm RSS beslemelerini oku"
+
+#: sabnzbd/osxmenu.py
+msgid "Complete Folder"
+msgstr "Tamamlanmışlar Dizini"
+
+#: sabnzbd/osxmenu.py
+msgid "Incomplete Folder"
+msgstr "Tamamlanmamışlar Dizini"
+
+#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+msgid "Troubleshoot"
+msgstr "Sorun Giderme"
+
+#. Config->Scheduling
+#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Restart"
+msgstr "Tekrar Başlat"
+
+#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+msgid "Restart without login"
+msgstr "Oturum açmadan tekrar başlat"
+
+#: sabnzbd/osxmenu.py
+msgid "Quit"
+msgstr "Çık"
+
+#: sabnzbd/osxmenu.py
+msgid "Queue First 10 Items"
+msgstr "İlk 10 Unsuru Kuyruğa Al"
+
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "Empty"
+msgstr "Boş"
+
+#: sabnzbd/osxmenu.py
+msgid "History Last 10 Items"
+msgstr "Son 10 Unsur Tarihçesi"
+
+#: sabnzbd/osxmenu.py
+msgid "Go to wizard"
+msgstr "Sihirbaza git"
+
+#: sabnzbd/osxmenu.py
+msgid "Stopping..."
+msgstr "Durduruluyor..."
+
+#: sabnzbd/panic.py
+msgid "Problem with"
+msgstr "Şununla sorun"
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
+"    SABnzbd needs a free tcp/ip port for its internal web server.<br>\n"
+"    Port %s on %s was tried , but it is not available.<br>\n"
+"    Some other software uses the port or SABnzbd is already running.<br>\n"
+"    <br>\n"
+"    Please restart SABnzbd with a different port number."
+msgstr ""
+"\n"
+"    SABnzbd, dahili web sunucusu için boş bir tcp/ip bağlantı noktası gerektirir.<br>\n"
+"    Bağlantı noktası %s  %s üzerinde denendi, fakat müsait değil.<br>\n"
+"    Başka bir yazılım bağlantı noktasını kullanıyor veya SABnzb zaten çalışıyor.<br>\n"
+"    <br>\n"
+"    Lütfen SABnzbd'yi başka bir bağlantı noktası sayısı kullanarak tekrar başlatın."
+
+#: sabnzbd/panic.py
+msgid ""
+"If you get this error message again, please try a different number.<br>"
+msgstr "Bu hata mesajını tekrar alırsanız, lütfen başka bir sayı deneyin.<br>"
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
+"    SABnzbd needs a valid host address for its internal web server.<br>\n"
+"    You have specified an invalid address.<br>\n"
+"    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>\n"
+"    <br>\n"
+"    Please restart SABnzbd with a proper host address."
+msgstr ""
+"\n"
+"    SABnzbd, dahili web sunucusu için geçerli bir makine adresine ihtiyaç duyar.<br>\n"
+"    Geçersiz bir adres belirttiniz.<br>\n"
+"    Güvenli değerler şunlardır: <b>localhost</b> ve <b>0.0.0.0</b><br>\n"
+"    <br>\n"
+"    Lütfen SABnzbd'yi doğru bir makine adresiyle tekrar başlatın."
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
+"    SABnzbd detected saved data from an other SABnzbd version<br>\n"
+"    but cannot re-use the data of the other program.<br><br>\n"
+"    You may want to finish your queue first with the other program.<br><br>\n"
+"    After that, start this program with the \"--clean\" option.<br>\n"
+"    This will erase the current queue and history!<br>\n"
+"    SABnzbd read the file \"%s\"."
+msgstr ""
+"\n"
+"    SABnzbd başka bir SABnzbd sürümünden kaydedilmiş veriler tespit etti<br>\n"
+"    fakat diğer programın verilerini tekrar kullanamaz.<br><br>\n"
+"    Evvela kuyruğunuzu diğer program ile tamamlamak isteyebilirsiniz.<br><br>\n"
+"    Ardından bu programı  \"--clean\" seçeneğiyle başlatın.<br>\n"
+"    Bu, güncel kuyruk ve tarihçeyi silecektir!<br>\n"
+"    SABnzbd, \"%s\" dosyasını okudu."
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
+"    SABnzbd cannot find its web interface files in %s.<br>\n"
+"    Please install the program again.<br>\n"
+"    <br>\n"
+msgstr ""
+"\n"
+"    SABnzbd, %s konumunda kendi web arayüz dosyalarını bulamıyor.<br>\n"
+"    Lütfen programı tekrar kurun.<br>\n"
+"    <br>\n"
+
+#: sabnzbd/panic.py
+msgid "SABnzbd detected a fatal error:"
+msgstr "SABnzbd ölümcül bir hata tespit etti:"
+
+#: sabnzbd/panic.py
+msgid ""
+"\n"
+"    SABnzbd detected that the file sqlite3.dll is missing.<br><br>\n"
+"    Some poorly designed virus-scanners remove this file.<br>\n"
+"    Please check your virus-scanner, try to re-install SABnzbd and complain to your virus-scanner vendor.<br>\n"
+"    <br>\n"
+msgstr ""
+"\n"
+"    SABnzbd, sqlite3.dll dosyasının eksik olduğunu tespit etti.<br><br>\n"
+"    Bazı kötü tasarlanmış virüs tarayıcıları bu dosyayı kaldırmaktadır.<br>\n"
+"    Lütfen virüs tarayıcınızı kontrol edin, SABnzbd'yi tekrar kurmayı deneyin ve virüs tarayıcı sağlayıcınıza şikayette bulunun.<br>\n"
+"    <br>\n"
+
+#: sabnzbd/panic.py
+msgid "Press Startkey+R and type the line (example):"
+msgstr "Başlatma tuşu+R tuşuna basın ve şu satırı yazın (örnek):"
+
+#: sabnzbd/panic.py
+msgid "Open a Terminal window and type the line (example):"
+msgstr "Bir terminal penceresi açın ve şu satırı yazın (örnek):"
+
+#: sabnzbd/panic.py
+msgid "Program did not start!"
+msgstr "Program başlamadı!"
+
+#: sabnzbd/panic.py
+msgid "Fatal error"
+msgstr "Ölümcül hata"
+
+#: sabnzbd/panic.py
+msgid ""
+"Unable to bind to port %s on %s. Some other software uses the port or "
+"SABnzbd is already running."
+msgstr ""
+"%s bağlantı noktasına %s üzerinde bağlanılamıyor. Başka bir yazılım bağlantı"
+" noktasını kullanıyor veya SABnzbd zaten çalışıyor."
+
+#. Warning message
+#: sabnzbd/panic.py
+msgid "Cannot launch the browser, probably not found"
+msgstr "Tarayıcı başlatılamıyor, muhtemelen bulunamadı"
+
+#: sabnzbd/panic.py
+msgid "Access denied"
+msgstr "Erişim reddedildi"
+
+#: sabnzbd/panic.py
+msgid "Error %s: You need to provide a valid username and password."
+msgstr "Hata %s: geçerli bir kullanıcı ismi ve parola sağlamanız gerekiyor."
+
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "Old queue detected, use Status->Repair to convert the queue"
+msgstr ""
+"Eski bir kuyruk tespit edildi, kuyruğu dönüştürmek için Durum->Tamir Et "
+"kullanın"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Failed to compile regex for search term: %s"
+msgstr "Arama terimi için düzenli ifadenin derlenmesi başarısız oldu: %s"
+
+#: sabnzbd/postproc.py
+msgid "Download might fail, only %s of required %s available"
+msgstr "İndirme başarısız olabilir, sadece %s mevcut gerekli %s unsurdan"
+
+#: sabnzbd/postproc.py
+msgid "Download failed - Not on your server(s)"
+msgstr "İndirme başarısız oldu - Sunucularınızda yok"
+
+#: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Post-processing"
+
+#: sabnzbd/postproc.py
+msgid "Moving"
+msgstr "Taşınıyor"
+
+#: sabnzbd/postproc.py
+msgid "Sent %s to queue"
+msgstr "%s kuyruğa gönderildi"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Error renaming \"%s\" to \"%s\""
+msgstr "\"%s\" unsurunun \"%s\" olarak yeniden isimlendirilmesinde hata meydana geldi"
+
+#: sabnzbd/postproc.py
+msgid "Failed to move files"
+msgstr "Dosyaların taşınması başarısız oldu"
+
+#: sabnzbd/postproc.py
+msgid "Running user script %s"
+msgstr "Kullanıcı betiği %s çalıştırılıyor"
+
+#: sabnzbd/postproc.py
+msgid "Script exit code is %s"
+msgstr "Betiğin çıkış kodu şudur: %s"
+
+#: sabnzbd/postproc.py
+msgid "Ran %s"
+msgstr "%s çalıştırıldı"
+
+#: sabnzbd/postproc.py, sabnzbd/skintext.py
+msgid "More"
+msgstr "Dahası"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Post Processing Failed for %s (%s)"
+msgstr "%s (%s) için Post Processing başarısız oldu"
+
+#: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr "Post Processing iptal edildi"
+
+#: sabnzbd/postproc.py
+msgid "Download Failed"
+msgstr "İndirme başarısız oldu"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Cleanup of %s failed."
+msgstr "%s temizlenmesi başarısız oldu."
+
+#: sabnzbd/postproc.py
+msgid "Download Completed"
+msgstr "İndirme Tamamlandı"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Cannot create final folder %s"
+msgstr "Son dizin %s oluşturulamıyor"
+
+#: sabnzbd/postproc.py
+msgid "[%s] No par2 sets"
+msgstr "[%s] Hiçbir par2 kümesi yok"
+
+#: sabnzbd/postproc.py
+msgid "Some files failed to verify against \"%s\""
+msgstr "Bazı dosyalar \"%s\" ile kontrolde başarısız oldu"
+
+#: sabnzbd/postproc.py
+msgid "Verified successfully using SFV files"
+msgstr "SFV dosyaları kullanılarak başarılı bir şekilde kontrol edildi"
+
+#: sabnzbd/postproc.py
+msgid "Trying RAR-based verification"
+msgstr "RAR temelli kontrol deneniyor"
+
+#: sabnzbd/postproc.py
+msgid "Passworded"
+msgstr "Parolalı"
+
+#: sabnzbd/postproc.py
+msgid "[%s] RAR-based verification failed: %s"
+msgstr "[%s] RAR temelli kontrol başarısız oldu: %s"
+
+#: sabnzbd/postproc.py
+msgid "RAR files verified successfully"
+msgstr "RAR dosyaları başarılı bir şekilde kontrol edildi"
+
+#: sabnzbd/postproc.py
+msgid "RAR files failed to verify"
+msgstr "RAR dosyaları kontrolde başarısız oldu"
+
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
+msgstr "RAR yeniden isimlendiricisi deneniyor"
+
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr "%s için eşleşen önceki bir rar dosyası yok"
+
+#. Error message
+#: sabnzbd/postproc.py
+msgid "Removing %s failed"
+msgstr "%s kaldırması başarısız oldu"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Failed to hibernate system"
+msgstr "Sistemin askıya alınması başarısız oldu"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Failed to standby system"
+msgstr "Sistemin beklemeye alınması başarısız oldu"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Error while shutting down system"
+msgstr "Sistemin kapatılması esnasında hata"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr "Bir DBUS istisnası alındı %s"
+
+#. Error message
+#: sabnzbd/rss.py
+msgid "Incorrect RSS feed description \"%s\""
+msgstr "Yanlış RSS besleme tanımlaması \"%s\""
+
+#: sabnzbd/rss.py
+msgid "Do not have valid authentication for feed %s"
+msgstr "%s beslemesi için geçerli kimlik doğrulaması yok"
+
+#: sabnzbd/rss.py
+msgid "Server side error (server code %s); could not get %s on %s"
+msgstr "Sunucu tarafı hatası (sunucu kodu %s); %s alınamadı %s üzerinde"
+
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "%s unsurundan RSS alınması başarısız oldu: %s"
+
+#: sabnzbd/rss.py, sabnzbd/urlgrabber.py
+msgid "Server %s uses an untrusted HTTPS certificate"
+msgstr "%s sunucusu güvenilmez bir HTTPS sertifikası kullanıyor"
+
+#. Warning message
+#: sabnzbd/rss.py
+msgid "RSS Feed %s was empty"
+msgstr "%s RSS Beselemesi boştu"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Uyumsuz besleme"
+
+#. Warning message
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Boş RSS girdisi bulundu (%s)"
+
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Show interface"
+msgstr "Arayüzü göster"
+
+#. Queue page button or entry box
+#: sabnzbd/sabtray.py, sabnzbd/skintext.py
+msgid "Pause for"
+msgstr "Şu süre boyunca duraklat"
+
+#: sabnzbd/sabtray.py, sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "5 dakika boyunca duraklat"
+
+#: sabnzbd/sabtray.py, sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "15 dakika boyunca duraklat"
+
+#: sabnzbd/sabtray.py, sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "30 dakika boyunca duraklat"
+
+#: sabnzbd/sabtray.py, sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "1 saat boyunca duraklat"
+
+#: sabnzbd/sabtray.py, sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "3 saat boyunca duraklat"
+
+#: sabnzbd/sabtray.py, sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "6 saat boyunca duraklat"
+
+#. Config->Scheduling
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Shutdown"
+msgstr "Kapat"
+
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Remaining"
+msgstr "Kalan"
+
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Add NZB"
+msgstr "NZB Ekle"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Bad schedule %s at %s:%s"
+msgstr "%s kötü zamanlaması, %s:%s üzerinde"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Unknown action: %s"
+msgstr "Bilinmeyen eylem: %s"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Schedule for non-existing server %s"
+msgstr "Mevcut olmayan %s sunucu için zamanlama"
+
+#. Warning message
+#: sabnzbd/scheduler.py
+msgid "Trying to set status of non-existing server %s"
+msgstr "Mevcut olmayan %s sunucu için durum ayarlanmaya çalışılıyor"
+
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/skintext.py
+msgid "Download"
+msgstr "İndir"
+
+#. PP phase "filejoin"
+#: sabnzbd/skintext.py
+msgid "Join files"
+msgstr "Dosyaları birleştir"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "Aç"
+
+#. PP phase "deobfuscate"
+#: sabnzbd/skintext.py
+msgid "Deobfuscate"
+msgstr "Karartmayı kaldır"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Betik"
+
+#. PP RSS feed  of the NZB - Main menu item
+#: sabnzbd/skintext.py
+msgid "RSS"
+msgstr "RSS"
+
+#. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
+#: sabnzbd/skintext.py
+msgid "Source"
+msgstr "Kaynak"
+
+#. PP Distribution over servers - Main menu item
+#: sabnzbd/skintext.py
+msgid "Servers"
+msgstr "Sunucular"
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Failed"
+msgstr "Başarısız"
+
+#. Queue and PP status
+#: sabnzbd/skintext.py
+msgid "Waiting"
+msgstr "Bekleniyor"
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Repairing..."
+msgstr "Tamir ediliyor..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Extracting..."
+msgstr "Açılıyor..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Moving..."
+msgstr "Taşınıyor..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Running script..."
+msgstr "Betik çalıştırılıyor..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Fetching extra blocks..."
+msgstr "İlave bloklar alınıyor..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Quick Check..."
+msgstr "Hızlı Kontrol..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Verifying..."
+msgstr "Teyit ediliyor..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Kontrol ediliyor"
+
+#. #: Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "disable server"
+msgstr "sunucuyu devre dışı bırak"
+
+#. #: Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "enable server"
+msgstr "sunucuyu etkinleştir"
+
+#. #: Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Speedlimit"
+msgstr "Hız sınırı"
+
+#. #: Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Pause All"
+msgstr "Tümünü Duraklat"
+
+#. #: Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Pause post-processing"
+msgstr "Post-processing  duraklasın"
+
+#. #: Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Resume post-processing"
+msgstr "Post-processing devam etsin"
+
+#. #: Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Read RSS feeds"
+msgstr "RSS beslemeleri oku"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Remove failed jobs"
+msgstr "Başarısız işleri kaldır"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Remove completed jobs"
+msgstr "Tamamlanmış işleri kaldır"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Pause low priority jobs"
+msgstr "Düşük öncelikli işleri duraklat"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Pause normal priority jobs"
+msgstr "Normal öncelikli işleri duraklat"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Pause high priority jobs"
+msgstr "Yüksek öncelikli işleri duraklat"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Resume low priority jobs"
+msgstr "Düşük öncelikli işlere devam et"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Resume normal priority jobs"
+msgstr "Normal öncelikli işlere devam et"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Resume high priority jobs"
+msgstr "Yüksek öncelikli işlere devam et"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Enable quota management"
+msgstr "Kota yönetimini etkinleştir"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Disable quota management"
+msgstr "Kota yönetimini devre dışı bırak"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Pause jobs with category"
+msgstr "Kategoriye göre işleri duraklat"
+
+#. Config->Scheduler
+#: sabnzbd/skintext.py
+msgid "Resume jobs with category"
+msgstr "Kategoriye göre işlere devam et"
+
+#. Prowl priority - Three way switch for duplicates
+#: sabnzbd/skintext.py
+msgid "Off"
+msgstr "Kapalı"
+
+#. Prowl priority
+#: sabnzbd/skintext.py
+msgid "Very Low"
+msgstr "Çok Düşük"
+
+#. Prowl priority
+#: sabnzbd/skintext.py
+msgid "Moderate"
+msgstr "Orta"
+
+#. Prowl priority - Priority pick list
+#: sabnzbd/skintext.py
+msgid "Normal"
+msgstr "Normal"
+
+#. Prowl priority - Priority pick list
+#: sabnzbd/skintext.py
+msgid "High"
+msgstr "Yüksek"
+
+#. Prowl priority
+#: sabnzbd/skintext.py
+msgid "Emergency"
+msgstr "Acil"
+
+#. Prowl priority - Priority pick list
+#: sabnzbd/skintext.py
+msgid "Low"
+msgstr "Düşük"
+
+#. One hour
+#: sabnzbd/skintext.py
+msgid "hour"
+msgstr "saat"
+
+#. Multiple hours
+#: sabnzbd/skintext.py
+msgid "hours"
+msgstr "saat"
+
+#. Multiple minutes
+#: sabnzbd/skintext.py
+msgid "mins"
+msgstr "dakika"
+
+#. One second
+#: sabnzbd/skintext.py
+msgid "sec"
+msgstr "saniye"
+
+#. Multiple seconds
+#: sabnzbd/skintext.py
+msgid "seconds"
+msgstr "saniye"
+
+#: sabnzbd/skintext.py
+msgid "day"
+msgstr "gün"
+
+#: sabnzbd/skintext.py
+msgid "days"
+msgstr "gün"
+
+#: sabnzbd/skintext.py
+msgid "week"
+msgstr "hafta"
+
+#: sabnzbd/skintext.py
+msgid "Month"
+msgstr "Ay"
+
+#: sabnzbd/skintext.py
+msgid "Year"
+msgstr "Sene"
+
+#: sabnzbd/skintext.py
+msgid "Day of month"
+msgstr "Ayın günü"
+
+#: sabnzbd/skintext.py
+msgid "This week"
+msgstr "Bu hafta"
+
+#: sabnzbd/skintext.py
+msgid "This month"
+msgstr "Bu ay"
+
+#: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr "Seçili tarih aralığı"
+
+#: sabnzbd/skintext.py
+msgid "Today"
+msgstr "Bugün"
+
+#: sabnzbd/skintext.py
+msgid "Total"
+msgstr "Toplam"
+
+#: sabnzbd/skintext.py
+msgid "on"
+msgstr "açık"
+
+#. Config: startup parameters of SABnzbd - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Parameters"
+msgstr "Parametreler"
+
+#: sabnzbd/skintext.py
+msgid "Python Version"
+msgstr "Python Sürümü"
+
+#. Home page of the SABnzbd project
+#: sabnzbd/skintext.py
+msgid "Home page"
+msgstr "Ana Sayfa"
+
+#: sabnzbd/skintext.py
+msgid "or"
+msgstr "veya"
+
+#. Server hostname or IP
+#: sabnzbd/skintext.py
+msgid "Host"
+msgstr "Makine"
+
+#: sabnzbd/skintext.py
+msgid "Cancel"
+msgstr "İptal"
+
+#: sabnzbd/skintext.py
+msgid "Log in"
+msgstr "Oturum aç"
+
+#: sabnzbd/skintext.py
+msgid "Log out"
+msgstr "Çıkış"
+
+#: sabnzbd/skintext.py
+msgid "Remember me"
+msgstr "Beni hatırla"
+
+#. "Save" button
+#: sabnzbd/skintext.py
+msgid "Save"
+msgstr "Kaydet"
+
+#: sabnzbd/skintext.py
+msgid "Saving.."
+msgstr "Kaydediliyor..."
+
+#. Used in confirmation popups
+#: sabnzbd/skintext.py
+msgid "Are you sure?"
+msgstr "Emin misiniz?"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Home"
+msgstr "Ana Unsur"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Config"
+msgstr "Yapılandırma"
+
+#. Main menu item - History table header
+#: sabnzbd/skintext.py
+msgid "Status"
+msgstr "Durum"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Help"
+msgstr "Yardım"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Forum"
+msgstr "Forum"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Live Chat"
+msgstr "Canlı Sohbet"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Issues"
+msgstr "Hatalar"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Support the project, Donate!"
+msgstr "Projeye destek olun, Bağış Yapın!"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "General"
+msgstr "Genel"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Folders"
+msgstr "Dizinler"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Switches"
+msgstr "Anahtarlar"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Scheduling"
+msgstr "Zamanlama"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Notifications"
+msgstr "Bildirimler"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Email"
+msgstr "E-posta"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Categories"
+msgstr "Kategoriler"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Sorting"
+msgstr "Sıralama"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Special"
+msgstr "Özel"
+
+#. Main menu item
+#: sabnzbd/skintext.py
+msgid "Search"
+msgstr "Ara"
+
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to shutdown SABnzbd?"
+msgstr "SABnzbd’yi kapatmak istediğinizden emin misiniz?"
+
+#. Add NZB to queue (button) - Add NZB to queue (header)
+#: sabnzbd/skintext.py
+msgid "Add"
+msgstr "Ekle"
+
+#. Job category
+#: sabnzbd/skintext.py
+msgid "Category"
+msgstr "Kategori"
+
+#. Server priority
+#: sabnzbd/skintext.py
+msgid "Priority"
+msgstr "Öncelik"
+
+#. Post processing pick list
+#: sabnzbd/skintext.py
+msgid "+Repair"
+msgstr "+Tamir et"
+
+#. Post processing pick list
+#: sabnzbd/skintext.py
+msgid "+Unpack"
+msgstr "+Aç"
+
+#. Post processing pick list
+#: sabnzbd/skintext.py
+msgid "+Delete"
+msgstr "+Sil"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "Force"
+msgstr "Zorla"
+
+#. Priority pick list
+#: sabnzbd/skintext.py
+msgid "Stop"
+msgstr "Durdur"
+
+#. Add NZB Dialog
+#: sabnzbd/skintext.py
+msgid "Enter URL"
+msgstr "URL Gir"
+
+#. Queue page end-of-queue action
+#: sabnzbd/skintext.py
+msgid "Shutdown PC"
+msgstr "Bilgisayarı Kapat"
+
+#. Queue page end-of-queue action
+#: sabnzbd/skintext.py
+msgid "Standby PC"
+msgstr "Bilgisayarı Beklemeye Al"
+
+#. Queue page end-of-queue action
+#: sabnzbd/skintext.py
+msgid "Hibernate PC"
+msgstr "Bilgisayarı Askıya Al"
+
+#. Queue page end-of-queue action
+#: sabnzbd/skintext.py
+msgid "Shutdown SABnzbd"
+msgstr "SABnzbd'yi kapat"
+
+#. Queue page table column header
+#: sabnzbd/skintext.py
+msgid "Processing"
+msgstr "İşleme"
+
+#. Queue page table column header
+#: sabnzbd/skintext.py
+msgid "Name"
+msgstr "İsim"
+
+#. Queue page button
+#: sabnzbd/skintext.py
+msgid "Retry"
+msgstr "Tekrar dene"
+
+#. Queue page table, script selection menu
+#: sabnzbd/skintext.py
+msgid "Scripts"
+msgstr "Betikler"
+
+#. Confirmation popup
+#: sabnzbd/skintext.py
+msgid "Delete all items from the queue?"
+msgstr "Kuyruktaki tüm unsurlar silinsin mi?"
+
+#. Delete confirmation popup
+#: sabnzbd/skintext.py
+msgid "Are you sure you want to remove these jobs?"
+msgstr "Bu işleri kaldırmak istediğinizden emin misiniz?"
+
+#. Queue page button
+#: sabnzbd/skintext.py
+msgid "Purge NZBs"
+msgstr "NZB'leri Temizle"
+
+#. Queue page button
+#: sabnzbd/skintext.py
+msgid "Purge NZBs & Delete Files"
+msgstr "NZB'leri Temizle ve Dosyaları Sil"
+
+#. Queue page button
+#: sabnzbd/skintext.py
+msgid "Remove NZB"
+msgstr "NZB'yi Kaldır"
+
+#. Queue page button
+#: sabnzbd/skintext.py
+msgid "Remove NZB & Delete Files"
+msgstr "NZB'yi Kaldır ve Dosyaları Sil"
+
+#. Checkbox if job should be added to Archive
+#: sabnzbd/skintext.py
+msgid "Permanently delete (skip archive)"
+msgstr "Daimi olarak sil (arşivi atla)"
+
+#. Caption for missing articles in Queue
+#: sabnzbd/skintext.py
+msgid "Missing articles"
+msgstr "Eksik makale"
+
+#. Remaining quota (displayed in Queue)
+#: sabnzbd/skintext.py
+msgid "Quota left"
+msgstr "Kalan kota"
+
+#. Manual reset of quota
+#: sabnzbd/skintext.py
+msgid "manual"
+msgstr "el ile"
+
+#: sabnzbd/skintext.py
+msgid "Reset Quota now"
+msgstr "Kotayı Şimdi Sıfırla"
+
+#: sabnzbd/skintext.py
+msgid "Archive"
+msgstr "Arşiv"
+
+#. Button/link hiding History job details
+#: sabnzbd/skintext.py
+msgid "Hide details"
+msgstr "Ayrıntıları Gizle"
+
+#. Button/link showing History job details
+#: sabnzbd/skintext.py
+msgid "Show details"
+msgstr "Ayrıntıları Göster"
+
+#. Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!
+#: sabnzbd/skintext.py
+msgid "Show Failed"
+msgstr "Başarısızları Göster"
+
+#. Button or link showing all History jobs
+#: sabnzbd/skintext.py
+msgid "Show All"
+msgstr "Hepsini Göster"
+
+#. Button showing all archived jobs
+#: sabnzbd/skintext.py
+msgid "Show Archive"
+msgstr "Arşivleri Göster"
+
+#. History table header - Size of the download quota
+#: sabnzbd/skintext.py
+msgid "Size"
+msgstr "Boyut"
+
+#. Button to delete all failed jobs in History
+#: sabnzbd/skintext.py
+msgid "Purge Failed NZBs"
+msgstr "Başarısız NZB'leri Temizle"
+
+#: sabnzbd/skintext.py
+msgid "Purge Failed NZBs & Delete Files"
+msgstr "Başarısız NZB'leri Temizle ve Dosyaları Sil"
+
+#. Button to delete all completed jobs in History
+#: sabnzbd/skintext.py
+msgid "Purge Completed NZBs"
+msgstr "Tamamlanmış NZB'leri Temizle"
+
+#. Button to delete jobs on current page in History
+#: sabnzbd/skintext.py
+msgid "Purge NZBs on the current page"
+msgstr "Güncel sayfadaki NZB'leri temizle"
+
+#. Button to add NZB to failed job in History
+#: sabnzbd/skintext.py
+msgid "Optional Supplemental NZB"
+msgstr "Seçime Dayalı Ek NZB"
+
+#. Path as displayed in History details
+#: sabnzbd/skintext.py
+msgid "Path"
+msgstr "Yol"
+
+#. Retry all failed jobs in History
+#: sabnzbd/skintext.py
+msgid "Retry all failed jobs"
+msgstr "Tüm başarısız işleri tekrar dene"
+
+#. Status page button
+#: sabnzbd/skintext.py
+msgid "Force Disconnect"
+msgstr "Bağlantıyı Kesmeye Zorla"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+"Usenet sunucularıyla olan tüm faal bağlantıları kes. Bağlantılar, kuyrukta "
+"unsur bulunuyorsa birkaç saniye sonra tekrar açılacaktır."
+
+#: sabnzbd/skintext.py
+msgid "This will send a test email to your account."
+msgstr "Bu, hesabınıza bir deneme e-postası gönderecektir."
+
+#. Status page button
+#: sabnzbd/skintext.py
+msgid "Show Logging"
+msgstr "Kütüğü Göster"
+
+#. Status page button
+#: sabnzbd/skintext.py
+msgid "Test Email"
+msgstr "Deneme E-postası"
+
+#. Status page selection menu
+#: sabnzbd/skintext.py
+msgid "Logging"
+msgstr "Kütük"
+
+#. Status page table header
+#: sabnzbd/skintext.py
+msgid "Errors/Warning"
+msgstr "Hatalar/İkaz"
+
+#. Status page logging selection value
+#: sabnzbd/skintext.py
+msgid "+ Info"
+msgstr "+Bilgi"
+
+#. Status page logging selection value
+#: sabnzbd/skintext.py
+msgid "+ Debug"
+msgstr "+Hata Ayıklama"
+
+#. Status page tab header - Server: amount of connections
+#: sabnzbd/skintext.py
+msgid "Connections"
+msgstr "Bağlantı"
+
+#. Status page, article identifier
+#: sabnzbd/skintext.py
+msgid "Article identifier"
+msgstr "Makale kimliği"
+
+#. Status page, par-set that article belongs to
+#: sabnzbd/skintext.py
+msgid "File set"
+msgstr "Dosya kümesi"
+
+#. Status page, indicator that server is enabled
+#: sabnzbd/skintext.py
+msgid "Enabled"
+msgstr "Etkinleştirilmiş"
+
+#: sabnzbd/skintext.py
+msgid "Connection failed!"
+msgstr "Bağlantı başarısız oldu!"
+
+#: sabnzbd/skintext.py
+msgid "Local IPv4 address"
+msgstr "Yerel IPv4 adresi"
+
+#: sabnzbd/skintext.py
+msgid "Public IPv4 address"
+msgstr "Herkese açık IPv4 adresi"
+
+#: sabnzbd/skintext.py
+msgid "IPv6 address"
+msgstr "IPv6 adresi"
+
+#: sabnzbd/skintext.py
+msgid "Nameserver / DNS Lookup"
+msgstr "İsim sunucusu/DNS Araması"
+
+#: sabnzbd/skintext.py
+msgid "Download speed limited by"
+msgstr "İndirme hızı şu tarafından sınırlanmış:"
+
+#: sabnzbd/skintext.py
+msgid "Disk speed"
+msgstr "Disk hızı"
+
+#: sabnzbd/skintext.py
+msgid "System load"
+msgstr "Sistem yükü"
+
+#. Do not translate Pystone
+#: sabnzbd/skintext.py
+msgid "System Performance (Pystone)"
+msgstr "Sistem performansı (Pystone)"
+
+#: sabnzbd/skintext.py
+msgid "Download folder speed"
+msgstr "İndirme dizini hızı"
+
+#: sabnzbd/skintext.py
+msgid "Complete folder speed"
+msgstr "Tamamlanmış dizini hızı"
+
+#: sabnzbd/skintext.py
+msgid "Internet Bandwidth"
+msgstr "İnternet Bant Genişliği"
+
+#: sabnzbd/skintext.py
+msgid "Repeat test"
+msgstr "Testi tekrarla"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr "Deneme indirmesi"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can"
+" be used to verify your setup."
+msgstr ""
+"Rastgele verilerle doldurulmuş, belirtilen boyutta doğrulanmış bir deneme "
+"NZB dosyası ekler. Kurulumunuzu doğrulamak için kullanılabilir."
+
+#: sabnzbd/skintext.py
+msgid "Config File"
+msgstr "Yapılandırma Dosyası"
+
+#. Main config page, how much cache is in use
+#: sabnzbd/skintext.py
+msgid "Used cache"
+msgstr "Kullanılan tampon"
+
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr "Platform"
+
+#: sabnzbd/skintext.py
+msgid ""
+"This will restart SABnzbd.<br />Use it when you think the program has a "
+"stability problem.<br />Downloading will be paused before the restart and "
+"resume afterwards."
+msgstr ""
+"Bu, SABnzbd’yi tekrar başlatacaktır.<br />Bunu, programın bir kararlılık "
+"sorunu olduğunu düşündüğünüzde kullanın.<br />İndirme, tekrar başlatmadan "
+"evvel duraklatılacak ve sonradan devam edecektir."
+
+#: sabnzbd/skintext.py
+msgid "<br />If authentication is enabled, you will need to login again."
+msgstr ""
+"<br />Eğer kimlik doğrulama etkinleştirilmiş ise, yeniden oturum açmanız "
+"gerekecektir."
+
+#: sabnzbd/skintext.py
+msgid "Advanced"
+msgstr "Gelişmiş"
+
+#: sabnzbd/skintext.py
+msgid ""
+"There are orphaned jobs in the download folder.<br />You can choose to "
+"delete them (including files) or send them back to the queue."
+msgstr ""
+"İndirme dizininde öksüz işler bulunmaktadır.<br />Onları (dosyaları da "
+"içerecek şekilde) silmeyi seçebilirsiniz veya kuyruğa tekrar "
+"gönderebilirsiniz."
+
+#: sabnzbd/skintext.py
+msgid ""
+"The \"Repair\" button will restart SABnzbd and do a complete<br "
+"/>reconstruction of the queue content, preserving already downloaded "
+"files.<br />This will modify the queue order."
+msgstr ""
+"\"Tamir\" düğmesi SABnzbd’yi tekrar başlatacak ve kuyruk içeriğinin<br />tam"
+" bir yeniden inşasını yapacaktır, zaten indirilmiş dosyalar muhafaza "
+"edilecektir.<br />Bu, kuyruk sıralamasını değiştirecektir."
+
+#: sabnzbd/skintext.py
+msgid "Changes have not been saved, and will be lost."
+msgstr "Değişiklikler kaydedilmedi ve kaybolacaklardır."
+
+#: sabnzbd/skintext.py
+msgid ""
+"When your IP address changes or SABnzbd is restarted the session will "
+"expire."
+msgstr ""
+"Oturum, IP adresiniz değiştiğinde veya SABnzbd tekrar başlatıldığında sona "
+"erecektir."
+
+#: sabnzbd/skintext.py
+msgid "Enable 7zip"
+msgstr "7zip'i Etkinleştir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Speed up repairs by installing par2cmdline-turbo, it is available for many "
+"platforms."
+msgstr ""
+"Tamirleri süratlendirmek için par2cmdline-turbo'yu kurun, birçok platform "
+"için mevcuttur."
+
+#: sabnzbd/skintext.py
+msgid "Version"
+msgstr "Sürüm"
+
+#: sabnzbd/skintext.py
+msgid "Uptime"
+msgstr "Çalışma Süresi"
+
+#. Indicates that server is Backup server in Status page
+#: sabnzbd/skintext.py
+msgid "Backup"
+msgstr "Yedek"
+
+#: sabnzbd/skintext.py
+msgid "Read the Wiki Help on this!"
+msgstr "Bu mevzuda Viki yardımını okuyun!"
+
+#: sabnzbd/skintext.py
+msgid "Restarting SABnzbd..."
+msgstr "SABnzbd tekrar başlatılıyor..."
+
+#: sabnzbd/skintext.py
+msgid "Changes will require a SABnzbd restart!"
+msgstr "Değişiklikler SABnzbd’nin tekrar başlatılmasını gerektirecek!"
+
+#: sabnzbd/skintext.py
+msgid "SABnzbd Web Server"
+msgstr "SABnzbd Web Sunucusu"
+
+#: sabnzbd/skintext.py
+msgid "SABnzbd Host"
+msgstr "SABnzbd Makinesi"
+
+#: sabnzbd/skintext.py
+msgid "Host SABnzbd should listen on."
+msgstr "SABnzbd'nin üzerinde bağlantıları bekleyeceği makine."
+
+#: sabnzbd/skintext.py
+msgid "SABnzbd Port"
+msgstr "SABnzbd Bağlantı Noktası"
+
+#: sabnzbd/skintext.py
+msgid "Port SABnzbd should listen on."
+msgstr "SABnzbd'nin dinleyeceği bağlantı noktası (port)."
+
+#: sabnzbd/skintext.py
+msgid "Web Interface Theme"
+msgstr "Web Arayüz Teması"
+
+#: sabnzbd/skintext.py
+msgid "Choose a theme."
+msgstr "Bir tema seçin."
+
+#: sabnzbd/skintext.py
+msgid "SABnzbd Username"
+msgstr "SABnzbd Kullanıcı ismi"
+
+#: sabnzbd/skintext.py
+msgid "Optional authentication username."
+msgstr "İsteğe dayalı kimlik doğrulama kullanıcı ismi."
+
+#: sabnzbd/skintext.py
+msgid "SABnzbd Password"
+msgstr "SABnzbd Parolası"
+
+#: sabnzbd/skintext.py
+msgid "Optional authentication password."
+msgstr "İsteğe dayalı kimlik doğrulama parolası."
+
+#: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+"Şayet SABnzbd Makinesi veya Bağlantı Noktası İnternet'e açıksa, güncel "
+"ayarlarınız SABnzbd arayüzüne tam harici erişim izni vermektedir."
+
+#: sabnzbd/skintext.py
+msgid "Security"
+msgstr "Güvenlik"
+
+#: sabnzbd/skintext.py
+msgid "Enable HTTPS"
+msgstr "HTTPS'i etkinleştir"
+
+#: sabnzbd/skintext.py
+msgid "Enable accessing the interface from a HTTPS address."
+msgstr "Arayüze bir HTTPS adresinden erişimi etkinleştir."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Modern web browsers and other clients will not accept self-signed "
+"certificates and will give a warning and/or won't connect at all."
+msgstr ""
+"Modern İnternet tarayıcıları ve diğer istemciler kendinden imzalı "
+"sertifikaları kabul etmeyecek ve bir ikaz görüntüleyecek ve/veya hiç "
+"bağlanmayacaklardır."
+
+#: sabnzbd/skintext.py
+msgid "HTTPS Port"
+msgstr "HTTPS Bağlantı Noktası"
+
+#: sabnzbd/skintext.py
+msgid "If empty, the standard port will only listen to HTTPS."
+msgstr ""
+"Şayet boşsa, standart bağlantı noktası sadece HTTPS için dinlemede "
+"bulunacaktır."
+
+#: sabnzbd/skintext.py
+msgid "HTTPS Certificate"
+msgstr "HTTPS Sertifikası"
+
+#: sabnzbd/skintext.py
+msgid "File name or path to HTTPS Certificate."
+msgstr "HTTPS Sertifikası için dosya ismi veya yol."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Generate new self-signed certificate and key. Requires SABnzbd restart!"
+msgstr ""
+"Yeni kendinden imzalı sertifika ve anahtar oluştur. SABnzbd’nin tekrar "
+"başlatılmasını gerektirir!"
+
+#: sabnzbd/skintext.py
+msgid "HTTPS Key"
+msgstr "HTTPS Anahtarı"
+
+#: sabnzbd/skintext.py
+msgid "File name or path to HTTPS Key."
+msgstr "HTTPS Anahtarı için dosya ismi veya yol."
+
+#: sabnzbd/skintext.py
+msgid "HTTPS Chain Certifcates"
+msgstr "HTTPS Zincir Sertifikaları"
+
+#: sabnzbd/skintext.py
+msgid "File name or path to HTTPS Chain."
+msgstr "HTTPS Zinciri için dosya ismi veya yol."
+
+#: sabnzbd/skintext.py
+msgid "Tuning"
+msgstr "Ayarlar"
+
+#: sabnzbd/skintext.py
+msgid "RSS Checking Interval"
+msgstr "RSS Kontrol Zaman Aralığı"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Checking interval (in minutes, at least 15). Not active when you use the "
+"Scheduler!"
+msgstr ""
+"Kontrol zaman aralığı (dakika olarak, asgari 15). Zamanlayıcıyı "
+"kullandığınızda faal değildir!"
+
+#: sabnzbd/skintext.py
+msgid "Maximum line speed"
+msgstr "Hattın azami hızı"
+
+#: sabnzbd/skintext.py
+msgid "Percentage of line speed"
+msgstr "Hat hızının yüzdesi"
+
+#: sabnzbd/skintext.py
+msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
+msgstr "SABnzbd'nin hat hızının hangi yüzdesini kullanacağı, mesela 50"
+
+#: sabnzbd/skintext.py
+msgid "Article Cache Limit"
+msgstr "Makale Tampon Sınırı"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally"
+" follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
+msgstr ""
+"Disk erişimini azaltmak için makaleleri hafızada tampona al.<br /><i>Bayt "
+"olarak, seçime dayalı bir şekilde K, M, G takip edebilir. Mesela: \"64M\" "
+"veya \"128M\"</i>"
+
+#. Config->Scheduling
+#: sabnzbd/skintext.py
+msgid "Create backup"
+msgstr "Yedekleme oluştur"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Create a backup of the configuration file and databases in the Backup "
+"Folder.<br>If the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.<br>Recurring backups can be configured on the"
+" Scheduling page."
+msgstr ""
+"Yapılandırma dosyasının ve veri tabanlarının Yedekleme Dizini'nde bir "
+"yedeklemesini oluştur.<br>Eğer Yedekleme Dizini ayarlanmamışsa, yedekleme "
+"Tamamlanmış İndirme Dizini'nde oluşturulacaktır. <br>Yinelenen yedeklemeler,"
+" Zamanlaylıcı sayfasında yapılandırılabilirler."
+
+#: sabnzbd/skintext.py
+msgid "Cleanup List"
+msgstr "Listeyi Temizle"
+
+#: sabnzbd/skintext.py
+msgid ""
+"List of file extensions that should be deleted after download.<br />For "
+"example: <b>nfo</b> or <b>nfo, sfv</b>"
+msgstr ""
+"İndirmeden sonra silinecek uzantıların listesi.<br />Mesela: <b>nfo</b> veya"
+" <b>nfo, sfv</b>"
+
+#: sabnzbd/skintext.py
+msgid "History Retention"
+msgstr "Tarihçe Muhafazası"
+
+#: sabnzbd/skintext.py
+msgid "Keep all jobs"
+msgstr "Tüm işleri muhafaza et"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move jobs to the archive if the history exceeds specified number of jobs"
+msgstr "Şayet tarihçe belirtilen iş sayısını aşarsa işleri arşive taşı"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Delete jobs if the history and archive exceeds specified number of jobs"
+msgstr "Şayet tarihçe ile arşiv belirtilen iş sayısını aşarsa işleri sil"
+
+#: sabnzbd/skintext.py
+msgid "Move jobs to the archive after specified number of days"
+msgstr "Belirtilen gün sayısından sonra işleri arşive taşı"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Delete jobs from the history and archive after specified number of days"
+msgstr "Belirtilen gün sayısından sonra işleri tarihçe ve arşivden sil"
+
+#: sabnzbd/skintext.py
+msgid "Move all completed jobs to archive"
+msgstr "Tüm tamamlanan işleri arşive taşı"
+
+#: sabnzbd/skintext.py
+msgid "Delete all completed jobs"
+msgstr "Tüm tamamlanan işleri sil"
+
+#: sabnzbd/skintext.py
+msgid "Jobs"
+msgstr "İşler"
+
+#: sabnzbd/skintext.py
+msgid "Save Changes"
+msgstr "Değişiklikleri Kaydet"
+
+#: sabnzbd/skintext.py
+msgid "Restore Defaults"
+msgstr "Varsayılanları Geri Getir"
+
+#: sabnzbd/skintext.py
+msgid "Reset"
+msgstr "Sıfırla"
+
+#: sabnzbd/skintext.py
+msgid "Language"
+msgstr "Lisan"
+
+#: sabnzbd/skintext.py
+msgid "Select a web interface language."
+msgstr "Bir web arayüz dili seçin."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
+"improved existing translations here:"
+msgstr ""
+"SABnzbd'yi dilinize tercüme etmemize yardımcı olun!<br/>Şurada tercüme "
+"edilmemiş metinleri ekleyin veya mevcut tercümeleri iyileştirin:"
+
+#: sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API Anahtarı"
+
+#: sabnzbd/skintext.py
+msgid "This key will give 3rd party programs full access to SABnzbd."
+msgstr "Bu anahtar, 3. taraf programlara SABnzbd'ye tam erişim sağlayacaktır."
+
+#: sabnzbd/skintext.py
+msgid "NZB Key"
+msgstr "NZB Anahtarı"
+
+#: sabnzbd/skintext.py
+msgid "This key will allow 3rd party programs to add NZBs to SABnzbd."
+msgstr ""
+"Bu anahtar, 3. taraf programların SABnzbd'ye NZB dosyaları eklemelerine izin"
+" verecektir."
+
+#: sabnzbd/skintext.py
+msgid "Generate New Key"
+msgstr "Yeni Anahtar Oluştur"
+
+#. Explanation for QR code of APIKEY
+#: sabnzbd/skintext.py
+msgid "API Key QR Code"
+msgstr "API Anahtar QR Kodu"
+
+#: sabnzbd/skintext.py
+msgid "External internet access"
+msgstr "Harici İnternet erişimi"
+
+#: sabnzbd/skintext.py
+msgid "You can set access rights for systems outside your local network."
+msgstr ""
+"Yerel şebekenizin dışındaki sistemler için erişim izinleri "
+"ayarlayabilirsiniz."
+
+#: sabnzbd/skintext.py
+msgid "No access"
+msgstr "Erişim yok"
+
+#: sabnzbd/skintext.py
+msgid "Add NZB files "
+msgstr "NZB dosyaları ekle "
+
+#: sabnzbd/skintext.py
+msgid "API (no Config)"
+msgstr "API (yapılandırmasız)"
+
+#: sabnzbd/skintext.py
+msgid "Full API"
+msgstr "Tam API"
+
+#: sabnzbd/skintext.py
+msgid "Full Web interface"
+msgstr "Tam Web Arayüzü"
+
+#: sabnzbd/skintext.py
+msgid "Only external access requires login"
+msgstr "Sadece harici erişim oturum açmayı gerektirir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"<em>NOTE:</em> Folders will be created automatically when Saving. You may "
+"use absolute paths to save outside of the default folders."
+msgstr ""
+"<em>NOT:</em> dizinler, Kaydetme esnasında otomatik olarak oluşturulacaktır."
+" Varsayılan dizinlerin dışında kaydetmek için mutlak yollar "
+"kullanabilirsiniz."
+
+#: sabnzbd/skintext.py
+msgid "User Folders"
+msgstr "Kullanıcı Dizinleri"
+
+#: sabnzbd/skintext.py
+msgid "Browse"
+msgstr "Tara"
+
+#: sabnzbd/skintext.py
+msgid "Temporary Download Folder"
+msgstr "Geçici İndirme Dizini"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location to store unprocessed downloads.<br /><i>Can only be changed when "
+"queue is empty.</i>"
+msgstr ""
+"İşlenmemiş indirmelerin muhafaza edilecekleri konum.<br /><i>Sadece kuyruk "
+"boş olduğunda değiştirilebilir.</i>"
+
+#: sabnzbd/skintext.py
+msgid "Minimum Free Space for Temporary Download Folder"
+msgstr "Geçici İndirme Dizini için Asgari Boş Alan"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Auto-pause when free space is beneath this value.<br /><i>In bytes, "
+"optionally follow with K,M,G,T. For example: \"800M\" or \"8G\"</i>"
+msgstr ""
+"Boş alan bu değerin altında olduğunda otomatik olarak duraklat.<br /><i>Bayt"
+" olarak, seçime dayalı bir şekilde K, M, G,T takip edebilir. Mesela \"800M\""
+" veya \"8G\"</i>"
+
+#: sabnzbd/skintext.py
+msgid "Completed Download Folder"
+msgstr "Tamamlanmış İndirme Dizini"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location to store finished, fully processed downloads.<br /><i>Can be "
+"overruled by user-defined categories.</i>"
+msgstr ""
+"Sonlanmış ve tamamen işlenmiş indirmelerin muhafaza edilecekleri konum.<br "
+"/><i>Kullanıcı tanımlı kategoriler tarafından geçersiz kılınabilir.</i>"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Use Sorting to automatically organize and rename your completed downloads."
+msgstr ""
+"Tamamlanmış indirmelerinizi otomatik olarak organize etmek ve tekrar "
+"isimlendirmek için Sıralama kullanın."
+
+#: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr "Tamamlanmış İndirme Dizini için Asgari Boş Alan"
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr "Bir kategori dizini başka bir diskteyse çalışmaz."
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "Otomatik olarak devam et"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+"İndirme, asgari boş alan tekrar mevcut hale gelirse otomatik olarak "
+"sürdürülecektir.<br />Hem Geçici, hem de Tamamlanmış İndirme Dizini için "
+"geçerlidir.<br />Her birkaç dakikada bir kontrol edilir."
+
+#: sabnzbd/skintext.py
+msgid "Permissions for completed downloads"
+msgstr "Tamamlanmış indirmeler için izinler"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Set permissions pattern for completed files/folders.<br /><i>In octal "
+"notation. For example: \"755\" or \"777\"</i>"
+msgstr ""
+"Tamamlanmış dosyalar/dizinler için isin desenleri ayarla.<br /><i>Sekizlik "
+"yazımda. Mesela \"755\" veya \"777\"</i>"
+
+#: sabnzbd/skintext.py
+msgid "Watched Folder"
+msgstr "İzlenen Dizin"
+
+#: sabnzbd/skintext.py
+msgid "Folder to monitor for .nzb files."
+msgstr ".nzb dosyaları için takip edilecek dizin."
+
+#: sabnzbd/skintext.py
+msgid "Watched Folder Scan Speed"
+msgstr "İzlenen Dizin Tarama Hızı"
+
+#: sabnzbd/skintext.py
+msgid "Number of seconds between scans for .nzb files."
+msgstr ".nzb dosyaları için taramalar arası saniye sayısı."
+
+#: sabnzbd/skintext.py
+msgid "Scripts Folder"
+msgstr "Betik Dizini"
+
+#: sabnzbd/skintext.py
+msgid "Folder containing user scripts."
+msgstr "Kullanıcı betiklerini içeren dizin."
+
+#: sabnzbd/skintext.py
+msgid "Email Templates Folder"
+msgstr "E-posta Şablon Dizini"
+
+#: sabnzbd/skintext.py
+msgid "Folder containing user-defined email templates."
+msgstr "Kullanıcı tarafından tanımlanmış e-posta şablonlarını içeren dizin."
+
+#: sabnzbd/skintext.py
+msgid "Password file"
+msgstr "Parola dosyası"
+
+#: sabnzbd/skintext.py
+msgid "File containing all passwords to be tried on encrypted RAR files."
+msgstr "Şifreli RAR dosyalarında denenecek tüm parolaları içeren dosya."
+
+#: sabnzbd/skintext.py
+msgid "System Folders"
+msgstr "Sistem Dizinleri"
+
+#: sabnzbd/skintext.py
+msgid "Hidden Folders"
+msgstr "Gizli Dizinler"
+
+#: sabnzbd/skintext.py
+msgid "Administrative Folder"
+msgstr "Yönetim Dizini"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location for queue admin and history database.<br /><i>Can only be changed "
+"when queue is empty.</i>"
+msgstr ""
+"Kuyruk yönetimi ve tarihçe veri tabanı için konum.<br /><i>Sadece kuyruk boş"
+" olduğunda değiştirilebilir.</i>"
+
+#: sabnzbd/skintext.py
+msgid "Backup Folder"
+msgstr "Yedekleme Dizini"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location where the backups of the configuration file and databases are "
+"stored.<br />If left empty, the backup will be created in the Completed "
+"Download Folder."
+msgstr ""
+"Yapılandırma dosyası ile veri tabanları yedeklemelerinin muhafaza "
+"edildikleri konum.<br />Şayet boş bırakılırsa, yedekleme Tamamlanmış İndirme"
+" Dizini'nde oluşturulacaktır."
+
+#: sabnzbd/skintext.py
+msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
+msgstr ""
+"<i>Veriler <b>taşınmayacaktır</b>. SABnzbd'nin tekrar başlatılmasını "
+"gerektirir!</i>"
+
+#: sabnzbd/skintext.py
+msgid "Log Folder"
+msgstr "Kütük Dizini"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"
+msgstr ""
+"SABnzbd için kütük dosyalarının konumu. </b><i>SABnzbd'nin tekrar "
+"başlatılmasını gerektirir!</i>"
+
+#: sabnzbd/skintext.py
+msgid "Purge Logs"
+msgstr "Kütükleri Temizle"
+
+#: sabnzbd/skintext.py
+msgid ".nzb Backup Folder"
+msgstr ".nzb Yedekleme Dizini"
+
+#: sabnzbd/skintext.py
+msgid "Location where .nzb files will be stored."
+msgstr ".nzb dosyalarının muhafaza edilecekleri konum."
+
+#: sabnzbd/skintext.py
+msgid "Default Base Folder"
+msgstr "Varsayılan Temel Dizin"
+
+#: sabnzbd/skintext.py
+msgid "Download all par2 files"
+msgstr "Tüm par2 dosyalarını indir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"This prevents multiple repair runs by downloading all par2 files when "
+"needed."
+msgstr ""
+"Bu, gerektiğinde tüm par2 dosyalarını indirerek birden fazla tamir "
+"çalışmasını önler."
+
+#: sabnzbd/skintext.py
+msgid "Enable recursive unpacking"
+msgstr "Yinelenen açmayı etkinleştir"
+
+#: sabnzbd/skintext.py
+msgid "Unpack archives (rar, zip, 7z) within archives."
+msgstr "Arşiv dahilindeki arşivleri (rar, zip, 7z) aç."
+
+#: sabnzbd/skintext.py
+msgid "Ignore any folders inside archives"
+msgstr "Arşiv dahilindeki dizinleri dikkate alma"
+
+#: sabnzbd/skintext.py
+msgid "All files will go into a single folder."
+msgstr "Tüm dosyalar tek bir dizin içine gider."
+
+#: sabnzbd/skintext.py
+msgid "Only Get Articles for Top of Queue"
+msgstr "Yalnızca Sıranın Başındaki Makaleleri Al"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Enable for less memory usage. Disable to prevent slow jobs from blocking the"
+" queue."
+msgstr ""
+"Daha düşük hafıza kullanımı için etkinleştirin. Yavaş işlerin kuyruğu "
+"engellemesine mani olmak için devre dışı bırakın."
+
+#: sabnzbd/skintext.py
+msgid "Post-Process Only Verified Jobs"
+msgstr "Post-processing Sadece Doğrulanmış İşler için Yapılsın"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Only unpack and run scripts on jobs that passed the verification stage. If "
+"turned off, all jobs will be marked as Completed even if they are "
+"incomplete."
+msgstr ""
+"Sadece doğrulama aşamasını geçen işler için açma ve betik çalıştırma yap. "
+"Şayet devre dışıysa, kısmi olsalar dahi tüm işler Tamamlanmış olarak "
+"işaretlenecektir."
+
+#: sabnzbd/skintext.py
+msgid "Action when encrypted RAR is downloaded"
+msgstr "Şifrelenmiş RAR indirildiğinde yapılacak eylem"
+
+#: sabnzbd/skintext.py
+msgid "In case of \"Pause\", you'll need to set a password and resume the job."
+msgstr ""
+"\"Duraklat\" durumunda, bir parola ayarlayıp işi devam ettirmeniz "
+"gerekecektir."
+
+#: sabnzbd/skintext.py
+msgid "Identical download detection"
+msgstr "Aynı indirme tespiti"
+
+#: sabnzbd/skintext.py
+msgid "Detect identical downloads based on name or NZB contents."
+msgstr "Aynı indirmeleri isim veya NZB içeriklerine dayalı olarak tespit et."
+
+#: sabnzbd/skintext.py
+msgid "Smart duplicate detection"
+msgstr "Akıllı kopya tespiti"
+
+#: sabnzbd/skintext.py
+msgid "Detect duplicates based on analysis of the filename."
+msgstr "Kopyaları dosya isminin tahliline dayanarak tespit et."
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr "Düzeltilmiş yayınlara izin ver"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass smart duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name."
+msgstr ""
+"İndirme isminde PROPER, REAL veya REPACK tespit edilirse akıllı kopya "
+"tespitini atla."
+
+#. Four way switch for duplicates
+#: sabnzbd/skintext.py
+msgid "Discard"
+msgstr "At"
+
+#. Four way switch for duplicates
+#: sabnzbd/skintext.py
+msgid "Tag job"
+msgstr "İşi etiketle"
+
+#. Four way switch for duplicates
+#: sabnzbd/skintext.py
+msgid "Fail job (move to History)"
+msgstr "İşi başarısız yap (Tarihçeye taşı)"
+
+#: sabnzbd/skintext.py
+msgid "Abort post-processing"
+msgstr "Post-processing'i iptal et"
+
+#: sabnzbd/skintext.py
+msgid "Action when unwanted extension detected"
+msgstr "İstenmeyen uzantı tespit edildiğinde yapılacak eylem"
+
+#: sabnzbd/skintext.py
+msgid "Action when an unwanted extension is detected"
+msgstr "İstenmeyen bir uzantı tespit edildiğinde yapılacak eylem"
+
+#: sabnzbd/skintext.py
+msgid "Unwanted extensions"
+msgstr "İstenmeyen uzantılar"
+
+#: sabnzbd/skintext.py
+msgid "Blacklist"
+msgstr "Kara liste"
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr "Beyaz liste"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
+msgstr ""
+"Bir kip seçin ve tüm isten(mey)en uzantıları listeleyin. Mesela:  <b>exe</b>"
+" veya <b>exe, com</b>"
+
+#: sabnzbd/skintext.py
+msgid "Enable SFV-based checks"
+msgstr "SFV temelli kontrolleri etkinleştir"
+
+#: sabnzbd/skintext.py
+msgid "Do an extra verification based on SFV files."
+msgstr "SFV dosyalarına dayalı ilave bir doğrulama yap."
+
+#: sabnzbd/skintext.py
+msgid "User script can flag job as failed"
+msgstr "Kullanıcı betiği işi başarısız olarak işaretleyebilir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When the user script returns a non-zero exit code, the job will be flagged "
+"as failed."
+msgstr ""
+"Kullanıcı betiği sıfır olmayan bir çıkış kodu geri gönderdiğinde, iş "
+"başarısız olarak işaretlenecektir."
+
+#: sabnzbd/skintext.py
+msgid "Enable folder rename"
+msgstr "Dizin tekrar isimlendirmesini etkinleştir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Use temporary names during post processing. Disable when your system doesn't"
+" handle that properly."
+msgstr ""
+"Post processing esnasında geçici isimler kullan. Sisteminiz bunu doğru "
+"yönetemediğinde devre dışı bırakın."
+
+#: sabnzbd/skintext.py
+msgid "Pre-queue user script"
+msgstr "Sıra öncesi kullanıcı betiği"
+
+#: sabnzbd/skintext.py
+msgid "Used before an NZB enters the queue."
+msgstr "Bir NZB kuyruğa girmeden evvel kullanılır."
+
+#: sabnzbd/skintext.py
+msgid "On queue finish script"
+msgstr "Kuyruk sonu betiği"
+
+#: sabnzbd/skintext.py
+msgid "Executed after the queue finishes downloading."
+msgstr "Kuyruğun indirmesi tamamlandığında çalıştırılır."
+
+#: sabnzbd/skintext.py
+msgid "Extra PAR2 Parameters"
+msgstr "İlave PAR2 Parametreleri"
+
+#: sabnzbd/skintext.py
+msgid "Nice Parameters"
+msgstr "'Nice' Parametreleri"
+
+#: sabnzbd/skintext.py
+msgid "IONice Parameters"
+msgstr "'IONice' Parametreleri"
+
+#: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr "Harici işlem önceliği"
+
+#: sabnzbd/skintext.py
+msgid "Disconnect on Empty Queue"
+msgstr "Kuyruk Boşsa Bağlantıyı Kes"
+
+#: sabnzbd/skintext.py
+msgid "Disconnect from Usenet server(s) when queue is empty or paused."
+msgstr ""
+"Kuyruk boşsa veya duraklatıldıysa Usenet sunucuları ile bağlantıyı kes."
+
+#: sabnzbd/skintext.py
+msgid "Automatically sort queue"
+msgstr "Kuyruğu otomatik olarak sırala"
+
+#: sabnzbd/skintext.py
+msgid "Automatically sort jobs in the queue when a new job is added."
+msgstr "Kuyruktaki işleri yeni bir iş eklendiğinde otomatik olarak sırala."
+
+#: sabnzbd/skintext.py
+msgid "The queue will resort every 30 seconds if % downloaded is selected."
+msgstr ""
+"İndirme %'si seçildiyse, kuyruk her 30 saniyede bir tekrar sıralanacaktır."
+
+#: sabnzbd/skintext.py
+msgid "Propagation delay"
+msgstr "Yayılma gecikmesi"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Posts will be paused untill they are at least this age. Setting job priority"
+" to Force will skip the delay."
+msgstr ""
+"Mesajlar en az bu yaşa gelene dek duraklatılacaklar. İş önceliğini Zorla'ya "
+"ayarlamak gecikmeyi atlayacaktır."
+
+#: sabnzbd/skintext.py
+msgid "Check for New Release"
+msgstr "Yeni Sürüm Kontrol Et"
+
+#. Pick list for weekly test for new releases
+#: sabnzbd/skintext.py
+msgid "Also test releases"
+msgstr "Deneme sürümleri de"
+
+#: sabnzbd/skintext.py
+msgid "Replace Spaces in Foldername"
+msgstr "Dizin isminde boşlukların yerine koy"
+
+#: sabnzbd/skintext.py
+msgid "Replace spaces with underscores in folder names."
+msgstr "Dizin isimlerinde boşlukların yerine alt tireler koy."
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores in folder name"
+msgstr "Dizin isimlerinde alt tirelerin yerine koy"
+
+#: sabnzbd/skintext.py
+msgid "Replace underscores with dots in folder names."
+msgstr "Dizin isimlerinde alt tirelerin yerine noktalar koy."
+
+#: sabnzbd/skintext.py
+msgid "Replace dots in Foldername"
+msgstr "Dizin isimlerinde noktaların yerine koy"
+
+#: sabnzbd/skintext.py
+msgid "Replace dots with spaces in folder names."
+msgstr "Dizin isimlerinde noktaların yerine boşluklar koy."
+
+#: sabnzbd/skintext.py
+msgid "Make Windows compatible"
+msgstr "Windows ile uyumlu yap"
+
+#: sabnzbd/skintext.py
+msgid "For servers: make sure names are compatible with Windows."
+msgstr "Sunucular için: isimlerin Windows ile uyumlu olduğundan emin ol."
+
+#: sabnzbd/skintext.py
+msgid "Launch Browser on Startup"
+msgstr "Tarayıcıyı Başlangıçta Başlat"
+
+#: sabnzbd/skintext.py
+msgid "Launch the default web browser when starting SABnzbd."
+msgstr "SABnzbd'yi başlatırken varsayılan İnternet tarayıcısını başlat."
+
+#: sabnzbd/skintext.py
+msgid "Pause Downloading During Post-Processing"
+msgstr "Post-Processing Esnasında İndirmeyi Duraklat"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Pauses downloading at the start of post processing and resumes when "
+"finished."
+msgstr ""
+"İndirmeyi post processing (Sonra işleme) başladığında duraklatır ve "
+"tamamlandığında devam ettirir."
+
+#: sabnzbd/skintext.py
+msgid "Ignore Samples"
+msgstr "Örnekleri Dikkate Alma"
+
+#: sabnzbd/skintext.py
+msgid "Filter out sample files (e.g. video samples)."
+msgstr "Örnek dosyalarını filtrele (mesela video örneklerini (sample))."
+
+#: sabnzbd/skintext.py
+msgid "Delete after download"
+msgstr "İndirmeden sonra sil"
+
+#: sabnzbd/skintext.py
+msgid "Deobfuscate final filenames"
+msgstr "Son dosya isimlerindeki karartmayı kaldır"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If filenames of (large) files in the final folder look obfuscated or "
+"meaningless they will be renamed to the job name."
+msgstr ""
+"Eğer son dizindeki (büyük) dosyaların isimleri karartılmış veya anlamsız "
+"görünüyorsa, işin ismiyle yeniden isimlendirileceklerdir."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Additionally, attempts to set the correct file extension based on the file "
+"signature if the extension is not present or meaningless."
+msgstr ""
+"Buna ilaveten uzantı mevcut değilse veya anlamsızsa, doğru dosya uzantısı "
+"dosya imzasına dayanılarak ayarlanmaya çalışılacaktır."
+
+#: sabnzbd/skintext.py
+msgid "HTTPS certificate verification"
+msgstr "HPPS sertifika doğrulaması"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Verify certificates when connecting to indexers and RSS-sources using HTTPS."
+msgstr ""
+"İndeks sitelerine ve RSS kaynaklarına HTTPS kullanarak bağlanıldığında "
+"sertifikaları doğrula."
+
+#: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr "SOCKS5 Vekil Sunucusu"
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+"Belirtilen SOCKS5 vekil sunucusunu tüm dışarı giden bağlantılar için kullan."
+
+#: sabnzbd/skintext.py
+msgid "Server"
+msgstr "Sunucu"
+
+#: sabnzbd/skintext.py
+msgid "Post processing"
+msgstr "Post processing"
+
+#: sabnzbd/skintext.py
+msgid "Naming"
+msgstr "İsimlendirme"
+
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "Kota"
+
+#: sabnzbd/skintext.py
+msgid "How much can be downloaded this month (K/M/G)"
+msgstr "Bu ay ne kadar indirme yapılabileceği (K/M/G)"
+
+#. Reset day of the download quota
+#: sabnzbd/skintext.py
+msgid "Reset day"
+msgstr "Sıfırlama günü"
+
+#: sabnzbd/skintext.py
+msgid ""
+"On which day of the month or week (1=Monday) does your ISP reset the quota? "
+"(Optionally with hh:mm)"
+msgstr ""
+"Ayın veya haftanın (1=Pazartesi) hangi günü İnternet Erişim Sağlayıcınız "
+"kotayı sıfırlar? (Seçime dayalı olarak ss:dd ile)"
+
+#: sabnzbd/skintext.py
+msgid "Should downloading resume after the quota is reset?"
+msgstr "İndirme, kota sıfırlandıktan sonra devam etmeli mi?"
+
+#. Does the quota get reset every day, week or month?
+#: sabnzbd/skintext.py
+msgid "Quota period"
+msgstr "Kota periyodu"
+
+#: sabnzbd/skintext.py
+msgid "Does the quota get reset each day, week or month?"
+msgstr "Kota her gün, hafta veya ay sıfırlanıyor mu?"
+
+#: sabnzbd/skintext.py
+msgid "Check before download"
+msgstr "İndirmeden önce kontrol et"
+
+#: sabnzbd/skintext.py
+msgid "Try to predict successful completion before actual download (slower!)"
+msgstr ""
+"Hakiki indirmeden önce başarılı tamamlamayı öngörmeyi dene (daha yavaş!)"
+
+#: sabnzbd/skintext.py
+msgid "SSL Ciphers"
+msgstr "SSL Şifreleri"
+
+#: sabnzbd/skintext.py
+msgid "Increase performance by forcing a lower SSL encryption strength."
+msgstr "Daha düşük şifreleme kuvveti zorlayarak performansı arttır."
+
+#: sabnzbd/skintext.py, sabnzbd/urlgrabber.py
+msgid "Maximum retries"
+msgstr "Azami tekrar deneme"
+
+#: sabnzbd/skintext.py
+msgid "Maximum number of retries per server"
+msgstr "Sunucu başı azami tekrar deneme sayısı"
+
+#: sabnzbd/skintext.py
+msgid "Abort jobs that cannot be completed"
+msgstr "Tamamlanamayacak işleri iptal et"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When during download it becomes clear that too much data is missing, abort "
+"the job"
+msgstr ""
+"İndirme esnasında çok fazla verinin eksik olduğu anlaşıldığında, işi iptal "
+"et"
+
+#. Caption - Button: Add server
+#: sabnzbd/skintext.py
+msgid "Add Server"
+msgstr "Sunucu Ekle"
+
+#. User defined name for server
+#: sabnzbd/skintext.py
+msgid "Server description"
+msgstr "Sunucu tanımlaması"
+
+#. Server port
+#: sabnzbd/skintext.py
+msgid "Port"
+msgstr "Bağlantı Noktası"
+
+#. Server username
+#: sabnzbd/skintext.py
+msgid "Username"
+msgstr "Kullanıcı İsmi"
+
+#. Server password
+#: sabnzbd/skintext.py
+msgid "Password"
+msgstr "Parola"
+
+#. Server timeout
+#: sabnzbd/skintext.py
+msgid "Timeout"
+msgstr "Zaman Aşımı"
+
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr "Hesabın sonlanma tarihi"
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr "Sonlanma tarihinden 5 gün evvel ikaz et."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
+"Bu hesap için kota, bu seçeneğin ayarlanmasından itibaren hesaplanır. Bayt "
+"olarak, seçime dayalı bir şekilde K,M,G takip edebilir.<br />0 değerine "
+"ulaştığında ikazda bulun, her birkaç dakikada bir kontrol edilir."
+
+#. Server's retention time in days
+#: sabnzbd/skintext.py
+msgid "Retention time"
+msgstr "Muhafaza süresi"
+
+#. Server SSL tickbox
+#: sabnzbd/skintext.py
+msgid "SSL"
+msgstr "SSL"
+
+#. Server SSL tickbox
+#: sabnzbd/skintext.py
+msgid "Secure connection to server"
+msgstr "Sunucuya güvenli bağlantı"
+
+#: sabnzbd/skintext.py
+msgid "Certificate verification"
+msgstr "Sertifika doğrulaması"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
+msgstr ""
+"SSL etkinleştirildiğinde: - Katı: tam sertifika doğrulamasını zorla. Bu, en "
+"emniyetli ayardır. - Orta: sertifikanın geçerli ve sunucu adresiyle "
+"eşleştiğini doğrula, ama yerel olarak zerkedilen sertifikalara (mesela "
+"güvenlik duvarı veya virüs tarayıcısı tarafından) izin ver. - Asgari: "
+"sertifikanın geçerli olduğunu doğrula. Bu, güvenli değildir ve herhangi bir "
+"sertifika kullanılabilir. - Devre dışı: hiçbir sertifika doğrulaması yok. "
+"Bu, hiçbir şekilde güvenli değildir, herhangi biri bağlantınızı "
+"dinleyebilir. "
+
+#: sabnzbd/skintext.py
+msgid "Disabled"
+msgstr "Devre dışı"
+
+#: sabnzbd/skintext.py
+msgid "Minimal"
+msgstr "Asgari"
+
+#: sabnzbd/skintext.py
+msgid "Medium"
+msgstr "Orta"
+
+#: sabnzbd/skintext.py
+msgid "Strict"
+msgstr "Katı"
+
+#. Explain server priority
+#: sabnzbd/skintext.py
+msgid "0 is highest priority, 100 is the lowest priority"
+msgstr "0 en yüksek öncelik, 100 ise en düşük önceliktir"
+
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr "Gerekli"
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+"Bağlantı kopması durumunda, indirme kuyruğu bu sunucuyu atlamak yerine "
+"birkaç dakikalığına duraklatılacaktır"
+
+#. Server optional tickbox
+#: sabnzbd/skintext.py
+msgid "Optional"
+msgstr "Seçime Dayalı"
+
+#: sabnzbd/skintext.py
+msgid "For unreliable servers, will be ignored longer in case of failures"
+msgstr ""
+"İstikrarsız sunucular için, başarısızlık durumunda daha uzun süre dikkate "
+"alınmayacaktır"
+
+#. Enable server tickbox
+#: sabnzbd/skintext.py
+msgid "Enable"
+msgstr "Etkinleştir"
+
+#. Button: Remove server
+#: sabnzbd/skintext.py
+msgid "Remove Server"
+msgstr "Sunucuyu Kaldır"
+
+#. Button: Test server - Wizard step
+#: sabnzbd/skintext.py
+msgid "Test Server"
+msgstr "Sunucuyu Dene"
+
+#. Button: Clear server's byte counters
+#: sabnzbd/skintext.py
+msgid "Clear Counters"
+msgstr "Sayaçları Temizle"
+
+#: sabnzbd/skintext.py
+msgid "Testing server details..."
+msgstr "Sunucu ayrıntıları deneniyor..."
+
+#: sabnzbd/skintext.py
+msgid "Bandwidth"
+msgstr "Bant genişliği"
+
+#: sabnzbd/skintext.py
+msgid "Personal notes"
+msgstr "Kişisel notlar"
+
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr "Makale bulunurluluğu"
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr "Talep edilen %d makaleden % %f  mevcut"
+
+#. Config->Scheduling
+#: sabnzbd/skintext.py
+msgid "Add Schedule"
+msgstr "Zamanlama Ekle"
+
+#. Config->Scheduling
+#: sabnzbd/skintext.py
+msgid "Frequency"
+msgstr "Frekans"
+
+#. Config->Scheduling
+#: sabnzbd/skintext.py
+msgid "Action"
+msgstr "Eylem"
+
+#. Config->Scheduling
+#: sabnzbd/skintext.py
+msgid "Arguments"
+msgstr "Argümanlar"
+
+#. Config->Scheduling
+#: sabnzbd/skintext.py
+msgid "Current Schedules"
+msgstr "Güncel Zamanlayıcılar"
+
+#: sabnzbd/skintext.py
+msgid ""
+"The checkbox next to the feed name should be ticked for the feed to be "
+"enabled and be automatically checked for new items.<br />When a feed is "
+"added, it will only pick up new items and not anything already in the RSS "
+"feed unless you press \"Force Download\"."
+msgstr ""
+"Beslemenin etkinleştirilmesi ve otomatik olarak yeni unsurlar için kontrol "
+"edilmesi için besleme isminin yanındaki kutucuğun işaretlenmesi gerekir.<br "
+"/>Yeni bir besleme eklendiğinde sadece yeni unsurları dikkate alacaktır, "
+"\"İndirmeyi Zorla\" düğmesine basmassanız RSS beslemesinde zaten bulunan "
+"şeyleri dikkate almayacaktır."
+
+#. Config->RSS, placeholder (cannot be too long)
+#: sabnzbd/skintext.py
+msgid "Seperate multiple URLs by a comma"
+msgstr "Birden fazla URL'leri virgülle ayırın"
+
+#. Config->RSS button
+#: sabnzbd/skintext.py
+msgid "Read Feed"
+msgstr "Beslemeyi Oku"
+
+#. Config->RSS button
+#: sabnzbd/skintext.py
+msgid "Force Download"
+msgstr "İndirmeyi Zorla"
+
+#: sabnzbd/skintext.py
+msgid "Apply filters"
+msgstr "Filtreleri Uygula"
+
+#. Config->RSS edit button
+#: sabnzbd/skintext.py
+msgid "Edit"
+msgstr "Düzenle"
+
+#. Config->RSS when will be the next RSS scan
+#: sabnzbd/skintext.py
+msgid "Next scan at"
+msgstr "Gelecek tarama şu zamanda"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Order"
+msgstr "Sıra"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Type"
+msgstr "Tür"
+
+#. Config->RSS table column header
+#: sabnzbd/skintext.py
+msgid "Filter"
+msgstr "Filtre"
+
+#. Config->RSS filter-type selection menu
+#: sabnzbd/skintext.py
+msgid "Accept"
+msgstr "Kabul et"
+
+#. Config->RSS filter-type selection menu
+#: sabnzbd/skintext.py
+msgid "Reject"
+msgstr "Reddet"
+
+#. Config->RSS filter-type selection menu
+#: sabnzbd/skintext.py
+msgid "Requires"
+msgstr "Gereklilikler"
+
+#. Config->RSS filter-type selection menu
+#: sabnzbd/skintext.py
+msgid "RequiresCat"
+msgstr "ZorunluDizin"
+
+#. Config->RSS filter-type selection menu
+#: sabnzbd/skintext.py
+msgid "At least"
+msgstr "En az"
+
+#. Config->RSS filter-type selection menu
+#: sabnzbd/skintext.py
+msgid "At most"
+msgstr "En çok"
+
+#. Config->RSS filter-type selection menu "From Season/Episode"
+#: sabnzbd/skintext.py
+msgid "From SxxEyy"
+msgstr "SxxEyy'den Başlayarak"
+
+#. Config->RSS filter-type selection menu "From Show Season/Episode"
+#: sabnzbd/skintext.py
+msgid "From Show SxxEyy"
+msgstr "Dizi SxxEyy'den Başlayarak"
+
+#. Config->RSS section header
+#: sabnzbd/skintext.py
+msgid "Matched"
+msgstr "Eşleşmiş"
+
+#. Config->RSS section header
+#: sabnzbd/skintext.py
+msgid "Not Matched"
+msgstr "Eşleşmemiş"
+
+#. Config->RSS section header
+#: sabnzbd/skintext.py
+msgid "Downloaded"
+msgstr "İndirilmiş"
+
+#. Config->RSS button
+#: sabnzbd/skintext.py
+msgid "Read All Feeds Now"
+msgstr "Tüm Beslemeleri Şimdi Oku"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
+"Eğer sadece <em>Varsayılan</em> kategorisi seçildiyse, bildirimler tüm "
+"kategorilerdeki işler için etkinleştirilir."
+
+#: sabnzbd/skintext.py
+msgid "Email Notification On Job Completion"
+msgstr "İş Tamamlanmasında E-posta Bildirimi"
+
+#. When to send email
+#: sabnzbd/skintext.py
+msgid "Never"
+msgstr "Asla"
+
+#. When to send email
+#: sabnzbd/skintext.py
+msgid "Always"
+msgstr "Daima"
+
+#. When to send email
+#: sabnzbd/skintext.py
+msgid "Error-only"
+msgstr "Sadece Hatada"
+
+#: sabnzbd/skintext.py
+msgid "Disk Full Notifications"
+msgstr "Disk Dolu Bildirimleri"
+
+#: sabnzbd/skintext.py
+msgid "Send email when disk is full and SABnzbd is paused."
+msgstr "Disk dolduğunda ve SABnzbd duraklatıldığında e-posta gönder."
+
+#: sabnzbd/skintext.py
+msgid "Send RSS notifications"
+msgstr "RSS bildirimleri gönder"
+
+#: sabnzbd/skintext.py
+msgid "Send email when an RSS feed adds jobs to the queue."
+msgstr "Bir RSS beslemesi kuyruğa iş eklediğinde e-posta gönder."
+
+#: sabnzbd/skintext.py
+msgid "SMTP Server"
+msgstr "SMTP Sunucusu"
+
+#: sabnzbd/skintext.py
+msgid "Set your ISP's server for outgoing email."
+msgstr "Giden e-postalar için İSS'nizin sunucusunu ayarlayın."
+
+#: sabnzbd/skintext.py
+msgid "Email Recipient"
+msgstr "E-posta Alıcısı"
+
+#: sabnzbd/skintext.py
+msgid "Email address to send the email to."
+msgstr "E-postanın gönderileceği e-posta adresi."
+
+#: sabnzbd/skintext.py
+msgid "Email Sender"
+msgstr "E-posta göndericisi"
+
+#: sabnzbd/skintext.py
+msgid "Who should we say sent the email?"
+msgstr "Kimin bu e-postayı gönderdiğini söylememiz gerekiyor?"
+
+#: sabnzbd/skintext.py
+msgid "OPTIONAL Account Username"
+msgstr "SEÇİME DAYALI Hesap Kullanıcı İsmi"
+
+#: sabnzbd/skintext.py
+msgid "For authenticated email, account name."
+msgstr "Kimlik doğrulamalı e-posta için hesap ismi."
+
+#: sabnzbd/skintext.py
+msgid "OPTIONAL Account Password"
+msgstr "SEÇİME DAYALI Hesap Parolası"
+
+#: sabnzbd/skintext.py
+msgid "For authenticated email, password."
+msgstr "Kimlik doğrulamalı e-posta için parola."
+
+#: sabnzbd/skintext.py
+msgid "Notification Sent!"
+msgstr "Bildirim Gönderildi!"
+
+#. Don't translate "NotifyOSD"
+#: sabnzbd/skintext.py
+msgid "Enable NotifyOSD"
+msgstr "NotifyOSD'yi Etkinleştir"
+
+#. Header for macOS Notfication Center section
+#: sabnzbd/skintext.py
+msgid "Notification Center"
+msgstr "Bildirim Merkezi"
+
+#: sabnzbd/skintext.py
+msgid "Enable Windows Notifications"
+msgstr "Windows Bildirimlerini Etkinleştir"
+
+#: sabnzbd/skintext.py
+msgid "Windows Notifications"
+msgstr "Windows Bildirimleri"
+
+#. Header for Ubuntu's NotifyOSD notifications section
+#: sabnzbd/skintext.py
+msgid "NotifyOSD"
+msgstr "NotifyOSD"
+
+#. Header for Prowl notification section
+#: sabnzbd/skintext.py
+msgid "Prowl"
+msgstr "Prowl"
+
+#. Prowl settings
+#: sabnzbd/skintext.py
+msgid "Enable Prowl notifications"
+msgstr "Prowl bildirimlerini etkinleştir"
+
+#. Prowl settings
+#: sabnzbd/skintext.py
+msgid "Requires a Prowl account"
+msgstr "Bir Prowl hesabına ihtiyaç duyar"
+
+#. Prowl settings
+#: sabnzbd/skintext.py
+msgid "API key for Prowl"
+msgstr "Prowl için API anahtarı"
+
+#. Prowl settings
+#: sabnzbd/skintext.py
+msgid "Personal API key for Prowl (required)"
+msgstr "Prowl için kişisel API anahtarı (gerekli)"
+
+#. Header for Pushover notification section
+#: sabnzbd/skintext.py
+msgid "Pushover"
+msgstr "Pushover"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "Enable Pushover notifications"
+msgstr "Pushover bildirimlerini etkinleştir"
+
+#. Pushoversettings
+#: sabnzbd/skintext.py
+msgid "Requires a Pushover account"
+msgstr "Bir Pushover hesabına ihtiyaç duyar"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "Application Token"
+msgstr "Uygulama Jetonu"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "Application token (required)"
+msgstr "Uygulama jetonu (gerekli)"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "User Key"
+msgstr "Kullanıcı Anahtarı"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "User Key (required)"
+msgstr "Kullanıcı Anahtarı (gerekli)"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "Device(s)"
+msgstr "Cihazlar"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "Device(s) to which message should be sent"
+msgstr "Mesajın gönderilmesi gereken cihazlar"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "Emergency retry"
+msgstr "Acil tekrar deneme"
+
+#: sabnzbd/skintext.py
+msgid "How often (in seconds) the same notification will be sent"
+msgstr "Ne sıklıkla (saniye olarak) aynı bildirimin gönderileceği"
+
+#. Pushover settings
+#: sabnzbd/skintext.py
+msgid "Emergency expire"
+msgstr "Acil durum süresinin dolması"
+
+#: sabnzbd/skintext.py
+msgid "How many seconds your notification will continue to be retried"
+msgstr "Kaç saniye boyunca bildiriminizin tekrar deneneceği"
+
+#. Header for Pushbullet notification section
+#: sabnzbd/skintext.py
+msgid "Pushbullet"
+msgstr "Pushbullet"
+
+#. Pushbullet settings
+#: sabnzbd/skintext.py
+msgid "Enable Pushbullet notifications"
+msgstr "Pushbullet bildirimlerini etkinleştir"
+
+#. Pushbulletsettings
+#: sabnzbd/skintext.py
+msgid "Requires a Pushbullet account"
+msgstr "Bir Pushbullet hesabına ihtiyaç duyar"
+
+#. Pushbullet settings
+#: sabnzbd/skintext.py
+msgid "Personal API key"
+msgstr "Kişisel API anahtarı"
+
+#. Pushbullet settings
+#: sabnzbd/skintext.py
+msgid "Your personal Pushbullet API key (required)"
+msgstr "Kişisel Pushbullet API anahtarınız (gerekli)"
+
+#. Pushbullet settings
+#: sabnzbd/skintext.py
+msgid "Device"
+msgstr "Cihaz"
+
+#. Pushbullet settings
+#: sabnzbd/skintext.py
+msgid "Device to which message should be sent"
+msgstr "Mesajın yollanması gereken cihaz"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Enable Apprise notifications"
+msgstr "Apprise bildirimlerini etkinleştir"
+
+#: sabnzbd/skintext.py
+msgid "Send notifications using Apprise to almost any notification service"
+msgstr ""
+"Apprise kullanarak neredeyse tüm bildirim hizmetlerine bildirim gönderin"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Default Apprise URLs"
+msgstr "Varsayılan Apprise URL'leri"
+
+#. Apprise settings
+#: sabnzbd/skintext.py
+msgid "Use a comma and/or space to identify more than one URL."
+msgstr ""
+"Birden fazla URL (adres) tanımlamak için virgül ve/veya boşluk kullanın."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Override the default URLs for specific notification types below, if desired."
+msgstr ""
+"İstenirse, belirli bildirim türleri için aşağıdaki varsayılan URL'lerin "
+"yerine koy."
+
+#. Header for Notification Script notification section
+#: sabnzbd/skintext.py
+msgid "Notification Script"
+msgstr "Bildirim Betiği"
+
+#. Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Enable notification script"
+msgstr "Bildirim betiğini etkinleştir"
+
+#. Notification Scriptsettings
+#: sabnzbd/skintext.py
+msgid "Executes a custom script"
+msgstr "Kişiselleştirilmiş bir betik çalıştırır"
+
+#. Notification Scriptsettings
+#: sabnzbd/skintext.py
+msgid "Which script should we execute for notification?"
+msgstr "Bildirim için hangi betiği çalıştırmamız gerekir?"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Indexers can supply a category inside the NZB which SABnzbd will try to "
+"match to the categories defined below. Additionally, you can add terms to "
+"\"Indexer Categories / Groups\" to match more categories. Use commas to "
+"separate terms. Wildcards in the terms are supported. <br>More information "
+"can be found on the Wiki."
+msgstr ""
+"İndeksleyiciler NZB dosyası içinde bir kategori sağlayabilirler, ki SABnzbd "
+"bunu aşağıda tanımlanan kategorilerle eşleştirmeyi deneyecektir. Buna "
+"ilaveten, \"İndeksleyici Kategorileri / Grupları\" bölümüne daha fazla "
+"kategoriyle eşleşmesi için terim ekleyebilirsiniz. Terimleri ayırmak için "
+"virgül kullanın. Terimlerde joker kullanabilirsiniz. <br>Daha fazla bilgi "
+"Viki'de bulunabilir."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Ending the path with an asterisk * will prevent creation of job folders."
+msgstr ""
+"Yolun sonuna bir asterisk * koyarsanız, bu, iş dizinlerinin oluşturulmasına "
+"engel olacaktır."
+
+#: sabnzbd/skintext.py
+msgid "Relative folders are based on"
+msgstr "Göreli dizinler şuna dayalı olacaktır"
+
+#: sabnzbd/skintext.py
+msgid "Folder/Path"
+msgstr "Dizin/Yol"
+
+#: sabnzbd/skintext.py
+msgid "Indexer Categories / Groups"
+msgstr "İndeksleyici Kategorileri / Gruplar"
+
+#: sabnzbd/skintext.py
+msgid "Pattern Key"
+msgstr "Desen Anahtarı"
+
+#: sabnzbd/skintext.py
+msgid "Clear"
+msgstr "Temizle"
+
+#: sabnzbd/skintext.py
+msgid "Presets"
+msgstr "Ön ayarlar"
+
+#: sabnzbd/skintext.py
+msgid "Affected Categories"
+msgstr "Etkilenen Kategoriler"
+
+#: sabnzbd/skintext.py
+msgid "Meaning"
+msgstr "Anlam"
+
+#: sabnzbd/skintext.py
+msgid "Pattern"
+msgstr "Desen"
+
+#: sabnzbd/skintext.py
+msgid "Result"
+msgstr "Netice"
+
+#: sabnzbd/skintext.py
+msgid "Title"
+msgstr "Başlık"
+
+#: sabnzbd/skintext.py
+msgid "Movie Name"
+msgstr "Film İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Movie.Name"
+msgstr "Film.İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Movie_Name"
+msgstr "Film_İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Show Name"
+msgstr "Dizi İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Show.Name"
+msgstr "Dİzi.İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Show_Name"
+msgstr "Dizi_İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Season Number"
+msgstr "Sezon Sayısı"
+
+#: sabnzbd/skintext.py
+msgid "Episode Number"
+msgstr "Bölüm Sayısı"
+
+#: sabnzbd/skintext.py
+msgid "Episode Name"
+msgstr "Bölüm İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Episode.Name"
+msgstr "Bölüm.İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Episode_Name"
+msgstr "Bölüm_İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Extension"
+msgstr "Uzantı"
+
+#: sabnzbd/skintext.py
+msgid "Part Number"
+msgstr "Blok sayısı"
+
+#: sabnzbd/skintext.py
+msgid "Decade"
+msgstr "On yıl"
+
+#: sabnzbd/skintext.py
+msgid "Original Filename"
+msgstr "Özgün Dosya İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Original Job Name"
+msgstr "Özgün İş İsmi"
+
+#: sabnzbd/skintext.py
+msgid "Lower Case"
+msgstr "Küçük Harfle"
+
+#: sabnzbd/skintext.py
+msgid "TEXT"
+msgstr "METİN"
+
+#: sabnzbd/skintext.py
+msgid "text"
+msgstr "metin"
+
+#: sabnzbd/skintext.py
+msgid "file"
+msgstr "dosya"
+
+#: sabnzbd/skintext.py
+msgid "Sort String"
+msgstr "Sıralama Dizesi"
+
+#: sabnzbd/skintext.py
+msgid "Multi-part Label"
+msgstr "Çoklu blok etiketi"
+
+#: sabnzbd/skintext.py
+msgid "Show folder"
+msgstr "Dizi dizini"
+
+#: sabnzbd/skintext.py
+msgid "Season folder"
+msgstr "Sezon dizini"
+
+#: sabnzbd/skintext.py
+msgid "In folders"
+msgstr "Şu dizinlerde"
+
+#: sabnzbd/skintext.py
+msgid "No folders"
+msgstr "Dizin yok"
+
+#: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr "İş ismi Dosya İsmi Olarak"
+
+#: sabnzbd/skintext.py
+msgid "Series"
+msgstr "Dizi"
+
+#. Note for title expression in Sorting that does case adjustment
+#: sabnzbd/skintext.py
+msgid "case-adjusted"
+msgstr "büyük-küçük harf ayarlanmış"
+
+#: sabnzbd/skintext.py
+msgid "Processed Result"
+msgstr "İşlenmiş Sonuç"
+
+#: sabnzbd/skintext.py
+msgid "Any property"
+msgstr "Herhangi bir özellik"
+
+#: sabnzbd/skintext.py
+msgid "property"
+msgstr "özellik"
+
+#: sabnzbd/skintext.py
+msgid "GuessIt Property"
+msgstr "Guessit Özelliği"
+
+#: sabnzbd/skintext.py
+msgid "GuessIt.Property"
+msgstr "Guessit.Özelliği"
+
+#: sabnzbd/skintext.py
+msgid "GuessIt_Property"
+msgstr "Guessit_Özelliği"
+
+#: sabnzbd/skintext.py
+msgid "Minimum Filesize"
+msgstr "Asgari Dosya Boyutu"
+
+#: sabnzbd/skintext.py
+msgid "Affected Job Types"
+msgstr "Etkilenen İş Türleri"
+
+#: sabnzbd/skintext.py
+msgid "All"
+msgstr "Hepsi"
+
+#: sabnzbd/skintext.py
+msgid "Series with air dates"
+msgstr "Yayınlama tarihleri olan diziler"
+
+#: sabnzbd/skintext.py
+msgid "Movies"
+msgstr "Filmler"
+
+#: sabnzbd/skintext.py
+msgid "Other / Unknown"
+msgstr "Diğer / Bilinmeyen"
+
+#: sabnzbd/skintext.py
+msgid ""
+"<p>Use Sorters to automatically organize your completed downloads. For "
+"example, put all episodes from a series in a season-specific folder. Or, put"
+" movies in a folder named after the movie.</p><p>Sorters are tried in order "
+"of appearance and can be reordered by dragging and dropping.<br/>The first "
+"active sorter that matches both the affected category and job type is "
+"applied.</p><p>More options are available when Advanced Settings is "
+"checked.<br/>Detailed information can be found on the Wiki.</p>"
+msgstr ""
+"<p>Tamamlanmış indirmelerinizi otomatik olarak düzenlemek için "
+"Sıralayıcıları kullanın. Mesela, bir dizinin tüm bölümlerini sezona özel bir"
+" dizine koyun. Veya filmleri, ismini filmden alan bir dizine "
+"koyun.</p><p>Sıralayıcılar görünüm sırasına göre denenir ve sürükeyip "
+"bırakarak tekrar düzenlenebilir.<br/>Hem etkilenen kategori, hem de iş türü "
+"ile eşleşen ilk faal sıralayıcı uygulanır.</p><p>Gelişmiş Ayarlar "
+"işaretlendiğinde daha fazla seçenek mevcut olur.<br/>Teferruatlı bilgi "
+"Viki'de bulunabilir.</p>"
+
+#: sabnzbd/skintext.py
+msgid "Add Sorter"
+msgstr "Sıralayıcı Ekle"
+
+#: sabnzbd/skintext.py
+msgid "Remove Sorter"
+msgstr "Sıralayıcıyı Kaldır"
+
+#: sabnzbd/skintext.py
+msgid "Test Data"
+msgstr "Deneme Verileri"
+
+#: sabnzbd/skintext.py
+msgid "Quick start"
+msgstr "Hızlı başlangıç"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all episodes in the \"tv\" category to a show-specific "
+"folder"
+msgstr ""
+"\"tv\" kategorisindeki tüm bölümleri diziye özel bir dizine taşı ve tekrar "
+"isimlendir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Move and rename all movies in the \"movies\" category to a movie-specific "
+"folder"
+msgstr ""
+"\"Film\" kategorisindeki tüm filmleri filmlere özel bir dizine taşı ve "
+"tekrar isimlendir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Rarely used options. For their meaning and explanation, click on the Help "
+"button to go to the Wiki page.<br>Don't change these without checking the "
+"Wiki first, as some have serious side-effects.<br>The default values are "
+"between parentheses."
+msgstr ""
+"Nadiren kullanılan seçenekler. Anlamları ve açıklama için Viki sayfasına "
+"gitmek maksadıyla Yardım düğmesine tıklayın.<br>Bazılarının ciddi yan "
+"etkileri olduğundan dolayı bunları Viki'yi kontrol etmeden "
+"değiştirmeyin.<br>Varsayılan değerler parantez içindedir."
+
+#: sabnzbd/skintext.py
+msgid "Values"
+msgstr "Değerler"
+
+#. Job details page
+#: sabnzbd/skintext.py
+msgid "Edit NZB Details"
+msgstr "NZB Ayrıntılarını Düzenle"
+
+#. Job details page, delete button
+#: sabnzbd/skintext.py
+msgid "Delete"
+msgstr "Sil"
+
+#. Job details page, filename column header
+#: sabnzbd/skintext.py
+msgid "Filename"
+msgstr "Dosya ismi"
+
+#: sabnzbd/skintext.py
+msgid "Free Space"
+msgstr "Boş alan"
+
+#: sabnzbd/skintext.py
+msgid "Temp Folder"
+msgstr "Geçici Dizin"
+
+#: sabnzbd/skintext.py
+msgid "Multi-Operations"
+msgstr "Çoklu-İşlemler"
+
+#: sabnzbd/skintext.py
+msgid "Hold shift key to select a range"
+msgstr "Bir aralık seçmek için Shift tuşunu basılı tutun"
+
+#: sabnzbd/skintext.py
+msgid "Check all"
+msgstr "Hepsini seç"
+
+#: sabnzbd/skintext.py
+msgid "Restart SABnzbd"
+msgstr "SABnzbd'yi tekrar başlat"
+
+#: sabnzbd/skintext.py
+msgid "On queue finish"
+msgstr "Kuyruk bitiminde"
+
+#: sabnzbd/skintext.py
+msgid "Status and interface options"
+msgstr "Durum ve arayüz seçenekleri"
+
+#: sabnzbd/skintext.py
+msgid "Or drag and drop files in the window!"
+msgstr "Veya dosyaları pencereye sürükleyip bırakın!"
+
+#: sabnzbd/skintext.py
+msgid "Lost connection to SABnzbd.."
+msgstr "SABnzbd'ye bağlantı kesildi."
+
+#: sabnzbd/skintext.py
+msgid "In case of SABnzbd restart this screen will disappear automatically!"
+msgstr ""
+"SABnzbd'nin tekrar başlatılması durumunda bu ekran otomatik olarak yok "
+"olacaktır!"
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "İKAZ:"
+
+#: sabnzbd/skintext.py
+msgid "Fetch"
+msgstr "Al"
+
+#: sabnzbd/skintext.py
+msgid "Web Interface"
+msgstr "Web arayüzü"
+
+#: sabnzbd/skintext.py
+msgid "Refresh rate"
+msgstr "Tazeleme oranı"
+
+#: sabnzbd/skintext.py
+msgid "Use global interface settings"
+msgstr "Genel arayüz ayarlarını kullan"
+
+#: sabnzbd/skintext.py
+msgid "Queue item limit"
+msgstr "Kuyruk unsur sınırı"
+
+#: sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "Tarihçe unsur sınırı"
+
+#: sabnzbd/skintext.py
+msgid "Date format"
+msgstr "Tarih biçimi"
+
+#: sabnzbd/skintext.py
+msgid "Extra queue columns"
+msgstr "Ek kuyruk sütunları"
+
+#: sabnzbd/skintext.py
+msgid "Extra history columns"
+msgstr "Ek tarihçe sütunları"
+
+#: sabnzbd/skintext.py
+msgid "page"
+msgstr "sayfa"
+
+#: sabnzbd/skintext.py
+msgid "Loading"
+msgstr "Yükleniyor"
+
+#: sabnzbd/skintext.py
+msgid "articles"
+msgstr "makale"
+
+#: sabnzbd/skintext.py
+msgid "Rename"
+msgstr "Tekrar İsimlendir"
+
+#: sabnzbd/skintext.py
+msgid "Queue repair"
+msgstr "Kuyruk tamiri"
+
+#: sabnzbd/skintext.py
+msgid "Show active connections"
+msgstr "Faal bağlantıları göster"
+
+#: sabnzbd/skintext.py
+msgid "Unblock"
+msgstr "Engeli kaldır"
+
+#: sabnzbd/skintext.py
+msgid "Orphaned jobs"
+msgstr "Öksüz işler"
+
+#: sabnzbd/skintext.py
+msgid "Send back to queue"
+msgstr "Kuyruğa geri gönder"
+
+#: sabnzbd/skintext.py
+msgid "Delete All"
+msgstr "Tümünü Sil"
+
+#: sabnzbd/skintext.py
+msgid "Retry all"
+msgstr "Tümünü tekrar dene"
+
+#: sabnzbd/skintext.py
+msgid "Fetch NZB from URL"
+msgstr "URL konumundan NZB al"
+
+#: sabnzbd/skintext.py
+msgid "Upload NZB"
+msgstr "NZB Yükle"
+
+#: sabnzbd/skintext.py
+msgid "Optionally specify a filename"
+msgstr "Seçime dayalı olarak bir dosya ismi belirtin"
+
+#: sabnzbd/skintext.py
+msgid "Submit"
+msgstr "Gönder"
+
+#: sabnzbd/skintext.py
+msgid "Remove all selected files"
+msgstr "Tüm seçili dosyaları kaldır"
+
+#: sabnzbd/skintext.py
+msgid "Hide/show completed files"
+msgstr "Tamamlanmış dosyaları sakla/göster"
+
+#: sabnzbd/skintext.py
+msgid "Top"
+msgstr "Üst"
+
+#: sabnzbd/skintext.py
+msgid "Bottom"
+msgstr "Alt"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When you Retry a job, 'Duplicate Detection' and 'Abort jobs that cannot be "
+"completed' are disabled."
+msgstr ""
+"Bir işi tekrar denediğinizde, 'Kopya Tespiti' ve 'Tamamlanamayacak işleri "
+"iptal et' devre dışı bırakılır."
+
+#: sabnzbd/skintext.py
+msgid "View Script Log"
+msgstr "Betik Kütüğünü Görüntüle"
+
+#: sabnzbd/skintext.py
+msgid "Renaming the job will abort Direct Unpack."
+msgstr "İşi tekrar isimlendirmek Doğrudan Açmayı iptal edecektir."
+
+#: sabnzbd/skintext.py
+msgid ""
+"LocalStorage (cookies) are disabled in your browser, interface settings will"
+" be lost after you close the browser!"
+msgstr ""
+"YerelDepolama (LocalStorage, çerezler) tarayıcınızda devre dışı, arayüz "
+"ayarları tarayıcınızı kapattığınızda kaybolacaktır!"
+
+#: sabnzbd/skintext.py
+msgid "Glitter has some (new) features you might like!"
+msgstr "Glitter'de sevebileceğiniz bazı (yeni) işlevler vardır!"
+
+#: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Kişisel"
+
+#: sabnzbd/skintext.py
+msgid "Compact layout"
+msgstr "Sıkışık düzen"
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
+msgstr "Daima tam ekran genişliğini kullan"
+
+#: sabnzbd/skintext.py
+msgid "Tabbed layout <br/>(separate queue and history)"
+msgstr "Sekmeli düzen <br/>(kuyruk ve tarihçeyi ayır)"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Hız"
+
+#: sabnzbd/skintext.py
+msgid "Confirm Queue Deletions"
+msgstr "Kuyruk Silmelerini Teyit Et"
+
+#: sabnzbd/skintext.py
+msgid "Confirm History Deletions"
+msgstr "Tarihçe Silmelerini Teyit Et"
+
+#: sabnzbd/skintext.py
+msgid "Keyboard shortcuts"
+msgstr "Klavye kısayolları"
+
+#: sabnzbd/skintext.py
+msgid "Shift+Arrow key: Browse Queue and History pages"
+msgstr "Shift+İmleç Tuşu: Kuyruk ve Tarihçe sayfalarını tara"
+
+#: sabnzbd/skintext.py
+msgid "How long or untill when do you want to pause? (in English!)"
+msgstr ""
+"Ne kadar veya ne zamana dek duraklatmak istiyorsunuz? (İngilizce olarak!)"
+
+#: sabnzbd/skintext.py
+msgid "Sorry, we could not interpret that. Try again."
+msgstr "Özür dileriz, bunu yorumlayamadık. Tekrar deneyin."
+
+#: sabnzbd/skintext.py
+msgid "Pause for..."
+msgstr "Şu süre boyunca duraklat..."
+
+#: sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "Yenile"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log"
+" and the included copy of your settings."
+msgstr ""
+"Bütün kullanıcı isimleri, parolalar ve API anahtarları otomatik olarak "
+"kütükten ve ayarlarınızın birlikte verilen kopyasından kaldırılır."
+
+#: sabnzbd/skintext.py
+msgid "Sort by % downloaded <small>Most&rarr;Least</small>"
+msgstr "İndirilen % ile sırala <small>Azami&rarr;Asgari</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
+msgstr "Yaşa göre sırala <small>En eski&rarr;En yeni</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Age <small>Newest&rarr;Oldest</small>"
+msgstr "Yaşa göre sırala <small>En yeni&rarr;En eski</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Name <small>A&rarr;Z</small>"
+msgstr "İsme göre sırala <small>A&rarr;Z</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Name <small>Z&rarr;A</small>"
+msgstr "İsme göre sırala  <small>Z&rarr;A</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Size <small>Smallest&rarr;Largest</small>"
+msgstr "Boyuta göre sırala <small>En küçük&rarr;En büyük</small>"
+
+#: sabnzbd/skintext.py
+msgid "Sort by Size <small>Largest&rarr;Smallest</small>"
+msgstr "Boyuta göre sırala <small>En büyük&rarr;En küçük</small>"
+
+#: sabnzbd/skintext.py
+msgid "Uploading"
+msgstr "Gönderiliyor"
+
+#: sabnzbd/skintext.py
+msgid "Forcing disconnect"
+msgstr "Bağlantının kesilmesi zorlanıyor"
+
+#: sabnzbd/skintext.py
+msgid "Removing job"
+msgstr "İş kaldırılıyor"
+
+#: sabnzbd/skintext.py
+msgid "Removing jobs"
+msgstr "İşler kaldırılıyor"
+
+#: sabnzbd/skintext.py
+msgid "SABnzbd Quick-Start Wizard"
+msgstr "SABnzbd Hızlı-Başlama Sihirbazı"
+
+#: sabnzbd/skintext.py
+msgid "SABnzbd Version"
+msgstr "SABnzbd Sürümü"
+
+#. Button to go to previous Wizard page
+#: sabnzbd/skintext.py
+msgid "Previous"
+msgstr "Önceki"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Sonraki"
+
+#: sabnzbd/skintext.py
+msgid "Server Details"
+msgstr "Sunucu Ayrıntıları"
+
+#: sabnzbd/skintext.py
+msgid "Please enter in the details of your primary usenet provider."
+msgstr "Lütfen birincil usenet sağlayıcınızın ayrıntılarını girin."
+
+#: sabnzbd/skintext.py
+msgid "The number of connections allowed by your provider"
+msgstr "Sağlayıcınız tarafından izin verilen bağlantı sayısı"
+
+#. Wizard: examples of amount of connections
+#: sabnzbd/skintext.py
+msgid "E.g. 8 or 20"
+msgstr "Mesela 8 veya 20"
+
+#: sabnzbd/skintext.py
+msgid "Select only if your provider allows SSL connections."
+msgstr "Sadece sağlayıcınız SSL bağlantılara müsaade ediyorsa seçin."
+
+#: sabnzbd/skintext.py
+msgid "Click to test the entered details."
+msgstr "Girilen ayrıntıları denemek için tıklayın."
+
+#. Abbreviation for "for example"
+#: sabnzbd/skintext.py
+msgid "E.g."
+msgstr "Mesela"
+
+#. Wizard step
+#: sabnzbd/skintext.py
+msgid "Setup is now complete!"
+msgstr "Yapılandırma artık tamamlandı!"
+
+#. Wizard tip
+#: sabnzbd/skintext.py
+msgid "SABnzbd will now be running in the background."
+msgstr "SABnzbd, artık arka plan çalışacaktır."
+
+#. Wizard tip
+#: sabnzbd/skintext.py
+msgid "Closing any browser windows/tabs will NOT close SABnzbd."
+msgstr ""
+"Tarayıcı pencerelerini/sekmelerini kapatmak SABnzbd'yi KAPATMAYACAKTIR."
+
+#: sabnzbd/skintext.py
+msgid ""
+"It is recommended you right click and bookmark this location and use this "
+"bookmark to access SABnzbd when it is running in the background."
+msgstr ""
+"SABnzbd arka planda çalışırken ona erişmek için bu konumu sağ tıklayıp yer "
+"imlerine eklemeniz ve bu yer imini kullanmanız tavsiye edilir."
+
+#: sabnzbd/skintext.py
+msgid "Further help can be found on our"
+msgstr "Daha fazla yardım bizim şu sitemizde bulunabilir:"
+
+#. Wizard step
+#: sabnzbd/skintext.py
+msgid "Go to SABnzbd"
+msgstr "SABnzbd'ye git"
+
+#. Wizard EXIT button on first page
+#: sabnzbd/skintext.py
+msgid "Exit SABnzbd"
+msgstr "SABnzb'den çık"
+
+#. Wizard START button on first page
+#: sabnzbd/skintext.py
+msgid "Start Wizard"
+msgstr "Sihirbazı Başlat"
+
+#: sabnzbd/skintext.py
+msgid "Restore backup"
+msgstr "Yedeklemeyi geri getir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"\n"
+"SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
+"This is free software, and you are welcome to redistribute it under certain conditions.\n"
+"It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.\n"
+msgstr ""
+"\n"
+"SABnzbd KESİNLİKLE GARANTİSİZ bir şekilde sağlanır.\n"
+"Bu, özgür bir yazılımdır ve bazı koşullar kapsamında onu tekrar dağıtmanıza izin verilir.\n"
+"GNU GENEL KAMU LİSANSI Sürüm 2 veya (sizin seçiminize dayalı olarak) herhangi daha yeni bir sürüm kapsamında lisanslanmıştır.\n"
+
+#. Error message
+#: sabnzbd/sorting.py
+msgid "Failed to rename %s to %s"
+msgstr "%s unsurunun %s olarak tekrar isimlendirilmesi başarısız oldu"
+
+#. Error message
+#: sabnzbd/sorting.py
+msgid "Failed to rename similar file: %s to %s"
+msgstr ""
+"Benzer dosyanın tekrar isimlendirilmesi başarısız oldu: %s unsurunun %s "
+"olarak"
+
+#: sabnzbd/urlgrabber.py
+msgid "Unauthorized access"
+msgstr "İzinsiz erişim"
+
+#: sabnzbd/urlgrabber.py
+msgid "File not on server"
+msgstr "Dosya sunucuda yok"
+
+#: sabnzbd/urlgrabber.py
+msgid "Server could not complete request"
+msgstr "Sunucu talebi tamamlayamadı"
+
+#. Error message
+#: sabnzbd/urlgrabber.py
+msgid "URLGRABBER CRASHED"
+msgstr "URLGRABBER ÇÖKTÜ"
+
+#: sabnzbd/urlgrabber.py
+msgid "Unusable NZB file"
+msgstr "Kullanılamaz NZB dosyası"
+
+#: sabnzbd/urlgrabber.py
+msgid "URL Fetching failed; %s"
+msgstr "URL alımı başarısız oldu; %s"
+
+#: sabnzbd/urlgrabber.py
+msgid "Trying to fetch NZB from %s"
+msgstr "NZB dosyasının %s konumundan alınması deneniyor"

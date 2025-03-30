@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -70,7 +70,6 @@ from sabnzbd.filesystem import (
     set_permissions,
     long_path,
     fix_unix_encoding,
-    get_ext,
     get_filename,
     get_unique_filename,
     renamer,
@@ -89,8 +88,9 @@ from sabnzbd.filesystem import (
     backup_nzb,
     remove_data,
     strip_extensions,
+    get_ext,
 )
-from sabnzbd.par2file import FilePar2Info
+from sabnzbd.par2file import FilePar2Info, has_par2_in_filename, analyse_par2, parse_par2_file, is_par2_file
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -296,6 +296,10 @@ class Article(TryList):
 ##############################################################################
 # NzbFile
 ##############################################################################
+class SkippedNzbFile(Exception):
+    pass
+
+
 NzbFileSaver = (
     "date",
     "filename",
@@ -313,7 +317,6 @@ NzbFileSaver = (
     "nzo",
     "nzf_id",
     "deleted",
-    "valid",
     "import_finished",
     "crc32",
     "assembled",
@@ -325,7 +328,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("first_article",)
+    __slots__ = NzbFileSaver
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -351,7 +354,6 @@ class NzbFile(TryList):
         self.bytes_left: int = file_bytes
 
         self.nzo: NzbObject = nzo
-        self.nzf_id: str = get_new_id("nzf", nzo.admin_path)
         self.deleted = False
         self.import_finished = False
 
@@ -359,26 +361,28 @@ class NzbFile(TryList):
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
 
-        self.valid: bool = bool(raw_article_db)
+        # Add first article to decodetable, this way we can check
+        # if this is maybe a duplicate nzf
+        first_article = self.add_article(raw_article_db.pop(0))
+        first_article.lowest_partnum = True
 
-        # Temporarily hold the first article during import
-        self.first_article: Optional[Article] = None
+        if self in nzo.files:
+            logging.info("File %s occurred twice in NZB, skipping", self.filename)
+            raise SkippedNzbFile
 
-        if self.valid and self.nzf_id:
-            # Save first article separate, so we can deobfuscate-during-download
-            # We process the first_file in nzo.add_nzf because if this NZF turns
-            # out to be a duplicate file inside the NZB, the first article would
-            # otherwise become a ghost article.
-            self.first_article = self.add_article(raw_article_db.pop(0))
-            self.first_article.lowest_partnum = True
+        # Create file on disk, which can fail in case of disk errors
+        self.nzf_id: str = get_new_id("nzf", nzo.admin_path)
+        if not self.nzf_id:
+            # Error already shown to user from get_new_id
+            raise SkippedNzbFile
 
-            # Any articles left?
-            if raw_article_db:
-                # Save the rest
-                save_data(raw_article_db, self.nzf_id, nzo.admin_path)
-            else:
-                # All imported
-                self.import_finished = True
+        # Any articles left?
+        if raw_article_db:
+            # Save the rest
+            save_data(raw_article_db, self.nzf_id, nzo.admin_path)
+        else:
+            # All imported
+            self.import_finished = True
 
     def finish_import(self):
         """Load the article objects from disk"""
@@ -410,7 +414,7 @@ class NzbFile(TryList):
         return len(self.articles)
 
     def set_par2(self, setname, vol, blocks):
-        """Designate this this file as a par2 file"""
+        """Designate this file as a par2 file"""
         self.is_par2 = True
         self.setname = setname
         self.vol = vol
@@ -955,12 +959,13 @@ class NzbObject(TryList):
         self.bytes += nzf.bytes
 
         # Only now add first article to the list
-        self.first_articles.append(nzf.first_article)
-        self.first_articles_count += 1
-        nzf.first_article = None
+        if len(nzf.decodetable):
+            self.first_articles.append(nzf.decodetable[0])
+            self.first_articles_count += 1
 
         # Count how many bytes are available for repair
-        if sabnzbd.par2file.is_parfile(nzf.filename):
+        # This is quite unreliable in case of obfuscation and broken par2 files
+        if has_par2_in_filename(nzf.filename):
             self.bytes_par2 += nzf.bytes
 
         logging.info("File %s added to queue", nzf.filename)
@@ -1025,22 +1030,21 @@ class NzbObject(TryList):
         if parset not in self.extrapars:
             self.extrapars[parset] = []
 
-        lparset = parset.lower()
         for xnzf in self.files[:]:
-            # Move only when not current NZF and filename was extractable from subject
-            if xnzf.filename:
-                setname, vol, block = sabnzbd.par2file.analyse_par2(xnzf.filename)
-                # Don't postpone header-only-files, so we can extract all
-                # possible md5of16k and par2packs's even if the filenames are bad
-                # Usually they are all downloaded as first_articles
-                if setname and block and matcher(lparset, setname.lower()):
-                    xnzf.set_par2(parset, vol, block)
-                    # Don't postpone if all par2 are desired and should be kept or not repairing
-                    if self.repair and not (cfg.enable_all_par() and not cfg.enable_par_cleanup()):
-                        self.extrapars[parset].append(xnzf)
-                        self.files.remove(xnzf)
-                        # Already count these bytes as done
-                        self.bytes_tried += xnzf.bytes_left
+            # Allow re-analysis in case the name was changed by yEnc-header
+            setname, vol, block = analyse_par2(xnzf.filename)
+            # Don't postpone header-only-files, so we can extract all
+            # possible md5of16k and par2packs's even if the filenames are bad
+            # Usually they are all downloaded as first_articles
+            # We match on exact match
+            if setname and block and parset.lower() == setname.lower():
+                xnzf.set_par2(parset, vol, block)
+                # Don't postpone if all par2 are desired and should be kept or not repairing
+                if self.repair and not (cfg.enable_all_par() and not cfg.enable_par_cleanup()):
+                    self.extrapars[parset].append(xnzf)
+                    self.files.remove(xnzf)
+                    # Already count these bytes as done
+                    self.bytes_tried += xnzf.bytes_left
 
         # Sort the sets
         for setname in self.extrapars:
@@ -1056,11 +1060,11 @@ class NzbObject(TryList):
         self.remove_extrapar(nzf)
 
         # Reparse
-        setname, vol, block = sabnzbd.par2file.analyse_par2(nzf.filename, filepath)
+        setname, vol, block = analyse_par2(nzf.filename, filepath)
         nzf.set_par2(setname, vol, block)
 
         # Parse the file contents for hashes
-        set_id, pack = sabnzbd.par2file.parse_par2_file(filepath, nzf.nzo.md5of16k)
+        set_id, pack = parse_par2_file(filepath, nzf.nzo.md5of16k)
 
         # If we couldn't parse it, we ignore it
         if set_id and pack:
@@ -1106,7 +1110,7 @@ class NzbObject(TryList):
         """In case of a broken par2 or missing par2, move another
         of the same set to the top (if we can find it)
         """
-        setname, vol, block = sabnzbd.par2file.analyse_par2(nzf.filename)
+        setname, vol, block = analyse_par2(nzf.filename)
         # Now we need to identify if we have more in this set
         if setname and self.repair:
             # Maybe it was the first one
@@ -1114,10 +1118,8 @@ class NzbObject(TryList):
                 self.postpone_pars(setname)
             # Get the next one
             for new_nzf in self.extrapars[setname]:
+                # Add it to the top
                 if self.add_parfile(new_nzf):
-                    # Add it to the top
-                    self.files.remove(new_nzf)
-                    self.files.insert(0, new_nzf)
                     break
 
     def get_extra_blocks(self, setname: str, needed_blocks: int) -> int:
@@ -1177,6 +1179,11 @@ class NzbObject(TryList):
         if not success:
             # Increase missing bytes counter
             self.bytes_missing += article.bytes
+
+            # Reduce available par2 data if it's a par2 file
+            # This will be unreliable in case of obfuscated par2 files!
+            if nzf.is_par2:
+                self.bytes_par2 -= article.bytes
 
             # Add extra parfiles when there was a damaged article and not pre-checking
             if self.extrapars and not self.precheck:
@@ -1297,7 +1304,7 @@ class NzbObject(TryList):
         # otherwise updates the byte-counters incorrectly.
         for nzf in self.finished_files:
             filepath = os.path.join(wdir, nzf.filename)
-            if sabnzbd.par2file.is_parfile(filepath):
+            if is_par2_file(filepath):
                 self.handle_par2(nzf, filepath)
                 self.bytes_par2 += nzf.bytes
 
@@ -1453,13 +1460,14 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def add_parfile(self, parfile: NzbFile) -> bool:
         """Add parfile to the files to be downloaded
+        Add it to the start so we try it first
         Resets try list just to be sure
         Adjust download-size accordingly
         Returns False when the file couldn't be added
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_try_list()
-            self.files.append(parfile)
+            self.files.insert(0, parfile)
             self.bytes_tried -= parfile.bytes_left
             return True
         return False
@@ -1761,7 +1769,7 @@ class NzbObject(TryList):
             yenc_filename
             and yenc_filename != nzf.filename
             and not is_probably_obfuscated(yenc_filename)
-            and not nzf.filename.endswith(".par2")
+            and not sabnzbd.par2file.has_par2_in_filename(nzf.filename)
         ):
             logging.info("Detected filename from yenc or uu: %s -> %s", nzf.filename, yenc_filename)
             self.renamed_file(yenc_filename, nzf.filename)
@@ -2072,7 +2080,7 @@ class NzbObject(TryList):
         if self.bytes_par2 is None:
             self.bytes_par2 = 0
             for nzf in self.files + self.finished_files:
-                if sabnzbd.par2file.is_parfile(nzf.filename):
+                if sabnzbd.par2file.has_par2_in_filename(nzf.filename):
                     self.bytes_par2 += nzf.bytes
         if self.download_path is None:
             self.download_path = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
@@ -2190,12 +2198,3 @@ def name_extractor(subject: str) -> str:
 
     # Return the subject
     return subject
-
-
-def matcher(pattern, txt):
-    """Return True if `pattern` is sufficiently equal to `txt`"""
-    if txt.endswith(pattern):
-        txt = txt[: txt.rfind(pattern)].strip()
-        return (not txt) or txt.endswith('"')
-    else:
-        return False

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2022-2024 by The SABnzbd-Team (sabnzbd.org) -->
+<!-- Copyright 2022-2025 by The SABnzbd-Team (sabnzbd.org) -->
 <component type="desktop-application">
   <id>org.sabnzbd.sabnzbd</id>
   <metadata_license>MIT</metadata_license>
@@ -30,6 +30,7 @@
   <url type="faq">https://sabnzbd.org/wiki/faq</url>
   <url type="contact">https://sabnzbd.org/live-chat.html</url>
   <releases>
+    <release version="4.5.0" date="2025-04-01" type="stable"/>
     <release version="4.4.1" date="2024-12-23" type="stable"/>
     <release version="4.4.0" date="2024-12-09" type="stable"/>
     <release version="4.3.3" date="2024-08-01" type="stable"/>

@@ -1,12 +1,12 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
 "Language-Team: Polish (https://app.transifex.com/sabnzbd/teams/111101/pl/)\n"
@@ -81,20 +81,6 @@ msgstr "Porty dla HTTP i HTTPS nie mogą być takie same"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -130,6 +116,27 @@ msgstr "Odebrano sygnał %s, zapisywanie i zamykanie programu..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "Błąd krytyczny podczas zapisywania stanu"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1072,11 +1079,6 @@ msgstr ""
 msgid "Verifying"
 msgstr "Weryfikowanie"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "Sprawdzanie"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Próba weryfikacji SFV"
@@ -1096,7 +1098,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
 msgstr ""
 
 #: sabnzbd/newswrapper.py
@@ -1597,13 +1602,6 @@ msgstr ""
 msgid "Failed to compile regex for search term: %s"
 msgstr "Błąd kompilacji wyrażenia regularnego dla wyszukiwania: %s"
 
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
 msgstr "Pobieranie może się nie udać, dostępne jedynie %s z wymaganych %s"
@@ -1928,6 +1926,11 @@ msgstr "Szybkie sprawdzanie..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "Weryfikowanie..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "Sprawdzanie"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2622,6 +2625,11 @@ msgstr "Plik konfiguracyjny"
 #: sabnzbd/skintext.py
 msgid "Used cache"
 msgstr "Użyta pamięć podręczna"
+
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3673,8 +3681,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3683,6 +3696,10 @@ msgstr "Wyłączone"
 
 #: sabnzbd/skintext.py
 msgid "Minimal"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Medium"
 msgstr ""
 
 #: sabnzbd/skintext.py

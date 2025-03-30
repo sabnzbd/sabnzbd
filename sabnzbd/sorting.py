@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -803,9 +803,9 @@ def strip_path_elements(path: str) -> str:
     """Return 'path' without leading and trailing spaces and underscores in each element"""
     # Clear the most deviant of UNC notations
     path = clip_path(path)
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         path = path.replace("\\", "/")  # Switch to unix style directory separators
-    is_unc = sabnzbd.WIN32 and path.startswith("//")
+    is_unc = sabnzbd.WINDOWS and path.startswith("//")
 
     path_elements = path.strip("/").split("/")
     # Insert an empty element to prevent loss, if path starts with a slash
@@ -817,7 +817,7 @@ def strip_path_elements(path: str) -> str:
 
     # For Windows, also remove leading and trailing dots: it cannot handle trailing dots, and
     # leading dots carry no significance like on macOS, Linux, etc.
-    chars = whitespace + "_" + ("." if sabnzbd.WIN32 else "")
+    chars = whitespace + "_" + ("." if sabnzbd.WINDOWS else "")
 
     # Clean all elements and reconstruct the path
     path = os.path.normpath("/".join([element.strip(chars) for element in path_elements]))
@@ -863,7 +863,7 @@ def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optiona
 
 def is_full_path(file: str) -> bool:
     """Determine whether file has an absolute path"""
-    return file.startswith("/") or (sabnzbd.WIN32 and (file.startswith("\\") or file[1:3] == ":\\"))
+    return file.startswith("/") or (sabnzbd.WINDOWS and (file.startswith("\\") or file[1:3] == ":\\"))
 
 
 def eval_sort(sort_string: str, job_name: str, multipart_label: str = "") -> Optional[str]:
@@ -906,7 +906,7 @@ def eval_sort(sort_string: str, job_name: str, multipart_label: str = "") -> Opt
     if sorter.rename_files:
         sorted_path += ".ext"
     else:
-        sorted_path += "\\" if sabnzbd.WIN32 else "/"
+        sorted_path += "\\" if sabnzbd.WINDOWS else "/"
 
     return sorted_path
 

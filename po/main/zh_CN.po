@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Kangwei Li <lkw20010211@gmail.com>, 2023\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -82,20 +82,6 @@ msgstr "HTTP 与 HTTPS 端口不能相同"
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载文件夹中统一标准编码的文件和文件夹名称出现问题。"
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
@@ -131,6 +117,27 @@ msgstr "捕捉到 %s 信号，正在保存并退出..."
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "保存状态时遇到致命错误"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载文件夹中统一标准编码的文件和文件夹名称出现问题。"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr "已完成文件夹 %s 位于 FAT 文件系统上，这样会有最大文件为 4GB 的限制。"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1055,11 +1062,6 @@ msgstr ""
 msgid "Verifying"
 msgstr "正在验证"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "正在检查"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "正在尝试  SFV 验证"
@@ -1079,7 +1081,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
 msgstr ""
 
 #: sabnzbd/newswrapper.py
@@ -1576,13 +1581,6 @@ msgstr "侦测到旧版队列，请使用“状态”→“修复”转换队列
 msgid "Failed to compile regex for search term: %s"
 msgstr "为搜索关键词编译正则表达式失败: %s"
 
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr "已完成文件夹 %s 位于 FAT 文件系统上，这样会有最大文件为 4GB 的限制。"
-
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
 msgstr "下载可能会失败，只有 %s 块 (需要 %s) 可用"
@@ -1907,6 +1905,11 @@ msgstr "快速检查..."
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "正在验证..."
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "正在检查"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2601,6 +2604,11 @@ msgstr "配置文件"
 #: sabnzbd/skintext.py
 msgid "Used cache"
 msgstr "已用缓存"
+
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3602,9 +3610,14 @@ msgstr "证书验证"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
-msgstr "最小：启动 SSL 时，使用服务器自己的证书来验证身份。严格：验证并强制 hostname 一致。"
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3613,6 +3626,10 @@ msgstr "禁用"
 #: sabnzbd/skintext.py
 msgid "Minimal"
 msgstr "最小"
+
+#: sabnzbd/skintext.py
+msgid "Medium"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Strict"

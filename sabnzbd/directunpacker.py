@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -415,7 +415,7 @@ class DirectUnpacker(threading.Thread):
 
         # Generate command
         rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
-        if sabnzbd.WIN32:
+        if sabnzbd.WINDOWS:
             # On Windows, UnRar uses a custom argument parser
             # See: https://github.com/sabnzbd/sabnzbd/issues/1043
             # The -scf forces the output to be UTF8
@@ -448,6 +448,9 @@ class DirectUnpacker(threading.Thread):
 
         if cfg.ignore_unrar_dates():
             command.insert(3, "-tsm-")
+        if unrar_parameters := cfg.unrar_parameters().strip().split():
+            for param in unrar_parameters:
+                command.insert(-2, param)
 
         # Let's start from the first one!
         self.cur_volume = 1

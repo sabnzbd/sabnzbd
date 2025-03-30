@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ class TestNotifier(TestCase):
     @classmethod
     def setUpClass(self):
         # hack since test_misc uses @set_config decorator eliminating all of the default configuration
-        # We wnat to test with the default configuration in place; This safely resets all fields and
+        # We want to test with the default configuration in place; This safely resets all fields and
         # replaces them correctly in memory
         reload(cfg)
 

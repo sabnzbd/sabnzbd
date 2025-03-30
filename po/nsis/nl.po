@@ -1,12 +1,12 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -34,21 +34,12 @@ msgstr ""
 "Klik `Ok` om de bestaande services te verwijderen of `Annuleren` om te stoppen."
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports 64-bit Windows, use the standalone version to "
-"run on 32-bit Windows."
-msgstr ""
-"Alleen 64-bit wordt ondersteund in de installer, download de standalone "
-"versie om SABnzbd uit te voeren op 32-bit Windows."
+msgid "SABnzbd only supports 64-bit Windows."
+msgstr "SABnzbd ondersteund alleen 64bit Windows."
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The installer only supports Windows 8.1 and above, use the standalone legacy"
-" version to run on older Windows version."
-msgstr ""
-"Alleen Windows 8.1 en nieuwer worden ondersteund door de installer, download"
-" de standalone legacy versie om SABnzbd uit te voeren op oudere versies van "
-"Windows."
+msgid "SABnzbd only supports Windows 8.1 and above."
+msgstr "SABnzbd ondersteund alleen Windows 8.1 en hoger."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
@@ -77,15 +68,3 @@ msgstr "Programma verwijderen"
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "Verwijder alle instellingen"
-
-#: builder/win/NSIS_Installer.nsi
-msgid ""
-"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
-"the previous version or `Cancel` to cancel this upgrade."
-msgstr ""
-"U kunt geen bestaande installatie overschrijven.\\n\\nKlik op `OK` om de "
-"vorige versie te verwijderen of op `Annuleren` om te stoppen."
-
-#: builder/win/NSIS_Installer.nsi
-msgid "Your settings and data will be preserved."
-msgstr "Je instellingen en bestanden blijven behouden."

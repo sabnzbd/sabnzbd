@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.4.0Beta1\n"
+"Project-Id-Version: SABnzbd-4.5.0Beta2\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: ION, 2024\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -82,24 +82,6 @@ msgstr "פתחות של HTTP ו־HTTPS אינן יכולות להיות אותו
 
 #. Warning message
 #: SABnzbd.py
-msgid ""
-"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
-"with Unicoded file and directory names in downloads."
-msgstr ""
-"SABnzbd הותחל עם קידוד %s, הוא אמור להיות UTF-8. צפה לבעיות עם שמות Unicoded"
-" של קבצים וסיפריות בהורדות."
-
-#. Warning message
-#: SABnzbd.py
-msgid ""
-"Current umask (%o) might deny SABnzbd access to the files and folders it "
-"creates."
-msgstr ""
-"פקודת umask נוכחית (%o) עשויה לדחות גישה מן SABnzbd אל הקבצים והתיקיות שהוא "
-"יוצר."
-
-#. Warning message
-#: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr "לא היה ניתן לטעון תעודות נוספות מחבילת תעודות"
 
@@ -135,6 +117,33 @@ msgstr "אות %s נתפס, שומר ויוצא…"
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
 msgstr "שגיאה חמורה במצב שמירה"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+"SABnzbd הותחל עם קידוד %s, הוא אמור להיות UTF-8. צפה לבעיות עם שמות Unicoded"
+" של קבצים וסיפריות בהורדות."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Current umask (%o) might deny SABnzbd access to the files and folders it "
+"creates."
+msgstr ""
+"פקודת umask נוכחית (%o) עשויה לדחות גישה מן SABnzbd אל הקבצים והתיקיות שהוא "
+"יוצר."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+"תיקיית ההורדות השלמות %s נמצאת במערכת קבצים FAT שמגבילה גודל מרבי של קובץ אל"
+" 4 ג״ב"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1076,11 +1085,6 @@ msgstr "בודק קבצי תוספת"
 msgid "Verifying"
 msgstr "מוודא"
 
-#. PP status
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Checking"
-msgstr "בודק"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "מנסה וידוא SFV"
@@ -1102,8 +1106,11 @@ msgstr ""
 "שרת."
 
 #: sabnzbd/newswrapper.py
-msgid "Certificate not valid. This is most probably a server issue."
-msgstr "תעודה בלתי תקפה. קרוב לוודאי שזו סוגית שרת."
+msgid ""
+"Certificate could not be validated. This could be a server issue or due to a"
+" locally injected certificate (for example by firewall or virus scanner). "
+"Try setting Certificate verification to Medium."
+msgstr ""
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -1601,15 +1608,6 @@ msgstr "תור ישן התגלה, השתמש במעמד->תיקון כדי לה�
 msgid "Failed to compile regex for search term: %s"
 msgstr "כישלון בליקוט ביטוי רגולרי עבור מונח חיפוש: %s"
 
-#. Warning message
-#: sabnzbd/postproc.py
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
-msgstr ""
-"תיקיית ההורדות השלמות %s נמצאת במערכת קבצים FAT שמגבילה גודל מרבי של קובץ אל"
-" 4 ג״ב"
-
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
 msgstr "הורדה עשויה להיכשל, רק %s מתוך %s דרושים זמינים"
@@ -1934,6 +1932,11 @@ msgstr "בדוק זריז…"
 #: sabnzbd/skintext.py
 msgid "Verifying..."
 msgstr "מוודא…"
+
+#. PP status
+#: sabnzbd/skintext.py
+msgid "Checking"
+msgstr "בודק"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2632,6 +2635,11 @@ msgstr "קובץ תצורה"
 #: sabnzbd/skintext.py
 msgid "Used cache"
 msgstr "מטמון בשימוש"
+
+#. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
+#: sabnzbd/skintext.py
+msgid "Platform"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3687,11 +3695,14 @@ msgstr "וידוא תעודה"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Minimal: when SSL is enabled, verify the identity of the server using its "
-"certificates. Strict: verify and enforce matching hostname."
+"When SSL is enabled: - Strict: enforce full certificate verification. This "
+"is the most secure setting. - Medium: verify that the certificate is valid "
+"and matches the server address, but allow certificates locally injected (for"
+" example by firewall or virus scanner).- Minimal: verify that the "
+"certificate is valid. This is not secure, any valid certificate could be "
+"used. - Disabled: no certification verification. This is not secure at all, "
+"anyone could intercept your connection. "
 msgstr ""
-"מזערי: כאשר SSL מאופשר, וודא את זהות השרת ע״י שימוש בתעודותיו. קפדני: וודא "
-"ואכוף שם מארח תואם."
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3700,6 +3711,10 @@ msgstr "מושבת"
 #: sabnzbd/skintext.py
 msgid "Minimal"
 msgstr "מזערי"
+
+#: sabnzbd/skintext.py
+msgid "Medium"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Strict"

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -91,3 +91,8 @@ def xml_name(input_value) -> str:
     if input_value is not None:
         return escape(str(input_value))
     return ""
+
+
+def limit_encoded_length(inputstring: str, max_length: int) -> str:
+    """Limit the actual codepoint length of a string"""
+    return inputstring.encode("utf-8", errors="replace")[:max_length].decode(errors="ignore")

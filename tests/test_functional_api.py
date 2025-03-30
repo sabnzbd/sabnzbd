@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2024 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -862,7 +862,7 @@ class TestQueueApi(ApiTestFunctions):
             ("thư điện tử password=mật_khẩu", None, "thư điện tử", "mật_khẩu", True),
             ("{{Jobname{{PassWord}}", None, "{{Jobname", "PassWord", True),  # Issue #1659
             ("password=PartOfTheJobname", None, "password=PartOfTheJobname", None, True),  # Issue #1659
-            ("/Jobname", None, "+Jobname", None, True),  # Issue #1659
+            ("/Jobname", None, "_Jobname", None, True),  # Issue #1659
             ("", None, None, None, False),
             ("", "PassWord", None, "PassWord", False),
             (None, None, None, None, False),
