@@ -818,11 +818,9 @@ def get_platform_description() -> str:
         else:
             # Check for other forms of virtualization
             try:
-                # Check if the command exists by searching in the PATH
-                if run_command(["which", "systemd-detect-virt"]).strip():
-                    if virt := run_command(["systemd-detect-virt"]).strip():
-                        if virt != "none":
-                            platform_tags.append(virt)
+                if virt := run_command(["systemd-detect-virt"], stderr=subprocess.DEVNULL).strip():
+                    if virt != "none":
+                        platform_tags.append(virt)
             except:
                 pass
 
