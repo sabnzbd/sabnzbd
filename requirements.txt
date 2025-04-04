@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.9.2
+apprise==1.9.3
 sabctools==8.2.5
 CT3==3.4.0
 cffi==1.17.1
@@ -21,7 +21,7 @@ zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
 tempora # List version-less for Python 3.8 to just get latest supported
 tempora==5.8.0; python_version > '3.8'
-pytz==2025.1
+pytz==2025.2
 sgmllib3k==1.0.0
 portend==3.2.0
 chardet==5.2.0
@@ -38,7 +38,7 @@ cryptography==44.0.2
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
 ujson==5.10.0
-orjson==3.10.15
+orjson==3.10.16; python_version > '3.8'
 
 # Windows system integration
 pywin32==310; sys_platform == 'win32'

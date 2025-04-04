@@ -363,8 +363,9 @@ class NzbFile(TryList):
 
         # Add first article to decodetable, this way we can check
         # if this is maybe a duplicate nzf
-        first_article = self.add_article(raw_article_db.pop(0))
-        first_article.lowest_partnum = True
+        if raw_article_db:
+            first_article = self.add_article(raw_article_db.pop(0))
+            first_article.lowest_partnum = True
 
         if self in nzo.files:
             logging.info("File %s occurred twice in NZB, skipping", self.filename)
