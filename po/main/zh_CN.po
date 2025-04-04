@@ -4,12 +4,13 @@
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
 # Kangwei Li <lkw20010211@gmail.com>, 2023
+# aw aw, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.5.0RC1\n"
+"Project-Id-Version: SABnzbd-4.5.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Kangwei Li <lkw20010211@gmail.com>, 2023\n"
+"Last-Translator: aw aw, 2025\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -66,7 +67,7 @@ msgstr "7za 可执行程序... *未*找到!"
 #. Error message
 #: SABnzbd.py
 msgid "Essential modules are missing, downloading cannot start."
-msgstr ""
+msgstr "缺失必要模块，无法开始下载。"
 
 #. Warning message
 #: SABnzbd.py
