@@ -28,7 +28,7 @@ import gettext
 import subprocess
 
 # Make sure it's run as "python tools/make_mo.py"
-if not os.path.exists("builder"):
+if not os.path.exists("po"):
     raise RuntimeError("Make sure to run from root directory of SABnzbd")
 
 PO_DIR = "po/main"
