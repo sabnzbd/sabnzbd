@@ -45,7 +45,7 @@ try:
     # Verify version to at least match minor version
     if SABCTOOLS_VERSION[:3] != SABCTOOLS_VERSION_REQUIRED[:3]:
         raise ImportError
-except:
+except Exception:
     SABCTOOLS_ENABLED = False
 
 
@@ -122,7 +122,7 @@ def decode(article: Article, data_view: memoryview):
                     decoded_data = decode_uu(article, bytes(data_view))
                     logging.debug("Found uu-encoded article %s in job %s", art_id, nzo.final_name)
                     article_success = True
-                except:
+                except Exception:
                     pass
             # Only bother with further checks if uu-decoding didn't work out
             if not article_success:
@@ -150,7 +150,7 @@ def decode(article: Article, data_view: memoryview):
             if search_new_server(article):
                 return
 
-    except:
+    except Exception:
         logging.warning(T("Unknown Error while decoding %s"), art_id)
         logging.info("Traceback: ", exc_info=True)
 

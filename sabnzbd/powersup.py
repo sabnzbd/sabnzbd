@@ -50,7 +50,7 @@ def win_hibernate():
     try:
         win_power_privileges()
         win32api.SetSystemPowerState(False, True)
-    except:
+    except Exception:
         logging.error(T("Failed to hibernate system"))
         logging.info("Traceback: ", exc_info=True)
 
@@ -60,7 +60,7 @@ def win_standby():
     try:
         win_power_privileges()
         win32api.SetSystemPowerState(True, True)
-    except:
+    except Exception:
         logging.error(T("Failed to standby system"))
         logging.info("Traceback: ", exc_info=True)
 
@@ -83,7 +83,7 @@ def osx_shutdown():
     """Shutdown macOS system, never returns"""
     try:
         subprocess.call(["osascript", "-e", 'tell app "System Events" to shut down'])
-    except:
+    except Exception:
         logging.error(T("Error while shutting down system"))
         logging.info("Traceback: ", exc_info=True)
     os._exit(0)
@@ -94,7 +94,7 @@ def osx_standby():
     try:
         subprocess.call(["pmset", "sleepnow"])
         time.sleep(10)
-    except:
+    except Exception:
         logging.error(T("Failed to standby system"))
         logging.info("Traceback: ", exc_info=True)
 

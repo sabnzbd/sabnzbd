@@ -66,7 +66,7 @@ def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", L
         mylocalipv4 = local_ipv4()
         if mylocalipv4:
             san_list.append(x509.IPAddress(ipaddress.IPv4Address(str(mylocalipv4))))
-    except:
+    except Exception:
         pass
 
     cert = (

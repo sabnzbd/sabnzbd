@@ -181,7 +181,7 @@ def get_biggest_file(filelist: List[str]) -> str:
             return filelist[0]
         else:
             return False
-    except:
+    except Exception:
         if len(filelist) == 1:
             # the only file, so biggest
             return filelist[0]

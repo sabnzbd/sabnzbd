@@ -89,7 +89,7 @@ class RSSReader:
             if self.jobs:
                 for feed in self.jobs:
                     remove_obsolete(self.jobs[feed], list(self.jobs[feed]))
-        except:
+        except Exception:
             logging.warning(T("Cannot read %s"), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
 
@@ -479,7 +479,7 @@ class RSSReader:
         if feed in self.jobs:
             try:
                 return self.jobs[feed]
-            except:
+            except Exception:
                 return {}
         else:
             return {}
@@ -660,7 +660,7 @@ def _get_link(entry):
         try:
             link = entry.enclosures[0]["href"]
             size = int(entry.enclosures[0]["length"])
-        except:
+        except Exception:
             pass
 
     # GUID usually has URL to result on page
@@ -675,19 +675,19 @@ def _get_link(entry):
             m = _RE_SIZE1.search(desc) or _RE_SIZE2.search(desc)
             if m:
                 size = from_units(m.group(1))
-        except:
+        except Exception:
             pass
 
     # Try newznab attribute first, this is the correct one
     try:
         # Convert it to format that calc_age understands
         age = datetime.datetime(*entry["newznab"]["usenetdate_parsed"][:6])
-    except:
+    except Exception:
         # Date from feed (usually lags behind)
         try:
             # Convert it to format that calc_age understands
             age = datetime.datetime(*entry.published_parsed[:6])
-        except:
+        except Exception:
             pass
     finally:
         # We need to convert it to local timezone, feedparser always returns UTC

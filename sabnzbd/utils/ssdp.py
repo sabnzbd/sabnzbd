@@ -119,7 +119,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
                 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
                     sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
                     sock.sendto(self.__mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
-            except:
+            except Exception:
                 # probably no network
                 pass
 

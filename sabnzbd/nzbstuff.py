@@ -466,7 +466,7 @@ class NzbFile(TryList):
         try:
             logging.debug("Removing article database for %s", self.nzf_id)
             remove_file(os.path.join(self.nzo.admin_path, self.nzf_id))
-        except:
+        except Exception:
             pass
 
     def __getstate__(self):
@@ -880,13 +880,13 @@ class NzbObject(TryList):
                 self.duplicate_check(repeat=True)
             try:
                 pp = int(pq_pp)
-            except:
+            except Exception:
                 pp = None
             if pq_cat:
                 cat = pq_cat
             try:
                 priority = int(pq_priority)
-            except:
+            except Exception:
                 priority = DEFAULT_PRIORITY
             if pq_script and is_valid_script(pq_script):
                 script = pq_script
@@ -1011,7 +1011,7 @@ class NzbObject(TryList):
                     # Remove and add it back after the position of the first rar
                     self.files.remove(lastrarnzf)
                     self.files.insert(firstrarpos + 1, lastrarnzf)
-                except:
+                except Exception:
                     logging.debug("The lastrar swap did not go well")
 
     @synchronized(TRYLIST_LOCK)
@@ -1297,7 +1297,7 @@ class NzbObject(TryList):
                 self.bytes += nzf.bytes
                 self.bytes_tried += nzf.bytes
                 self.bytes_downloaded += nzf.bytes
-        except:
+        except Exception:
             logging.error(T("Error importing %s"), self.final_name)
             logging.info("Traceback: ", exc_info=True)
 

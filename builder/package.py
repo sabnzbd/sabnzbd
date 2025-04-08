@@ -125,7 +125,7 @@ def test_sab_binary(binary_path: str):
             try:
                 urllib.request.urlopen(base_url, timeout=1).read()
                 break
-            except:
+            except Exception:
                 time.sleep(1)
         else:
             # Print console output and give some time to print

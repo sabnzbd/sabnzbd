@@ -131,7 +131,7 @@ def format_time_left(totalseconds: int, short_format: bool = False) -> str:
                     return "%s:%s:%s" % (hours, minutes, seconds)
             else:
                 return "%s:%s" % (minutes, seconds)
-        except:
+        except Exception:
             pass
     if short_format:
         return "0:00"
@@ -161,7 +161,7 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
             return "%d%s" % (date_diff.seconds / 3600, h)
         else:
             return "%d%s" % (date_diff.seconds / 60, m)
-    except:
+    except Exception:
         return "-"
 
 
@@ -347,7 +347,7 @@ def convert_filter(text):
         txt = wildcard_to_re(text)
     try:
         return re.compile(txt, re.I)
-    except:
+    except Exception:
         logging.debug("Could not compile regex: %s", text)
         return None
 
@@ -367,7 +367,7 @@ def cat_convert(cat):
                 indexer = raw_cats[ucat["name"]].newzbin()
                 if not isinstance(indexer, list):
                     indexer = [indexer]
-            except:
+            except Exception:
                 indexer = []
             for name in indexer:
                 if re.search("^%s$" % wildcard_to_re(name), cat, re.I):
@@ -439,7 +439,7 @@ def get_from_url(url: str) -> Optional[str]:
         req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
         with urllib.request.urlopen(req) as response:
             return ubtou(response.read())
-    except:
+    except Exception:
         return None
 
 
@@ -455,7 +455,7 @@ def convert_version(text):
             elif m.group(4).lower() == "beta":
                 version = version + 40
             version = version + int(m.group(5))
-        except:
+        except Exception:
             version = version + 99
             test = False
     return version, test
@@ -503,14 +503,14 @@ def check_latest_version():
     try:
         latest_label = version_data[0]
         url = version_data[1]
-    except:
+    except Exception:
         latest_label = ""
         url = ""
 
     try:
         latest_testlabel = version_data[2]
         url_beta = version_data[3]
-    except:
+    except Exception:
         latest_testlabel = ""
         url_beta = ""
 
@@ -564,7 +564,7 @@ def upload_file_to_sabnzbd(url, fp):
             if username and password:
                 url = "%s&ma_username=%s&ma_password=%s" % (url, username, password)
         get_from_url(url)
-    except:
+    except Exception:
         logging.error(T("Failed to upload file: %s"), fp)
         logging.info("Traceback: ", exc_info=True)
 
@@ -588,7 +588,7 @@ def from_units(val: str) -> float:
             val = m.group(1)
         try:
             return float(val)
-        except:
+        except Exception:
             return 0.0
     else:
         return 0.0
@@ -709,7 +709,7 @@ def get_cache_limit():
         # We make sure it's at least a valid value
         if mem_bytes > from_units("32M"):
             return to_units(mem_bytes)
-    except:
+    except Exception:
         pass
 
     # Always at least minimum on Windows/macOS
@@ -778,7 +778,7 @@ def get_cpu_name():
                         cputype = myline.split(":", 1)[1]  # get everything after the first ":"
                         break  # we're done
         cputype = platform_btou(cputype)
-    except:
+    except Exception:
         # An exception, maybe due to a subprocess call gone wrong
         pass
 
@@ -789,7 +789,7 @@ def get_cpu_name():
         try:
             # Not found, so let's fall back to platform()
             cputype = platform.platform()
-        except:
+        except Exception:
             # Can fail on special platforms (like Snapcraft or embedded)
             pass
 
@@ -821,14 +821,14 @@ def get_platform_description() -> str:
                 if virt := run_command(["systemd-detect-virt"], stderr=subprocess.DEVNULL).strip():
                     if virt != "none":
                         platform_tags.append(virt)
-            except:
+            except Exception:
                 pass
 
             try:
                 # Only present in Python 3.10+
                 # Can print nicer description like "Ubuntu 24.02 LTS"
                 platform_tags.append(platform.freedesktop_os_release()["PRETTY_NAME"])
-            except:
+            except Exception:
                 pass
 
     if not platform_tags:
@@ -864,14 +864,14 @@ def memory_usage():
         return "V=%sM R=%sM" % (virt, res)
     except IOError:
         pass
-    except:
+    except Exception:
         logging.debug("Error retrieving memory usage")
         logging.info("Traceback: ", exc_info=True)
 
 
 try:
     _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
-except:
+except Exception:
     _PAGE_SIZE = 0
 _HAVE_STATM = _PAGE_SIZE and memory_usage()
 
@@ -882,7 +882,7 @@ def loadavg():
     if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
         try:
             p = "%.2f | %.2f | %.2f" % os.getloadavg()
-        except:
+        except Exception:
             pass
         if _HAVE_STATM:
             p = "%s | %s" % (p, memory_usage())
@@ -932,7 +932,7 @@ def str_conv(value: Any, default: str = "") -> str:
         return default
     try:
         return str(value)
-    except:
+    except Exception:
         return default
 
 
@@ -941,7 +941,7 @@ def int_conv(value: Any, default: int = 0) -> int:
     Returns 0 or requested default value"""
     try:
         return int(value)
-    except:
+    except Exception:
         return default
 
 
@@ -959,7 +959,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         private_key = generate_key(key_size=2048, output_file=ssl_key)
         generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN="SABnzbd", ON="SABnzbd")
         logging.info("Self-signed certificates generated successfully")
-    except:
+    except Exception:
         logging.error(T("Error creating SSL key and certificate"))
         logging.info("Traceback: ", exc_info=True)
         return False
@@ -1006,7 +1006,7 @@ def get_all_passwords(nzo) -> List[str]:
                         "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
                     )
                 )
-        except:
+        except Exception:
             logging.warning(T("Failed to read the password file %s"), pw_file)
             logging.info("Traceback: ", exc_info=True)
 
@@ -1163,7 +1163,7 @@ def ip_extract() -> List[str]:
     if sabnzbd.WINDOWS or not program:
         try:
             info = socket.getaddrinfo(socket.gethostname(), None)
-        except:
+        except Exception:
             # Hostname does not resolve, use localhost
             info = socket.getaddrinfo("localhost", None)
         for item in info:
@@ -1319,7 +1319,7 @@ def run_script(script: str):
         try:
             script_output = run_command([script_path], env=sabnzbd.newsunpack.create_env())
             logging.info("Output of script %s: \n%s", script, script_output)
-        except:
+        except Exception:
             logging.info("Failed script %s, Traceback: ", script, exc_info=True)
 
 
@@ -1356,7 +1356,7 @@ def request_repair():
     try:
         with open(path, "w") as f:
             f.write("\n")
-    except:
+    except Exception:
         pass
 
 
@@ -1366,7 +1366,7 @@ def check_repair_request():
     if os.path.exists(path):
         try:
             remove_file(path)
-        except:
+        except Exception:
             pass
         return True
     return False

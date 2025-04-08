@@ -411,7 +411,7 @@ def is_rarfile(xfile):
         rar_ver = _get_rar_version(xfile)
         if rar_ver:
             return "RAR%d" % rar_ver
-    except:
+    except Exception:
         pass
     return None
 
@@ -1132,7 +1132,7 @@ class CommonParser(object):
 
             # now read actual header
             return self._parse_block_header(fd)
-        except:
+        except Exception:
             # SABnzbd-edit:
             # Catch all errors
             self._set_error("Broken header in RAR file")
@@ -1216,7 +1216,7 @@ class CommonParser(object):
             tmpf.write(suffix)
             tmpf.close()
             rf.close()
-        except:
+        except Exception:
             rf.close()
             tmpf.close()
             os.unlink(tmpname)
@@ -2989,7 +2989,7 @@ def membuf_tempfile(memfile):
                 break
             tmpf.write(buf)
         tmpf.close()
-    except:
+    except Exception:
         tmpf.close()
         os.unlink(tmpname)
         raise

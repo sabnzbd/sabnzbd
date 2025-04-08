@@ -71,7 +71,7 @@ if __name__ == "__main__":
             print("Disk writing speed: %.2f Mbytes per second" % SPEED)
         else:
             print("No measurement possible. Check that directory is writable.")
-    except:
+    except Exception:
         print("Something went wrong. I don't know what")
         raise
 

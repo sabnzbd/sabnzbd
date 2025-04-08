@@ -185,7 +185,7 @@ def validate_host(value: str) -> ValidateResult:
         ipaddress.ip_address(value)
         # valid host, so return it
         return None, value
-    except:
+    except Exception:
         pass
 
     # we don't want a plain number. As socket.getaddrinfo("100", ...) allows that, we have to pre-check
@@ -193,7 +193,7 @@ def validate_host(value: str) -> ValidateResult:
         int(value)
         # plain int as input, which is not allowed
         return T("Invalid server address."), None
-    except:
+    except Exception:
         pass
 
     # not a plain IPv4 nor IPv6 address, so let's check if it's a name that resolves to IPv4
@@ -202,7 +202,7 @@ def validate_host(value: str) -> ValidateResult:
         # all good
         logging.debug("Valid host name")
         return None, value
-    except:
+    except Exception:
         pass
 
     # ... and if not: does it resolve to IPv6 ... ?
@@ -211,7 +211,7 @@ def validate_host(value: str) -> ValidateResult:
         # all good
         logging.debug("Valid host name")
         return None, value
-    except:
+    except Exception:
         logging.debug("No valid host name")
         pass
 

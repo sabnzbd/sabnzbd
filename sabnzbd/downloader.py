@@ -615,7 +615,7 @@ class Downloader(Thread):
                             try:
                                 logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
                                 nw.init_connect()
-                            except:
+                            except Exception:
                                 logging.error(
                                     T("Failed to initialize %s@%s with reason: %s"),
                                     nw.thrdnum,
@@ -682,7 +682,7 @@ class Downloader(Thread):
                 process_nw_queue.put_multiple(read)
                 process_nw_queue.join()
 
-        except:
+        except Exception:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
     def process_nw_worker(self, read_fds: Dict[int, NewsWrapper], nw_queue: MultiAddQueue):
@@ -695,7 +695,7 @@ class Downloader(Thread):
                 # The read_fds is passed by reference, so we can access its items!
                 self.process_nw(read_fds[nw_queue.get()])
                 nw_queue.task_done()
-        except:
+        except Exception:
             # We cannot break out of the Downloader from here, so just pause
             logging.error(T("Fatal error in Downloader"), exc_info=True)
             self.pause()
@@ -988,7 +988,7 @@ class Downloader(Thread):
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
             self.__reset_nw(nw, "Server broke off connection", warn=True)
-        except:
+        except Exception:
             logging.error(T("Suspect error in downloader"))
             logging.info("Traceback: ", exc_info=True)
             self.__reset_nw(nw, "Server broke off connection", warn=True)

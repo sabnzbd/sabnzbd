@@ -988,7 +988,7 @@ def save_config(force=False):
     try:
         shutil.copyfile(filename, bakname)
         shutil.copymode(filename, bakname)
-    except:
+    except Exception:
         # Something wrong with the backup,
         logging.error(T("Cannot create backup file for %s"), bakname)
         logging.info("Traceback: ", exc_info=True)
@@ -1001,12 +1001,12 @@ def save_config(force=False):
         shutil.copymode(bakname, filename)
         CFG_MODIFIED = False
         res = True
-    except:
+    except Exception:
         logging.error(T("Cannot write to INI file %s"), filename)
         logging.info("Traceback: ", exc_info=True)
         try:
             remove_file(filename)
-        except:
+        except Exception:
             pass
         # Restore INI file from backup
         renamer(bakname, filename)
@@ -1049,7 +1049,7 @@ def create_config_backup() -> Union[str, bool]:
                 with open(CFG_OBJ.filename, "rb") as data:
                     zip_ref.writestr(DEF_INI_FILE, data.read())
         return clip_path(complete_path)
-    except:
+    except Exception:
         logging.info("Failed to create backup: ", exc_info=True)
         return False
 
@@ -1062,7 +1062,7 @@ def validate_config_backup(config_backup_data: bytes) -> bool:
                 # Will throw KeyError if not present
                 zip_ref.getinfo(DEF_INI_FILE)
                 return True
-    except:
+    except Exception:
         return False
 
 
@@ -1097,7 +1097,7 @@ def restore_config_backup(config_backup_data: bytes):
                         # File not in archive
                         pass
                 save_config()
-    except:
+    except Exception:
         logging.warning(T("Could not restore backup"))
         logging.info("Traceback: ", exc_info=True)
 

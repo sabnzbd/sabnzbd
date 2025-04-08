@@ -86,7 +86,7 @@ def get_rar_extension(myrarfile):
 
                 # Combine into the extension
                 org_extension = "part%03d.rar" % volumenumber
-    except:
+    except Exception:
         pass
 
     return volumenumber, org_extension
@@ -100,5 +100,5 @@ if __name__ == "__main__":
         myfile = sys.argv[1]
         print("File:", myfile)
         print("Volume and extension:", get_rar_extension(myfile))
-    except:
+    except Exception:
         print("Please specify rar file as parameter")

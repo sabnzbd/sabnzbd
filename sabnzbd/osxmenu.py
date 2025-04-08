@@ -274,7 +274,7 @@ class SABnzbdDelegate(NSObject):
             self.pauseUpdate()
             self.speedlimitUpdate()
             self.diskspaceUpdate()
-        except:
+        except Exception:
             logging.info("[osx] Exception", exc_info=True)
 
     def queueUpdate(self):
@@ -311,7 +311,7 @@ class SABnzbdDelegate(NSObject):
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T("Empty"), "", "")
                 self.menu_queue.addItem_(menu_queue_item)
             self.queue_menu_item.setSubmenu_(self.menu_queue)
-        except:
+        except Exception:
             logging.info("[osx] queueUpdate Exception", exc_info=True)
 
     def historyUpdate(self):
@@ -356,7 +356,7 @@ class SABnzbdDelegate(NSObject):
                 menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T("Empty"), "", "")
                 self.menu_history.addItem_(menu_history_item)
             self.history_menu_item.setSubmenu_(self.menu_history)
-        except:
+        except Exception:
             logging.info("[osx] historyUpdate Exception", exc_info=True)
 
     def warningsUpdate(self):
@@ -375,7 +375,7 @@ class SABnzbdDelegate(NSObject):
             else:
                 self.warnings_menu_item.setTitle_("%s : 0" % (T("Warnings")))
                 self.warnings_menu_item.setHidden_(YES)
-        except:
+        except Exception:
             logging.info("[osx] warningsUpdate Exception", exc_info=True)
 
     def stateUpdate(self):
@@ -409,7 +409,7 @@ class SABnzbdDelegate(NSObject):
 
             if not config.get_servers():
                 self.state_menu_item.setTitle_(T("Go to wizard"))
-        except:
+        except Exception:
             logging.info("[osx] stateUpdate Exception", exc_info=True)
 
     def pauseUpdate(self):
@@ -422,7 +422,7 @@ class SABnzbdDelegate(NSObject):
                 self.status_item.setImage_(self.icons["idle"])
                 self.resume_menu_item.setHidden_(YES)
                 self.pause_menu_item.setHidden_(NO)
-        except:
+        except Exception:
             logging.info("[osx] pauseUpdate Exception", exc_info=True)
 
     def speedlimitUpdate(self):
@@ -436,7 +436,7 @@ class SABnzbdDelegate(NSObject):
                         menuitem.setState_(NSOnState)
                     else:
                         menuitem.setState_(NSOffState)
-        except:
+        except Exception:
             logging.info("[osx] speedlimitUpdate Exception", exc_info=True)
 
     def diskspaceUpdate(self):
@@ -447,7 +447,7 @@ class SABnzbdDelegate(NSObject):
             self.incompletefolder_menu_item.setTitle_(
                 "%s (%.2f GB)" % (T("Incomplete Folder"), diskspace()["download_dir"][1])
             )
-        except:
+        except Exception:
             logging.info("[osx] diskspaceUpdate Exception", exc_info=True)
 
     def setMenuTitle_(self, text):
@@ -467,7 +467,7 @@ class SABnzbdDelegate(NSObject):
 
             title = NSAttributedString.alloc().initWithString_attributes_(text, titleAttributes)
             self.status_item.setAttributedTitle_(title)
-        except:
+        except Exception:
             logging.info("[osx] setMenuTitle Exception", exc_info=True)
 
     def openBrowserAction_(self, sender):

@@ -79,7 +79,7 @@ class NzbQueue:
                         if not repair:
                             panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                             exit_sab(2)
-            except:
+            except Exception:
                 nzo_ids = []
                 logging.error(
                     T("Error loading %s, corrupt file detected"),
@@ -117,7 +117,7 @@ class NzbQueue:
                     else:
                         try:
                             remove_file(item)
-                        except:
+                        except Exception:
                             pass
 
     @NzbQueueLocker
@@ -192,7 +192,7 @@ class NzbQueue:
                     nzo = NzbObject(name, password=password, nzbname=name, reuse=repair_folder)
                     self.add(nzo)
                     nzo_ids = [nzo.nzo_id]
-                except:
+                except Exception:
                     # NzoObject can throw exceptions if duplicate or unwanted etc
                     logging.info("Skipping %s due to exception", name, exc_info=True)
                     nzo_ids = []
@@ -207,7 +207,7 @@ class NzbQueue:
         """Send back job to queue after successful pre-check"""
         try:
             nzb_path = globber_full(old_nzo.admin_path, "*.gz")[0]
-        except:
+        except Exception:
             logging.info("Failed to find NZB file after pre-check (%s)", old_nzo.nzo_id)
             return
 
@@ -472,7 +472,7 @@ class NzbQueue:
             # Allow an index as second parameter, easier for some skins
             i = int(item_id_2)
             item_id_2 = self.__nzo_list[i].nzo_id
-        except:
+        except Exception:
             pass
         try:
             nzo1 = self.__nzo_table[item_id_1]
@@ -497,7 +497,7 @@ class NzbQueue:
             # if id1 is surrounded by items of a different priority then change its priority to match
             if nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority or nzo2_priority > nzo1_priority:
                 nzo1.priority = nzo2_priority
-        except:
+        except Exception:
             nzo1.priority = nzo2_priority
         item_id_pos1 = -1
         item_id_pos2 = -1
@@ -656,7 +656,7 @@ class NzbQueue:
             )
             return pos
 
-        except:
+        except Exception:
             return -1
 
     @NzbQueueLocker
@@ -666,7 +666,7 @@ class NzbQueue:
             for nzo_id in nzo_ids:
                 n = self.__set_priority(nzo_id, priority)
             return n
-        except:
+        except Exception:
             return -1
 
     def has_forced_jobs(self) -> bool:

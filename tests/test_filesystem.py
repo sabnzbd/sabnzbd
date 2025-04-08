@@ -1129,7 +1129,7 @@ class TestRenamer:
         try:
             # Should fail
             filesystem.renamer(filename, newfilename)
-        except:
+        except Exception:
             pass
         assert os.path.isfile(filename)
         assert not os.path.isfile(newfilename)
@@ -1139,7 +1139,7 @@ class TestRenamer:
         newfilename = os.path.join(dirname, "newsubdir", "newfile.txt")
         try:
             filesystem.renamer(filename, newfilename, create_local_directories=True)
-        except:
+        except Exception:
             pass
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
@@ -1149,7 +1149,7 @@ class TestRenamer:
         newfilename = os.path.join(dirname, "newsubdir", "deepersubdir", "newfile.txt")
         try:
             filesystem.renamer(filename, newfilename, create_local_directories=True)
-        except:
+        except Exception:
             pass
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
@@ -1159,7 +1159,7 @@ class TestRenamer:
         newfilename = os.path.join(dirname, "..", "newsubdir", "newfile.txt")
         try:
             filesystem.renamer(filename, newfilename, create_local_directories=True)
-        except:
+        except Exception:
             pass
         assert os.path.isfile(filename)
         assert not os.path.isfile(newfilename)
