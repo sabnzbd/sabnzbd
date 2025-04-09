@@ -77,7 +77,7 @@ def get_a_line(line_src, number):
         # We include 2 lines extra, since sometimes the "logging.warning"
         # can be on the line above, due to code-formatting
         return "".join(FILE_CACHE[line_src][number - 3 : number])
-    except:
+    except Exception:
         return ""
 
 

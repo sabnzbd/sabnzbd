@@ -156,7 +156,7 @@ class URLGrabber(Thread):
                         try:
                             item = hdr.lower()
                             value = fetch_request.headers[hdr]
-                        except:
+                        except Exception:
                             continue
 
                         # Skip empty values
@@ -294,9 +294,9 @@ class URLGrabber(Thread):
                 # Always clean up what we wrote to disk
                 try:
                     sabnzbd.filesystem.remove_file(path)
-                except:
+                except Exception:
                     pass
-            except:
+            except Exception:
                 logging.error(T("URLGRABBER CRASHED"), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 

@@ -147,7 +147,7 @@ class PostProcessor(Thread):
                 logging.warning(T("Old queue detected, use Status->Repair to convert the queue"))
             elif isinstance(history_queue, list):
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.download_path)]
-        except:
+        except Exception:
             logging.info("Corrupt %s file, discarding", POSTPROC_QUEUE_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
 
@@ -183,7 +183,7 @@ class PostProcessor(Thread):
         """Remove given nzo from the queue"""
         try:
             self.history_queue.remove(nzo)
-        except:
+        except Exception:
             pass
         self.save()
         history_updated()
@@ -206,7 +206,7 @@ class PostProcessor(Thread):
                         # Try to kill any external running process
                         self.external_process.kill()
                         logging.info("Killed external process %s", self.external_process.args[0])
-                    except:
+                    except Exception:
                         pass
                 result = True
             return result
@@ -231,7 +231,7 @@ class PostProcessor(Thread):
             search_text = search.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
             try:
                 re_search = re.compile(search_text, re.I)
-            except:
+            except Exception:
                 logging.error(T("Failed to compile regex for search term: %s"), search_text)
 
         # Need a copy to prevent race conditions
@@ -514,7 +514,7 @@ def process_job(nzo: NzbObject) -> bool:
 
                 try:
                     newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
-                except:
+                except Exception:
                     logging.error(
                         T('Error renaming "%s" to "%s"'),
                         clip_path(tmp_workdir_complete),
@@ -616,7 +616,7 @@ def process_job(nzo: NzbObject) -> bool:
         # See if we need to start an alternative or remove the duplicates
         sabnzbd.NzbQueue.handle_duplicate_alternatives(nzo, all_ok)
 
-    except:
+    except Exception:
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
         logging.info("Traceback: ", exc_info=True)
 
@@ -650,7 +650,7 @@ def process_job(nzo: NzbObject) -> bool:
     # Clean up the NZO data
     try:
         nzo.purge_data(delete_all_data=all_ok)
-    except:
+    except Exception:
         logging.error(T("Cleanup of %s failed."), nzo.final_name)
         logging.info("Traceback: ", exc_info=True)
 
@@ -743,7 +743,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
 
         try:
             renamer(workdir_complete, tmp_workdir_complete)
-        except:
+        except Exception:
             pass  # On failure, just use the original name
 
         # Is the unique path different? Then we also need to modify the final path
@@ -970,7 +970,7 @@ def rar_renamer(nzo: NzbObject) -> int:
             ).filelist()
             try:
                 rarvolnr[rar_vol]
-            except:
+            except Exception:
                 # does not yet exist, so create:
                 rarvolnr[rar_vol] = {}
             rarvolnr[rar_vol][file_to_check] = rar_contents  # store them for matching (if needed)
@@ -1013,7 +1013,7 @@ def rar_renamer(nzo: NzbObject) -> int:
     for rar_set_number in range(1, highest_rar + 1):
         try:
             how_many_here = len(rarvolnr[rar_set_number])
-        except:
+        except Exception:
             # rarset does not exist at all
             logging.warning("rarset %s is missing completely, so I can't deobfuscate.", rar_set_number)
             return 0
@@ -1114,10 +1114,10 @@ def cleanup_list(wdir: str, skip_nzb: bool):
                             try:
                                 logging.info("Removing unwanted file %s", entry.path)
                                 remove_file(entry.path)
-                            except:
+                            except Exception:
                                 logging.error(T("Removing %s failed"), clip_path(entry.path))
                                 logging.info("Traceback: ", exc_info=True)
-        except:
+        except Exception:
             logging.info("Traceback: ", exc_info=True)
 
 
@@ -1211,7 +1211,7 @@ def remove_samples(path: str):
             try:
                 logging.info("Removing unwanted sample file %s", path)
                 remove_file(path)
-            except:
+            except Exception:
                 logging.error(T("Removing %s failed"), clip_path(path))
                 logging.info("Traceback: ", exc_info=True)
     else:
@@ -1239,7 +1239,7 @@ def rename_and_collapse_folder(oldpath: str, newpath: str, files: List[str]) -> 
     renamer(oldpath, newpath)
     try:
         remove_dir(orgpath)
-    except:
+    except Exception:
         pass
     return files
 
@@ -1252,7 +1252,7 @@ def set_marker(folder: str) -> Optional[str]:
         try:
             fp = open(path, "w")
             fp.close()
-        except:
+        except Exception:
             logging.info("Cannot create marker file %s", path)
             logging.info("Traceback: ", exc_info=True)
             name = None
@@ -1265,7 +1265,7 @@ def del_marker(path: str):
         logging.debug("Removing marker file %s", path)
         try:
             remove_file(path)
-        except:
+        except Exception:
             logging.info("Cannot remove marker file %s", path)
             logging.info("Traceback: ", exc_info=True)
 

@@ -86,14 +86,14 @@ def send_email(message, email_to, test=None):
             mailconn = smtplib.SMTP_SSL(server, port)
             mailconn.ehlo()
             logging.debug("Connected to server %s:%s", server, port)
-        except:
+        except Exception:
             # Non SSL mail server
             logging.debug("Non-SSL mail server detected reconnecting to server %s:%s", server, port)
 
             try:
                 mailconn = smtplib.SMTP(server, port)
                 mailconn.ehlo()
-            except:
+            except Exception:
                 logging.info("Traceback: ", exc_info=True)
                 return errormsg(T("Failed to connect to mail server"))
 
@@ -103,7 +103,7 @@ def send_email(message, email_to, test=None):
             try:
                 mailconn.starttls()
                 mailconn.ehlo()
-            except:
+            except Exception:
                 logging.info("Traceback: ", exc_info=True)
                 return errormsg(T("Failed to initiate TLS connection"))
 
@@ -117,7 +117,7 @@ def send_email(message, email_to, test=None):
                 return errormsg(T("Failed to authenticate to mail server"))
             except smtplib.SMTPException:
                 return errormsg(T("No suitable authentication method was found"))
-            except:
+            except Exception:
                 logging.info("Traceback: ", exc_info=True)
                 return errormsg(T("Unknown authentication failure in mail server"))
 
@@ -132,13 +132,13 @@ def send_email(message, email_to, test=None):
             msg = errormsg("The server didn't accept the from_addr.")
         except smtplib.SMTPDataError:
             msg = errormsg("The server replied with an unexpected error code (other than a refusal of a recipient).")
-        except:
+        except Exception:
             logging.info("Traceback: ", exc_info=True)
             msg = errormsg(T("Failed to send e-mail"))
 
         try:
             mailconn.close()
-        except:
+        except Exception:
             logging.info("Traceback: ", exc_info=True)
             errormsg(T("Failed to close mail connection"))
 
@@ -162,7 +162,7 @@ def send_with_template(prefix, parm, test=None):
     if path and os.path.exists(path):
         try:
             email_templates = glob.glob(os.path.join(path, "%s-*.tmpl" % prefix))
-        except:
+        except Exception:
             logging.error(T("Cannot find email templates in %s"), path)
     else:
         path = os.path.join(sabnzbd.DIR_PROG, DEF_EMAIL_TMPL)

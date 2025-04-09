@@ -85,7 +85,7 @@ def dnslookup() -> bool:
     try:
         addresslookup(sabnzbd.cfg.selftest_host())
         result = True
-    except:
+    except Exception:
         result = False
     logging.debug("DNS Lookup = %s (in %.2f seconds)", result, time.time() - start)
     return result
@@ -138,7 +138,7 @@ def public_ip(family: int = socket.AF_UNSPEC) -> Optional[str]:
         # Make sure it's a valid IPv4 or IPv6 address
         if not sabnzbd.misc.is_ipv4_addr(client_ip) and not sabnzbd.misc.is_ipv6_addr(client_ip):
             raise ValueError
-    except:
+    except Exception:
         logging.debug(
             "Failed to get public address from %s (%s)",
             sabnzbd.cfg.selftest_host(),
@@ -165,7 +165,7 @@ def local_ipv6() -> Optional[str]:
             # IPv6 prefix for documentation purpose
             s_ipv6.connect(("2001:db8::8080", 80))
             ipv6_address = s_ipv6.getsockname()[0]
-    except:
+    except Exception:
         ipv6_address = None
 
     # If text is updated, make sure to update log-anonymization

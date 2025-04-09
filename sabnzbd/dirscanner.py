@@ -79,7 +79,7 @@ class DirScanner(threading.Thread):
             if dirscan_dir != self.dirscan_dir:
                 self.ignored = {}
                 self.suspected = {}
-        except:
+        except Exception:
             self.ignored = {}  # Will hold all unusable files and the
             # successfully processed ones that cannot be deleted
             self.suspected = {}  # Will hold name/attributes of suspected candidates
@@ -174,7 +174,7 @@ class DirScanner(threading.Thread):
                             del self.suspected[path]
 
                     yield path, catdir, stat_tuple
-        except:
+        except Exception:
             if not self.error_reported and not catdir:
                 logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(folder))
                 logging.info("Traceback: ", exc_info=True)

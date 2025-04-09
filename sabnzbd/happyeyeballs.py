@@ -116,7 +116,7 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
             )
         finally:
             s.close()
-    except:
+    except Exception:
         pass
 
 
@@ -163,7 +163,7 @@ def happyeyeballs(
                             ipv6_addrinfo.append(addrinfo)
                         else:
                             ipv4_addrinfo.append(addrinfo)
-            except:
+            except Exception:
                 # Did we fail on the first getaddrinfo already?
                 # Otherwise, we failed on the IPv6 alternative address, and those failures can be ignored
                 if not ipv4_addrinfo and not ipv6_addrinfo:

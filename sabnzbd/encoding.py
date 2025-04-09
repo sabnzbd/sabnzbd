@@ -81,7 +81,7 @@ def correct_cherrypy_encoding(inputstring: str) -> str:
     """convert inputstring with separate, individual chars (1-255) to valid string (with UTF8 encoding)"""
     try:
         return inputstring.encode("raw_unicode_escape").decode("utf8")
-    except:
+    except Exception:
         # not possible to convert to UTF8, so don't change anything:
         return inputstring
 

@@ -46,7 +46,7 @@ if os.name == "nt":
 
     try:
         KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
-    except:
+    except Exception:
         pass
 elif os.name == "posix":
     ORG_UMASK = os.umask(18)
@@ -56,7 +56,7 @@ elif os.name == "posix":
     try:
         LIBC = ctypes.CDLL("libc.so.6")
         LIBC.malloc_trim(0)  # try the malloc_trim() call, which is a GNU extension
-    except:
+    except Exception:
         # No malloc_trim(), probably because no glibc
         LIBC = None
         pass
@@ -71,7 +71,7 @@ elif os.name == "posix":
             import sabnzbd.utils.sleepless as sleepless
 
             FOUNDATION = True
-        except:
+        except Exception:
             pass
 
 
@@ -358,41 +358,41 @@ def halt():
         sabnzbd.URLGrabber.stop()
         try:
             sabnzbd.URLGrabber.join(timeout=3)
-        except:
+        except Exception:
             pass
 
         logging.debug("Stopping dirscanner")
         sabnzbd.DirScanner.stop()
         try:
             sabnzbd.DirScanner.join(timeout=3)
-        except:
+        except Exception:
             pass
 
         logging.debug("Stopping downloader")
         sabnzbd.Downloader.stop()
         try:
             sabnzbd.Downloader.join(timeout=3)
-        except:
+        except Exception:
             pass
 
         logging.debug("Stopping assembler")
         sabnzbd.Assembler.stop()
         try:
             sabnzbd.Assembler.join(timeout=3)
-        except:
+        except Exception:
             pass
 
         logging.debug("Stopping postprocessor")
         sabnzbd.PostProcessor.stop()
         try:
             sabnzbd.PostProcessor.join(timeout=3)
-        except:
+        except Exception:
             pass
 
         # Save State
         try:
             save_state()
-        except:
+        except Exception:
             logging.error(T("Fatal error at saving state"), exc_info=True)
 
         # The Scheduler cannot be stopped when the stop was scheduled.
@@ -454,7 +454,7 @@ def delayed_startup_actions():
             sabnzbd.__baseline__ = sabnzbd.misc.run_command(
                 ["git", "rev-parse", "--short", "HEAD"], cwd=sabnzbd.DIR_PROG
             ).strip()
-        except:
+        except Exception:
             pass
 
     logging.info("Commit = %s", sabnzbd.__baseline__)
@@ -607,5 +607,5 @@ def pid_file(pid_path=None, pid_file=None, port=0):
                     f.write("%d\n" % os.getpid())
             else:
                 filesystem.remove_file(sabnzbd.DIR_PID)
-        except:
+        except Exception:
             logging.warning(T("Cannot access PID file %s"), sabnzbd.DIR_PID)

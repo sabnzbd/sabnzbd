@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # Check for DMGBuild
     try:
         import dmgbuild
-    except:
+    except Exception:
         print("Requires dmgbuild-module, use pip install dmgbuild")
         exit()
 

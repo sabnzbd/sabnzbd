@@ -311,7 +311,7 @@ def identify_web_template(key, defweb, wdir):
     if wdir is None:
         try:
             wdir = fix_webname(key())
-        except:
+        except Exception:
             wdir = ""
     if not wdir:
         wdir = defweb
@@ -383,13 +383,13 @@ def get_user_profile_paths():
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
             sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
             sabnzbd.DIR_HOME = os.environ["USERPROFILE"]
-        except:
+        except Exception:
             try:
                 root = os.environ["AppData"]
                 user = os.environ["USERPROFILE"]
                 sabnzbd.DIR_LCLDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
                 sabnzbd.DIR_HOME = user
-            except:
+            except Exception:
                 pass
 
         # Long-path everything
@@ -675,7 +675,7 @@ def is_sabnzbd_running(url):
         ver = get_from_url(url)
         set_https_verification(prev)
         return ver and (re.search(r"\d+\.\d+\.", ver) or ver.strip() == sabnzbd.__version__)
-    except:
+    except Exception:
         return False
 
 
@@ -686,7 +686,7 @@ def find_free_port(host, currentport):
         try:
             portend.free(host, currentport, timeout=0.025)
             return currentport
-        except:
+        except Exception:
             currentport += 5
             n += 1
     return 0
@@ -888,7 +888,7 @@ def main():
         elif opt in ("-l", "--logging"):
             try:
                 logging_level = int(arg)
-            except:
+            except Exception:
                 logging_level = -2
             if logging_level < -1 or logging_level > 2:
                 print_help()
@@ -1007,13 +1007,13 @@ def main():
                 portend.free(web_host, https_port, timeout=0.05)
             except IOError:
                 abort_and_show_error(browserhost, web_port)
-            except:
+            except Exception:
                 abort_and_show_error(browserhost, web_port, "49")
         try:
             portend.free(web_host, web_port, timeout=0.05)
         except IOError:
             abort_and_show_error(browserhost, web_port)
-        except:
+        except Exception:
             abort_and_show_error(browserhost, web_port, "49")
 
     # Windows instance is reachable through registry
@@ -1049,7 +1049,7 @@ def main():
                             # In case HTTPS == HTTP port
                             web_port = newport
                             sabnzbd.cfg.web_port.set(newport)
-        except:
+        except Exception:
             # Something else wrong, probably badly specified host
             abort_and_show_error(browserhost, web_port, "49")
 
@@ -1072,7 +1072,7 @@ def main():
                     if port > 0:
                         sabnzbd.cfg.web_port.set(port)
                         web_port = port
-        except:
+        except Exception:
             # Something else wrong, probably badly specified host
             abort_and_show_error(browserhost, web_port, "49")
 
@@ -1090,7 +1090,7 @@ def main():
             if RSS_FILE_NAME not in x:
                 try:
                     os.remove(x)
-                except:
+                except Exception:
                     pass
 
     # Prevent the logger from raising exceptions
@@ -1146,7 +1146,7 @@ def main():
             os.environ["SSL_CERT_FILE"] = certifi.where()
             logging.info("Certifi version = %s", certifi.__version__)
             logging.info("Loaded additional certificates from %s", os.environ["SSL_CERT_FILE"])
-        except:
+        except Exception:
             # Sometimes the certificate file is blocked
             logging.warning(T("Could not load additional certificates from certifi package"))
             logging.info("Traceback: ", exc_info=True)
@@ -1181,7 +1181,7 @@ def main():
                 import sabnzbd.sabtraylinux
 
                 sabnzbd.sabtraylinux.StatusIcon()
-            except:
+            except Exception:
                 logging.info("python3-gi not found, no SysTray.")
 
     # Find external programs
@@ -1210,7 +1210,7 @@ def main():
         try:
             trialcontext.load_cert_chain(https_cert, https_key)
             logging.info("HTTPS keys are OK")
-        except:
+        except Exception:
             logging.warning(T("Disabled HTTPS because of invalid CERT and KEY files"))
             logging.info("Traceback: ", exc_info=True)
             enable_https = False
@@ -1351,7 +1351,7 @@ def main():
 
     try:
         cherrypy.engine.start()
-    except:
+    except Exception:
         # Since the webserver is started by cherrypy in a separate thread, we can't really catch any
         # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
@@ -1387,7 +1387,7 @@ def main():
     logging.info("Starting %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
     try:
         sabnzbd.start()
-    except:
+    except Exception:
         logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
         sabnzbd.halt()
 
@@ -1493,7 +1493,7 @@ def main():
     if hasattr(sys, "frozen") and sabnzbd.MACOS:
         try:
             AppHelper.stopEventLoop()
-        except:
+        except Exception:
             # Failing AppHelper library!
             os._exit(0)
     elif sabnzbd.WIN_SERVICE:

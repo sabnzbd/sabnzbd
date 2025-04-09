@@ -244,7 +244,7 @@ def launch_a_browser(url, force=False):
             webbrowser.open(url, 2, True)
         else:
             logging.info("Not showing panic message in webbrowser, no support found")
-    except:
+    except Exception:
         logging.warning(T("Cannot launch the browser, probably not found"))
         logging.info("Traceback: ", exc_info=True)
 

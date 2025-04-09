@@ -51,7 +51,7 @@ if sabnzbd.WINDOWS:
         # Set a custom AUMID to display the right icon, it is written to the registry by the installer
         shell.SetCurrentProcessExplicitAppUserModelID("SABnzbd")
         _HAVE_WINDOWS_TOASTER = True
-    except:
+    except Exception:
         # Sending toasts on non-supported platforms results in segfaults
         _HAVE_WINDOWS_TOASTER = False
 
@@ -64,7 +64,7 @@ try:
     # Without DISPLAY, notify2 cannot autolaunch a dbus-daemon
     if not hasattr(notify2, "init") or "DISPLAY" not in os.environ:
         _HAVE_NTFOSD = False
-except:
+except Exception:
     _HAVE_NTFOSD = False
 
 
@@ -217,7 +217,7 @@ def send_notify_osd(title, message):
     # when there's no active notification daemon
     try:
         _NTFOSD = _NTFOSD or notify2.init("SABnzbd")
-    except:
+    except Exception:
         _NTFOSD = False
 
     if _NTFOSD:
@@ -225,7 +225,7 @@ def send_notify_osd(title, message):
         try:
             note = notify2.Notification(title, message, icon)
             note.show()
-        except:
+        except Exception:
             # Apparently not implemented on this system
             logging.info(error)
             return error
@@ -248,7 +248,7 @@ def send_notification_center(title: str, msg: str, notification_type: str, actio
                 break
 
         sabnzbd.MACOSTRAY.send_notification(title, subtitle, msg, button_text, button_action)
-    except:
+    except Exception:
         logging.info(T("Failed to send macOS notification"))
         logging.debug("Traceback: ", exc_info=True)
         return T("Failed to send macOS notification")
@@ -280,7 +280,7 @@ def send_prowl(title, msg, notification_type, force=False, test=None):
         try:
             urllib.request.urlopen(url)
             return ""
-        except:
+        except Exception:
             logging.warning(T("Failed to send Prowl message"))
             logging.info("Traceback: ", exc_info=True)
             return T("Failed to send Prowl message")
@@ -365,7 +365,7 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
         ):
             return T("Failed to send one or more Apprise Notifications")
 
-    except:
+    except Exception:
         logging.warning(T("Failed to send Apprise message"))
         logging.info("Traceback: ", exc_info=True)
         return T("Failed to send Apprise message")
@@ -434,7 +434,7 @@ def do_send_pushover(body):
             return T("Failed to send pushover message")
         else:
             return ""
-    except:
+    except Exception:
         logging.warning(T("Failed to send pushover message"))
         logging.info("Traceback: ", exc_info=True)
         return T("Failed to send pushover message")
@@ -468,7 +468,7 @@ def send_pushbullet(title, msg, notification_type, force=False, test=None):
         else:
             logging.info("Successfully sent to Pushbullet")
 
-    except:
+    except Exception:
         logging.warning(T("Failed to send pushbullet message"))
         logging.info("Traceback: ", exc_info=True)
         return T("Failed to send pushbullet message")
@@ -506,7 +506,7 @@ def send_nscript(title, msg, notification_type, force=False, test=None):
                 )
                 output = p.stdout.read()
                 ret = p.wait()
-            except:
+            except Exception:
                 logging.info("Failed to run script %s", script, exc_info=True)
 
             if ret:
@@ -540,7 +540,7 @@ def send_windows(title: str, msg: str, notification_type: str, actions: Optional
             notification_sender.show_toast(toast_notification)
         elif sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:
             sabnzbd.WINTRAY.sendnotification(title, msg)
-    except:
+    except Exception:
         logging.info(T("Failed to send Windows notification"))
         logging.debug("Traceback: ", exc_info=True)
         return T("Failed to send Windows notification")

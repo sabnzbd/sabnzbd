@@ -29,7 +29,7 @@ try:
     from threading import Thread
 
     _HAVE_BONJOUR = True
-except:
+except Exception:
     _HAVE_BONJOUR = False
 
 import sabnzbd
@@ -92,7 +92,7 @@ def set_bonjour(host=None, port=None):
     except sabnzbd.utils.pybonjour.BonjourError as e:
         _BONJOUR_OBJECT = None
         logging.debug("Failed to start Bonjour service: %s", str(e))
-    except:
+    except Exception:
         _BONJOUR_OBJECT = None
         logging.debug("Failed to start Bonjour service due to non-pybonjour related problem", exc_info=True)
     else:

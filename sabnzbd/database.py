@@ -119,7 +119,7 @@ class HistoryDB:
             try:
                 self.cursor.execute(command, args)
                 return True
-            except:
+            except Exception:
                 error = str(sys.exc_info()[1])
                 if tries > 0 and "is locked" in error:
                     logging.debug("Database locked, wait and retry")
@@ -135,7 +135,7 @@ class HistoryDB:
                     self.close()
                     try:
                         remove_file(HistoryDB.db_path)
-                    except:
+                    except Exception:
                         pass
                     HistoryDB.startup_done = False
                     self.connect()
@@ -149,7 +149,7 @@ class HistoryDB:
                     logging.info("Traceback: ", exc_info=True)
                     try:
                         self.connection.rollback()
-                    except:
+                    except Exception:
                         # Can fail in case of automatic rollback
                         logging.debug("Rollback Failed:", exc_info=True)
             return False
@@ -198,7 +198,7 @@ class HistoryDB:
         try:
             self.cursor.close()
             self.connection.close()
-        except:
+        except Exception:
             logging.error(T("Failed to close database, see log"))
             logging.info("Traceback: ", exc_info=True)
 
@@ -418,7 +418,7 @@ class HistoryDB:
         if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
                 data = ubtou(zlib.decompress(self.cursor.fetchone()["script_log"]))
-            except:
+            except Exception:
                 pass
         return data
 
@@ -556,7 +556,7 @@ def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
         parsed_stage_log = []
         try:
             all_stages_lines = lst.split("\r\n")
-        except:
+        except Exception:
             logging.warning(T("Invalid stage logging in history for %s"), item["name"])
             logging.debug("Lines: %s", lst)
             all_stages_lines = []
@@ -564,13 +564,13 @@ def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
         for stage_lines in all_stages_lines:
             try:
                 key, logs = stage_lines.split(":::")
-            except:
+            except Exception:
                 logging.info('Missing key:::logs "%s"', stage_lines)
                 continue
             stage = {"name": key, "actions": []}
             try:
                 stage["actions"] = logs.split(";")
-            except:
+            except Exception:
                 logging.warning(T("Invalid stage logging in history for %s"), item["name"])
                 logging.debug("Logs: %s", logs)
             parsed_stage_log.append(stage)

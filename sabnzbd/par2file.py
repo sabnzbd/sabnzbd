@@ -66,7 +66,7 @@ def is_par2_file(filepath: str) -> bool:
             with open(filepath, "rb") as f:
                 buf = f.read(8)
                 return buf.startswith(PAR_PKT_ID)
-        except:
+        except Exception:
             pass
     return False
 
@@ -98,7 +98,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
                         if PAR_RECOVERY_ID in buf:
                             block += 1
                         buf = f.read(128)
-            except:
+            except Exception:
                 pass
     return setname, vol, block
 
@@ -234,7 +234,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                     duplicates16k.append(par2info.hash16k)
                     table[par2info.filename].has_duplicate = True
 
-    except:
+    except Exception:
         logging.info("Par2 parser crashed in file %s", fname)
         logging.debug("Traceback: ", exc_info=True)
         table = {}
