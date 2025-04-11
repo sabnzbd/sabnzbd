@@ -309,8 +309,8 @@ class RSSReader:
                     n = 0
                     if ("F" in reTypes or "S" in reTypes) and (not season or not episode):
                         show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
-                        season = show_analysis.info.get("season")
-                        episode = show_analysis.info.get("episode")
+                        season = show_analysis.info.get("season_num")
+                        episode = show_analysis.info.get("episode_num")
 
                     # Match against all filters until an positive or negative match
                     logging.debug("Size %s", size)

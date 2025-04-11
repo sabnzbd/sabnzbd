@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 4.5.0
+Release Notes - SABnzbd 4.5.1
 =========================================================
+
+## Bug fixes and changes in 4.5.1
+
+* Correct platform detection on Linux.
+* The `From SxxEyy` RSS filters did not always work.
+* Windows and macOS: Update Unrar to 7.11.
 
 ## New features in 4.5.0
 

@@ -27,6 +27,10 @@ import sys
 import gettext
 import subprocess
 
+# Make sure it's run as "python tools/make_mo.py"
+if not os.path.exists("po"):
+    raise RuntimeError("Make sure to run from root directory of SABnzbd")
+
 PO_DIR = "po/main"
 POE_DIR = "po/email"
 PON_DIR = "po/nsis"

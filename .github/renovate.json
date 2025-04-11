@@ -23,7 +23,12 @@
     "jaraco.collections",
     "sabctools",
     "paho-mqtt",
-    "werkzeug"
+    "werkzeug",
+    "winrt-runtime",
+    "winrt-Windows.Data.Xml.Dom",
+    "winrt-Windows.Foundation",
+    "winrt-Windows.Foundation.Collections",
+    "winrt-Windows.UI.Notifications"
   ],
   "packageRules": [
     {
