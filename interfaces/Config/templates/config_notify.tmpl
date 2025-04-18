@@ -288,12 +288,12 @@
                             $T($notify_types[$type]).replace('/', ' / ')
                         </label>
                         <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
-                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == "-3" then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
-                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == "-2" then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
-                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == "-1" then 'selected="selected"' else ""#--> >$T('prowl-moderate')</option>
-                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == "0"  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
-                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == "1"  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
-                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == "2"  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == -3 then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
+                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == -1 then 'selected="selected"' else ""#--> >$T('prowl-moderate')</option>
+                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
+                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                         </select>
                     </div>
                 <!--#end for#-->
@@ -354,12 +354,12 @@
                             $T($notify_types[$type]).replace('/', ' / ')
                         </label>
                         <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
-                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == "-3" then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
-                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == "-2" then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
-                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == "-1" then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
-                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == "0"  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
-                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == "1"  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == "2"  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
+                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                         </select>
                     </div>
                 <!--#end for#-->
