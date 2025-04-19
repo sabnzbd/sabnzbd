@@ -214,6 +214,13 @@ def sanitize_filename(filename: str) -> str:
     if not filename:
         return filename
 
+    # Replace surrogate characters before other sanitization
+    try:
+        filename = filename.encode('utf-8', errors='replace').decode('utf-8')
+    except Exception:
+        # Fallback in case of unexpected errors
+        pass
+
     illegal = CH_ILLEGAL
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
@@ -259,6 +266,13 @@ def sanitize_foldername(foldername: str) -> str:
     """
     if not foldername:
         return foldername
+
+    # Replace surrogate characters before other sanitization
+    try:
+        foldername = foldername.encode('utf-8', errors='replace').decode('utf-8')
+    except Exception:
+        # Fallback in case of unexpected errors
+        pass
 
     illegal = CH_ILLEGAL + ':"'
 
