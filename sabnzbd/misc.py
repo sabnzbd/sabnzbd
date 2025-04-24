@@ -618,12 +618,19 @@ def to_units(val: Union[int, float], postfix="") -> str:
 
     val = val / 2 ** (10 * n)
 
+    # Showing the single decimal per doc string
     if n > 1:
         decimals = 1
     else:
         decimals = 0
 
-    return ("%%s%%.%sf %%s%%s" % decimals) % (sign, val, TAB_UNITS[n], postfix)
+    # We might not have anything at all to append
+    if n == 0 and postfix == "":
+        units = ""
+    else:
+        units = f" {TAB_UNITS[n]}{postfix}"
+
+    return f"{sign}{val:.{decimals}f}{units}"
 
 
 def caller_name(skip=2):
