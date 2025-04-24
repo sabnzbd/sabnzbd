@@ -38,6 +38,7 @@ import ctypes
 import html
 import ipaddress
 import socks
+import math
 from threading import Thread
 from collections.abc import Iterable
 from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
@@ -604,15 +605,18 @@ def to_units(val: Union[int, float], postfix="") -> str:
 
     if val < 0:
         sign = "-"
+        val = abs(val)
     else:
         sign = ""
 
     # Determine what form we are at
-    val = abs(val)
-    n = 0
-    while (val > 1023) and (n < 5):
-        val = val / 1024
-        n = n + 1
+    # Anything beyond petabytes is outside of scope
+    if val == 0:
+        n = 0
+    else:
+        n = min(5, math.trunc(math.log2(val) / 10))
+
+    val = val / 2 ** (10 * n)
 
     if n > 1:
         decimals = 1
