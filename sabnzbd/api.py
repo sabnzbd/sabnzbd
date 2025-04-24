@@ -1798,9 +1798,9 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["have_warnings"] = str(sabnzbd.GUIHANDLER.count())
     header["finishaction"] = sabnzbd.QUEUECOMPLETE
 
-    header["quota"] = to_units(sabnzbd.BPSMeter.quota)
+    header["quota"] = to_units(sabnzbd.BPSMeter.quota, "B")
     header["have_quota"] = bool(sabnzbd.BPSMeter.quota > 0.0)
-    header["left_quota"] = to_units(sabnzbd.BPSMeter.left)
+    header["left_quota"] = to_units(sabnzbd.BPSMeter.left, "B")
 
     anfo = sabnzbd.ArticleCache.cache_info()
     header["cache_art"] = str(anfo.article_sum)
