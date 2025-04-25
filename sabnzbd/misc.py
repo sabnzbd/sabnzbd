@@ -609,13 +609,22 @@ def to_units(val: Union[int, float], postfix="") -> str:
     else:
         sign = ""
 
-    # Determine what form we are at
-    # Anything beyond petabytes is outside of scope
-    if val == 0:
+    # Determine the unit tag and how to scale.
+    # The tags are ordered by powers of 1024.
+    # Index 0 contains all values under 1024.
+    if val < 1024:
         n = 0
     else:
+        # The index into the tags for a value, then,
+        # is the integer part of log1024(value).
+        # log2(a)/log2(b) = logb(a).
+        # log2(1024) is 10 so we can use that literally.
+        # Limit it to 5 as the maximum defined index.
         n = min(5, math.trunc(math.log2(val) / 10))
 
+    # Now we scale our value to the appropriate power of 1024
+    # It is written as 2^10n for symmetry with the
+    # selection above.
     val = val / 2 ** (10 * n)
 
     # Showing the single decimal per doc string
