@@ -38,6 +38,7 @@ import ctypes
 import html
 import ipaddress
 import socks
+import math
 from threading import Thread
 from collections.abc import Iterable
 from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
@@ -604,22 +605,41 @@ def to_units(val: Union[int, float], postfix="") -> str:
 
     if val < 0:
         sign = "-"
+        val = abs(val)
     else:
         sign = ""
 
-    # Determine what form we are at
-    val = abs(val)
-    n = 0
-    while (val > 1023) and (n < 5):
-        val = val / 1024
-        n = n + 1
+    # Determine the unit tag and how to scale.
+    # The tags are ordered by powers of 1024.
+    # Index 0 contains all values under 1024.
+    if val < 1024:
+        n = 0
+    else:
+        # The index into the tags for a value, then,
+        # is the integer part of log1024(value).
+        # log2(a)/log2(b) = logb(a).
+        # log2(1024) is 10 so we can use that literally.
+        # Limit it to 5 as the maximum defined index.
+        n = min(5, math.trunc(math.log2(val) / 10))
 
+    # Now we scale our value to the appropriate power of 1024
+    # It is written as 2^10n for symmetry with the
+    # selection above.
+    val = val / 2 ** (10 * n)
+
+    # Showing the single decimal per doc string
     if n > 1:
         decimals = 1
     else:
         decimals = 0
 
-    return ("%%s%%.%sf %%s%%s" % decimals) % (sign, val, TAB_UNITS[n], postfix)
+    # We might not have anything at all to append
+    if n == 0 and postfix == "":
+        units = ""
+    else:
+        units = f" {TAB_UNITS[n]}{postfix}"
+
+    return f"{sign}{val:.{decimals}f}{units}"
 
 
 def caller_name(skip=2):
