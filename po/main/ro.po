@@ -515,7 +515,7 @@ msgid "Resuming"
 msgstr "Reluare"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Întrerupt"
@@ -1151,13 +1151,13 @@ msgstr "Pornire/Închidere"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Pauză"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Reia"
@@ -1398,96 +1398,96 @@ msgid "Pausing duplicate NZB \"%s\""
 msgstr "Întrerupem duplicat NZB \"%s\""
 
 #. Footer: indicator of warnings
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
 msgstr "Atenționări"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Inactiv"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Queue"
 msgstr "Coadă"
 
 #. Queue page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge Queue"
 msgstr "Goleşte Coadă"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "History"
 msgstr "Istoric"
 
 #. History page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge History"
 msgstr "Şterge Istoricul"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Limit Speed"
 msgstr "Limitare de Viteză"
 
 #. One minute
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "min"
 msgstr "min"
 
 #. #: Config->Scheduler
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Scan watched folder"
 msgstr "Scanează dosar urmărire"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Read all RSS feeds"
 msgstr "Citește toate feed-urile RSS"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Complete Folder"
 msgstr "Dosar Complet"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Incomplete Folder"
 msgstr "Dosar Incomplet"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Troubleshoot"
 msgstr "Depanare"
 
 #. Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Repornește"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Restart without login"
 msgstr "Reporneşte fără autorizare"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Quit"
 msgstr "Ieșire"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Queue First 10 Items"
 msgstr "Pune la Coadă Primele 10 Obiecte"
 
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Gol"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "History Last 10 Items"
 msgstr "Istoric Ultimele 10 Obiecte"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Go to wizard"
 msgstr "Dute la vrăjitor"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Stopping..."
 msgstr "Se oprește..."
 

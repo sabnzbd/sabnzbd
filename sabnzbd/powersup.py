@@ -79,7 +79,7 @@ def win_shutdown():
 ##############################################################################
 
 
-def osx_shutdown():
+def macos_shutdown():
     """Shutdown macOS system, never returns"""
     try:
         subprocess.call(["osascript", "-e", 'tell app "System Events" to shut down'])
@@ -89,7 +89,7 @@ def osx_shutdown():
     os._exit(0)
 
 
-def osx_standby():
+def macos_standby():
     """Make macOS system sleep, returns after wakeup"""
     try:
         subprocess.call(["pmset", "sleepnow"])
@@ -99,9 +99,9 @@ def osx_standby():
         logging.info("Traceback: ", exc_info=True)
 
 
-def osx_hibernate():
+def macos_hibernate():
     """Make macOS system sleep, returns after wakeup"""
-    osx_standby()
+    macos_standby()
 
 
 ##############################################################################

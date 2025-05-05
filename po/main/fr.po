@@ -543,7 +543,7 @@ msgid "Resuming"
 msgstr "Reprise en cours"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "En pause"
@@ -1198,13 +1198,13 @@ msgstr "Démarrage/Arrêt"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Mettre en pause"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Reprendre"
@@ -1445,96 +1445,96 @@ msgid "Pausing duplicate NZB \"%s\""
 msgstr "Mise en pause du doublon NZB \"%s\""
 
 #. Footer: indicator of warnings
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
 msgstr "Avertissements"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "A l'arrêt"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Queue"
 msgstr "File d'attente"
 
 #. Queue page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge Queue"
 msgstr "Vider la file d'attente"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "History"
 msgstr "Historique"
 
 #. History page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge History"
 msgstr "Vider l'historique"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Limit Speed"
 msgstr "Limiter la vitesse"
 
 #. One minute
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "min"
 msgstr "min"
 
 #. #: Config->Scheduler
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Scan watched folder"
 msgstr "Analyser le dossier surveillé"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Read all RSS feeds"
 msgstr "Lire tous les flux RSS"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Complete Folder"
 msgstr "Dossier complet"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Incomplete Folder"
 msgstr "Dossier incomplet"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Troubleshoot"
 msgstr "Résoudre les problèmes"
 
 #. Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Redémarrer"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Restart without login"
 msgstr "Redémarrer sans se connecter"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Quit"
 msgstr "Quitter"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Queue First 10 Items"
 msgstr "Mettre en file d'attente les 10 premiers articles"
 
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Vide"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "History Last 10 Items"
 msgstr "Historique des 10 derniers articles"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Go to wizard"
 msgstr "Aller à l'assistant"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Stopping..."
 msgstr "Arrêt en cours..."
 

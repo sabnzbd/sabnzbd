@@ -537,7 +537,7 @@ msgid "Resuming"
 msgstr "Hervatten"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Gepauzeerd"
@@ -1189,13 +1189,13 @@ msgstr "Opstarten/Afsluiten"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Pauze"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Doorgaan"
@@ -1436,96 +1436,96 @@ msgid "Pausing duplicate NZB \"%s\""
 msgstr "Dubbele download \"%s\" gepauzeerd"
 
 #. Footer: indicator of warnings
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
 msgstr "Meldingen"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Rust"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Queue"
 msgstr "Wachtrij"
 
 #. Queue page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge Queue"
 msgstr "Wis wachtrij"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "History"
 msgstr "Geschiedenis"
 
 #. History page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge History"
 msgstr "Wis de volledige geschiedenis"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Limit Speed"
 msgstr "Beperk snelheid"
 
 #. One minute
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "min"
 msgstr "min"
 
 #. #: Config->Scheduler
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Scan watched folder"
 msgstr "Bewaakte map uitlezen"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Read all RSS feeds"
 msgstr "Lees alle RSS-feeds uit"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Complete Folder"
 msgstr "Map voltooid"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Incomplete Folder"
 msgstr "Tijdelijke download map"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Troubleshoot"
 msgstr "Probleemoplosser"
 
 #. Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Herstart"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Restart without login"
 msgstr "Herstarten zonder login"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Quit"
 msgstr "Afsluiten"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Queue First 10 Items"
 msgstr "Wachtrij Eerste 10 Items"
 
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Leeg"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "History Last 10 Items"
 msgstr "Geschiedenis Laaste 10 Items"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Go to wizard"
 msgstr "Ga naar Wizard"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Stopping..."
 msgstr "Afsluiten..."
 

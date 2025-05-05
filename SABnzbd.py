@@ -1632,7 +1632,7 @@ if __name__ == "__main__":
         # macOS binary runner
         from PyObjCTools import AppHelper
         from AppKit import NSApplication
-        from sabnzbd.osxmenu import SABnzbdDelegate
+        from sabnzbd.macosmenu import SABnzbdDelegate
 
         # Need to run the main application in separate thread because the eventLoop
         # has to be in the main thread. The eventLoop is required for the menu.

@@ -1323,7 +1323,7 @@ PATHBROWSER_JUNKFOLDERS = (
     ".vol",
     "cachedmessages",
     "caches",
-    "trash",  # osx specific
+    "trash",  # macos specific
 )
 
 

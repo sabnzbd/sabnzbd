@@ -499,7 +499,7 @@ msgid "Resuming"
 msgstr "Obnovování"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Pozastaveno"
@@ -1122,13 +1122,13 @@ msgstr "Spuštění/Vypnutí"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Pause"
 msgstr "Pozastavit"
 
 #. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Resume"
 msgstr "Obnovit stahování"
@@ -1369,96 +1369,96 @@ msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pozastavuji duplikátní NZB \"%s\""
 
 #. Footer: indicator of warnings
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
 msgstr "Výstrahy"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Nečinný"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Queue"
 msgstr "Fronta"
 
 #. Queue page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge Queue"
 msgstr "Vyprázdnit frontu"
 
 #. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "History"
 msgstr "Historie"
 
 #. History page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Purge History"
 msgstr "Vyprázdnit historii"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Limit Speed"
 msgstr "Omezit rychlost"
 
 #. One minute
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "min"
 msgstr "minuta"
 
 #. #: Config->Scheduler
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Scan watched folder"
 msgstr "Zkontrolovat sledovanou složku"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Read all RSS feeds"
 msgstr "Číst všechny RSS kanály"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Complete Folder"
 msgstr "Složka dokončených"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Incomplete Folder"
 msgstr "Složka nedokončených"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Troubleshoot"
 msgstr ""
 
 #. Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
 msgstr "Restart"
 
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
 msgid "Restart without login"
 msgstr "Restart bez přihlášení"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Quit"
 msgstr "Vypnout"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Queue First 10 Items"
 msgstr "Fronta prvních 10 položek"
 
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Empty"
 msgstr "Prázdný"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "History Last 10 Items"
 msgstr "Historie posledních 10 položek"
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Go to wizard"
 msgstr ""
 
-#: sabnzbd/osxmenu.py
+#: sabnzbd/macosmenu.py
 msgid "Stopping..."
 msgstr "Zastavuji..."
 

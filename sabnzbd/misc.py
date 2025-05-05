@@ -1404,7 +1404,7 @@ def system_shutdown():
     if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_shutdown()
     elif sabnzbd.MACOS:
-        sabnzbd.powersup.osx_shutdown()
+        sabnzbd.powersup.macos_shutdown()
     else:
         sabnzbd.powersup.linux_shutdown()
 
@@ -1415,7 +1415,7 @@ def system_hibernate():
     if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_hibernate()
     elif sabnzbd.MACOS:
-        sabnzbd.powersup.osx_hibernate()
+        sabnzbd.powersup.macos_hibernate()
     else:
         sabnzbd.powersup.linux_hibernate()
 
@@ -1426,7 +1426,7 @@ def system_standby():
     if sabnzbd.WINDOWS:
         sabnzbd.powersup.win_standby()
     elif sabnzbd.MACOS:
-        sabnzbd.powersup.osx_standby()
+        sabnzbd.powersup.macos_standby()
     else:
         sabnzbd.powersup.linux_standby()
 
