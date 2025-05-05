@@ -2,10 +2,10 @@
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 pyinstaller==6.13.0
 packaging==25.0
-pyinstaller-hooks-contrib==2025.3
+pyinstaller-hooks-contrib==2025.4
 altgraph==0.17.4
 wrapt==1.17.2
-setuptools==80.0.0
+setuptools==80.3.1
 
 # For the Windows build
 pefile==2024.8.26; sys_platform == 'win32'
