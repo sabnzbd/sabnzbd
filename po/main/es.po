@@ -862,6 +862,113 @@ msgstr "ERROR:"
 msgid "Back"
 msgstr "Atrás"
 
+#. Footer: indicator of warnings
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Warnings"
+msgstr "Advertencias"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Idle"
+msgstr "Inactivo"
+
+#. Main menu item
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Queue"
+msgstr "Cola"
+
+#. Queue page button
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Purge Queue"
+msgstr "Limpiar Cola"
+
+#. Main menu item
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "History"
+msgstr "Historial"
+
+#. History page button
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Purge History"
+msgstr "Purgar historial"
+
+#: sabnzbd/macosmenu.py
+msgid "Limit Speed"
+msgstr "Limitar Velocidad"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Pausar"
+
+#. One minute
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "mín"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Reanudar"
+
+#. #: Config->Scheduler
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Scan watched folder"
+msgstr "Escanear directorio bajo observación"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Read all RSS feeds"
+msgstr "Leer todos los canales RSS"
+
+#: sabnzbd/macosmenu.py
+msgid "Complete Folder"
+msgstr "Carpeta Completa"
+
+#: sabnzbd/macosmenu.py
+msgid "Incomplete Folder"
+msgstr "Carpeta Incompleta"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+msgid "Troubleshoot"
+msgstr "Resolver  un problema"
+
+#. Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Restart"
+msgstr "Reiniciar"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+msgid "Restart without login"
+msgstr "Reiniciar sin sesión iniciada"
+
+#: sabnzbd/macosmenu.py
+msgid "Quit"
+msgstr "Salir"
+
+#: sabnzbd/macosmenu.py
+msgid "Queue First 10 Items"
+msgstr "Encolar los primeros 10 elementos"
+
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Empty"
+msgstr "Vacía"
+
+#: sabnzbd/macosmenu.py
+msgid "History Last 10 Items"
+msgstr "Histórico últimos 10 elementos"
+
+#: sabnzbd/macosmenu.py
+msgid "Go to wizard"
+msgstr "Ir al Asistente"
+
+#: sabnzbd/macosmenu.py
+msgid "Stopping..."
+msgstr "Deteniendo..."
+
 #: sabnzbd/misc.py
 msgid ""
 "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
@@ -1177,19 +1284,6 @@ msgstr ""
 msgid "Startup/Shutdown"
 msgstr "Inicio/Apagado"
 
-#. Notification - Pause downloading - Four way switch for duplicates -
-#. Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Pause"
-msgstr "Pausar"
-
-#. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Resume"
-msgstr "Reanudar"
-
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
@@ -1429,100 +1523,6 @@ msgstr "%s artículos contenían duplicados inconexos"
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pausando NZB duplicados \"%s\""
-
-#. Footer: indicator of warnings
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "Warnings"
-msgstr "Advertencias"
-
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Idle"
-msgstr "Inactivo"
-
-#. Main menu item
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "Queue"
-msgstr "Cola"
-
-#. Queue page button
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "Purge Queue"
-msgstr "Limpiar Cola"
-
-#. Main menu item
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "History"
-msgstr "Historial"
-
-#. History page button
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "Purge History"
-msgstr "Purgar historial"
-
-#: sabnzbd/macosmenu.py
-msgid "Limit Speed"
-msgstr "Limitar Velocidad"
-
-#. One minute
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "min"
-msgstr "mín"
-
-#. #: Config->Scheduler
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "Scan watched folder"
-msgstr "Escanear directorio bajo observación"
-
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Read all RSS feeds"
-msgstr "Leer todos los canales RSS"
-
-#: sabnzbd/macosmenu.py
-msgid "Complete Folder"
-msgstr "Carpeta Completa"
-
-#: sabnzbd/macosmenu.py
-msgid "Incomplete Folder"
-msgstr "Carpeta Incompleta"
-
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
-msgid "Troubleshoot"
-msgstr "Resolver  un problema"
-
-#. Config->Scheduling
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Restart"
-msgstr "Reiniciar"
-
-#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
-msgid "Restart without login"
-msgstr "Reiniciar sin sesión iniciada"
-
-#: sabnzbd/macosmenu.py
-msgid "Quit"
-msgstr "Salir"
-
-#: sabnzbd/macosmenu.py
-msgid "Queue First 10 Items"
-msgstr "Encolar los primeros 10 elementos"
-
-#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
-msgid "Empty"
-msgstr "Vacía"
-
-#: sabnzbd/macosmenu.py
-msgid "History Last 10 Items"
-msgstr "Histórico últimos 10 elementos"
-
-#: sabnzbd/macosmenu.py
-msgid "Go to wizard"
-msgstr "Ir al Asistente"
-
-#: sabnzbd/macosmenu.py
-msgid "Stopping..."
-msgstr "Deteniendo..."
 
 #: sabnzbd/panic.py
 msgid "Problem with"
