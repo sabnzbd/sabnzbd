@@ -270,8 +270,8 @@ if __name__ == "__main__":
         # Otherwise the signature of the main application becomes invalid
         if authority:
             files_to_sign = [
-                "osx/par2/par2-turbo",
-                "osx/par2/arm64/par2-turbo",
+                "osx/par2/par2",
+                "osx/par2/arm64/par2",
                 "osx/unrar/unrar",
                 "osx/unrar/arm64/unrar",
                 "osx/7zip/7zz",

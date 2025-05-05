@@ -106,11 +106,11 @@ def find_programs(curdir: str):
     if sabnzbd.MACOS:
         if sabnzbd.MACOSARM64:
             # M1 (ARM64) versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/arm64/par2-turbo")
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/arm64/par2")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/arm64/unrar")
         else:
             # Regular x64 versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-turbo")
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
         # The 7zip binary is universal2
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7zz")
