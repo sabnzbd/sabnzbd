@@ -39,7 +39,11 @@ import time
 import re
 import gc
 import threading
+import http.cookies
 from typing import List, Dict, Any
+
+# Monkey-patch key validation to prevent cherrypy from stumbling over invalid cookies
+http.cookies._is_legal_key = lambda _: True
 
 try:
     import sabctools
