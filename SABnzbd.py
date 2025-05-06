@@ -42,9 +42,6 @@ import threading
 import http.cookies
 from typing import List, Dict, Any
 
-# Monkey-patch key validation to prevent cherrypy from stumbling over invalid cookies
-http.cookies._is_legal_key = lambda _: True
-
 try:
     import sabctools
     import Cheetah
@@ -1292,6 +1289,9 @@ def main():
             "error_page.404": sabnzbd.panic.error_page_404,
         }
     )
+
+    # Monkey-patch key validation to prevent cherrypy from stumbling over invalid cookies
+    http.cookies._is_legal_key = lambda _: True
 
     # Catch shutdown errors that can break cherrypy/cheroot
     # See https://github.com/cherrypy/cheroot/issues/710
