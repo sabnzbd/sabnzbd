@@ -493,6 +493,7 @@ api_logging = OptionBool("misc", "api_logging", True)
 html_login = OptionBool("misc", "html_login", True)
 disable_archive = OptionBool("misc", "disable_archive", False)
 warn_dupl_jobs = OptionBool("misc", "warn_dupl_jobs", False)
+use_parallel_unrar = OptionBool("misc", "use_parallel_unrar", False)
 
 keep_awake = OptionBool("misc", "keep_awake", True)
 tray_icon = OptionBool("misc", "tray_icon", True)
