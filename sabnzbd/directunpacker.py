@@ -26,6 +26,7 @@ import time
 import threading
 import logging
 from typing import Optional, Dict, List, Tuple
+from concurrent.futures import ThreadPoolExecutor
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -69,6 +70,9 @@ class DirectUnpacker(threading.Thread):
 
         self.duplicate_lines: int = 0
 
+        self.thread_pool = ThreadPoolExecutor(max_workers=cfg.direct_unpack_threads())
+        self.use_parallel_unrar = cfg.use_parallel_unrar()
+
         nzo.direct_unpacker = self
 
     def stop(self):
@@ -76,6 +80,13 @@ class DirectUnpacker(threading.Thread):
 
     def save(self):
         pass
+
+    def worker_unrar(self, nzf: NzbFile):
+        """Worker method for parallel unrar."""
+        try:
+            self.create_unrar_instance(nzf)
+        except Exception as e:
+            logging.error(f"Error processing {nzf.filename}: {e}")
 
     def reset_active(self):
         # make sure the process and file handlers are closed nicely:
@@ -128,7 +139,7 @@ class DirectUnpacker(threading.Thread):
 
     @synchronized(START_STOP_LOCK)
     def add(self, nzf: NzbFile):
-        """Add jobs and start instance of DirectUnpack"""
+        """Add jobs and start instance of DirectUnpack."""
         if not cfg.direct_unpack_tested():
             test_disk_performance()
 
@@ -144,14 +155,29 @@ class DirectUnpacker(threading.Thread):
         # Analyze updated filenames
         nzf.setname, nzf.vol = analyze_rar_filename(nzf.filename)
 
-        # Are we doing this set?
-        if self.cur_setname and self.cur_setname == nzf.setname:
-            logging.debug("DirectUnpack queued %s for %s", nzf.filename, self.cur_setname)
+        # Decide whether to use parallel or single-threaded processing
+        if self.use_parallel_unrar:
+            logging.info(f"Using parallel Unrar for set: {nzf.setname}")
+            try:
+                self.thread_pool.submit(self.worker_unrar, nzf)
+            except Exception as e:
+                logging.error(f"Failed to submit {nzf.filename} to thread pool: {e}")
+        elif self.cur_setname and self.cur_setname == nzf.setname:
+            logging.debug(
+                "DirectUnpack queued %s for %s", nzf.filename, self.cur_setname
+            )
             # Is this the first one of the first set?
-            if not self.active_instance and not self.is_alive() and self.have_next_volume():
+            if (
+                not self.active_instance
+                and not self.is_alive()
+                and self.have_next_volume()
+            ):
                 # Too many runners already?
                 if len(ACTIVE_UNPACKERS) >= cfg.direct_unpack_threads():
-                    logging.info("Too many DirectUnpackers currently to start %s", self.cur_setname)
+                    logging.info(
+                        "Too many DirectUnpackers currently to start %s",
+                        self.cur_setname,
+                    )
                     return
 
                 # Start the unrar command and the loop
@@ -378,8 +404,8 @@ class DirectUnpacker(threading.Thread):
                 self.next_file_lock.wait()
 
     @synchronized(START_STOP_LOCK)
-    def create_unrar_instance(self):
-        """Start the unrar instance using the user's options"""
+    def create_unrar_instance(self, nzf: NzbFile = None):
+        """Start the unrar instance for a specific file."""
         # Generate extraction path and save for post-proc
         if not self.unpack_dir_info:
             try:
@@ -405,8 +431,11 @@ class DirectUnpacker(threading.Thread):
         else:
             action = "x"
 
-        # The first NZF
-        self.rarfile_nzf = self.have_next_volume()
+        # The first NZF - either specified or find the next volume
+        if nzf:
+            self.rarfile_nzf = nzf
+        else:
+            self.rarfile_nzf = self.have_next_volume()
 
         # Ignore if maybe this set is not there anymore
         # This can happen due to race/timing issues when creating the sets
@@ -415,36 +444,25 @@ class DirectUnpacker(threading.Thread):
 
         # Generate command
         rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
+
+        # The -scf forces the output to be UTF8
+        command = [
+            sabnzbd.newsunpack.RAR_COMMAND,
+            action,
+            "-vp",
+            "-idp",
+            "-scf",
+            "-o+",
+            "-ai",
+            password_command,
+            rarfile_path,
+            "%s/" % extraction_path,
+        ]
+
         if sabnzbd.WINDOWS:
             # On Windows, UnRar uses a custom argument parser
             # See: https://github.com/sabnzbd/sabnzbd/issues/1043
-            # The -scf forces the output to be UTF8
-            command = [
-                sabnzbd.newsunpack.RAR_COMMAND,
-                action,
-                "-vp",
-                "-idp",
-                "-scf",
-                "-o+",
-                "-ai",
-                password_command,
-                rarfile_path,
-                "%s\\" % long_path(extraction_path),
-            ]
-        else:
-            # The -scf forces the output to be UTF8
-            command = [
-                sabnzbd.newsunpack.RAR_COMMAND,
-                action,
-                "-vp",
-                "-idp",
-                "-scf",
-                "-o+",
-                "-ai",
-                password_command,
-                rarfile_path,
-                "%s/" % extraction_path,
-            ]
+            command[-1] = "%s\\" % long_path(extraction_path)
 
         if cfg.ignore_unrar_dates():
             command.insert(3, "-tsm-")
@@ -464,7 +482,9 @@ class DirectUnpacker(threading.Thread):
         ACTIVE_UNPACKERS.append(self)
 
         # Doing the first
-        logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
+        logging.info(
+            "DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname
+        )
 
     @synchronized(START_STOP_LOCK)
     def abort(self):
