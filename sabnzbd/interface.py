@@ -1472,9 +1472,9 @@ class ConfigRss:
             self.__refresh_ignore = False
             self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
-    
+
     @secured_expose(check_api_key=True, check_configlock=True)
-    def update_rss_feed_delay (self, *args, **kwargs):
+    def update_rss_feed_delay(self, *args, **kwargs):
         """Update the delay for a feed"""
         if "feed" in kwargs:
             feed = kwargs["feed"]
@@ -1484,7 +1484,7 @@ class ConfigRss:
 
             if not kwargs["feed_delay"].isdigit():
                 raise Raiser(self.__root)
-            
+
             delay = int(kwargs["feed_delay"])
             config.get_rss()[feed].feed_delay.set(delay)
             config.save_config()
