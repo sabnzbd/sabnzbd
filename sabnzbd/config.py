@@ -695,6 +695,7 @@ class ConfigRSS:
         self.script = OptionStr(name, "script", add=False)
         self.enable = OptionBool(name, "enable", add=False)
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
+        self.feed_delay = OptionNumber(name, "feed_delay", 0, 0, 10080, add=False)  # 0-10080 minutes (1 week)
         self.filters = OptionFilters(name, "filters", add=False)
         self.filters.set([["", "", "", "A", "*", DEFAULT_PRIORITY, "1"]])
 
@@ -703,7 +704,7 @@ class ConfigRSS:
 
     def set_dict(self, values: Dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
-        for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
+        for kw in ("uri", "cat", "pp", "script", "priority", "enable", "feed_delay"):
             try:
                 value = values[kw]
                 getattr(self, kw).set(value)
@@ -721,6 +722,7 @@ class ConfigRSS:
         output_dict["script"] = self.script()
         output_dict["enable"] = self.enable()
         output_dict["priority"] = self.priority()
+        output_dict["feed_delay"] = self.feed_delay()
         filters = self.filters.get_dict()
         for kw in filters:
             output_dict[kw] = filters[kw]

@@ -156,6 +156,13 @@ class RSSReader:
         if not notdefault(defPrio):
             defPrio = None
 
+        # Get the feed_delay setting for this feed
+        feed_delay = feeds.feed_delay()
+        if not feed_delay:
+            feed_delay = 0
+        else:
+            # Convert from minutes to seconds
+            feed_delay = int(feed_delay) * 60
         # Preparations, convert filters to regex's
         regexes = []
         reTypes = []
@@ -394,6 +401,25 @@ class RSSReader:
                         star = first or jobs[link].get("status", "").endswith("*")
                     else:
                         star = first
+                        
+                    # Check if the item is old enough (with feed_delay) to be downloaded
+                    current_time = time.time()
+                    item_time = current_time
+                    if link in jobs:
+                        # Convert age to UTC to prevent timezone issues line 724 converts to local timezone
+                        utc_age = (jobs[link].get("age")+ datetime.timedelta(seconds=time.timezone))
+                        item_time = (utc_age - datetime.datetime(1970, 1, 1)).total_seconds()
+                    
+                    # Only apply delay if this is a download attempt and not a force download
+                    should_download = act
+                    if act and feed_delay > 0 and not force:
+                        # Check if the item has aged enough since first seen
+                        item_age = current_time - item_time
+                        if item_age < feed_delay:
+                            logging.info("Item %s not old enough yet (%d/%d seconds), delaying download", 
+                                         title, item_age, feed_delay)
+                            should_download = False
+                    
                     if result:
                         _HandleLink(
                             feed,
@@ -410,12 +436,12 @@ class RSSReader:
                             myCat,
                             myPP,
                             myScript,
-                            act,
+                            should_download,
                             star,
                             priority=myPrio,
                             rule=n,
                         )
-                        if act:
+                        if should_download:
                             new_downloads.append(title)
                     else:
                         _HandleLink(

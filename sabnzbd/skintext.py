@@ -475,6 +475,10 @@ SKIN_TEXT = {
     "explain-propagation_delay": TT(
         "Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay."
     ),
+    "opt-feed_delay": TT("Feed delay"),
+    "explain-feed_delay": TT(
+        "Minimum age of feed items, before adding them to download queue. This will be ignored in a forced download."
+    ),
     "opt-check_new_rel": TT("Check for New Release"),
     "also-test": TT("Also test releases"),  #: Pick list for weekly test for new releases
     "opt-replace_spaces": TT("Replace Spaces in Foldername"),

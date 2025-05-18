@@ -1472,6 +1472,27 @@ class ConfigRss:
             self.__refresh_ignore = False
             self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
+    
+    @secured_expose(check_api_key=True, check_configlock=True)
+    def update_rss_feed_delay (self, *args, **kwargs):
+        """Update the delay for a feed"""
+        if "feed" in kwargs:
+            feed = kwargs["feed"]
+            # check if feed exists
+            if feed not in config.get_rss():
+                raise Raiser(self.__root)
+
+            if not kwargs["feed_delay"].isdigit():
+                raise Raiser(self.__root)
+            
+            delay = int(kwargs["feed_delay"])
+            config.get_rss()[feed].feed_delay.set(delay)
+            config.save_config()
+            self.__refresh_download = True
+            self.__refresh_force = False
+            self.__refresh_ignore = True
+            self.__evaluate = True
+        raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
