@@ -651,9 +651,37 @@ function QueueModel(parent, data) {
         self.editingName(true)
         self.nameForEdit(self.name())
 
-        // Select
-        $(event.target).parents('.name').find('input').select()
-    }
+        // Select the input
+        const $input = $(event.target).parents('.name').find('input');
+        $input.select();
+
+        // Add Tab/Shift+Tab navigation
+        $input.off('keydown.tabnav').on('keydown.tabnav', function (e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+
+                // Find all rename inputs that are currently visible
+                const inputs = $('.queue-table input[type="text"]');
+                const currentIndex = inputs.index(this);
+                let nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
+
+                // Wrap around
+                if (nextIndex >= inputs.length) nextIndex = 0;
+                if (nextIndex < 0) nextIndex = inputs.length - 1;
+
+                // Simulate clicking Rename on the next row
+                const $nextRow = inputs.eq(nextIndex).closest('tr');
+                $nextRow.find('.hover-button[title="Rename"]').click();
+
+                // Delay focusing to wait for new input to appear
+                setTimeout(() => {
+                    const $nextInput = $('.queue-table input[type="text"]').eq(nextIndex);
+                    $nextInput.focus().select();
+                }, 50);
+            }
+        });
+    };
+
 
     // Catch the submit action
     self.editingNameSubmit = function() {
