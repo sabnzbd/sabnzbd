@@ -649,19 +649,26 @@ def _get_link(entry):
     """Retrieve the post link from this entry
     Returns (link, category, size)
     """
+    link = None
     size = 0
     age = datetime.datetime.now()
 
     # Try standard link and enclosures first
-    link = entry.link
-    if not link:
-        link = entry.links[0].href
     if "enclosures" in entry:
         try:
-            link = entry.enclosures[0]["href"]
-            size = int(entry.enclosures[0]["length"])
+            for enclosure in entry["enclosures"]:
+                if "type" in enclosure and enclosure["type"] != "application/x-nzb":
+                    continue
+
+                link = enclosure["href"]
+                size = int(enclosure["length"])
+                break
         except Exception:
             pass
+    else:
+        link = entry.link
+        if not link:
+            link = entry.links[0].href
 
     # GUID usually has URL to result on page
     infourl = None
