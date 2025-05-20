@@ -63,6 +63,36 @@ class TestNewsUnpackFunctions:
         with pytest.raises(TypeError):
             newsunpack.SevenZip("tests/data/basic_rar5/testfile.rar")
 
+    def test_is_tar(self):
+        # False, because the command is not set
+        #assert not newsunpack.SEVENZIP_COMMAND
+        #assert not newsunpack.is_tar("tests/data/test_7zip/testfile.7z")
+
+        # Set the command to get some real results
+        newsunpack.find_programs(".")
+        #assert newsunpack.SEVENZIP_COMMAND
+        assert not newsunpack.is_tar("tests/data/only_comments.sfv")
+        assert not newsunpack.is_tar("tests/data/random.bin")
+        assert not newsunpack.is_tar("tests/data/par2file/basic_16k.par2")
+        assert newsunpack.is_tar("tests/data/test_tar/testfile.tar")
+
+    def test_tar(self):
+        testtar = newsunpack.TarFile("tests/data/test_tar/testfile.tar")
+        assert testtar.namelist() == ["bobby_tables.txt"]
+
+        # Test with a non-tar file
+        assert not newsunpack.TarFile("tests/data/basic_rar5/testfile.rar")
+
+    def test_tar_safe(self):
+        # Safe
+        testtar = newsunpack.TarFile("tests/data/test_tar/testfile.tar")
+        assert testtar.is_tar_safe()
+        # Dangerous
+        testtar2 = newsunpack.TarFile("tests/data/test_tar/evil.tar")
+        assert not testtar2.is_tar_safe()
+        testtar3 = newsunpack.TarFile("tests/data/test_tar/evil2.tar")
+        assert not testtar3.is_tar_safe()
+        # soft/hard links should be added too
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestPar2Repair:

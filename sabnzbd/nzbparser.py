@@ -172,6 +172,8 @@ def process_nzb_archive_file(
             zf = rarfile.RarFile(path)
         elif sabnzbd.newsunpack.is_sevenfile(path):
             zf = sabnzbd.newsunpack.SevenZip(path)
+        elif sabnzbd.newsunpack.is_tar(path):
+            zf = sabnzbd.newsunpack.TarFile(path)
         else:
             logging.info("File %s is not a supported archive!", filename)
             return AddNzbFileResult.ERROR, []

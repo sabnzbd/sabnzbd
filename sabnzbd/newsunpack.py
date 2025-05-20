@@ -29,6 +29,7 @@ import io
 import shutil
 import functools
 from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union, Set
+import tarfile
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
@@ -1913,6 +1914,95 @@ class SevenZip:
         with build_and_run_command(command, text_mode=False, stderr=subprocess.DEVNULL) as p:
             data = io.BytesIO(p.stdout.read())
             p.wait()
+        return data
+
+    def close(self):
+        """Close file"""
+        pass
+
+
+##############################################################################
+# .tar Functions
+##############################################################################
+
+def is_tar(path: str) -> bool:
+    """Return True if path has .tar and tarfile confirms tar archive"""
+    try:
+        with tarfile.open(path, 'r:*') as tar:
+            tar.getmembers()
+        return True
+    except (tarfile.TarError, EOFError, OSError, RuntimeError) as e:
+        # Not a valid tar file
+        print(f"Invalid tar file: {e}")
+        return False
+    print(f"Invalid tar file, other")
+    return False
+
+def is_within_directory(directory, target):
+    abs_dir = os.path.abspath(directory)
+    abs_target = os.path.abspath(target)
+    return abs_target.startswith(abs_dir)
+
+# Probably would be better to check for safety then pass to installed program, but seems like every compression has their own extractor
+class TarFile:
+    """Check for safe paths inside .tar and extraction"""
+
+    def __init__(self, path: str):
+        self.path = path
+        # Check if it's actually a tar-file
+        if not is_tar(self.path):
+            raise TypeError("File is not a .tar file")
+
+    def is_tar_safe(self, path="."):
+        try:
+            with tarfile.open(self.path, 'r:*') as tar:
+                for member in tar.getmembers():
+                    # Avoid files with absolute paths or .. (path traversal)
+                    if member.name.startswith("/") or ".." in member.name:
+                        raise Exception(f"Unsafe path detected: {member.name}")
+
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception(f"Unsafe path detected: {member.name}")
+                    if member.issym() or member.islnk():
+                        raise Exception(f"Link detected: {member.name}")
+
+            return True
+        except tarfile.TarError:
+            # Not a valid tar file
+            return False
+
+
+    def namelist(self) -> List[str]:
+        """Return list of names in tar"""
+        names = []
+        try:
+            with tarfile.open(self.path, 'r:*') as tar:
+                for member in tar.getmembers():
+                    # Avoid files with absolute paths or .. (path traversal)
+                    if member.name.startswith("/") or ".." in member.name:
+                        raise Exception(f"Unsafe path detected: {member.name}")
+
+                    member_path = os.path.join(self.path, member.name)
+                    if not is_within_directory(self.path, member_path):
+                        raise Exception(f"Unsafe path detected: {member.name}")
+                    if member.issym() or member.islnk():
+                        raise Exception(f"Link detected: {member.name}")
+                    
+                    names.append(member.name)
+
+            return names
+        except tarfile.TarError:
+            # Not a valid tar file
+            return None
+
+    def open(self, name: str) -> BinaryIO:
+        """Read named file from tar and return data"""
+        data = None
+        with tarfile.open("example.tar", "r|") as tar:
+            tar.extract(name)
+        with open(name) as f:
+            data = f.read()
         return data
 
     def close(self):
