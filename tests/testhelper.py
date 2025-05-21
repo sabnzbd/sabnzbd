@@ -36,6 +36,8 @@ from unittest import mock
 from urllib3.exceptions import ProtocolError
 import xmltodict
 import functools
+from werkzeug import Request
+from werkzeug.utils import send_from_directory
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -162,6 +164,11 @@ def create_and_read_nzb_fp(nzbdir: str, metadata: Optional[Dict[str, str]] = Non
     # Remove the created NZB-file
     os.remove(nzb_path)
     return io.BytesIO(nzb_data)
+
+
+def httpserver_handler_data_dir(request: Request):
+    """Respond to a httpserver request with a file in SAB_DATA_DIR"""
+    return send_from_directory(directory=SAB_DATA_DIR, path=request.path.lstrip("/"), environ=request.environ)
 
 
 def random_name(length: int = 16) -> str:

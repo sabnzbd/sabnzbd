@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>My RSS Feed</title>
+    <link>https://sabnzbd.org/</link>
+    <item>
+      <title>TITLE</title>
+      <link>http://LINK</link>
+      <comments>COMMENTS</comments>
+      <description><![CDATA[<strong>Total Size</strong>: 200.0 B]]></description>
+      <pubDate>Tue, 20 May 2025 18:21:01 +0000</pubDate>
+      <guid isPermaLink="true">https://sabnzbd.org/rss_link</guid>
+    </item>
+  </channel>
+</rss>

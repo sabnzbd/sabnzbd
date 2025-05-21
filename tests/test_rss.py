@@ -21,9 +21,11 @@ tests.test_misc - Testing functions in misc.py
 import datetime
 import time
 import configobj
+from pytest_httpserver import HTTPServer
 
 import sabnzbd.rss as rss
 import sabnzbd.config
+from tests.testhelper import httpserver_handler_data_dir
 
 
 class TestRSS:
@@ -96,4 +98,68 @@ class TestRSS:
         # feedparser returns UTC so SABnzbd converts to locale
         # of the system, so now we have to return to UTC
         adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7) - datetime.timedelta(seconds=time.timezone)
+        assert job_data["age"] == adjusted_date
+
+    def test_rss_link(self, httpserver: HTTPServer):
+        httpserver.expect_request("/rss_link.xml").respond_with_handler(httpserver_handler_data_dir)
+
+        feed_name = "TestFeedLink"
+        self.setup_rss(feed_name, httpserver.url_for("/rss_link.xml"))
+
+        # Start the RSS reader
+        rss_obj = rss.RSSReader()
+        rss_obj.run_feed(feed_name)
+
+        # Is the feed processed?
+        assert feed_name in rss_obj.jobs
+        assert "http://LINK" in rss_obj.jobs[feed_name]
+
+        # Check some job-data
+        job_data = rss_obj.jobs[feed_name]["http://LINK"]
+        assert job_data["title"] == "TITLE"
+        assert job_data["infourl"] == "https://sabnzbd.org/rss_link"
+        assert job_data["size"] == 200
+
+        # feedparser returns UTC so SABnzbd converts to locale
+        # of the system, so now we have to return to UTC
+        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1) - datetime.timedelta(seconds=time.timezone)
+        assert job_data["age"] == adjusted_date
+
+    def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer):
+        httpserver.expect_request("/rss_enclosure_no_nzb.xml").respond_with_handler(httpserver_handler_data_dir)
+
+        feed_name = "TestFeedEnclosureNoNZB"
+        self.setup_rss(feed_name, httpserver.url_for("/rss_enclosure_no_nzb.xml"))
+
+        # Start the RSS reader
+        rss_obj = rss.RSSReader()
+        rss_obj.run_feed(feed_name)
+
+        # Is the feed processed?
+        assert feed_name in rss_obj.jobs
+        assert not rss_obj.jobs[feed_name]
+
+    def test_rss_enclosure_multiple(self, httpserver: HTTPServer):
+        httpserver.expect_request("/rss_enclosure_multiple.xml").respond_with_handler(httpserver_handler_data_dir)
+
+        feed_name = "TestFeedEnclosureMultiple"
+        self.setup_rss(feed_name, httpserver.url_for("/rss_enclosure_multiple.xml"))
+
+        # Start the RSS reader
+        rss_obj = rss.RSSReader()
+        rss_obj.run_feed(feed_name)
+
+        # Is the feed processed?
+        assert feed_name in rss_obj.jobs
+        assert "http://NZB_LINK" in rss_obj.jobs[feed_name]
+
+        # Check some job-data
+        job_data = rss_obj.jobs[feed_name]["http://NZB_LINK"]
+        assert job_data["title"] == "TITLE"
+        assert job_data["infourl"] == "https://sabnzbd.org/rss_enclosure_multiple"
+        assert job_data["size"] == 200
+
+        # feedparser returns UTC so SABnzbd converts to locale
+        # of the system, so now we have to return to UTC
+        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1) - datetime.timedelta(seconds=time.timezone)
         assert job_data["age"] == adjusted_date
