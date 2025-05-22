@@ -1770,7 +1770,6 @@ msgstr "Kanał RSS %s był pusty"
 msgid "Incompatible feed"
 msgstr "Niekompatybilny kanał"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Znaleziono pusty wpis RSS (%s)"

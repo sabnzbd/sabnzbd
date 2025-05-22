@@ -1750,7 +1750,6 @@ msgstr "RSS Feed %s 为空"
 msgid "Incompatible feed"
 msgstr "feed 不兼容"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "发现空的 RSS 条目 (%s)"

@@ -1799,7 +1799,6 @@ msgstr "Fluxul RSS %s a fost gol"
 msgid "Incompatible feed"
 msgstr "Fulx RSS incompatibil"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Valoare RSS gasită a fost goală (%s)"

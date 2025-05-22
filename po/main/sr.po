@@ -1756,7 +1756,6 @@ msgstr "RSS фид %s је празан"
 msgid "Incompatible feed"
 msgstr "Некомпатибилан Фид"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Nađen prazan RSS unos (%s)"

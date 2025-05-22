@@ -1835,7 +1835,6 @@ msgstr "El canal RSS %s estaba vacío"
 msgid "Incompatible feed"
 msgstr "Canal Incorrecto"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Entrada RSS vacía (%s)"

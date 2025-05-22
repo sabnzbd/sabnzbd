@@ -1776,7 +1776,6 @@ msgstr "הזנת RSS %s הייתה ריקה"
 msgid "Incompatible feed"
 msgstr "הזנה בלתי תואמת"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "כניסת RSS ריקה נמצאה (%s)"

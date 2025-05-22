@@ -1761,7 +1761,6 @@ msgstr "RSS-kilde %s var tom"
 msgid "Incompatible feed"
 msgstr "Ukompatibel nyhetsstrøm"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Tom RSS post funnet (%s)"

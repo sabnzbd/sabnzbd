@@ -1822,7 +1822,6 @@ msgstr "%s RSS Beselemesi boştu"
 msgid "Incompatible feed"
 msgstr "Uyumsuz besleme"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Boş RSS girdisi bulundu (%s)"

@@ -1763,7 +1763,6 @@ msgstr "RSS syöte %s oli tyhjä"
 msgid "Incompatible feed"
 msgstr "Puutteellinen syöte"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Tyhjä RSS kohde löytyi (%s)"

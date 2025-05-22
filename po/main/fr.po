@@ -1851,7 +1851,6 @@ msgstr "Le flux RSS %s était vide"
 msgid "Incompatible feed"
 msgstr "Flux incompatible"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Entrée vide de flux RSS trouvée (%s)"

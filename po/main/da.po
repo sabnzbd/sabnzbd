@@ -1771,7 +1771,6 @@ msgstr "RSS Feed %s er tom"
 msgid "Incompatible feed"
 msgstr "Inkompatibel feed"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Tom RSS post blev fundet (%s)"

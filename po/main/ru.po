@@ -1763,7 +1763,6 @@ msgstr "RSS-лента %s была пустой"
 msgid "Incompatible feed"
 msgstr "Несовместимая лента"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Обнаружена пустая запись RSS (%s)"

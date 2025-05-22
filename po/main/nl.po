@@ -1834,7 +1834,6 @@ msgstr "RSS-feed %s is leeg"
 msgid "Incompatible feed"
 msgstr "Ongeschikte RSS-feed"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Lege RSS-feed gevonden (%s)"

@@ -1706,7 +1706,6 @@ msgstr ""
 msgid "Incompatible feed"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr ""
