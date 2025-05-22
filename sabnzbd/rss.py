@@ -724,7 +724,7 @@ def _get_link(entry):
 
         return link, infourl, category, size, age, season, episode
     else:
-        logging.warning(T("Empty RSS entry found (%s)"), link)
+        logging.info(T("Empty RSS entry found (%s)"), link)
         return None, None, "", 0, None, 0, 0
 
 
