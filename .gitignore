@@ -2,7 +2,7 @@
 *.py[cod]
 __pycache__
 /venv
-
+myenv/
 # Snapcraft
 parts/
 prime/
