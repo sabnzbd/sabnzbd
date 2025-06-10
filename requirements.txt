@@ -23,7 +23,8 @@ tempora # List version-less for Python 3.8 to just get latest supported
 tempora==5.8.0; python_version > '3.8'
 pytz==2025.2
 sgmllib3k==1.0.0
-portend==3.2.1
+portend # List version-less for Python 3.8 to just get latest supported
+portend==3.2.1; python_version > '3.8'
 chardet==5.2.0
 PySocks==1.7.1
 puremagic==1.29
