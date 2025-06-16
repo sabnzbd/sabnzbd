@@ -51,8 +51,8 @@ winrt-Windows.Foundation.Collections==3.2.1; sys_platform == 'win32' and python_
 winrt-Windows.UI.Notifications==3.2.1; sys_platform == 'win32' and python_version > '3.8'
 
 # macOS system calls
-pyobjc-core==11.0; sys_platform == 'darwin'
-pyobjc-framework-Cocoa==11.0; sys_platform == 'darwin'
+pyobjc-core==11.1; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==11.1; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
@@ -70,7 +70,7 @@ charset_normalizer==3.4.2
 idna==3.10
 urllib3 # List version-less for Python 3.8 to just get latest supported
 urllib3==2.4.0; python_version > '3.8'
-certifi==2025.4.26
+certifi==2025.6.15
 oauthlib==3.2.2
 PyJWT # List version-less for Python 3.8 to just get latest supported
 PyJWT==2.10.1; python_version > '3.8'
