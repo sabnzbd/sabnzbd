@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.osxmenu - macOS Top Menu
+sabnzbd.macosmenu - macOS Top Menu
 """
 
 import os
@@ -72,9 +72,9 @@ import sabnzbd.config as config
 DefaultUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
 
 status_icons = {
-    "idle": "icons/sabnzbd_osx_idle.tiff",
-    "pause": "icons/sabnzbd_osx_pause.tiff",
-    "clicked": "icons/sabnzbd_osx_clicked.tiff",
+    "idle": "icons/sabnzbd_macos_idle.tiff",
+    "pause": "icons/sabnzbd_macos_pause.tiff",
+    "clicked": "icons/sabnzbd_macos_clicked.tiff",
 }
 start_time = NSDate.date()
 
@@ -274,8 +274,8 @@ class SABnzbdDelegate(NSObject):
             self.pauseUpdate()
             self.speedlimitUpdate()
             self.diskspaceUpdate()
-        except:
-            logging.info("[osx] Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] Exception", exc_info=True)
 
     def queueUpdate(self):
         try:
@@ -311,8 +311,8 @@ class SABnzbdDelegate(NSObject):
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T("Empty"), "", "")
                 self.menu_queue.addItem_(menu_queue_item)
             self.queue_menu_item.setSubmenu_(self.menu_queue)
-        except:
-            logging.info("[osx] queueUpdate Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] queueUpdate Exception", exc_info=True)
 
     def historyUpdate(self):
         try:
@@ -356,8 +356,8 @@ class SABnzbdDelegate(NSObject):
                 menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T("Empty"), "", "")
                 self.menu_history.addItem_(menu_history_item)
             self.history_menu_item.setSubmenu_(self.menu_history)
-        except:
-            logging.info("[osx] historyUpdate Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] historyUpdate Exception", exc_info=True)
 
     def warningsUpdate(self):
         try:
@@ -375,8 +375,8 @@ class SABnzbdDelegate(NSObject):
             else:
                 self.warnings_menu_item.setTitle_("%s : 0" % (T("Warnings")))
                 self.warnings_menu_item.setHidden_(YES)
-        except:
-            logging.info("[osx] warningsUpdate Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] warningsUpdate Exception", exc_info=True)
 
     def stateUpdate(self):
         try:
@@ -409,8 +409,8 @@ class SABnzbdDelegate(NSObject):
 
             if not config.get_servers():
                 self.state_menu_item.setTitle_(T("Go to wizard"))
-        except:
-            logging.info("[osx] stateUpdate Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] stateUpdate Exception", exc_info=True)
 
     def pauseUpdate(self):
         try:
@@ -422,8 +422,8 @@ class SABnzbdDelegate(NSObject):
                 self.status_item.setImage_(self.icons["idle"])
                 self.resume_menu_item.setHidden_(YES)
                 self.pause_menu_item.setHidden_(NO)
-        except:
-            logging.info("[osx] pauseUpdate Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] pauseUpdate Exception", exc_info=True)
 
     def speedlimitUpdate(self):
         try:
@@ -436,8 +436,8 @@ class SABnzbdDelegate(NSObject):
                         menuitem.setState_(NSOnState)
                     else:
                         menuitem.setState_(NSOffState)
-        except:
-            logging.info("[osx] speedlimitUpdate Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] speedlimitUpdate Exception", exc_info=True)
 
     def diskspaceUpdate(self):
         try:
@@ -447,8 +447,8 @@ class SABnzbdDelegate(NSObject):
             self.incompletefolder_menu_item.setTitle_(
                 "%s (%.2f GB)" % (T("Incomplete Folder"), diskspace()["download_dir"][1])
             )
-        except:
-            logging.info("[osx] diskspaceUpdate Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] diskspaceUpdate Exception", exc_info=True)
 
     def setMenuTitle_(self, text):
         try:
@@ -467,14 +467,14 @@ class SABnzbdDelegate(NSObject):
 
             title = NSAttributedString.alloc().initWithString_attributes_(text, titleAttributes)
             self.status_item.setAttributedTitle_(title)
-        except:
-            logging.info("[osx] setMenuTitle Exception", exc_info=True)
+        except Exception:
+            logging.info("[macos] setMenuTitle Exception", exc_info=True)
 
     def openBrowserAction_(self, sender):
         launch_a_browser(sabnzbd.BROWSER_URL, True)
 
     def speedlimitAction_(self, sender):
-        # logging.info("[osx] speed limit to %s" % (sender.representedObject()))
+        # logging.info("[macos] speed limit to %s" % (sender.representedObject()))
         speed = int(sender.representedObject())
         if speed != self.speed:
             sabnzbd.Downloader.limit_speed("%s%%" % speed)
@@ -482,7 +482,7 @@ class SABnzbdDelegate(NSObject):
 
     def purgeAction_(self, sender):
         mode = sender.representedObject()
-        # logging.info("[osx] purge %s" % (mode))
+        # logging.info("[macos] purge %s" % (mode))
         if mode == "queue":
             sabnzbd.NzbQueue.remove_all()
         elif mode == "history":
@@ -492,7 +492,7 @@ class SABnzbdDelegate(NSObject):
 
     def pauseAction_(self, sender):
         minutes = int(sender.representedObject())
-        # logging.info("[osx] pause for %s" % (minutes))
+        # logging.info("[macos] pause for %s" % (minutes))
         if minutes:
             sabnzbd.Scheduler.plan_resume(minutes)
         else:
@@ -535,17 +535,17 @@ class SABnzbdDelegate(NSObject):
         self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
 
     def application_openFiles_(self, nsapp, filenames):
-        # logging.info('[osx] file open')
-        # logging.info('[osx] file : %s' % (filenames))
+        # logging.info('[macos] file open')
+        # logging.info('[macos] file : %s' % (filenames))
         for filename in filenames:
-            logging.info("[osx] receiving from macOS : %s", filename)
+            logging.info("[macos] receiving from macOS : %s", filename)
             if os.path.exists(filename):
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
                     sabnzbd.nzbparser.add_nzbfile(filename, keep=True)
         # logging.info('opening done')
 
     def applicationShouldTerminate_(self, sender):
-        logging.info("[osx] application terminating")
+        logging.info("[macos] application terminating")
         self.setMenuTitle_("\n\n%s\n" % (T("Stopping...")))
         self.status_item.setHighlightMode_(NO)
         sabnzbd.shutdown_program()

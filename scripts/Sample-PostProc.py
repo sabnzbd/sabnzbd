@@ -23,7 +23,7 @@ for item in os.environ:
 # More intelligent parsing:
 try:
     (scriptname, directory, orgnzbname, jobname, reportnumber, category, group, postprocstatus, url) = sys.argv
-except:
+except Exception:
     print("No SAB compliant number of commandline parameters found (should be 8):", len(sys.argv) - 1)
     sys.exit(1)  # non-zero return code
 
@@ -33,7 +33,7 @@ print("jobname is:", jobname)
 try:
     sabversion = os.environ["SAB_VERSION"]
     print("SAB_VERSION is:", sabversion)
-except:
+except Exception:
     pass
 
 """ your code here """

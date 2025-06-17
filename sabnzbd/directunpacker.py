@@ -84,7 +84,7 @@ class DirectUnpacker(threading.Thread):
                 self.active_instance.stdout.close()
                 self.active_instance.stdin.close()
                 self.active_instance.wait(timeout=2)
-        except:
+        except Exception:
             logging.debug("Exception in reset_active()", exc_info=True)
             pass
 
@@ -384,7 +384,7 @@ class DirectUnpacker(threading.Thread):
         if not self.unpack_dir_info:
             try:
                 self.unpack_dir_info = prepare_extraction_path(self.nzo)
-            except:
+            except Exception:
                 # Prevent fatal crash if directory creation fails
                 self.abort()
                 return
@@ -515,7 +515,7 @@ class DirectUnpacker(threading.Thread):
                             # Flat-unpack, so remove foldername from RarFile output
                             f = os.path.join(extraction_path, os.path.basename(rm_file))
                             remove_file(f)
-                    except:
+                    except Exception:
                         # The user will have to remove it themselves
                         logging.info(
                             "Failed to clean Direct Unpack after aborting %s", rarfile_nzf.filename, exc_info=True

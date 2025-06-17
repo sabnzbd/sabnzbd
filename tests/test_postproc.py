@@ -51,7 +51,7 @@ class TestPostProc:
             # create a fresh copy
             try:
                 shutil.copytree(sourcedir, workingdir)
-            except:
+            except Exception:
                 pytest.fail("Could not create copy of files for rar_renamer")
 
             # And now let the magic happen:
@@ -69,7 +69,7 @@ class TestPostProc:
             # Remove workingdir again
             try:
                 shutil.rmtree(workingdir)
-            except:
+            except Exception:
                 pytest.fail("Could not remove existing workingdir %s for rar_renamer" % workingdir)
 
             return number_renamed_files

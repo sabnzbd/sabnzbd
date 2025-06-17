@@ -106,14 +106,14 @@ def find_programs(curdir: str):
     if sabnzbd.MACOS:
         if sabnzbd.MACOSARM64:
             # M1 (ARM64) versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/arm64/par2-turbo")
-            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/arm64/unrar")
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "macos/par2/arm64/par2")
+            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "macos/unrar/arm64/unrar")
         else:
             # Regular x64 versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "osx/par2/par2-turbo")
-            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "osx/unrar/unrar")
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "macos/par2/par2")
+            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "macos/unrar/unrar")
         # The 7zip binary is universal2
-        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "osx/7zip/7zz")
+        sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "macos/7zip/7zz")
 
     if sabnzbd.WINDOWS:
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
@@ -248,7 +248,7 @@ def external_processing(
 
             # Show current line in history
             nzo.set_action_line(T("Running script"), line)
-    except:
+    except Exception:
         logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info=True)
         return "Cannot run script %s\r\n" % extern_proc, -1
 
@@ -368,7 +368,7 @@ def match_ts(file: str) -> Tuple[str, int]:
     try:
         setname = file[: match.start()]
         setname += ".ts"
-    except:
+    except Exception:
         setname = ""
     return setname, num
 
@@ -379,13 +379,13 @@ def clean_up_joinables(names: List[str]):
         if os.path.exists(name):
             try:
                 remove_file(name)
-            except:
+            except Exception:
                 pass
         name1 = name + ".1"
         if os.path.exists(name1):
             try:
                 remove_file(name1)
-            except:
+            except Exception:
                 pass
 
 
@@ -478,7 +478,7 @@ def file_join(nzo: NzbObject, workdir_complete: str, joinables: List[str]) -> Tu
             else:
                 msg = T("[%s] Joined %s files") % (joinable_set, size)
                 nzo.set_unpack_info("Filejoin", msg, setname)
-    except:
+    except Exception:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T("File join of %s failed") % msg
         nzo.set_unpack_info(
@@ -558,7 +558,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: Li
                     rarpath, len(rar_sets[rar_set]), one_folder, nzo, rar_set, extraction_path
                 )
                 success = not fail
-            except:
+            except Exception:
                 success = False
                 fail = 1
                 msg = sys.exc_info()[1]
@@ -911,7 +911,7 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: Lis
             for seven in seven_sets[seven_set]:
                 try:
                     remove_file(seven)
-                except:
+                except Exception:
                     logging.warning(T("Deleting %s failed!"), seven)
         new_files.extend(new_files_set)
 
@@ -1070,7 +1070,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
             else:
                 logging.info("Par verify failed on %s!", parfile)
                 return readd, False
-        except:
+        except Exception:
             msg = sys.exc_info()[1]
             nzo.fail_msg = T("Repairing failed, %s") % msg
             logging.error(T("Error %s while running par2_repair on set %s"), msg, setname)
@@ -1114,7 +1114,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
                         remove_file(filepath)
                     except OSError:
                         logging.warning(T("Deleting %s failed!"), filepath)
-    except:
+    except Exception:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T("Repairing failed, %s") % msg
         logging.error(T('Error "%s" while running par2_repair on set %s'), msg, setname, exc_info=True)
@@ -1429,7 +1429,7 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
                     env["SAB_" + field.upper()] = str(field_value * 1)
                 else:
                     env["SAB_" + field.upper()] = str(field_value)
-            except:
+            except Exception:
                 # Catch key errors
                 pass
 
@@ -1453,7 +1453,7 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
                 env["SAB_" + field.upper()] = str(extra_env_fields[field])
             else:
                 env["SAB_" + field.upper()] = ""
-        except:
+        except Exception:
             # Catch key errors
             pass
 
@@ -1480,10 +1480,10 @@ def rar_volumelist(rarfile_path: str, password: str, known_volumes: List[str]) -
         if password:
             try:
                 zf.setpassword(password)
-            except:
+            except Exception:
                 pass
         zf_volumes = zf.volumelist()
-    except:
+    except Exception:
         zf_volumes = []
 
     # Remove duplicates
@@ -1606,7 +1606,7 @@ def unrar_check(rar: str) -> Tuple[int, bool]:
     if rar:
         try:
             version = run_command([rar])
-        except:
+        except Exception:
             return version, original
         original = "Alexander Roshal" in version
 
@@ -1625,7 +1625,7 @@ def sevenzip_check(sevenzip: str) -> str:
             # Example: 7-Zip (z) 21.06 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-11-24
             #          7-Zip (a) 24.03 (x86) : Copyright (c) 1999-2024 Igor Pavlov : 2024-03-23
             return re.search(r"(\d+\.\d+).*Copyright", seven_command_output).group(1)
-        except:
+        except Exception:
             pass
     return ""
 
@@ -1635,7 +1635,7 @@ def par2_turbo_check(par2_path: str) -> bool:
     try:
         if "par2cmdline-turbo" in run_command([par2_path, "-V"]):
             return True
-    except:
+    except Exception:
         pass
     return False
 
@@ -1660,7 +1660,7 @@ def is_sfv_file(myfile: str) -> bool:
             else:
                 # non-ASCII, so not SFV
                 return False
-    except:
+    except Exception:
         # the with-open() went wrong, so not an existing file, so certainly not a SFV file
         return False
 
@@ -1839,7 +1839,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
 
         try:
             p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
-        except:
+        except Exception:
             logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
             return values
 

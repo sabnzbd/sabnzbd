@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # Check for DMGBuild
     try:
         import dmgbuild
-    except:
+    except Exception:
         print("Requires dmgbuild-module, use pip install dmgbuild")
         exit()
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # Create sub-folder to upload later
     release = RELEASE_VERSION
     prod = "SABnzbd-" + release
-    fileDmg = prod + "-osx.dmg"
+    fileDmg = prod + "-macos.dmg"
 
     # Path to app file
     apppath = "dist/SABnzbd.app"
@@ -48,8 +48,8 @@ if __name__ == "__main__":
     readmepath = os.path.join(apppath, "Contents/Resources/README.txt")
 
     # Path to background and the icon
-    backgroundpath = "builder/osx/image/sabnzbd_new_bg.png"
-    iconpath = "builder/osx/image/sabnzbdplus.icns"
+    backgroundpath = "builder/macos/image/sabnzbd_new_bg.png"
+    iconpath = "builder/macos/image/sabnzbdplus.icns"
 
     # Make DMG
     print("Building DMG")

@@ -118,7 +118,7 @@ class Assembler(Thread):
                             sabnzbd.Downloader.pause()
                         else:
                             logging.debug("Ignoring error %s for %s, already finished or in post-proc", err, filepath)
-                    except:
+                    except Exception:
                         logging.error(T("Fatal error in Assembler"), exc_info=True)
                         break
             else:
@@ -342,7 +342,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                         break
                                     # This one didn't work
                                     pass
-                                except:
+                                except Exception:
                                     # All the other errors we skip, they might be fixable in post-proc.
                                     # For example starting from the wrong volume, or damaged files
                                     # This will cause the check to be performed again for the next rar, might

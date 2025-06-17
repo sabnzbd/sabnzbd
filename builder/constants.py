@@ -45,7 +45,7 @@ RELEASE_TITLE = "SABnzbd %s" % RELEASE_VERSION
 RELEASE_SRC = RELEASE_NAME + "-src.tar.gz"
 RELEASE_BINARY = RELEASE_NAME + "-win64-bin.zip"
 RELEASE_INSTALLER = RELEASE_NAME + "-win-setup.exe"
-RELEASE_MACOS = RELEASE_NAME + "-osx.dmg"
+RELEASE_MACOS = RELEASE_NAME + "-macos.dmg"
 RELEASE_README = "README.mkd"
 
 # Used in package.py and SABnzbd.spec

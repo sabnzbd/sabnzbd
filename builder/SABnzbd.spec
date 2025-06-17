@@ -22,9 +22,9 @@ extra_hiddenimports.extend(collect_submodules("guessit.data"))
 if sys.platform == "darwin":
     extra_hiddenimports.extend(["objc", "PyObjCTools"])
     # macOS folders
-    EXTRA_FOLDERS += ["osx/par2/", "osx/unrar/", "osx/7zip/"]
+    EXTRA_FOLDERS += ["macos/par2/", "macos/unrar/", "macos/7zip/"]
     # Add NZB-icon file
-    extra_pyinstaller_files.append(("builder/osx/image/nzbfile.icns", "."))
+    extra_pyinstaller_files.append(("builder/macos/image/nzbfile.icns", "."))
     # Version information is set differently on macOS
     version_info = None
 else:
@@ -118,7 +118,7 @@ exe = EXE(
     contents_directory=".",
     version=version_info,
     target_arch="universal2",
-    entitlements_file="builder/osx/entitlements.plist",
+    entitlements_file="builder/macos/entitlements.plist",
     codesign_identity=codesign_identity,
 )
 
@@ -173,7 +173,7 @@ if sys.platform == "darwin":
     app = BUNDLE(
         coll,
         name="SABnzbd.app",
-        icon="builder/osx/image/sabnzbdplus.icns",
+        icon="builder/macos/image/sabnzbdplus.icns",
         bundle_identifier="org.sabnzbd.sabnzbd",
         info_plist=info_plist,
     )

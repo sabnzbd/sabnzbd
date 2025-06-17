@@ -156,7 +156,7 @@ class SysTrayIconThread(Thread):
         )
         try:
             win32gui.Shell_NotifyIcon(message, self.notify_id)
-        except:
+        except Exception:
             # Timeouts can occur after system comes out of standby/hibernate
             pass
 

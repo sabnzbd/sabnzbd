@@ -614,7 +614,7 @@ def get_access_info():
 
     try:
         addresses = socket.getaddrinfo(host, None)
-    except:
+    except Exception:
         addresses = []
 
     if web_host == "0.0.0.0":
@@ -1050,7 +1050,7 @@ class ConfigGeneral:
             if config.validate_config_backup(config_backup_data):
                 sabnzbd.RESTORE_DATA = config_backup_data
                 return sabnzbd.api.report(data={"success": True, "restart_req": True})
-        except:
+        except Exception:
             pass
         return sabnzbd.api.report(error=T("Invalid backup archive"))
 
@@ -1552,7 +1552,7 @@ def Strip(txt):
     """Return stripped string, can handle None"""
     try:
         return txt.strip()
-    except:
+    except Exception:
         return None
 
 
@@ -1615,12 +1615,12 @@ class ConfigScheduling:
             conf["schedlines"].append(line)
             try:
                 enabled, m, h, day_numbers, action = line.split(" ", 4)
-            except:
+            except Exception:
                 continue
             action = action.strip()
             try:
                 action, value = action.split(" ", 1)
-            except:
+            except Exception:
                 value = ""
             value = value.strip()
             if value and not value.lower().strip("0123456789kmgtp%."):
@@ -1998,7 +1998,7 @@ def GetRssLog(feed):
         good.sort(key=lambda job: job["age_ms"], reverse=True)
         bad.sort(key=lambda job: job["age_ms"], reverse=True)
         done.sort(key=lambda job: job["time_downloaded_ms"], reverse=True)
-    except:
+    except Exception:
         # Let the javascript do it then..
         pass
 

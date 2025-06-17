@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>My RSS Feed</title>
+    <link>https://sabnzbd.org/</link>
+    <item>
+      <title>TITLE</title>
+      <link>http://LINK</link>
+      <comments>COMMENTS</comments>
+      <enclosure url="http://TORRENT_LINK" type="application/x-bittorrent" length="100" />
+      <enclosure url="http://NZB_LINK" type="application/x-nzb" length="200" />
+      <pubDate>Tue, 20 May 2025 18:21:01 +0000</pubDate>
+      <guid isPermaLink="true">https://sabnzbd.org/rss_enclosure_multiple</guid>
+    </item>
+  </channel>
+</rss>

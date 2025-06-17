@@ -96,7 +96,7 @@ def is_rtl(lang):
     """returns True if given lang is a right-to-left language. Default: False."""
     try:
         return LanguageTable.get(lang, "en")[3]
-    except:
+    except Exception:
         return False
 
 
