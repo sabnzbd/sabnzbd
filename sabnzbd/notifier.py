@@ -91,6 +91,7 @@ NOTIFICATION_TYPES = {
 NOTIFICATION_ACTIONS = {
     "open_folder": TT("Open folder"),  #: Notification action
     "open_complete": TT("Open complete folder"),  #: Notification action
+    "open_update_page": TT("Download"),
 }
 
 

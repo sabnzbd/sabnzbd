@@ -533,20 +533,22 @@ def check_latest_version():
         latest_label = latest_testlabel
         url = url_beta
 
-    notify_version = None
     if current < latest:
         # This is a test version, but user hasn't seen the
         # "Final" of this one yet, so show the Final
         # Or this one is behind, show latest final
         sabnzbd.NEW_VERSION = (latest_label, url)
-        notify_version = latest_label
     elif testver and current < latest_test:
         # This is a test version beyond the latest Final, so show latest Alpha/Beta/RC
         sabnzbd.NEW_VERSION = (latest_testlabel, url_beta)
-        notify_version = latest_testlabel
 
-    if notify_version:
-        sabnzbd.notifier.send_notification(T("Update Available!"), "SABnzbd %s" % notify_version, "other")
+    if any(sabnzbd.NEW_VERSION):
+        sabnzbd.notifier.send_notification(
+            T("Update Available!"),
+            "SABnzbd %s" % sabnzbd.NEW_VERSION[0],
+            "other",
+            actions={"open_update_page": sabnzbd.NEW_VERSION[1]},
+        )
 
 
 def upload_file_to_sabnzbd(url, fp):
