@@ -1273,6 +1273,12 @@ msgstr ""
 msgid "Open complete folder"
 msgstr "Åben færdig mappe"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "Downloader"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ikke tilgængelig"
@@ -1840,12 +1846,6 @@ msgstr "Tidsplan for ikke-eksisterende server %s"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "Forsøger at sætte status på ikke eksisterende server %s"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "Downloader"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

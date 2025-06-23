@@ -1252,6 +1252,12 @@ msgstr ""
 msgid "Open complete folder"
 msgstr "打开完成文件夹"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "下载"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "不可用"
@@ -1819,12 +1825,6 @@ msgstr "定时任务的服务器不存在 %s"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "正在尝试设置不存在的服务器 %s 的状态"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "下载"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

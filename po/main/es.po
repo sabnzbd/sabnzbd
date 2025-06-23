@@ -1323,6 +1323,12 @@ msgstr ""
 msgid "Open complete folder"
 msgstr "Abrir todo el folder"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "Descargar"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "No disponible"
@@ -1904,12 +1910,6 @@ msgstr "Planificación para servidor %s inexistente"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "Intentando cambiar el estado de servidor inexistente %s"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "Descargar"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

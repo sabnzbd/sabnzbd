@@ -1266,6 +1266,12 @@ msgstr ""
 msgid "Open complete folder"
 msgstr "Otevřít složku s kompletními soubory"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "Stahování"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Nedostupné"
@@ -1805,12 +1811,6 @@ msgstr ""
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "Zkouším aktualizovat stav neexistujícího serveru %s"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "Stahování"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

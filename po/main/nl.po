@@ -1333,6 +1333,12 @@ msgstr "Open map"
 msgid "Open complete folder"
 msgstr "Open map met voltooide downloads"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "Download"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Niet beschikbaar"
@@ -1903,12 +1909,6 @@ msgstr "Taak voor niet bestaande server %s"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "Poging de status van niet-bestaande server %s in te stellen"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "Download"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

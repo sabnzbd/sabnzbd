@@ -1320,6 +1320,12 @@ msgstr "Dizin aç"
 msgid "Open complete folder"
 msgstr "Tamamlanmışlar dizinini aç"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "İndir"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Mevcut değil"
@@ -1891,12 +1897,6 @@ msgstr "Mevcut olmayan %s sunucu için zamanlama"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "Mevcut olmayan %s sunucu için durum ayarlanmaya çalışılıyor"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "İndir"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py
