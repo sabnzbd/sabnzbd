@@ -53,9 +53,6 @@ if sabnzbd.WINDOWS:
         shell.SetCurrentProcessExplicitAppUserModelID("SABnzbd")
         _HAVE_WINDOWS_TOASTER = True
     except Exception:
-        # This needs to work on Windows releases
-        if hasattr(sys, "frozen"):
-            raise
         # Sending toasts on non-supported platforms results in segfaults
         _HAVE_WINDOWS_TOASTER = False
 
