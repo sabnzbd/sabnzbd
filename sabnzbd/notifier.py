@@ -46,13 +46,17 @@ if sabnzbd.WINDOWS:
         from windows_toasts import InteractableWindowsToaster, Toast, ToastActivatedEventArgs, ToastButton
 
         # Only Windows 10 and above are supported
-        if int_conv(platform.release()) < 10:
+        if int_conv(platform.version().split(".")[0]) < 10:
             raise OSError
 
         # Set a custom AUMID to display the right icon, it is written to the registry by the installer
         shell.SetCurrentProcessExplicitAppUserModelID("SABnzbd")
         _HAVE_WINDOWS_TOASTER = True
     except Exception:
+        # This needs to work on Windows releases
+        if hasattr(sys, "frozen"):
+            raise
+
         # Sending toasts on non-supported platforms results in segfaults
         _HAVE_WINDOWS_TOASTER = False
 
