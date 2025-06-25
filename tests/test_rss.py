@@ -68,7 +68,13 @@ class TestRSS:
             monkeypatch.setattr(sabnzbd.rss, "RSSReader", MockRSSReader)
 
             # Also patch the sabnzbd.RSSReader reference that the scheduler uses
-            monkeypatch.setattr("sabnzbd.RSSReader", MockRSSReader, raising=False)
+            # Use try/except to handle different Python versions
+            try:
+                # Python 3.7+ supports the raising parameter
+                monkeypatch.setattr("sabnzbd.RSSReader", MockRSSReader, raising=False)
+            except TypeError:
+                # Fallback for older Python versions
+                monkeypatch.setattr("sabnzbd.RSSReader", MockRSSReader)
 
             # Mock the scheduler's scheduler attribute to avoid initializing the real one
             original_scheduler_init = sabnzbd.scheduler.Scheduler.__init__
