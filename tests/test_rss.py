@@ -42,6 +42,70 @@ class TestRSS:
         sabnzbd.config.ConfigCat("tv", {})
         sabnzbd.config.ConfigCat("movies", {})
 
+    def test_force_rss_updates_next_run(self, monkeypatch):
+        """Test that force_rss updates the RSSReader's next_run time"""
+        # Import the necessary modules
+        from unittest.mock import MagicMock
+        import sabnzbd.scheduler
+        import sabnzbd.rss
+        from sabnzbd import cfg
+        import time
+        
+        # Save original values
+        original_rss_reader = sabnzbd.rss.RSSReader
+        original_rss_rate = cfg.rss_rate()
+        
+        try:
+            # Create a mock RSSReader class
+            class MockRSSReader:
+                next_run = 0
+                
+                @classmethod
+                def run(cls):
+                    pass
+            
+            # Replace the RSSReader class with our mock
+            monkeypatch.setattr(sabnzbd.rss, 'RSSReader', MockRSSReader)
+            
+            # Also patch the sabnzbd.RSSReader reference that the scheduler uses
+            monkeypatch.setattr('sabnzbd.RSSReader', MockRSSReader, raising=False)
+            
+            # Mock the scheduler's scheduler attribute to avoid initializing the real one
+            original_scheduler_init = sabnzbd.scheduler.Scheduler.__init__
+            def mock_scheduler_init(self, *args, **kwargs):
+                self.scheduler = MagicMock()
+                self.pause_end = None
+                self.resume_task = None
+                self.restart_scheduler = False
+                self.pp_pause_event = False
+            
+            monkeypatch.setattr(sabnzbd.scheduler.Scheduler, '__init__', mock_scheduler_init)
+            
+            # Create a scheduler instance
+            sched = sabnzbd.scheduler.Scheduler()
+            
+            # Set a fixed time for testing
+            test_time = 1000000.0
+            
+            # Mock time.time() to return our test time
+            monkeypatch.setattr(time, 'time', lambda: test_time)
+            
+            # Set rss_rate to 1 minute for testing and mock the cfg.rss_rate() method
+            monkeypatch.setattr(cfg, 'rss_rate', lambda: 1)
+            
+            # Call force_rss
+            sched.force_rss()
+            
+            # Verify next_run was updated to test_time + 60 seconds
+            expected_next_run = test_time + 60
+            assert MockRSSReader.next_run == expected_next_run, \
+                f"next_run should be {expected_next_run}, got {MockRSSReader.next_run}"
+                
+        finally:
+            # Restore original values
+            monkeypatch.undo()
+            cfg.rss_rate.set(original_rss_rate)
+
     def test_rss_newznab_parser(self):
         """Test basic RSS-parsing of custom elements
         Harder to test in functional test

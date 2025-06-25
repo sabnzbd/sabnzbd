@@ -450,6 +450,9 @@ class Scheduler:
 
     def force_rss(self):
         """Add a one-time RSS scan, one second from now"""
+        # Update the next_run time to be current time + rss_rate minutes
+        # This ensures the next scheduled scan is rss_rate minutes after the manual scan
+        sabnzbd.RSSReader.next_run = time.time() + cfg.rss_rate() * 60
         self.scheduler.add_single_task(sabnzbd.RSSReader.run, "RSS", 1)
 
 
