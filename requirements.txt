@@ -10,7 +10,7 @@ configobj==5.0.9
 cheroot==10.0.1
 six==1.17.0
 cherrypy==18.10.0
-jaraco.functools==4.1.0
+jaraco.functools==4.2.1
 jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
@@ -18,7 +18,7 @@ jaraco.context==4.3.0
 more-itertools==10.7.0
 zc.lockfile==3.0.post1
 python-dateutil==2.9.0.post0
-tempora==5.8.0
+tempora==5.8.1
 pytz==2025.2
 sgmllib3k==1.0.0
 portend==3.2.1
@@ -59,15 +59,15 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 requests==2.32.4
 requests-oauthlib==2.0.0
 PyYAML==6.0.2
-markdown==3.8
+markdown==3.8.2
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
 charset_normalizer==3.4.2
 idna==3.10
-urllib3==2.4.0
+urllib3==2.5.0
 certifi==2025.6.15
-oauthlib==3.2.2
+oauthlib==3.3.1
 PyJWT==2.10.1
 blinker==1.9.0
 
