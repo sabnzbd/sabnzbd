@@ -1265,6 +1265,12 @@ msgstr ""
 msgid "Open complete folder"
 msgstr "Avaa valmistuneet-kansio"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "Lataa"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ei saatavilla"
@@ -1832,12 +1838,6 @@ msgstr "Ajastettu tuntemattomalle palvelimelle %s"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "Yritettiin asettaa tila ei olemassa olevalle palvelimelle %s"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "Lataa"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

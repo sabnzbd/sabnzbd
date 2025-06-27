@@ -1276,6 +1276,12 @@ msgstr "פתח תיקייה"
 msgid "Open complete folder"
 msgstr "פתח תיקיית השלמה"
 
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "הורדה"
+
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
 msgstr "לא זמין"
@@ -1845,12 +1851,6 @@ msgstr "תזמן עבור שרת בלתי קיים %s"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "מנסה לקבוע מעמד של שרת בלתי קיים %s"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "הורדה"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py
