@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 4.5.2 Release Candidate 2
+Release Notes - SABnzbd 4.5.2
 =========================================================
 
 ## Bug fixes and changes in 4.5.2
