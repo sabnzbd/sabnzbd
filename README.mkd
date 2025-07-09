@@ -1,5 +1,17 @@
-Release Notes - SABnzbd 4.5.1
+Release Notes - SABnzbd 4.5.2
 =========================================================
+
+## Bug fixes and changes in 4.5.2
+
+* Added Tab and Shift+Tab navigation to move between rename fields in queue.
+* Invalid cookies of other services could result in errors.
+* Internet Bandwidth test could be stuck in infinite loop.
+* RSS readout did not ignore torrent alternatives.
+* Prowl and Pushover settings did not load correctly.
+* Renamed `osx` to `macos` internally.
+* API: Removed `B` post-fix from `quota` and `left_quota` fields in `queue`.
+* Windows: Support more languages in the installer.
+* Windows and macOS: Updated par2cmdline-turbo to 1.3.0 and Unrar to 7.12.
 
 ## Bug fixes and changes in 4.5.1
 

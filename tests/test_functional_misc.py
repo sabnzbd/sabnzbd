@@ -154,7 +154,7 @@ class TestExtractPot:
             subprocess.Popen(lang_command.split()).communicate(timeout=30)
             lang_command = "git checkout @ -- %s/../po/email/SABemail.pot" % SAB_BASE_DIR
             subprocess.Popen(lang_command.split()).communicate(timeout=30)
-        except:
+        except Exception:
             pass
 
 

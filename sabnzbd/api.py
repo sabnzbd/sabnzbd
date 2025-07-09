@@ -246,12 +246,12 @@ def _api_queue_priority(value: str, kwargs: Dict[str, Union[str, List[str]]]) ->
         try:
             try:
                 priority = int(priority)
-            except:
+            except Exception:
                 return report(_MSG_INT_VALUE)
             pos = sabnzbd.NzbQueue.set_priority(nzo_ids, priority)
             # Returns the position in the queue, -1 is incorrect job-id
             return report(keyword="position", data=pos)
-        except:
+        except Exception:
             return report(_MSG_NO_VALUE2)
     else:
         return report(_MSG_NO_VALUE2)
@@ -682,7 +682,7 @@ def _api_showlog(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     try:
         if cur_user := getpass.getuser():
             log_data = log_data.replace(utob(cur_user), b"<USERNAME>")
-    except:
+    except Exception:
         pass
 
     # Set headers
@@ -1311,7 +1311,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
             username=username,
             password=password,
         )
-    except:
+    except Exception:
         return False, T("Invalid server details")
 
     # All exceptions are caught internally
@@ -1798,9 +1798,9 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["have_warnings"] = str(sabnzbd.GUIHANDLER.count())
     header["finishaction"] = sabnzbd.QUEUECOMPLETE
 
-    header["quota"] = to_units(sabnzbd.BPSMeter.quota)
+    header["quota"] = to_units(sabnzbd.BPSMeter.quota, "B")
     header["have_quota"] = bool(sabnzbd.BPSMeter.quota > 0.0)
-    header["left_quota"] = to_units(sabnzbd.BPSMeter.left)
+    header["left_quota"] = to_units(sabnzbd.BPSMeter.left, "B")
 
     anfo = sabnzbd.ArticleCache.cache_info()
     header["cache_art"] = str(anfo.article_sum)
@@ -1852,7 +1852,7 @@ def build_history(
     try:
         history_db = sabnzbd.get_db_connection()
         close_db = False
-    except:
+    except Exception:
         # Required for repairs at startup because Cherrypy isn't active yet
         history_db = HistoryDB()
         close_db = True

@@ -125,7 +125,7 @@ def test_sab_binary(binary_path: str):
             try:
                 urllib.request.urlopen(base_url, timeout=1).read()
                 break
-            except:
+            except Exception:
                 time.sleep(1)
         else:
             # Print console output and give some time to print
@@ -270,11 +270,11 @@ if __name__ == "__main__":
         # Otherwise the signature of the main application becomes invalid
         if authority:
             files_to_sign = [
-                "osx/par2/par2-turbo",
-                "osx/par2/arm64/par2-turbo",
-                "osx/unrar/unrar",
-                "osx/unrar/arm64/unrar",
-                "osx/7zip/7zz",
+                "macos/par2/par2",
+                "macos/par2/arm64/par2",
+                "macos/unrar/unrar",
+                "macos/unrar/arm64/unrar",
+                "macos/7zip/7zz",
             ]
             for file_to_sign in files_to_sign:
                 print("Signing %s with hardended runtime" % file_to_sign)
@@ -287,7 +287,7 @@ if __name__ == "__main__":
                         "--options",
                         "runtime",
                         "--entitlements",
-                        "builder/osx/entitlements.plist",
+                        "builder/macos/entitlements.plist",
                         "-s",
                         authority,
                         file_to_sign,
@@ -429,7 +429,7 @@ if __name__ == "__main__":
                     tarinfo.uid = 0
                     tarinfo.gid = 0
                     if _file in ("SABnzbd.py", "Sample-PostProc.sh", "make_mo.py", "msgfmt.py"):
-                        # Force Linux/OSX scripts as executable
+                        # Force Linux/macOS scripts as executable
                         tarinfo.mode = 0o755
                     else:
                         tarinfo.mode = 0o644

@@ -175,7 +175,7 @@ def process_nzb_archive_file(
         else:
             logging.info("File %s is not a supported archive!", filename)
             return AddNzbFileResult.ERROR, []
-    except:
+    except Exception:
         logging.info(T("Cannot read %s"), path, exc_info=True)
         return AddNzbFileResult.RETRY, []
 
@@ -225,7 +225,7 @@ def process_nzb_archive_file(
                         # Duplicate or unwanted extension directed to history
                         sabnzbd.NzbQueue.fail_to_history(err.nzo)
                         nzo_ids.append(err.nzo.nzo_id)
-                    except:
+                    except Exception:
                         # Something else is wrong, show error
                         logging.error(T("Error while adding %s, removing"), name, exc_info=True)
                     finally:
@@ -335,7 +335,7 @@ def process_single_nzb(
         # Duplicate or unwanted extension directed to history
         sabnzbd.NzbQueue.fail_to_history(err.nzo)
         nzo_ids.append(err.nzo.nzo_id)
-    except:
+    except Exception:
         # Something else is wrong, show error
         logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
         result = AddNzbFileResult.ERROR
@@ -407,7 +407,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 try:
                     file_date = datetime.datetime.fromtimestamp(int(element.attrib.get("date")))
                     file_timestamp = int(element.attrib.get("date"))
-                except:
+                except Exception:
                     file_date = datetime.datetime.fromtimestamp(time_now)
                     file_timestamp = time_now
 
@@ -448,7 +448,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                             else:
                                 raw_article_db[partnum] = (article_id, segment_size)
                                 file_bytes += segment_size
-                        except:
+                        except Exception:
                             # In case of missing attributes
                             pass
 

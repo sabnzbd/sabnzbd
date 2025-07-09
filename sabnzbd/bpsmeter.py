@@ -237,7 +237,7 @@ class BPSMeter:
             if abs(quota - self.quota) > 0.5:
                 self.change_quota()
             res = self.reset_quota()
-        except:
+        except Exception:
             self.defaults()
         return res
 

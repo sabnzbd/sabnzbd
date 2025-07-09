@@ -85,10 +85,10 @@ class Scheduler:
 
             try:
                 enabled, m, h, d, action_name = schedule.split()
-            except:
+            except Exception:
                 try:
                     enabled, m, h, d, action_name, argument_list = schedule.split(None, 5)
-                except:
+                except Exception:
                     continue  # Bad schedule, ignore
 
             if argument_list:
@@ -98,7 +98,7 @@ class Scheduler:
             try:
                 m = int(m)
                 h = int(h)
-            except:
+            except Exception:
                 logging.warning(T("Bad schedule %s at %s:%s"), action_name, m, h)
                 continue
 
@@ -274,7 +274,7 @@ class Scheduler:
             action = ev[1]
             try:
                 value = ev[2]
-            except:
+            except Exception:
                 value = None
             if action == "pause":
                 paused = True
@@ -311,12 +311,12 @@ class Scheduler:
             elif action == "enable_server":
                 try:
                     servers[value] = 1
-                except:
+                except Exception:
                     logging.warning(T("Schedule for non-existing server %s"), value)
             elif action == "disable_server":
                 try:
                     servers[value] = 0
-                except:
+                except Exception:
                     logging.warning(T("Schedule for non-existing server %s"), value)
 
         # Special case, a priority was passed, so evaluate only that and return state
@@ -350,7 +350,7 @@ class Scheduler:
                 if bool(item.enable()) != bool(value):
                     item.enable.set(value)
                     sabnzbd.Downloader.init_server(serv, serv)
-            except:
+            except Exception:
                 pass
         config.save_config()
 
@@ -473,10 +473,10 @@ def sort_schedules(all_events, now=None):
         try:
             # Note: the last parameter can have spaces (category name)!
             enabled, m, h, dd, action, parms = schedule.split(None, 5)
-        except:
+        except Exception:
             try:
                 enabled, m, h, dd, action = schedule.split(None, 4)
-            except:
+            except Exception:
                 continue  # Bad schedule, ignore
         action = action.strip()
         if dd == "*":
@@ -510,7 +510,7 @@ def enable_server(server):
     """Enable server (scheduler only)"""
     try:
         config.get_config("servers", server).enable.set(1)
-    except:
+    except Exception:
         logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()
@@ -521,7 +521,7 @@ def disable_server(server):
     """Disable server (scheduler only)"""
     try:
         config.get_config("servers", server).enable.set(0)
-    except:
+    except Exception:
         logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()

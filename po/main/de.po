@@ -20,7 +20,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.5.0\n"
+"Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Media Cat, 2025\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -554,7 +554,7 @@ msgid "Resuming"
 msgstr "Fortgesetzt"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "Angehalten"
@@ -892,6 +892,113 @@ msgstr "FEHLER:"
 msgid "Back"
 msgstr "Zurück"
 
+#. Footer: indicator of warnings
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Warnings"
+msgstr "Warnungen"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Idle"
+msgstr "Leerlauf"
+
+#. Main menu item
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Queue"
+msgstr "Warteschlange"
+
+#. Queue page button
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Purge Queue"
+msgstr "Warteschlange leeren"
+
+#. Main menu item
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "History"
+msgstr "Verlauf"
+
+#. History page button
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Purge History"
+msgstr "Verlauf leeren"
+
+#: sabnzbd/macosmenu.py
+msgid "Limit Speed"
+msgstr "Geschwindigkeit begrenzen"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Anhalten"
+
+#. One minute
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "Minuten"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Fortsetzen"
+
+#. #: Config->Scheduler
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Scan watched folder"
+msgstr "Überwachter Ordner lesen"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Read all RSS feeds"
+msgstr "Alle RSS-Feeds lesen"
+
+#: sabnzbd/macosmenu.py
+msgid "Complete Folder"
+msgstr "Fertige Downloads"
+
+#: sabnzbd/macosmenu.py
+msgid "Incomplete Folder"
+msgstr "Unfertige Download"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+msgid "Troubleshoot"
+msgstr "Fehler suchen"
+
+#. Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Restart"
+msgstr "Neu starten"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+msgid "Restart without login"
+msgstr "Neustart ohne Anmeldung"
+
+#: sabnzbd/macosmenu.py
+msgid "Quit"
+msgstr "Beenden"
+
+#: sabnzbd/macosmenu.py
+msgid "Queue First 10 Items"
+msgstr "Warteschlange mit den 10 obersten Einträgen"
+
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Empty"
+msgstr "Leer"
+
+#: sabnzbd/macosmenu.py
+msgid "History Last 10 Items"
+msgstr "Verlauf mit den letzten 10 Einträgen"
+
+#: sabnzbd/macosmenu.py
+msgid "Go to wizard"
+msgstr "Assistent öffnen"
+
+#: sabnzbd/macosmenu.py
+msgid "Stopping..."
+msgstr "Wird angehalten …"
+
 #: sabnzbd/misc.py
 msgid ""
 "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
@@ -1208,19 +1315,6 @@ msgstr "Verbindung fehlgeschlagen: %s %s@%s:%s(%s)"
 msgid "Startup/Shutdown"
 msgstr "Starten/Beenden"
 
-#. Notification - Pause downloading - Four way switch for duplicates -
-#. Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Pause"
-msgstr "Anhalten"
-
-#. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Resume"
-msgstr "Fortsetzen"
-
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
@@ -1259,6 +1353,12 @@ msgstr "Ordner öffnen"
 #: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Open complete folder"
 msgstr "Öffne Zielverzeichnis"
+
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "Herunterladen"
 
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
@@ -1459,100 +1559,6 @@ msgstr "%s Artikel hatten nicht übereinstimmende Duplikate"
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Doppelt vorhandene NZB \"%s\" angehalten"
-
-#. Footer: indicator of warnings
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Warnings"
-msgstr "Warnungen"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Idle"
-msgstr "Leerlauf"
-
-#. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Queue"
-msgstr "Warteschlange"
-
-#. Queue page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Purge Queue"
-msgstr "Warteschlange leeren"
-
-#. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "History"
-msgstr "Verlauf"
-
-#. History page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Purge History"
-msgstr "Verlauf leeren"
-
-#: sabnzbd/osxmenu.py
-msgid "Limit Speed"
-msgstr "Geschwindigkeit begrenzen"
-
-#. One minute
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "min"
-msgstr "Minuten"
-
-#. #: Config->Scheduler
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Scan watched folder"
-msgstr "Überwachter Ordner lesen"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Read all RSS feeds"
-msgstr "Alle RSS-Feeds lesen"
-
-#: sabnzbd/osxmenu.py
-msgid "Complete Folder"
-msgstr "Fertige Downloads"
-
-#: sabnzbd/osxmenu.py
-msgid "Incomplete Folder"
-msgstr "Unfertige Download"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
-msgid "Troubleshoot"
-msgstr "Fehler suchen"
-
-#. Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Restart"
-msgstr "Neu starten"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
-msgid "Restart without login"
-msgstr "Neustart ohne Anmeldung"
-
-#: sabnzbd/osxmenu.py
-msgid "Quit"
-msgstr "Beenden"
-
-#: sabnzbd/osxmenu.py
-msgid "Queue First 10 Items"
-msgstr "Warteschlange mit den 10 obersten Einträgen"
-
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Empty"
-msgstr "Leer"
-
-#: sabnzbd/osxmenu.py
-msgid "History Last 10 Items"
-msgstr "Verlauf mit den letzten 10 Einträgen"
-
-#: sabnzbd/osxmenu.py
-msgid "Go to wizard"
-msgstr "Assistent öffnen"
-
-#: sabnzbd/osxmenu.py
-msgid "Stopping..."
-msgstr "Wird angehalten …"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1867,7 +1873,6 @@ msgstr "RSS-Feed %s war leer"
 msgid "Incompatible feed"
 msgstr "Inkompatibeler RSS-Feed"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "Leerer RSS-Feed gefunden: %s"
@@ -1937,12 +1942,6 @@ msgstr "Regel für nicht existierenden Server %s."
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "Status für nicht vorhandenen Server wird versucht %s einzustellen"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "Herunterladen"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

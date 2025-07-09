@@ -69,7 +69,7 @@ def get_ext(filename: str) -> str:
     """Return lowercased file extension"""
     try:
         return os.path.splitext(filename)[1].lower()
-    except:
+    except Exception:
         return ""
 
 
@@ -120,7 +120,7 @@ def get_filename(path: str) -> str:
     """Return path without the file extension"""
     try:
         return os.path.split(path)[1]
-    except:
+    except Exception:
         return ""
 
 
@@ -141,7 +141,7 @@ def is_size(filepath: str, size: int) -> bool:
     """Return True if filepath exists and is specified size"""
     try:
         return os.path.getsize(filepath) == size
-    except:
+    except Exception:
         return False
 
 
@@ -435,7 +435,7 @@ def same_directory(a: str, b: str) -> int:
         if os.path.samefile(a, b) is True:
             return 1
         return is_subfolder
-    except:
+    except Exception:
         if int(a == b):
             return 1
         else:
@@ -564,7 +564,7 @@ def fix_unix_encoding(folder: str):
                 if name != new_name:
                     try:
                         renamer(os.path.join(root, name), os.path.join(root, new_name))
-                    except:
+                    except Exception:
                         logging.info("Cannot correct name of %s", os.path.join(root, name))
 
 
@@ -629,7 +629,7 @@ def set_chmod(path: str, permissions: int, allow_failures: bool = False):
     try:
         logging.debug("Applying permissions %s (octal) to %s", oct(permissions), path)
         os.chmod(path, permissions)
-    except:
+    except Exception:
         if not allow_failures and not sabnzbd.misc.match_str(path, IGNORED_FILES_AND_FOLDERS):
             logging.error(T("Cannot change permissions of %s"), clip_path(path))
             logging.info("Traceback: ", exc_info=True)
@@ -809,7 +809,7 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
     if overwrite and os.path.exists(new_path):
         try:
             os.remove(new_path)
-        except:
+        except Exception:
             overwrite = False
     if not overwrite:
         new_path = get_unique_filename(new_path)
@@ -827,7 +827,7 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
             try:
                 shutil.copyfile(path, new_path)
                 os.remove(path)
-            except:
+            except Exception:
                 # Check if the old-file actually exists (possible delete-delays)
                 if not os.path.exists(path):
                     logging.debug("File not moved, original path gone: %s", path)
@@ -850,7 +850,7 @@ def cleanup_empty_directories(path: str):
                 try:
                     remove_dir(root)
                     repeat = True
-                except:
+                except Exception:
                     pass
         if not repeat:
             break
@@ -859,7 +859,7 @@ def cleanup_empty_directories(path: str):
     if not os.listdir(path):
         try:
             remove_dir(path)
-        except:
+        except Exception:
             pass
 
 
@@ -965,7 +965,7 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
             logging.debug("Removing dir recursively %s", path)
             try:
                 shutil.rmtree(path)
-            except:
+            except Exception:
                 logging.info("Cannot remove folder %s", path, exc_info=True)
         else:
             # Get files based on pattern
@@ -977,14 +977,14 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
                 if os.path.isfile(f):
                     try:
                         remove_file(f)
-                    except:
+                    except Exception:
                         logging.info("Cannot remove file %s", f, exc_info=True)
                 elif recursive:
                     remove_all(f, pattern, False, True)
             if not keep_folder:
                 try:
                     remove_dir(path)
-                except:
+                except Exception:
                     logging.info("Cannot remove folder %s", path, exc_info=True)
 
 
@@ -1047,7 +1047,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
             return disk_size / GIGI, available / GIGI
-        except:
+        except Exception:
             return 0.0, 0.0
     elif sabnzbd.MACOS:
         # MacOS diskfree ... via c-lib call statfs()
@@ -1066,7 +1066,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
             else:
                 available = float(s.f_bavail) * float(s.f_frsize)
             return disk_size / GIGI, available / GIGI
-        except:
+        except Exception:
             return 0.0, 0.0
     else:
         return 20.0, 10.0
@@ -1096,7 +1096,7 @@ def get_new_id(prefix, folder, check_list=None):
             head, tail = os.path.split(path)
             if not check_list or tail not in check_list:
                 return tail
-        except:
+        except Exception:
             logging.error(T("Failure in tempfile.mkstemp"))
             logging.info("Traceback: ", exc_info=True)
             break
@@ -1119,7 +1119,7 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                 else:
                     data_file.write(data)
             break
-        except:
+        except Exception:
             if silent:
                 # This can happen, probably a removed folder
                 pass
@@ -1155,7 +1155,7 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
 
         if remove:
             remove_file(path)
-    except:
+    except Exception:
         logging.error(T("Loading %s failed"), path)
         logging.info("Traceback: ", exc_info=True)
         return None
@@ -1169,7 +1169,7 @@ def remove_data(_id: str, path: str):
     try:
         if os.path.exists(path):
             remove_file(path)
-    except:
+    except Exception:
         logging.debug("Failed to remove %s", path)
 
 
@@ -1223,7 +1223,7 @@ def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
                 # We only need minimal compression to prevent huge files
                 with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
                     shutil.copyfileobj(data_fp, gzip_file)
-        except:
+        except Exception:
             logging.error(T("Saving %s failed"), full_nzb_path)
             logging.info("Traceback: ", exc_info=True)
     else:
@@ -1251,14 +1251,14 @@ def directory_is_writable_with_file(mydir, myfilename):
     if os.path.exists(filename):
         try:
             os.remove(filename)
-        except:
+        except Exception:
             return False
     try:
         with open(filename, "w") as f:
             f.write("Some random content")
         os.remove(filename)
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -1323,7 +1323,7 @@ PATHBROWSER_JUNKFOLDERS = (
     ".vol",
     "cachedmessages",
     "caches",
-    "trash",  # osx specific
+    "trash",  # macos specific
 )
 
 

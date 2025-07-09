@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.5.0RC1\n"
+"Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: ION, 2024\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -504,7 +504,7 @@ msgid "Resuming"
 msgstr "ממשיך"
 
 #. PP status - Priority pick list
-#: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
 msgstr "מושהה"
@@ -828,6 +828,113 @@ msgstr "שגיאה:"
 msgid "Back"
 msgstr "הקודם"
 
+#. Footer: indicator of warnings
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Warnings"
+msgstr "אזהרות"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Idle"
+msgstr "מנוחה"
+
+#. Main menu item
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Queue"
+msgstr "תור"
+
+#. Queue page button
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Purge Queue"
+msgstr "טהר תור"
+
+#. Main menu item
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "History"
+msgstr "היסטוריה"
+
+#. History page button
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Purge History"
+msgstr "נקה היסטוריה"
+
+#: sabnzbd/macosmenu.py
+msgid "Limit Speed"
+msgstr "הגבל מהירות"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "השהה"
+
+#. One minute
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "דקה"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/notifier.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "המשך"
+
+#. #: Config->Scheduler
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Scan watched folder"
+msgstr "סרוק תיקייה מושגחת"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
+msgid "Read all RSS feeds"
+msgstr "קרא את כל הזנות RSS"
+
+#: sabnzbd/macosmenu.py
+msgid "Complete Folder"
+msgstr "תיקייה שלמה"
+
+#: sabnzbd/macosmenu.py
+msgid "Incomplete Folder"
+msgstr "תיקייה בלתי שלמה"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+msgid "Troubleshoot"
+msgstr "פתור בעיות"
+
+#. Config->Scheduling
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
+#: sabnzbd/skintext.py
+msgid "Restart"
+msgstr "הפעל מחדש"
+
+#: sabnzbd/macosmenu.py, sabnzbd/sabtray.py
+msgid "Restart without login"
+msgstr "הפעל מחדש ללא כניסה"
+
+#: sabnzbd/macosmenu.py
+msgid "Quit"
+msgstr "צא"
+
+#: sabnzbd/macosmenu.py
+msgid "Queue First 10 Items"
+msgstr "הוסף לתור 10 פריטים ראשונים"
+
+#: sabnzbd/macosmenu.py, sabnzbd/skintext.py
+msgid "Empty"
+msgstr "ריק"
+
+#: sabnzbd/macosmenu.py
+msgid "History Last 10 Items"
+msgstr "העבר להיסטוריה 10 פריטים אחרונים"
+
+#: sabnzbd/macosmenu.py
+msgid "Go to wizard"
+msgstr "לך לאשף"
+
+#: sabnzbd/macosmenu.py
+msgid "Stopping..."
+msgstr "עוצר…"
+
 #: sabnzbd/misc.py
 msgid ""
 "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
@@ -1130,19 +1237,6 @@ msgstr "כישלון בהתחברות: %s %s@%s:%s (%s)"
 msgid "Startup/Shutdown"
 msgstr "הזנק/כיבוי"
 
-#. Notification - Pause downloading - Four way switch for duplicates -
-#. Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Pause"
-msgstr "השהה"
-
-#. Notification - Resume downloading - Config->Scheduling
-#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
-#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Resume"
-msgstr "המשך"
-
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
@@ -1181,6 +1275,12 @@ msgstr "פתח תיקייה"
 #: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Open complete folder"
 msgstr "פתח תיקיית השלמה"
+
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
+#: sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Download"
+msgstr "הורדה"
 
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Not available"
@@ -1377,100 +1477,6 @@ msgstr "אל %s מאמרים יש כפילויות בלתי תואמות"
 #: sabnzbd/nzbstuff.py
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "משהה NZB כפול \"%s\""
-
-#. Footer: indicator of warnings
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Warnings"
-msgstr "אזהרות"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Idle"
-msgstr "מנוחה"
-
-#. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Queue"
-msgstr "תור"
-
-#. Queue page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Purge Queue"
-msgstr "טהר תור"
-
-#. Main menu item
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "History"
-msgstr "היסטוריה"
-
-#. History page button
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Purge History"
-msgstr "נקה היסטוריה"
-
-#: sabnzbd/osxmenu.py
-msgid "Limit Speed"
-msgstr "הגבל מהירות"
-
-#. One minute
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "min"
-msgstr "דקה"
-
-#. #: Config->Scheduler
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Scan watched folder"
-msgstr "סרוק תיקייה מושגחת"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
-msgid "Read all RSS feeds"
-msgstr "קרא את כל הזנות RSS"
-
-#: sabnzbd/osxmenu.py
-msgid "Complete Folder"
-msgstr "תיקייה שלמה"
-
-#: sabnzbd/osxmenu.py
-msgid "Incomplete Folder"
-msgstr "תיקייה בלתי שלמה"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
-msgid "Troubleshoot"
-msgstr "פתור בעיות"
-
-#. Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Restart"
-msgstr "הפעל מחדש"
-
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
-msgid "Restart without login"
-msgstr "הפעל מחדש ללא כניסה"
-
-#: sabnzbd/osxmenu.py
-msgid "Quit"
-msgstr "צא"
-
-#: sabnzbd/osxmenu.py
-msgid "Queue First 10 Items"
-msgstr "הוסף לתור 10 פריטים ראשונים"
-
-#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
-msgid "Empty"
-msgstr "ריק"
-
-#: sabnzbd/osxmenu.py
-msgid "History Last 10 Items"
-msgstr "העבר להיסטוריה 10 פריטים אחרונים"
-
-#: sabnzbd/osxmenu.py
-msgid "Go to wizard"
-msgstr "לך לאשף"
-
-#: sabnzbd/osxmenu.py
-msgid "Stopping..."
-msgstr "עוצר…"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1776,7 +1782,6 @@ msgstr "הזנת RSS %s הייתה ריקה"
 msgid "Incompatible feed"
 msgstr "הזנה בלתי תואמת"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "Empty RSS entry found (%s)"
 msgstr "כניסת RSS ריקה נמצאה (%s)"
@@ -1846,12 +1851,6 @@ msgstr "תזמן עבור שרת בלתי קיים %s"
 #: sabnzbd/scheduler.py
 msgid "Trying to set status of non-existing server %s"
 msgstr "מנסה לקבוע מעמד של שרת בלתי קיים %s"
-
-#. Queue status "download" - Post processing pick list - Config->RSS button
-#. "download item"
-#: sabnzbd/skintext.py
-msgid "Download"
-msgstr "הורדה"
 
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py

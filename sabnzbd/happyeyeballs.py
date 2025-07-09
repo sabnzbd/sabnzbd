@@ -116,7 +116,7 @@ def do_socket_connect(result_queue: queue.Queue, addrinfo: AddrInfo, timeout: in
             )
         finally:
             s.close()
-    except:
+    except Exception:
         pass
 
 
@@ -137,7 +137,7 @@ def happyeyeballs(
         check_hosts = [host]
         if cfg.ipv6_staging() and host in IPV6_MAPPING:
             check_hosts.append(IPV6_MAPPING[host])
-            logging.info("Added alternative IPv6 address: %s", IPV6_MAPPING[host])
+            logging.info("Added IPv6 alternative %s for host %s", IPV6_MAPPING[host], host)
 
         ipv4_addrinfo = []
         ipv6_addrinfo = []
@@ -163,7 +163,7 @@ def happyeyeballs(
                             ipv6_addrinfo.append(addrinfo)
                         else:
                             ipv4_addrinfo.append(addrinfo)
-            except:
+            except Exception:
                 # Did we fail on the first getaddrinfo already?
                 # Otherwise, we failed on the IPv6 alternative address, and those failures can be ignored
                 if not ipv4_addrinfo and not ipv6_addrinfo:
@@ -200,7 +200,7 @@ def happyeyeballs(
                 # Reduce waiting time by time already spent
                 result = result_queue.get(timeout=timeout - addr_tried * CONNECTION_ATTEMPT_DELAY)
             except queue.Empty:
-                raise ConnectionError("No addresses could be resolved")
+                raise ConnectionError("No usable IP addresses found for %s" % ", ".join(check_hosts))
 
         logging.info(
             "Quickest IP address for %s (port=%d, %s): %s (%s)",

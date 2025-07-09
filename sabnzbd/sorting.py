@@ -855,7 +855,7 @@ def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optiona
                 try:
                     logging.debug("Rename: %s to %s", path, newpath)
                     renamer(path, newpath)
-                except:
+                except Exception:
                     logging.error(T("Failed to rename similar file: %s to %s"), clip_path(path), clip_path(newpath))
                     logging.info("Traceback: ", exc_info=True)
     cleanup_empty_directories(folder)
