@@ -45,6 +45,8 @@ msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
 msgstr ""
+"Impossible d'établir une connexion avec OpenSSL, les fonctions de connexion "
+"SSL optimisées ne seront pas utilisées."
 
 #. Error message
 #: SABnzbd.py
