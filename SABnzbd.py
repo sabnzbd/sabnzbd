@@ -1100,12 +1100,13 @@ def main():
         logging_level = sabnzbd.cfg.log_level()
     else:
         sabnzbd.cfg.log_level.set(logging_level)
-    sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
+
     logformat = "%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s"
     logger.setLevel(LOGLEVELS[logging_level + 1])
 
     try:
         if not no_file_log:
+            sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
             rollover_log = logging.handlers.RotatingFileHandler(
                 sabnzbd.LOGFILE, "a+", sabnzbd.cfg.log_size(), sabnzbd.cfg.log_backups()
             )

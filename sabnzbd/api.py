@@ -667,8 +667,11 @@ def _api_showlog(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
     log_data += b"The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
     log_data += b"\n\n--------------------------------\n"
 
-    with open(sabnzbd.LOGFILE, "rb") as f:
-        log_data += f.read()
+    if sabnzbd.LOGFILE and os.path.exists(sabnzbd.LOGFILE):
+        with open(sabnzbd.LOGFILE, "rb") as f:
+            log_data += f.read()
+    else:
+        log_data += b"\nFile log disabled or not found.\n\n"
 
     with open(config.get_filename(), "rb") as f:
         log_data += f.read()
@@ -1413,7 +1416,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     # build up header full of basic information
     info = build_header(trans_functions=False)
 
-    info["logfile"] = clip_path(sabnzbd.LOGFILE)
+    info["logfile"] = clip_path(sabnzbd.LOGFILE) if sabnzbd.LOGFILE else ""
     info["weblogfile"] = clip_path(sabnzbd.WEBLOGFILE)
     info["webdir"] = clip_path(info["webdir"])
     info["loglevel"] = str(cfg.log_level())
