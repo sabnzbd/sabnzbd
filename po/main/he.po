@@ -37,6 +37,13 @@ msgstr "כישלון בהתחלת ממשק רשת"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "לא ניתן למצוא תבניות רשת: %s, מנסה תבנית תקנית"
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""

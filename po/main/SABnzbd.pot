@@ -32,6 +32,11 @@ msgstr ""
 msgid "Cannot find web template: %s, trying standard template"
 msgstr ""
 
+#. Warning message
+#: SABnzbd.py
+msgid "Unable to link to OpenSSL, optimized SSL connection functions will not be used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid "SABCTools disabled: no correct version found! (Found v%s, expecting v%s)"

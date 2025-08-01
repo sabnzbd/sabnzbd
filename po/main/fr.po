@@ -39,6 +39,13 @@ msgstr ""
 "Impossible de trouver le template de l'interface web : %s, nouvelle "
 "tentative avec le template standard"
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""
