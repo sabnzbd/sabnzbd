@@ -1898,7 +1898,13 @@ def build_history(
 
 def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, Any]]):
     """Get the active history queue and add it to the existing items list"""
+    nzo_ids = set([nzo["nzo_id"] for nzo in items])
+
     for nzo in postproc_queue:
+        # Skip already in history
+        if nzo.nzo_id in nzo_ids:
+            continue
+
         # This output has to be the same as fetch_history!
         item = {
             "completed": int(time.time()),
