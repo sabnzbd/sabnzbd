@@ -1,6 +1,6 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.9.3
+apprise==1.9.4
 sabctools==8.2.6
 CT3==3.4.0
 cffi==1.17.1
@@ -66,7 +66,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 charset_normalizer==3.4.2
 idna==3.10
 urllib3==2.5.0
-certifi==2025.7.14
+certifi==2025.8.3
 oauthlib==3.3.1
 PyJWT==2.10.1
 blinker==1.9.0
