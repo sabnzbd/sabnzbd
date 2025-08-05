@@ -38,6 +38,13 @@ msgstr "web 界面启动失败"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "无法找到 web 模板: %s，正在尝试标准模板"
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""

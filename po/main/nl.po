@@ -38,6 +38,13 @@ msgstr "Webinterface kan niet gestart worden"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""

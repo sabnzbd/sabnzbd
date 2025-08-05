@@ -3,13 +3,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
-# ION, 2024
+# ION, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: ION, 2024\n"
+"Last-Translator: ION, 2025\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,6 +36,13 @@ msgstr "כישלון בהתחלת ממשק רשת"
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "לא ניתן למצוא תבניות רשת: %s, מנסה תבנית תקנית"
+
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
 
 #. Error message
 #: SABnzbd.py
@@ -1080,7 +1087,7 @@ msgstr "פריקה נכשלה, שגיאת כתיבה או דיסק מלא?"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
-msgstr ""
+msgstr "פריקה נכשלה, דיסק מלא"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
@@ -2638,7 +2645,7 @@ msgstr "מטמון בשימוש"
 #. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
 #: sabnzbd/skintext.py
 msgid "Platform"
-msgstr ""
+msgstr "פלטפורמה"
 
 #: sabnzbd/skintext.py
 msgid ""
