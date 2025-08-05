@@ -2,7 +2,7 @@ name: sabnzbd
 summary: SABnzbd
 description: The automated Usenet download tool
 confinement: strict
-base: core20
+base: core24
 grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 adopt-info: sabnzbd
@@ -30,15 +30,15 @@ parts:
     stage-packages: [python3-dev, libdb5.3, unrar, p7zip-full, par2]
     build-packages: [pkg-config, libffi-dev, python3-dev, libssl-dev, cargo]
     override-build: |
-      snapcraftctl set-version $(grep -o -P '(?<=__version__ = ").*(?=")' sabnzbd/version.py)
-      snapcraftctl build
+      craftctl set version=$(grep -o -P '(?<=__version__ = ").*(?=")' sabnzbd/version.py)
+      craftctl build
       python3 tools/make_mo.py
-      mkdir -p $SNAPCRAFT_PART_INSTALL/opt
-      cp -R $SNAPCRAFT_PART_BUILD $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      echo "\$SNAP/usr/bin/snapcraft-preload python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
-      chmod +x $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
-      ln -sf ../usr/lib/libsnapcraft-preload.so $SNAPCRAFT_PART_INSTALL/lib/libsnapcraft-preload.so
+      mkdir -p $SNAP_PART_INSTALL/opt
+      cp -R $SNAP_PART_BUILD $SNAP_PART_INSTALL/opt/sabnzbd
+      mkdir -p $SNAP_PART_INSTALL/bin
+      echo "\$SNAP/usr/bin/snapcraft-preload python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAP_PART_INSTALL/bin/sabnzbd-wrapper
+      chmod +x $SNAP_PART_INSTALL/bin/sabnzbd-wrapper
+      ln -sf ../usr/lib/libsnapcraft-preload.so $SNAP_PART_INSTALL/lib/libsnapcraft-preload.so
     prime: [-usr/bin/7z,-usr/bin/7za,-usr/bin/7zr]
     organize:
       usr/bin/unrar-nonfree: usr/bin/unrar
