@@ -1,5 +1,14 @@
-Release Notes - SABnzbd 4.5.2
+Release Notes - SABnzbd 4.5.3 Beta 1
 =========================================================
+
+## Bug fixes and changes in 4.5.3
+
+* Remember if `Permanently delete` was previously checked.
+* History API-output could have duplicate items.
+* Prevent renaming of `.cbr` files during verification.
+* If `--disable-file-log` was enabled, `Show Logging` would crash.
+* Windows: Unable to start on Windows 8.
+* macOS: Repair would fail on macOS 10.13 High Sierra.
 
 ## Bug fixes and changes in 4.5.2
 
