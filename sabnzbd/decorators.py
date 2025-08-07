@@ -80,7 +80,11 @@ def conditional_cache(cache_time: int):
             current_time = time.time()
 
             # Create cache key using functools._make_key
-            key = functools._make_key(args, kwargs, typed=False)
+            try:
+                key = functools._make_key(args, kwargs, typed=False)
+            except TypeError:
+                # If args/kwargs aren't hashable, skip caching entirely
+                return func(*args, **kwargs)
 
             # Allow force kward to skip cache
             if not kwargs.get("force"):
