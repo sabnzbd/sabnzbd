@@ -1941,6 +1941,7 @@ def add_active_history(postproc_queue: List[NzbObject], items: List[Dict[str, An
             "loaded": nzo.pp_active,
             "retry": False,
             "archive": False,
+            "time_added": nzo.time_added,
         }
         # Add stage information, in the correct order
         for stage in STAGES:

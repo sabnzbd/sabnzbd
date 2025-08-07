@@ -110,6 +110,10 @@ class HistoryDB:
                 _ = self.execute("PRAGMA user_version = 4;") and self.execute(
                     "ALTER TABLE history ADD COLUMN archive INTEGER;"
                 )
+            if version < 5:
+                _ = self.execute("PRAGMA user_version = 5;") and self.execute(
+                    "ALTER TABLE history ADD COLUMN time_added INTEGER;"
+                )
 
             HistoryDB.startup_done = True
 
@@ -187,11 +191,12 @@ class HistoryDB:
             "md5sum" TEXT,
             "password" TEXT,
             "duplicate_key" TEXT,
-            "archive" INTEGER
+            "archive" INTEGER,
+            "time_added" INTEGER
         )
         """
         )
-        self.execute("PRAGMA user_version = 4;")
+        self.execute("PRAGMA user_version = 5;")
 
     def close(self):
         """Close database connection"""
@@ -293,8 +298,8 @@ class HistoryDB:
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
             url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-            downloaded, fail_message, url_info, bytes, duplicate_key, md5sum, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            downloaded, fail_message, url_info, bytes, duplicate_key, md5sum, password, time_added)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             t,
         )
         logging.info("Added job %s to history", nzo.final_name)
@@ -540,6 +545,7 @@ def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_ou
         nzo.duplicate_key,
         nzo.md5sum,
         nzo.correct_password,
+        nzo.time_added,
     )
 
 
