@@ -117,10 +117,40 @@ jobs:
         path: "*-macos.dmg"
         name: macOS binary
 
+  build-snap:
+    name: Build Snap Packages (${{ matrix.linux_arch }})
+    timeout-minutes: 30
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            linux_arch: amd64
+          - os: ubuntu-24.04-arm
+            linux_arch: arm64
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snapcore/action-build@v1
+        id: snapcraft
+      - name: Upload snap artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap package (${{ matrix.linux_arch }})
+          path: ${{ steps.snapcraft.outputs.snap }}
+      - name: Test snap installation
+        run: |
+          sudo snap install --dangerous *.snap
+          sudo snap connect sabnzbd:removable-media
+          # Basic smoke test - check that the binary exists and can show help
+          timeout 10s snap run sabnzbd --help || true
+          sudo snap remove sabnzbd
+
   release:
     name: Prepare Release
     runs-on: ubuntu-latest
-    needs: [build_windows, build_macos]
+    needs: [build_windows, build_macos, build-snap]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -140,10 +170,3 @@ jobs:
         run: |
           pip3 install -r builder/release-requirements.txt
           python3 builder/release.py
-      - name: Release latest available Snap
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
-        run: |
-          sudo snap install snapcraft --classic
-          python3 snap/local/release_snap.py

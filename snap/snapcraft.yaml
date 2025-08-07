@@ -9,7 +9,6 @@ adopt-info: sabnzbd
 
 platforms:
   amd64:
-  armhf:
   arm64:
 
 apps:
@@ -47,9 +46,7 @@ parts:
       fi
     override-build: |
       craftctl default
-
       python3 tools/make_mo.py
-
       rsync -av --mkpath \
         --exclude=.git \
         --exclude=.github \
@@ -60,9 +57,7 @@ parts:
         --exclude=tests \
         --exclude=win \
         $CRAFT_PART_BUILD/ $CRAFT_PART_INSTALL/opt/sabnzbd/
-
       ln -sf ../usr/lib/libsnapcraft-preload.so $CRAFT_PART_INSTALL/lib/libsnapcraft-preload.so
-
       # 7-Zip script has an invalid path in a snap context
       rm -rf $CRAFT_PART_INSTALL/usr/bin/7zz
     organize:
