@@ -27,10 +27,7 @@ parts:
     source: .
     python-requirements:
       - requirements.txt
-    python-packages:
-      - setuptools-rust
     stage-packages:
-      - libdb5.3
       - unrar
       - p7zip-full
     build-packages:
