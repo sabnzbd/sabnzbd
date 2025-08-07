@@ -26,8 +26,10 @@ parts:
   sabnzbd:
     plugin: python
     source: .
-    requirements: [snap/local/requirements_snap.txt, requirements.txt]
-    stage-packages: [python3-dev, libdb5.3, unrar, p7zip-full, par2]
+    python-requirements:
+      - snap/local/requirements_snap.txt
+      - requirements.txt
+    stage-packages: [python3-dev, libdb5.3-dev, unrar, p7zip-full, par2]
     build-packages: [pkg-config, libffi-dev, python3-dev, libssl-dev, cargo]
     override-build: |
       craftctl set version=$(grep -o -P '(?<=__version__ = ").*(?=")' sabnzbd/version.py)
@@ -46,14 +48,10 @@ parts:
     source: https://github.com/sergiusens/snapcraft-preload.git
     plugin: cmake
     cmake-parameters:
-      - -DCMAKE_INSTALL_PREFIX=/usr -DLIBPATH=/lib
+      - "-DCMAKE_INSTALL_PREFIX=/usr"
+      - "-DLIBPATH=/lib"
     stage-packages:
-      - to amd64:
-        - lib32stdc++6
+      - on amd64: [lib32stdc++6]
     build-packages:
-      - to arm64:
-        - g++-multilib-arm-linux-gnueabihf
-        - gcc-multilib-arm-linux-gnueabihf
-      - else:
-        - gcc-multilib
-        - g++-multilib
+      - on arm64: [g++-multilib-arm-linux-gnueabihf, gcc-multilib-arm-linux-gnueabihf]
+      - on [amd64, armhf]: [gcc-multilib, g++-multilib]
