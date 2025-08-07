@@ -1613,6 +1613,9 @@ def build_queue(
         else:
             slot["avg_age"] = calc_age(nzo.avg_date)
 
+        # Add timestamp when the item was added to the queue
+        slot["time_added"] = nzo.time_added
+
         slotinfo.append(slot)
         n += 1
 
