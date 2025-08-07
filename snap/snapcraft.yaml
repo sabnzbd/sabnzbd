@@ -29,7 +29,7 @@ parts:
       - requirements.txt
     stage-packages:
       - unrar
-      - p7zip-full
+      - 7zip-standalone
     build-packages:
       - git
       - pkg-config
@@ -62,13 +62,14 @@ parts:
         $CRAFT_PART_BUILD/ $CRAFT_PART_INSTALL/opt/sabnzbd/
 
       ln -sf ../usr/lib/libsnapcraft-preload.so $CRAFT_PART_INSTALL/lib/libsnapcraft-preload.so
-      rm -rf $CRAFT_PART_INSTALL/usr/bin/7z $CRAFT_PART_INSTALL/usr/bin/7za $CRAFT_PART_INSTALL/usr/bin/7zr
+
+      # 7-Zip script has an invalid path in a snap context
+      rm -rf $CRAFT_PART_INSTALL/usr/bin/7zz
     organize:
       usr/bin/unrar-nonfree: usr/bin/unrar
-      usr/lib/7zip/7za: usr/bin/7za
+      usr/lib/7zip/7zz: usr/bin/7zz
     prime:
       - -usr/lib/7zip
-      - -usr/bin/p7zip
   par2cmdline-turbo:
     source: .
     plugin: autotools
