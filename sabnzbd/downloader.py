@@ -35,7 +35,7 @@ from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue
-from sabnzbd.happyeyeballs import happyeyeballs, AddrInfo
+from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
 from sabnzbd.constants import SOFT_QUEUE_LIMIT
 
 
@@ -206,7 +206,7 @@ class Server:
         self.article_queue = []
 
     def request_addrinfo(self):
-        """Launch async request to resolve server address and perform Happy Eyeballs.
+        """Launch async request to resolve server address and select the fastest.
         In some situations this can be slow and result in delayed starts and timeouts on connections.
         Because of this, the results will be cached in the server object."""
         if not self.request:
@@ -214,7 +214,7 @@ class Server:
             Thread(target=self.request_addrinfo_blocking).start()
 
     def request_addrinfo_blocking(self):
-        """Blocking attempt to run getaddrinfo() and Happy Eyeballs for specified server"""
+        """Blocking attempt to run getaddrinfo() and address selection for specified server"""
         logging.debug("Retrieving server address information for %s", self)
 
         # Disable IPV6 if desired
@@ -222,7 +222,7 @@ class Server:
         if not cfg.ipv6_servers():
             family = socket.AF_INET
 
-        self.addrinfo = happyeyeballs(self.host, self.port, self.timeout, family)
+        self.addrinfo = get_fastest_addrinfo(self.host, self.port, self.timeout, family)
         if not self.addrinfo:
             self.bad_cons += self.threads
             # Notify next call to maybe_block_server

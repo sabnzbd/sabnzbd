@@ -32,7 +32,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DEF_NETWORKING_TIMEOUT, NNTP_BUFFER_SIZE, NTTP_MAX_BUFFER_SIZE
 from sabnzbd.encoding import utob, ubtou
-from sabnzbd.happyeyeballs import AddrInfo
+from sabnzbd.get_addrinfo import AddrInfo
 from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 from sabnzbd.misc import int_conv
 

@@ -55,7 +55,7 @@ from sabnzbd.misc import (
     get_cpu_name,
     clean_comma_separated_list,
 )
-from sabnzbd.happyeyeballs import happyeyeballs
+from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.filesystem import (
     real_path,
     globber,
@@ -1174,7 +1174,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        if not happyeyeballs(
+        if not get_fastest_addrinfo(
             host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
         ):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
