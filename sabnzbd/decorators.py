@@ -64,22 +64,44 @@ def NzbQueueLocker(func: Callable):
     return call_func
 
 
-def cache_maintainer(clear_time: int):
+def conditional_cache(cache_time: int):
     """
-    A function decorator that clears functools.cache or functools.lru_cache clear_time seconds
-    :param clear_time: In seconds, how often to clear cache (only checks when called)
+    A decorator that caches function results for a specified time, but only if the result is not empty.
+    Empty results (None, empty collections, empty strings, False, 0) are not cached.
+    If a keyword argument of `force=True` is used, the cache is skipped.
+
+    :param cache_time: Time in seconds to cache non-empty results
     """
 
-    def inner(func):
+    def decorator(func):
+        cache = {}
+
         def wrapper(*args, **kwargs):
-            if hasattr(func, "next_clear"):
-                if time.time() > func.next_clear or kwargs.get("force"):
-                    func.cache_clear()
-                    func.next_clear = time.time() + clear_time
-            else:
-                func.next_clear = time.time() + clear_time
-            return func(*args, **kwargs)
+            current_time = time.time()
+
+            # Create cache key using functools._make_key
+            key = functools._make_key(args, kwargs, typed=False)
+
+            # Allow force kward to skip cache
+            if not kwargs.get("force"):
+                # Check if we have a valid cached result
+                if key in cache:
+                    cached_result, timestamp = cache[key]
+                    if current_time - timestamp < cache_time:
+                        return cached_result
+                    # Cache entry expired, remove it
+                    del cache[key]
+
+            # Call the original function
+            result = func(*args, **kwargs)
+
+            # Only cache non-empty results
+            # This excludes None, [], {}, "", 0, False, etc.
+            if result:
+                cache[key] = (result, current_time)
+
+            return result
 
         return wrapper
 
-    return inner
+    return decorator

@@ -30,7 +30,7 @@ from typing import Tuple, Union, Optional
 
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import DEF_NETWORKING_TIMEOUT
-from sabnzbd.decorators import cache_maintainer
+from sabnzbd.decorators import conditional_cache
 
 # How often to check for connection results
 CONNECTION_RESULT_CHECK = 0.1  # 100ms
@@ -115,8 +115,7 @@ def do_socket_connect(results_list: list, addrinfo: AddrInfo, timeout: int):
         pass
 
 
-@cache_maintainer(clear_time=60)
-@functools.lru_cache(maxsize=None)
+@conditional_cache(cache_time=60)
 def get_fastest_addrinfo(
     host: str,
     port: int,
