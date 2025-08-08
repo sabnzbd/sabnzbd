@@ -7,18 +7,17 @@ grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 adopt-info: sabnzbd
 
-architectures:
-  - build-on: arm64
-  - build-on: armhf
-  - build-on: amd64
+platforms:
+  amd64:
+  armhf:
+  arm64:
 
 apps:
   sabnzbd:
     environment:
-      PATH: $SNAP/usr/lib/p7zip:$PATH
       LC_CTYPE: C.UTF-8
       SNAPCRAFT_PRELOAD_REDIRECT_ONLY_SHM: 1
-    command: bin/sabnzbd-wrapper
+    command: usr/bin/snapcraft-preload python3 $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
     daemon: simple
     plugs: [network, home, network-bind, removable-media]
 
@@ -27,31 +26,73 @@ parts:
     plugin: python
     source: .
     python-requirements:
-      - snap/local/requirements_snap.txt
       - requirements.txt
-    stage-packages: [python3-dev, libdb5.3-dev, unrar, p7zip-full, par2]
-    build-packages: [pkg-config, libffi-dev, python3-dev, libssl-dev, cargo]
-    override-build: |
+    stage-packages:
+      - unrar
+      - 7zip-standalone
+    build-packages:
+      - git
+      - pkg-config
+      - libffi-dev
+      - python3-dev
+      - libssl-dev
+      - cargo
+      - rsync
+    override-pull: |
+      craftctl default
       craftctl set version=$(grep -o -P '(?<=__version__ = ").*(?=")' sabnzbd/version.py)
-      craftctl build
+      if [ -z "$(git status --porcelain)" ]; then
+        COMMIT=$(git rev-parse --short HEAD)
+        sed -i "s/__baseline__ = .*/__baseline__ = \"${COMMIT}\"/" sabnzbd/version.py
+      fi
+    override-build: |
+      craftctl default
+
       python3 tools/make_mo.py
-      mkdir -p $SNAP_PART_INSTALL/opt
-      cp -R $SNAP_PART_BUILD $SNAP_PART_INSTALL/opt/sabnzbd
-      mkdir -p $SNAP_PART_INSTALL/bin
-      echo "\$SNAP/usr/bin/snapcraft-preload python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAP_PART_INSTALL/bin/sabnzbd-wrapper
-      chmod +x $SNAP_PART_INSTALL/bin/sabnzbd-wrapper
-      ln -sf ../usr/lib/libsnapcraft-preload.so $SNAP_PART_INSTALL/lib/libsnapcraft-preload.so
-    prime: [-usr/bin/7z,-usr/bin/7za,-usr/bin/7zr]
+
+      rsync -av --mkpath \
+        --exclude=.git \
+        --exclude=.github \
+        --exclude=builder \
+        --exclude=macos \
+        --exclude=po \
+        --exclude=snap \
+        --exclude=tests \
+        --exclude=win \
+        $CRAFT_PART_BUILD/ $CRAFT_PART_INSTALL/opt/sabnzbd/
+
+      ln -sf ../usr/lib/libsnapcraft-preload.so $CRAFT_PART_INSTALL/lib/libsnapcraft-preload.so
+
+      # 7-Zip script has an invalid path in a snap context
+      rm -rf $CRAFT_PART_INSTALL/usr/bin/7zz
     organize:
       usr/bin/unrar-nonfree: usr/bin/unrar
+      usr/lib/7zip/7zz: usr/bin/7zz
+    prime:
+      - -usr/lib/7zip
+  par2cmdline-turbo:
+    source: .
+    plugin: autotools
+    build-packages:
+      - jq
+    build-environment:
+      - LDFLAGS: -s
+    override-pull: |
+      PAR2_TARBALL=$(curl -sL https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | jq -r '.tarball_url')
+      curl -o /tmp/par2cmdline.tar.gz -L $PAR2_TARBALL
+      tar xf /tmp/par2cmdline.tar.gz --strip-components=1
+    autotools-configure-parameters:
+      - --prefix=/usr
   snapcraft-preload:
     source: https://github.com/sergiusens/snapcraft-preload.git
     plugin: cmake
     cmake-parameters:
-      - "-DCMAKE_INSTALL_PREFIX=/usr"
-      - "-DLIBPATH=/lib"
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DLIBPATH=/lib
     stage-packages:
-      - on amd64: [lib32stdc++6]
+      - to amd64:
+        - lib32stdc++6
     build-packages:
-      - on arm64: [g++-multilib-arm-linux-gnueabihf, gcc-multilib-arm-linux-gnueabihf]
-      - on [amd64, armhf]: [gcc-multilib, g++-multilib]
+      - to amd64:
+        - gcc-multilib
+        - g++-multilib
