@@ -75,6 +75,7 @@ parts:
     plugin: autotools
     build-packages:
       - jq
+      - curl
     build-environment:
       - LDFLAGS: -s
     override-pull: |
