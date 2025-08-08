@@ -27,7 +27,6 @@ parts:
     python-requirements:
       - requirements.txt
     stage-packages:
-      - unrar
       - 7zip-standalone
     build-packages:
       - git
@@ -61,7 +60,6 @@ parts:
       # 7-Zip script has an invalid path in a snap context
       rm -rf $CRAFT_PART_INSTALL/usr/bin/7zz
     organize:
-      usr/bin/unrar-nonfree: usr/bin/unrar
       usr/lib/7zip/7zz: usr/bin/7zz
     prime:
       - -usr/lib/7zip
@@ -79,6 +77,21 @@ parts:
       tar xf /tmp/par2cmdline.tar.gz --strip-components=1
     autotools-configure-parameters:
       - --prefix=/usr
+  unrar:
+    source: https://www.rarlab.com/rar/unrarsrc-7.1.10.tar.gz
+    plugin: make
+    override-build: |
+      case $CRAFT_ARCH_BUILD_FOR in
+        amd64)
+          cxxflags=-march=native
+          ;;
+        arm64)
+          cxxflags=-march=armv8-a+crypto+crc
+          ;;
+      esac
+      sed -i "/^CXXFLAGS=/ s|$| ${cxxflags}|" makefile
+      craftctl default
+      $CRAFT_PART_INSTALL/bin/unrar || exit 1
   snapcraft-preload:
     source: https://github.com/sergiusens/snapcraft-preload.git
     plugin: cmake
