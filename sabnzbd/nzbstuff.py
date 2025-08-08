@@ -523,6 +523,10 @@ class NzbRejected(Exception):
     pass
 
 
+class NzbPreQueueRejected(Exception):
+    pass
+
+
 class NzbRejectToHistory(Exception):
     def __init__(self, nzo, fail_msg):
         self.nzo: NzbObject = nzo
@@ -870,7 +874,7 @@ class NzbObject(TryList):
             accept = int_conv(accept)
             if accept < 1:
                 self.purge_data()
-                raise NzbRejected
+                raise NzbPreQueueRejected
             if accept == 2:
                 raise NzbRejectToHistory(self, T("Pre-queue script marked job as failed"))
 
