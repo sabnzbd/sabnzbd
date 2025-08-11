@@ -167,6 +167,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+          cache: pip
+          cache-dependency-path: "builder/release-requirements.txt"
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
