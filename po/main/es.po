@@ -5,13 +5,13 @@
 # Ester Molla Aragones <moarages@gmail.com>, 2020
 # Angel, 2023
 # Carmen Gonzalez, 2024
-# Safihre <safihre@sabnzbd.org>, 2024
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,6 +47,8 @@ msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
 msgstr ""
+"No se puede enlazar con OpenSSL; no se usarán las funciones optimizadas de "
+"conexión SSL."
 
 #. Error message
 #: SABnzbd.py
@@ -489,19 +491,19 @@ msgstr "Error inespecifico mientras descodificando %s"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate skipped due to DVD/Bluray directories"
-msgstr ""
+msgstr "Se omitió la desofuscación debido a directorios de DVD/Blu‑ray"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate corrected the extension of %d file(s)"
-msgstr ""
+msgstr "Desofuscar corrigió la extensión de %d archivo(s)"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
-msgstr ""
+msgstr "Desofuscar renombró %d archivo(s)"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d subtitle file(s)"
-msgstr ""
+msgstr "Desofuscar renombró %d archivo(s) de subtítulos"
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -568,7 +570,7 @@ msgstr "El servidor %s se ignorará por %s minutos"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "There are no active servers!"
-msgstr ""
+msgstr "¡No hay servidores activos!"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -578,12 +580,13 @@ msgstr "Error al inicializar %s@%s con la razón: %s"
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
-msgstr ""
+msgstr "Error grave en el descargador"
 
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "%s@%s: Received unknown status code %s for article %s"
 msgstr ""
+"%s@%s: Se recibió un código de estado desconocido %s para el artículo %s"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -594,6 +597,8 @@ msgid ""
 "Login from too many different IP addresses to server %s [%s] - "
 "https://sabnzbd.org/multiple-adresses"
 msgstr ""
+"Inicio de sesión desde demasiadas direcciones IP diferentes en el servidor "
+"%s [%s] - https://sabnzbd.org/multiple-adresses"
 
 #: sabnzbd/downloader.py
 msgid "Failed login for server %s [%s]"
@@ -616,12 +621,12 @@ msgstr "Apagando"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s is expiring in %s day(s)"
-msgstr ""
+msgstr "El servidor %s expira en %s día(s)"
 
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s has used the specified quota"
-msgstr ""
+msgstr "El servidor %s ha utilizado la cuota especificada"
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -728,7 +733,7 @@ msgstr "Error al mover %s a %s"
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
-msgstr ""
+msgstr "Intento bloqueado de crear el directorio %s"
 
 #. Error message
 #: sabnzbd/filesystem.py
@@ -748,17 +753,21 @@ msgstr "Cargar de %s no se pudo completar."
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "%s is not writable at all. This blocks downloads."
-msgstr ""
+msgstr "%s no es escribible. Esto bloquea las descargas."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
 msgstr ""
+"No se puede escribir un nombre de archivo largo en %s. Esto puede causar "
+"problemas."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
 msgstr ""
+"No se puede escribir un nombre de archivo en Unicode en %s. Esto puede "
+"causar problemas."
 
 #. Warning message
 #: sabnzbd/filesystem.py
@@ -766,10 +775,12 @@ msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
+"%s no permite escribir nombres de archivo con caracteres especiales. Esto "
+"puede causar problemas."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
-msgstr ""
+msgstr "Conexión rechazada de:"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
@@ -807,7 +818,7 @@ msgstr "Intento fallido de inicio de sesión desde %s"
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
-msgstr ""
+msgstr "Copia de seguridad no válida"
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -1127,7 +1138,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
-msgstr ""
+msgstr "Error al descomprimir, disco lleno"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
@@ -1272,6 +1283,10 @@ msgid ""
 " locally injected certificate (for example by firewall or virus scanner). "
 "Try setting Certificate verification to Medium."
 msgstr ""
+"No se pudo validar el certificado. Puede ser un problema del servidor o "
+"debido a un certificado inyectado localmente (por ejemplo, por un "
+"cortafuegos o un antivirus). Intente establecer la verificación de "
+"certificados en Media."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -1284,7 +1299,7 @@ msgstr "Wiki"
 
 #: sabnzbd/newswrapper.py
 msgid "Failed to connect: %s %s@%s:%s (%s)"
-msgstr ""
+msgstr "Error al conectar: %s %s@%s:%s (%s)"
 
 #. Notification
 #: sabnzbd/notifier.py
@@ -1323,7 +1338,7 @@ msgstr "Otros mensajes"
 #. Notification action
 #: sabnzbd/notifier.py
 msgid "Open folder"
-msgstr ""
+msgstr "Abrir carpeta"
 
 #. Notification action
 #: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
@@ -1352,21 +1367,21 @@ msgstr "No se pudo enviar el mensaje de Prowl"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message - no URLs defined"
-msgstr ""
+msgstr "No se pudo enviar el mensaje de Apprise: no hay URL definidas"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "One or more Apprise URLs could not be loaded."
-msgstr ""
+msgstr "No se pudo cargar una o más URL de Apprise."
 
 #: sabnzbd/notifier.py
 msgid "Failed to send one or more Apprise Notifications"
-msgstr ""
+msgstr "No se pudieron enviar una o más notificaciones de Apprise"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message"
-msgstr ""
+msgstr "No se pudo enviar el mensaje de Apprise"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1730,7 +1745,7 @@ msgstr "Error al post-procesar %s (%s)"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
-msgstr ""
+msgstr "Se canceló el posprocesado"
 
 #: sabnzbd/postproc.py
 msgid "Download Failed"
@@ -1784,7 +1799,7 @@ msgstr "No se han podido verificar los archivos RAR"
 
 #: sabnzbd/postproc.py
 msgid "Trying RAR renamer"
-msgstr ""
+msgstr "Intentando cambiar nombres RAR"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -1931,7 +1946,7 @@ msgstr "Descomprimir"
 #. PP phase "deobfuscate"
 #: sabnzbd/skintext.py
 msgid "Deobfuscate"
-msgstr ""
+msgstr "Desofuscar"
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
@@ -2192,7 +2207,7 @@ msgstr "Este mes"
 
 #: sabnzbd/skintext.py
 msgid "Selected date range"
-msgstr ""
+msgstr "Rango de fechas seleccionado"
 
 #: sabnzbd/skintext.py
 msgid "Today"
@@ -2287,7 +2302,7 @@ msgstr "Foro"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Live Chat"
-msgstr ""
+msgstr "Chat en vivo"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2446,7 +2461,7 @@ msgstr "¿Eliminar todos los elementos de la cola?"
 #. Delete confirmation popup
 #: sabnzbd/skintext.py
 msgid "Are you sure you want to remove these jobs?"
-msgstr ""
+msgstr "¿Seguro que quieres eliminar estos trabajos?"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2471,7 +2486,7 @@ msgstr "Eliminar NZB y Eliminar Ficheros"
 #. Checkbox if job should be added to Archive
 #: sabnzbd/skintext.py
 msgid "Permanently delete (skip archive)"
-msgstr ""
+msgstr "Eliminar permanentemente (omitir archivo)"
 
 #. Caption for missing articles in Queue
 #: sabnzbd/skintext.py
@@ -2494,7 +2509,7 @@ msgstr "Reinicializar Quota ahora"
 
 #: sabnzbd/skintext.py
 msgid "Archive"
-msgstr ""
+msgstr "Archivo"
 
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
@@ -2519,7 +2534,7 @@ msgstr "Mostrar Todo"
 #. Button showing all archived jobs
 #: sabnzbd/skintext.py
 msgid "Show Archive"
-msgstr ""
+msgstr "Mostrar Archivo"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2650,15 +2665,15 @@ msgstr "Nombre del servidor / Búsqueda de DNS"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
-msgstr ""
+msgstr "Velocidad de descarga limitada por"
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
-msgstr ""
+msgstr "Velocidad de disco"
 
 #: sabnzbd/skintext.py
 msgid "System load"
-msgstr ""
+msgstr "Carga del sistema"
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -2705,7 +2720,7 @@ msgstr "Caché utilizada"
 #. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
 #: sabnzbd/skintext.py
 msgid "Platform"
-msgstr ""
+msgstr "Plataforma"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2810,11 +2825,11 @@ msgstr "Puerto en que SABnzbd debería escuchar"
 
 #: sabnzbd/skintext.py
 msgid "Web Interface Theme"
-msgstr ""
+msgstr "Tema de la interfaz web"
 
 #: sabnzbd/skintext.py
 msgid "Choose a theme."
-msgstr ""
+msgstr "Elige un tema."
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
