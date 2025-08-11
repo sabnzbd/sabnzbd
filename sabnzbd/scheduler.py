@@ -40,6 +40,7 @@ class Scheduler:
         self.scheduler = kronos.ThreadedScheduler()
         self.pause_end: Optional[float] = None  # Moment when pause will end
         self.resume_task: Optional[kronos.Task] = None
+        self.rss_task: Optional[kronos.Task] = None  # RSS interval task
         self.restart_scheduler = False
         self.pp_pause_event = False
         self.load_schedules()
@@ -189,8 +190,7 @@ class Scheduler:
             delay = random.randint(0, interval - 1)
             logging.info("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
             sabnzbd.RSSReader.next_run = time.time() + delay * 60
-            self.scheduler.add_interval_task(sabnzbd.RSSReader.run, "RSS", delay * 60, interval * 60)
-            self.scheduler.add_single_task(sabnzbd.RSSReader.run, "RSS", 15)
+            self.rss_task = self.scheduler.add_interval_task(sabnzbd.RSSReader.run, "RSS", delay * 60, interval * 60)
 
         if cfg.version_check():
             # Check for new release daily at a random time
@@ -449,8 +449,15 @@ class Scheduler:
         self.scheduler.add_single_task(action, "", interval * 60, args=parms)
 
     def force_rss(self):
-        """Add a one-time RSS scan, one second from now"""
-        self.scheduler.add_single_task(sabnzbd.RSSReader.run, "RSS", 1)
+        """Run RSS scan immediately and reschedule interval task"""
+        # Cancel the current RSS interval task
+        if self.rss_task:
+            self.scheduler.cancel(self.rss_task)
+
+        # Schedule a new interval task and start one now
+        interval = cfg.rss_rate() * 60  # Convert minutes to seconds
+        sabnzbd.RSSReader.next_run = time.time() + interval
+        self.rss_task = self.scheduler.add_interval_task(sabnzbd.RSSReader.run, "RSS", 0, interval)
 
 
 def sort_schedules(all_events, now=None):

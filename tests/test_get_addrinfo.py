@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_happyeyeballs - Testing SABnzbd happyeyeballs
+tests.test_get_addrinfo - Testing SABnzbd concurrent IP address testing implementation
 """
 import os
 import sys
@@ -25,52 +25,52 @@ import socket
 import pytest
 from flaky import flaky
 
-from sabnzbd.happyeyeballs import happyeyeballs, IPV6_MAPPING
+from sabnzbd.get_addrinfo import get_fastest_addrinfo, IPV6_MAPPING
 from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr
 
 
 @flaky
-class TestHappyEyeballs:
-    """Tests of happyeyeballs() against various websites/servers
-    happyeyeballs() returns the quickest IP address (IPv4, or IPv6 if available end-to-end),
-    or None (if not resolvable, or not reachable)
+class TestConcurrentAddressTesting:
+    """Tests of get_fastest_addrinfo() against various websites/servers
+    get_fastest_addrinfo() tests all IP addresses concurrently and returns the fastest one
+    after CONNECTION_CHECK interval, or None (if not resolvable, or not reachable)
     """
 
     def test_google_http(self):
-        addrinfo = happyeyeballs("www.google.com", port=80)
+        addrinfo = get_fastest_addrinfo("www.google.com", port=80)
         assert is_ipv4_addr(addrinfo.ipaddress) or is_ipv6_addr(addrinfo.ipaddress)
         assert "google" in addrinfo.canonname
 
     def test_google_https(self):
-        addrinfo = happyeyeballs("www.google.com", port=443)
+        addrinfo = get_fastest_addrinfo("www.google.com", port=443)
         assert is_ipv4_addr(addrinfo.ipaddress) or is_ipv6_addr(addrinfo.ipaddress)
         assert "google" in addrinfo.canonname
 
     def test_google_http_want_ipv4(self):
-        addrinfo = happyeyeballs("www.google.com", port=80, family=socket.AF_INET)
+        addrinfo = get_fastest_addrinfo("www.google.com", port=80, family=socket.AF_INET)
         assert is_ipv4_addr(addrinfo.ipaddress) and not is_ipv6_addr(addrinfo.ipaddress)
         assert "google" in addrinfo.canonname
 
     def test_google_http_want_ipv6(self):
         # TODO: timeout needed for IPv4-only CI environment?
-        if addrinfo := happyeyeballs("www.google.com", port=80, timeout=2, family=socket.AF_INET6):
+        if addrinfo := get_fastest_addrinfo("www.google.com", port=80, timeout=2, family=socket.AF_INET6):
             assert not is_ipv4_addr(addrinfo.ipaddress) and is_ipv6_addr(addrinfo.ipaddress)
             assert "google" in addrinfo.canonname
 
     def test_not_resolvable(self):
-        assert happyeyeballs("not.resolvable.invalid", port=80) is None
+        assert get_fastest_addrinfo("not.resolvable.invalid", port=80) is None
 
     def test_ipv6_only(self):
-        if addrinfo := happyeyeballs("ipv6.google.com", port=443, timeout=2):
+        if addrinfo := get_fastest_addrinfo("ipv6.google.com", port=443, timeout=2):
             assert is_ipv6_addr(addrinfo.ipaddress)
             assert "google" in addrinfo.canonname
 
     def test_google_unreachable_port(self):
-        assert happyeyeballs("www.google.com", port=33333, timeout=1) is None
+        assert get_fastest_addrinfo("www.google.com", port=33333, timeout=1) is None
 
     @pytest.mark.xfail(reason="CI sometimes blocks this")
     def test_nntp(self):
-        if ip := happyeyeballs("news.newshosting.com", port=119).ipaddress:
+        if ip := get_fastest_addrinfo("news.newshosting.com", port=119).ipaddress:
             assert is_ipv4_addr(ip) or is_ipv6_addr(ip)
 
     @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Resolves strangely on macOS CI")

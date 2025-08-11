@@ -33,7 +33,7 @@ from flaky import flaky
 from tests.testhelper import *
 from sabnzbd import misc
 from sabnzbd import newswrapper
-from sabnzbd.happyeyeballs import AddrInfo
+from sabnzbd.get_addrinfo import AddrInfo
 
 TEST_HOST = "127.0.0.1"
 TEST_PORT = portend.find_available_local_port()

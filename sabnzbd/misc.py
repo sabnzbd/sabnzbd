@@ -55,7 +55,7 @@ from sabnzbd.constants import (
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.decorators import cache_maintainer
+from sabnzbd.decorators import conditional_cache
 from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file
 
@@ -774,8 +774,7 @@ def get_macos_memory():
     return float(system_output.split()[1])
 
 
-@cache_maintainer(clear_time=3600)
-@functools.lru_cache(maxsize=None)
+@conditional_cache(cache_time=3600)
 def get_cpu_name():
     """Find the CPU name (which needs a different method per OS), and return it
     If none found, return platform.platform()"""

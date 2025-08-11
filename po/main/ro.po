@@ -757,15 +757,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Conectare refuzată cu gazda „%s” de la:"
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Utilizatorul s-a autentificat în interfața web"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Utilizator logat"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -780,6 +771,15 @@ msgid ""
 msgstr ""
 "Cheie API incorectă, Folosiţi cheia api din Configurare->General în "
 "programul dumneavoastră terţ:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Utilizatorul s-a autentificat în interfața web"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Utilizator logat"
 
 #. Warning message
 #: sabnzbd/interface.py

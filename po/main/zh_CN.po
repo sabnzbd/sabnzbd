@@ -729,15 +729,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "用户已在 web 界面登录"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "用户已登录"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -748,6 +739,15 @@ msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr "API Key 不正确，请在第三方程序中使用“配置”->“常规”中的 api key:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "用户已在 web 界面登录"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "用户已登录"
 
 #. Warning message
 #: sabnzbd/interface.py

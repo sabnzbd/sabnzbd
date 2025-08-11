@@ -180,6 +180,7 @@ class DuplicateStatus:
 
 class AddNzbFileResult:
     RETRY = "Retry"  # File could not be read
-    ERROR = "Error"  # Rejected as duplicate, by pre-queue script or other failure to process file
+    ERROR = "Error"  # Rejected as duplicate or other failure to process file
+    PREQUEUE_REJECTED = "Pre-queue rejected"  # Rejected by pre-queue script
     OK = "OK"  # Added to queue
     NO_FILES_FOUND = "No files found"  # Malformed or might not be an NZB file

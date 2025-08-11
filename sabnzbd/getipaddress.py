@@ -32,7 +32,7 @@ import socks
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
-from sabnzbd.happyeyeballs import happyeyeballs, family_type
+from sabnzbd.get_addrinfo import get_fastest_addrinfo, family_type
 from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
 
 
@@ -109,7 +109,7 @@ def public_ip(family: int = socket.AF_UNSPEC) -> Optional[str]:
     Reports the client's public IP address (IPv4 or IPv6, if specified by family), as reported by selftest host
     """
     start = time.time()
-    if resolvehostaddress := happyeyeballs(
+    if resolvehostaddress := get_fastest_addrinfo(
         sabnzbd.cfg.selftest_host(),
         port=443,
         timeout=DEF_NETWORKING_SHORT_TIMEOUT,

@@ -117,6 +117,46 @@ jobs:
         path: "*-macos.dmg"
         name: macOS binary
 
+  build-snap:
+    name: Build Snap Packages (${{ matrix.linux_arch }})
+    timeout-minutes: 30
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            linux_arch: amd64
+          - os: ubuntu-24.04-arm
+            linux_arch: arm64
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snapcore/action-build@v1
+        name: Build snap
+        id: snapcraft
+      - name: Test snap installation
+        run: |
+          sudo snap install --dangerous *.snap
+          sudo snap connect sabnzbd:removable-media
+          # Basic smoke test - check that the binary exists and can show help
+          timeout 10s snap run sabnzbd --help || true
+          sudo snap remove sabnzbd
+      - name: Upload snap
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snap package (${{ matrix.linux_arch }})
+          path: ${{ steps.snapcraft.outputs.snap }}
+      - name: Publish snap
+        uses: snapcore/action-publish@v1
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
+        with:
+          store_login: ${{ secrets.SNAP_TOKEN }}
+          snap: ${{ steps.snapcraft.outputs.snap }}
+          release: stable
+
   release:
     name: Prepare Release
     runs-on: ubuntu-latest
@@ -127,6 +167,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+          cache: pip
+          cache-dependency-path: "builder/release-requirements.txt"
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -140,10 +182,3 @@ jobs:
         run: |
           pip3 install -r builder/release-requirements.txt
           python3 builder/release.py
-      - name: Release latest available Snap
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
-        run: |
-          sudo snap install snapcraft --classic
-          python3 snap/local/release_snap.py

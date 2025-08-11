@@ -551,6 +551,11 @@ function HistoryModel(parent, data) {
         return displayDateTime(self.completed(), parent.parent.dateFormat(), 'X')
     });
 
+    // Format time added
+    self.timeAdded = ko.pureComputed(function() {
+        return displayDateTime(self.historyStatus.time_added(), parent.parent.dateFormat(), 'X')
+    });
+
     // Subscribe to retryEvent so we can load the password
     self.canRetry.subscribe(function() {
         self.updateAllHistory = true;

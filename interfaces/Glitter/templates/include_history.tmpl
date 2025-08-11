@@ -83,6 +83,10 @@
                                     <div class="col-sm-2">$T('name')</div>
                                     <div class="col-sm-10" data-bind="text: historyStatus.name"></div>
                                 </div>
+                                <div class="row" data-bind="visible: historyStatus.time_added">
+                                    <div class="col-sm-2">$T('rss-added')</div>
+                                    <div class="col-sm-10" data-bind="text: timeAdded(), attr: { 'data-timestamp': historyStatus.time_added }"></div>
+                                </div>
                                 <div class="row">
                                     <div class="col-sm-2">$T('post-Completed')</div>
                                     <div class="col-sm-10" data-bind="text: completedOn, attr: { 'data-timestamp': completed }"></div>

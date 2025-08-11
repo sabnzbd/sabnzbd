@@ -228,6 +228,7 @@ class FakeHistoryDB(db.HistoryDB):
             nzo.nzo_info = {"download_time": randint(1, 10**4)}
             nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
             nzo.duplicate_key = "show/season/episode"
+            nzo.time_added = int(time.time())
             nzo.futuretype = False  # for "report", only True when fetching an URL
             nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
 

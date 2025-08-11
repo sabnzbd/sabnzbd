@@ -806,15 +806,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Verbindung vom Host \"%s\" abgelehnt von:"
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Benutzer im Web-Interface angemeldet"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Benutzer angemeldet"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -829,6 +820,15 @@ msgid ""
 msgstr ""
 "API-Schlüssel ungültig. Bitte API-Schlüssel aus Einstellungen->Allgemein in "
 "die externe Anwendung eingeben:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Benutzer im Web-Interface angemeldet"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Benutzer angemeldet"
 
 #. Warning message
 #: sabnzbd/interface.py

@@ -31,7 +31,7 @@ from typing import Dict
 import sabctools
 import sabnzbd
 from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
-from sabnzbd.happyeyeballs import happyeyeballs, family_type
+from sabnzbd.get_addrinfo import get_fastest_addrinfo, family_type
 
 TEST_HOSTNAME = "sabnzbd.org"
 TEST_PORT = 443
@@ -88,8 +88,8 @@ def internetspeed_interal(family: int = socket.AF_UNSPEC) -> float:
         context.verify_flags &= ~ssl.VERIFY_X509_STRICT
 
     try:
-        if not (addrinfo := happyeyeballs(TEST_HOSTNAME, TEST_PORT, DEF_NETWORKING_SHORT_TIMEOUT, family)):
-            # no addrinfo from happyeyeballs, so no connection was possible
+        if not (addrinfo := get_fastest_addrinfo(TEST_HOSTNAME, TEST_PORT, DEF_NETWORKING_SHORT_TIMEOUT, family)):
+            # no addrinfo from get_fastest_addrinfo, so no connection was possible
             return 0.0  # no speed at all
 
         for _ in range(NR_CONNECTIONS):
