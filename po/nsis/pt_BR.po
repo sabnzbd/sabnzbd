@@ -2,13 +2,13 @@
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/sabnzbd/teams/111101/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,7 +29,10 @@ msgid ""
 "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
-msgstr "O Serviço do Windows do SABnzbd mudou no SABnzbd 3.0.0.\\nVocê precisará reinstalar o serviço do SABnzbd.\\n\\nClique em `OK` para remover os serviços existentes ou em `Cancelar` para cancelar esta atualização."
+msgstr ""
+"O Serviço do Windows do SABnzbd mudou no SABnzbd 3.0.0.\\nVocê precisará "
+"reinstalar o serviço do SABnzbd.\\n\\nClique em `OK` para remover os "
+"serviços existentes ou em `Cancelar` para cancelar esta atualização."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
