@@ -29,19 +29,19 @@ msgid ""
 "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
-msgstr ""
+msgstr "Windows услуга за SABnzbd је измењена у верзији SABnzbd 3.0.0.\\nМораћете поново да инсталирате SABnzbd услугу.\\n\\nКликните „У реду“ да уклоните постојеће услуге или „Откажи“ да откажете ово ажурирање."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
-msgstr ""
+msgstr "SABnzbd подржава само 64‑битни Windows."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports Windows 8.1 and above."
-msgstr ""
+msgstr "SABnzbd подржава само Windows 8.1 и новије."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
-msgstr ""
+msgstr "Искључивање SABnzbd"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"

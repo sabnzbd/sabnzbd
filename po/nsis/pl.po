@@ -29,19 +29,19 @@ msgid ""
 "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
-msgstr ""
+msgstr "Usługa SABnzbd dla Windows została zmieniona w wersji SABnzbd 3.0.0.\\nMusisz ponownie zainstalować usługę SABnzbd.\\n\\nKliknij `OK`, aby usunąć istniejące usługi, lub `Anuluj`, aby przerwać tę aktualizację."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
-msgstr ""
+msgstr "SABnzbd obsługuje tylko system Windows 64-bit."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports Windows 8.1 and above."
-msgstr ""
+msgstr "SABnzbd obsługuje tylko Windows 8.1 i nowsze."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
-msgstr ""
+msgstr "Zamykanie SABnzbd"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"

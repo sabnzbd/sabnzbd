@@ -42,6 +42,8 @@ msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
 msgstr ""
+"Kan ikke linke til OpenSSL, optimerede SSL-forbindelsesfunktioner vil ikke "
+"blive brugt."
 
 #. Error message
 #: SABnzbd.py
@@ -74,7 +76,7 @@ msgstr "7za binær... IKKE fundet!"
 #. Error message
 #: SABnzbd.py
 msgid "Essential modules are missing, downloading cannot start."
-msgstr ""
+msgstr "Nødvendige moduler mangler, download kan ikke starte."
 
 #. Warning message
 #: SABnzbd.py
@@ -93,7 +95,7 @@ msgstr "HTTP og HTTPS porte kan ikke være de samme"
 #. Warning message
 #: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
-msgstr ""
+msgstr "Kunne ikke indlæse yderligere certifikater fra certifi-pakken"
 
 #. Warning message
 #: SABnzbd.py
@@ -103,7 +105,7 @@ msgstr "HTTPS fejlede på grund af manglende CERT og KEY filer"
 #. Warning message
 #: SABnzbd.py
 msgid "Disabled HTTPS because of invalid CERT and KEY files"
-msgstr ""
+msgstr "HTTPS deaktiveret på grund af ugyldige CERT og KEY filer"
 
 #. Error message
 #: SABnzbd.py
@@ -143,6 +145,8 @@ msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
 msgstr ""
+"Aktuel umask (%o) kan nægte SABnzbd adgang til filer og mapper den "
+"opretter."
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -150,26 +154,28 @@ msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
 msgstr ""
+"Færdig Download Mappe %s er på FAT filsystem, begrænser maksimal filstørrelse "
+"til 4GB"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
-msgstr ""
+msgstr "Genstarter på grund af styrt efterbehandler"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
-msgstr ""
+msgstr "Genstarter på grund af styrt downloader"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed assembler"
-msgstr ""
+msgstr "Genstarter på grund af styrt assembler"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Cannot access PID file %s"
-msgstr ""
+msgstr "Kan ikke få adgang til PID-fil %s"
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -201,18 +207,20 @@ msgid ""
 "server (port 80), possibly an indexer, not a usenet server. You have to fill"
 " a usenet server."
 msgstr ""
+"Kunne ikke forbinde til %s på port %s. Det ser ud til at %s fungerer som en "
+"webserver (port 80), muligvis en indexer, ikke en usenet server. Du skal "
+"angive en usenet server."
+
+#: sabnzbd/api.py
+msgid "Could not connect to %s on port %s. Use the default usenet settings: port "
+"119 and SSL turned off"
+msgstr "Kunne ikke forbinde til %s på port %s. Brug standard usenet-indstillinger: port 119 og SSL slået fra"
 
 #: sabnzbd/api.py
 msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "563 and SSL turned on"
-msgstr ""
-
-#: sabnzbd/api.py
-msgid ""
-"Could not connect to %s on port %s. Use the default usenet settings: port "
-"119 and SSL turned off"
-msgstr ""
+msgstr "Kunne ikke forbinde til %s på port %s. Brug standard usenet-indstillinger: port 563 og SSL slået til"
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -326,12 +334,12 @@ msgstr "Afbrudt, uønsket extension fundet"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
-msgstr ""
+msgstr "Job \"%s\" er sandsynligvis krypteret pga. en RAR med samme navn inde i denne RAR"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
-msgstr ""
+msgstr "Job \"%s\" er sandsynligvis krypteret: \"password\" i filnavnet \"%s\""
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -356,7 +364,7 @@ msgstr "Ugyldig server adresse."
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
-msgstr ""
+msgstr "%s er ikke et gyldigt script"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a correct octal value"
@@ -368,11 +376,13 @@ msgid ""
 "Permissions setting of %s might deny SABnzbd access to the files and folders"
 " it creates."
 msgstr ""
+"Tilladelsesindstillingen for %s kan nægte SABnzbd adgang til de filer og "
+"mapper, den opretter."
 
 #. Warning message
 #: sabnzbd/cfg.py
 msgid "Network path \"%s\" should not be used here"
-msgstr ""
+msgstr "Netværksstien \"%s\" bør ikke bruges her"
 
 #: sabnzbd/cfg.py
 msgid "Queue not empty, cannot change folder."
@@ -383,6 +393,8 @@ msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
+"Mappen Færdige downloads kan ikke være den samme som eller en undermappe af "
+"den Midlertidige download-mappe"
 
 #. Warning message
 #: sabnzbd/cfg.py
@@ -390,17 +402,19 @@ msgid ""
 "Do not use a folder in the application folder as your Scripts Folder, it "
 "might be emptied during updates."
 msgstr ""
+"Brug ikke en mappe i programmappen som din Scripts-mappe, den kan blive "
+"tømt under opdateringer."
 
 #. Warning message
 #: sabnzbd/cfg.py
 msgid ""
 "The par2 application was switched, any custom par2 parameters were removed"
-msgstr ""
+msgstr "par2-programmet blev skiftet, eventuelle brugerdefinerede par2-parametre er fjernet"
 
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
-msgstr ""
+msgstr "Konfiguration låst, kan ikke gemme indstillinger"
 
 #. Error message
 #: sabnzbd/config.py
@@ -415,7 +429,7 @@ msgstr "Kan ikke oprette backup fil for %s"
 #. Warning message
 #: sabnzbd/config.py
 msgid "Could not restore backup"
-msgstr ""
+msgstr "Kunne ikke gendanne backup"
 
 #. Error message
 #: sabnzbd/config.py
@@ -459,23 +473,23 @@ msgstr "Ukendt fejl under afkodning af %s"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate skipped due to DVD/Bluray directories"
-msgstr ""
+msgstr "Dekryptering sprang over på grund af DVD/Blu-ray-mapper"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate corrected the extension of %d file(s)"
-msgstr ""
+msgstr "Dekryptering rettede filendelsen på %d fil(er)"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d file(s)"
-msgstr ""
+msgstr "Dekryptering omdøbte %d fil(er)"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d subtitle file(s)"
-msgstr ""
+msgstr "Dekryptering omdøbte %d undertekst-fil(er)"
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
-msgstr ""
+msgstr "Direkte udpakning"
 
 #. PP status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
@@ -489,13 +503,15 @@ msgstr "Udpakket %s filer/mapper i %s"
 #. Warning message
 #: sabnzbd/directunpacker.py
 msgid "Direct Unpack was automatically enabled."
-msgstr ""
+msgstr "Direkte udpakning blev automatisk aktiveret."
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
 msgstr ""
+"Jobs vil begynde at blive udpakket under download for at reducere "
+"efterbehandlingstiden. Virker kun for jobs, der ikke kræver reparation."
 
 #. Error message
 #: sabnzbd/dirscanner.py
@@ -535,7 +551,7 @@ msgstr "Server %s vil blive ignoreret for i %s minutter"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "There are no active servers!"
-msgstr ""
+msgstr "Der er ingen aktive servere!"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -545,12 +561,12 @@ msgstr "Det lykkedes ikke at initialisere %s@%s med begrundelse %s"
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Fatal error in Downloader"
-msgstr ""
+msgstr "Alvorlig fejl i Downloader"
 
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
+msgstr "%s@%s: Modtog ukendt statuskode %s for artikel %s"
 
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
@@ -561,6 +577,8 @@ msgid ""
 "Login from too many different IP addresses to server %s [%s] - "
 "https://sabnzbd.org/multiple-adresses"
 msgstr ""
+"Login fra for mange forskellige IP-adresser til server %s [%s] - "
+"https://sabnzbd.org/multiple-adresses"
 
 #: sabnzbd/downloader.py
 msgid "Failed login for server %s [%s]"
@@ -583,12 +601,12 @@ msgstr "Påbegynder lukning af SABnzbd"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s is expiring in %s day(s)"
-msgstr ""
+msgstr "Server %s udløber om %s dag(e)"
 
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s has used the specified quota"
-msgstr ""
+msgstr "Server %s har brugt den angivne kvota"
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -694,7 +712,7 @@ msgstr "Det lykkedes ikke at flytte %s til %s"
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
-msgstr ""
+msgstr "Blokerede forsøg på at oprette mappe %s"
 
 #. Error message
 #: sabnzbd/filesystem.py
@@ -714,17 +732,17 @@ msgstr "Downloadning af %s mislykkedes"
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "%s is not writable at all. This blocks downloads."
-msgstr ""
+msgstr "%s er slet ikke skrivbar. Dette blokerer downloads."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a long filename to %s. This can cause problems."
-msgstr ""
+msgstr "Kan ikke skrive et langt filnavn til %s. Dette kan give problemer."
 
 #. Warning message
 #: sabnzbd/filesystem.py
 msgid "Cannot write a unicode filename to %s. This can cause problems."
-msgstr ""
+msgstr "Kan ikke skrive et Unicode-filnavn til %s. Dette kan give problemer."
 
 #. Warning message
 #: sabnzbd/filesystem.py
@@ -732,14 +750,15 @@ msgid ""
 "%s is not writable with special character filenames. This can cause "
 "problems."
 msgstr ""
+"%s er ikke skrivbar med filnavne med specialtegn. Dette kan give problemer."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
-msgstr ""
+msgstr "Afviste forbindelse fra:"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
-msgstr ""
+msgstr "Afviste forbindelse med værtsnavn \"%s\" fra:"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -773,7 +792,7 @@ msgstr "Mislykkede login forsøg fra %s"
 
 #: sabnzbd/interface.py
 msgid "Invalid backup archive"
-msgstr ""
+msgstr "Ugyldigt backup-arkiv"
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -821,9 +840,8 @@ msgid "Undefined server!"
 msgstr "Udefineret server!"
 
 #: sabnzbd/interface.py
-msgid ""
-"Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr ""
+msgid "Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr "Kategorimappe kan ikke være en undermappe i den midlertidige download-mappe."
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "ERROR:"
@@ -943,7 +961,7 @@ msgstr "Standser..."
 #: sabnzbd/misc.py
 msgid ""
 "To prevent all helpful warnings, disable Special setting 'helpful_warnings'."
-msgstr ""
+msgstr "For at undertrykke alle hjælpsomme advarsler, deaktiver Special-indstillingen 'helpful_warnings'."
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -964,7 +982,7 @@ msgstr "Opdatering tilgængelig!"
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
-msgstr ""
+msgstr "Kunne ikke uploade fil: %s"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -976,17 +994,17 @@ msgstr "Fejl ved oprettelse af SSL-nøgle og certifikat"
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
-msgstr ""
+msgstr "Din adgangskodefil indeholder over 30 adgangskoder, at afprøve dem alle tager lang tid. Prøv kun at liste nyttige adgangskoder."
 
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Failed to read the password file %s"
-msgstr ""
+msgstr "Kunne ikke læse adgangskodefilen %s"
 
 #. Error message
 #: sabnzbd/misc.py
 msgid "[%s] The command in build_command is undefined."
-msgstr ""
+msgstr "[%s] Kommandoen i build_command er ikke defineret."
 
 #. Error message
 #: sabnzbd/misc.py
@@ -1082,7 +1100,7 @@ msgstr "Udpakning mislykkedes, skrivefejl eller disken fuld?"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
-msgstr ""
+msgstr "Udpakning mislykkedes, disken er fuld"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
@@ -1183,7 +1201,7 @@ msgstr "[%s] Repareret i %s"
 
 #: sabnzbd/newsunpack.py
 msgid "Verifying repair"
-msgstr ""
+msgstr "Verificerer reparation"
 
 #. Notification
 #: sabnzbd/newsunpack.py, sabnzbd/notifier.py
@@ -1215,6 +1233,8 @@ msgid ""
 "Certificate hostname mismatch: the server hostname is not listed in the "
 "certificate. This is a server issue."
 msgstr ""
+"Certifikatets værtsnavn stemmer ikke: serverens værtsnavn er ikke angivet i "
+"certifikatet. Dette er et serverproblem."
 
 #: sabnzbd/newswrapper.py
 msgid ""
@@ -1222,6 +1242,9 @@ msgid ""
 " locally injected certificate (for example by firewall or virus scanner). "
 "Try setting Certificate verification to Medium."
 msgstr ""
+"Certifikatet kunne ikke valideres. Dette kan være et serverproblem eller "
+"skyldes et lokalt indsat certifikat (f.eks. af firewall eller virus-scanner). "
+"Prøv at sætte Certifikatkontrol til Medium."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -1234,7 +1257,7 @@ msgstr "Wiki"
 
 #: sabnzbd/newswrapper.py
 msgid "Failed to connect: %s %s@%s:%s (%s)"
-msgstr ""
+msgstr "Kunne ikke oprette forbindelse: %s %s@%s:%s (%s)"
 
 #. Notification
 #: sabnzbd/notifier.py
@@ -1273,7 +1296,7 @@ msgstr "Andre beskeder"
 #. Notification action
 #: sabnzbd/notifier.py
 msgid "Open folder"
-msgstr ""
+msgstr "Åbn mappe"
 
 #. Notification action
 #: sabnzbd/notifier.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
@@ -1292,7 +1315,7 @@ msgstr "Ikke tilgængelig"
 
 #: sabnzbd/notifier.py
 msgid "Failed to send macOS notification"
-msgstr ""
+msgstr "Kunne ikke sende macOS-notifikation"
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -1302,21 +1325,21 @@ msgstr "Kunne ikke sende Prowl besked"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message - no URLs defined"
-msgstr ""
+msgstr "Kunne ikke sende Apprise-besked - ingen URL'er angivet"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "One or more Apprise URLs could not be loaded."
-msgstr ""
+msgstr "En eller flere Apprise-URL'er kunne ikke indlæses."
 
 #: sabnzbd/notifier.py
 msgid "Failed to send one or more Apprise Notifications"
-msgstr ""
+msgstr "Kunne ikke sende en eller flere Apprise-notifikationer"
 
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message"
-msgstr ""
+msgstr "Kunne ikke sende Apprise-besked"
 
 #. Error message
 #: sabnzbd/notifier.py
@@ -1588,10 +1611,9 @@ msgid "Fatal error"
 msgstr "Alvorlig fejl"
 
 #: sabnzbd/panic.py
-msgid ""
-"Unable to bind to port %s on %s. Some other software uses the port or "
-"SABnzbd is already running."
-msgstr ""
+msgid "Unable to bind to port %s on %s. Some other software uses the port or SABnzbd is already running."
+msgstr "Kan ikke binde til port %s på %s. En anden software bruger porten eller SABnzbd kører allerede."
+
 
 #. Warning message
 #: sabnzbd/panic.py
@@ -1867,7 +1889,7 @@ msgstr "Udpak"
 #. PP phase "deobfuscate"
 #: sabnzbd/skintext.py
 msgid "Deobfuscate"
-msgstr ""
+msgstr "Af-obfuskér"
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/skintext.py
@@ -2583,15 +2605,15 @@ msgstr "Nameserver/DNS Lookup"
 
 #: sabnzbd/skintext.py
 msgid "Download speed limited by"
-msgstr ""
+msgstr "Downloadhastighed begrænset af"
 
 #: sabnzbd/skintext.py
 msgid "Disk speed"
-msgstr ""
+msgstr "Diskhastighed"
 
 #: sabnzbd/skintext.py
 msgid "System load"
-msgstr ""
+msgstr "Systembelastning"
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -2608,7 +2630,7 @@ msgstr "Komplet mappe hastighed"
 
 #: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
-msgstr ""
+msgstr "Internetbåndbredde"
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
@@ -2623,6 +2645,8 @@ msgid ""
 "Adds a verified test NZB of the specified size, filled with random data. Can"
 " be used to verify your setup."
 msgstr ""
+"Tilføjer en verificeret test-NZB af den angivne størrelse, fyldt med "
+"tilfældige data. Kan bruges til at verificere din opsætning."
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -2636,7 +2660,7 @@ msgstr "Brugt chace"
 #. What platform we are on (e.g. Windows/macOS/Ubuntu/UnRaid/etc)
 #: sabnzbd/skintext.py
 msgid "Platform"
-msgstr ""
+msgstr "Platform"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2742,11 +2766,11 @@ msgstr "Port som SABnzbd ska lytte på."
 
 #: sabnzbd/skintext.py
 msgid "Web Interface Theme"
-msgstr ""
+msgstr "Tema for webgrænseflade"
 
 #: sabnzbd/skintext.py
 msgid "Choose a theme."
-msgstr ""
+msgstr "Vælg et tema."
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Username"
@@ -2787,6 +2811,8 @@ msgid ""
 "Modern web browsers and other clients will not accept self-signed "
 "certificates and will give a warning and/or won't connect at all."
 msgstr ""
+"Moderne webbrowsere og andre klienter accepterer ikke selvsignerede "
+"certifikater og vil give en advarsel og/eller slet ikke forbinde."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Port"
@@ -2868,19 +2894,22 @@ msgstr ""
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Create backup"
-msgstr ""
+msgstr "Opret backup"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Create a backup of the configuration file and databases in the Backup "
-"Folder.<br>If the Backup Folder is not set, the backup will be created in "
-"the Completed Download Folder.<br>Recurring backups can be configured on the"
+"Folder.\u003cbr\u003eIf the Backup Folder is not set, the backup will be created in "
+"the Completed Download Folder.\u003cbr\u003eRecurring backups can be configured on the"
 " Scheduling page."
 msgstr ""
+"Opret en backup af konfigurationsfilen og databaserne i Backup-mappen.\u003cbr\u003eHvis "
+"Backup-mappen ikke er sat, oprettes backup i mappen Færdige downloads.\u003cbr\u003e"
+"Tilbagevendende backups kan konfigureres på siden Planlægning."
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
-msgstr "Ryd listen"
+msgstr "Rydningsliste"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2892,7 +2921,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
-msgstr ""
+msgstr "Bevarelse af historik"
 
 #: sabnzbd/skintext.py
 msgid "Keep all jobs"
@@ -2901,29 +2930,29 @@ msgstr "Behold alle jobs"
 #: sabnzbd/skintext.py
 msgid ""
 "Move jobs to the archive if the history exceeds specified number of jobs"
-msgstr ""
+msgstr "Flyt jobs til arkivet hvis historikken overstiger det angivne antal jobs"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Delete jobs if the history and archive exceeds specified number of jobs"
-msgstr ""
+msgstr "Slet jobs hvis historik og arkiv overstiger det angivne antal jobs"
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
-msgstr ""
+msgstr "Flyt jobs til arkivet efter angivet antal dage"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Delete jobs from the history and archive after specified number of days"
-msgstr ""
+msgstr "Slet jobs fra historik og arkiv efter angivet antal dage"
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"
-msgstr ""
+msgstr "Flyt alle fuldførte jobs til arkivet"
 
 #: sabnzbd/skintext.py
 msgid "Delete all completed jobs"
-msgstr ""
+msgstr "Slet alle fuldførte jobs"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3068,17 +3097,17 @@ msgstr ""
 "tilsidesættes af bruger-definerede kategorier.</i>"
 
 #: sabnzbd/skintext.py
-msgid ""
-"Use Sorting to automatically organize and rename your completed downloads."
-msgstr ""
+msgid "Use Sorting to automatically organize and rename your completed downloads."
+msgstr "Brug Sortering til automatisk at organisere og omdøbe dine fuldførte downloads."
+
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
-msgstr ""
+msgstr "Minimum fri plads for mappen Færdige downloads"
 
 #: sabnzbd/skintext.py
 msgid "Will not work if a category folder is on a different disk."
-msgstr ""
+msgstr "Virker ikke hvis en kategorimappe er på en anden disk."
 
 #. Auto-resume download on the reset day
 #: sabnzbd/skintext.py
@@ -3088,9 +3117,12 @@ msgstr "Automatisk genoptag"
 #: sabnzbd/skintext.py
 msgid ""
 "Downloading will automatically resume if the minimum free space is available"
-" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
-"/>Checked every few minutes."
+" again.\u003cbr /\u003eApplies to both the Temporary and Complete Download Folder.\u003cbr "
+"/\u003eChecked every few minutes."
 msgstr ""
+"Download vil automatisk blive genoptaget hvis minimum fri plads er "
+"tilgængelig igen.\u003cbr /\u003eGælder både for Midlertidig og Færdig download-"
+"mappe.\u003cbr /\u003eKontrolleres hvert par minutter."
 
 #: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
@@ -3152,7 +3184,7 @@ msgstr "Systemmapper"
 
 #: sabnzbd/skintext.py
 msgid "Hidden Folders"
-msgstr ""
+msgstr "Skjulte mapper"
 
 #: sabnzbd/skintext.py
 msgid "Administrative Folder"
@@ -3168,14 +3200,16 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Backup Folder"
-msgstr ""
+msgstr "Backup-mappe"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Location where the backups of the configuration file and databases are "
-"stored.<br />If left empty, the backup will be created in the Completed "
+"stored.\u003cbr /\u003eIf left empty, the backup will be created in the Completed "
 "Download Folder."
 msgstr ""
+"Placering hvor backups af konfigurationsfil og databaser gemmes.\u003cbr /\u003eHvis "
+"tom, oprettes backup i mappen Færdige downloads."
 
 #: sabnzbd/skintext.py
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
@@ -3380,11 +3414,11 @@ msgstr "Brugt før, en NZB kommer ind i køen."
 
 #: sabnzbd/skintext.py
 msgid "On queue finish script"
-msgstr ""
+msgstr "Script når køen afsluttes"
 
 #: sabnzbd/skintext.py
 msgid "Executed after the queue finishes downloading."
-msgstr ""
+msgstr "Køres når køens downloads er afsluttet."
 
 #: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
@@ -4157,26 +4191,26 @@ msgstr "Enhed som meddelse skal sendes til"
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Enable Apprise notifications"
-msgstr ""
+msgstr "Aktiver Apprise-notifikationer"
 
 #: sabnzbd/skintext.py
 msgid "Send notifications using Apprise to almost any notification service"
-msgstr ""
+msgstr "Send notifikationer via Apprise til næsten enhver notifikationstjeneste"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Default Apprise URLs"
-msgstr ""
+msgstr "Standard Apprise-URL'er"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use a comma and/or space to identify more than one URL."
-msgstr ""
+msgstr "Brug komma og/eller mellemrum for at angive flere URL'er."
 
 #: sabnzbd/skintext.py
 msgid ""
 "Override the default URLs for specific notification types below, if desired."
-msgstr ""
+msgstr "Tilsidesæt standard-URL'er for specifikke notifikationstyper nedenfor, hvis ønsket."
 
 #. Header for Notification Script notification section
 #: sabnzbd/skintext.py

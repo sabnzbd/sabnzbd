@@ -18,7 +18,7 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Show Release Notes"
-msgstr ""
+msgstr "Zobrazit poznámky k vydání"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -29,40 +29,40 @@ msgid ""
 "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
-msgstr ""
+msgstr "Služba SABnzbd pro Windows byla ve verzi SABnzbd 3.0.0 změněna.\\nBudete muset znovu nainstalovat službu SABnzbd.\\n\\nKlikněte na `OK` pro odstranění stávajících služeb nebo na `Zrušit` pro zrušení této aktualizace."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
-msgstr ""
+msgstr "SABnzbd podporuje pouze 64bitové Windows."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports Windows 8.1 and above."
-msgstr ""
+msgstr "SABnzbd podporuje pouze Windows 8.1 a novější."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
-msgstr ""
+msgstr "Vypínání SABnzbd"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
-msgstr ""
+msgstr "Tímto odinstalujete SABnzbd z vašeho systému"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
-msgstr ""
+msgstr "Spouštět při startu systému"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Ikona na ploše"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
-msgstr ""
+msgstr "Přiřazení souborů NZB"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
-msgstr ""
+msgstr "Odstranit program"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
-msgstr ""
+msgstr "Smazat nastavení"

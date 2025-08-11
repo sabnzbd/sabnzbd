@@ -37,11 +37,11 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
-msgstr ""
+msgstr "SABnzbd stöder endast 64-bitars Windows."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports Windows 8.1 and above."
-msgstr ""
+msgstr "SABnzbd stöder endast Windows 8.1 och senare."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
