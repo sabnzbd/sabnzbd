@@ -310,9 +310,6 @@ def set_login_cookie(remove=False, remember_me=False):
     if remove:
         cherrypy.response.cookie["login_cookie"]["expires"] = 0
         cherrypy.response.cookie["login_salt"]["expires"] = 0
-    else:
-        # Notify about new login
-        notifier.send_notification(T("User logged in"), T("User logged in to the web interface"), "new_login")
 
 
 def check_login_cookie():
@@ -679,6 +676,8 @@ class LoginPage:
             set_login_cookie(remember_me=kwargs.get("remember_me", False))
             # Log the success
             logging.info("Successful login from %s", cherrypy.request.remote_label)
+            # Notify about new login
+            notifier.send_notification(T("User logged in"), T("User logged in to the web interface"), "new_login")
             # Redirect
             raise Raiser("/")
         elif kwargs.get("username") or kwargs.get("password"):
