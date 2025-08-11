@@ -676,20 +676,20 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
+msgid "API Key missing, please enter the api key from Config->General into your 3rd party program:"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr ""
 
 #. Notification
 #: sabnzbd/interface.py, sabnzbd/notifier.py
 msgid "User logged in"
-msgstr ""
-
-#: sabnzbd/interface.py
-msgid "API Key missing, please enter the api key from Config->General into your 3rd party program:"
-msgstr ""
-
-#: sabnzbd/interface.py
-msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
 msgstr ""
 
 #. Warning message

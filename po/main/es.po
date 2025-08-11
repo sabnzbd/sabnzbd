@@ -776,15 +776,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Se deniega la conexión con el nombre de equipo \"%s\" desde:"
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Usuario conectado a la interfaz web"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Usuario conectado"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -799,6 +790,15 @@ msgid ""
 msgstr ""
 "Clave de API erróneo, favor ingresar la clave correcta desde Config->General"
 " en tu aplicacion externa:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Usuario conectado a la interfaz web"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Usuario conectado"
 
 #. Warning message
 #: sabnzbd/interface.py

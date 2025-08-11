@@ -731,15 +731,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr ""
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr ""
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -754,6 +745,15 @@ msgid ""
 msgstr ""
 "API-nyckel felaktig, använd api-nyckeln från Konfiguration-> Allmänt i ditt "
 "tredjepartsprogram:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr ""
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py
