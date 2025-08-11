@@ -149,12 +149,13 @@ jobs:
           path: ${{ steps.snapcraft.outputs.snap }}
       - name: Publish snap
         uses: snapcore/action-publish@v1
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
         with:
           store_login: ${{ secrets.SNAP_TOKEN }}
           snap: ${{ steps.snapcraft.outputs.snap }}
-          release: edge
+          release: stable
 
   release:
     name: Prepare Release
