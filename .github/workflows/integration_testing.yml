@@ -36,7 +36,7 @@ jobs:
         os: [ubuntu-latest]
         include:
           - name: macOS
-            os: macos-latest
+            os: macos-13
             python-version: "3.13"
           - name: Windows
             os: windows-latest
