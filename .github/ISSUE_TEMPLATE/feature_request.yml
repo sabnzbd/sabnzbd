@@ -1,7 +1,7 @@
 name: Feature request
 description: What new feature would you like to have added to SABnzbd?
 labels:
-  - Feature request
+  - Support
 body:
   - type: textarea
     attributes:
