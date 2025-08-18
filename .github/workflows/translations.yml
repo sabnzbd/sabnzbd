@@ -12,7 +12,7 @@ jobs:
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       - name: Generate translatable texts
