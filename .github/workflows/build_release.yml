@@ -12,7 +12,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
@@ -54,7 +54,7 @@ jobs:
       CFLAGS: -arch x86_64 -arch arm64
       ARCHFLAGS: -arch x86_64 -arch arm64
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python 3.13
       # Only use this for the caching of pip packages!
       uses: actions/setup-python@v5
@@ -131,7 +131,19 @@ jobs:
             linux_arch: arm64
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - name: Cache par2cmdline-turbo tarball
+        uses: actions/cache@v4
+        id: cache-par2cmdline
+        # Clearing the cache in case of new version requires manual clearing in GitHub!
+        with:
+          path: snap/par2cmdline.tar.gz
+          key: cache-par2cmdline
+      - name: Download par2cmdline-turbo tarball
+        if: steps.cache-par2cmdline.outputs.cache-hit != 'true'
+        run: |
+          PAR2_TARBALL=$(curl -sL https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | jq -r '.tarball_url')
+          curl -o snap/par2cmdline.tar.gz -L "$PAR2_TARBALL"
       - uses: snapcore/action-build@v1
         name: Build snap
         id: snapcraft
@@ -162,7 +174,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_windows, build_macos]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -170,7 +182,7 @@ jobs:
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist
       - name: Move all artifacts to main folder

@@ -2,13 +2,13 @@
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Serbian (https://app.transifex.com/sabnzbd/teams/111101/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,18 +30,21 @@ msgid ""
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
 msgstr ""
+"Windows услуга за SABnzbd је измењена у верзији SABnzbd 3.0.0.\\nМораћете "
+"поново да инсталирате SABnzbd услугу.\\n\\nКликните „У реду“ да уклоните "
+"постојеће услуге или „Откажи“ да откажете ово ажурирање."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
-msgstr ""
+msgstr "SABnzbd подржава само 64‑битни Windows."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports Windows 8.1 and above."
-msgstr ""
+msgstr "SABnzbd подржава само Windows 8.1 и новије."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
-msgstr ""
+msgstr "Искључивање SABnzbd"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
