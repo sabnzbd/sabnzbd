@@ -74,9 +74,14 @@ parts:
     build-environment:
       - LDFLAGS: -s
     override-pull: |
-      PAR2_TARBALL=$(curl -sL https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | jq -r '.tarball_url')
-      curl -o /tmp/par2cmdline.tar.gz -L $PAR2_TARBALL
-      tar xf /tmp/par2cmdline.tar.gz --strip-components=1
+      PAR2_TARBALL_PATH="$CRAFT_PROJECT_DIR/snap/par2cmdline.tar.gz"
+      if [ ! -f "$PAR2_TARBALL_PATH" ]; then
+        PAR2_TARBALL=$(curl -sL https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | jq -r '.tarball_url')
+        curl -o "$PAR2_TARBALL_PATH" -L "$PAR2_TARBALL"
+      else
+        echo "Using cached snap/par2cmdline.tar.gz"
+      fi
+      tar xf "$PAR2_TARBALL_PATH" --strip-components=1
     autotools-configure-parameters:
       - --prefix=/usr
   snapcraft-preload:

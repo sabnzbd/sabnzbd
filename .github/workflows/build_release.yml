@@ -132,6 +132,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+      - name: Cache par2cmdline-turbo tarball
+        uses: actions/cache@v4
+        id: cache-par2cmdline
+        # Clearing the cache in case of new version requires manual clearing in GitHub!
+        with:
+          path: snap/par2cmdline.tar.gz
+          key: cache-par2cmdline
+      - name: Download par2cmdline-turbo tarball
+        if: steps.cache-par2cmdline.outputs.cache-hit != 'true'
+        run: |
+          PAR2_TARBALL=$(curl -sL https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | jq -r '.tarball_url')
+          curl -o snap/par2cmdline.tar.gz -L "$PAR2_TARBALL"
       - uses: snapcore/action-build@v1
         name: Build snap
         id: snapcraft
