@@ -10,7 +10,7 @@ configobj==5.0.9
 cheroot==10.0.1
 six==1.17.0
 cherrypy==18.10.0
-jaraco.functools==4.2.1
+jaraco.functools==4.3.0
 jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
@@ -35,7 +35,7 @@ cryptography==45.0.6
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.10.0
+ujson==5.11.0
 orjson==3.11.2
 
 # Windows system integration
@@ -56,7 +56,7 @@ pyobjc-framework-Cocoa==11.1; sys_platform == 'darwin'
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 
 # Apprise Requirements
-requests==2.32.4
+requests==2.32.5
 requests-oauthlib==2.0.0
 PyYAML==6.0.2
 markdown==3.8.2
