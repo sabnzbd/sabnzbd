@@ -523,6 +523,10 @@ class NzbRejected(Exception):
     pass
 
 
+class NzbPreQueueRejected(Exception):
+    pass
+
+
 class NzbRejectToHistory(Exception):
     def __init__(self, nzo, fail_msg):
         self.nzo: NzbObject = nzo
@@ -587,6 +591,7 @@ NzbObjectSaver = (
     "servercount",
     "unwanted_ext",
     "renames",
+    "time_added",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -668,6 +673,7 @@ class NzbObject(TryList):
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
         self.propagation_delay: Optional[float] = None  # Set during parsing
         self.correct_password: Optional[str] = None
+        self.time_added: int = int(time.time())  # When the NZB was added to the queue
 
         # Bookkeeping values
         self.meta = {}
@@ -868,7 +874,7 @@ class NzbObject(TryList):
             accept = int_conv(accept)
             if accept < 1:
                 self.purge_data()
-                raise NzbRejected
+                raise NzbPreQueueRejected
             if accept == 2:
                 raise NzbRejectToHistory(self, T("Pre-queue script marked job as failed"))
 
@@ -2090,6 +2096,9 @@ class NzbObject(TryList):
         if not isinstance(self.saved_articles, set):
             # Converted from list to set
             self.saved_articles = set(self.saved_articles)
+        if self.time_added is None:
+            # For backward compatibility with older saved NZOs
+            self.time_added = 0
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)

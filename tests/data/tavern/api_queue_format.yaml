@@ -74,6 +74,7 @@ stages:
             status: "Paused"
             timeleft: "0:00:00"
             avg_age: "!anystr"
+            time_added: !anyint
 
 ---
 test_name: Check general queue format (xml output)
@@ -156,6 +157,7 @@ stages:
             <status>!anystr</status>
             <timeleft>0:00:00</timeleft>
             <avg_age>!anystr</avg_age>
+            <time_added>!anyint</time_added>
             </slot>
             </slots>
             </queue>

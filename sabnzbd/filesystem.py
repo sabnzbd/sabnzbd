@@ -44,7 +44,7 @@ except ImportError:
     pass
 
 import sabnzbd
-from sabnzbd.decorators import synchronized, cache_maintainer
+from sabnzbd.decorators import synchronized, conditional_cache
 from sabnzbd.constants import (
     FUTURE_Q_FOLDER,
     JOB_ADMIN,
@@ -1072,10 +1072,9 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
         return 20.0, 10.0
 
 
-@cache_maintainer(clear_time=10)
-@functools.lru_cache(maxsize=None)
+@conditional_cache(cache_time=10)
 def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
-    """Wrapper to keep results cached by cache_maintainer
+    """Wrapper to keep results cached by conditional_cache
     If called with force=True, the wrapper will clear the results"""
     return {
         "download_dir": diskspace_base(sabnzbd.cfg.download_dir.get_path()),

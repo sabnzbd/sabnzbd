@@ -50,7 +50,7 @@ RENAMES_FILE = "__renames__"
 ATTRIB_FILE = "SABnzbd_attrib"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABCTOOLS_VERSION_REQUIRED = "8.2.5"
+SABCTOOLS_VERSION_REQUIRED = "8.2.6"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
@@ -180,6 +180,7 @@ class DuplicateStatus:
 
 class AddNzbFileResult:
     RETRY = "Retry"  # File could not be read
-    ERROR = "Error"  # Rejected as duplicate, by pre-queue script or other failure to process file
+    ERROR = "Error"  # Rejected as duplicate or other failure to process file
+    PREQUEUE_REJECTED = "Pre-queue rejected"  # Rejected by pre-queue script
     OK = "OK"  # Added to queue
     NO_FILES_FOUND = "No files found"  # Malformed or might not be an NZB file

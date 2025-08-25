@@ -1,5 +1,20 @@
-Release Notes - SABnzbd 4.5.2
+Release Notes - SABnzbd 4.5.3
 =========================================================
+
+## Bug fixes and changes in 4.5.3
+
+* Remember if `Permanently delete` was previously checked.
+* All available IP-addresses will be included when selecting the fastest.
+* Pre-queue script rejected NZBs were sometimes reported as `URL Fetching failed`.
+* RSS `Next scan` time was not adjusted after manual `Read All Feeds Now`.
+* Prevent renaming of `.cbr` files during verification.
+* If `--disable-file-log` was enabled, `Show Logging` would crash.
+* API: Added `time_added`, timestamp of when the job was added to the queue.
+* API: History output could contain duplicate items.
+* Snap: Updated packages and changed build process for reliability.
+* macOS: Repair would fail on macOS 10.13 High Sierra.
+* Windows: Unable to start on Windows 8.
+* Windows: Updated Unrar to 7.13, which resolves CVE-2025-8088.
 
 ## Bug fixes and changes in 4.5.2
 

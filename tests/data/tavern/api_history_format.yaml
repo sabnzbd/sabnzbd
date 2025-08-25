@@ -59,6 +59,7 @@ stages:
               loaded: !anybool
               retry: !anybool
               archive: !anybool
+              time_added: !anyint
           noofslots: !anyint
           ppslots: !anyint
           last_history_update: !anyint
@@ -127,6 +128,7 @@ stages:
             <loaded>!anybool</loaded>
             <retry>!anybool</retry>
             <archive>!anybool</archive>
+            <time_added>!anyint</time_added>
             </slot>
             </slots>
             <noofslots>!anyint</noofslots>

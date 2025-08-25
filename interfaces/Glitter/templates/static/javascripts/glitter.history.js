@@ -10,6 +10,7 @@ function HistoryListModel(parent) {
     self.historyItems = ko.observableArray([])
     self.showFailed = ko.observable(false).extend({ persist: 'historyShowFailed' });
     self.showArchive = ko.observable(false).extend({ persist: 'historyShowArchive' });
+    self.permanentlyDelete = ko.observable(false).extend({ persist: 'permanentlyDelete' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 400, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
@@ -391,6 +392,10 @@ function HistoryListModel(parent) {
         }
         if(strIDsHistory !== "") {
             var skipArchive = $('#modal-delete-history-job input[type="checkbox"]').prop("checked")
+
+            // Permanently delete if we are on the Archive page
+            if(self.showArchive()) skipArchive = true
+
             callAPI({
                 mode: 'history',
                 name: 'delete',
@@ -544,6 +549,11 @@ function HistoryModel(parent, data) {
     // Format completion time
     self.completedOn = ko.pureComputed(function() {
         return displayDateTime(self.completed(), parent.parent.dateFormat(), 'X')
+    });
+
+    // Format time added
+    self.timeAdded = ko.pureComputed(function() {
+        return displayDateTime(self.historyStatus.time_added(), parent.parent.dateFormat(), 'X')
     });
 
     // Subscribe to retryEvent so we can load the password

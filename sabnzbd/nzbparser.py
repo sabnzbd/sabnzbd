@@ -218,8 +218,12 @@ def process_nzb_archive_file(
                             nzo_id=nzo_id,
                             dup_check=dup_check,
                         )
-                    except (sabnzbd.nzbstuff.NzbEmpty, sabnzbd.nzbstuff.NzbRejected):
-                        # Empty or fully rejected
+                    except (
+                        sabnzbd.nzbstuff.NzbEmpty,
+                        sabnzbd.nzbstuff.NzbRejected,
+                        sabnzbd.nzbstuff.NzbPreQueueRejected,
+                    ):
+                        # Empty or fully rejected (including pre-queue rejections)
                         pass
                     except sabnzbd.nzbstuff.NzbRejectToHistory as err:
                         # Duplicate or unwanted extension directed to history
@@ -329,8 +333,11 @@ def process_single_nzb(
         # Malformed or might not be an NZB file
         result = AddNzbFileResult.NO_FILES_FOUND
     except sabnzbd.nzbstuff.NzbRejected:
-        # Rejected as duplicate or by pre-queue script
+        # Rejected as duplicate
         result = AddNzbFileResult.ERROR
+    except sabnzbd.nzbstuff.NzbPreQueueRejected:
+        # Rejected by pre-queue script - should be silently ignored for URL fetches
+        result = AddNzbFileResult.PREQUEUE_REJECTED
     except sabnzbd.nzbstuff.NzbRejectToHistory as err:
         # Duplicate or unwanted extension directed to history
         sabnzbd.NzbQueue.fail_to_history(err.nzo)

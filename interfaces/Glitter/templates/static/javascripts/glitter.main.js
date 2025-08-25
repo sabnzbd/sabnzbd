@@ -704,7 +704,6 @@ function ViewModel() {
         data.append("apikey", apiKey);
 
         // Add this one
-        debugger
         $.ajax({
             url: "./api",
             type: "POST",

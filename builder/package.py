@@ -271,7 +271,6 @@ if __name__ == "__main__":
         if authority:
             files_to_sign = [
                 "macos/par2/par2",
-                "macos/par2/arm64/par2",
                 "macos/unrar/unrar",
                 "macos/unrar/arm64/unrar",
                 "macos/7zip/7zz",

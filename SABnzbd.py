@@ -426,10 +426,7 @@ def print_modules():
         # Check if we managed to link, warning for now
         # It won't work on OpenSSL < 1.1.1 anyway, so we skip the check there
         if not sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED and ssl.OPENSSL_VERSION_INFO >= (1, 1, 1):
-            logging.warning(
-                "Could not link to OpenSSL library, please report here: "
-                "https://github.com/sabnzbd/sabnzbd/issues/2421"
-            )
+            helpful_warning(T("Unable to link to OpenSSL, optimized SSL connection functions will not be used."))
     else:
         # Wrong SABCTools version, if it was fully missing it would fail to start due to check at the very top
         logging.error(
@@ -1103,12 +1100,13 @@ def main():
         logging_level = sabnzbd.cfg.log_level()
     else:
         sabnzbd.cfg.log_level.set(logging_level)
-    sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
+
     logformat = "%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s"
     logger.setLevel(LOGLEVELS[logging_level + 1])
 
     try:
         if not no_file_log:
+            sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
             rollover_log = logging.handlers.RotatingFileHandler(
                 sabnzbd.LOGFILE, "a+", sabnzbd.cfg.log_size(), sabnzbd.cfg.log_backups()
             )

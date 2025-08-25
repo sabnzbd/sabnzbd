@@ -37,6 +37,13 @@ msgstr "Nezdařilo se spustit webové rozhraní"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Šablona pro web nebyla nalezena: %s, zkouším standardní šablonu"
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""
@@ -724,15 +731,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Odmítnuté spojení s hostem \"%s\" z:"
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Uživatel přihlášen do webového rozhraní"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Uživatel přihlášen"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -747,6 +745,15 @@ msgid ""
 msgstr ""
 "Nesprávný API klíč, použijte api klíč z Nastavení->Obecné ve vašem programu "
 "třetí strany:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Uživatel přihlášen do webového rozhraní"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Uživatel přihlášen"
 
 #. Warning message
 #: sabnzbd/interface.py

@@ -39,6 +39,15 @@ msgstr ""
 "Impossible de trouver le template de l'interface web : %s, nouvelle "
 "tentative avec le template standard"
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+"Impossible d'établir une connexion avec OpenSSL, les fonctions de connexion "
+"SSL optimisées ne seront pas utilisées."
+
 #. Error message
 #: SABnzbd.py
 msgid ""
@@ -788,15 +797,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Connexion refusée avec le nom d'hôte \"%s\" à partir de :"
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Utilisateur connecté à l'interface web"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Utilisateur connecté"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -811,6 +811,15 @@ msgid ""
 msgstr ""
 "Clé API incorrecte, utilisez la clé API de la configuration générale dans "
 "votre application tierce :"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Utilisateur connecté à l'interface web"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Utilisateur connecté"
 
 #. Warning message
 #: sabnzbd/interface.py

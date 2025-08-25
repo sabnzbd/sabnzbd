@@ -55,7 +55,7 @@ from sabnzbd.misc import (
     get_cpu_name,
     clean_comma_separated_list,
 )
-from sabnzbd.happyeyeballs import happyeyeballs
+from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.filesystem import (
     real_path,
     globber,
@@ -310,9 +310,6 @@ def set_login_cookie(remove=False, remember_me=False):
     if remove:
         cherrypy.response.cookie["login_cookie"]["expires"] = 0
         cherrypy.response.cookie["login_salt"]["expires"] = 0
-    else:
-        # Notify about new login
-        notifier.send_notification(T("User logged in"), T("User logged in to the web interface"), "new_login")
 
 
 def check_login_cookie():
@@ -679,6 +676,8 @@ class LoginPage:
             set_login_cookie(remember_me=kwargs.get("remember_me", False))
             # Log the success
             logging.info("Successful login from %s", cherrypy.request.remote_label)
+            # Notify about new login
+            notifier.send_notification(T("User logged in"), T("User logged in to the web interface"), "new_login")
             # Redirect
             raise Raiser("/")
         elif kwargs.get("username") or kwargs.get("password"):
@@ -1174,7 +1173,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         kwargs["connections"] = "1"
 
     if kwargs.get("enable") == "1":
-        if not happyeyeballs(
+        if not get_fastest_addrinfo(
             host, int_conv(port), int_conv(kwargs.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
         ):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)

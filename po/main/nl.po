@@ -38,6 +38,13 @@ msgstr "Webinterface kan niet gestart worden"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""
@@ -782,15 +789,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Verbinding met hostnaam \"%s\" geweigerd van:"
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Gebruiker heeft ingelogd"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Gebruiker ingelogd"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -805,6 +803,15 @@ msgid ""
 msgstr ""
 "API-sleutel incorrect; vul de API-sleutel van 'Configuratie' => 'Algemeen' "
 "in bij het externe programma:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Gebruiker heeft ingelogd"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Gebruiker ingelogd"
 
 #. Warning message
 #: sabnzbd/interface.py

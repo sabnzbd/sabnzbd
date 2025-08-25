@@ -947,6 +947,10 @@ def rar_renamer(nzo: NzbObject) -> int:
         if not os.path.isfile(file_to_check):
             continue
 
+        # guard against cbr files due to pr#3114
+        if get_ext(file_to_check) == ".cbr":
+            continue
+
         if rarfile.is_rarfile(file_to_check):
             # if a rar file is fully encrypted, rarfile.RarFile() will return an empty list:
             if not rarfile.RarFile(file_to_check, single_file_check=True).filelist():

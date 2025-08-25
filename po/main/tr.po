@@ -37,6 +37,13 @@ msgstr "Web arayüzünün başlatılması başarısız oldu"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Web şablonu bulunamadı: %s, standart şablon denenecek"
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""
@@ -772,15 +779,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Şuradan \"%s\" makine ismi ile bağlantı reddedildi:"
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr "Kullanıcı web arayüzünde oturum açtı"
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr "Kullanıcı oturum açtı"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -795,6 +793,15 @@ msgid ""
 msgstr ""
 "API anahtarı yanlış, 3. taraf programınızda Yapılandırma->Genel'den api "
 "anahtarını kullanın:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr "Kullanıcı web arayüzünde oturum açtı"
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr "Kullanıcı oturum açtı"
 
 #. Warning message
 #: sabnzbd/interface.py

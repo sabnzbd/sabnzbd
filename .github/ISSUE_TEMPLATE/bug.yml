@@ -3,7 +3,7 @@ description: >
   Did you discover a bug in SABnzbd? Report it here!
   If you are not 100% certain this is a bug please go to our forums, Reddit or Discord server first.
 labels:
-  - Bug
+  - Support
 body:
   - type: input
     attributes:

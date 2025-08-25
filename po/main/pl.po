@@ -36,6 +36,13 @@ msgstr "Nie udało się uruchomić interfejsu WWW"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Nie znaleziono szablonu: %s, próbuję użyć standardowego szablonu"
 
+#. Warning message
+#: SABnzbd.py
+msgid ""
+"Unable to link to OpenSSL, optimized SSL connection functions will not be "
+"used."
+msgstr ""
+
 #. Error message
 #: SABnzbd.py
 msgid ""
@@ -730,15 +737,6 @@ msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "User logged in to the web interface"
-msgstr ""
-
-#. Notification
-#: sabnzbd/interface.py, sabnzbd/notifier.py
-msgid "User logged in"
-msgstr ""
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
@@ -753,6 +751,15 @@ msgid ""
 msgstr ""
 "Klucz API jest nieprawidłowy, użyj klucza API z sekcji Konfiguracja->Ogólne "
 "w zewnętrznym programie:"
+
+#: sabnzbd/interface.py
+msgid "User logged in to the web interface"
+msgstr ""
+
+#. Notification
+#: sabnzbd/interface.py, sabnzbd/notifier.py
+msgid "User logged in"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/interface.py
