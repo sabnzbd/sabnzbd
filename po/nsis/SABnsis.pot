@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.6.0\n"
+"Project-Id-Version: SABnzbd-4.5.3\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: team@sabnzbd.org\n"
 "Language-Team: SABnzbd <team@sabnzbd.org>\n"
@@ -14,6 +14,10 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Show Release Notes"
+msgstr ""
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Run SABnzbd"
 msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
