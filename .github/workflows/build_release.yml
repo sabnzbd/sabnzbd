@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v4
       id: upload-unsigned-binary
       with:
-        path: "dist"
+        path: "*-win64-bin.zip"
         name: Windows standalone binary (unsigned)
     - name: Sign Windows standalone binary (unsigned)
       uses: signpath/github-action-submit-signing-request@v1
@@ -46,12 +46,12 @@ jobs:
         signing-policy-slug: "test-signing"
         github-artifact-id: ${{ steps.upload-unsigned-binary.outputs.artifact-id }}
         wait-for-completion: true
-        output-artifact-directory: "dist/signed"
+        output-artifact-directory: "signed"
     - name: Upload Windows standalone binary (signed)
       uses: actions/upload-artifact@v4
       with:
         name: Windows standalone binary (signed)
-        path: "dist/signed"
+        path: "signed"
     - name: Build Windows installer
       run: python builder/package.py installer
     - name: Upload Windows installer
@@ -70,12 +70,12 @@ jobs:
         signing-policy-slug: "test-signing"
         github-artifact-id: ${{ steps.upload-unsigned-installer.outputs.artifact-id }}
         wait-for-completion: true
-        output-artifact-directory: "dist/signed-installer"
+        output-artifact-directory: "signed"
     - name: Upload Windows standalone binary (signed)
       uses: actions/upload-artifact@v4
       with:
         name: Windows installer (signed)
-        path: "dist/signed-installer/*-win-setup.exe"
+        path: "signed/*-win-setup.exe"
 
   build_macos:
     name: Build macOS binary

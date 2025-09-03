@@ -229,16 +229,24 @@ if __name__ == "__main__":
         # Test the release
         test_sab_binary("dist/SABnzbd/SABnzbd.exe")
 
+        # Create the archive
+        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, "SABnzbd"], cwd="dist")
+        shutil.move(f"dist/{RELEASE_BINARY}", RELEASE_BINARY)
+
     if "installer" in sys.argv:
         # Check if we have the dist folder
         if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
             raise FileNotFoundError("SABnzbd executable not found, run binary creation first")
 
         # Check if we have a signed version
-        if os.path.exists("dist/signed/SABnzbd/SABnzbd.exe"):
+        if os.path.exists(f"signed/{RELEASE_BINARY}"):
             print("Using signed version of SABnzbd binaries")
             safe_remove("dist/SABnzbd")
-            shutil.move("dist/signed/SABnzbd", "dist/SABnzbd")
+            run_external_command(["win/7zip/7za.exe", "x", "-odist", f"signed/{RELEASE_BINARY}"])
+
+            # Make sure it exists
+            if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
+                raise FileNotFoundError("SABnzbd executable not found, signed zip extraction failed")
         elif RELEASE_THIS:
             raise FileNotFoundError("Signed SABnzbd executable not found, required for release!")
         else:
