@@ -27,18 +27,59 @@ jobs:
         python -m pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt --no-dependencies
         pip install --upgrade -r builder/requirements.txt --no-dependencies
-    - name: Build Windows standalone binary and installer
-      run: python builder/package.py installer
-    - name: Upload Windows standalone binary
+    - name: Build Windows standalone binary
+      id: windows_binary
+      run: python builder/package.py binary
+    - name: Upload Windows standalone binary (unsigned)
       uses: actions/upload-artifact@v4
+      id: upload-unsigned-binary
       with:
         path: "*-win64-bin.zip"
         name: Windows standalone binary
+    - name: Sign Windows standalone binary
+      uses: signpath/github-action-submit-signing-request@v1
+      if: contains(github.ref, 'refs/tags/')
+      with:
+        api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+        organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
+        project-slug: "sabnzbd"
+        artifact-configuration-slug: "sabnzbd-binary"
+        signing-policy-slug: "release-signing"
+        github-artifact-id: ${{ steps.upload-unsigned-binary.outputs.artifact-id }}
+        wait-for-completion: true
+        output-artifact-directory: "signed"
+    - name: Upload Windows standalone binary (signed)
+      uses: actions/upload-artifact@v4
+      if: contains(github.ref, 'refs/tags/')
+      with:
+        name: Windows standalone binary (signed)
+        path: "signed"
+    - name: Build Windows installer
+      run: python builder/package.py installer
     - name: Upload Windows installer
       uses: actions/upload-artifact@v4
+      id: upload-unsigned-installer
       with:
         path: "*-win-setup.exe"
         name: Windows installer
+    - name: Sign Windows installer
+      uses: signpath/github-action-submit-signing-request@v1
+      if: contains(github.ref, 'refs/tags/')
+      with:
+        api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+        organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
+        project-slug: "sabnzbd"
+        artifact-configuration-slug: "sabnzbd-installer"
+        signing-policy-slug: "release-signing"
+        github-artifact-id: ${{ steps.upload-unsigned-installer.outputs.artifact-id }}
+        wait-for-completion: true
+        output-artifact-directory: "signed"
+    - name: Upload Windows installer (signed)
+      if: contains(github.ref, 'refs/tags/')
+      uses: actions/upload-artifact@v4
+      with:
+        name: Windows installer (signed)
+        path: "signed/*-win-setup.exe"
 
   build_macos:
     name: Build macOS binary
@@ -89,8 +130,8 @@ jobs:
       if: env.CERTIFICATES_P12
       run: |
         echo $CERTIFICATES_P12 | base64 --decode > certificate.p12
-        security create-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain 
-        security default-keychain -s build.keychain 
+        security create-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain
+        security default-keychain -s build.keychain
         security unlock-keychain -p "$MACOS_KEYCHAIN_TEMP_PASSWORD" build.keychain
         security set-keychain-settings -lut 21600 build.keychain
         security import certificate.p12 -k build.keychain -P "$CERTIFICATES_P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productsign -T /usr/bin/xcrun
@@ -161,7 +202,7 @@ jobs:
           path: ${{ steps.snapcraft.outputs.snap }}
       - name: Publish snap
         uses: snapcore/action-publish@v1
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        if: contains(github.ref, 'refs/tags/')
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
         with:
@@ -181,12 +222,19 @@ jobs:
           python-version: "3.x"
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
-      - name: Download all artifacts
+      - name: Download Source distribution artifact
         uses: actions/download-artifact@v5
         with:
-          path: dist
-      - name: Move all artifacts to main folder
-        run: find dist -type f -exec mv {} . \;
+          name: Source distribution
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: macOS binary
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: ${{ (contains(github.ref, 'refs/tags/')) && '*signed*' || '*Windows*' }}
+          merge-multiple: true
       - name: Prepare official release
         env:
           AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
