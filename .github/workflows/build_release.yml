@@ -218,12 +218,15 @@ jobs:
           python-version: "3.x"
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
-      - name: Download all artifacts
+      - name: Download macOS artifact
         uses: actions/download-artifact@v5
         with:
-          path: dist
-      - name: Move all artifacts to main folder
-        run: find dist -type f -exec mv {} . \;
+          name: macOS binary
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: "*signed*"
+          merge-multiple: true
       - name: Prepare official release
         env:
           AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
