@@ -35,8 +35,8 @@ jobs:
       id: upload-unsigned-binary
       with:
         path: "*-win64-bin.zip"
-        name: Windows standalone binary (unsigned)
-    - name: Sign Windows standalone binary (unsigned)
+        name: Windows standalone binary
+    - name: Sign Windows standalone binary
       uses: signpath/github-action-submit-signing-request@v1
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -60,7 +60,7 @@ jobs:
       with:
         path: "*-win-setup.exe"
         name: Windows installer
-    - name: Sign Windows standalone binary (unsigned)
+    - name: Sign Windows installer
       uses: signpath/github-action-submit-signing-request@v1
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
         github-artifact-id: ${{ steps.upload-unsigned-installer.outputs.artifact-id }}
         wait-for-completion: true
         output-artifact-directory: "signed"
-    - name: Upload Windows standalone binary (signed)
+    - name: Upload Windows installer (signed)
       uses: actions/upload-artifact@v4
       with:
         name: Windows installer (signed)
@@ -218,6 +218,10 @@ jobs:
           python-version: "3.x"
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
+      - name: Download Source distribution artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: Source distribution
       - name: Download macOS artifact
         uses: actions/download-artifact@v5
         with:
@@ -227,6 +231,8 @@ jobs:
         with:
           pattern: "*signed*"
           merge-multiple: true
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: Prepare official release
         env:
           AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
