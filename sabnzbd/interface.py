@@ -716,22 +716,11 @@ async def index_config_folders(request: Request):
 @secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True)
 async def config_folder_save(request: Request):
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-        value = request.query_params.get(kw)
-        if value is not None or kw in LIST_BOOL_DIRPAGE:
-            if kw in ("complete_dir", "dirscan_dir", "backup_dir"):
-                msg = config.get_config("misc", kw).set(value, create=True)
-            else:
-                msg = config.get_config("misc", kw).set(value)
-            if msg:
-                # return sabnzbd.api.report('json', error=msg)
-                return badParameterResponse(msg, request.query_params.get("ajax"))
+        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
+            return sabnzbd.api.report(request.query_params, error=msg)
 
     config.save_config()
-    test = await request.form()
-    if request.query_params.get("ajax"):
-        return sabnzbd.api.report()
-    else:
-        raise Raiser(self.__root)
+    return sabnzbd.api.report(request.query_params)
 
 
 ##############################################################################
@@ -806,12 +795,14 @@ async def index_config_switches(request: Request):
 async def config_switches_save(request: Request):
     for kw in SWITCH_LIST:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-            return badParameterResponse(msg, request.query_params.get("ajax"))
+            return sabnzbd.api.report(request.query_params, error=msg)
 
     config.save_config()
     return sabnzbd.api.report(request.query_params)
 
 
+##############################################################################
+# Page definitions - Config - Special
 ##############################################################################
 SPECIAL_BOOL_LIST = (
     "start_paused",
@@ -876,39 +867,36 @@ SPECIAL_LIST_LIST = (
 )
 
 
-class ConfigSpecial:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose(check_configlock=True)
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["switches"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
+@secured_expose(route="/config/special", check_configlock=True)
+async def index_config_special(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    conf["switches"] = [
+        (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
+    ]
+    conf["entries"] = [
+        (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_VALUE_LIST
+    ]
+    conf["entries"].extend(
+        [
+            (kw, config.get_config("misc", kw).get_string(), config.get_config("misc", kw).default_string())
+            for kw in SPECIAL_LIST_LIST
         ]
-        conf["entries"] = [
-            (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_VALUE_LIST
-        ]
-        conf["entries"].extend(
-            [
-                (kw, config.get_config("misc", kw).get_string(), config.get_config("misc", kw).default_string())
-                for kw in SPECIAL_LIST_LIST
-            ]
-        )
+    )
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_special.tmpl"),
-            search_list=conf,
-        )
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_special.tmpl"),
+        search_list=conf,
+    )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSpecial(request: Request):
-        for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
-            if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-                return badParameterResponse(msg)
 
-        config.save_config()
-        raise Raiser(self.__root)
+@secured_expose(route="/config/special/save", check_api_key=True, check_configlock=True)
+async def config_special_save(request: Request):
+    for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
+        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
+            return sabnzbd.api.report(request.query_params, error=msg)
+
+    config.save_config()
+    return sabnzbd.api.report(request.query_params)
 
 
 ##############################################################################
