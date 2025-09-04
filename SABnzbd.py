@@ -39,6 +39,7 @@ import ssl
 import time
 import re
 import gc
+import threading
 import uvicorn
 from typing import List, Dict, Any
 
@@ -1288,16 +1289,6 @@ def main():
         }
     )
 
-    # Monkey-patch key validation to prevent cherrypy from stumbling over invalid cookies
-    http.cookies._is_legal_key = lambda _: True
-
-    # Catch shutdown errors that can break cherrypy/cheroot
-    # See https://github.com/cherrypy/cheroot/issues/710
-    try:
-        cheroot.errors.acceptable_sock_shutdown_exceptions += (OSError,)
-    except AttributeError:
-        pass
-
     # Do we want CherryPy Logging? Cannot be done via the config
     cherrypy.log.screen = False
     cherrypy.log.access_log.propagate = False
@@ -1338,7 +1329,7 @@ def main():
     else:
         sabnzbd.BROWSER_URL = "http://%s:%s%s" % (browserhost, web_port, sabnzbd.cfg.url_base())
 
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         # Write URL for uploads and version check directly to registry
         set_connection_info(f"{sabnzbd.BROWSER_URL}/api?apikey={sabnzbd.cfg.api_key()}")
 
