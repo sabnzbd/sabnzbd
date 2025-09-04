@@ -38,6 +38,7 @@ jobs:
         name: Windows standalone binary
     - name: Sign Windows standalone binary
       uses: signpath/github-action-submit-signing-request@v1
+      if: contains(github.ref, 'refs/tags/')
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
         organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
@@ -49,6 +50,7 @@ jobs:
         output-artifact-directory: "signed"
     - name: Upload Windows standalone binary (signed)
       uses: actions/upload-artifact@v4
+      if: contains(github.ref, 'refs/tags/')
       with:
         name: Windows standalone binary (signed)
         path: "signed"
@@ -62,6 +64,7 @@ jobs:
         name: Windows installer
     - name: Sign Windows installer
       uses: signpath/github-action-submit-signing-request@v1
+      if: contains(github.ref, 'refs/tags/')
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
         organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
@@ -72,6 +75,7 @@ jobs:
         wait-for-completion: true
         output-artifact-directory: "signed"
     - name: Upload Windows installer (signed)
+      if: contains(github.ref, 'refs/tags/')
       uses: actions/upload-artifact@v4
       with:
         name: Windows installer (signed)
@@ -198,7 +202,7 @@ jobs:
           path: ${{ steps.snapcraft.outputs.snap }}
       - name: Publish snap
         uses: snapcore/action-publish@v1
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        if: contains(github.ref, 'refs/tags/')
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
         with:
@@ -229,10 +233,8 @@ jobs:
       - name: Download Windows artifacts
         uses: actions/download-artifact@v5
         with:
-          pattern: "*signed*"
+          pattern: ${{ (contains(github.ref, 'refs/tags/')) && '*signed*' || '*Windows*' }}
           merge-multiple: true
-      - name: Display structure of downloaded files
-        run: ls -R
       - name: Prepare official release
         env:
           AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
