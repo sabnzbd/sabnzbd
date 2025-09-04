@@ -20,7 +20,7 @@ import logging
 import datetime
 import ctypes.util
 import time
-import socket
+import ssl
 from typing import Optional
 
 import cherrypy

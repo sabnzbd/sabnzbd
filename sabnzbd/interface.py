@@ -95,14 +95,7 @@ from sabnzbd.constants import (
     DEF_NETWORKING_TEST_TIMEOUT,
 )
 from sabnzbd.lang import list_languages
-from sabnzbd.api import (
-    list_scripts,
-    list_cats,
-    del_from_section,
-    api_handler,
-    build_header,
-    Ttemplate,
-)
+from sabnzbd.api import list_scripts, list_cats, del_from_section, api_handler, build_header, Ttemplate
 
 ##############################################################################
 # Security functions
@@ -415,7 +408,7 @@ async def main_index(request: Request):
         info["have_watched_dir"] = bool(cfg.dirscan_dir())
         info["cpumodel"] = get_cpu_name()
         info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
-        info["docker"] = "Docker" if sabnzbd.DOCKER else ""
+        info["platform"] = sabnzbd.PLATFORM
 
         # Have logout only with HTML and if inet=5, only when we are external
         info["have_logout"] = (
@@ -490,7 +483,7 @@ async def description_xml(request: Request):
 @secured_expose(route="/wizard", check_configlock=True)
 async def wizard_index(request: Request):
     """Show the language selection page"""
-    if sabnzbd.WIN32:
+    if sabnzbd.WINDOWS:
         from sabnzbd.utils.apireg import get_install_lng
 
         cfg.language.set(get_install_lng())
@@ -622,8 +615,8 @@ def get_access_info():
 ##############################################################################
 
 
-@secured_expose(route="/config/folders/save", check_for_login=False)
-async def index(request: Request):
+@secured_expose(route="/login", check_for_login=False)
+async def login_index(request: Request):
     # Base output var
     info = build_header(sabnzbd.WEB_DIR_CONFIG)
     info["error"] = ""
@@ -743,6 +736,8 @@ async def config_folder_save(request: Request):
 
 
 ##############################################################################
+# Page definitions - Config - Switches
+##############################################################################
 SWITCH_LIST = (
     "par_option",
     "top_only",
@@ -789,39 +784,36 @@ SWITCH_LIST = (
 )
 
 
-class ConfigSwitches:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/switches", check_configlock=True)
+async def index_config_switches(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
+    conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
 
-    @secured_expose(check_configlock=True)
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
-        conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
+    for kw in SWITCH_LIST:
+        conf[kw] = config.get_config("misc", kw)()
+    conf["cleanup_list"] = cfg.cleanup_list.get_string()
+    conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
 
-        for kw in SWITCH_LIST:
-            conf[kw] = config.get_config("misc", kw)()
-        conf["cleanup_list"] = cfg.cleanup_list.get_string()
-        conf["unwanted_extensions"] = cfg.unwanted_extensions.get_string()
+    conf["scripts"] = list_scripts() or ["None"]
 
-        conf["scripts"] = list_scripts() or ["None"]
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_switches.tmpl"),
+        search_list=conf,
+    )
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_switches.tmpl"),
-            search_list=conf,
-        )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveSwitches(request: Request):
-        for kw in SWITCH_LIST:
-            if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-                return badParameterResponse(msg, request.query_params.get("ajax"))
+@secured_expose(route="/config/switches/save", check_api_key=True, check_configlock=True)
+async def config_switches_save(request: Request):
+    for kw in SWITCH_LIST:
+        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
+            return badParameterResponse(msg, request.query_params.get("ajax"))
 
-        config.save_config()
-        if request.query_params.get("ajax"):
-            return sabnzbd.api.report()
-        else:
-            raise Raiser(self.__root)
+    config.save_config()
+    if request.query_params.get("ajax"):
+        return sabnzbd.api.report()
+    else:
+        raise Raiser("/config")
 
 
 ##############################################################################
@@ -924,6 +916,8 @@ class ConfigSpecial:
 
 
 ##############################################################################
+# Page definitions - Config - General
+##############################################################################
 GENERAL_LIST = (
     "host",
     "port",
@@ -945,80 +939,78 @@ GENERAL_LIST = (
 )
 
 
-class ConfigGeneral:
-    def __init__(self, root):
-        self.__root = root
+@secured_expose(route="/config/general", check_configlock=True)
+async def index_config_general(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-    @secured_expose(check_configlock=True)
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    web_list = []
+    for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
+        # Ignore the config
+        if not interface_dir.endswith(DEF_STD_CONFIG):
+            # Check the available templates
+            for colorscheme in globber(
+                os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
+            ):
+                web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
 
-        web_list = []
-        for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
-            # Ignore the config
-            if not interface_dir.endswith(DEF_STD_CONFIG):
-                # Check the available templates
-                for colorscheme in globber(
-                    os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
-                ):
-                    web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
+    conf["web_list"] = web_list
+    conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
+    conf["password"] = cfg.password.get_stars()
 
-        conf["web_list"] = web_list
-        conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
-        conf["password"] = cfg.password.get_stars()
+    conf["language"] = cfg.language()
+    conf["lang_list"] = list_languages()
+    conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
 
-        conf["language"] = cfg.language()
-        conf["lang_list"] = list_languages()
-        conf["def_https_cert_file"] = DEF_HTTPS_CERT_FILE
+    for kw in GENERAL_LIST:
+        conf[kw] = config.get_config("misc", kw)()
 
-        for kw in GENERAL_LIST:
-            conf[kw] = config.get_config("misc", kw)()
+    conf["nzb_key"] = cfg.nzb_key()
+    conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 
-        conf["nzb_key"] = cfg.nzb_key()
-        conf["caller_url"] = cherrypy.request.base + cfg.url_base()
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
+        search_list=conf,
+    )
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
-            search_list=conf,
-        )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveGeneral(request: Request):
-        # Handle general options
-        for kw in GENERAL_LIST:
-            if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-                return badParameterResponse(msg, ajax=request.query_params.get("ajax"))
+@secured_expose(route="/config/general/save", check_api_key=True, check_configlock=True)
+async def config_general_save(request: Request):
+    # Handle general options
+    for kw in GENERAL_LIST:
+        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
+            return badParameterResponse(msg, ajax=request.query_params.get("ajax"))
 
-        # Handle special options
-        cfg.password.set(request.query_params.get("password"))
+    # Handle special options
+    cfg.password.set(request.query_params.get("password"))
 
-        web_dir = request.query_params.get("web_dir")
+    if web_dir := request.query_params.get("web_dir"):
         change_web_dir(web_dir)
 
-        config.save_config()
+    config.save_config()
 
-        # Update CherryPy authentication
-        set_auth(cherrypy.config)
-        if request.query_params.get("ajax"):
-            return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
-        else:
-            raise Raiser(self.__root)
+    # Update CherryPy authentication
+    set_auth(cherrypy.config)
+    if request.query_params.get("ajax"):
+        return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
+    else:
+        raise Raiser("/config")
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def uploadConfig(request: Request):
-        """Restore a config backup"""
-        config_backup_file = request.query_params.get("config_backup_file")
 
-        # Only accept the backup file if it can be opened as a zip archive and only contains a config file
-        try:
-            config_backup_data = config_backup_file.file.read()
-            config_backup_file.file.close()
-            if config.validate_config_backup(config_backup_data):
-                sabnzbd.RESTORE_DATA = config_backup_data
-                return sabnzbd.api.report(data={"success": True, "restart_req": True})
-        except Exception:
-            pass
-        return sabnzbd.api.report(error=T("Invalid backup archive"))
+@secured_expose(route="/config/general/uploadConfig", check_api_key=True, check_configlock=True)
+async def config_upload_backup(request: Request):
+    """Restore a config backup"""
+    form_data = await request.form()
+    config_backup_file = form_data.get("config_backup_file")
+
+    # Only accept the backup file if it can be opened as a zip archive and only contains a config file
+    try:
+        config_backup_data = await config_backup_file.read()
+        if config.validate_config_backup(config_backup_data):
+            sabnzbd.RESTORE_DATA = config_backup_data
+            return sabnzbd.api.report(data={"success": True, "restart_req": True})
+    except Exception:
+        pass
+    return sabnzbd.api.report(error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):
