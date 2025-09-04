@@ -17,7 +17,6 @@
 
 import sys
 
-
 # Trick to show a better message on older Python
 # releases that don't support walrus operator
 if Python_38_is_required_to_run_SABnzbd := sys.hexversion < 0x03080000:
