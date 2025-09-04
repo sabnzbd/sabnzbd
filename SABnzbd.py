@@ -48,7 +48,6 @@ try:
     import Cheetah
     import feedparser
     import configobj
-    import cherrypy
     import cheroot.errors
     import portend
     import cryptography
@@ -1273,28 +1272,6 @@ def main():
         "application/font*",
         "image/svg+xml",
     )
-    cherrypy.config.update(
-        {
-            "server.environment": "production",
-            "server.socket_host": web_host,
-            "server.socket_port": web_port,
-            "server.shutdown_timeout": 0,
-            "engine.autoreload.on": False,
-            "tools.encode.on": True,
-            "tools.gzip.on": True,
-            "tools.gzip.mime_types": mime_gzip,
-            "request.show_tracebacks": True,
-            "error_page.401": sabnzbd.panic.error_page_401,
-            "error_page.404": sabnzbd.panic.error_page_404,
-        }
-    )
-
-    # Do we want CherryPy Logging? Cannot be done via the config
-    cherrypy.log.screen = False
-    cherrypy.log.access_log.propagate = False
-    if cherrypylogging:
-        sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-        cherrypy.log.access_file = str(sabnzbd.WEBLOGFILE)
 
     logging.info("Starting web-interface on %s:%s", web_host, web_port)
 
