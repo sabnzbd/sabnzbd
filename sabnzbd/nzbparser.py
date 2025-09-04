@@ -30,8 +30,7 @@ import datetime
 import zipfile
 import tempfile
 
-import cherrypy._cpreqbody
-from typing import Optional, Any, Union
+from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
 from sabnzbd.nzb import (
@@ -57,7 +56,7 @@ import rarfile
 
 
 def add_nzbfile(
-    nzbfile: Union[str, cherrypy._cpreqbody.Part],
+    nzbfile,
     pp: Optional[Union[int, str]] = None,
     script: Optional[str] = None,
     cat: Optional[str] = None,

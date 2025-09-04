@@ -27,7 +27,6 @@ import gc
 import socket
 import time
 import getpass
-import cherrypy
 from threading import Thread
 from typing import Optional, Any, Union, Generator
 
@@ -1828,7 +1827,7 @@ def build_file_list(nzo_id: str) -> list[dict[str, Any]]:
 
 def retry_job(
     job: str,
-    new_nzb: Optional[cherrypy._cpreqbody.Part] = None,
+    new_nzb=None,
     password: Optional[str] = None,
 ) -> Optional[str]:
     """Re enter failed job in the download queue"""

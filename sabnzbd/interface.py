@@ -23,7 +23,6 @@ import os
 import threading
 import time
 import datetime
-import cherrypy
 import logging
 import urllib.parse
 import re
@@ -810,10 +809,7 @@ async def config_switches_save(request: Request):
             return badParameterResponse(msg, request.query_params.get("ajax"))
 
     config.save_config()
-    if request.query_params.get("ajax"):
-        return sabnzbd.api.report()
-    else:
-        raise Raiser("/config")
+    return sabnzbd.api.report(request.query_params)
 
 
 ##############################################################################
