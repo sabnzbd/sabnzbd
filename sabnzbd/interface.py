@@ -136,7 +136,6 @@ def secured_expose(
 
     @functools.wraps(wrap_func)
     async def internal_wrap(*args, **kwargs):
-        # All good, cool!
         return await wrap_func(*args, **kwargs)
 
     return internal_wrap
@@ -961,7 +960,7 @@ async def config_general_save(request: Request):
     # Handle general options
     for kw in GENERAL_LIST:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-            return badParameterResponse(msg, ajax=request.query_params.get("ajax"))
+            return sabnzbd.api.report(request.query_params, error=msg)
 
     # Handle special options
     cfg.password.set(request.query_params.get("password"))
@@ -970,13 +969,7 @@ async def config_general_save(request: Request):
         change_web_dir(web_dir)
 
     config.save_config()
-
-    # Update CherryPy authentication
-    set_auth(cherrypy.config)
-    if request.query_params.get("ajax"):
-        return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
-    else:
-        raise Raiser("/config")
+    return sabnzbd.api.report(request.query_params, data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
 
 
 @secured_expose(route="/config/general/uploadConfig", check_api_key=True, check_configlock=True)
@@ -1704,64 +1697,76 @@ class ConfigScheduling:
 
 
 ##############################################################################
-class ConfigCats:
-    def __init__(self, root):
-        self.__root = root
+# Page definitions - Config - Categories
+##############################################################################
 
-    @secured_expose(check_configlock=True)
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+@secured_expose(route="/config/categories", check_configlock=True)
+async def index_config_categories(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf["scripts"] = list_scripts(default=True)
-        conf["defdir"] = cfg.complete_dir.get_clipped_path()
+    conf["scripts"] = list_scripts(default=True)
+    conf["defdir"] = cfg.complete_dir.get_clipped_path()
 
-        categories = config.get_ordered_categories()
-        new_cat_order = max(cat["order"] for cat in categories) + 1
+    categories = config.get_ordered_categories()
+    new_cat_order = max(cat["order"] for cat in categories) + 1
 
-        # Add empty line to add new categories
-        empty = {
-            "name": "",
-            "order": str(new_cat_order),
-            "pp": "-1",
-            "script": "",
-            "dir": "",
-            "newzbin": "",
-            "priority": DEFAULT_PRIORITY,
-        }
-        categories.insert(1, empty)
-        conf["slotinfo"] = categories
+    # Add empty line to add new categories
+    empty = {
+        "name": "",
+        "order": str(new_cat_order),
+        "pp": "-1",
+        "script": "",
+        "dir": "",
+        "newzbin": "",
+        "priority": DEFAULT_PRIORITY,
+    }
+    categories.insert(1, empty)
+    conf["slotinfo"] = categories
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_cat.tmpl"),
-            search_list=conf,
-        )
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_cat.tmpl"),
+        search_list=conf,
+    )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def delete(request: Request):
-        kwargs["section"] = "categories"
-        kwargs["keyword"] = request.query_params.get("name")
-        del_from_section(kwargs)
-        raise Raiser(self.__root)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def save(request: Request):
-        name = request.query_params.get("name", "*")
-        newname = request.query_params.get("newname", "")
-        if name == "*":
-            newname = name
+@secured_expose(route="/config/categories/delete", check_api_key=True, check_configlock=True)
+async def config_categories_delete(request: Request):
+    kw = {
+        "section": "categories",
+        "keyword": request.query_params.get("name"),
+    }
+    del_from_section(kw)
+    # Keep API response pattern consistent
+    return sabnzbd.api.report(request.query_params)
 
-        if newname:
-            # Check if this cat-dir is not sub-folder of incomplete
-            if same_directory(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs["dir"])):
-                return T("Category folder cannot be a subfolder of the Temporary Download Folder.")
 
-            # Delete current one and replace with new one
-            if name:
-                config.delete("categories", name)
-            config.ConfigCat(newname.lower(), kwargs)
+@secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True)
+async def config_categories_save(request: Request):
+    name = request.query_params.get("name", "*")
+    newname = request.query_params.get("newname", "")
+    if name == "*":
+        newname = name
 
-        config.save_config()
-        raise Raiser(self.__root)
+    if newname:
+        # Build params dict for category configuration
+        cat_params = dict(request.query_params)
+        # Validate directory not under incomplete
+        if same_directory(
+            cfg.download_dir.get_path(),
+            real_path(cfg.complete_dir.get_path(), cat_params.get("dir", "")),
+        ):
+            return sabnzbd.api.report(
+                request.query_params,
+                error=T("Category folder cannot be a subfolder of the Temporary Download Folder."),
+            )
+
+        # Delete current one and replace with new one
+        if name:
+            config.delete("categories", name)
+        config.ConfigCat(newname.lower(), cat_params)
+
+    config.save_config()
+    return sabnzbd.api.report(request.query_params)
 
 
 ##############################################################################
