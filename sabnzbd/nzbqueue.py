@@ -22,7 +22,6 @@ sabnzbd.nzbqueue - nzb queue
 import os
 import logging
 import time
-import cherrypy._cpreqbody
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
@@ -158,9 +157,7 @@ class NzbQueue:
                     logging.info("Skipping repair for job %s", folder)
         return result
 
-    def repair_job(
-        self, repair_folder: str, new_nzb: Optional[cherrypy._cpreqbody.Part] = None, password: Optional[str] = None
-    ) -> Optional[str]:
+    def repair_job(self, repair_folder: str, new_nzb=None, password: Optional[str] = None) -> Optional[str]:
         """Reconstruct admin for a single job folder, optionally with new NZB"""
         # Check if folder exists
         if not repair_folder or not os.path.exists(repair_folder):
