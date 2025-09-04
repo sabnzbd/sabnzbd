@@ -961,7 +961,6 @@ async def index_config_general(request: Request):
         conf[kw] = config.get_config("misc", kw)()
 
     conf["nzb_key"] = cfg.nzb_key()
-    conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 
     return template_filtered_response(
         file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_general.tmpl"),
