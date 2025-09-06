@@ -19,6 +19,7 @@
 tests.test_functional_config - Basic testing if Config pages work
 """
 
+import sysconfig
 from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
 from selenium.webdriver.common.by import By
 from pytest_httpserver import HTTPServer
@@ -27,6 +28,7 @@ from pytest_httpserver import HTTPServer
 from tests.testhelper import *
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestBasicPages(SABnzbdBaseTest):
     def test_base_pages(self):
         # Quick-check of all Config pages
@@ -76,6 +78,7 @@ class TestBasicPages(SABnzbdBaseTest):
                 assert submit_btn.text == "Save Changes"
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestConfigLogin(SABnzbdBaseTest):
     def test_login(self):
         # Test if base page works
@@ -156,6 +159,7 @@ class TestConfigLogin(SABnzbdBaseTest):
         assert "/login/" not in self.driver.current_url
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestConfigCategories(SABnzbdBaseTest):
     category_name = "testCat"
 
@@ -172,6 +176,7 @@ class TestConfigCategories(SABnzbdBaseTest):
         assert self.category_name not in self.driver.page_source
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestConfigRSS(SABnzbdBaseTest):
     rss_name = "_SeleniumFeed"
 
@@ -251,6 +256,7 @@ class TestConfigRSS(SABnzbdBaseTest):
         assert get_api_result("resume") == {"status": True}
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestConfigServers(SABnzbdBaseTest):
     server_name = "_SeleniumServer"
 

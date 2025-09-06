@@ -19,6 +19,7 @@
 tests.test_functional_sorting - Test downloads with season sorting and sequential files
 """
 import os
+import sysconfig
 from tests.testhelper import *
 from flaky import flaky
 import sabnzbd.config as config
@@ -31,6 +32,7 @@ INI_FILE = "sabnzbd.sorting.ini"
 
 @flaky
 @pytest.mark.usefixtures("run_sabnzbd")
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestDownloadSorting(DownloadFlowBasics):
     def test_sorter_settings_conversion(self):
         """Read the ini file after the sabnzbd test instance completed startup

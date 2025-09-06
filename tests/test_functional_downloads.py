@@ -18,11 +18,13 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
+import sysconfig
 from tests.testhelper import *
 from flaky import flaky
 
 
 @flaky
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestDownloadFlow(DownloadFlowBasics):
     def test_download_basic_rar5(self):
         self.download_nzb("basic_rar5", ["My_Test_Download.bin"])
