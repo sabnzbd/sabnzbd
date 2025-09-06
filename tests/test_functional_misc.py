@@ -21,6 +21,7 @@ tests.test_functional_misc - Functional tests of various functions
 import shutil
 import subprocess
 import sys
+import sysconfig
 
 import sabnzbd.encoding
 from sabnzbd.filesystem import save_compressed
@@ -28,6 +29,7 @@ from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import *
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestShowLogging(SABnzbdBaseTest):
     def test_showlog(self):
         """Test the output of the filtered-log button"""
@@ -43,6 +45,7 @@ class TestShowLogging(SABnzbdBaseTest):
         assert "[misc]" in log_result
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestQueueRepair(SABnzbdBaseTest):
     def test_queue_repair(self):
         """Test full queue repair by manually adding an orphaned job"""
@@ -90,6 +93,7 @@ class TestQueueRepair(SABnzbdBaseTest):
         assert get_api_result("resume") == {"status": True}
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestSamplePostProc:
     def test_sample_post_proc(self):
         """Make sure we don't break things"""
@@ -125,6 +129,7 @@ class TestSamplePostProc:
         assert env["SAB_VERSION"] in script_output
 
 
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestExtractPot:
     def test_extract_pot(self):
         """Simple test if translation extraction still works"""
@@ -160,6 +165,7 @@ class TestExtractPot:
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Skipping on Windows")
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Fails for now due to PyObjC problem")
+@pytest.mark.skipif(sysconfig.get_platform() == "linux-aarch64", reason="Selenium does not support linux-aarch64")
 class TestDaemonizing(SABnzbdBaseTest):
     def test_daemonizing(self):
         """Simple test to see if daemon-mode still works.
