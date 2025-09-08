@@ -23,7 +23,7 @@ msgstr "Visa releasenoteringar"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run SABnzbd"
-msgstr ""
+msgstr "Kör SABnzbd"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"

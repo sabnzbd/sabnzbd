@@ -2,14 +2,14 @@
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
 # ION, 2024
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: ION, 2024\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +23,7 @@ msgstr "הראה הערות שחרור"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run SABnzbd"
-msgstr ""
+msgstr "הפעל את SABnzbd"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"

@@ -3,12 +3,13 @@
 # 
 # Translators:
 # mauron, 2025
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: mauron, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +23,7 @@ msgstr "Yayın Notlarını Göster"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run SABnzbd"
-msgstr ""
+msgstr "SABnzbd'yi çalıştır"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
