@@ -76,6 +76,10 @@ class TestSortingFunctions:
             ("Test Date Detection 22.07.14", {"date": datetime.date(2022, 7, 14)}),
             (None, None),  # Jobname missing
             ("", None),
+            (
+                "[PrettyPlease] Who Cares S6 - 42 (720p) [1A2B3C4D]",
+                {"season": 6, "episode": 42, "episode_title": None, "title": "Who Cares"},
+            ),  # Anime
         ],
     )
     def test_guess_what(self, name, result):

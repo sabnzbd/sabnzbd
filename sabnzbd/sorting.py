@@ -660,6 +660,16 @@ def guess_what(name: str) -> MatchesDict:
         # Unfix the title
         guess["title"] = guess.get("title", "")[len(digit_fix) :]
 
+    # Handle weird anime episode notation, that results in the episode number ending up as the episode title
+    if (
+        guess.get("type") == "episode"
+        and not "episode" in guess
+        and "season" in guess
+        and guess.get("episode_title", "").isdigit()
+    ):
+        guess.setdefault("episode", default=int(guess.get("episode_title")))
+        guess.pop("episode_title")
+
     # Force season to 1 for seasonless episodes with no date
     if guess.get("type") == "episode" and "date" not in guess:
         guess.setdefault("season", 1)
