@@ -76,6 +76,10 @@ class TestSortingFunctions:
             ("Test Date Detection 22.07.14", {"date": datetime.date(2022, 7, 14)}),
             (None, None),  # Jobname missing
             ("", None),
+            (
+                "[PrettyPlease] Who Cares S6 - 42 (720p) [1A2B3C4D]",
+                {"season": 6, "episode": 42, "episode_title": None, "title": "Who Cares"},
+            ),  # Anime
         ],
     )
     def test_guess_what(self, name, result):
@@ -1294,7 +1298,7 @@ class TestSortingSorter:
             assert os.path.exists(job_dir)
 
             # Create "downloaded" files
-            file_size = 42 * 1024**2
+            file_size = 42 * 1024 ** 2
             for filename in data_set:
                 job_filepath = os.path.join(job_dir, filename)
                 # Create only mkv and bar as large files, keep anything else below the sorter's min_size
