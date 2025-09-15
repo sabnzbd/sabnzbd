@@ -1298,7 +1298,7 @@ class TestSortingSorter:
             assert os.path.exists(job_dir)
 
             # Create "downloaded" files
-            file_size = 42 * 1024 ** 2
+            file_size = 42 * 1024**2
             for filename in data_set:
                 job_filepath = os.path.join(job_dir, filename)
                 # Create only mkv and bar as large files, keep anything else below the sorter's min_size
