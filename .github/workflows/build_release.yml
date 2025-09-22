@@ -89,7 +89,7 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.13.5"
+      PYTHON_VERSION: "3.13.7"
       MACOSX_DEPLOYMENT_TARGET: "10.13"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
