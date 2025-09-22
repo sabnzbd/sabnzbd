@@ -33,8 +33,8 @@ rebulk==3.2.0
 starlette==0.48.0
 anyio==4.10.0
 sniffio==1.3.1
-uvicorn==0.35.0
-click==8.2.1
+uvicorn==0.36.0
+click==8.3.0
 h11==0.16.0
 python-multipart==0.0.20
 httptools==0.6.4
