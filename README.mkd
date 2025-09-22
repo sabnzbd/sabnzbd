@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 4.5.3
+Release Notes - SABnzbd 4.5.4 Beta 1
 =========================================================
+
+## Bug fixes and changes in 4.5.4
+
+* Handle `S04 - 10` (anime) episode notation for Sorting and Duplicate Detection.
+* Active connections counter in Status window were not updated correctly.
+* Windows: Release is now signed using SignPath Foundation certificate.
+* Windows: Start SABnzbd directly from the installer.
 
 ## Bug fixes and changes in 4.5.3
 
