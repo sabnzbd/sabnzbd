@@ -21,6 +21,10 @@ msgid "Show Release Notes"
 msgstr "Vis udgivelsesbemærkninger"
 
 #: builder/win/NSIS_Installer.nsi
+msgid "Run SABnzbd"
+msgstr "Kør SABnzbd"
+
+#: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "Støt projektet, donér!"
 

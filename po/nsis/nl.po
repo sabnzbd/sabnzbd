@@ -2,13 +2,13 @@
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2024
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2024\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,6 +19,10 @@ msgstr ""
 #: builder/win/NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Toon opmerkingen bij deze uitgave"
+
+#: builder/win/NSIS_Installer.nsi
+msgid "Run SABnzbd"
+msgstr "SABnzbd starten"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"

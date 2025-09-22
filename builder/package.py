@@ -70,9 +70,9 @@ def delete_files_glob(glob_pattern: str, allow_no_matches: bool = False):
             raise FileNotFoundError(f"No files found that match '{glob_pattern}'")
 
 
-def run_external_command(command: List[str], print_output: bool = True):
+def run_external_command(command: List[str], print_output: bool = True, **kwargs):
     """Wrapper to ease the use of calling external programs"""
-    process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
     output, _ = process.communicate()
     ret = process.wait()
     if (output and print_output) or ret != 0:
@@ -201,23 +201,21 @@ if __name__ == "__main__":
         if not os.path.exists("locale"):
             raise FileNotFoundError("Failed to compile language files")
 
-    # Make sure we remove any existing build-folders
-    safe_remove("build")
-    safe_remove("dist")
-    safe_remove(RELEASE_NAME)
-
-    # Copy the specification
-    shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
-
-    if "binary" in sys.argv or "installer" in sys.argv:
+    if "binary" in sys.argv:
         # Must be run on Windows
         if sys.platform != "win32":
             raise RuntimeError("Binary should be created on Windows")
 
+        # Make sure we remove any existing build-folders
+        safe_remove("build")
+        safe_remove("dist")
+
         # Remove any leftovers
+        safe_remove(RELEASE_NAME)
         safe_remove(RELEASE_BINARY)
 
         # Run PyInstaller and check output
+        shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
         shutil.copytree("dist/SABnzbd-console", "dist/SABnzbd", dirs_exist_ok=True)
@@ -228,33 +226,49 @@ if __name__ == "__main__":
         delete_files_glob("dist/SABnzbd/api-ms-win*.dll", allow_no_matches=True)
         delete_files_glob("dist/SABnzbd/ucrtbase.dll", allow_no_matches=True)
 
-        if "installer" in sys.argv:
-            # Compile NSIS translations
-            safe_remove("NSIS_Installer.nsi")
-            safe_remove("NSIS_Installer.nsi.tmp")
-            shutil.copyfile("builder/win/NSIS_Installer.nsi", "NSIS_Installer.nsi")
-            run_external_command([sys.executable, "tools/make_mo.py", "nsis"])
-
-            # Run NSIS to build installer
-            run_external_command(
-                [
-                    "makensis.exe",
-                    "/V3",
-                    "/DSAB_VERSION=%s" % RELEASE_VERSION,
-                    "/DSAB_VERSIONKEY=%s" % ".".join(map(str, RELEASE_VERSION_TUPLE)),
-                    "/DSAB_FILE=%s" % RELEASE_INSTALLER,
-                    "NSIS_Installer.nsi.tmp",
-                ]
-            )
-
-        # Rename the folder
-        shutil.copytree("dist/SABnzbd", RELEASE_NAME)
+        # Test the release
+        test_sab_binary("dist/SABnzbd/SABnzbd.exe")
 
         # Create the archive
-        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, RELEASE_NAME])
+        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, "SABnzbd"], cwd="dist")
+        shutil.move(f"dist/{RELEASE_BINARY}", RELEASE_BINARY)
 
-        # Test the release, as the very last step to not mess with any release code
-        test_sab_binary("dist/SABnzbd/SABnzbd.exe")
+    if "installer" in sys.argv:
+        # Check if we have the dist folder
+        if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
+            raise FileNotFoundError("SABnzbd executable not found, run binary creation first")
+
+        # Check if we have a signed version
+        if os.path.exists(f"signed/{RELEASE_BINARY}"):
+            print("Using signed version of SABnzbd binaries")
+            safe_remove("dist/SABnzbd")
+            run_external_command(["win/7zip/7za.exe", "x", "-odist", f"signed/{RELEASE_BINARY}"])
+
+            # Make sure it exists
+            if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
+                raise FileNotFoundError("SABnzbd executable not found, signed zip extraction failed")
+        elif RELEASE_THIS:
+            raise FileNotFoundError("Signed SABnzbd executable not found, required for release!")
+        else:
+            print("Using unsigned version of SABnzbd binaries")
+
+        # Compile NSIS translations
+        safe_remove("NSIS_Installer.nsi")
+        safe_remove("NSIS_Installer.nsi.tmp")
+        shutil.copyfile("builder/win/NSIS_Installer.nsi", "NSIS_Installer.nsi")
+        run_external_command([sys.executable, "tools/make_mo.py", "nsis"])
+
+        # Run NSIS to build installer
+        run_external_command(
+            [
+                "makensis.exe",
+                "/V3",
+                "/DSAB_VERSION=%s" % RELEASE_VERSION,
+                "/DSAB_VERSIONKEY=%s" % ".".join(map(str, RELEASE_VERSION_TUPLE)),
+                "/DSAB_FILE=%s" % RELEASE_INSTALLER,
+                "NSIS_Installer.nsi.tmp",
+            ]
+        )
 
     if "app" in sys.argv:
         # Must be run on macOS
@@ -296,6 +310,7 @@ if __name__ == "__main__":
                 print("Signed %s!" % file_to_sign)
 
         # Run PyInstaller and check output
+        shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
         # Make sure we created a fully universal2 release when releasing or during CI

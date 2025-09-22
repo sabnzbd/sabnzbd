@@ -66,3 +66,12 @@ Conditions:
 - Bugfixes created specifically for a release branch are done there (because they are specific, they're not cherry-picked to `develop`).
 - Bugfixes done on `develop` may be cherry-picked to a release branch.
 - We will not release a 1.0.2 if a 1.1.0 has already been released.
+
+## Privacy Policy
+
+This program will not transfer any information to other networked systems unless
+specifically requested by the user or the person installing or operating it.
+
+## Code Signing Policy
+
+For our Windows release, free code signing is provided by [SignPath.io](https://signpath.io), certificate by [SignPath Foundation](https://signpath.org).

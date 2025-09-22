@@ -27,6 +27,11 @@
   ],
   "packageRules": [
     {
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["windows"],
+      "enabled": false
+    },
+    {
       "matchPackagePatterns": [
         "*"
       ],
