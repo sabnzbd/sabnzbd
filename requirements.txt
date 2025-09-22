@@ -7,7 +7,7 @@ cffi==2.0.0
 pycparser==2.23
 feedparser==6.0.12
 configobj==5.0.9
-cheroot==10.0.1
+cheroot==11.0.0
 six==1.17.0
 cherrypy==18.10.0
 jaraco.functools==4.3.0
@@ -16,7 +16,7 @@ jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
 more-itertools==10.8.0
-zc.lockfile==3.0.post1
+zc.lockfile==4.0
 python-dateutil==2.9.0.post0
 tempora==5.8.1
 pytz==2025.2
@@ -33,8 +33,8 @@ rebulk==3.2.0
 starlette==0.48.0
 anyio==4.10.0
 sniffio==1.3.1
-uvicorn==0.35.0
-click==8.2.1
+uvicorn==0.36.0
+click==8.3.0
 h11==0.16.0
 python-multipart==0.0.20
 httptools==0.6.4
