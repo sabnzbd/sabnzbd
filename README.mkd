@@ -30,7 +30,12 @@ This is the first Release Candidate for the 4.5.0 release.
 
 * Read `ISSUES.txt` or https://sabnzbd.org/wiki/introduction/known-issues
 
+## Code Signing Policy
+
+Windows code signing is provided by SignPath.io using a SignPath Foundation certificate.
+
 ## About
+
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically, thanks to its web-based
 user interface and advanced built-in post-processing options that automatically verify, repair,
