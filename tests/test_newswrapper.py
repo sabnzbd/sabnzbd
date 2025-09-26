@@ -94,6 +94,7 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> str | None:
         s.connect(address_to_connect_to)
         local_ip = s.getsockname()[0]
     except OSError as e:
+        # If the network is unreachable, it's probably that we don't have an IP for this Protocol
         if e.errno == errno.ENETUNREACH:
             return None
         else:
