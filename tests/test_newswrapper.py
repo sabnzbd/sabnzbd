@@ -18,6 +18,8 @@
 """
 tests.test_newswrapper - Tests of various functions in newswrapper
 """
+import errno
+import ipaddress
 import logging
 import os.path
 import socket
@@ -26,7 +28,7 @@ import threading
 import ssl
 import time
 import warnings
-from enum import StrEnum, auto
+from enum import Enum
 from typing import Optional
 import portend
 from flaky import flaky
@@ -40,9 +42,9 @@ TEST_HOST = "127.0.0.1"
 TEST_PORT = portend.find_available_local_port()
 TEST_DATA = b"connection_test"
 
-class IPProtocolVersion(StrEnum):
-    IPV4 = auto()
-    IPV6 = auto()
+class IPProtocolVersion(Enum):
+    IPV4 = 4
+    IPV6 = 6
 
 
 def socket_test_server(ssl_context: ssl.SSLContext):
@@ -66,26 +68,36 @@ def socket_test_server(ssl_context: ssl.SSLContext):
         server_socket.close()
 
 
-def get_local_ip(protocol_version: IPProtocolVersion) -> str:
+def get_local_ip(protocol_version: IPProtocolVersion) -> str | None:
     """
     Find the ip address that would be used to send traffic towards internet. Uses the UDP Socket trick: connect is not
     sending any traffic but already prefills what would be the sender ip address.
     """
     s: socket.socket | None = None
+    address_to_connect_to: tuple[str, int] | None = None
     match protocol_version:
         case IPProtocolVersion.IPV4:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            # Google DNS IPv4
+            address_to_connect_to = ('8.8.8.8', 80)
         case IPProtocolVersion.IPV6:
             s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+            # Google DNS IPv6
+            address_to_connect_to = ('2001:4860:4860::8888', 80)
         case _:
             raise ValueError(f"Unknown protocol version: {protocol_version}")
 
     assert s is not None, "Socket has not been assigned!"
+    assert address_to_connect_to is not None, "Address to connect to has not been assigned!"
+
     try:
-        s.connect(('8.8.8.8', 1))
+        s.connect(address_to_connect_to)
         local_ip = s.getsockname()[0]
-    except OSError:
-        local_ip = '127.0.0.1'
+    except OSError as e:
+        if e.errno == errno.ENETUNREACH:
+            return None
+        else:
+            raise
     finally:
         s.close()
     return local_ip
@@ -171,20 +183,22 @@ class TestNewsWrapper:
         time.sleep(1.0)
 
     @pytest.mark.parametrize(
-        "local_ip",
+        "local_ip, ip_protocol",
         [
-            get_local_ip(protocol_version=IPProtocolVersion.IPV4),
-            get_local_ip(protocol_version=IPProtocolVersion.IPV6),
-            None,
+            (get_local_ip(protocol_version=IPProtocolVersion.IPV4), IPProtocolVersion.IPV4),
+            (get_local_ip(protocol_version=IPProtocolVersion.IPV6), IPProtocolVersion.IPV6),
+            (None, None),
         ],
     )
-    def test_socket_binding_outgoing_interface(self, local_ip: str | None, monkeypatch):
+    def test_socket_binding_outgoing_interface(self, local_ip: str | None, ip_protocol: IPProtocolVersion | None, monkeypatch):
         """Test to make sure that the binding of outgoing interface works as expected."""
-        def mock_connect(self):
-            pass
+        if local_ip is None and ip_protocol is not None:
+            pytest.skip(f"No available ip for this protocol: {ip_protocol}")
+        elif ip_protocol is not None:
+            # We want to make sure the local ip is matching the version of the expected IP Protocol
+            assert ipaddress.ip_address(local_ip).version == ip_protocol.value
 
         nw = mock.Mock()
-        monkeypatch.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
 
         nw.blocking = True
         nw.thrdnum = 1
@@ -199,6 +213,12 @@ class TestNewsWrapper:
         nw.server.ssl_ciphers = None
 
         sabnzbd.cfg.outgoing_interface.set(local_ip)
+
+        # We mock the connect as it's being called in the Init, we want to have a "functional" newswrapper.NNTP instance
+        def mock_connect(self):
+            pass
+
+        monkeypatch.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
         nntp = newswrapper.NNTP(nw, nw.server.info)
         monkeypatch.undo()
 
