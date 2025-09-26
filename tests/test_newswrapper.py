@@ -191,7 +191,7 @@ class TestNewsWrapper:
             (None, None),
         ],
     )
-    def test_socket_binding_outgoing_interface(self, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch):
+    def test_socket_binding_outgoing_ip(self, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch):
         """Test to make sure that the binding of outgoing interface works as expected."""
         if local_ip is None and ip_protocol is not None:
             pytest.skip(f"No available ip for this protocol: {ip_protocol}")
@@ -213,7 +213,7 @@ class TestNewsWrapper:
         nw.server.ssl_verify = 0
         nw.server.ssl_ciphers = None
 
-        sabnzbd.cfg.outgoing_interface.set(local_ip)
+        sabnzbd.cfg.outgoing_ip.set(local_ip)
 
         # We mock the connect as it's being called in the Init, we want to have a "functional" newswrapper.NNTP instance
         def mock_connect(self):
