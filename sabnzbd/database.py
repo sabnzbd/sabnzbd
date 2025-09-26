@@ -232,6 +232,11 @@ class HistoryDB:
         logging.info("Removing all jobs with status=%s", status)
         self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, status))
 
+    def mark_as_completed(self, job: str):
+        """Mark a job as completed in the history"""
+        self.execute("""UPDATE history SET status = ? WHERE nzo_id = ?""", (Status.COMPLETED, job))
+        logging.info("[%s] Marked job %s as completed", caller_name(), job)
+
     def get_failed_paths(self, search: Optional[str] = None) -> List[str]:
         """Return list of all storage paths of failed jobs (may contain non-existing or empty paths)"""
         search = convert_search(search)

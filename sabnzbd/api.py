@@ -533,6 +533,22 @@ def _api_history(name: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
             return report()
         else:
             return report(_MSG_NO_VALUE)
+    elif name == "mark_as_completed":
+        if value:
+            history_db = sabnzbd.get_db_connection()
+            for job in clean_comma_separated_list(value):
+                # Get incomplete path before marking as completed
+                incomplete_path = history_db.get_incomplete_path(job)
+                history_db.mark_as_completed(job)
+
+                # Remove incomplete folder if it exists
+                if incomplete_path:
+                    remove_all(incomplete_path, recursive=True)
+
+            history_updated()
+            return report()
+        else:
+            return report(_MSG_NO_VALUE)
     elif not name:
         # Do we need to send anything?
         if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
