@@ -75,17 +75,16 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
     """
     s: Optional[socket.socket] = None
     address_to_connect_to: Optional[Tuple[str, int]] = None
-    match protocol_version:
-        case IPProtocolVersion.IPV4:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            # Google DNS IPv4
-            address_to_connect_to = ('8.8.8.8', 80)
-        case IPProtocolVersion.IPV6:
-            s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-            # Google DNS IPv6
-            address_to_connect_to = ('2001:4860:4860::8888', 80)
-        case _:
-            raise ValueError(f"Unknown protocol version: {protocol_version}")
+    if protocol_version == IPProtocolVersion.IPV4:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Google DNS IPv4
+        address_to_connect_to = ('8.8.8.8', 80)
+    elif protocol_version == IPProtocolVersion.IPV6:
+        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        # Google DNS IPv6
+        address_to_connect_to = ('2001:4860:4860::8888', 80)
+    else:
+        raise ValueError(f"Unknown protocol version: {protocol_version}")
 
     assert s is not None, "Socket has not been assigned!"
     assert address_to_connect_to is not None, "Address to connect to has not been assigned!"
