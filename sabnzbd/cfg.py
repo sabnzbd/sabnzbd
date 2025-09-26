@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional
 
 import sabnzbd
 from sabnzbd.config import (
@@ -57,7 +57,7 @@ from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_ne
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
-ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None]]
+ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None], Tuple[None, None]]
 
 
 ##############################################################################
@@ -218,6 +218,12 @@ def validate_host(value: str) -> ValidateResult:
     # if we get here, it is not valid host, so return None
     return T("Invalid server address."), None
 
+def validate_optional_host(value: Optional[str]) -> ValidateResult:
+    """Check if optional host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
+    if value is None:
+        return None, value
+
+    return validate_host(value)
 
 def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""
@@ -347,6 +353,7 @@ language = OptionStr("misc", "language", "en")
 enable_https_verification = OptionBool("misc", "enable_https_verification", True)
 web_host = OptionStr("misc", "host", DEF_HOST, validation=validate_host)
 web_port = OptionStr("misc", "port", DEF_PORT)
+outgoing_interface = OptionStr("misc", "outgoing_interface", default_val=None, validation=validate_host)
 https_port = OptionStr("misc", "https_port")
 username = OptionStr("misc", "username")
 password = OptionPassword("misc", "password")

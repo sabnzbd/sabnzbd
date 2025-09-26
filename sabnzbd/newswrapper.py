@@ -342,6 +342,21 @@ class NNTP:
             self.sock.settimeout(self.nw.server.timeout)
 
             # Connect
+            outgoing_interface = sabnzbd.cfg.outgoing_interface()
+            if outgoing_interface is not None:
+                try:
+                    self.sock.bind((outgoing_interface, 0))
+                    socket_info = self.sock.getsockname()
+                    logging.debug(
+                        "%s@%s: Successfully bound to following ip address: %s at following port: %d",
+                        self.nw.thrdnum,
+                        self.nw.server.host,
+                        socket_info[0],
+                        socket_info[1],
+                    )
+                except socket.error as e:
+                    raise RuntimeError(f"An error occurred while binding to outgoing interface: {e}") from e
+
             self.sock.connect(self.addrinfo.sockaddr)
 
             # Secured or unsecured?

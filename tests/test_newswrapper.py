@@ -26,6 +26,7 @@ import threading
 import ssl
 import time
 import warnings
+from enum import StrEnum, auto
 from typing import Optional
 import portend
 from flaky import flaky
@@ -39,14 +40,18 @@ TEST_HOST = "127.0.0.1"
 TEST_PORT = portend.find_available_local_port()
 TEST_DATA = b"connection_test"
 
+class IPProtocolVersion(StrEnum):
+    IPV4 = auto()
+    IPV6 = auto()
 
-def socket_test_server(ssl_context: ssl.SSLContext):
+
+def socket_test_server(ssl_context: ssl.SSLContext, host: str = TEST_HOST, port: int = TEST_PORT):
     """Support function that starts a mini-server"""
     # Allow reuse of the address, because our CI is too fast for the socket closing
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
-        server_socket.bind((TEST_HOST, TEST_PORT))
+        server_socket.bind((host, port))
         server_socket.listen(1)
         server_socket.settimeout(1.0)
         conn, _ = server_socket.accept()
@@ -59,6 +64,31 @@ def socket_test_server(ssl_context: ssl.SSLContext):
     finally:
         # Make sure to close the socket
         server_socket.close()
+
+
+def get_local_ip(protocol_version: IPProtocolVersion) -> str:
+    """
+    Find the ip address that would be used to send traffic towards internet. Uses the UDP Socket trick: connect is not
+    sending any traffic but already prefills what would be the sender ip address.
+    """
+    s: socket.socket | None = None
+    match protocol_version:
+        case IPProtocolVersion.IPV4:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        case IPProtocolVersion.IPV6:
+            s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        case _:
+            raise ValueError(f"Unknown protocol version: {protocol_version}")
+
+    assert s is not None, "Socket has not been assigned!"
+    try:
+        s.connect(('8.8.8.8', 1))
+        local_ip = s.getsockname()[0]
+    except OSError:
+        local_ip = '127.0.0.1'
+    finally:
+        s.close()
+    return local_ip
 
 
 @flaky
@@ -139,3 +169,48 @@ class TestNewsWrapper:
         if server_thread.is_alive():
             raise RuntimeError("Test server was not stopped")
         time.sleep(1.0)
+
+    @pytest.mark.parametrize(
+        "local_ip",
+        [
+            get_local_ip(protocol_version=IPProtocolVersion.IPV4),
+            get_local_ip(protocol_version=IPProtocolVersion.IPV6),
+            None,
+        ],
+    )
+    def test_socket_binding_outgoing_interface(self, local_ip: str | None, monkeypatch):
+        """Test to make sure that the binding of outgoing interface works as expected."""
+        new_local_port = portend.find_available_local_port()
+
+        def mock_connect(self):
+            pass
+
+        nw = mock.Mock()
+        monkeypatch.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
+
+        nw.blocking = True
+        nw.thrdnum = 1
+        nw.server = mock.Mock()
+        nw.server.host = TEST_HOST
+        nw.server.port = new_local_port
+        nw.server.info = AddrInfo(*socket.getaddrinfo(TEST_HOST, new_local_port, 0, socket.SOCK_STREAM)[0])
+        nw.server.timeout = 10
+        nw.server.ssl = True
+        nw.server.ssl_context = None
+        nw.server.ssl_verify = 0
+        nw.server.ssl_ciphers = None
+
+        sabnzbd.cfg.outgoing_interface.set(local_ip)
+        nntp = newswrapper.NNTP(nw, nw.server.info)
+        monkeypatch.undo()
+
+        # The connection has crashed but the socket should have been bound to the provided ip in the configuration
+        with pytest.raises(OSError, match="Connection refused"):
+            nntp.connect()
+
+        current_ip, _ = nntp.sock.getsockname()
+        if local_ip is not None:
+            assert current_ip == local_ip
+        else:
+            assert current_ip is not None
+        nntp.close(send_quit=False)
