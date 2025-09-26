@@ -180,8 +180,6 @@ class TestNewsWrapper:
     )
     def test_socket_binding_outgoing_interface(self, local_ip: str | None, monkeypatch):
         """Test to make sure that the binding of outgoing interface works as expected."""
-        new_local_port = portend.find_available_local_port()
-
         def mock_connect(self):
             pass
 
@@ -192,8 +190,8 @@ class TestNewsWrapper:
         nw.thrdnum = 1
         nw.server = mock.Mock()
         nw.server.host = TEST_HOST
-        nw.server.port = new_local_port
-        nw.server.info = AddrInfo(*socket.getaddrinfo(TEST_HOST, new_local_port, 0, socket.SOCK_STREAM)[0])
+        nw.server.port = TEST_PORT
+        nw.server.info = AddrInfo(*socket.getaddrinfo(TEST_HOST, TEST_PORT, 0, socket.SOCK_STREAM)[0])
         nw.server.timeout = 10
         nw.server.ssl = True
         nw.server.ssl_context = None
