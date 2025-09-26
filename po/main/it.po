@@ -2429,6 +2429,11 @@ msgstr "Nome"
 msgid "Retry"
 msgstr "Riprova"
 
+#. History page button
+#: sabnzbd/skintext.py
+msgid "Mark as Completed & Remove Temporary Files"
+msgstr ""
+
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
