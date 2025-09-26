@@ -45,13 +45,13 @@ class IPProtocolVersion(StrEnum):
     IPV6 = auto()
 
 
-def socket_test_server(ssl_context: ssl.SSLContext, host: str = TEST_HOST, port: int = TEST_PORT):
+def socket_test_server(ssl_context: ssl.SSLContext):
     """Support function that starts a mini-server"""
     # Allow reuse of the address, because our CI is too fast for the socket closing
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
-        server_socket.bind((host, port))
+        server_socket.bind((TEST_HOST, TEST_PORT))
         server_socket.listen(1)
         server_socket.settimeout(1.0)
         conn, _ = server_socket.accept()
