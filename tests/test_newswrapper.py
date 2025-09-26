@@ -29,7 +29,7 @@ import ssl
 import time
 import warnings
 from enum import Enum
-from typing import Optional
+from typing import Optional, Tuple
 import portend
 from flaky import flaky
 
@@ -68,13 +68,13 @@ def socket_test_server(ssl_context: ssl.SSLContext):
         server_socket.close()
 
 
-def get_local_ip(protocol_version: IPProtocolVersion) -> str | None:
+def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
     """
     Find the ip address that would be used to send traffic towards internet. Uses the UDP Socket trick: connect is not
     sending any traffic but already prefills what would be the sender ip address.
     """
-    s: socket.socket | None = None
-    address_to_connect_to: tuple[str, int] | None = None
+    s: Optional[socket.socket] = None
+    address_to_connect_to: Optional[Tuple[str, int]] = None
     match protocol_version:
         case IPProtocolVersion.IPV4:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -191,7 +191,7 @@ class TestNewsWrapper:
             (None, None),
         ],
     )
-    def test_socket_binding_outgoing_interface(self, local_ip: str | None, ip_protocol: IPProtocolVersion | None, monkeypatch):
+    def test_socket_binding_outgoing_interface(self, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch):
         """Test to make sure that the binding of outgoing interface works as expected."""
         if local_ip is None and ip_protocol is not None:
             pytest.skip(f"No available ip for this protocol: {ip_protocol}")
