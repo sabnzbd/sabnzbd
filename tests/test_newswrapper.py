@@ -94,7 +94,8 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
         local_ip = s.getsockname()[0]
     except OSError as e:
         # If the network is unreachable, it's probably that we don't have an IP for this Protocol
-        if e.errno == errno.ENETUNREACH:
+        # On Linux, we would get ENETUNREACH where on Mac OS we would get EHOSTUNREACH
+        if e.errno == errno.ENETUNREACH or e.errno == errno.EHOSTUNREACH:
             return None
         else:
             raise
