@@ -245,5 +245,5 @@ class TestValidators:
             None,
         ]
         for ip in different_behavior_inputs_to_validate:
-            assert cfg.validate_host(ip) == ('Invalid server address.', None)
+            assert cfg.validate_host(ip) == ("Invalid server address.", None)
             assert cfg.validate_optional_host(ip) == (None, None)

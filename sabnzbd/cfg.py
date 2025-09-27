@@ -218,12 +218,14 @@ def validate_host(value: str) -> ValidateResult:
     # if we get here, it is not valid host, so return None
     return T("Invalid server address."), None
 
+
 def validate_optional_host(value: Optional[str]) -> ValidateResult:
     """Check if optional host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
     if value is None:
         return None, value
 
     return validate_host(value)
+
 
 def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""

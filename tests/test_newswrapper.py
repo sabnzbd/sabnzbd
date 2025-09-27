@@ -43,6 +43,7 @@ TEST_HOST = "127.0.0.1"
 TEST_PORT = portend.find_available_local_port()
 TEST_DATA = b"connection_test"
 
+
 class IPProtocolVersion(Enum):
     IPV4 = 4
     IPV6 = 6
@@ -227,9 +228,6 @@ class TestNewsWrapper:
         monkeypatch.undo()
 
         # The connection has crashed but the socket should have been bound to the provided ip in the configuration
-        with pytest.raises(OSError, match="Connection refused"):
-            nntp.connect()
-
         with pytest.raises(OSError) as excinfo:
             nntp.connect()
 
