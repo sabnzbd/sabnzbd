@@ -232,8 +232,8 @@ class TestNewsWrapper:
             nntp.connect()
 
         if sys.platform == "win32":
-            # On Windows, the error code for this is WSAEADDRNOTAVAIL (10049)
-            assert excinfo.value.winerror == 10049
+            # On Windows, the error code for this is WSAECONNREFUSED (10061)
+            assert excinfo.value.errno == errno.WSAECONNREFUSED
         else:
             # On Linux and macOS, the error code is ECONNREFUSED
             assert excinfo.value.errno == errno.ECONNREFUSED
