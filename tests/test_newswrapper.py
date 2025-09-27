@@ -23,6 +23,7 @@ import ipaddress
 import logging
 import os.path
 import socket
+import sys
 import tempfile
 import threading
 import ssl
@@ -78,11 +79,11 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
     if protocol_version == IPProtocolVersion.IPV4:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Google DNS IPv4
-        address_to_connect_to = ('8.8.8.8', 80)
+        address_to_connect_to = ("8.8.8.8", 80)
     elif protocol_version == IPProtocolVersion.IPV6:
         s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         # Google DNS IPv6
-        address_to_connect_to = ('2001:4860:4860::8888', 80)
+        address_to_connect_to = ("2001:4860:4860::8888", 80)
     else:
         raise ValueError(f"Unknown protocol version: {protocol_version}")
 
@@ -191,7 +192,9 @@ class TestNewsWrapper:
             (None, None),
         ],
     )
-    def test_socket_binding_outgoing_ip(self, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch):
+    def test_socket_binding_outgoing_ip(
+        self, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch
+    ):
         """Test to make sure that the binding of outgoing interface works as expected."""
         if local_ip is None and ip_protocol is not None:
             pytest.skip(f"No available ip for this protocol: {ip_protocol}")
@@ -226,6 +229,16 @@ class TestNewsWrapper:
         # The connection has crashed but the socket should have been bound to the provided ip in the configuration
         with pytest.raises(OSError, match="Connection refused"):
             nntp.connect()
+
+        with pytest.raises(OSError) as excinfo:
+            nntp.connect()
+
+        if sys.platform == "win32":
+            # On Windows, the error code for this is WSAEADDRNOTAVAIL (10049)
+            assert excinfo.value.winerror == 10049
+        else:
+            # On Linux and macOS, the error code is ECONNREFUSED
+            assert excinfo.value.errno == errno.ECONNREFUSED
 
         current_ip, _ = nntp.sock.getsockname()
         if local_ip is not None:
