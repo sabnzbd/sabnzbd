@@ -456,6 +456,50 @@ function QueueListModel(parent) {
         self.triggerRemoveDownload(self.multiEditItems())
     }
 
+    // Move all selected to top
+    self.doMultiMoveToTop = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        // Move each item to the top, starting from the last one in the sorted list
+        var arrayList = self.multiEditItems()
+        var movePromises = [];
+        for(var i = arrayList.length - 1; i >= 0; i--) {
+            movePromises.push(callAPI({
+                mode: "switch",
+                value: arrayList[i].id,
+                value2: 0
+            }));
+        }
+
+        // Wait for all moves to complete then refresh
+        Promise.all(movePromises).then(function() {
+            self.parent.refresh();
+        });
+    }
+
+    // Move all selected to bottom
+    self.doMultiMoveToBottom = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        // Move each item to the bottom, starting from the first one in the sorted list
+        var arrayList = self.multiEditItems()
+        var movePromises = [];
+        for(var i = 0; i < arrayList.length; i++) {
+            movePromises.push(callAPI({
+                mode: "switch",
+                value: arrayList[i].id,
+                value2: self.totalItems() - 1
+            }));
+        }
+
+        // Wait for all moves to complete then refresh
+        Promise.all(movePromises).then(function() {
+            self.parent.refresh();
+        });
+    }
+
     // Focus on the confirm button
     $('#modal-delete-queue-job').on("shown.bs.modal", function() {
         $('#modal-delete-queue-job .btn[type="submit"]').focus()
