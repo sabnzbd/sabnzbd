@@ -31,9 +31,9 @@ rebulk==3.2.0
 
 # New for starlette/uvicorn
 starlette==0.48.0
-anyio==4.10.0
+anyio==4.11.0
 sniffio==1.3.1
-uvicorn==0.36.0
+uvicorn==0.37.0
 click==8.3.0
 h11==0.16.0
 python-multipart==0.0.20
@@ -68,7 +68,7 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 # Apprise Requirements
 requests==2.32.5
 requests-oauthlib==2.0.0
-PyYAML==6.0.2
+PyYAML==6.0.3
 markdown==3.9
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
