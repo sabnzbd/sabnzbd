@@ -28,7 +28,7 @@
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
-      "matchPackageNames": ["windows"],
+      "matchPackageNames": ["windows", "macos"],
       "enabled": false
     },
     {
