@@ -2454,7 +2454,7 @@ msgstr "Réessayer"
 #. History page button
 #: sabnzbd/skintext.py
 msgid "Mark as Completed & Remove Temporary Files"
-msgstr ""
+msgstr " Marquer comme terminé & supprimer les fichiers temporaires"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
