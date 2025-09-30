@@ -66,7 +66,7 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import Status, JOB_ADMIN
+from sabnzbd.constants import Status
 
 
 # Regex globals
@@ -647,14 +647,13 @@ def rar_extract_core(
     """
     start = time.time()
 
-    logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
+    logging.debug("Extraction path: %s", extraction_path)
+    logging.debug("Found rar version: %s", rarfile.is_rarfile(rarfile_path))
 
     if password:
         password_command = "-p%s" % password
     else:
         password_command = "-p-"
-
-    ############################################################################
 
     if one_folder or cfg.flat_unpack():
         action = "e"
@@ -667,24 +666,7 @@ def rar_extract_core(
         overwrite = "-o-"  # Disable overwrite
         rename = "-or"  # Auto renaming
 
-    if sabnzbd.WINDOWS:
-        # On Windows, UnRar uses a custom argument parser
-        # See: https://github.com/sabnzbd/sabnzbd/issues/1043
-        # The -scf forces the output to be UTF8
-        command = [
-            RAR_COMMAND,
-            action,
-            "-idp",
-            "-scf",
-            overwrite,
-            rename,
-            "-ai",
-            password_command,
-            rarfile_path,
-            "%s\\" % long_path(extraction_path),
-        ]
-
-    elif RAR_PROBLEM:
+    if RAR_PROBLEM:
         # Use only oldest options, specifically no "-or" or "-scf"
         command = [
             RAR_COMMAND,
@@ -693,10 +675,11 @@ def rar_extract_core(
             overwrite,
             password_command,
             rarfile_path,
-            "%s/" % extraction_path,
+            extraction_path,
         ]
     else:
         # The -scf forces the output to be UTF8
+        # On Windows, specifically remove long path from destination so Unrar handles it
         command = [
             RAR_COMMAND,
             action,
@@ -707,17 +690,17 @@ def rar_extract_core(
             "-ai",
             password_command,
             rarfile_path,
-            "%s/" % extraction_path,
+            clip_path(extraction_path),
         ]
 
-    if cfg.ignore_unrar_dates():
-        command.insert(3, "-tsm-")
-    if not RAR_PROBLEM and (unrar_parameters := cfg.unrar_parameters().strip().split()):
-        for param in unrar_parameters:
-            command.insert(-2, param)
+        if cfg.ignore_unrar_dates():
+            command.insert(3, "-tsm-")
+        if unrar_parameters := cfg.unrar_parameters().split():
+            for param in unrar_parameters:
+                command.insert(-2, param)
 
-    # Get list of all the volumes part of this set
-    logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
+    # On Windows, UnRar uses a custom argument parser
+    # See: https://github.com/sabnzbd/sabnzbd/issues/1043
     p = build_and_run_command(command, windows_unrar_command=True)
     sabnzbd.PostProcessor.external_process = p
 
@@ -793,11 +776,21 @@ def rar_extract_core(
             requires_kill = True
 
         elif line.startswith("Cannot create"):
-            line2 = p.stdout.readline()
-            if "must not exceed 260" in line2:
-                msg = "%s: %s" % (T("Unpacking failed, path is too long"), line[13:])
-            else:
-                msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line[13:])
+            # Check if maybe it can be salvaged
+            line = p.stdout.readline()
+            lines.append(line.strip())
+            # Error is different on Linux and Windows
+            if line.startswith(("Invalid argument", "The filename, directory name, or volume label syntax")):
+                # Read another line
+                line = p.stdout.readline()
+                lines.append(line.strip())
+                # Will it try to correct?
+                if line.startswith("WARNING: Attempting to correct"):
+                    # Great! Let it try
+                    logging.info("Unrar detected invalid filename and is attempting to correct")
+                    continue
+
+            msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line)
             nzo.fail_msg = msg
             nzo.set_unpack_info("Unpack", msg, setname)
             fail = 1

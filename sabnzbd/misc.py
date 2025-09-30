@@ -24,7 +24,6 @@ import platform
 import ssl
 import sys
 import logging
-import functools
 import urllib.request
 import urllib.parse
 import re

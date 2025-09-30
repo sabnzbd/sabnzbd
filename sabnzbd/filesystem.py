@@ -33,7 +33,6 @@ import fnmatch
 import stat
 import ctypes
 import random
-import functools
 from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
