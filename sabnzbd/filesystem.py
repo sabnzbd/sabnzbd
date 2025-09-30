@@ -1242,6 +1242,10 @@ def check_filesystem_capabilities(test_dir: str) -> bool:
 
     # if not on Windows, check special chars like \ and :
     if not sabnzbd.WINDOWS and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
+        # Always enable "Make Windows Compatible"
+        sabnzbd.cfg.sanitize_safe.set(True)
+
+        # However, external programs like unrar can still try to write them so we still warn the user
         sabnzbd.misc.helpful_warning(
             T("%s is not writable with special character filenames. This can cause problems."), test_dir
         )
