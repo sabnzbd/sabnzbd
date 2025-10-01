@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple, Union, Optional
+from typing import List, Tuple, Union
 
 import sabnzbd
 from sabnzbd.config import (
