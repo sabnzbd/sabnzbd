@@ -220,30 +220,13 @@ class TestValidators:
 
     def test_validate_host(self):
         # valid input
-        inputs_to_validate = [
-            (None, "127.0.0.1"),
-            (None, "0.0.0.0"),
-            (None, "1.1.1.1"),
-            (None, "::1"),
-            (None, "::"),
-        ]
-        for error, ip in inputs_to_validate:
-            assert cfg.validate_host(ip) == (error, ip)
-            assert cfg.validate_optional_host(ip) == (error, ip)
+        assert cfg.validate_host("127.0.0.1") == (None, "127.0.0.1")
+        assert cfg.validate_host("0.0.0.0") == (None, "0.0.0.0")
+        assert cfg.validate_host("1.1.1.1") == (None, "1.1.1.1")
+        assert cfg.validate_host("::1") == (None, "::1")
+        assert cfg.validate_host("::") == (None, "::")
 
         # non-valid input. Should return None as second parameter
-        invalid_inputs_to_validate = [
-            "0.0.0.0.",
-            "kajkdjflkjasd",
-            "100",
-        ]
-        for ip in invalid_inputs_to_validate:
-            assert cfg.validate_host(ip)[1] is None
-            assert cfg.validate_optional_host(ip)[1] is None
-
-        different_behavior_inputs_to_validate = [
-            None,
-        ]
-        for ip in different_behavior_inputs_to_validate:
-            assert cfg.validate_host(ip) == ("Invalid server address.", None)
-            assert cfg.validate_optional_host(ip) == (None, None)
+        assert not cfg.validate_host("0.0.0.0.")[1]  # Trailing dot
+        assert not cfg.validate_host("kajkdjflkjasd")[1]  # does not resolve
+        assert not cfg.validate_host("100")[1]  # just a number

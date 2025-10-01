@@ -190,7 +190,7 @@ class TestNewsWrapper:
         [
             (get_local_ip(protocol_version=IPProtocolVersion.IPV4), IPProtocolVersion.IPV4),
             (get_local_ip(protocol_version=IPProtocolVersion.IPV6), IPProtocolVersion.IPV6),
-            (None, None),
+            ("", None),
         ],
     )
     def test_socket_binding_outgoing_ip(
@@ -239,7 +239,7 @@ class TestNewsWrapper:
             assert excinfo.value.errno == errno.ECONNREFUSED
 
         current_ip, _ = nntp.sock.getsockname()
-        if local_ip is not None:
+        if local_ip != "":
             assert current_ip == local_ip
         else:
             assert current_ip is not None
