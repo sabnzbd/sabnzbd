@@ -342,7 +342,7 @@ class NNTP:
             self.sock.settimeout(self.nw.server.timeout)
 
             # Connect
-            outgoing_ip = sabnzbd.cfg.outgoing_ip()
+            outgoing_ip = sabnzbd.cfg.outgoing_nttp_ip()
             if outgoing_ip is not None:
                 try:
                     self.sock.bind((outgoing_ip, 0))
@@ -354,8 +354,8 @@ class NNTP:
                         socket_info[0],
                         socket_info[1],
                     )
-                except socket.error as e:
-                    raise RuntimeError(f"An error occurred while binding to outgoing interface: {e}") from e
+                except socket.error:
+                    logging.exception("An error occurred while binding to outgoing interface")
 
             self.sock.connect(self.addrinfo.sockaddr)
 

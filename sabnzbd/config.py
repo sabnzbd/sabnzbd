@@ -353,7 +353,7 @@ class OptionStr(Option):
         self,
         section: str,
         keyword: str,
-        default_val: Optional[str] = "",
+        default_val: str = "",
         validation: Optional[Callable] = None,
         add: bool = True,
         strip: bool = True,

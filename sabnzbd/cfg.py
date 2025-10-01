@@ -57,7 +57,7 @@ from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_ne
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
-ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None], Tuple[None, None]]
+ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None]]
 
 
 ##############################################################################
@@ -219,14 +219,6 @@ def validate_host(value: str) -> ValidateResult:
     return T("Invalid server address."), None
 
 
-def validate_optional_host(value: Optional[str]) -> ValidateResult:
-    """Check if optional host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
-    if value is None:
-        return None, value
-
-    return validate_host(value)
-
-
 def validate_script(value: str) -> ValidateResult:
     """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and is_valid_script(value)):
@@ -355,7 +347,6 @@ language = OptionStr("misc", "language", "en")
 enable_https_verification = OptionBool("misc", "enable_https_verification", True)
 web_host = OptionStr("misc", "host", DEF_HOST, validation=validate_host)
 web_port = OptionStr("misc", "port", DEF_PORT)
-outgoing_ip = OptionStr("misc", "outgoing_ip", default_val=None, validation=validate_optional_host)
 https_port = OptionStr("misc", "https_port")
 username = OptionStr("misc", "username")
 password = OptionPassword("misc", "password")
@@ -540,6 +531,7 @@ switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 unrar_parameters = OptionStr("misc", "unrar_parameters", validation=supported_unrar_parameters)
+outgoing_nttp_ip = OptionStr("misc", "outgoing_nttp_ip", default_val="")
 
 
 ##############################################################################

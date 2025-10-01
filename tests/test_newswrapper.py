@@ -217,7 +217,7 @@ class TestNewsWrapper:
         nw.server.ssl_verify = 0
         nw.server.ssl_ciphers = None
 
-        sabnzbd.cfg.outgoing_ip.set(local_ip)
+        sabnzbd.cfg.outgoing_nttp_ip.set(local_ip)
 
         # We mock the connect as it's being called in the Init, we want to have a "functional" newswrapper.NNTP instance
         def mock_connect(self):
