@@ -531,7 +531,7 @@ switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 unrar_parameters = OptionStr("misc", "unrar_parameters", validation=supported_unrar_parameters)
-outgoing_nttp_ip = OptionStr("misc", "outgoing_nttp_ip", default_val="")
+outgoing_nntp_ip = OptionStr("misc", "outgoing_nntp_ip")
 
 
 ##############################################################################

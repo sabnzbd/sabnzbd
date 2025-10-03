@@ -342,10 +342,9 @@ class NNTP:
             self.sock.settimeout(self.nw.server.timeout)
 
             # Connect
-            outgoing_nttp_ip = sabnzbd.cfg.outgoing_nttp_ip()
-            if outgoing_nttp_ip != "":
+            if outgoing_nntp_ip := sabnzbd.cfg.outgoing_nntp_ip():
                 try:
-                    self.sock.bind((outgoing_nttp_ip, 0))
+                    self.sock.bind((outgoing_nntp_ip, 0))
                     socket_info = self.sock.getsockname()
                     logging.debug(
                         "%s@%s: Successfully bound to following ip address: %s at following port: %d",
@@ -355,7 +354,7 @@ class NNTP:
                         socket_info[1],
                     )
                 except socket.error:
-                    logging.exception("An error occurred while binding to outgoing interface")
+                    raise ConnectionError(f"Could not bind to outgoing interface {outgoing_nntp_ip}")
 
             self.sock.connect(self.addrinfo.sockaddr)
 
