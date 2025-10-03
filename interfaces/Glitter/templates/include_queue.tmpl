@@ -179,11 +179,11 @@
             </a>
         </div>
         <div class="add-nzb-inputbox add-nzb-inputbox-small">
-            <label for="multiedit-play">
+            <label for="multiedit-play" data-bind="event: { mousedown: queue.handleMultiEditStatusMouseDown }">
                 <input type="radio" name="multiedit-status" value="resume" id="multiedit-play" data-bind="event: { change: queue.doMultiEditUpdate }" />
                 <span class="glyphicon glyphicon-play" title="$T('link-resume')" data-tooltip="true" data-placement="top"></span>
             </label>
-            <label for="multiedit-pause">
+            <label for="multiedit-pause" data-bind="event: { mousedown: queue.handleMultiEditStatusMouseDown }">
                 <input type="radio" name="multiedit-status" value="pause" id="multiedit-pause" data-bind="event: { change: queue.doMultiEditUpdate }" />
                 <span class="glyphicon glyphicon-pause" title="$T('link-pause')" data-tooltip="true" data-placement="top"></span>
             </label>
