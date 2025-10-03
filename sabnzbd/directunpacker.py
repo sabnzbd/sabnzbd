@@ -36,7 +36,8 @@ from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left
 from sabnzbd.postproc import prepare_extraction_path
-from sabnzbd.utils.rarfile import RarFile
+from sabnzbd.misc import SABRarFile
+import rarfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 # Need a lock to make sure start and stop is handled correctly
@@ -494,8 +495,8 @@ class DirectUnpacker(threading.Thread):
                 if one_folder:
                     # RarFile can fail for mysterious reasons
                     try:
-                        rar_contents = RarFile(
-                            os.path.join(self.nzo.download_path, rarfile_nzf.filename), single_file_check=True
+                        rar_contents = SABRarFile(
+                            os.path.join(self.nzo.download_path, rarfile_nzf.filename), part_only=True
                         ).filelist()
                         for rm_file in rar_contents:
                             # Flat-unpack, so remove foldername from RarFile output

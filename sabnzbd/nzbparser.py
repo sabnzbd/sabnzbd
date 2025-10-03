@@ -43,7 +43,8 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.misc import name_to_cat, cat_pp_script_sanitizer
 from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES, AddNzbFileResult
-from sabnzbd.utils import rarfile
+from sabnzbd.misc import SABRarFile
+import rarfile
 
 
 def add_nzbfile(
@@ -169,7 +170,7 @@ def process_nzb_archive_file(
         if zipfile.is_zipfile(path):
             zf = zipfile.ZipFile(path)
         elif rarfile.is_rarfile(path):
-            zf = rarfile.RarFile(path)
+            zf = SABRarFile(path)
         elif sabnzbd.newsunpack.is_sevenfile(path):
             zf = sabnzbd.newsunpack.SevenZip(path)
         else:

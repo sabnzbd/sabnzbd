@@ -28,11 +28,11 @@ import time
 import io
 import shutil
 import functools
+import rarfile
 from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union, Set
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
-import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import (
     format_time_string,
     find_on_path,
@@ -44,6 +44,7 @@ from sabnzbd.misc import (
     build_and_run_command,
     format_time_left,
     is_none,
+    SABRarFile,
 )
 from sabnzbd.filesystem import (
     make_script_path,
@@ -1467,7 +1468,7 @@ def rar_volumelist(rarfile_path: str, password: str, known_volumes: List[str]) -
     # UnRar is required to read some RAR files
     # RarFile can fail in special cases
     try:
-        zf = rarfile.RarFile(rarfile_path)
+        zf = SABRarFile(rarfile_path)
 
         # setpassword can fail due to bugs in RarFile
         if password:

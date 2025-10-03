@@ -25,6 +25,7 @@ portend==3.2.1
 chardet==5.2.0
 PySocks==1.7.1
 puremagic==1.30
+rarfile==4.2
 guessit==3.8.0
 babelfish==0.6.1
 rebulk==3.2.0

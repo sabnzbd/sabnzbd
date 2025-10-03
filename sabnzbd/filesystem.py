@@ -54,7 +54,7 @@ from sabnzbd.constants import (
     DEX_FILE_EXTENSION_MAX,
 )
 from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
-from sabnzbd.utils import rarfile
+import rarfile
 
 
 # For Windows: determine executable extensions
