@@ -326,7 +326,7 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element, By.ID, "next-button").click()
         self.no_page_crash()
         check_result = self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "quoteBlock").text
-        assert "http://%s:%s/" % (SAB_HOST, SAB_PORT) in check_result
+        assert "http://%s:%s" % (SAB_HOST, SAB_PORT) in check_result
 
         # Go to SAB!
         self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, ".btn.btn-success").click()
