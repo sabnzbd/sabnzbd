@@ -1,10 +1,18 @@
-Release Notes - SABnzbd 4.5.4 Beta 1
+Release Notes - SABnzbd 4.5.4 Beta 2
 =========================================================
 
 ## Bug fixes and changes in 4.5.4
 
+* Add option to History details to mark job as `Completed`.
 * Handle `S04 - 10` (anime) episode notation for Sorting and Duplicate Detection.
+* Add Move to Top/Bottom options to Multi-Operations.
+* Require correct server test in setup wizard.
+* Add option `outgoing_nntp_ip` to bind outgoing NNTP connections to specific IP.
+* Unselect Play/Resume in Multi-Operations on second click.
+* Let Unrar handle rename of invalid characters on Windows filesystem.
 * Active connections counter in Status window were not updated correctly.
+* Job setting changes during URL-grabbing would sometimes be ignored.
+* Linux: Enable `Make Windows compatible` automatically if needed.
 * Windows: Release is now signed using SignPath Foundation certificate.
 * Windows: Start SABnzbd directly from the installer.
 
