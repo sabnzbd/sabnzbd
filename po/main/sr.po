@@ -1072,10 +1072,6 @@ msgid "Unpacking failed, disk full"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "Neuspešno raspakivanje, putanja je predugačka"
-
-#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
 msgstr "Neuspešno raspakivanje, arhiva zahteva lozinku"
 

@@ -1149,10 +1149,6 @@ msgid "Unpacking failed, disk full"
 msgstr "Error al descomprimir, disco lleno"
 
 #: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "Aperture de archivo fallo, la via es muy larga"
-
-#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
 msgstr "Error al descomprimir; El archivo está protegido por contraseña"
 

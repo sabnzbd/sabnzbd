@@ -1135,10 +1135,6 @@ msgid "Unpacking failed, disk full"
 msgstr "Estrazione fallita, disco pieno"
 
 #: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "Estrazione fallita, percorso troppo lungo"
-
-#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
 msgstr "Estrazione fallita, l'archivio richiede una password"
 
