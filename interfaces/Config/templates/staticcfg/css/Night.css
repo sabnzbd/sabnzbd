@@ -50,7 +50,6 @@ textarea,
 .navbar-default .navbar-nav>li>a:focus,
 .navbar-logo:hover,
 .quoteBlock,
-.selected,
 .server-disabled,
 #serverResponse,
 .table>tbody>tr:nth-child(odd),
@@ -62,28 +61,8 @@ select:hover {
     color: #EBEBEB !important;
 }
 
-.correct {
-    border: 2px solid #00cc22 !important;
-}
-
-.failed,
-.required-star,
-.error-text {
+.failed {
     color: #ff3333 !important;
-}
-
-.unselected,
-.selected {
-    border: 1px solid #EBEBEB !important;
-    color: #EBEBEB !important;
-}
-
-.incorrect {
-    border: 2px solid #ff3333 !important;
-}
-
-.disabled-text {
-    color: #777 !important;
 }
 
 #rightGreyText,

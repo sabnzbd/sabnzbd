@@ -98,42 +98,14 @@ label {
 .align-center {
     text-align: center;
 }
-.unselected,
-.selected {
-    display: inline-block;
-}
-.unselected {
-    padding: 6px 10px 6px 10px;
-    border: 1px solid #636363;
-    margin-left: 8px;
-    margin-right: 8px;
-    color: #636363;
-}
-.selected {
-    padding: 6px 10px 6px 10px;
-    color: white;
-    background-color: #636363;
-    border: 1px solid #636363;
-    margin-left: 8px;
-    margin-right: 8px;
-}
 .bigger {
     font-size: 14px;
 }
 .bigger input {
     font-size: 16px;
 }
-.required-star {
-    color: red;
-}
 .full-width {
     width: 100%;
-}
-.correct {
-    border: 2px solid #00cc22;
-}
-.incorrect {
-    border: 2px solid red;
 }
 .hidden {
     display: none !important;
@@ -150,19 +122,11 @@ label {
 .input-group-bw {
     width: 150px;
 }
-.disabled-text {
-    text-decoration: line-through;
-    color: #ccc;
-}
 #serverResponse {
     padding: 6px 10px;
 }
 #host-tip {
     margin-bottom: 5px;
-}
-.error-text {
-    display: inline;
-    color: red;
 }
 #bandwidth {
     display: inline-block;

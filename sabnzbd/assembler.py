@@ -26,9 +26,10 @@ import re
 from threading import Thread
 import ctypes
 from typing import Tuple, Optional, List
+import rarfile
 
 import sabnzbd
-from sabnzbd.misc import get_all_passwords, match_str
+from sabnzbd.misc import get_all_passwords, match_str, SABRarFile
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -42,7 +43,6 @@ from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
-import sabnzbd.utils.rarfile as rarfile
 
 
 class Assembler(Thread):
@@ -295,7 +295,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
                 # Open the rar
-                zf = rarfile.RarFile(filepath, single_file_check=True)
+                zf = SABRarFile(filepath, part_only=True)
 
                 # Check for encryption
                 if (
@@ -322,12 +322,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
-                                except rarfile.Error:
-                                    # On weird passwords the setpassword() will fail
-                                    # but the actual testrar() will work
-                                    pass
-                                try:
-                                    zf.testrar()
+                                    zf.trigger_parse()
                                     password_hit = password
                                     break
                                 except rarfile.RarWrongPassword:

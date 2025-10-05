@@ -1072,10 +1072,6 @@ msgid "Unpacking failed, disk full"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "Neuspešno raspakivanje, putanja je predugačka"
-
-#: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
 msgstr "Neuspešno raspakivanje, arhiva zahteva lozinku"
 
@@ -2353,6 +2349,11 @@ msgstr "Име"
 #: sabnzbd/skintext.py
 msgid "Retry"
 msgstr "Покушај опет"
+
+#. History page button
+#: sabnzbd/skintext.py
+msgid "Mark as Completed & Remove Temporary Files"
+msgstr ""
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py

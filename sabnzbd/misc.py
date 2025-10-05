@@ -24,7 +24,6 @@ import platform
 import ssl
 import sys
 import logging
-import functools
 import urllib.request
 import urllib.parse
 import re
@@ -39,6 +38,7 @@ import html
 import ipaddress
 import socks
 import math
+import rarfile
 from threading import Thread
 from collections.abc import Iterable
 from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
@@ -1585,3 +1585,40 @@ def convert_history_retention():
             cfg.history_retention_number.set(to_keep)
         elif to_keep < 0:
             cfg.history_retention_option.set("all-delete")
+
+
+##
+## SABnzbd patched rarfile classes
+## Patch for https://github.com/markokr/rarfile/issues/56#issuecomment-711146569
+##
+
+
+class SABRarFile(rarfile.RarFile):
+    """SABnzbd patched RarFile class with info_callback fix for multi-volume archives"""
+
+    def __init__(self, *args, **kwargs):
+        """Patch RarFile-call when using `part_only`
+        to store filenames inside the RAR-files"""
+        if kwargs.get("part_only"):
+            kwargs["info_callback"] = self.info_callback
+
+        # Let RarFile handle the rest!
+        super().__init__(*args, **kwargs)
+
+    def info_callback(self, rar_obj: rarfile.RarInfo):
+        """Called for every RarInfo-object found"""
+        # We only care about files inside the Rar
+        # For Rar5 there is a separate object, for Rar3 we need to check if a filename was parsed
+        if isinstance(rar_obj, (rarfile.Rar5FileInfo, rarfile.Rar3Info)) and rar_obj.filename:
+            # Avoid duplicates
+            if rar_obj not in self._file_parser._info_list:
+                self._file_parser._info_list.append(rar_obj)
+                self._file_parser._info_map[rar_obj.filename.rstrip("/")] = rar_obj
+
+    def filelist(self):
+        """Return list of filenames in archive."""
+        return [f.filename for f in self.infolist() if not f.isdir()]
+
+    def trigger_parse(self):
+        """Force re-parse, wich is needed to trigger password checking logic"""
+        self._parse()

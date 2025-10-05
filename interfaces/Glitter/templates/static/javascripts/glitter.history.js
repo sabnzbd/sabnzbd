@@ -420,6 +420,42 @@ function HistoryListModel(parent) {
         self.triggerRemoveDownload(self.multiEditItems())
     }
 
+    // Mark jobs as completed
+    self.markAsCompleted = function(items) {
+        // Confirm
+        if(!confirm(glitterTranslate.markComplete)) {
+            return
+        }
+        // Single or multiple items?
+        var strIDs = '';
+        if(items.length) {
+            $.each(items, function(index) {
+                strIDs = strIDs + this.id + ',';
+            })
+        } else {
+            strIDs = items.id
+        }
+
+        // Send the API call
+        callAPI({
+            mode: 'history',
+            name: 'mark_as_completed',
+            value: strIDs
+        }).then(function(response) {
+            // Force refresh to update the UI
+            self.parent.refresh(true);
+        });
+    }
+
+    // Mark all selected as completed
+    self.doMultiMarkCompleted = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        // Mark them
+        self.markAsCompleted(self.multiEditItems());
+    }
+
     // Focus on the confirm button
     $('#modal-delete-history-job').on("shown.bs.modal", function() {
         $('#modal-delete-history-job .btn[type="submit"]').focus()
@@ -569,6 +605,11 @@ function HistoryModel(parent, data) {
         $('#retry_job_password').val(self.historyStatus.password())
         // Open modal
         $('#modal-retry-job').modal("show")
+    };
+
+    // Mark as completed button
+    self.markAsCompleted = function() {
+        parent.markAsCompleted(self);
     };
 
     // Update information only on click

@@ -33,7 +33,6 @@ import fnmatch
 import stat
 import ctypes
 import random
-import functools
 from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
@@ -55,7 +54,7 @@ from sabnzbd.constants import (
     DEX_FILE_EXTENSION_MAX,
 )
 from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
-from sabnzbd.utils import rarfile
+import rarfile
 
 
 # For Windows: determine executable extensions
@@ -991,50 +990,6 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-def disk_free_macos_clib_statfs64(directory: str) -> Tuple[int, int]:
-    # MacOS only!
-    # direct system call to c-lib's statfs(), not python's os.statvfs()
-    # because statvfs() on MacOS has a rollover at 4TB (possibly a 32bit rollover with 10bit block size)
-    # See https://bugs.python.org/issue43638
-    # Based on code of pudquick and blackntan
-    # Input: directory.
-    # Output: disksize and available space, in bytes
-
-    # format & parameters: on MacOS, see "man statfs", lines starting at
-    # "struct statfs { /* when _DARWIN_FEATURE_64_BIT_INODE is defined */"
-    class statfs64(ctypes.Structure):
-        _fields_ = [
-            ("f_bsize", ctypes.c_uint32),
-            ("f_iosize", ctypes.c_int32),
-            ("f_blocks", ctypes.c_uint64),
-            ("f_bfree", ctypes.c_uint64),
-            ("f_bavail", ctypes.c_uint64),
-            ("f_files", ctypes.c_uint64),
-            ("f_ffree", ctypes.c_uint64),
-            ("f_fsid", ctypes.c_uint64),
-            ("f_owner", ctypes.c_uint32),
-            ("f_type", ctypes.c_uint32),
-            ("f_flags", ctypes.c_uint32),
-            ("f_fssubtype", ctypes.c_uint32),
-            ("f_fstypename", ctypes.c_char * 16),
-            ("f_mntonname", ctypes.c_char * 1024),
-            ("f_mntfromname", ctypes.c_char * 1024),
-            ("f_reserved", ctypes.c_uint32 * 8),
-        ]
-
-    fs_info64 = statfs64()  # set up the parameters to be filled out
-    result = sabnzbd.MACOSLIBC.statfs64(
-        ctypes.create_string_buffer(utob(directory)), ctypes.byref(fs_info64)
-    )  # fs_info64 gets filled out via the byref()
-    if result == 0:
-        # result = 0: "Upon successful completion, a value of 0 is returned."
-        return fs_info64.f_blocks * fs_info64.f_bsize, fs_info64.f_bavail * fs_info64.f_bsize
-    else:
-        # result = -1: "Otherwise, -1 is returned and the global variable errno is set to indicate the error."
-        logging.debug("Call to MACOSLIBC.statfs64 not successful. Value of errno is %s", ctypes.get_errno())
-        return 0, 0
-
-
 def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
@@ -1049,10 +1004,6 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
             return disk_size / GIGI, available / GIGI
         except Exception:
             return 0.0, 0.0
-    elif sabnzbd.MACOS:
-        # MacOS diskfree ... via c-lib call statfs()
-        disk_size, available = disk_free_macos_clib_statfs64(dir_to_check)
-        return disk_size / GIGI, available / GIGI
     elif hasattr(os, "statvfs"):
         # posix diskfree
         try:
@@ -1290,6 +1241,10 @@ def check_filesystem_capabilities(test_dir: str) -> bool:
 
     # if not on Windows, check special chars like \ and :
     if not sabnzbd.WINDOWS and not directory_is_writable_with_file(test_dir, "sab_test \\ bla :: , bla.txt"):
+        # Always enable "Make Windows Compatible"
+        sabnzbd.cfg.sanitize_safe.set(True)
+
+        # However, external programs like unrar can still try to write them so we still warn the user
         sabnzbd.misc.helpful_warning(
             T("%s is not writable with special character filenames. This can cause problems."), test_dir
         )
