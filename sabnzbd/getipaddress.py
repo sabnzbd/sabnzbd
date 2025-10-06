@@ -92,11 +92,23 @@ def dnslookup() -> bool:
 
 
 def local_ipv4() -> Optional[str]:
+    """ return IPv4 address of default local LAN interface """
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
-            # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
-            s_ipv4.connect(("10.255.255.255", 80))
-            ipv4 = s_ipv4.getsockname()[0]
+        if not (proxysettings := active_socks5_proxy()):
+            # No socks5 proxy, so we can use UDP (SOCK_DGRAM) and a non-reachable host
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
+                s_ipv4.connect(("10.255.255.255", 80))
+                ipv4 = s_ipv4.getsockname()[0]
+        else:      
+            # socks5 proxy, so we must use TCP (SOCK_STREAM) and a reachable host: the proxy server
+            proxyhost = proxysettings.split(":")[0]
+            try:
+                proxyport = int(proxysettings.split(":")[1])
+            except Exception:
+                proxyport = 1080
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_ipv4:
+                s_ipv4.connect((proxyhost, proxyport))
+                ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
 
