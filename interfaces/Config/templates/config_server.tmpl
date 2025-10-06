@@ -465,13 +465,10 @@
     **/
     jQuery(document).ready(function(){
         // Reload form in case we change items that make the servers appear different
-        jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function() {
-            jQuery('.fullform').submit(function() {
-                // No ajax this time
-                jQuery('input[name="ajax"]').val('')
-                // Skip the fancy stuff, just submit
-                this.submit()
-            })
+        jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function(event) {
+            var parentForm = jQuery(event.target).parents("form")
+            parentForm.unbind("submit")
+            parentForm.find('input[name="ajax"]').val('')
         })
 
         /**

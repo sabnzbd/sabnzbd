@@ -18,15 +18,19 @@
 """
 tests.test_newswrapper - Tests of various functions in newswrapper
 """
+import errno
+import ipaddress
 import logging
 import os.path
 import socket
+import sys
 import tempfile
 import threading
 import ssl
 import time
 import warnings
-from typing import Optional
+from enum import Enum
+from typing import Optional, Tuple
 import portend
 from flaky import flaky
 
@@ -38,6 +42,11 @@ from sabnzbd.get_addrinfo import AddrInfo
 TEST_HOST = "127.0.0.1"
 TEST_PORT = portend.find_available_local_port()
 TEST_DATA = b"connection_test"
+
+
+class IPProtocolVersion(Enum):
+    IPV4 = 4
+    IPV6 = 6
 
 
 def socket_test_server(ssl_context: ssl.SSLContext):
@@ -59,6 +68,42 @@ def socket_test_server(ssl_context: ssl.SSLContext):
     finally:
         # Make sure to close the socket
         server_socket.close()
+
+
+def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
+    """
+    Find the ip address that would be used to send traffic towards internet. Uses the UDP Socket trick: connect is not
+    sending any traffic but already prefills what would be the sender ip address.
+    """
+    s: Optional[socket.socket] = None
+    address_to_connect_to: Optional[Tuple[str, int]] = None
+    if protocol_version == IPProtocolVersion.IPV4:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Google DNS IPv4
+        address_to_connect_to = ("8.8.8.8", 80)
+    elif protocol_version == IPProtocolVersion.IPV6:
+        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        # Google DNS IPv6
+        address_to_connect_to = ("2001:4860:4860::8888", 80)
+    else:
+        raise ValueError(f"Unknown protocol version: {protocol_version}")
+
+    assert s is not None, "Socket has not been assigned!"
+    assert address_to_connect_to is not None, "Address to connect to has not been assigned!"
+
+    try:
+        s.connect(address_to_connect_to)
+        local_ip = s.getsockname()[0]
+    except OSError as e:
+        # If the network is unreachable, it's probably that we don't have an IP for this Protocol
+        # On Linux, we would get ENETUNREACH where on Mac OS we would get EHOSTUNREACH
+        if e.errno == errno.ENETUNREACH or e.errno == errno.EHOSTUNREACH:
+            return None
+        else:
+            raise
+    finally:
+        s.close()
+    return local_ip
 
 
 @flaky
@@ -139,3 +184,63 @@ class TestNewsWrapper:
         if server_thread.is_alive():
             raise RuntimeError("Test server was not stopped")
         time.sleep(1.0)
+
+    @pytest.mark.parametrize(
+        "local_ip, ip_protocol",
+        [
+            (get_local_ip(protocol_version=IPProtocolVersion.IPV4), IPProtocolVersion.IPV4),
+            (get_local_ip(protocol_version=IPProtocolVersion.IPV6), IPProtocolVersion.IPV6),
+            ("", None),
+        ],
+    )
+    def test_socket_binding_outgoing_ip(
+        self, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch
+    ):
+        """Test to make sure that the binding of outgoing interface works as expected."""
+        if local_ip is None and ip_protocol is not None:
+            pytest.skip(f"No available ip for this protocol: {ip_protocol}")
+        elif ip_protocol is not None:
+            # We want to make sure the local ip is matching the version of the expected IP Protocol
+            assert ipaddress.ip_address(local_ip).version == ip_protocol.value
+
+        nw = mock.Mock()
+
+        nw.blocking = True
+        nw.thrdnum = 1
+        nw.server = mock.Mock()
+        nw.server.host = TEST_HOST
+        nw.server.port = TEST_PORT
+        nw.server.info = AddrInfo(*socket.getaddrinfo(TEST_HOST, TEST_PORT, 0, socket.SOCK_STREAM)[0])
+        nw.server.timeout = 10
+        nw.server.ssl = True
+        nw.server.ssl_context = None
+        nw.server.ssl_verify = 0
+        nw.server.ssl_ciphers = None
+
+        sabnzbd.cfg.outgoing_nntp_ip.set(local_ip)
+
+        # We mock the connect as it's being called in the Init, we want to have a "functional" newswrapper.NNTP instance
+        def mock_connect(self):
+            pass
+
+        monkeypatch.setattr("sabnzbd.newswrapper.NNTP.connect", mock_connect)
+        nntp = newswrapper.NNTP(nw, nw.server.info)
+        monkeypatch.undo()
+
+        # The connection has crashed but the socket should have been bound to the provided ip in the configuration
+        with pytest.raises(OSError) as excinfo:
+            nntp.connect()
+
+        if sys.platform == "win32":
+            # On Windows, the error code for this is WSAECONNREFUSED (10061)
+            assert excinfo.value.errno == errno.WSAECONNREFUSED
+        else:
+            # On Linux and macOS, the error code is ECONNREFUSED
+            assert excinfo.value.errno == errno.ECONNREFUSED
+
+        current_ip, _ = nntp.sock.getsockname()
+        if local_ip != "":
+            assert current_ip == local_ip
+        else:
+            assert current_ip is not None
+        nntp.close(send_quit=False)

@@ -246,7 +246,9 @@ class NzbQueue:
     def set_top_only(self, value):
         self.__top_only = value
 
+    @NzbQueueLocker
     def change_opts(self, nzo_ids: List[str], pp: int) -> int:
+        """Locked so changes during URLGrabbing are correctly passed to new job"""
         result = 0
         for nzo_id in nzo_ids:
             if nzo_id in self.__nzo_table:
@@ -254,7 +256,9 @@ class NzbQueue:
                 result += 1
         return result
 
+    @NzbQueueLocker
     def change_script(self, nzo_ids: List[str], script: str) -> int:
+        """Locked so changes during URLGrabbing are correctly passed to new job"""
         result = 0
         if (script is None) or is_valid_script(script):
             for nzo_id in nzo_ids:
@@ -264,7 +268,9 @@ class NzbQueue:
                     result += 1
         return result
 
+    @NzbQueueLocker
     def change_cat(self, nzo_ids: List[str], cat: str) -> int:
+        """Locked so changes during URLGrabbing are correctly passed to new job"""
         result = 0
         for nzo_id in nzo_ids:
             if nzo_id in self.__nzo_table:
@@ -278,7 +284,9 @@ class NzbQueue:
                 result += 1
         return result
 
+    @NzbQueueLocker
     def change_name(self, nzo_id: str, name: str, password: str = None) -> bool:
+        """Locked so changes during URLGrabbing are correctly passed to new job"""
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             logging.info("Renaming %s to %s", nzo.final_name, name)
@@ -440,7 +448,9 @@ class NzbQueue:
             handled.append(nzo_id)
         return handled
 
+    @NzbQueueLocker
     def pause_nzo(self, nzo_id: str) -> List[str]:
+        """Locked so changes during URLGrabbing are correctly passed to new job"""
         handled = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]

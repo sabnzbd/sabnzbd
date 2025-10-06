@@ -26,6 +26,7 @@ import time
 import re
 import gc
 import queue
+import rarfile
 from typing import List, Optional, Tuple
 
 import sabnzbd
@@ -46,6 +47,7 @@ from sabnzbd.misc import (
     change_queue_complete_action,
     run_script,
     is_none,
+    SABRarFile,
 )
 from sabnzbd.filesystem import (
     real_path,
@@ -89,7 +91,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
-import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
 import sabnzbd.deobfuscate_filenames as deobfuscate
@@ -892,7 +893,7 @@ def try_rar_check(nzo: NzbObject, rars: List[str]) -> bool:
         nzo.set_action_line(T("Trying RAR-based verification"), "...")
         try:
             # Requires de-unicode for RarFile to work!
-            zf = rarfile.RarFile(rars[0])
+            zf = SABRarFile(rars[0])
 
             # Skip if it's encrypted
             if zf.needs_password():
@@ -952,8 +953,8 @@ def rar_renamer(nzo: NzbObject) -> int:
             continue
 
         if rarfile.is_rarfile(file_to_check):
-            # if a rar file is fully encrypted, rarfile.RarFile() will return an empty list:
-            if not rarfile.RarFile(file_to_check, single_file_check=True).filelist():
+            # if a rar file is fully encrypted, RarFile() will return an empty list:
+            if not SABRarFile(file_to_check, part_only=True).filelist():
                 logging.info(
                     "Download %s contains a fully encrypted & obfuscated rar-file: %s.",
                     nzo.final_name,
@@ -969,9 +970,7 @@ def rar_renamer(nzo: NzbObject) -> int:
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
             volnrext[file_to_check] = (rar_vol, new_extension)
             # The files inside rar file
-            rar_contents = rarfile.RarFile(
-                os.path.join(nzo.download_path, file_to_check), single_file_check=True
-            ).filelist()
+            rar_contents = SABRarFile(os.path.join(nzo.download_path, file_to_check), part_only=True).filelist()
             try:
                 rarvolnr[rar_vol]
             except Exception:
