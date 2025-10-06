@@ -92,14 +92,14 @@ def dnslookup() -> bool:
 
 
 def local_ipv4() -> Optional[str]:
-    """ return IPv4 address of default local LAN interface """
+    """return IPv4 address of default local LAN interface"""
     try:
         if not (proxysettings := active_socks5_proxy()):
             # No socks5 proxy, so we can use UDP (SOCK_DGRAM) and a non-reachable host
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
                 s_ipv4.connect(("10.255.255.255", 80))
                 ipv4 = s_ipv4.getsockname()[0]
-        else:      
+        else:
             # socks5 proxy, so we must use TCP (SOCK_STREAM) and a reachable host: the proxy server
             proxyhost = proxysettings.split(":")[0]
             try:
