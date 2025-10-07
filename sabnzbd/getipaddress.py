@@ -36,7 +36,6 @@ from sabnzbd.get_addrinfo import get_fastest_addrinfo, family_type
 from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
 
 
-
 def timeout(max_timeout: int):
     """Timeout decorator, parameter in seconds."""
 
