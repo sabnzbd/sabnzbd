@@ -105,12 +105,10 @@ def local_ipv4() -> Optional[str]:
                 s_ipv4.connect(("10.255.255.255", 80))
                 ipv4 = s_ipv4.getsockname()[0]
         else:
-            # socks5 proxy, so we must use TCP (SOCK_STREAM) and a reachable host: the proxy server
-            proxyhost = proxysettings.split(":")[0]
-            try:
-                proxyport = int(proxysettings.split(":")[1])
-            except Exception:
-                proxyport = 1080
+            # socks5 proxy set, so we must use TCP (SOCK_STREAM) and a reachable host: the proxy server
+            proxyhost, proxyport = proxysettings.rsplit(":", 1) # a string like "myproxy:1080"
+            proxyport = int(proxyport) if proxyport.isdigit() else 1080
+            logging.debug(f"Using proxy {proxyhost} on port {proxyport} to determine local IPv4 address")
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_ipv4:
                 s_ipv4.connect((proxyhost, proxyport))
                 ipv4 = s_ipv4.getsockname()[0]
