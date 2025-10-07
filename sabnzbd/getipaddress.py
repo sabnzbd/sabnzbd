@@ -36,6 +36,7 @@ from sabnzbd.get_addrinfo import get_fastest_addrinfo, family_type
 from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
 
 
+
 def timeout(max_timeout: int):
     """Timeout decorator, parameter in seconds."""
 
@@ -106,8 +107,8 @@ def local_ipv4() -> Optional[str]:
                 ipv4 = s_ipv4.getsockname()[0]
         else:
             # socks5 proxy set, so we must use TCP (SOCK_STREAM) and a reachable host: the proxy server
-            proxyhost, proxyport = proxysettings.rsplit(":", 1) # a string like "myproxy:1080"
-            proxyport = int(proxyport) if proxyport.isdigit() else 1080
+            proxyhost = proxysettings.rsplit(":", 1)[0]
+            proxyport = sabnzbd.misc.int_conv(proxysettings.split(":")[1], default=1080)
             logging.debug(f"Using proxy {proxyhost} on port {proxyport} to determine local IPv4 address")
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_ipv4:
                 s_ipv4.connect((proxyhost, proxyport))
