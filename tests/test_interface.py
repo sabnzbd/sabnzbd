@@ -18,12 +18,22 @@
 """
 tests.test_interface - Testing functions in interface.py
 """
-import cherrypy
+from unittest.mock import Mock
+from starlette.requests import Request
+from starlette.datastructures import Headers, Address
 
 from sabnzbd import interface
 from sabnzbd.misc import is_local_addr, is_loopback_addr
 
 from tests.testhelper import *
+
+
+def create_mock_request(remote_ip: str = "127.0.0.1", headers: dict = None, remote_port: int = 12345):
+    """Create a mock Starlette Request object for testing"""
+    mock_request = Mock(spec=Request)
+    mock_request.client = Address(remote_ip, remote_port)
+    mock_request.headers = Headers(headers or {})
+    return mock_request
 
 
 class TestInterfaceFunctions:
@@ -147,9 +157,11 @@ class TestInterfaceFunctions:
             }
         )
         def _func():
-            # Insert fake request data
-            cherrypy.request.remote.ip = remote_ip
-            cherrypy.request.headers.update({"X-Forwarded-For": xff_header})
+            # Create mock Starlette request with test data
+            headers = {}
+            if xff_header:
+                headers["X-Forwarded-For"] = xff_header
+            request = create_mock_request(remote_ip=remote_ip, headers=headers)
 
             if verify_xff_header:
                 result = result_with_xff
@@ -158,9 +170,9 @@ class TestInterfaceFunctions:
                 result = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
 
             if access_type <= inet_exposure:
-                assert interface.check_access(access_type) is True
+                assert interface.check_access(request, access_type) is True
             else:
-                assert interface.check_access(access_type) is result
+                assert interface.check_access(request, access_type) is result
 
         _func()
 
@@ -218,8 +230,8 @@ class TestInterfaceFunctions:
     def test_remote_ip_from_xff(self, local_ranges, xff_ips, expected_result):
         @set_config({"local_ranges": local_ranges})
         def _func():
-            # Insert fake request data; should *not* influence the results of the tested function
-            cherrypy.request.remote.ip = "6.6.6.6"
+            # The remote_ip_from_xff function doesn't depend on request objects,
+            # it only takes the xff_ips list as parameter
             assert xff_ips
             assert interface.remote_ip_from_xff(xff_ips) is expected_result
 

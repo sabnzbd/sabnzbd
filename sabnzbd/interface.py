@@ -118,7 +118,7 @@ def secured_expose(
     check_api_key: bool = False,
     access_type: int = 4,
 ) -> Union[Callable, str]:
-    """Wrapper login/access check"""
+    """Wrapper for both starlette routing and login/access check"""
     if not wrap_func:
         return functools.partial(
             secured_expose,
@@ -129,20 +129,48 @@ def secured_expose(
             access_type=access_type,
         )
 
-    # Add as route
-    # TODO: Remove IF!
-    if route:
-        INTERFACE_ROUTES.append(Route(route, endpoint=wrap_func, methods=["GET", "POST"]))
-
     @functools.wraps(wrap_func)
-    async def internal_wrap(*args, **kwargs):
-        return await wrap_func(*args, **kwargs)
+    async def internal_wrap(request: Request, *args, **kwargs):
+        # Check if config is locked
+        if check_configlock and cfg.configlock():
+            if cfg.api_warnings():
+                return PlainTextResponse(_MSG_ACCESS_DENIED_CONFIG_LOCK, status_code=403)
+            return PlainTextResponse("", status_code=403)
+
+        # Check if external access and if it's allowed
+        if not check_access(request, access_type=access_type, warn_user=True):
+            if cfg.api_warnings():
+                return PlainTextResponse(_MSG_ACCESS_DENIED, status_code=403)
+            return PlainTextResponse("", status_code=403)
+
+        # Verify login status, only for non-key pages
+        if check_for_login and not check_api_key and not check_login(request):
+            return RedirectResponse(url=f"{cfg.url_base()}/login/")
+
+        # Verify host used for the visit
+        if not check_hostname(request):
+            if cfg.api_warnings():
+                return PlainTextResponse(_MSG_ACCESS_DENIED_HOSTNAME, status_code=403)
+            return PlainTextResponse("", status_code=403)
+
+        # Some pages need correct API key
+        if check_api_key:
+            if msg := check_apikey(request):
+                if cfg.api_warnings():
+                    return PlainTextResponse(msg, status_code=403)
+                return PlainTextResponse("", status_code=403)
+
+        # All good, cool!
+        return await wrap_func(request, *args, **kwargs)
+
+    if route:
+        INTERFACE_ROUTES.append(Route(route, endpoint=internal_wrap, methods=["GET", "POST"]))
 
     return internal_wrap
 
 
-def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
-    """Check if external address is allowed given access_type:
+def check_access(request: Request, access_type: int = 4, warn_user: bool = False) -> bool:
+    """Check if external address is allowed given access_type (Starlette version):
     1=nzb
     2=api
     3=full_api
@@ -153,7 +181,7 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     if access_type <= cfg.inet_exposure():
         return True
 
-    remote_ip = cherrypy.request.remote.ip
+    remote_ip = request.client.host
 
     # Check if the client IP is a loopback address or considered local
     is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
@@ -162,19 +190,19 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     if (
         is_allowed
         and cfg.verify_xff_header()
-        and (xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For")))
+        and (xff_ips := clean_comma_separated_list(request.headers.get("X-Forwarded-For")))
     ):
         is_allowed = all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)
         if not is_allowed:
             logging.debug("Denying access based on X-Forwarded-For IPs '%s'", xff_ips)
 
     if not is_allowed and warn_user:
-        log_warning_and_ip(T("Refused connection from:"))
+        log_warning_and_ip(request, T("Refused connection from:"))
     return is_allowed
 
 
-def check_hostname():
-    """Check if hostname is allowed, to mitigate DNS-rebinding attack.
+def check_hostname(request: Request) -> bool:
+    """Check if hostname is allowed, to mitigate DNS-rebinding attack (Starlette version).
     Similar to CVE-2019-5702, we need to add protection even
     if only allowed to be accessed via localhost.
     """
@@ -183,7 +211,7 @@ def check_hostname():
         return True
 
     # Don't allow requests without Host
-    host = cherrypy.request.headers.get("Host")
+    host = request.headers.get("Host")
     if not host:
         return False
 
@@ -205,7 +233,7 @@ def check_hostname():
         return True
 
     # Ohoh, bad
-    log_warning_and_ip(T('Refused connection with hostname "%s" from:') % host)
+    log_warning_and_ip(request, T('Refused connection with hostname "%s" from:') % host)
     return False
 
 
@@ -226,8 +254,9 @@ def remote_ip_from_xff(xff_ips: List[str]) -> str:
         return xff_ips[0]
 
 
-def set_login_cookie(remove=False, remember_me=False):
-    """We try to set a cookie as unique as possible
+def set_login_cookie(request: Request, response: Response, remove=False, remember_me=False):
+    """Set login cookie for Starlette (updated version)
+    We try to set a cookie as unique as possible
     to the current user. Based on it's IP and the
     current process ID of the SAB instance and a random
     number, so cookies cannot be re-used
@@ -235,60 +264,58 @@ def set_login_cookie(remove=False, remember_me=False):
     salt = randint(1, 1000)
 
     # If we are using XFF headers, get remote IP from XFF if possible
-    if cfg.verify_xff_header() and (
-        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
-    ):
+    if cfg.verify_xff_header() and (xff_ips := clean_comma_separated_list(request.headers.get("X-Forwarded-For"))):
         remote_ip = remote_ip_from_xff(xff_ips)
     else:
-        remote_ip = cherrypy.request.remote.ip
+        remote_ip = request.client.host
 
     cookie_str = utob(str(salt) + remote_ip + COOKIE_SECRET)
-    cherrypy.response.cookie["login_cookie"] = hashlib.sha1(cookie_str).hexdigest()
-    cherrypy.response.cookie["login_cookie"]["path"] = "/"
-    cherrypy.response.cookie["login_cookie"]["httponly"] = 1
-    cherrypy.response.cookie["login_salt"] = salt
-    cherrypy.response.cookie["login_salt"]["path"] = "/"
-    cherrypy.response.cookie["login_salt"]["httponly"] = 1
+    cookie_value = hashlib.sha1(cookie_str).hexdigest()
 
-    # If we want to be remembered
-    if remember_me:
-        cherrypy.response.cookie["login_cookie"]["max-age"] = 3600 * 24 * 14
-        cherrypy.response.cookie["login_salt"]["max-age"] = 3600 * 24 * 14
-
-    # To remove
     if remove:
-        cherrypy.response.cookie["login_cookie"]["expires"] = 0
-        cherrypy.response.cookie["login_salt"]["expires"] = 0
-
-
-def check_login_cookie():
-    # Do we have everything?
-    if "login_cookie" not in cherrypy.request.cookie or "login_salt" not in cherrypy.request.cookie:
-        return False
-
-    # If we are using XFF headers, get remote IP from XFF if possible
-    if cfg.verify_xff_header() and (
-        xff_ips := clean_comma_separated_list(cherrypy.request.headers.get("X-Forwarded-For"))
-    ):
-        remote_ip = remote_ip_from_xff(xff_ips)
+        # Remove cookies
+        response.set_cookie("login_cookie", "", path="/", httponly=True, expires="Thu, 01 Jan 1970 00:00:00 GMT")
+        response.set_cookie("login_salt", "", path="/", httponly=True, expires="Thu, 01 Jan 1970 00:00:00 GMT")
     else:
-        remote_ip = cherrypy.request.remote.ip
+        # Set cookies
+        max_age = None
+        if remember_me:
+            max_age = 3600 * 24 * 14  # 14 days
 
-    cookie_str = utob(str(cherrypy.request.cookie["login_salt"].value) + remote_ip + COOKIE_SECRET)
-    return cherrypy.request.cookie["login_cookie"].value == hashlib.sha1(cookie_str).hexdigest()
+        response.set_cookie("login_cookie", cookie_value, path="/", httponly=True, max_age=max_age)
+        response.set_cookie("login_salt", str(salt), path="/", httponly=True, max_age=max_age)
 
 
-def check_login():
+def check_login(request: Request) -> bool:
+    """Check if user is logged in (Starlette version)"""
     # Not when no authentication required or basic-auth is on
     if not cfg.html_login() or not cfg.username() or not cfg.password():
         return True
 
     # If we show login for external IP, by using access_type=6 we can check if IP match
-    if cfg.inet_exposure() == 5 and check_access(access_type=6):
+    if cfg.inet_exposure() == 5 and check_access(request, access_type=6):
         return True
 
     # Check the cookie
-    return check_login_cookie()
+    return check_login_cookie(request)
+
+
+def check_login_cookie(request: Request) -> bool:
+    """Check login cookie validity (Starlette version)"""
+    # Do we have everything?
+    login_cookie = request.cookies.get("login_cookie")
+    login_salt = request.cookies.get("login_salt")
+    if not login_cookie or not login_salt:
+        return False
+
+    # If we are using XFF headers, get remote IP from XFF if possible
+    if cfg.verify_xff_header() and (xff_ips := clean_comma_separated_list(request.headers.get("X-Forwarded-For"))):
+        remote_ip = remote_ip_from_xff(xff_ips)
+    else:
+        remote_ip = request.client.host
+
+    cookie_str = utob(str(login_salt) + remote_ip + COOKIE_SECRET)
+    return login_cookie == hashlib.sha1(cookie_str).hexdigest()
 
 
 def check_basic_auth(_, username, password):
@@ -316,8 +343,8 @@ def set_auth(conf):
         conf.update({"tools.auth_basic.on": False})
 
 
-def check_apikey(kwargs):
-    """Check API-key or NZB-key
+def check_apikey(request: Request) -> Optional[str]:
+    """Check API-key or NZB-key (Starlette version)
     Return None when OK, otherwise an error message
     """
     mode = request.query_params.get("mode", "")
@@ -325,7 +352,7 @@ def check_apikey(kwargs):
 
     # Lookup required access level for the specific api-call
     req_access = sabnzbd.api.api_level(mode, name)
-    if not check_access(req_access, warn_user=True):
+    if not check_access(request, access_type=req_access, warn_user=True):
         return _MSG_ACCESS_DENIED
 
     # Skip for auth and version calls
@@ -336,7 +363,7 @@ def check_apikey(kwargs):
     key = request.query_params.get("apikey")
     if not key:
         log_warning_and_ip(
-            T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
+            request, T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
         )
         return _MSG_APIKEY_REQUIRED
     elif req_access == 1 and key == cfg.nzb_key():
@@ -344,7 +371,9 @@ def check_apikey(kwargs):
     elif key == cfg.api_key():
         return None
     else:
-        log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
+        log_warning_and_ip(
+            request, T("API Key incorrect, Use the api key from Config->General in your 3rd party program:")
+        )
         return _MSG_APIKEY_INCORRECT
 
 
@@ -359,10 +388,13 @@ def template_filtered_response(file: str, search_list: Dict[str, Any]):
     )
 
 
-def log_warning_and_ip(txt):
-    """Include the IP and the Proxy-IP for warnings"""
+def log_warning_and_ip(request: Request, txt: str):
+    """Include the IP and the Proxy-IP for warnings (Starlette version)"""
     if cfg.api_warnings():
-        logging.warning("%s %s", txt, cherrypy.request.remote_label)
+        remote_info = f"{request.client.host}:{request.client.port}"
+        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+            remote_info += f" (X-Forwarded-For: {xff_ips})"
+        logging.warning("%s %s", txt, remote_info)
 
 
 ##############################################################################
@@ -549,14 +581,14 @@ async def wizard_page_two(request: Request):
     # Show Restart screen
     info = build_header(sabnzbd.WIZARD_DIR)
 
-    info["access_url"], info["urls"] = get_access_info()
+    info["access_url"], info["urls"] = get_access_info(request)
     info["download_dir"] = cfg.download_dir.get_clipped_path()
     info["complete_dir"] = cfg.complete_dir.get_clipped_path()
 
     return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "two.html"), search_list=info)
 
 
-def get_access_info():
+def get_access_info(request: Optional[Request] = None):
     """Build up a list of url's that sabnzbd can be accessed from"""
     # Access_url is used to provide the user a link to SABnzbd depending on the host
     web_host = cfg.web_host()
@@ -591,7 +623,21 @@ def get_access_info():
         socks = [web_host]
 
     # Add the current requested URL as the base
-    access_url = urllib.parse.urljoin(cherrypy.request.base, cfg.url_base())
+    if request:
+        # For Starlette: build URL from request
+        scheme = "https" if cfg.enable_https() else "http"
+        port = cfg.https_port() if cfg.enable_https() else cfg.web_port()
+        host_header = request.headers.get("host", "localhost")
+        if ":" in host_header:
+            host_part = host_header.split(":")[0]
+        else:
+            host_part = host_header
+        access_url = f"{scheme}://{host_part}:{port}{cfg.url_base()}"
+    else:
+        # Fallback for backward compatibility
+        scheme = "https" if cfg.enable_https() else "http"
+        port = cfg.https_port() if cfg.enable_https() else cfg.web_port()
+        access_url = f"{scheme}://localhost:{port}{cfg.url_base()}"
 
     urls = [access_url]
     for sock in socks:
@@ -619,30 +665,48 @@ async def login_index(request: Request):
     info = build_header(sabnzbd.WEB_DIR_CONFIG)
     info["error"] = ""
 
+    # Handle both GET and POST requests
+    if request.method == "POST":
+        form = await request.form()
+        username = form.get("username")
+        password = form.get("password")
+        remember_me = form.get("remember_me", False)
+        logout = form.get("logout")
+    else:
+        username = request.query_params.get("username")
+        password = request.query_params.get("password")
+        remember_me = request.query_params.get("remember_me", False)
+        logout = request.query_params.get("logout")
+
     # Logout?
-    if request.query_params.get("logout"):
-        set_login_cookie(remove=True)
-        raise Raiser()
+    if logout:
+        response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
+        set_login_cookie(request, response, remove=True)
+        return response
 
     # Check if there's even a username/password set
-    if check_login():
-        raise Raiser("/")
+    if check_login(request):
+        return RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
 
     # Check login info
-    if (
-        request.query_params.get("username") == cfg.username()
-        and request.query_params.get("password") == cfg.password()
-    ):
+    if username == cfg.username() and password == cfg.password():
+        # Create redirect response
+        response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
         # Save login cookie
-        set_login_cookie(remember_me=request.query_params.get("remember_me", False))
+        set_login_cookie(request, response, remember_me=remember_me)
         # Log the success
-        logging.info("Successful login from %s", cherrypy.request.remote_label)
-        # Redirect
-        raise Raiser("/")
-    elif request.query_params.get("username") or request.query_params.get("password"):
+        remote_info = f"{request.client.host}:{request.client.port}"
+        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+            remote_info += f" (X-Forwarded-For: {xff_ips})"
+        logging.info("Successful login from %s", remote_info)
+        return response
+    elif username or password:
         info["error"] = T("Authentication failed, check username/password.")
         # Warn about the potential security problem
-        logging.warning(T("Unsuccessful login attempt from %s"), cherrypy.request.remote_label)
+        remote_info = f"{request.client.host}:{request.client.port}"
+        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+            remote_info += f" (X-Forwarded-For: {xff_ips})"
+        logging.warning(T("Unsuccessful login attempt from %s"), remote_info)
 
     # Show login
     return template_filtered_response(
@@ -1700,6 +1764,7 @@ class ConfigScheduling:
 # Page definitions - Config - Categories
 ##############################################################################
 
+
 @secured_expose(route="/config/categories", check_configlock=True)
 async def index_config_categories(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
@@ -2190,6 +2255,7 @@ class ThreadedServer(uvicorn.Server):
 
 INTERFACE_ROUTES.extend(
     [
+        Route("/sabnzbd", endpoint=main_index, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory="interfaces/Glitter/templates/static"), name="static"),
         Mount("/staticcfg", app=StaticFiles(directory="interfaces/Config/templates/staticcfg"), name="staticcfg"),
     ]
