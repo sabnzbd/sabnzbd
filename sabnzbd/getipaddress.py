@@ -75,7 +75,12 @@ def addresslookup6(myhost):
 def active_socks5_proxy() -> Optional[str]:
     """Return the active proxy"""
     if socket.socket == socks.socksocket:
-        return "%s:%s" % socks.socksocket.default_proxy[1:3]
+        socks5host = socks.socksocket.default_proxy[1]
+        try:
+            socks5port = int(socks.socksocket.default_proxy[2])
+        except Exception:
+            socks5port = 1080
+        return f"{socks5host}:{socks5port}"
     return None
 
 
