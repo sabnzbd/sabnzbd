@@ -76,10 +76,7 @@ def active_socks5_proxy() -> Optional[str]:
     """Return the active proxy"""
     if socket.socket == socks.socksocket:
         socks5host = socks.socksocket.default_proxy[1]
-        try:
-            socks5port = int(socks.socksocket.default_proxy[2])
-        except Exception:
-            socks5port = 1080
+        socks5port = sabnzbd.misc.int_conv(socks.socksocket.default_proxy[2], default=1080)
         return f"{socks5host}:{socks5port}"
     return None
 
