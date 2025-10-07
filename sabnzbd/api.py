@@ -490,7 +490,7 @@ def _api_history(name: str, kwargs: QueryParams) -> Response:
     return _api_history_table.get(name, (_api_history_default, 2))[0](value, kwargs)
 
 
-def _api_history_delete(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
+def _api_history_delete(value: str, kwargs: QueryParams) -> Response:
     """API: accepts value(=nzo_id or special), search, archive, del_files"""
     search = kwargs.get("search")
     archive = True
@@ -516,7 +516,7 @@ def _api_history_delete(value: str, kwargs: Dict[str, Union[str, List[str]]]) ->
             else:
                 history_db.remove_with_status(Status.COMPLETED, search)
         history_updated()
-        return report()
+        return report(kwargs)
     elif value:
         for job in clean_comma_separated_list(value):
             if sabnzbd.PostProcessor.get_path(job):
@@ -531,12 +531,12 @@ def _api_history_delete(value: str, kwargs: Dict[str, Union[str, List[str]]]) ->
                 else:
                     history_db.remove(job)
         history_updated()
-        return report()
+        return report(kwargs)
     else:
-        return report(_MSG_NO_VALUE)
+        return report(kwargs, _MSG_NO_VALUE)
 
 
-def _api_history_mark_as_completed(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
+def _api_history_mark_as_completed(value: str, kwargs: QueryParams) -> Response:
     """API: accepts value(=nzo_id)"""
     if value:
         history_db = sabnzbd.get_db_connection()
@@ -550,12 +550,12 @@ def _api_history_mark_as_completed(value: str, kwargs: Dict[str, Union[str, List
                 remove_all(incomplete_path, recursive=True)
 
         history_updated()
-        return report()
+        return report(kwargs)
     else:
-        return report(_MSG_NO_VALUE)
+        return report(kwargs, _MSG_NO_VALUE)
 
 
-def _api_history_default(value: str, kwargs: Dict[str, Union[str, List[str]]]) -> bytes:
+def _api_history_default(value: str, kwargs: QueryParams) -> Response:
     """API: accepts start, limit, search, failed_only, archive, cat, status, nzo_ids"""
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
@@ -568,55 +568,14 @@ def _api_history_default(value: str, kwargs: Dict[str, Union[str, List[str]]]) -
 
     # Do we need to send anything?
     if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
-        return report(keyword="history", data=False)
+        return report(kwargs, keyword="history", data=False)
 
     if failed_only:
         # We ignore any other statuses, having both doesn't make sense
         statuses = [Status.FAILED]
 
-        special = value.lower()
-        del_files = bool_conv(kwargs.get("del_files"))
-        if special in ("all", "failed", "completed"):
-            history_db = sabnzbd.get_db_connection()
-            if special in ("all", "failed"):
-                if del_files:
-                    del_job_files(history_db.get_failed_paths(search))
-                if archive:
-                    history_db.archive_with_status(Status.FAILED, search)
-                else:
-                    history_db.remove_with_status(Status.FAILED, search)
-            if special in ("all", "completed"):
-                if archive:
-                    history_db.archive_with_status(Status.COMPLETED, search)
-                else:
-                    history_db.remove_with_status(Status.COMPLETED, search)
-            history_updated()
-            return report(
-                kwargs,
-            )
-        elif value:
-            for job in clean_comma_separated_list(value):
-                if sabnzbd.PostProcessor.get_path(job):
-                    # This is always a permanent delete, no archiving
-                    sabnzbd.PostProcessor.delete(job, del_files=del_files)
-                else:
-                    history_db = sabnzbd.get_db_connection()
-                    if del_files:
-                        remove_all(history_db.get_incomplete_path(job), recursive=True)
-                    if archive:
-                        history_db.archive(job)
-                    else:
-                        history_db.remove(job)
-            history_updated()
-            return report(
-                kwargs,
-            )
-        else:
-            return report(kwargs, _MSG_NO_VALUE)
-    elif not name:
-        # Do we need to send anything?
-        if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
-            return report(kwargs, keyword="history", data=False)
+    if not limit:
+        limit = cfg.history_limit()
 
     # Only show archive if specifically requested
     archive = bool(int_conv(kwargs.get("archive")))
@@ -638,29 +597,7 @@ def _api_history_default(value: str, kwargs: Dict[str, Union[str, List[str]]]) -
     )
     history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
     history["version"] = sabnzbd.__version__
-    return report(keyword="history", data=history)
-
-
-        history = {}
-        grand, month, week, day = sabnzbd.BPSMeter.get_sums()
-        history["total_size"] = to_units(grand)
-        history["month_size"] = to_units(month)
-        history["week_size"] = to_units(week)
-        history["day_size"] = to_units(day)
-        history["slots"], history["ppslots"], history["noofslots"] = build_history(
-            start=start,
-            limit=limit,
-            archive=archive,
-            search=search,
-            categories=categories,
-            statuses=statuses,
-            nzo_ids=nzo_ids,
-        )
-        history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
-        history["version"] = sabnzbd.__version__
-        return report(kwargs, keyword="history", data=history)
-    else:
-        return report(kwargs, _MSG_NOT_IMPLEMENTED)
+    return report(kwargs, keyword="history", data=history)
 
 
 def _api_get_files(name: str, kwargs: QueryParams) -> Response:
