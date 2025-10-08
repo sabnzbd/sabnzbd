@@ -400,34 +400,27 @@ logging.getLogger("python_multipart.multipart").setLevel(logging.WARNING)
 
 
 ##############################################################################
-# Helper raiser functions
+# Helper redirect functions
 ##############################################################################
-def Raiser(root: str = "", **kwargs):
-    # Add extras
+def BaseRedirectResponse(root: str = "", **kwargs) -> RedirectResponse:
+    """Create a Starlette RedirectResponse with SABnzbd URL base and query parameters"""
+    # Add query parameters if provided
     if kwargs:
         root = "%s?%s" % (root, urllib.parse.urlencode(kwargs))
 
     # Add the leading /sabnzbd/ (or what the user set)
-    root = cfg.url_base() + root
+    url = cfg.url_base() + root
 
-    # Log the redirect
+    # Log the redirect if API logging is enabled
     if cfg.api_logging():
-        logging.debug("Request %s %s redirected to %s", cherrypy.request.method, cherrypy.request.path_info, root)
+        logging.debug("Redirecting to %s", url)
 
-    # Send the redirect
-    return cherrypy.HTTPRedirect(root)
-
-
-def rssRaiser(root, kwargs):
-    return Raiser(root, feed=request.query_params.get("feed"))
+    return RedirectResponse(url=url, status_code=302)
 
 
 ##############################################################################
 # Page definitions - Main
 ##############################################################################
-class MainPage:
-    def __init__(self):
-        pass
 
 
 @secured_expose(route="/", methods=["GET"])
@@ -488,7 +481,7 @@ async def scriptlog(request: Request):
         history_db = sabnzbd.get_db_connection()
         return ShowString(history_db.get_name(name), history_db.get_script_log(name))
     else:
-        raise Raiser(self.__root)
+        return BaseRedirectResponse("/")
 
 
 @secured_expose(methods=["GET"])
@@ -500,11 +493,11 @@ async def robots_txt(request: Request):
 @secured_expose(methods=["GET"])
 async def description_xml(request: Request):
     """Provide the description.xml which was broadcast via SSDP"""
-    if is_lan_addr(cherrypy.request.remote.ip):
-        cherrypy.response.headers["Content-Type"] = "application/xml"
-        return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
+    if is_lan_addr(request.client.host):
+        response = Response(content=sabnzbd.utils.ssdp.server_ssdp_xml(), media_type="application/xml")
+        return response
     else:
-        return None
+        return Response(status_code=404)
 
 
 ##############################################################################
@@ -774,7 +767,7 @@ async def index_config_folders(request: Request):
 
 @secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True)
 async def config_folder_save(request: Request):
-    params = get_unified_params(request)
+    params = await merged_post_get_params(request)
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
         if msg := config.get_config("misc", kw).set(params.get(kw)):
             return sabnzbd.api.report(params, error=msg)
@@ -1103,11 +1096,13 @@ class ConfigServer:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def addServer(request: Request):
-        return handle_server(kwargs, self.__root, True)
+        # params = await merged_post_get_params(request)
+        return handle_server(request, dict(params), self.__root, True)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveServer(request: Request):
-        return handle_server(kwargs, self.__root)
+        # params = await merged_post_get_params(request)
+        return handle_server(request, dict(params), self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def testServer(request: Request):
@@ -1116,28 +1111,30 @@ class ConfigServer:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def delServer(request: Request):
-        kwargs["section"] = "servers"
-        kwargs["keyword"] = request.query_params.get("server")
-        del_from_section(kwargs)
-        raise Raiser(self.__root)
+        # params = await merged_post_get_params(request)
+        kw = {"section": "servers", "keyword": params.get("server")}
+        del_from_section(kw)
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def clrServer(request: Request):
-        server = request.query_params.get("server")
+        # params = await merged_post_get_params(request)
+        server = params.get("server")
         if server:
             sabnzbd.BPSMeter.clear_server(server)
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggleServer(request: Request):
-        server = request.query_params.get("server")
+        # params = await merged_post_get_params(request)
+        server = params.get("server")
         if server:
             svr = config.get_config("servers", server)
             if svr:
                 svr.enable.set(not svr.enable())
                 config.save_config()
                 sabnzbd.Downloader.update_server(server, server)
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
 
 def unique_svr_name(server):
@@ -1155,27 +1152,28 @@ def unique_svr_name(server):
     return new_name
 
 
-def handle_server(kwargs, root=None, new_svr=False):
+def handle_server(request: Request, kwargs, root=None, new_svr=False):
     """Internal server handler"""
-    ajax = request.query_params.get("ajax")
-    host = request.query_params.get("host", "").strip()
+    # params = await merged_post_get_params(request)
+    ajax = params.get("ajax")
+    host = params.get("host", "").strip()
     if not host:
         return badParameterResponse(T("Server address required"), ajax)
 
-    port = request.query_params.get("port", "").strip()
+    port = params.get("port", "").strip()
     if not port:
-        if not request.query_params.get("ssl", "").strip():
+        if not params.get("ssl", "").strip():
             port = "119"
         else:
             port = "563"
         kwargs["port"] = port
 
-    if request.query_params.get("connections", "").strip() == "":
+    if params.get("connections", "").strip() == "":
         kwargs["connections"] = "1"
 
-    if request.query_params.get("enable") == "1":
+    if params.get("enable") == "1":
         if not happyeyeballs(
-            host, int_conv(port), int_conv(request.query_params.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
+            host, int_conv(port), int_conv(params.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
         ):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
 
@@ -1183,7 +1181,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     server = host
 
     svr = None
-    old_server = request.query_params.get("server")
+    old_server = params.get("server")
     if old_server:
         svr = config.get_config("servers", old_server)
     if svr:
@@ -1195,7 +1193,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         server = unique_svr_name(server)
 
     for kw in ("ssl", "enable", "required", "optional"):
-        if kw not in request.query_params.keys():
+        if kw not in params.keys():
             kwargs[kw] = None
     if svr and not new_svr:
         svr.set_dict(kwargs)
@@ -1209,7 +1207,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         if ajax:
             return sabnzbd.api.report()
         else:
-            raise Raiser(root)
+            return BaseRedirectResponse(root)
 
 
 ##############################################################################
@@ -1302,23 +1300,26 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_rate(request: Request):
         """Save changed RSS automatic readout rate"""
-        cfg.rss_rate.set(request.query_params.get("rss_rate"))
+        # params = await merged_post_get_params(request)
+        cfg.rss_rate.set(params.get("rss_rate"))
         config.save_config()
         sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_feed(request: Request):
         """Update Feed level attributes,
         legacy version: ignores 'enable' parameter
         """
-        if request.query_params.get("enable") is not None:
+        # params = await merged_post_get_params(request)
+        kwargs = dict(params)
+        if params.get("enable") is not None:
             del kwargs["enable"]
         try:
-            cf = config.get_rss()[request.query_params.get("feed")]
+            cf = config.get_rss()[params.get("feed")]
         except KeyError:
             cf = None
-        uri = Strip(request.query_params.get("uri"))
+        uri = Strip(params.get("uri"))
         if cf and uri:
             kwargs["uri"] = uri
             cf.set_dict(kwargs)
@@ -1326,53 +1327,61 @@ class ConfigRss:
 
         self.__evaluate = False
         self.__show_eval_button = True
-        raise rssRaiser(self.__root, kwargs)
+        # Include feed parameter in redirect
+        feed = params.get("feed")
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_feed(request: Request):
         """Update Feed level attributes"""
-        feed_name = request.query_params.get("feed")
+        # params = await merged_post_get_params(request)
+        kwargs = dict(params)
+        feed_name = params.get("feed")
         try:
             cf = config.get_rss()[feed_name]
         except KeyError:
             cf = None
         if "enable" not in kwargs:
             kwargs["enable"] = 0
-        uri = Strip(request.query_params.get("uri"))
+        uri = Strip(params.get("uri"))
         if cf and uri:
             kwargs["uri"] = uri
             cf.set_dict(kwargs)
 
             # Did we get a new name for this feed?
-            new_name = request.query_params.get("feed_new_name")
+            new_name = params.get("feed_new_name")
             if new_name and new_name != feed_name:
                 # Update the feed name for the redirect
-                kwargs["feed"] = cf.rename(new_name)
+                feed_name = cf.rename(new_name)
 
             config.save_config()
 
-        raise rssRaiser(self.__root, kwargs)
+        return BaseRedirectResponse(self.__root, feed=feed_name) if feed_name else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggle_rss_feed(request: Request):
         """Toggle automatic read-out flag of Feed"""
+        # params = await merged_post_get_params(request)
         try:
-            item = config.get_rss()[request.query_params.get("feed")]
+            item = config.get_rss()[params.get("feed")]
         except KeyError:
             item = None
-        if cfg:
+        if item:  # Changed from 'cfg' to 'item'
             item.enable.set(not item.enable())
             config.save_config()
-        if request.query_params.get("table"):
-            raise Raiser(self.__root)
+        if params.get("table"):
+            return BaseRedirectResponse(self.__root)
         else:
-            raise rssRaiser(self.__root, kwargs)
+            feed = params.get("feed")
+            return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def add_rss_feed(request: Request):
         """Add one new RSS feed definition"""
-        feed = Strip(request.query_params.get("feed")).strip("[]")
-        uri = Strip(request.query_params.get("uri"))
+        # params = await merged_post_get_params(request)
+        kwargs = dict(params)
+        feed = Strip(params.get("feed", "")).strip("[]")
+        uri = Strip(params.get("uri"))
         if feed and uri:
             try:
                 rss_cfg = config.get_rss()[feed]
@@ -1391,128 +1400,144 @@ class ConfigRss:
                 self.__refresh_force = False
                 self.__refresh_ignore = True
                 self.__evaluate = True
-                raise rssRaiser(self.__root, kwargs)
+                return BaseRedirectResponse(self.__root, feed=feed)
             else:
-                raise Raiser(self.__root)
+                return BaseRedirectResponse(self.__root)
         else:
-            raise Raiser(self.__root)
+            return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def upd_rss_filter(request: Request):
+    def upd_rss_filter(self, request: Request):
         """Wrapper, so we can call from api.py"""
-        self.internal_upd_rss_filter(**kwargs)
+        # params = await merged_post_get_params(request)
+        return self.internal_upd_rss_filter(request, **dict(params))
 
-    def internal_upd_rss_filter(request: Request):
+    def internal_upd_rss_filter(self, request: Request, **kwargs):
         """Save updated filter definition"""
+        # params = await merged_post_get_params(request)
         try:
-            feed_cfg = config.get_rss()[request.query_params.get("feed")]
+            feed_cfg = config.get_rss()[params.get("feed")]
         except KeyError:
-            raise rssRaiser(self.__root, kwargs)
+            feed = params.get("feed")
+            return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
-        pp = request.query_params.get("pp", "")
+        pp = params.get("pp", "")
         if is_none(pp):
             pp = ""
-        script = ConvertSpecials(request.query_params.get("script"))
-        cat = ConvertSpecials(request.query_params.get("cat"))
-        prio = ConvertSpecials(request.query_params.get("priority"))
-        filt = request.query_params.get("filter_text")
-        enabled = request.query_params.get("enabled", "0")
+        script = ConvertSpecials(params.get("script"))
+        cat = ConvertSpecials(params.get("cat"))
+        prio = ConvertSpecials(params.get("priority"))
+        filt = params.get("filter_text")
+        enabled = params.get("enabled", "0")
 
         if filt:
             feed_cfg.filters.update(
-                int(request.query_params.get("index", 0)),
-                [cat, pp, script, request.query_params.get("filter_type"), filt, prio, enabled],
+                int(params.get("index", 0)),
+                [cat, pp, script, params.get("filter_type"), filt, prio, enabled],
             )
 
             # Move filter if requested
-            index = int_conv(request.query_params.get("index", ""))
-            new_index = request.query_params.get("new_index", "")
+            index = int_conv(params.get("index", ""))
+            new_index = params.get("new_index", "")
             if new_index and int_conv(new_index) != index:
                 feed_cfg.filters.move(int(index), int_conv(new_index))
 
             config.save_config()
         self.__evaluate = False
         self.__show_eval_button = True
-        raise rssRaiser(self.__root, kwargs)
+        feed = params.get("feed")
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def del_rss_feed(self, *args, **kwargs):
+    def del_rss_feed(self, request: Request):
         """Remove complete RSS feed"""
-        kwargs["section"] = "rss"
-        kwargs["keyword"] = request.query_params.get("feed")
-        del_from_section(kwargs)
-        sabnzbd.RSSReader.clear_feed(request.query_params.get("feed"))
-        raise Raiser(self.__root)
+        # params = await merged_post_get_params(request)
+        kw = {"section": "rss", "keyword": params.get("feed")}
+        del_from_section(kw)
+        sabnzbd.RSSReader.clear_feed(params.get("feed"))
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def del_rss_filter(request: Request):
+    def del_rss_filter(self, request: Request):
         """Wrapper, so we can call from api.py"""
-        self.internal_del_rss_filter(**kwargs)
+        # params = await merged_post_get_params(request)
+        return self.internal_del_rss_filter(request, **dict(params))
 
-    def internal_del_rss_filter(request: Request):
+    def internal_del_rss_filter(self, request: Request, **kwargs):
         """Remove one RSS filter"""
+        # params = await merged_post_get_params(request)
         try:
-            feed_cfg = config.get_rss()[request.query_params.get("feed")]
+            feed_cfg = config.get_rss()[params.get("feed")]
         except KeyError:
-            raise rssRaiser(self.__root, kwargs)
+            feed = params.get("feed")
+            return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
-        feed_cfg.filters.delete(int(request.query_params.get("index", 0)))
+        feed_cfg.filters.delete(int(params.get("index", 0)))
         config.save_config()
         self.__evaluate = False
         self.__show_eval_button = True
-        raise rssRaiser(self.__root, kwargs)
+        feed = params.get("feed")
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def download_rss_feed(self, *args, **kwargs):
+    def download_rss_feed(self, request: Request):
         """Force download of all matching jobs in a feed"""
-        if "feed" in kwargs:
-            feed = kwargs["feed"]
+        # params = await merged_post_get_params(request)
+        feed = params.get("feed")
+        if feed:
             self.__refresh_readout = feed
             self.__refresh_download = True
             self.__refresh_force = True
             self.__refresh_ignore = False
             self.__evaluate = True
-        raise rssRaiser(self.__root, kwargs)
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def clean_rss_jobs(self, *args, **kwargs):
+    def clean_rss_jobs(self, request: Request):
         """Remove processed RSS jobs from UI"""
-        sabnzbd.RSSReader.clear_downloaded(kwargs["feed"])
+        # params = await merged_post_get_params(request)
+        feed = params.get("feed")
+        if feed:
+            sabnzbd.RSSReader.clear_downloaded(feed)
         self.__evaluate = True
-        raise rssRaiser(self.__root, kwargs)
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def test_rss_feed(self, *args, **kwargs):
+    def test_rss_feed(self, request: Request):
         """Read the feed content again and show results"""
-        if "feed" in kwargs:
-            feed = kwargs["feed"]
+        # params = await merged_post_get_params(request)
+        feed = params.get("feed")
+        if feed:
             self.__refresh_readout = feed
             self.__refresh_download = False
             self.__refresh_force = False
             self.__refresh_ignore = True
             self.__evaluate = True
             self.__show_eval_button = False
-        raise rssRaiser(self.__root, kwargs)
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def eval_rss_feed(self, *args, **kwargs):
+    def eval_rss_feed(self, request: Request):
         """Re-apply the filters to the feed"""
-        if "feed" in kwargs:
+        # params = await merged_post_get_params(request)
+        feed = params.get("feed")
+        if feed:
             self.__refresh_download = False
             self.__refresh_force = False
             self.__refresh_ignore = False
             self.__show_eval_button = False
             self.__evaluate = True
 
-        raise rssRaiser(self.__root, kwargs)
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def download(request: Request):
+    def download(self, request: Request):
         """Download NZB from provider (Download button)"""
-        feed = request.query_params.get("feed")
-        url = request.query_params.get("url")
+        # params = await merged_post_get_params(request)
+        feed = params.get("feed")
+        url = params.get("url")
         if att := sabnzbd.RSSReader.lookup_url(feed, url):
-            nzbname = request.query_params.get("nzbname")
+            nzbname = params.get("nzbname")
             pp = att.get("pp")
             cat = att.get("cat")
             script = att.get("script")
@@ -1531,13 +1556,13 @@ class ConfigRss:
                 )
             # Need to pass the title instead
             sabnzbd.RSSReader.flag_downloaded(feed, url)
-        raise rssRaiser(self.__root, kwargs)
+        return BaseRedirectResponse(self.__root, feed=feed) if feed else BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def rss_now(self, *args, **kwargs):
+    def rss_now(self, request: Request):
         """Run an automatic RSS run now"""
         sabnzbd.Scheduler.force_rss()
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
 
 def ConvertSpecials(p):
@@ -1682,15 +1707,16 @@ class ConfigScheduling:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def addSchedule(request: Request):
+    def addSchedule(self, request: Request):
         servers = config.get_servers()
-        minute = request.query_params.get("minute")
-        hour = request.query_params.get("hour")
-        days_of_week = "".join([str(x) for x in request.query_params.get("daysofweek", "")])
+        # params = await merged_post_get_params(request)
+        minute = params.get("minute")
+        hour = params.get("hour")
+        days_of_week = "".join([str(x) for x in params.get("daysofweek", "")])
         if not days_of_week:
             days_of_week = "1234567"
-        action = request.query_params.get("action")
-        arguments = request.query_params.get("arguments")
+        action = params.get("action")
+        arguments = params.get("arguments")
 
         arguments = arguments.strip().lower()
         if arguments in ("on", "enable"):
@@ -1726,23 +1752,25 @@ class ConfigScheduling:
 
         config.save_config()
         sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def delSchedule(request: Request):
+    def delSchedule(self, request: Request):
         schedules = cfg.schedules()
-        line = request.query_params.get("line")
+        # params = await merged_post_get_params(request)
+        line = params.get("line")
         if line and line in schedules:
             schedules.remove(line)
             cfg.schedules.set(schedules)
             config.save_config()
             sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def toggleSchedule(request: Request):
+    def toggleSchedule(self, request: Request):
         schedules = cfg.schedules()
-        line = request.query_params.get("line")
+        # params = await merged_post_get_params(request)
+        line = params.get("line")
         if line:
             for i, schedule in enumerate(schedules):
                 if schedule == line:
@@ -1754,7 +1782,7 @@ class ConfigScheduling:
             cfg.schedules.set(schedules)
             config.save_config()
             sabnzbd.Scheduler.restart()
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
 
 ##############################################################################
@@ -1866,16 +1894,18 @@ class ConfigSorting:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def delete(request: Request):
-        kwargs["section"] = "sorters"
-        kwargs["keyword"] = request.query_params.get("name")
-        del_from_section(kwargs)
-        raise Raiser(self.__root)
+    def delete(self, request: Request):
+        # params = await merged_post_get_params(request)
+        kw = {"section": "sorters", "keyword": params.get("name")}
+        del_from_section(kw)
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def save_sorter(request: Request):
-        name = request.query_params.get("name", "*")
-        newname = request.query_params.get("newname", "")
+    def save_sorter(self, request: Request):
+        # params = await merged_post_get_params(request)
+        kwargs = dict(params)
+        name = params.get("name", "*")
+        newname = params.get("newname", "")
         newname = config.clean_section_name(newname)
 
         if name == "*":
@@ -1887,19 +1917,20 @@ class ConfigSorting:
             config.ConfigSorter(newname, kwargs)
 
         config.save_config()
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def toggle_sorter(request: Request):
+    def toggle_sorter(self, request: Request):
         """Toggle is_active flag of a sorter"""
+        # params = await merged_post_get_params(request)
         try:
-            sorter = config.get_sorters()[request.query_params.get("sorter")]
+            sorter = config.get_sorters()[params.get("sorter")]
             sorter.is_active.set(not sorter.is_active())
             config.save_config()
         except Exception:
             pass
 
-        raise Raiser(self.__root)
+        return BaseRedirectResponse(self.__root)
 
 
 def badParameterResponse(msg, ajax=None):
@@ -2213,16 +2244,17 @@ class ConfigNotify:
         )
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveNotify(request: Request):
+    def saveNotify(self, request: Request):
+        # params = await merged_post_get_params(request)
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
-                if msg := config.get_config(section, option).set(request.query_params.get(option)):
-                    return badParameterResponse(msg, request.query_params.get("ajax"))
+                if msg := config.get_config(section, option).set(params.get(option)):
+                    return badParameterResponse(msg, params.get("ajax"))
         config.save_config()
-        if request.query_params.get("ajax"):
+        if params.get("ajax"):
             return sabnzbd.api.report()
         else:
-            raise Raiser(self.__root)
+            return BaseRedirectResponse(self.__root)
 
 
 ##############################################################################
