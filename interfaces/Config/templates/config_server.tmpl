@@ -40,7 +40,7 @@
             <h3>$T('addServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div>
         <div class="col1">
-            <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
+            <form action="server/add_server" method="post" autocomplete="off" onsubmit="removeObfuscation();">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="output" value="json" />
                 <fieldset>
@@ -147,7 +147,7 @@
     <!--#set $cur_prio_color = -1 #-->
     <!--#set $last_prio = -1 #-->
     <!--#for $cur, $server in enumerate($servers) #-->
-        <form action="saveServer" method="post" class="fullform" autocomplete="off">
+        <form action="server/save_server" method="post" class="fullform" autocomplete="off">
             <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="output" value="json" />
             <input type="hidden" name="server" value="$server['name']" />
@@ -561,7 +561,7 @@
                     resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
 
                     // Allow adding the new server if we are in the new-server section
-                    if(theButton.parents("form[action='addServer']").length) {
+                    if(theButton.parents("form[action='server/add_server']").length) {
                         jQuery(".addNewServer").removeAttr("disabled")
                     }
                 } else {
@@ -569,7 +569,7 @@
                     resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
 
                     // Disable the adding of new server, just to be sure
-                    if(theButton.parents("form[action='addServer']").length) {
+                    if(theButton.parents("form[action='server/add_server']").length) {
                         jQuery(".addNewServer").attr("disabled", "disabled")
                     }
                 }

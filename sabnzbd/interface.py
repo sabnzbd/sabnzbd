@@ -78,6 +78,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
 import sabnzbd.utils.ssdp
+from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.constants import (
     DEF_STD_CONFIG,
     DEFAULT_PRIORITY,
@@ -91,7 +92,15 @@ from sabnzbd.constants import (
     DEF_NETWORKING_TEST_TIMEOUT,
 )
 from sabnzbd.lang import list_languages
-from sabnzbd.api import list_scripts, list_cats, del_from_section, api_handler, build_header, Ttemplate
+from sabnzbd.api import (
+    list_scripts,
+    list_cats,
+    del_from_section,
+    api_handler,
+    build_header,
+    Ttemplate,
+    test_nntp_server_dict,
+)
 
 ##############################################################################
 # Security functions
@@ -129,6 +138,9 @@ def secured_expose(
 
     @functools.wraps(wrap_func)
     async def internal_wrap(request: Request, *args, **kwargs):
+        # Merge post and get requests so we can use them easily
+        request._query_params = await merged_post_get_params(request)
+
         # Check if config is locked
         if check_configlock and cfg.configlock():
             if cfg.api_warnings():
@@ -1055,86 +1067,93 @@ def change_web_dir(web_dir):
 
 
 ##############################################################################
-class ConfigServer:
-    def __init__(self, root):
-        self.__root = root
+# Page definitions - Config - Server
+##############################################################################
 
-    @secured_expose(check_configlock=True, methods=["GET"])
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        new = []
-        servers = config.get_servers()
-        server_names = sorted(
-            servers,
-            key=lambda svr: "%d%02d%s"
-            % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
-        )
-        for svr in server_names:
-            new.append(servers[svr].get_dict(for_public_api=True))
-            t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
-            if t:
-                new[-1]["amounts"] = (
-                    to_units(t),
-                    to_units(m),
-                    to_units(w),
-                    to_units(d),
-                    daily,
-                    articles_tried,
-                    articles_success,
-                )
-            new[-1]["quota_left"] = to_units(
-                servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
+
+@secured_expose(route="/config/server", check_configlock=True, methods=["GET"])
+async def index_config_server(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    new = []
+    servers = config.get_servers()
+    server_names = sorted(
+        servers,
+        key=lambda svr: "%d%02d%s"
+        % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
+    )
+    for svr in server_names:
+        new.append(servers[svr].get_dict(for_public_api=True))
+        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
+        if t:
+            new[-1]["amounts"] = (
+                to_units(t),
+                to_units(m),
+                to_units(w),
+                to_units(d),
+                daily,
+                articles_tried,
+                articles_success,
             )
-
-        conf["servers"] = new
-        conf["cats"] = list_cats(default=True)
-
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_server.tmpl"),
-            search_list=conf,
+        new[-1]["quota_left"] = to_units(
+            servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
         )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def addServer(request: Request):
-        # params = await merged_post_get_params(request)
-        return handle_server(request, dict(params), self.__root, True)
+    conf["servers"] = new
+    conf["cats"] = list_cats(default=True)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveServer(request: Request):
-        # params = await merged_post_get_params(request)
-        return handle_server(request, dict(params), self.__root)
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_server.tmpl"),
+        search_list=conf,
+    )
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def testServer(request: Request):
-        _, msg = test_nntp_server_dict(kwargs)
-        return msg
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def delServer(request: Request):
-        # params = await merged_post_get_params(request)
-        kw = {"section": "servers", "keyword": params.get("server")}
-        del_from_section(kw)
-        return BaseRedirectResponse(self.__root)
+@secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True)
+async def config_server_add(request: Request):
+    params = await merged_post_get_params(request)
+    return handle_server(request, dict(params), "/config/server", True)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def clrServer(request: Request):
-        # params = await merged_post_get_params(request)
-        server = params.get("server")
-        if server:
-            sabnzbd.BPSMeter.clear_server(server)
-        return BaseRedirectResponse(self.__root)
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def toggleServer(request: Request):
-        # params = await merged_post_get_params(request)
-        server = params.get("server")
-        if server:
-            svr = config.get_config("servers", server)
-            if svr:
-                svr.enable.set(not svr.enable())
-                config.save_config()
-                sabnzbd.Downloader.update_server(server, server)
-        return BaseRedirectResponse(self.__root)
+@secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True)
+async def config_server_save(request: Request):
+    params = await merged_post_get_params(request)
+    return handle_server(request, dict(params), "/config/server")
+
+
+@secured_expose(route="/config/server/testServer", check_api_key=True, check_configlock=True)
+async def config_server_test(request: Request):
+    params = await merged_post_get_params(request)
+    _, msg = test_nntp_server_dict(params)
+    return PlainTextResponse(msg)
+
+
+@secured_expose(route="/config/server/delServer", check_api_key=True, check_configlock=True)
+async def config_server_del(request: Request):
+    params = await merged_post_get_params(request)
+    kw = {"section": "servers", "keyword": params.get("server")}
+    del_from_section(kw)
+    return BaseRedirectResponse("/config/server")
+
+
+@secured_expose(route="/config/server/clrServer", check_api_key=True, check_configlock=True)
+async def config_server_clr(request: Request):
+    params = await merged_post_get_params(request)
+    server = params.get("server")
+    if server:
+        sabnzbd.BPSMeter.clear_server(server)
+    return BaseRedirectResponse("/config/server")
+
+
+@secured_expose(route="/config/server/toggleServer", check_api_key=True, check_configlock=True)
+async def config_server_toggle(request: Request):
+    params = await merged_post_get_params(request)
+    server = params.get("server")
+    if server:
+        svr = config.get_config("servers", server)
+        if svr:
+            svr.enable.set(not svr.enable())
+            config.save_config()
+            sabnzbd.Downloader.update_server(server, server)
+    return BaseRedirectResponse("/config/server")
 
 
 def unique_svr_name(server):
@@ -1152,9 +1171,8 @@ def unique_svr_name(server):
     return new_name
 
 
-def handle_server(request: Request, kwargs, root=None, new_svr=False):
+def handle_server(request: Request, params, root=None, new_svr=False):
     """Internal server handler"""
-    # params = await merged_post_get_params(request)
     ajax = params.get("ajax")
     host = params.get("host", "").strip()
     if not host:
@@ -1166,13 +1184,13 @@ def handle_server(request: Request, kwargs, root=None, new_svr=False):
             port = "119"
         else:
             port = "563"
-        kwargs["port"] = port
+        params["port"] = port
 
     if params.get("connections", "").strip() == "":
-        kwargs["connections"] = "1"
+        params["connections"] = "1"
 
     if params.get("enable") == "1":
-        if not happyeyeballs(
+        if not get_fastest_addrinfo(
             host, int_conv(port), int_conv(params.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
         ):
             return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
@@ -1194,18 +1212,18 @@ def handle_server(request: Request, kwargs, root=None, new_svr=False):
 
     for kw in ("ssl", "enable", "required", "optional"):
         if kw not in params.keys():
-            kwargs[kw] = None
+            params[kw] = None
     if svr and not new_svr:
-        svr.set_dict(kwargs)
+        svr.set_dict(params)
     else:
         old_server = None
-        config.ConfigServer(server, kwargs)
+        config.ConfigServer(server, params)
 
     config.save_config()
     sabnzbd.Downloader.update_server(old_server, server)
     if root:
         if ajax:
-            return sabnzbd.api.report()
+            return sabnzbd.api.report(request.query_params)
         else:
             return BaseRedirectResponse(root)
 
