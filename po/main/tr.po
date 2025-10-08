@@ -362,6 +362,20 @@ msgstr "\"%s\" işi muhtemelen şifrelenmiştir: \"parola\", \"%s\" dosya ismind
 msgid "Quota spent, pausing downloading"
 msgstr "Kota kullanıldı, indirme duraklatılıyor"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "Kota"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Yanlış parametre"
@@ -3662,10 +3676,6 @@ msgid "Naming"
 msgstr "İsimlendirme"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "Kota"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Bu ay ne kadar indirme yapılabileceği (K/M/G)"
 
@@ -3772,13 +3782,10 @@ msgstr "Sonlanma tarihinden 5 gün evvel ikaz et."
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
-"Bu hesap için kota, bu seçeneğin ayarlanmasından itibaren hesaplanır. Bayt "
-"olarak, seçime dayalı bir şekilde K,M,G takip edebilir.<br />0 değerine "
-"ulaştığında ikazda bulun, her birkaç dakikada bir kontrol edilir."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

@@ -370,6 +370,20 @@ msgstr ""
 msgid "Quota spent, pausing downloading"
 msgstr "Quota atteint, téléchargement mis en pause"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "Quota"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Paramètre incorrect"
@@ -3715,10 +3729,6 @@ msgid "Naming"
 msgstr "Appellation"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "Quota"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Combien peut-être télécharger ce mois (K/M/G)"
 
@@ -3828,13 +3838,10 @@ msgstr "Avertir 5 jours avant la date d'expiration du compte."
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
-"Quota pour ce compte calculé à partir du moment où il est défini. En octets,"
-" éventuellement suivi de K,M,G.<br />Avertir quand il atteint 0, vérifié "
-"toutes les quelques minutes."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
