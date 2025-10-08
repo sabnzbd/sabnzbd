@@ -2034,7 +2034,7 @@ def plural_to_single(kw, def_kw=""):
         return def_kw
 
 
-def del_from_section(kwargs: QueryParams) -> bool:
+def del_from_section(kwargs: Dict[str, Union[str, List[str]]]) -> bool:
     """Remove keyword in section"""
     section = kwargs.get("section", "")
     if section in ("sorters", "servers", "rss", "categories"):

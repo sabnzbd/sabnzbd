@@ -673,11 +673,10 @@ async def login_index(request: Request):
     info["error"] = ""
 
     # Use unified params - works for both GET and POST requests
-    params = await merged_post_get_params(request)
-    username = params.get("username")
-    password = params.get("password")
-    remember_me = params.get("remember_me", False)
-    logout = params.get("logout")
+    username = request.query_params.get("username")
+    password = request.query_params.get("password")
+    remember_me = request.query_params.get("remember_me", False)
+    logout = request.query_params.get("logout")
 
     # Logout?
     if logout:
@@ -765,7 +764,6 @@ LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
 @secured_expose(route="/config/folders", check_configlock=True, methods=["GET"])
 async def index_config_folders(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-
     conf["file_exts"] = ", ".join(VALID_NZB_FILES + VALID_ARCHIVES)
 
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
@@ -779,13 +777,12 @@ async def index_config_folders(request: Request):
 
 @secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True)
 async def config_folder_save(request: Request):
-    params = await merged_post_get_params(request)
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-        if msg := config.get_config("misc", kw).set(params.get(kw)):
-            return sabnzbd.api.report(params, error=msg)
+        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
+            return sabnzbd.api.report(request.query_params, error=msg)
 
     config.save_config()
-    return sabnzbd.api.report(params)
+    return sabnzbd.api.report(request.query_params)
 
 
 ##############################################################################
@@ -1109,44 +1106,32 @@ async def index_config_server(request: Request):
 
 @secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True)
 async def config_server_add(request: Request):
-    params = await merged_post_get_params(request)
-    return handle_server(request, dict(params), "/config/server", True)
+    return handle_server(request, request.query_params, "/config/server", True)
 
 
 @secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True)
 async def config_server_save(request: Request):
-    params = await merged_post_get_params(request)
-    return handle_server(request, dict(params), "/config/server")
+    return handle_server(request, request.query_params, "/config/server")
 
 
-@secured_expose(route="/config/server/testServer", check_api_key=True, check_configlock=True)
-async def config_server_test(request: Request):
-    params = await merged_post_get_params(request)
-    _, msg = test_nntp_server_dict(params)
-    return PlainTextResponse(msg)
-
-
-@secured_expose(route="/config/server/delServer", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True)
 async def config_server_del(request: Request):
-    params = await merged_post_get_params(request)
-    kw = {"section": "servers", "keyword": params.get("server")}
+    kw = {"section": "servers", "keyword": request.query_params.get("server")}
     del_from_section(kw)
     return BaseRedirectResponse("/config/server")
 
 
-@secured_expose(route="/config/server/clrServer", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/clear_server", check_api_key=True, check_configlock=True)
 async def config_server_clr(request: Request):
-    params = await merged_post_get_params(request)
-    server = params.get("server")
+    server = request.query_params.get("server")
     if server:
         sabnzbd.BPSMeter.clear_server(server)
     return BaseRedirectResponse("/config/server")
 
 
-@secured_expose(route="/config/server/toggleServer", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/toggle_server", check_api_key=True, check_configlock=True)
 async def config_server_toggle(request: Request):
-    params = await merged_post_get_params(request)
-    server = params.get("server")
+    server = request.query_params.get("server")
     if server:
         svr = config.get_config("servers", server)
         if svr:
@@ -1318,7 +1303,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_rate(request: Request):
         """Save changed RSS automatic readout rate"""
-        # params = await merged_post_get_params(request)
         cfg.rss_rate.set(params.get("rss_rate"))
         config.save_config()
         sabnzbd.Scheduler.restart()
@@ -1329,7 +1313,6 @@ class ConfigRss:
         """Update Feed level attributes,
         legacy version: ignores 'enable' parameter
         """
-        # params = await merged_post_get_params(request)
         kwargs = dict(params)
         if params.get("enable") is not None:
             del kwargs["enable"]
@@ -1352,7 +1335,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_feed(request: Request):
         """Update Feed level attributes"""
-        # params = await merged_post_get_params(request)
         kwargs = dict(params)
         feed_name = params.get("feed")
         try:
@@ -1379,7 +1361,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggle_rss_feed(request: Request):
         """Toggle automatic read-out flag of Feed"""
-        # params = await merged_post_get_params(request)
         try:
             item = config.get_rss()[params.get("feed")]
         except KeyError:
@@ -1396,7 +1377,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def add_rss_feed(request: Request):
         """Add one new RSS feed definition"""
-        # params = await merged_post_get_params(request)
         kwargs = dict(params)
         feed = Strip(params.get("feed", "")).strip("[]")
         uri = Strip(params.get("uri"))
@@ -1427,12 +1407,10 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_filter(self, request: Request):
         """Wrapper, so we can call from api.py"""
-        # params = await merged_post_get_params(request)
         return self.internal_upd_rss_filter(request, **dict(params))
 
     def internal_upd_rss_filter(self, request: Request, **kwargs):
         """Save updated filter definition"""
-        # params = await merged_post_get_params(request)
         try:
             feed_cfg = config.get_rss()[params.get("feed")]
         except KeyError:
@@ -1469,7 +1447,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def del_rss_feed(self, request: Request):
         """Remove complete RSS feed"""
-        # params = await merged_post_get_params(request)
         kw = {"section": "rss", "keyword": params.get("feed")}
         del_from_section(kw)
         sabnzbd.RSSReader.clear_feed(params.get("feed"))
@@ -1478,12 +1455,10 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def del_rss_filter(self, request: Request):
         """Wrapper, so we can call from api.py"""
-        # params = await merged_post_get_params(request)
         return self.internal_del_rss_filter(request, **dict(params))
 
     def internal_del_rss_filter(self, request: Request, **kwargs):
         """Remove one RSS filter"""
-        # params = await merged_post_get_params(request)
         try:
             feed_cfg = config.get_rss()[params.get("feed")]
         except KeyError:
@@ -1500,7 +1475,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def download_rss_feed(self, request: Request):
         """Force download of all matching jobs in a feed"""
-        # params = await merged_post_get_params(request)
         feed = params.get("feed")
         if feed:
             self.__refresh_readout = feed
@@ -1513,7 +1487,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, request: Request):
         """Remove processed RSS jobs from UI"""
-        # params = await merged_post_get_params(request)
         feed = params.get("feed")
         if feed:
             sabnzbd.RSSReader.clear_downloaded(feed)
@@ -1523,7 +1496,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def test_rss_feed(self, request: Request):
         """Read the feed content again and show results"""
-        # params = await merged_post_get_params(request)
         feed = params.get("feed")
         if feed:
             self.__refresh_readout = feed
@@ -1537,7 +1509,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def eval_rss_feed(self, request: Request):
         """Re-apply the filters to the feed"""
-        # params = await merged_post_get_params(request)
         feed = params.get("feed")
         if feed:
             self.__refresh_download = False
@@ -1551,7 +1522,6 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def download(self, request: Request):
         """Download NZB from provider (Download button)"""
-        # params = await merged_post_get_params(request)
         feed = params.get("feed")
         url = params.get("url")
         if att := sabnzbd.RSSReader.lookup_url(feed, url):
@@ -1727,7 +1697,6 @@ class ConfigScheduling:
     @secured_expose(check_api_key=True, check_configlock=True)
     def addSchedule(self, request: Request):
         servers = config.get_servers()
-        # params = await merged_post_get_params(request)
         minute = params.get("minute")
         hour = params.get("hour")
         days_of_week = "".join([str(x) for x in params.get("daysofweek", "")])
@@ -1775,7 +1744,6 @@ class ConfigScheduling:
     @secured_expose(check_api_key=True, check_configlock=True)
     def delSchedule(self, request: Request):
         schedules = cfg.schedules()
-        # params = await merged_post_get_params(request)
         line = params.get("line")
         if line and line in schedules:
             schedules.remove(line)
@@ -1787,7 +1755,6 @@ class ConfigScheduling:
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggleSchedule(self, request: Request):
         schedules = cfg.schedules()
-        # params = await merged_post_get_params(request)
         line = params.get("line")
         if line:
             for i, schedule in enumerate(schedules):
@@ -1913,14 +1880,12 @@ class ConfigSorting:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def delete(self, request: Request):
-        # params = await merged_post_get_params(request)
         kw = {"section": "sorters", "keyword": params.get("name")}
         del_from_section(kw)
         return BaseRedirectResponse(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_sorter(self, request: Request):
-        # params = await merged_post_get_params(request)
         kwargs = dict(params)
         name = params.get("name", "*")
         newname = params.get("newname", "")
@@ -1940,7 +1905,6 @@ class ConfigSorting:
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggle_sorter(self, request: Request):
         """Toggle is_active flag of a sorter"""
-        # params = await merged_post_get_params(request)
         try:
             sorter = config.get_sorters()[params.get("sorter")]
             sorter.is_active.set(not sorter.is_active())
@@ -2263,7 +2227,6 @@ class ConfigNotify:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveNotify(self, request: Request):
-        # params = await merged_post_get_params(request)
         for section in NOTIFY_OPTIONS:
             for option in NOTIFY_OPTIONS[section]:
                 if msg := config.get_config(section, option).set(params.get(option)):
