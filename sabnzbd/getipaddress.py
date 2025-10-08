@@ -73,9 +73,11 @@ def addresslookup6(myhost):
 
 
 def active_socks5_proxy() -> Optional[str]:
-    """Return the active proxy"""
-    if socket.socket == socks.socksocket:
-        return "%s:%s" % socks.socksocket.default_proxy[1:3]
+    """Return the active proxy. And None if no proxy is set"""
+    if socks.socksocket.default_proxy:
+        socks5host = socks.socksocket.default_proxy[1]
+        socks5port = sabnzbd.misc.int_conv(socks.socksocket.default_proxy[2], default=1080)
+        return f"{socks5host}:{socks5port}"
     return None
 
 
@@ -92,11 +94,21 @@ def dnslookup() -> bool:
 
 
 def local_ipv4() -> Optional[str]:
+    """return IPv4 address of default local LAN interface"""
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
-            # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
-            s_ipv4.connect(("10.255.255.255", 80))
-            ipv4 = s_ipv4.getsockname()[0]
+        if not socks.socksocket.default_proxy:
+            # No socks5 proxy, so we can use UDP (SOCK_DGRAM) and a non-reachable host
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
+                s_ipv4.connect(("10.255.255.255", 80))
+                ipv4 = s_ipv4.getsockname()[0]
+        else:
+            # socks5 proxy set, so we must use TCP (SOCK_STREAM) and a reachable host: the proxy server
+            socks5host = socks.socksocket.default_proxy[1]
+            socks5port = sabnzbd.misc.int_conv(socks.socksocket.default_proxy[2], default=1080)
+            logging.debug(f"Using proxy {socks5host} on port {socks5port} to determine local IPv4 address")
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_ipv4:
+                s_ipv4.connect((socks5host, socks5port))
+                ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
 
