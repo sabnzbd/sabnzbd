@@ -577,7 +577,7 @@ def _api_history_default(value: str, kwargs: QueryParams) -> Response:
 
     # Do we need to send anything?
     if last_history_update == current_history_update:
-        return report(keyword="history", data=False)
+        return report(kwargs, keyword="history", data=False)
 
     if failed_only:
         # We ignore any other statuses, having both doesn't make sense
@@ -741,6 +741,7 @@ def _api_showlog(name: str, kwargs: QueryParams) -> Response:
                 yield sanitize_line(line)
     else:
         yield b"\nFile log disabled or not found.\n\n"
+
 
 def _api_get_cats(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs, keyword="categories", data=list_cats(False))
