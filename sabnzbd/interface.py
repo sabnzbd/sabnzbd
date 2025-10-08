@@ -93,13 +93,13 @@ from sabnzbd.constants import (
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
+    report,
     list_scripts,
     list_cats,
     del_from_section,
     api_handler,
     build_header,
     Ttemplate,
-    test_nntp_server_dict,
 )
 
 ##############################################################################
@@ -385,6 +385,7 @@ def log_warning_and_ip(request: Request, txt: str):
 async def merged_post_get_params(request: Request) -> Dict[str, Any]:
     # Start with query parameters
     unified_data = dict(request.query_params)
+    print(unified_data)
 
     # If it's a POST request with form data, merge it in
     if request.method == "POST":
@@ -392,6 +393,7 @@ async def merged_post_get_params(request: Request) -> Dict[str, Any]:
         if content_type.startswith(("application/x-www-form-urlencoded", "multipart/form-data")):
             try:
                 form_data = await request.form()
+                print(form_data)
                 # Form data takes precedence over query params for duplicate keys
                 for key, value in form_data.items():
                     if hasattr(value, "file") and hasattr(value, "filename"):
@@ -400,6 +402,7 @@ async def merged_post_get_params(request: Request) -> Dict[str, Any]:
                     else:
                         # Convert to string for consistency
                         unified_data[key] = str(value)
+                        print(key)
             except Exception:
                 # If form parsing fails, just use query params
                 pass
@@ -779,10 +782,10 @@ async def index_config_folders(request: Request):
 async def config_folder_save(request: Request):
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-            return sabnzbd.api.report(request.query_params, error=msg)
+            return report(request.query_params, error=msg)
 
     config.save_config()
-    return sabnzbd.api.report(request.query_params)
+    return report(request.query_params)
 
 
 ##############################################################################
@@ -857,10 +860,10 @@ async def index_config_switches(request: Request):
 async def config_switches_save(request: Request):
     for kw in SWITCH_LIST:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-            return sabnzbd.api.report(request.query_params, error=msg)
+            return report(request.query_params, error=msg)
 
     config.save_config()
-    return sabnzbd.api.report(request.query_params)
+    return report(request.query_params)
 
 
 ##############################################################################
@@ -955,10 +958,10 @@ async def index_config_special(request: Request):
 async def config_special_save(request: Request):
     for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-            return sabnzbd.api.report(request.query_params, error=msg)
+            return report(request.query_params, error=msg)
 
     config.save_config()
-    return sabnzbd.api.report(request.query_params)
+    return report(request.query_params)
 
 
 ##############################################################################
@@ -1023,7 +1026,7 @@ async def config_general_save(request: Request):
     # Handle general options
     for kw in GENERAL_LIST:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-            return sabnzbd.api.report(request.query_params, error=msg)
+            return report(request.query_params, error=msg)
 
     # Handle special options
     cfg.password.set(request.query_params.get("password"))
@@ -1032,7 +1035,7 @@ async def config_general_save(request: Request):
         change_web_dir(web_dir)
 
     config.save_config()
-    return sabnzbd.api.report(request.query_params, data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
+    return report(request.query_params, data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
 
 
 @secured_expose(route="/config/general/uploadConfig", check_api_key=True, check_configlock=True)
@@ -1046,10 +1049,10 @@ async def config_upload_backup(request: Request):
         config_backup_data = await config_backup_file.read()
         if config.validate_config_backup(config_backup_data):
             sabnzbd.RESTORE_DATA = config_backup_data
-            return sabnzbd.api.report(data={"success": True, "restart_req": True})
+            return report(data={"success": True, "restart_req": True})
     except Exception:
         pass
-    return sabnzbd.api.report(error=T("Invalid backup archive"))
+    return report(error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):
@@ -1208,7 +1211,7 @@ def handle_server(request: Request, params, root=None, new_svr=False):
     sabnzbd.Downloader.update_server(old_server, server)
     if root:
         if ajax:
-            return sabnzbd.api.report(request.query_params)
+            return report(request.query_params)
         else:
             return BaseRedirectResponse(root)
 
@@ -1812,7 +1815,7 @@ async def config_categories_delete(request: Request):
     }
     del_from_section(kw)
     # Keep API response pattern consistent
-    return sabnzbd.api.report(request.query_params)
+    return report(request.query_params)
 
 
 @secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True)
@@ -1830,7 +1833,7 @@ async def config_categories_save(request: Request):
             cfg.download_dir.get_path(),
             real_path(cfg.complete_dir.get_path(), cat_params.get("dir", "")),
         ):
-            return sabnzbd.api.report(
+            return report(
                 request.query_params,
                 error=T("Category folder cannot be a subfolder of the Temporary Download Folder."),
             )
@@ -1841,7 +1844,7 @@ async def config_categories_save(request: Request):
         config.ConfigCat(newname.lower(), cat_params)
 
     config.save_config()
-    return sabnzbd.api.report(request.query_params)
+    return report(request.query_params)
 
 
 ##############################################################################
@@ -1918,7 +1921,7 @@ class ConfigSorting:
 def badParameterResponse(msg, ajax=None):
     """Return a html page with error message and a 'back' button"""
     if ajax:
-        return sabnzbd.api.report(error=msg)
+        return report(error=msg)
     else:
         return """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -2200,42 +2203,41 @@ NOTIFY_OPTIONS = {
 }
 
 
-class ConfigNotify:
-    def __init__(self, root):
-        self.__root = root
+##############################################################################
+# Page definitions - Config - Notify
+##############################################################################
 
-    @secured_expose(check_configlock=True, methods=["GET"])
-    def index(request: Request):
-        conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
-        conf["categories"] = list_cats(False)
-        conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
-        conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION
-        conf["scripts"] = list_scripts(default=False, none=True)
 
-        for section in NOTIFY_OPTIONS:
-            for option in NOTIFY_OPTIONS[section]:
-                conf[option] = config.get_config(section, option)()
+@secured_expose(route="/config/notify", check_configlock=True, methods=["GET"])
+async def index_config_notify(request: Request):
+    conf = build_header(sabnzbd.WEB_DIR_CONFIG)
+    conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
+    conf["categories"] = list_cats(False)
+    conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
+    conf["have_ncenter"] = sabnzbd.MACOS and sabnzbd.FOUNDATION
+    conf["scripts"] = list_scripts(default=False, none=True)
 
-        # Use get_string to make sure lists are displayed correctly
-        conf["email_to"] = cfg.email_to.get_string()
+    for section in NOTIFY_OPTIONS:
+        for option in NOTIFY_OPTIONS[section]:
+            conf[option] = config.get_config(section, option)()
 
-        return template_filtered_response(
-            file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),
-            search_list=conf,
-        )
+    # Use get_string to make sure lists are displayed correctly
+    conf["email_to"] = cfg.email_to.get_string()
 
-    @secured_expose(check_api_key=True, check_configlock=True)
-    def saveNotify(self, request: Request):
-        for section in NOTIFY_OPTIONS:
-            for option in NOTIFY_OPTIONS[section]:
-                if msg := config.get_config(section, option).set(params.get(option)):
-                    return badParameterResponse(msg, params.get("ajax"))
-        config.save_config()
-        if params.get("ajax"):
-            return sabnzbd.api.report()
-        else:
-            return BaseRedirectResponse(self.__root)
+    return template_filtered_response(
+        file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),
+        search_list=conf,
+    )
+
+
+@secured_expose(route="/config/notify/save", check_api_key=True, check_configlock=True)
+async def config_notify_save(request: Request):
+    for section in NOTIFY_OPTIONS:
+        for option in NOTIFY_OPTIONS[section]:
+            if msg := config.get_config(section, option).set(request.query_params.get(option)):
+                return badParameterResponse(msg, request.query_params.get("ajax"))
+    config.save_config()
+    return report(request.query_params)
 
 
 ##############################################################################
