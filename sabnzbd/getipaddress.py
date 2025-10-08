@@ -103,11 +103,11 @@ def local_ipv4() -> Optional[str]:
                 ipv4 = s_ipv4.getsockname()[0]
         else:
             # socks5 proxy set, so we must use TCP (SOCK_STREAM) and a reachable host: the proxy server
-            proxyhost = socks.socksocket.default_proxy[1]
-            proxyport = sabnzbd.misc.int_conv(socks.socksocket.default_proxy[2], default=1080)
-            logging.debug(f"Using proxy {proxyhost} on port {proxyport} to determine local IPv4 address")
+            socks5host = socks.socksocket.default_proxy[1]
+            socks5port = sabnzbd.misc.int_conv(socks.socksocket.default_proxy[2], default=1080)
+            logging.debug(f"Using proxy {socks5host} on port {socks5port} to determine local IPv4 address")
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_ipv4:
-                s_ipv4.connect((proxyhost, proxyport))
+                s_ipv4.connect((socks5host, socks5port))
                 ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
