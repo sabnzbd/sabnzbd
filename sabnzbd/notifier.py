@@ -89,6 +89,7 @@ NOTIFICATION_TYPES = {
     "warning": TT("Warning"),  #: Notification
     "error": TT("Error"),  #: Notification
     "disk_full": TT("Disk full"),  #: Notification
+    "quota": TT("Quota"),  #: Notification
     "queue_done": TT("Queue finished"),  #: Notification
     "new_login": TT("User logged in"),  #: Notification
     "other": TT("Other Messages"),  #: Notification
@@ -323,6 +324,8 @@ def send_apprise(title, msg, notification_type, force=False, test=None):
         "error": apprise.common.NotifyType.FAILURE,
         # Disk full
         "disk_full": apprise.common.NotifyType.WARNING,
+        # Quota
+        "quota": apprise.common.NotifyType.WARNING,
         # Queue finished
         "queue_done": apprise.common.NotifyType.INFO,
         # User logged in

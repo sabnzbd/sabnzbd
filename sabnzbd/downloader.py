@@ -1143,6 +1143,11 @@ def check_server_quota():
         if server.quota():
             if server.quota.get_int() + server.usage_at_start() < sabnzbd.BPSMeter.grand_total.get(srv, 0):
                 logging.warning(T("Server %s has used the specified quota"), server.displayname())
+                sabnzbd.notifier.send_notification(
+                    T("Quota"),
+                    T("Server %s has used the specified quota") % server.displayname(),
+                    "quota",
+                )
                 server.quota.set("")
                 config.save_config()
 

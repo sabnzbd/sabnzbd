@@ -545,7 +545,8 @@ SKIN_TEXT = {
     "srv-expire_date": TT("Account expiration date"),
     "srv-explain-expire_date": TT("Warn 5 days in advance of account expiration date."),
     "srv-explain-quota": TT(
-        "Quota for this account, counted from the time it is set. In bytes, optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few minutes."
+        "Quota for this server, counted from the time it is set. In bytes, optionally follow with K,M,G.<br />"
+        "Checked every few minutes. Notification is sent when quota is spent."
     ),
     "srv-retention": TT("Retention time"),  #: Server's retention time in days
     "srv-ssl": TT("SSL"),  #: Server SSL tickbox
