@@ -1261,17 +1261,6 @@ def main():
     if inet_exposure:
         sabnzbd.cfg.inet_exposure.set(inet_exposure)
 
-    mime_gzip = (
-        "text/*",
-        "application/javascript",
-        "application/x-javascript",
-        "application/json",
-        "application/xml",
-        "application/vnd.ms-fontobject",
-        "application/font*",
-        "image/svg+xml",
-    )
-
     logging.info("Starting web-interface on %s:%s", web_host, web_port)
 
     sabnzbd.cfg.log_level.callback(guard_loglevel)

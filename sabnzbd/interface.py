@@ -42,10 +42,9 @@ from starlette.middleware import Middleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
-from starlette.responses import JSONResponse
 from Cheetah.Template import Template
 
-from typing import Optional, Callable, Union, Any, Dict, List
+from typing import Optional, Callable, Union, Any, Dict, List, Collection
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -66,7 +65,6 @@ from sabnzbd.misc import (
     get_cpu_name,
     clean_comma_separated_list,
 )
-from sabnzbd.get_addrinfo import get_fastest_addrinfo
 from sabnzbd.filesystem import (
     real_path,
     globber,
@@ -78,7 +76,6 @@ from sabnzbd.filesystem import (
 from sabnzbd.encoding import xml_name, utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
 import sabnzbd.utils.ssdp
 from sabnzbd.constants import (
@@ -106,7 +103,6 @@ _MSG_MISSING_AUTH = "Missing authentication"
 _MSG_APIKEY_REQUIRED = "API Key Required"
 _MSG_APIKEY_INCORRECT = "API Key Incorrect"
 
-
 INTERFACE_ROUTES: List[Union[Route, Mount]] = []
 
 
@@ -117,6 +113,7 @@ def secured_expose(
     check_for_login: bool = True,
     check_api_key: bool = False,
     access_type: int = 4,
+    methods: Collection = ("GET", "POST"),
 ) -> Union[Callable, str]:
     """Wrapper for both starlette routing and login/access check"""
     if not wrap_func:
@@ -127,6 +124,7 @@ def secured_expose(
             check_for_login=check_for_login,
             check_api_key=check_api_key,
             access_type=access_type,
+            methods=methods,
         )
 
     @functools.wraps(wrap_func)
@@ -164,7 +162,7 @@ def secured_expose(
         return await wrap_func(request, *args, **kwargs)
 
     if route:
-        INTERFACE_ROUTES.append(Route(route, endpoint=internal_wrap, methods=["GET", "POST"]))
+        INTERFACE_ROUTES.append(Route(route, endpoint=internal_wrap, methods=methods))
 
     return internal_wrap
 
@@ -318,31 +316,6 @@ def check_login_cookie(request: Request) -> bool:
     return login_cookie == hashlib.sha1(cookie_str).hexdigest()
 
 
-def check_basic_auth(_, username, password):
-    """CherryPy basic authentication validation"""
-    return username == cfg.username() and password == cfg.password()
-
-
-def set_auth(conf):
-    """Set the authentication for CherryPy"""
-    if cfg.username() and cfg.password() and not cfg.html_login():
-        conf.update(
-            {
-                "tools.auth_basic.on": True,
-                "tools.auth_basic.realm": "SABnzbd",
-                "tools.auth_basic.checkpassword": check_basic_auth,
-            }
-        )
-        conf.update(
-            {
-                "/api": {"tools.auth_basic.on": False},
-                "%s/api" % cfg.url_base(): {"tools.auth_basic.on": False},
-            }
-        )
-    else:
-        conf.update({"tools.auth_basic.on": False})
-
-
 def check_apikey(request: Request) -> Optional[str]:
     """Check API-key or NZB-key (Starlette version)
     Return None when OK, otherwise an error message
@@ -397,6 +370,35 @@ def log_warning_and_ip(request: Request, txt: str):
         logging.warning("%s %s", txt, remote_info)
 
 
+async def merged_post_get_params(request: Request) -> Dict[str, Any]:
+    # Start with query parameters
+    unified_data = dict(request.query_params)
+
+    # If it's a POST request with form data, merge it in
+    if request.method == "POST":
+        content_type = request.headers.get("content-type", "")
+        if content_type.startswith(("application/x-www-form-urlencoded", "multipart/form-data")):
+            try:
+                form_data = await request.form()
+                # Form data takes precedence over query params for duplicate keys
+                for key, value in form_data.items():
+                    if hasattr(value, "file") and hasattr(value, "filename"):
+                        # Keep file uploads as-is
+                        unified_data[key] = value
+                    else:
+                        # Convert to string for consistency
+                        unified_data[key] = str(value)
+            except Exception:
+                # If form parsing fails, just use query params
+                pass
+
+    return unified_data
+
+
+# Disable over-active logging for the form parser
+logging.getLogger("python_multipart.multipart").setLevel(logging.WARNING)
+
+
 ##############################################################################
 # Helper raiser functions
 ##############################################################################
@@ -428,7 +430,7 @@ class MainPage:
         pass
 
 
-@secured_expose(route="/")
+@secured_expose(route="/", methods=["GET"])
 async def main_index(request: Request):
     # Redirect to wizard if no servers are set
     if request.query_params.get("skip_wizard") or config.get_servers():
@@ -477,7 +479,7 @@ async def api(request: Request):
     return api_handler(request.query_params)
 
 
-@secured_expose(route="/scriptlog")
+@secured_expose(route="/scriptlog", methods=["GET"])
 async def scriptlog(request: Request):
     """Needed for all skins, URL is fixed due to postproc"""
     # No session key check, due to fixed URLs
@@ -489,13 +491,13 @@ async def scriptlog(request: Request):
         raise Raiser(self.__root)
 
 
-@secured_expose
+@secured_expose(methods=["GET"])
 async def robots_txt(request: Request):
     """Keep web crawlers out"""
     return PlainTextResponse("User-agent: *\nDisallow: /\n")
 
 
-@secured_expose
+@secured_expose(methods=["GET"])
 async def description_xml(request: Request):
     """Provide the description.xml which was broadcast via SSDP"""
     if is_lan_addr(cherrypy.request.remote.ip):
@@ -510,7 +512,7 @@ async def description_xml(request: Request):
 ##############################################################################
 
 
-@secured_expose(route="/wizard", check_configlock=True)
+@secured_expose(route="/wizard", check_configlock=True, methods=["GET"])
 async def wizard_index(request: Request):
     """Show the language selection page"""
     if sabnzbd.WINDOWS:
@@ -525,7 +527,7 @@ async def wizard_index(request: Request):
     return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "index.html"), search_list=info)
 
 
-@secured_expose(route="/wizard/one", check_configlock=True)
+@secured_expose(route="/wizard/one", check_configlock=True, methods=["GET"])
 async def wizard_page_one(request: Request):
     """Accept language and show server page"""
     if request.query_params.get("lang"):
@@ -567,7 +569,7 @@ async def wizard_page_one(request: Request):
     return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)
 
 
-@secured_expose(route="/wizard/two", check_configlock=True)
+@secured_expose(route="/wizard/two", check_configlock=True, methods=["GET"])
 async def wizard_page_two(request: Request):
     """Accept server and show the final page for restart"""
     # Save server details
@@ -665,18 +667,12 @@ async def login_index(request: Request):
     info = build_header(sabnzbd.WEB_DIR_CONFIG)
     info["error"] = ""
 
-    # Handle both GET and POST requests
-    if request.method == "POST":
-        form = await request.form()
-        username = form.get("username")
-        password = form.get("password")
-        remember_me = form.get("remember_me", False)
-        logout = form.get("logout")
-    else:
-        username = request.query_params.get("username")
-        password = request.query_params.get("password")
-        remember_me = request.query_params.get("remember_me", False)
-        logout = request.query_params.get("logout")
+    # Use unified params - works for both GET and POST requests
+    params = await merged_post_get_params(request)
+    username = params.get("username")
+    password = params.get("password")
+    remember_me = params.get("remember_me", False)
+    logout = params.get("logout")
 
     # Logout?
     if logout:
@@ -720,7 +716,7 @@ async def login_index(request: Request):
 ##############################################################################
 
 
-@secured_expose(route="/config", check_configlock=True)
+@secured_expose(route="/config", check_configlock=True, methods=["GET"])
 async def config_general_index(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["configfn"] = clip_path(config.get_filename())
@@ -761,7 +757,7 @@ LIST_DIRPAGE = (
 LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
 
 
-@secured_expose(route="/config/folders", check_configlock=True)
+@secured_expose(route="/config/folders", check_configlock=True, methods=["GET"])
 async def index_config_folders(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
@@ -778,12 +774,13 @@ async def index_config_folders(request: Request):
 
 @secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True)
 async def config_folder_save(request: Request):
+    params = get_unified_params(request)
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
-        if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
-            return sabnzbd.api.report(request.query_params, error=msg)
+        if msg := config.get_config("misc", kw).set(params.get(kw)):
+            return sabnzbd.api.report(params, error=msg)
 
     config.save_config()
-    return sabnzbd.api.report(request.query_params)
+    return sabnzbd.api.report(params)
 
 
 ##############################################################################
@@ -835,7 +832,7 @@ SWITCH_LIST = (
 )
 
 
-@secured_expose(route="/config/switches", check_configlock=True)
+@secured_expose(route="/config/switches", check_configlock=True, methods=["GET"])
 async def index_config_switches(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
@@ -930,7 +927,7 @@ SPECIAL_LIST_LIST = (
 )
 
 
-@secured_expose(route="/config/special", check_configlock=True)
+@secured_expose(route="/config/special", check_configlock=True, methods=["GET"])
 async def index_config_special(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["switches"] = [
@@ -986,7 +983,7 @@ GENERAL_LIST = (
 )
 
 
-@secured_expose(route="/config/general", check_configlock=True)
+@secured_expose(route="/config/general", check_configlock=True, methods=["GET"])
 async def index_config_general(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
@@ -1069,7 +1066,7 @@ class ConfigServer:
     def __init__(self, root):
         self.__root = root
 
-    @secured_expose(check_configlock=True)
+    @secured_expose(check_configlock=True, methods=["GET"])
     def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         new = []
@@ -1227,7 +1224,7 @@ class ConfigRss:
         self.__show_eval_button = False  # True if the "Apply filers" button should be shown
         self.__last_msg = ""  # Last error message from RSS reader
 
-    @secured_expose(check_configlock=True)
+    @secured_expose(check_configlock=True, methods=["GET"])
     def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
@@ -1590,7 +1587,7 @@ class ConfigScheduling:
     def __init__(self, root):
         self.__root = root
 
-    @secured_expose(check_configlock=True)
+    @secured_expose(check_configlock=True, methods=["GET"])
     def index(request: Request):
         def get_days():
             days = {
@@ -1765,7 +1762,7 @@ class ConfigScheduling:
 ##############################################################################
 
 
-@secured_expose(route="/config/categories", check_configlock=True)
+@secured_expose(route="/config/categories", check_configlock=True, methods=["GET"])
 async def index_config_categories(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
@@ -1839,7 +1836,7 @@ class ConfigSorting:
     def __init__(self, root):
         self.__root = root
 
-    @secured_expose(check_configlock=True)
+    @secured_expose(check_configlock=True, methods=["GET"])
     def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
@@ -2194,7 +2191,7 @@ class ConfigNotify:
     def __init__(self, root):
         self.__root = root
 
-    @secured_expose(check_configlock=True)
+    @secured_expose(check_configlock=True, methods=["GET"])
     def index(request: Request):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
