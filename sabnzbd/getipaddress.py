@@ -73,8 +73,8 @@ def addresslookup6(myhost):
 
 
 def active_socks5_proxy() -> Optional[str]:
-    """Return the active proxy"""
-    if socket.socket == socks.socksocket:
+    """Return the active proxy. And None if no proxy is set"""
+    if socks.socksocket.default_proxy:
         socks5host = socks.socksocket.default_proxy[1]
         socks5port = sabnzbd.misc.int_conv(socks.socksocket.default_proxy[2], default=1080)
         return f"{socks5host}:{socks5port}"
