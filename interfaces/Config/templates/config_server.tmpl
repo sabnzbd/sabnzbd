@@ -597,7 +597,7 @@
 
         jQuery('.delServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                jQuery(this).parents('form:first').attr('action','delServer').submit();
+                jQuery(this).parents('form:first').attr('action','server/delete_server').submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -608,7 +608,7 @@
 
         jQuery('.clrServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                jQuery(this).parents('form:first').attr('action','clrServer').submit();
+                jQuery(this).parents('form:first').attr('action','server/clear_server').submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -621,7 +621,7 @@
             var whichServer = jQuery(this).attr("name");
             jQuery.ajax({
                 type: "POST",
-                url: "toggleServer",
+                url: "server/toggle_server",
                 data: {server: whichServer, apikey: "$apikey" }
             }).done(function() {
                 // Let us leave!
