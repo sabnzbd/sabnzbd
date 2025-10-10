@@ -369,7 +369,8 @@ def _build_request(url: str) -> HTTPResponse:
     req.add_header("Accept-encoding", "gzip")
     if user_passwd:
         req.add_header("Authorization", "Basic " + ubtou(base64.b64encode(utob(user_passwd))).strip())
-    return urllib.request.urlopen(req)
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    return opener.open(req)
 
 
 def _analyse(fetch_request: HTTPResponse, future_nzo: NzbObject):

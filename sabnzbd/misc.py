@@ -39,6 +39,7 @@ import ipaddress
 import socks
 import math
 import rarfile
+import http.client
 from threading import Thread
 from collections.abc import Iterable
 from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
@@ -58,6 +59,24 @@ import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache
 from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file
+
+# Remember original networking functions so we can restore them when disabling the proxy
+_ORIGINAL_SOCKET = socket.socket
+_ORIGINAL_HTTP_CONNECT = http.client.HTTPConnection.connect
+_ORIGINAL_HTTPS_CONNECT = http.client.HTTPSConnection.connect
+
+
+def _http_connect_with_proxy(self):
+    """Ensure HTTP connections pick up the current socket implementation."""
+    self._create_connection = socket.create_connection
+    return _ORIGINAL_HTTP_CONNECT(self)
+
+
+def _https_connect_with_proxy(self):
+    """Ensure HTTPS connections pick up the current socket implementation."""
+    self._create_connection = socket.create_connection
+    return _ORIGINAL_HTTPS_CONNECT(self)
+
 
 if sabnzbd.WINDOWS:
     try:
@@ -1356,7 +1375,18 @@ def set_socks5_proxy():
             proxy.username,
             proxy.password,
         )
-        socket.socket = socks.socksocket
+        # Monkey-patch socket constructor so subsequent sockets use the proxy.
+        if socket.socket is not socks.socksocket:
+            socket.socket = socks.socksocket
+        http.client.HTTPConnection.connect = _http_connect_with_proxy
+        http.client.HTTPSConnection.connect = _https_connect_with_proxy
+    else:
+        # Clear proxy settings and restore original socket functions.
+        socks.set_default_proxy(None)
+        if socket.socket is socks.socksocket:
+            socket.socket = _ORIGINAL_SOCKET
+        http.client.HTTPConnection.connect = _ORIGINAL_HTTP_CONNECT
+        http.client.HTTPSConnection.connect = _ORIGINAL_HTTPS_CONNECT
 
 
 def set_https_verification(value):
