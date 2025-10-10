@@ -504,6 +504,8 @@ class Sorter:
     def _update_files_after_renames(self, base_path: str, original_files: List[str]) -> List[str]:
         """Update files list to reflect any renames that may have occurred in the base_path"""
         updated_files = []
+        renamed_files = set()  # Track files that no longer exist at their original paths
+        
         for file_path in original_files:
             # Convert to absolute path for checking
             if os.path.isabs(file_path):
@@ -516,11 +518,20 @@ class Sorter:
             if os.path.exists(abs_file_path):
                 updated_files.append(file_path)
             else:
-                # File might have been renamed, try to find it in base_path
-                # For now, just add all files in base_path that weren't in the original list
-                # This is a fallback - in practice, most renames will be handled by move_to_parent_directory
-                updated_files.append(file_path)
-                
+                renamed_files.add(os.path.basename(file_path))
+        
+        # If any files were renamed, add all current files in the base_path (excluding originals)
+        if renamed_files:
+            try:
+                for item in os.listdir(base_path):
+                    item_path = os.path.join(base_path, item)
+                    if os.path.isfile(item_path) and item not in renamed_files:
+                        # Only add if not already in the list (to avoid duplicates)
+                        if item_path not in updated_files:
+                            updated_files.append(item_path)
+            except (OSError, FileNotFoundError):
+                pass
+        
         return updated_files
 
     def _to_filepath(self, f: str, base_path: str) -> str:
@@ -636,37 +647,54 @@ def ends_in_file(path: str) -> bool:
     return bool(RE_ENDEXT.search(path) or RE_ENDFN.search(path))
 
 
-def move_to_parent_directory(workdir: str, files: List[str] = None) -> Tuple[str, bool, List[str]]:
-    """Move all files under 'workdir' into 'workdir/..' and track file movements"""
-    # Determine 'folder'/..
+def move_to_parent_directory(workdir: str, files: List[str]) -> Tuple[str, bool, List[str]]:
+    """Move specified files from workdir to workdir's parent directory and track file movements"""
+    if not files:
+        return workdir, True, []
+
+    # Determine 'workdir/..' as destination
     workdir = os.path.abspath(os.path.normpath(workdir))
     dest = os.path.abspath(os.path.normpath(os.path.join(workdir, "..")))
+    
+    logging.debug("Moving files from %s to parent directory: %s", workdir, dest)
 
-    logging.debug("Moving all files from %s to %s", workdir, dest)
-
-    # If no files list provided, just do the basic move
-    if files is None:
-        files = []
-        
     updated_files = []
 
     # Check for DVD folders and bail out if found
-    for item in os.listdir(workdir):
-        if item.lower() in IGNORED_MOVIE_FOLDERS:
-            return workdir, True, files
+    try:
+        for item in os.listdir(workdir):
+            if os.path.isdir(os.path.join(workdir, item)) and item.lower() in IGNORED_MOVIE_FOLDERS:
+                return workdir, True, files
+    except (OSError, FileNotFoundError):
+        # Skip directory listing if directory doesn't exist
+        pass
 
-    for root, dirs, files_in_dir in os.walk(workdir):
-        for _file in files_in_dir:
-            path = os.path.join(root, _file)
-            new_path = path.replace(workdir, dest)
-            ok, new_path = move_to_path(path, new_path)
-            if not ok:
-                return dest, False, files
-            # Track this file as it was moved
-            updated_files.append(new_path)
+    # Move each file to the parent directory
+    for file_path in files:
+        # Convert relative paths to absolute paths within workdir
+        if os.path.isabs(file_path):
+            abs_file_path = file_path
+        else:
+            abs_file_path = os.path.join(workdir, file_path)
+        abs_file_path = os.path.normpath(abs_file_path)
+        
+        if not os.path.exists(abs_file_path):
+            # Skip files that don't exist
+            continue
+            
+        filename = os.path.basename(abs_file_path)
+        new_path = os.path.join(dest, filename)
+        
+        ok, new_path = move_to_path(abs_file_path, new_path)
+        if not ok:
+            return dest, False, files
+        # Track this file as it was moved
+        updated_files.append(new_path)
 
+    # Clean up empty directories in the workdir
     cleanup_empty_directories(workdir)
-    # Return the list of files that were actually moved
+    
+    # Return the parent directory and list of files that were actually moved
     return dest, True, updated_files
 
 

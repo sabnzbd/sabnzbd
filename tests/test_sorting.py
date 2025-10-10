@@ -351,13 +351,15 @@ class TestSortingFunctions:
                 ffs.fs.create_file(base_dir + "/" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "/" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "/TEST")
+            # Create the file list to move
+            files_to_move = [base_dir + "/TEST/DIR/FILE"]
+            return_path, return_status, return_files = sorting.move_to_parent_directory(base_dir + "/TEST", files_to_move)
 
             # Affected by move
             assert not os.path.exists(base_dir + "/TEST/DIR/FILE")  # Moved to subdir
             assert not os.path.exists(base_dir + "/TEST/DIR2")  # Deleted empty directory
             assert not os.path.exists(base_dir + "/DIR2")  # Dirs don't get moved, only their file content
-            assert os.path.exists(base_dir + "/DIR/FILE")  # Moved file
+            assert os.path.exists(base_dir + "/FILE")  # Moved file
             # Not moved
             assert not os.path.exists(base_dir + "/some.file")
             assert not os.path.exists(base_dir + "/2")
@@ -366,6 +368,8 @@ class TestSortingFunctions:
             # Function return values
             assert (return_path) == base_dir
             assert (return_status) is True
+            assert len(return_files) == 1
+            assert return_files[0] == base_dir + "/FILE"
 
         # Exception for DVD directories
         with pyfakefs.fake_filesystem_unittest.Patcher() as ffs:
@@ -380,13 +384,15 @@ class TestSortingFunctions:
                 ffs.fs.create_file(base_dir + "/" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "/" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "/TEST")
+            # Create the file list to move (includes file in DVD directory)
+            files_to_move = [base_dir + "/TEST/" + dvd + "/FILE"]
+            return_path, return_status, return_files = sorting.move_to_parent_directory(base_dir + "/TEST", files_to_move)
 
             # Nothing should move in the presence of a DVD directory structure
             assert os.path.exists(base_dir + "/TEST/" + dvd + "/FILE")
             assert os.path.exists(base_dir + "/TEST/DIR2")
             assert not os.path.exists(base_dir + "/DIR2")
-            assert not os.path.exists(base_dir + "/DIR/FILE")
+            assert not os.path.exists(base_dir + "/FILE")
             assert not os.path.exists(base_dir + "/some.file")
             assert not os.path.exists(base_dir + "/2")
             assert os.path.exists(base_dir + "/dir/some.file")
@@ -394,6 +400,8 @@ class TestSortingFunctions:
             # Function return values
             assert (return_path) == base_dir + "/TEST"
             assert (return_status) is True
+            # Files should be returned as-is when DVD structure prevents moving
+            assert return_files == files_to_move
 
     @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
     def test_move_to_parent_directory_win(self):
@@ -409,13 +417,15 @@ class TestSortingFunctions:
                 ffs.fs.create_file(base_dir + "\\" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "\\" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "\\TEST")
+            # Create the file list to move
+            files_to_move = [base_dir + "\\TEST\\DIR\\FILE"]
+            return_path, return_status, return_files = sorting.move_to_parent_directory(base_dir + "\\TEST", files_to_move)
 
             # Affected by move
             assert not os.path.exists(base_dir + "\\TEST\\DIR\\FILE")  # Moved to subdir
             assert not os.path.exists(base_dir + "\\TEST\\DIR2")  # Deleted empty directory
             assert not os.path.exists(base_dir + "\\DIR2")  # Dirs don't get moved, only their file content
-            assert os.path.exists(base_dir + "\\DIR\\FILE")  # Moved file
+            assert os.path.exists(base_dir + "\\FILE")  # Moved file
             # Not moved
             assert not os.path.exists(base_dir + "\\some.file")
             assert not os.path.exists(base_dir + "\\2")
@@ -424,6 +434,8 @@ class TestSortingFunctions:
             # Function return values
             assert (return_path) == base_dir
             assert (return_status) is True
+            assert len(return_files) == 1
+            assert return_files[0] == base_dir + "\\FILE"
 
         # Exception for DVD directories
         with pyfakefs.fake_filesystem_unittest.Patcher() as ffs:
@@ -438,20 +450,24 @@ class TestSortingFunctions:
                 ffs.fs.create_file(base_dir + "\\" + test_file, int("0644", 8))
                 assert os.path.exists(base_dir + "\\" + test_file) is True
 
-            return_path, return_status = sorting.move_to_parent_directory(base_dir + "\\TEST")
+            # Create the file list to move (includes file in DVD directory)
+            files_to_move = [base_dir + "\\TEST\\" + dvd + "\\FILE"]
+            return_path, return_status, return_files = sorting.move_to_parent_directory(base_dir + "\\TEST", files_to_move)
 
             # Nothing should move in the presence of a DVD directory structure
             assert os.path.exists(base_dir + "\\TEST\\" + dvd + "\\FILE")
             assert os.path.exists(base_dir + "\\TEST\\DIR2")
             assert not os.path.exists(base_dir + "\\DIR2")
-            assert not os.path.exists(base_dir + "\\DIR\\FILE")
+            assert not os.path.exists(base_dir + "\\FILE")
             assert not os.path.exists(base_dir + "\\some.file")
             assert not os.path.exists(base_dir + "\\2")
             assert os.path.exists(base_dir + "\\dir\\some.file")
             assert os.path.exists(base_dir + "\\dir\\2")
-            # Function return values
+            # Function return values - should return original directory when DVD structure found
             assert (return_path) == base_dir + "\\TEST"
             assert (return_status) is True
+            # Files should be returned as-is when DVD structure prevents moving
+            assert return_files == files_to_move
 
 
 @pytest.mark.usefixtures("clean_cache_dir")
@@ -766,6 +782,10 @@ class TestSortingSorter:
     ):
         """Test the file renaming of the Sorter class"""
         with pyfakefs.fake_filesystem_unittest.Patcher() as ffs:
+            # Add guessit package directory to real paths so it can access its config files
+            import guessit
+            guessit_path = os.path.dirname(guessit.__file__)
+            ffs.fs.add_real_paths([guessit_path])
             # Make up a job name
             job_name = "Simulated.Job." + job_tag + ".2160p.Web.x264-SAB"
 
