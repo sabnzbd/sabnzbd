@@ -488,7 +488,7 @@ def process_job(nzo: NzbObject) -> bool:
 
             if all_ok:
                 # Remove files matching the cleanup list
-                cleanup_list(tmp_workdir_complete, skip_nzb=True)
+                newfiles = cleanup_list(newfiles, skip_nzb=True)
 
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
@@ -501,7 +501,7 @@ def process_job(nzo: NzbObject) -> bool:
                     cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     # Full cleanup including nzb's
-                    cleanup_list(tmp_workdir_complete, skip_nzb=False)
+                    newfiles = cleanup_list(newfiles, skip_nzb=False)
 
         script_ret = 0
         script_error = False
@@ -607,9 +607,9 @@ def process_job(nzo: NzbObject) -> bool:
                 unique=True,
             )
 
-        # Cleanup again, including NZB files
+        # Cleanup again, any changes made by the script will not be handled
         if all_ok and os.path.isdir(workdir_complete):
-            cleanup_list(workdir_complete, False)
+            newfiles = cleanup_list(newfiles, False)
 
         # Force error for empty result
         all_ok = all_ok and not empty
@@ -1101,27 +1101,34 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir: str, skip_nzb: bool):
+def cleanup_list(file_paths: List[str], skip_nzb: bool) -> List[str]:
     """Remove all files whose extension matches the cleanup list,
-    optionally ignoring the nzb extension
+    optionally ignoring the nzb extension.
+    Returns the updated list of files (excluding removed files).
     """
-    if cfg.cleanup_list():
-        try:
-            with os.scandir(wdir) as files:
-                for entry in files:
-                    if entry.is_dir():
-                        cleanup_list(entry.path, skip_nzb)
-                        cleanup_empty_directories(entry.path)
-                    else:
-                        if on_cleanup_list(entry.name, skip_nzb):
-                            try:
-                                logging.info("Removing unwanted file %s", entry.path)
-                                remove_file(entry.path)
-                            except Exception:
-                                logging.error(T("Removing %s failed"), clip_path(entry.path))
-                                logging.info("Traceback: ", exc_info=True)
-        except Exception:
-            logging.info("Traceback: ", exc_info=True)
+    if not cfg.cleanup_list():
+        return file_paths
+
+    logging.info("Checking for extensions to clean up: %s", cfg.cleanup_list.get_string())
+    
+    remaining_files = []
+    for file_path in file_paths:
+        filename = os.path.basename(file_path)
+        if on_cleanup_list(filename, skip_nzb):
+            try:
+                logging.info("Removing unwanted file %s", file_path)
+                remove_file(file_path)
+                # File was removed, don't add to remaining_files
+            except Exception:
+                logging.error(T("Removing %s failed"), clip_path(file_path))
+                logging.info("Traceback: ", exc_info=True)
+                # File removal failed, keep it in the list
+                remaining_files.append(file_path)
+        else:
+            # File not on cleanup list, keep it
+            remaining_files.append(file_path)
+    
+    return remaining_files
 
 
 def prefix(path: str, pre: str) -> str:
@@ -1274,6 +1281,7 @@ def del_marker(path: str):
 
 
 def remove_from_list(name: Optional[str], lst: List[str]):
+    """Removes item from list, modifies list in place"""
     if name:
         for n in range(len(lst)):
             if lst[n].endswith(name):
