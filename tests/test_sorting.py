@@ -816,7 +816,7 @@ class TestSortingSorter:
             )
             sorter.get_values()
             sorter.construct_path()
-            sort_dest, is_ok = sorter.rename(all_files, job_dir)
+            sort_dest, is_ok, updated_files = sorter.rename(all_files, job_dir)
 
             # Check the result
             try:
@@ -1314,7 +1314,7 @@ class TestSortingSorter:
             sorted_path = sorter.construct_path()
             # Check season pack status again after constructing the path
             assert sorter.is_season_pack is result_is_season_pack_later
-            sorted_dest, sorted_ok = sorter.rename(globber(job_dir), job_dir)
+            sorted_dest, sorted_ok, updated_files = sorter.rename(globber(job_dir), job_dir)
 
             # Verify the results
             for pattern, number in result_globs.items():

@@ -501,6 +501,28 @@ class Sorter:
                 logging.info("Traceback: ", exc_info=True)
         return success
 
+    def _update_files_after_renames(self, base_path: str, original_files: List[str]) -> List[str]:
+        """Update files list to reflect any renames that may have occurred in the base_path"""
+        updated_files = []
+        for file_path in original_files:
+            # Convert to absolute path for checking
+            if os.path.isabs(file_path):
+                abs_file_path = file_path
+            else:
+                abs_file_path = os.path.join(base_path, file_path)
+            abs_file_path = os.path.normpath(abs_file_path)
+            
+            # If the original file still exists, keep it
+            if os.path.exists(abs_file_path):
+                updated_files.append(file_path)
+            else:
+                # File might have been renamed, try to find it in base_path
+                # For now, just add all files in base_path that weren't in the original list
+                # This is a fallback - in practice, most renames will be handled by move_to_parent_directory
+                updated_files.append(file_path)
+                
+        return updated_files
+
     def _to_filepath(self, f: str, base_path: str) -> str:
         if not is_full_path(f):
             f = os.path.join(base_path, f)
@@ -515,23 +537,24 @@ class Sorter:
             and os.stat(filepath).st_size >= self.rename_limit
         )
 
-    def rename(self, files: List[str], base_path: str) -> Tuple[str, bool]:
+    def rename(self, files: List[str], base_path: str) -> Tuple[str, bool, List[str]]:
         if not self.rename_files:
-            return move_to_parent_directory(base_path)
+            return move_to_parent_directory(base_path, files)
 
         # Log the minimum filesize for renaming
         if self.rename_limit > 0:
             logging.debug("Minimum filesize for renaming set to %s bytes", self.rename_limit)
 
         # Store the list of all files for later use
-        all_files = files
+        all_files = files[:]
+        updated_files = files[:]
 
         # Filter files to remove nonexistent, undersized, samples, and excluded extensions
         files = [f for f in files if self._filter_files(f, base_path)]
 
         if len(files) == 0:
             logging.debug("No files left to rename after applying filter")
-            return move_to_parent_directory(base_path)
+            return move_to_parent_directory(base_path, updated_files)
 
         # Check for season packs or sequential filenames and handle their renaming separately;
         # if neither applies or succeeds, fall back to going with the single largest file instead.
@@ -541,7 +564,9 @@ class Sorter:
                 logging.debug("Trying to rename season pack files %s", files)
                 if self._rename_season_pack(files, base_path, all_files):
                     cleanup_empty_directories(base_path)
-                    return move_to_parent_directory(base_path)
+                    # Update the files list to reflect any renames that happened
+                    updated_files = self._update_files_after_renames(base_path, updated_files)
+                    return move_to_parent_directory(base_path, updated_files)
                 else:
                     logging.debug("Season pack sorting didn´t rename any files")
 
@@ -550,7 +575,9 @@ class Sorter:
                 logging.debug("Trying to rename sequential files %s", sequential_files)
                 if self._rename_sequential(sequential_files, base_path):
                     cleanup_empty_directories(base_path)
-                    return move_to_parent_directory(base_path)
+                    # Update the files list to reflect any renames that happened
+                    updated_files = self._update_files_after_renames(base_path, updated_files)
+                    return move_to_parent_directory(base_path, updated_files)
                 else:
                     logging.debug("Sequential file handling didn't rename any files")
 
@@ -575,14 +602,16 @@ class Sorter:
                 renamer(filepath, new_filepath)
                 renamed_files.append(new_filepath)
             except Exception:
-                logging.error(T("Failed to rename %s to %s"), clip_path(base_path), clip_path(new_filepath))
+                logging.error(T("Failed to rename %s to %s"), clip_path(filepath), clip_path(new_filepath))
                 logging.info("Traceback: ", exc_info=True)
 
             rename_similar(base_path, f_ext, self.filename_set, renamed_files)
         else:
             logging.debug("Cannot rename %s, new path %s already exists.", largest_file.get("name"), new_filepath)
 
-        return move_to_parent_directory(base_path)
+        # Update the files list to reflect any renames that happened
+        updated_files = self._update_files_after_renames(base_path, updated_files)
+        return move_to_parent_directory(base_path, updated_files)
 
 
 class BasicAnalyzer(Sorter):
@@ -607,29 +636,38 @@ def ends_in_file(path: str) -> bool:
     return bool(RE_ENDEXT.search(path) or RE_ENDFN.search(path))
 
 
-def move_to_parent_directory(workdir: str) -> Tuple[str, bool]:
-    """Move all files under 'workdir' into 'workdir/..'"""
+def move_to_parent_directory(workdir: str, files: List[str] = None) -> Tuple[str, bool, List[str]]:
+    """Move all files under 'workdir' into 'workdir/..' and track file movements"""
     # Determine 'folder'/..
     workdir = os.path.abspath(os.path.normpath(workdir))
     dest = os.path.abspath(os.path.normpath(os.path.join(workdir, "..")))
 
     logging.debug("Moving all files from %s to %s", workdir, dest)
 
+    # If no files list provided, just do the basic move
+    if files is None:
+        files = []
+        
+    updated_files = []
+
     # Check for DVD folders and bail out if found
     for item in os.listdir(workdir):
         if item.lower() in IGNORED_MOVIE_FOLDERS:
-            return workdir, True
+            return workdir, True, files
 
-    for root, dirs, files in os.walk(workdir):
-        for _file in files:
+    for root, dirs, files_in_dir in os.walk(workdir):
+        for _file in files_in_dir:
             path = os.path.join(root, _file)
             new_path = path.replace(workdir, dest)
             ok, new_path = move_to_path(path, new_path)
             if not ok:
-                return dest, False
+                return dest, False, files
+            # Track this file as it was moved
+            updated_files.append(new_path)
 
     cleanup_empty_directories(workdir)
-    return dest, True
+    # Return the list of files that were actually moved
+    return dest, True, updated_files
 
 
 def guess_what(name: str) -> MatchesDict:

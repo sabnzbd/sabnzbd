@@ -536,7 +536,7 @@ def process_job(nzo: NzbObject) -> bool:
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sorter_active:
                 if newfiles:
-                    workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
+                    workdir_complete, ok, newfiles = file_sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         nzo.fail_msg = T("Failed to move files")
