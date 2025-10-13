@@ -4887,6 +4887,11 @@ msgstr "Sair do SABnzbd"
 msgid "Start Wizard"
 msgstr "Iniciar o Assistente"
 
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "Restore backup"
 msgstr ""

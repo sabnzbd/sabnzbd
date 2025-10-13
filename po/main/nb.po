@@ -4866,6 +4866,11 @@ msgstr "Avslutt SABnzbd"
 msgid "Start Wizard"
 msgstr "Start Veiviser"
 
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "Restore backup"
 msgstr ""

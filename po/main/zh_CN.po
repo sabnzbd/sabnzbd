@@ -4799,6 +4799,11 @@ msgstr "退出 SABnzbd"
 msgid "Start Wizard"
 msgstr "启动向导"
 
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "Restore backup"
 msgstr ""

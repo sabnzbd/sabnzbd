@@ -5078,6 +5078,11 @@ msgstr "Salir SABnzbd"
 msgid "Start Wizard"
 msgstr "Iniciar Asistente"
 
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "Restore backup"
 msgstr "Restaurar copia de seguridad"
