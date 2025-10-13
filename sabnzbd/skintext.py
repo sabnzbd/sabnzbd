@@ -916,6 +916,7 @@ SKIN_TEXT = {
     "wizard-goto": TT("Go to SABnzbd"),  #: Wizard step
     "wizard-exit": TT("Exit SABnzbd"),  #: Wizard EXIT button on first page
     "wizard-start": TT("Start Wizard"),  #: Wizard START button on first page
+    "wizard-test-server-required": TT("Click on Test Server before continuing"),  #: Tooltip for disabled Next button
     "restore-backup": TT("Restore backup"),
     # Special
     "yourRights": TT(

@@ -16,9 +16,16 @@ function checkRequired() {
     // Check if form is valid using HTML5 validation and if server test passed
     if ($("form").get(0).checkValidity() && serverTestSuccessful) {
         $("#next-button").removeClass('disabled')
+        $("#next-button").removeAttr('data-toggle')
+        $("#next-button").removeAttr('title')
+        $("#next-button").tooltip('destroy')
         return true;
     } else {
         $("#next-button").addClass('disabled')
+        $("#next-button").attr('data-toggle', 'tooltip')
+        $("#next-button").attr('data-placement', 'left')
+        $("#next-button").attr('title', txtTestRequired)
+        $("#next-button").tooltip()
         return false;
     }
 }

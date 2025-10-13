@@ -9,6 +9,7 @@
                 <script type="text/javascript">
                     var txtTestServer = "$T('wizard-server-text')";
                     var txtChecking = "$T('srv-testing')";
+                    var txtTestRequired = "$T('wizard-test-server-required')";
                     <!--#include raw $webdir + "/static/javascript/checkserver.js"#-->
                 </script>
                 <h3>$T('wizard-server')</h3>
@@ -82,7 +83,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
-                                <button id="serverTest" class="btn btn-default"><span class="glyphicon glyphicon-sort"></span> $T('wizard-button-testServer')</button>
+                                <button id="serverTest" class="btn btn-default" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-sort"></span> $T('wizard-button-testServer')</button>
                             </div>
                             <div class="col-sm-8">
                                 <div id="serverResponse" class="well well-sm">$T('wizard-server-text')</div>
