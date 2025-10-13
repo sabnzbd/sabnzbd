@@ -37,10 +37,10 @@ jobs:
         include:
           - name: macOS
             os: macos-13
-            python-version: "3.13"
+            python-version: "3.14"
           - name: Windows
             os: windows-2022
-            python-version: "3.13"
+            python-version: "3.14"
 
     steps:
     - uses: actions/checkout@v5
