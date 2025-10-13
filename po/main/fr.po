@@ -2,14 +2,14 @@
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2025
 # Safihre <safihre@sabnzbd.org>, 2025
+# Fred L <88com88@gmail.com>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2025\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -378,11 +378,11 @@ msgstr "Quota"
 
 #: sabnzbd/bpsmeter.py
 msgid "Quota limit warning (%d%%)"
-msgstr ""
+msgstr "Avertissement de limite de quota (%d%%)"
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "Le téléchargement a repris après la réinitialisation du quota."
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -3842,6 +3842,9 @@ msgid ""
 " follow with K,M,G.<br />Checked every few minutes. Notification is sent "
 "when quota is spent."
 msgstr ""
+"Quota pour ce serveur, calculé à partir du moment où il est défini. En "
+"octets, suivi éventuellement de K,M,G.<br />Vérifié toutes les quelques "
+"minutes. Une notification est envoyée lorsque le quota est atteint."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
