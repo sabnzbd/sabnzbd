@@ -65,7 +65,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
 charset_normalizer==3.4.3
-idna==3.10
+idna==3.11
 urllib3==2.5.0
 certifi==2025.10.5
 oauthlib==3.3.1
