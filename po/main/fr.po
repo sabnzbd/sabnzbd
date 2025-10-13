@@ -2,14 +2,14 @@
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2025
 # Safihre <safihre@sabnzbd.org>, 2025
+# Fred L <88com88@gmail.com>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2025\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -369,6 +369,20 @@ msgstr ""
 #: sabnzbd/bpsmeter.py
 msgid "Quota spent, pausing downloading"
 msgstr "Quota atteint, téléchargement mis en pause"
+
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "Quota"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr "Avertissement de limite de quota (%d%%)"
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr "Le téléchargement a repris après la réinitialisation du quota."
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -3715,10 +3729,6 @@ msgid "Naming"
 msgstr "Appellation"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "Quota"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Combien peut-être télécharger ce mois (K/M/G)"
 
@@ -3828,13 +3838,13 @@ msgstr "Avertir 5 jours avant la date d'expiration du compte."
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
-"Quota pour ce compte calculé à partir du moment où il est défini. En octets,"
-" éventuellement suivi de K,M,G.<br />Avertir quand il atteint 0, vérifié "
-"toutes les quelques minutes."
+"Quota pour ce serveur, calculé à partir du moment où il est défini. En "
+"octets, suivi éventuellement de K,M,G.<br />Vérifié toutes les quelques "
+"minutes. Une notification est envoyée lorsque le quota est atteint."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

@@ -31,16 +31,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14.0-rc.3"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
         name: ["Linux"]
         os: [ubuntu-latest]
         include:
           - name: macOS
             os: macos-13
-            python-version: "3.13"
+            python-version: "3.14"
           - name: Windows
             os: windows-2022
-            python-version: "3.13"
+            python-version: "3.14"
 
     steps:
     - uses: actions/checkout@v5

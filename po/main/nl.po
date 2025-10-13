@@ -358,6 +358,20 @@ msgstr ""
 msgid "Quota spent, pausing downloading"
 msgstr "Quotum verbruikt, download is gestopt"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "Quotum"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Incorrecte parameter"
@@ -3674,10 +3688,6 @@ msgid "Naming"
 msgstr "Naamgeving"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "Quotum"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Hoeval mag deze maand worden gedownload (K/M/G)"
 
@@ -3788,14 +3798,10 @@ msgstr "Ontvang 5 dagen voor de verloopdatum een waarschuwing."
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
-"Quotum voor dit account, wordt geteld vanaf het moment dat het voor het "
-"eerst ingesteld wordt. In bytes, in K,M,G notatie.<br />Er wordt een "
-"waarschuwing gegeven als het quotum bereikt is, dit wordt elke paar minuten "
-"gecontroleerd."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

@@ -327,6 +327,20 @@ msgstr "任务 \"%s\" 可能受加密保护：文件名 \"%s\" 中有 \"password
 msgid "Quota spent, pausing downloading"
 msgstr "配额已耗尽，暂停下载"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "配额"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "参数不正确"
@@ -3487,10 +3501,6 @@ msgid "Naming"
 msgstr "命名"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "配额"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "本月能下载多少数据量 (K/M/G)"
 
@@ -3592,9 +3602,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
 
 #. Server's retention time in days

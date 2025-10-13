@@ -122,6 +122,7 @@ class BPSMeter:
         "q_hour",
         "q_minute",
         "quota_enabled",
+        "quota_notifications_sent",
     )
 
     def __init__(self):
@@ -161,6 +162,7 @@ class BPSMeter:
         self.q_hour = 0  # Quota reset hour
         self.q_minute = 0  # Quota reset minute
         self.quota_enabled: bool = True  # Scheduled quota enable/disable
+        self.quota_notifications_sent: int = 0  # Track highest quota threshold that has been notified
 
     def save(self):
         """Save admin to disk"""
@@ -323,10 +325,7 @@ class BPSMeter:
         # Quota check
         if self.have_quota and self.quota_enabled:
             self.left -= self.sum_cached_amount
-            if self.left <= 0.0:
-                if not sabnzbd.Downloader.paused:
-                    sabnzbd.Downloader.pause()
-                    logging.warning(T("Quota spent, pausing downloading"))
+            self.check_quota()
 
         # Speedometer
         try:
@@ -431,15 +430,47 @@ class BPSMeter:
         # We record every second, but display at the user's refresh-rate
         return self.bps_list[::refresh_rate]
 
+    def check_quota(self):
+        """Pause the queue when all quota is spent
+        Notify at specific quota usages (75%, 90%, 100%)
+        """
+        if self.left <= 0.0:
+            if not sabnzbd.Downloader.paused:
+                sabnzbd.Downloader.pause()
+                logging.warning(T("Quota spent, pausing downloading"))
+
+        # Guard against zero division
+        if self.quota:
+            # Check for quota notifications (75%, 90%, 100%)
+            # Only send notification for the highest applicable threshold that hasn't been notified yet
+            used_percentage = ((self.quota - self.left) / self.quota) * 100
+            if used_percentage >= 100 and self.quota_notifications_sent < 100:
+                sabnzbd.notifier.send_notification(T("Quota"), T("Quota spent, pausing downloading"), "quota")
+            elif used_percentage >= 90 and self.quota_notifications_sent < 90:
+                sabnzbd.notifier.send_notification(
+                    T("Quota"),
+                    T("Quota limit warning (%d%%)") % used_percentage,
+                    "quota",
+                )
+            elif used_percentage >= 75 and self.quota_notifications_sent < 75:
+                sabnzbd.notifier.send_notification(
+                    T("Quota"),
+                    T("Quota limit warning (%d%%)") % used_percentage,
+                    "quota",
+                )
+            self.quota_notifications_sent = used_percentage
+
     def reset_quota(self, force: bool = False):
         """Check if it's time to reset the quota, optionally resuming
         Return True, when still paused or should be paused
         """
         if force or (self.have_quota and time.time() > (self.q_time - 50)):
             self.quota = self.left = cfg.quota_size.get_float()
+            self.quota_notifications_sent = 0
             logging.info("Quota was reset to %s", self.quota)
             if cfg.quota_resume():
                 logging.info("Auto-resume due to quota reset")
+                sabnzbd.notifier.send_notification(T("Quota"), T("Downloading resumed after quota reset"), "quota")
                 sabnzbd.Downloader.resume()
             self.next_reset()
             return False
