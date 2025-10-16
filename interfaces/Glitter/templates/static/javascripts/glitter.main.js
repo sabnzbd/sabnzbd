@@ -895,7 +895,7 @@ function ViewModel() {
 
     // Orphaned folder deletion of all
     self.removeAllOrphaned = function() {
-        if (!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+        if (confirm(glitterTranslate.clearOrphanWarning)) {
             // Show notification
             showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.folders().length)
             // Delete them all
@@ -912,7 +912,7 @@ function ViewModel() {
 
     // Orphaned folder adding of all
     self.addAllOrphaned = function() {
-        if (!self.confirmDeleteHistory() || confirm(glitterTranslate.clearWarn)) {
+        if (confirm(glitterTranslate.confirm)) {
             // Show notification
             showNotification('.main-notification-box-sendback')
             // Delete them all
