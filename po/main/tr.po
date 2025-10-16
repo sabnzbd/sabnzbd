@@ -4777,6 +4777,12 @@ msgid "Retry all"
 msgstr "Tümünü tekrar dene"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Are you sure you want to delete all folders in your Temporary Download "
+"Folder? This cannot be undone!"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
 msgstr "URL konumundan NZB al"
 
