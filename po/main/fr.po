@@ -4843,6 +4843,8 @@ msgid ""
 "Are you sure you want to delete all folders in your Temporary Download "
 "Folder? This cannot be undone!"
 msgstr ""
+"Êtes-vous sûr de vouloir supprimer tous les dossiers de votre Dossier de "
+"Téléchargement Temporaire ? Cette opération ne peut pas être annulée !"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
