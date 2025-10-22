@@ -1,27 +1,35 @@
-Release Notes - SABnzbd 4.5.4 Release Candidate 1
+Release Notes - SABnzbd 4.5.4
 =========================================================
 
 ## Bug fixes and changes in 4.5.4
 
-* Add option to History details to mark job as `Completed`.
-* New Notification option `Quota` added (enabled by default) for all
-  Notification services. Will send notifications at 75%, 90% and 100% quota usage.
-* Handle `S04 - 10` (anime) episode notation for Sorting and Duplicate Detection.
-* Add Move to Top/Bottom options to Multi-Operations.
-* Require correct server test in setup wizard.
-* Add option `outgoing_nntp_ip` to bind outgoing NNTP connections to specific IP.
-* Unselect Play/Resume in Multi-Operations on second click.
-* Let Unrar handle rename of invalid characters on Windows filesystem.
-* Active connections counter in Status window were not updated correctly.
-* Job setting changes during URL-grabbing would sometimes be ignored.
-* Some `.par2` files could be left because they were not fully parsed.
-* Applying changes to Server configuration showed `Failure` while the page reloaded.
-* No longer using vendored `sabnzbd.rarfile` module, switched to `rarfile>=4.2`.
-* When using Socks5 proxy, `Local IPv4 address` could not be determined.
-* Linux: Enable `Make Windows compatible` automatically if needed.
-* Windows: Release is now signed using SignPath Foundation certificate.
-* Windows: Start SABnzbd directly from the installer.
-* Windows and macOS: Use Python 3.14 for binaries.
+### New Features
+* History details now includes option to mark job as `Completed`.
+* `Quota` notifications available for all notification services.
+  - Sends alerts at 75%, 90%, and 100% quota usage.
+* Multi-Operations now supports Move to Top/Bottom.
+* New `outgoing_nntp_ip` option to bind outgoing NNTP connections to specific IP address.
+
+### Improvements
+* Setup wizard now requires successful Server Test before proceeding.
+* Anime episode notation `S04 - 10` now supported for Sorting and Duplicate Detection.
+* Multi-Operations: Play/Resume button unselects on second click for better usability.
+* Unrar now handles renaming of invalid characters on Windows filesystem.
+* Switched from vendored `sabnzbd.rarfile` module to `rarfile>=4.2`.
+* Warning displayed when removing all Orphaned jobs (clears Temporary Download folder).
+
+### Bug Fixes
+* Active connections counter in Status window now updates correctly.
+* Job setting changes during URL-grabbing no longer ignored.
+* Incomplete `.par2` file parsing no longer leaves files behind.
+* `Local IPv4 address` now detectable when using Socks5 proxy.
+* Server configuration changes no longer show `Failure` message during page reload.
+
+### Platform-Specific
+* Linux: `Make Windows compatible` automatically enabled when needed.
+* Windows: Executables are now signed using SignPath Foundation certificate.
+* Windows: Can now start SABnzbd directly from installer.
+* Windows and macOS: Binaries now use Python 3.14.
 
 ## Bug fixes and changes in 4.5.3
 
@@ -74,10 +82,8 @@ Release Notes - SABnzbd 4.5.4 Release Candidate 1
 
 ## Upgrade notices
 
-* You can directly upgrade from version 3.0.0 and newer.
-* Upgrading from older versions will require performing a `Queue repair`.
-* Downgrading from version 4.2.0 or newer to 3.7.2 or older will require
-  performing a `Queue repair` due to changes in the internal data format.
+* Direct upgrade supported from version 3.0.0 and newer.
+* Older versions require performing a `Queue repair` after upgrading.
 
 ## Known problems and solutions
 
