@@ -75,7 +75,7 @@ print("----")
 # Check if tagged as release and check for token
 gh_token = os.environ.get("AUTOMATION_GITHUB_TOKEN", "")
 if RELEASE_THIS and gh_token:
-    gh_obj = github.Github(gh_token)
+    gh_obj = github.Github(auth=github.Auth.Token(gh_token))
     gh_repo = gh_obj.get_repo("sabnzbd/sabnzbd")
 
     # Read the release notes
@@ -86,7 +86,7 @@ if RELEASE_THIS and gh_token:
     for release in gh_repo.get_releases():
         if release.tag_name == RELEASE_VERSION:
             gh_release = release
-            print("Found existing release %s" % gh_release.title)
+            print("Found existing release %s" % gh_release.name)
             break
     else:
         # Did not find it, so create the release, use the GitHub tag we got as input
