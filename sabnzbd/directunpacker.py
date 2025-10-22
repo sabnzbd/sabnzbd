@@ -30,13 +30,14 @@ from typing import Optional, Dict, List, Tuple
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
-from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file, get_basename
+from sabnzbd.filesystem import remove_all, real_path, remove_file, get_basename, clip_path
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left
 from sabnzbd.postproc import prepare_extraction_path
-from sabnzbd.utils.rarfile import RarFile
+from sabnzbd.misc import SABRarFile
+import rarfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 # Need a lock to make sure start and stop is handled correctly
@@ -415,40 +416,24 @@ class DirectUnpacker(threading.Thread):
 
         # Generate command
         rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
-        if sabnzbd.WINDOWS:
-            # On Windows, UnRar uses a custom argument parser
-            # See: https://github.com/sabnzbd/sabnzbd/issues/1043
-            # The -scf forces the output to be UTF8
-            command = [
-                sabnzbd.newsunpack.RAR_COMMAND,
-                action,
-                "-vp",
-                "-idp",
-                "-scf",
-                "-o+",
-                "-ai",
-                password_command,
-                rarfile_path,
-                "%s\\" % long_path(extraction_path),
-            ]
-        else:
-            # The -scf forces the output to be UTF8
-            command = [
-                sabnzbd.newsunpack.RAR_COMMAND,
-                action,
-                "-vp",
-                "-idp",
-                "-scf",
-                "-o+",
-                "-ai",
-                password_command,
-                rarfile_path,
-                "%s/" % extraction_path,
-            ]
+
+        # The -scf forces the output to be UTF8
+        command = [
+            sabnzbd.newsunpack.RAR_COMMAND,
+            action,
+            "-vp",
+            "-idp",
+            "-scf",
+            "-o+",
+            "-ai",
+            password_command,
+            rarfile_path,
+            clip_path(extraction_path),
+        ]
 
         if cfg.ignore_unrar_dates():
             command.insert(3, "-tsm-")
-        if unrar_parameters := cfg.unrar_parameters().strip().split():
+        if unrar_parameters := cfg.unrar_parameters().split():
             for param in unrar_parameters:
                 command.insert(-2, param)
 
@@ -456,6 +441,8 @@ class DirectUnpacker(threading.Thread):
         self.cur_volume = 1
 
         # Need to disable buffer to have direct feedback
+        # On Windows, UnRar uses a custom argument parser
+        # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         self.active_instance = build_and_run_command(
             command, windows_unrar_command=True, text_mode=False, stdin=subprocess.PIPE
         )
@@ -508,8 +495,8 @@ class DirectUnpacker(threading.Thread):
                 if one_folder:
                     # RarFile can fail for mysterious reasons
                     try:
-                        rar_contents = RarFile(
-                            os.path.join(self.nzo.download_path, rarfile_nzf.filename), single_file_check=True
+                        rar_contents = SABRarFile(
+                            os.path.join(self.nzo.download_path, rarfile_nzf.filename), part_only=True
                         ).filelist()
                         for rm_file in rar_contents:
                             # Flat-unpack, so remove foldername from RarFile output

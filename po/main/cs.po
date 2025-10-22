@@ -335,6 +335,20 @@ msgstr ""
 msgid "Quota spent, pausing downloading"
 msgstr "Kvóta přesažena, pozastavuji stahování"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Nesprávný parametr"
@@ -1075,10 +1089,6 @@ msgstr "Rozbalování selhalo, chyba zápisu nebo plný disk?"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
 msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "Rozbalování selhalo, cesta k souboru je příliš dlouhá."
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
@@ -2334,6 +2344,11 @@ msgstr "Jméno"
 msgid "Retry"
 msgstr "Opakovat"
 
+#. History page button
+#: sabnzbd/skintext.py
+msgid "Mark as Completed & Remove Temporary Files"
+msgstr ""
+
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3474,10 +3489,6 @@ msgid "Naming"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr ""
 
@@ -3579,9 +3590,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
 
 #. Server's retention time in days
@@ -4525,6 +4536,12 @@ msgid "Retry all"
 msgstr "Opakovat vše"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Are you sure you want to delete all folders in your Temporary Download "
+"Folder? This cannot be undone!"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
 msgstr "Získat NZB z URL"
 
@@ -4768,6 +4785,11 @@ msgstr ""
 #. Wizard START button on first page
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
+msgstr ""
+
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
 msgstr ""
 
 #: sabnzbd/skintext.py

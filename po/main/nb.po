@@ -332,6 +332,20 @@ msgstr ""
 msgid "Quota spent, pausing downloading"
 msgstr "Kvote oppbrukt, setter nedlasting på pause"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "Kvote"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Feil parameter"
@@ -1075,10 +1089,6 @@ msgstr "Utpakking mislyktes, skrivefeil eller er disken full?"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
 msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "Utpakking feilet, stien er for lang"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
@@ -2359,6 +2369,11 @@ msgstr "Navn"
 msgid "Retry"
 msgstr "Prøv igjen"
 
+#. History page button
+#: sabnzbd/skintext.py
+msgid "Mark as Completed & Remove Temporary Files"
+msgstr ""
+
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3539,10 +3554,6 @@ msgid "Naming"
 msgstr "Filnavn"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "Kvote"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Hvor mye can lastes ned denne måneden (K/M/G)"
 
@@ -3649,9 +3660,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
 
 #. Server's retention time in days
@@ -4606,6 +4617,12 @@ msgid "Retry all"
 msgstr "Prøv alle på nytt"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Are you sure you want to delete all folders in your Temporary Download "
+"Folder? This cannot be undone!"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
 msgstr "Hent NZB fra URL"
 
@@ -4854,6 +4871,11 @@ msgstr "Avslutt SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Start Veiviser"
+
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

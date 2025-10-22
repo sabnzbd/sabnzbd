@@ -860,7 +860,7 @@ tr.queue-item>td:first-child>a {
 }
 
 .multioperations-selector .add-nzb-inputbox {
-    width: 20%;
+    width: 19%;
     float: left;
 }
 
@@ -871,7 +871,7 @@ tr.queue-item>td:first-child>a {
 }
 
 .multioperations-selector .add-nzb-inputbox-small {
-    width: 80px;
+    width: 115px;
     float: right;
     padding-left: 0;
     padding-top: 12px;
@@ -1095,6 +1095,13 @@ tr.queue-item>td:first-child>a {
 
 .history-status-table a {
     font-weight: bold;
+}
+
+.mark-completed-link {
+    font-weight: bold !important;
+    color: #28a745 !important;
+    text-decoration: underline;
+    margin-left: 10px;
 }
 
 .history-status-hidden {

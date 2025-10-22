@@ -7,7 +7,9 @@
                 <h1>$T('wizard-quickstart')</h1>
                 <hr />
                 <script type="text/javascript">
+                    var txtTestServer = "$T('wizard-server-text')";
                     var txtChecking = "$T('srv-testing')";
+                    var txtTestRequired = "$T('wizard-test-server-required')";
                     <!--#include raw $webdir + "/static/javascript/checkserver.js"#-->
                 </script>
                 <h3>$T('wizard-server')</h3>
@@ -22,7 +24,7 @@
                         <div class="form-group">
                             <label for="host" class="col-sm-4 control-label">$T('srv-host')</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="host" id="host" value="$host" placeholder="$T('wizard-example') news.newshosting.com" />
+                                <input type="text" class="form-control" name="host" id="host" value="$host" placeholder="$T('wizard-example') news.newshosting.com" required />
                             </div>
                         </div>
                         <div class="form-group">
@@ -57,13 +59,13 @@
                             <div class="form-group">
                                 <label for="port" class="col-sm-4 control-label">$T('srv-port')</label>
                                 <div class="col-sm-8">
-                                    <input type="number" class="form-control" name="port" id="port" value="<!--#if $port then $port else '563' #-->" min="0" max="65535" />
+                                    <input type="number" class="form-control" name="port" id="port" value="<!--#if $port then $port else '563' #-->" min="0" max="65535" required />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="connections" class="col-sm-4 control-label">$T('srv-connections')</label>
                                 <div class="col-sm-8">
-                                    <input type="number" class="form-control" name="connections" id="connections" value="<!--#if $connections then $connections else '8'#-->" min="1" max="500" data-toggle="tooltip" data-placement="right" title="$T('wizard-server-con-explain') $T('wizard-server-con-eg')" />
+                                    <input type="number" class="form-control" name="connections" id="connections" value="<!--#if $connections then $connections else '8'#-->" min="1" max="500" data-toggle="tooltip" data-placement="right" title="$T('wizard-server-con-explain') $T('wizard-server-con-eg')" required />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -81,7 +83,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
-                                <button id="serverTest" class="btn btn-default"><span class="glyphicon glyphicon-sort"></span> $T('wizard-button-testServer')</button>
+                                <button id="serverTest" class="btn btn-default" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-sort"></span> $T('wizard-button-testServer')</button>
                             </div>
                             <div class="col-sm-8">
                                 <div id="serverResponse" class="well well-sm">$T('wizard-server-text')</div>

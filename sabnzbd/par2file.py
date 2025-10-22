@@ -194,9 +194,10 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[s
                             for i in range(48, pack_len - 32, 20):
                                 filecrc32[fileid].append(struct.unpack("<I", data[i + 16 : i + 20])[0])
 
-                    # On large files, we stop after seeing all the listings
+                    # On large files, we stop after seeing all the listings and have crc32 data for all listings
+                    # Our unit-tests do not include large par2 files, so we cannot verify cases like #3164!
                     # On smaller files, we scan them fully to get the par2-creator
-                    if total_size > SCAN_LIMIT and len(filepar2info) == nr_files:
+                    if total_size > SCAN_LIMIT and len(filepar2info) == nr_files == len(filecrc32):
                         break
 
             # Process all the data

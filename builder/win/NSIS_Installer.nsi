@@ -29,6 +29,7 @@ Unicode true
 !include "nsProcess.nsh"
 !include "x64.nsh"
 !include "servicelib.nsh"
+!include "StdUtils.nsh"
 
 ;------------------------------------------------------------------
 ;
@@ -139,9 +140,9 @@ Unicode true
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
 
   !insertmacro MUI_PAGE_INSTFILES
-  ; !define MUI_FINISHPAGE_RUN
-  ; !define MUI_FINISHPAGE_RUN_FUNCTION PageFinishRun
-  ; !define MUI_FINISHPAGE_RUN_TEXT $(MsgRunSAB)
+  !define MUI_FINISHPAGE_RUN
+  !define MUI_FINISHPAGE_RUN_FUNCTION PageFinishRun
+  !define MUI_FINISHPAGE_RUN_TEXT $(MsgRunSAB)
   !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
   !define MUI_FINISHPAGE_SHOWREADME_TEXT $(MsgShowRelNote)
   !define MUI_FINISHPAGE_LINK $(MsgSupportUs)
@@ -154,12 +155,21 @@ Unicode true
   !insertmacro MUI_UNPAGE_COMPONENTS
   !insertmacro MUI_UNPAGE_INSTFILES
 
+
 ;------------------------------------------------------------------
 ; Run as user-level at end of install
-; DOES NOT WORK
-; Function PageFinishRun
-;   !insertmacro UAC_AsUser_ExecShell "" "$INSTDIR\SABnzbd.exe" "" "" ""
-; FunctionEnd
+Function PageFinishRun
+  ; Check if SABnzbd service is installed
+  !insertmacro SERVICE "installed" "SABnzbd" ""
+  Pop $0 ;response
+  ${If} $0 == true
+    ; Service is installed, start the service
+    !insertmacro SERVICE "start" "SABnzbd" ""
+  ${Else}
+    ; Service not installed, run executable as user
+    ${StdUtils.ExecShellAsUser} $0 "$INSTDIR\SABnzbd.exe" "" ""
+  ${EndIf}
+FunctionEnd
 
 
 ;------------------------------------------------------------------
@@ -186,7 +196,6 @@ Unicode true
   !insertmacro MUI_LANGUAGE "Russian"
   !insertmacro MUI_LANGUAGE "Czech"
   !insertmacro MUI_LANGUAGE "SimpChinese"
-
 
 
 ;------------------------------------------------------------------
@@ -361,14 +370,6 @@ Function .onInit
 
 FunctionEnd
 
-;------------------------------------------------------------------
-; Show the shortcuts at end of install so user can start SABnzbd
-; This is instead of us trying to run SAB from the installer
-;
-Function .onInstSuccess
-  ExecShell "open" "$SMPROGRAMS\$STARTMENU_FOLDER"
-FunctionEnd
-
 ;--------------------------------
 ; begin uninstall settings/section
 UninstallText $(MsgUninstall)
@@ -409,6 +410,8 @@ SectionEnd
 ;--------------------------------
 ;Language strings
   LangString MsgShowRelNote ${LANG_ENGLISH} "Show Release Notes"
+
+  LangString MsgRunSAB      ${LANG_ENGLISH} "Run SABnzbd"
 
   LangString MsgSupportUs   ${LANG_ENGLISH} "Support the project, Donate!"
 

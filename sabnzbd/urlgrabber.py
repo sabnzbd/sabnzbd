@@ -48,6 +48,7 @@ import sabnzbd.filesystem
 import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
+from sabnzbd.decorators import NZBQUEUE_LOCK
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.nzbparser import AddNzbFileResult
 from sabnzbd.nzbstuff import NzbObject, NzbRejected, NzbRejectToHistory
@@ -263,21 +264,24 @@ class URLGrabber(Thread):
                     # If the user resumed a duplicate detected URL, skip the check
                     dup_check = future_nzo.duplicate != DuplicateStatus.DUPLICATE_IGNORED
 
-                    # Add the new job to the queue
-                    res, _ = sabnzbd.nzbparser.add_nzbfile(
-                        path,
-                        pp=future_nzo.pp,
-                        script=future_nzo.script,
-                        cat=future_nzo.cat,
-                        priority=future_nzo.priority,
-                        nzbname=future_nzo.custom_name,
-                        nzo_info=nzo_info,
-                        url=future_nzo.url,
-                        keep=False,
-                        password=future_nzo.password,
-                        nzo_id=future_nzo.nzo_id,
-                        dup_check=dup_check,
-                    )
+                    # Locked, so that changes to the future_nzo are picked up by the new nzo
+                    with NZBQUEUE_LOCK:
+                        # Add the new job to the queue
+                        res, _ = sabnzbd.nzbparser.add_nzbfile(
+                            path,
+                            pp=future_nzo.pp,
+                            script=future_nzo.script,
+                            cat=future_nzo.cat,
+                            priority=future_nzo.priority,
+                            nzbname=future_nzo.custom_name,
+                            nzo_info=nzo_info,
+                            url=future_nzo.url,
+                            keep=False,
+                            password=future_nzo.password,
+                            nzo_id=future_nzo.nzo_id,
+                            dup_check=dup_check,
+                        )
+
                     if res is AddNzbFileResult.RETRY:
                         logging.info("Incomplete NZB, retry after 5 min %s", url)
                         self.add(url, future_nzo, when=300)

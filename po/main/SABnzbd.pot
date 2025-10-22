@@ -298,6 +298,19 @@ msgstr ""
 msgid "Quota spent, pausing downloading"
 msgstr ""
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Quota"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr ""
@@ -999,10 +1012,6 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
@@ -2244,6 +2253,11 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
+#. History page button
+#: sabnzbd/skintext.py
+msgid "Mark as Completed & Remove Temporary Files"
+msgstr ""
+
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3302,10 +3316,6 @@ msgid "Naming"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr ""
 
@@ -3402,7 +3412,7 @@ msgid "Warn 5 days in advance of account expiration date."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Quota for this account, counted from the time it is set. In bytes, optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few minutes."
+msgid "Quota for this server, counted from the time it is set. In bytes, optionally follow with K,M,G.<br />Checked every few minutes. Notification is sent when quota is spent."
 msgstr ""
 
 #. Server's retention time in days
@@ -4309,6 +4319,10 @@ msgid "Retry all"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Are you sure you want to delete all folders in your Temporary Download Folder? This cannot be undone!"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
 msgstr ""
 
@@ -4544,6 +4558,11 @@ msgstr ""
 #. Wizard START button on first page
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
+msgstr ""
+
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
 msgstr ""
 
 #: sabnzbd/skintext.py

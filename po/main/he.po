@@ -335,6 +335,20 @@ msgstr "העבודה \"%s\" כנראה מוצפנת: \"סיסמה\" בשם הק�
 msgid "Quota spent, pausing downloading"
 msgstr "מכסה נוצלה, משהה הורדה"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "מכסה"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "פרמטר שגוי"
@@ -1088,10 +1102,6 @@ msgstr "פריקה נכשלה, שגיאת כתיבה או דיסק מלא?"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
 msgstr "פריקה נכשלה, דיסק מלא"
-
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "פריקה נכשלה, נתיב ארוך מדי"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
@@ -2374,6 +2384,11 @@ msgstr "שם"
 msgid "Retry"
 msgstr "נסה שוב"
 
+#. History page button
+#: sabnzbd/skintext.py
+msgid "Mark as Completed & Remove Temporary Files"
+msgstr ""
+
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3566,10 +3581,6 @@ msgid "Naming"
 msgstr "מתן שמות"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "מכסה"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "כמה ניתן להוריד החודש (ק״ב/מ״ב/ג״ב)"
 
@@ -3673,12 +3684,10 @@ msgstr "הזהר 5 ימים טרם תאריך תפוגת החשבון."
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
-"מכסה עבור חשבון זה, נספרת מהזמן שהיא הוגדרה. בבתים, יכולה לבוא עם K,M,G.<br "
-"/>הזהר כאשר המכסה מגיעה אל 0, היא נבדקת כל כמה דקות."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -4642,6 +4651,12 @@ msgid "Retry all"
 msgstr "נסה שוב הכל"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Are you sure you want to delete all folders in your Temporary Download "
+"Folder? This cannot be undone!"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
 msgstr "משוך NZB מכתובת"
 
@@ -4894,6 +4909,11 @@ msgstr "צא מן SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "התחל אשף"
+
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

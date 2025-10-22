@@ -331,6 +331,20 @@ msgstr ""
 msgid "Quota spent, pausing downloading"
 msgstr "Przekroczono limit, wstrzymywanie pobierania"
 
+#. Warning message - Notification
+#: sabnzbd/bpsmeter.py, sabnzbd/downloader.py, sabnzbd/notifier.py,
+#: sabnzbd/skintext.py
+msgid "Quota"
+msgstr "Limit pobierania"
+
+#: sabnzbd/bpsmeter.py
+msgid "Quota limit warning (%d%%)"
+msgstr ""
+
+#: sabnzbd/bpsmeter.py
+msgid "Downloading resumed after quota reset"
+msgstr ""
+
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Błędny parametr"
@@ -1078,10 +1092,6 @@ msgstr "Rozpakowywanie nie powiodło się, błąd zapisu lub zapełniony dysk?"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, disk full"
 msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Unpacking failed, path is too long"
-msgstr "Rozpakowywanie nie powiodło się, zbyt długa ścieżka"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
@@ -2368,6 +2378,11 @@ msgstr "Nazwa"
 msgid "Retry"
 msgstr "Ponów"
 
+#. History page button
+#: sabnzbd/skintext.py
+msgid "Mark as Completed & Remove Temporary Files"
+msgstr ""
+
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
@@ -3550,10 +3565,6 @@ msgid "Naming"
 msgstr "Nazwy"
 
 #: sabnzbd/skintext.py
-msgid "Quota"
-msgstr "Limit pobierania"
-
-#: sabnzbd/skintext.py
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Ile danych można pobrać w miesiącu (K/M/G)"
 
@@ -3661,9 +3672,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Quota for this account, counted from the time it is set. In bytes, "
-"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
-" minutes."
+"Quota for this server, counted from the time it is set. In bytes, optionally"
+" follow with K,M,G.<br />Checked every few minutes. Notification is sent "
+"when quota is spent."
 msgstr ""
 
 #. Server's retention time in days
@@ -4618,6 +4629,12 @@ msgid "Retry all"
 msgstr "Ponów wszystkie"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Are you sure you want to delete all folders in your Temporary Download "
+"Folder? This cannot be undone!"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
 msgstr "Pobierz NZB z URL"
 
@@ -4864,6 +4881,11 @@ msgstr "Wyjście z SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Uruchom kreatora konfiguracji"
+
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

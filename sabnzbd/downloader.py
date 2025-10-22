@@ -123,7 +123,7 @@ class Server:
         self.host: str = host
         self.port: int = port
         self.timeout: int = timeout
-        self.threads: int = threads
+        self.threads: int = threads  # Total number of configured connections, not dynamic
         self.priority: int = priority
         self.ssl: bool = use_ssl
         self.ssl_verify: int = ssl_verify
@@ -490,7 +490,7 @@ class Downloader(Thread):
 
         # Optional and active server had too many problems.
         # Disable it now and send a re-enable plan to the scheduler
-        if server.optional and server.active and (server.threads < 1 or (server.bad_cons / server.threads) > 3):
+        if server.optional and server.active and (server.bad_cons / server.threads) > 0.3:
             # Deactivate server
             server.bad_cons = 0
             server.deactivate()
@@ -870,7 +870,6 @@ class Downloader(Thread):
                     # Don't count this for the tries (max_art_tries) on this server
                     self.__reset_nw(nw)
                     self.plan_server(server, _PENALTY_TOOMANY)
-                    server.threads -= 1
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
                 errormsg = T(
@@ -1144,6 +1143,11 @@ def check_server_quota():
         if server.quota():
             if server.quota.get_int() + server.usage_at_start() < sabnzbd.BPSMeter.grand_total.get(srv, 0):
                 logging.warning(T("Server %s has used the specified quota"), server.displayname())
+                sabnzbd.notifier.send_notification(
+                    T("Quota"),
+                    T("Server %s has used the specified quota") % server.displayname(),
+                    "quota",
+                )
                 server.quota.set("")
                 config.save_config()
 

@@ -423,6 +423,21 @@ function QueueListModel(parent) {
 
     }
 
+    // Handle mousedown to capture state before change
+    self.handleMultiEditStatusMouseDown = function(item, event) {
+        var clickedValue = $(event.currentTarget).find("input").val();
+
+        // If this radio was already selected (same value as previous), clear it
+        if ($('.multioperations-selector input[name="multiedit-status"]:checked').val() === clickedValue) {
+            // Clear all radio buttons in this group after the click finished
+            // Hacky, but it works
+            setTimeout(function () {
+                $('.multioperations-selector input[name="multiedit-status"]').prop('checked', false);
+            }, 200)
+        }
+        return true;
+    }
+
     // Remove downloads from queue
     self.removeDownloads = function(form) {
         // Hide modal and show notification
@@ -454,6 +469,50 @@ function QueueListModel(parent) {
 
         // Trigger modal
         self.triggerRemoveDownload(self.multiEditItems())
+    }
+
+    // Move all selected to top
+    self.doMultiMoveToTop = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        // Move each item to the top, starting from the last one in the sorted list
+        var arrayList = self.multiEditItems()
+        var movePromises = [];
+        for(var i = arrayList.length - 1; i >= 0; i--) {
+            movePromises.push(callAPI({
+                mode: "switch",
+                value: arrayList[i].id,
+                value2: 0
+            }));
+        }
+
+        // Wait for all moves to complete then refresh
+        Promise.all(movePromises).then(function() {
+            self.parent.refresh();
+        });
+    }
+
+    // Move all selected to bottom
+    self.doMultiMoveToBottom = function() {
+        // Anything selected?
+        if(self.multiEditItems().length < 1) return;
+
+        // Move each item to the bottom, starting from the first one in the sorted list
+        var arrayList = self.multiEditItems()
+        var movePromises = [];
+        for(var i = 0; i < arrayList.length; i++) {
+            movePromises.push(callAPI({
+                mode: "switch",
+                value: arrayList[i].id,
+                value2: self.totalItems() - 1
+            }));
+        }
+
+        // Wait for all moves to complete then refresh
+        Promise.all(movePromises).then(function() {
+            self.parent.refresh();
+        });
     }
 
     // Focus on the confirm button

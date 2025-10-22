@@ -3,13 +3,14 @@ pytest
 setuptools
 selenium
 requests
-pyfakefs>=5.6.0
-werkzeug<2.1.0 # Breaks httpbin in newer versions
+pyfakefs
+werkzeug
 pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict
 tavern
+tavern==3.0.0; python_version >= '3.11' # Latest version only supported on Python 3.11 and above
 flask
 tavalidate
 importlib_metadata

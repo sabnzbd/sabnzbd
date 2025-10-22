@@ -132,7 +132,7 @@
                         <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
                     </div>
                     <div class="field-pair no-field-pair-bg">
-                        <button class="btn btn-default addNewServer" disabled><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+                        <button class="btn btn-default addNewServer" disabled data-toggle="tooltip" data-placement="top" title="$T('wizard-test-server-required')"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                         <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     </div>
                     <div class="field-pair result-box">
@@ -464,14 +464,14 @@
         When finished loading
     **/
     jQuery(document).ready(function(){
+        // Initialize tooltips
+        jQuery('[data-toggle="tooltip"]').tooltip()
+        
         // Reload form in case we change items that make the servers appear different
-        jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function() {
-            jQuery('.fullform').submit(function() {
-                // No ajax this time
-                jQuery('input[name="ajax"]').val('')
-                // Skip the fancy stuff, just submit
-                this.submit()
-            })
+        jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function(event) {
+            var parentForm = jQuery(event.target).parents("form")
+            parentForm.unbind("submit")
+            parentForm.find('input[name="ajax"]').val('')
         })
 
         /**
@@ -563,6 +563,9 @@
                     // Allow adding the new server if we are in the new-server section
                     if(theButton.parents("form[action='addServer']").length) {
                         jQuery(".addNewServer").removeAttr("disabled")
+                        jQuery(".addNewServer").removeAttr("data-toggle")
+                        jQuery(".addNewServer").removeAttr("title")
+                        jQuery(".addNewServer").tooltip("destroy")
                     }
                 } else {
                     resultBox.addClass('alert-danger')
@@ -571,6 +574,10 @@
                     // Disable the adding of new server, just to be sure
                     if(theButton.parents("form[action='addServer']").length) {
                         jQuery(".addNewServer").attr("disabled", "disabled")
+                        jQuery(".addNewServer").attr("data-toggle", "tooltip")
+                        jQuery(".addNewServer").attr("data-placement", "top")
+                        jQuery(".addNewServer").attr("title", "$T('wizard-test-server-required')")
+                        jQuery(".addNewServer").tooltip()
                     }
                 }
             });

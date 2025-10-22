@@ -19,14 +19,10 @@
 """
 sabnzbd.utils.rarvolinfo - Find out volume number and/or original extension of a rar file. Useful with obfuscated files
 """
-
-
+import logging
 import os
 
-try:
-    import sabnzbd.utils.rarfile as rarfile
-except ImportError:
-    import rarfile
+import rarfile
 
 
 def get_rar_extension(myrarfile):
@@ -40,9 +36,9 @@ def get_rar_extension(myrarfile):
     org_extension = False
 
     try:
-        rar_ver = rarfile.is_rarfile(myrarfile)
+        rar_ver = rarfile.get_rar_version(myrarfile)
         with open(myrarfile, "rb") as fh:
-            if rar_ver.endswith("3"):
+            if rar_ver == rarfile.RAR_V3:
                 # As it's rar3, let's first find the numbering scheme: old (rNN) or new (partNN.rar)
                 mybuf = fh.read(100)  # first 100 bytes is enough
                 HEAD_FLAGS_LSB = mybuf[10]  # LSB = Least Significant Byte
@@ -62,7 +58,7 @@ def get_rar_extension(myrarfile):
                     else:
                         org_extension = "r%02d" % (volumenumber - 2)
 
-            elif rar_ver.endswith("5"):
+            elif rar_ver == rarfile.RAR_V5:
                 mybuf = fh.read(100)  # first 100 bytes is enough
 
                 # Get (and skip) the first 8 + 4 bytes
