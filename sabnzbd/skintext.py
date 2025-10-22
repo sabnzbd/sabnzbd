@@ -840,6 +840,9 @@ SKIN_TEXT = {
     "Glitter-backToQueue": TT("Send back to queue"),
     "Glitter-purgeOrphaned": TT("Delete All"),
     "Glitter-retryAllOrphaned": TT("Retry all"),
+    "Glitter-clearOrphanWarning": TT(
+        "Are you sure you want to delete all folders in your Temporary Download Folder? This cannot be undone!"
+    ),
     "Glitter-deleteJobAndFolders": TT("Remove NZB & Delete Files"),
     "Glitter-addFromURL": TT("Fetch NZB from URL"),
     "Glitter-addFromFile": TT("Upload NZB"),

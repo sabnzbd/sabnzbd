@@ -285,6 +285,14 @@ col2 h3 a,
     border-top-color: #E4E4E4 !important;
 }
 
+.tooltip.left .tooltip-arrow {
+    border-left-color: #E4E4E4 !important;
+}
+
+.tooltip.right .tooltip-arrow {
+    border-right-color: #E4E4E4 !important;
+}
+
 .Special .glyphicon-asterisk {
     color: #E4E4E4 !important;
 }

@@ -4788,6 +4788,12 @@ msgid "Retry all"
 msgstr "Riprova tutto"
 
 #: sabnzbd/skintext.py
+msgid ""
+"Are you sure you want to delete all folders in your Temporary Download "
+"Folder? This cannot be undone!"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
 msgstr "Recupera NZB da URL"
 
@@ -5042,6 +5048,11 @@ msgstr "Esci da SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Start Wizard"
 msgstr "Avvia procedura guidata"
+
+#. Tooltip for disabled Next button
+#: sabnzbd/skintext.py
+msgid "Click on Test Server before continuing"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

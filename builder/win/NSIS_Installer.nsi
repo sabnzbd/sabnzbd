@@ -159,7 +159,16 @@ Unicode true
 ;------------------------------------------------------------------
 ; Run as user-level at end of install
 Function PageFinishRun
-  ${StdUtils.ExecShellAsUser} $0 "$INSTDIR\SABnzbd.exe" "" ""
+  ; Check if SABnzbd service is installed
+  !insertmacro SERVICE "installed" "SABnzbd" ""
+  Pop $0 ;response
+  ${If} $0 == true
+    ; Service is installed, start the service
+    !insertmacro SERVICE "start" "SABnzbd" ""
+  ${Else}
+    ; Service not installed, run executable as user
+    ${StdUtils.ExecShellAsUser} $0 "$INSTDIR\SABnzbd.exe" "" ""
+  ${EndIf}
 FunctionEnd
 
 
