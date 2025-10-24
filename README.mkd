@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 4.5.4
+Release Notes - SABnzbd 4.5.5
 =========================================================
+
+## Bug fixes and changes in 4.5.5
+
+* macOS: Failed to start on versions of macOS older than 11.
+  Python 3.14 dropped support for macOS 10.13 and 10.14.
+  Because of that macOS 10.15 is required to run 4.5.5.
 
 ## Bug fixes and changes in 4.5.4
 

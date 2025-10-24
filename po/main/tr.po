@@ -370,11 +370,11 @@ msgstr "Kota"
 
 #: sabnzbd/bpsmeter.py
 msgid "Quota limit warning (%d%%)"
-msgstr ""
+msgstr "Kota sınır ikazı (%d%%)"
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "İndirme kota sıfırlamasının ardından devam etti"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -3786,6 +3786,10 @@ msgid ""
 " follow with K,M,G.<br />Checked every few minutes. Notification is sent "
 "when quota is spent."
 msgstr ""
+"Bu sunucu için, ayarlandığı zamandan itibaren hesaplanan kota. Bayt olarak, "
+"seçime dayalı bir şekilde K, M, G  takip edebilir. <br /> Her birkaç "
+"dakikada bir kontrol edilir. Kota sonuna ulaşıldığında bir bildirim "
+"gönderilir."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -4781,6 +4785,8 @@ msgid ""
 "Are you sure you want to delete all folders in your Temporary Download "
 "Folder? This cannot be undone!"
 msgstr ""
+"Geçici İndirme Dizini'ndeki tüm dizinleri silmek istediğinizden emin "
+"misiniz? Bu geri alınamaz!"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
@@ -5041,7 +5047,7 @@ msgstr "Sihirbazı Başlat"
 #. Tooltip for disabled Next button
 #: sabnzbd/skintext.py
 msgid "Click on Test Server before continuing"
-msgstr ""
+msgstr "Devam etmeden evvel Sunucuyu Dene unsuruna tıklayın"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"
