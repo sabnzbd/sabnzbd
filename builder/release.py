@@ -112,7 +112,7 @@ if RELEASE_THIS and gh_token:
                         print("Removing existing asset %s " % gh_asset.name)
                         gh_asset.delete_asset()
             # Upload the new one
-            print("Uploading %s to release %s" % (file_to_check, gh_release.title))
+            print("Uploading %s to release %s" % (file_to_check, gh_release.name))
             gh_release.upload_asset(file_to_check)
 
     # Check if we now have all files
