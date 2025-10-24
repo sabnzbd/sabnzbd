@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import glob
-import platform
 import re
 import sys
 import os
@@ -28,6 +27,7 @@ import tarfile
 import urllib.request
 import urllib.error
 import configobj
+import packaging.version
 from typing import List
 
 from constants import (
@@ -107,6 +107,52 @@ def patch_version_file(release_name):
 
     with open(VERSION_FILE, "w") as ver:
         ver.write(version_file)
+
+
+def test_macos_min_version(binary_path: str):
+    # Skip check if nothing was set
+    if macos_min_version := os.environ.get("MACOSX_DEPLOYMENT_TARGET"):
+        # Skip any arm64 specific files
+        if "arm64" in binary_path:
+            print(f"Skipping arm64 binary {binary_path}")
+            return
+
+        # Check minimum macOS version is at least mac OS10.13
+        # We only check the x86_64 since for arm64 it's always macOS 11+
+        print(f"Checking if binary supports macOS {macos_min_version} and above: {binary_path}")
+        otool_output = run_external_command(
+            [
+                "otool",
+                "-arch",
+                "x86_64",
+                "-l",
+                binary_path,
+            ],
+            print_output=False,
+        )
+
+        # Parse the output for LC_BUILD_VERSION minos
+        # The output is very large, so that's why we enumerate over it
+        req_version = packaging.version.parse(macos_min_version)
+        bin_version = None
+        lines = otool_output.split("\n")
+        for line_nr, line in enumerate(lines):
+            if "LC_VERSION_MIN_MACOSX" in line:
+                # Display the version in the next lines
+                bin_version = packaging.version.parse(lines[line_nr + 2].split()[1])
+            elif "minos" in line:
+                bin_version = packaging.version.parse(line.split()[1])
+
+            if bin_version and bin_version > req_version:
+                raise ValueError(f"{binary_path} requires {bin_version}, we want {req_version}")
+            else:
+                # We got the information we need
+                break
+        else:
+            print(lines)
+            raise RuntimeError(f"Could not determine minimum macOS version for {binary_path}")
+    else:
+        print(f"Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
 
 
 def test_sab_binary(binary_path: str):
@@ -290,7 +336,11 @@ if __name__ == "__main__":
                 "macos/7zip/7zz",
             ]
             for file_to_sign in files_to_sign:
-                print("Signing %s with hardended runtime" % file_to_sign)
+                # Make sure it supports the macOS versions we want first
+                test_macos_min_version(file_to_sign)
+
+                # Then sign in
+                print("Signing %s with hardened runtime" % file_to_sign)
                 run_external_command(
                     [
                         "codesign",
@@ -315,12 +365,15 @@ if __name__ == "__main__":
 
         # Make sure we created a fully universal2 release when releasing or during CI
         if RELEASE_THIS or ON_GITHUB_ACTIONS:
-            for bin_to_check in glob.glob("dist/SABnzbd.app/Contents/MacOS/**/*.so", recursive=True):
+            for bin_to_check in glob.glob("dist/SABnzbd.app/**/*.so", recursive=True):
                 print("Checking if binary is universal2: %s" % bin_to_check)
                 file_output = run_external_command(["file", bin_to_check], print_output=False)
                 # Make sure we have both arm64 and x86
                 if not ("x86_64" in file_output and "arm64" in file_output):
                     raise RuntimeError("Non-universal2 binary found!")
+
+                # Make sure it supports the macOS versions we want
+                test_macos_min_version(bin_to_check)
 
         # Only continue if we can sign
         if authority:
