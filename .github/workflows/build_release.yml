@@ -31,13 +31,13 @@ jobs:
       id: windows_binary
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (unsigned)
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       id: upload-unsigned-binary
       with:
         path: "*-win64-bin.zip"
         name: Windows standalone binary
     - name: Sign Windows standalone binary
-      uses: signpath/github-action-submit-signing-request@v1
+      uses: signpath/github-action-submit-signing-request@v2
       if: contains(github.ref, 'refs/tags/')
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
         wait-for-completion: true
         output-artifact-directory: "signed"
     - name: Upload Windows standalone binary (signed)
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       if: contains(github.ref, 'refs/tags/')
       with:
         name: Windows standalone binary (signed)
@@ -57,13 +57,13 @@ jobs:
     - name: Build Windows installer
       run: python builder/package.py installer
     - name: Upload Windows installer
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       id: upload-unsigned-installer
       with:
         path: "*-win-setup.exe"
         name: Windows installer
     - name: Sign Windows installer
-      uses: signpath/github-action-submit-signing-request@v1
+      uses: signpath/github-action-submit-signing-request@v2
       if: contains(github.ref, 'refs/tags/')
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -76,7 +76,7 @@ jobs:
         output-artifact-directory: "signed"
     - name: Upload Windows installer (signed)
       if: contains(github.ref, 'refs/tags/')
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: Windows installer (signed)
         path: "signed/*-win-setup.exe"
@@ -140,7 +140,7 @@ jobs:
       # Run this on macOS so the line endings are correct by default
       run: python builder/package.py source
     - name: Upload source distribution
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         path: "*-src.tar.gz"
         name: Source distribution
@@ -153,7 +153,7 @@ jobs:
         python3 builder/package.py app
         python3 builder/make_dmg.py
     - name: Upload macOS binary
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         path: "*-macos.dmg"
         name: macOS binary
@@ -196,7 +196,7 @@ jobs:
           timeout 10s snap run sabnzbd --help || true
           sudo snap remove sabnzbd
       - name: Upload snap
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Snap package (${{ matrix.linux_arch }})
           path: ${{ steps.snapcraft.outputs.snap }}
@@ -223,15 +223,15 @@ jobs:
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
       - name: Download Source distribution artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: Source distribution
       - name: Download macOS artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: macOS binary
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: ${{ (contains(github.ref, 'refs/tags/')) && '*signed*' || '*Windows*' }}
           merge-multiple: true
