@@ -104,6 +104,7 @@ class Assembler(Thread):
                             logging.info(f"SJ Intermediate: download_path {nzo.download_path}")
                             
                             if nzo.direct_unpack_progress:
+                                # direct unpacker active instance found
                                 try:
                                     logging.info(f"SJ: non-hacky unpack_dir: {unpack_dir}")
                                 except Exception as e:
