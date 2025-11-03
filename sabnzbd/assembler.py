@@ -27,6 +27,7 @@ from threading import Thread
 import ctypes
 from typing import Tuple, Optional, List
 import rarfile
+import glob
 
 import sabnzbd
 from sabnzbd.misc import get_all_passwords, match_str, SABRarFile
@@ -44,6 +45,14 @@ import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
 
+def get_biggest_file_in_dir(directory: str) -> Optional[str]:
+    """Return the biggest file in a directory"""
+    pattern = os.path.join(directory, "**/*")
+    all_files = [path for path in glob.glob(pattern, recursive=True) if os.path.isfile(path)]
+    if not all_files:
+        return None, 0
+    all_files = sorted(all_files, key=os.path.getsize)[::-1]  # reversed, so big to small. Format [start:stop:step]
+    return all_files[0], os.path.getsize(all_files[0])
 
 class Assembler(Thread):
     def __init__(self):
@@ -99,16 +108,20 @@ class Assembler(Thread):
                             nzo.handle_par2(nzf, filepath)
 
                         # Intermediate script
-                        if cfg.intermediate_script() and nzo.bytes_downloaded > 200_000_000:
+                        if cfg.intermediate_script() and nzo.bytes_downloaded > 400_000_000:
                             logging.info(f"SJ Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
-                            logging.info(f"SJ Intermediate: download_path {nzo.download_path}")
+                            incomplete_dir = nzo.download_path
+                            logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")  
+                            biggest_file, biggest_file_size = get_biggest_file_in_dir(incomplete_dir)
+                            logging.info(f"SJ Intermediate: incomplete biggest_file: {biggest_file}, size: {biggest_file_size}")
 
                             if nzo.direct_unpack_progress:
                                 # direct unpacker active instance found
                                 try:
-                                    logging.info(f"SJ: non-hacky unpack_dir: {unpack_dir}")
-                                except Exception as e:
-                                    logging.error(f"SJ: error accessing nzo.unpack_dir_info: {e}")
+                                    direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
+                                    logging.info(f"SJ: direct_unpack_dir: {direct_unpack_dir}")
+                                    biggest_file, biggest_file_size = get_biggest_file_in_dir(direct_unpack_dir)
+                                    logging.info(f"SJ Intermediate: direct_unpack biggest_file: {biggest_file}, size: {biggest_file_size}")
                             else:
                                 logging.info("SJ Intermediate: no direct unpacker active instance found")
 
