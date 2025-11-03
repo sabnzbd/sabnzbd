@@ -26,9 +26,10 @@ import re
 from threading import Thread
 import ctypes
 from typing import Tuple, Optional, List
+import rarfile
 
 import sabnzbd
-from sabnzbd.misc import get_all_passwords, match_str
+from sabnzbd.misc import get_all_passwords, match_str, SABRarFile
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -42,7 +43,6 @@ from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
-import sabnzbd.utils.rarfile as rarfile
 
 
 class Assembler(Thread):
@@ -97,25 +97,6 @@ class Assembler(Thread):
                         elif par2file.is_par2_file(filepath):
                             # Parse par2 files, cloaked or not
                             nzo.handle_par2(nzf, filepath)
-
-
-
-                        # Intermediate script
-                        if cfg.intermediate_script() and nzo.bytes_downloaded > 200_000_000:
-                            logging.info(f"SJ Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
-                            logging.info(f"SJ Intermediate: download_path {nzo.download_path}")
-                            #logging.info(f"SJ Intermediate: direct_unpack_progress {nzo.direct_unpack_progress}")
-                            
-                            if nzo.direct_unpack_progress:
-                                # TBD this is a hacky way to get the unpack dir
-                                #unpack_dir = nzo.direct_unpacker.active_instance.args[-1]
-                                #logging.info(f"SJ Intermediate: hacky direct unpacker active instance path {unpack_dir}")
-                                try:
-                                    logging.info(f"SJ: non-hacky unpack_dir: {unpack_dir}")
-                                except Exception as e:
-                                    logging.error(f"SJ: error accessing nzo.unpack_dir_info: {e}")
-                            else:
-                                logging.info("SJ Intermediate: no direct unpacker active instance found")
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
@@ -314,7 +295,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
                 # Open the rar
-                zf = rarfile.RarFile(filepath, single_file_check=True)
+                zf = SABRarFile(filepath, part_only=True)
 
                 # Check for encryption
                 if (
@@ -341,12 +322,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
-                                except rarfile.Error:
-                                    # On weird passwords the setpassword() will fail
-                                    # but the actual testrar() will work
-                                    pass
-                                try:
-                                    zf.testrar()
+                                    zf.trigger_parse()
                                     password_hit = password
                                     break
                                 except rarfile.RarWrongPassword:
