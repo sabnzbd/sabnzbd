@@ -686,10 +686,15 @@ SKIN_TEXT = {
     "explain-pushbullet_device": TT("Device to which message should be sent"),  #: Pushbullet settings
     "opt-apprise_enable": TT("Enable Apprise notifications"),  #: Apprise settings
     "explain-apprise_enable": TT(
-        "Send notifications using Apprise to almost any notification service"
+        "Send notifications directly to any notification service you use.<br>"
+        "For example: Slack, Discord, Telegram, or any service from over 100 supported services!"
     ),  #: Apprise settings
-    "opt-apprise_urls": TT("Default Apprise URLs"),  #: Apprise settings
-    "explain-apprise_urls": TT("Use a comma and/or space to identify more than one URL."),  #: Apprise settings
+    "opt-apprise_urls": TT("Use default Apprise URLs"),  #: Apprise settings
+    "explain-apprise_urls": TT(
+        "Apprise defines service connection information using URLs.<br>"
+        "Read the Apprise wiki how to define the URL for each service.<br>"
+        "Use a comma and/or space to identify more than one URL."
+    ),  #: Apprise settings
     "explain-apprise_extra_urls": TT(
         "Override the default URLs for specific notification types below, if desired."
     ),  #: Apprise settings
