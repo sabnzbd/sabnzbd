@@ -415,6 +415,7 @@ fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
 pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
+intermediate_script = OptionStr("misc", "intermediate_script", "None", validation=validate_script)
 end_queue_script = OptionStr("misc", "end_queue_script", "None", validation=validate_script)
 no_dupes = OptionNumber("misc", "no_dupes", 0)
 no_series_dupes = OptionNumber("misc", "no_series_dupes", 0)  # Kept for converting to no_smart_dupes
