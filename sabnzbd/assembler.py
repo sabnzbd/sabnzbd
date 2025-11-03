@@ -102,7 +102,7 @@ class Assembler(Thread):
                         if cfg.intermediate_script() and nzo.bytes_downloaded > 200_000_000:
                             logging.info(f"SJ Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
                             logging.info(f"SJ Intermediate: download_path {nzo.download_path}")
-                            
+
                             if nzo.direct_unpack_progress:
                                 # direct unpacker active instance found
                                 try:
@@ -111,7 +111,6 @@ class Assembler(Thread):
                                     logging.error(f"SJ: error accessing nzo.unpack_dir_info: {e}")
                             else:
                                 logging.info("SJ Intermediate: no direct unpacker active instance found")
-                          
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
