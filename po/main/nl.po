@@ -4306,19 +4306,23 @@ msgid "Enable Apprise notifications"
 msgstr "Apprise-meldingen activeren"
 
 #: sabnzbd/skintext.py
-msgid "Send notifications using Apprise to almost any notification service"
+msgid ""
+"Send notifications directly to any notification service you use.<br>For "
+"example: Slack, Discord, Telegram, or any service from over 100 supported "
+"services!"
 msgstr ""
-"Stuur meldingen met behulp van Apprise naar bijna elke bestaande service."
 
 #. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Default Apprise URLs"
-msgstr "Standaard Apprise-URL's"
+msgid "Use default Apprise URLs"
+msgstr ""
 
-#. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Use a comma and/or space to identify more than one URL."
-msgstr "Gebruik een komma en/of spatie om meer dan één URL op te geven."
+msgid ""
+"Apprise defines service connection information using URLs.<br>Read the "
+"Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
+"space to identify more than one URL."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
