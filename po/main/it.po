@@ -42,6 +42,8 @@ msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
 msgstr ""
+"Impossibile collegarsi a OpenSSL, le funzioni di connessione SSL ottimizzate"
+" non verranno utilizzate."
 
 #. Error message
 #: SABnzbd.py
@@ -369,11 +371,11 @@ msgstr "Quota"
 
 #: sabnzbd/bpsmeter.py
 msgid "Quota limit warning (%d%%)"
-msgstr ""
+msgstr "Avviso limite quota (%d%%)"
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "Download ripreso dopo il ripristino della quota"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -2442,7 +2444,7 @@ msgstr "Riprova"
 #. History page button
 #: sabnzbd/skintext.py
 msgid "Mark as Completed & Remove Temporary Files"
-msgstr ""
+msgstr "Segna come completato e rimuovi i file temporanei"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -3800,6 +3802,9 @@ msgid ""
 " follow with K,M,G.<br />Checked every few minutes. Notification is sent "
 "when quota is spent."
 msgstr ""
+"Quota per questo server, contata dal momento in cui viene impostata. In "
+"byte, opzionalmente seguito da K,M,G.<br />Controllato ogni pochi minuti. La"
+" notifica viene inviata quando la quota è esaurita."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -4309,11 +4314,14 @@ msgid ""
 "example: Slack, Discord, Telegram, or any service from over 100 supported "
 "services!"
 msgstr ""
+"Invia notifiche direttamente a qualsiasi servizio di notifica che "
+"utilizzi.<br>Ad esempio: Slack, Discord, Telegram o qualsiasi servizio tra "
+"oltre 100 servizi supportati!"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use default Apprise URLs"
-msgstr ""
+msgstr "Usa URL Apprise predefiniti"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4321,6 +4329,9 @@ msgid ""
 "Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
 "space to identify more than one URL."
 msgstr ""
+"Apprise definisce le informazioni di connessione del servizio utilizzando "
+"URL.<br>Leggi il wiki di Apprise per sapere come definire l'URL per ogni "
+"servizio.<br>Usa una virgola e/o uno spazio per identificare più di un URL."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4797,6 +4808,8 @@ msgid ""
 "Are you sure you want to delete all folders in your Temporary Download "
 "Folder? This cannot be undone!"
 msgstr ""
+"Sei sicuro di voler eliminare tutte le cartelle nella tua cartella di "
+"download temporanei? Questo non può essere annullato!"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
@@ -5057,7 +5070,7 @@ msgstr "Avvia procedura guidata"
 #. Tooltip for disabled Next button
 #: sabnzbd/skintext.py
 msgid "Click on Test Server before continuing"
-msgstr ""
+msgstr "Fai clic su Prova server prima di continuare"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

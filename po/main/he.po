@@ -2,14 +2,14 @@
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2023
 # ION, 2025
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: ION, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,7 +42,7 @@ msgstr "לא ניתן למצוא תבניות רשת: %s, מנסה תבנית ת
 msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
-msgstr ""
+msgstr "לא ניתן לקשר ל-OpenSSL, פונקציות חיבור SSL מותאמות לא יהיו בשימוש."
 
 #. Error message
 #: SABnzbd.py
@@ -210,12 +210,16 @@ msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "563 and SSL turned on"
 msgstr ""
+"לא ניתן להתחבר ל-%s בפורט %s. השתמש בהגדרות ברירת המחדל של usenet: פורט 563 "
+"ו-SSL מופעל"
 
 #: sabnzbd/api.py
 msgid ""
 "Could not connect to %s on port %s. Use the default usenet settings: port "
 "119 and SSL turned off"
 msgstr ""
+"לא ניתן להתחבר ל-%s בפורט %s. השתמש בהגדרות ברירת המחדל של usenet: פורט 119 "
+"ו-SSL כבוי"
 
 #: sabnzbd/api.py, sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -343,11 +347,11 @@ msgstr "מכסה"
 
 #: sabnzbd/bpsmeter.py
 msgid "Quota limit warning (%d%%)"
-msgstr ""
+msgstr "אזהרת מגבלת מכסה (%d%%)"
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "ההורדה התחדשה לאחר איפוס מכסה"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -411,7 +415,7 @@ msgstr ""
 #: sabnzbd/cfg.py
 msgid ""
 "The par2 application was switched, any custom par2 parameters were removed"
-msgstr ""
+msgstr "יישום par2 הוחלף, כל פרמטרי par2 מותאמים אישית הוסרו"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -487,7 +491,7 @@ msgstr "אי־האפלה שינתה שם של %d קבצים"
 
 #: sabnzbd/deobfuscate_filenames.py
 msgid "Deobfuscate renamed %d subtitle file(s)"
-msgstr ""
+msgstr "בוצע ביטול ערפול של %d קבצי כתוביות ששמם שונה"
 
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -1235,6 +1239,8 @@ msgid ""
 " locally injected certificate (for example by firewall or virus scanner). "
 "Try setting Certificate verification to Medium."
 msgstr ""
+"לא ניתן לאמת את האישור. זה יכול להיות בעיית שרת או בגלל אישור מוזרק מקומית "
+"(לדוגמה על ידי חומת אש או סורק וירוסים). נסה להגדיר את אימות האישור לבינוני."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -1315,7 +1321,7 @@ msgstr "כישלון בשליחת הודעת Prowl"
 #. Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send Apprise message - no URLs defined"
-msgstr ""
+msgstr "שליחת הודעת Apprise נכשלה - לא הוגדרו כתובות URL"
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -2387,7 +2393,7 @@ msgstr "נסה שוב"
 #. History page button
 #: sabnzbd/skintext.py
 msgid "Mark as Completed & Remove Temporary Files"
-msgstr ""
+msgstr "סמן כהושלם והסר קבצים זמניים"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -2933,7 +2939,7 @@ msgstr "העבר עבודות אל הארכיון אם ההיסטוריה חור
 #: sabnzbd/skintext.py
 msgid ""
 "Delete jobs if the history and archive exceeds specified number of jobs"
-msgstr ""
+msgstr "מחק עבודות אם ההיסטוריה והארכיון עוברים את מספר העבודות שצוין"
 
 #: sabnzbd/skintext.py
 msgid "Move jobs to the archive after specified number of days"
@@ -2942,7 +2948,7 @@ msgstr "העבר עבודות אל הארכיון לאחר מספר מצוין �
 #: sabnzbd/skintext.py
 msgid ""
 "Delete jobs from the history and archive after specified number of days"
-msgstr ""
+msgstr "מחק עבודות מההיסטוריה והארכיון לאחר מספר הימים שצוין"
 
 #: sabnzbd/skintext.py
 msgid "Move all completed jobs to archive"
@@ -3688,6 +3694,8 @@ msgid ""
 " follow with K,M,G.<br />Checked every few minutes. Notification is sent "
 "when quota is spent."
 msgstr ""
+"מכסה לשרת זה, נספרת מהרגע שהיא נקבעה. בבייטים, באופן אופציונלי ניתן להוסיף "
+"K,M,G.<br />נבדקת כל כמה דקות. הודעה נשלחת כאשר המכסה מוצתה."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -3718,6 +3726,11 @@ msgid ""
 "used. - Disabled: no certification verification. This is not secure at all, "
 "anyone could intercept your connection. "
 msgstr ""
+"כאשר SSL מופעל: - מחמיר: אכוף אימות אישור מלא. זוהי ההגדרה המאובטחת ביותר. -"
+" בינוני: אמת שהאישור תקף ותואם לכתובת השרת, אך אפשר אישורים המוזרקים מקומית "
+"(למשל על ידי חומת אש או סורק וירוסים). - מינימלי: אמת שהאישור תקף. זה לא "
+"מאובטח, כל אישור תקף יכול לשמש. - מושבת: ללא אימות אישור. זה לא מאובטח כלל, "
+"כל אחד יכול ליירט את החיבור שלך."
 
 #: sabnzbd/skintext.py
 msgid "Disabled"
@@ -3729,7 +3742,7 @@ msgstr "מזערי"
 
 #: sabnzbd/skintext.py
 msgid "Medium"
-msgstr ""
+msgstr "בינוני"
 
 #: sabnzbd/skintext.py
 msgid "Strict"
@@ -4186,11 +4199,13 @@ msgid ""
 "example: Slack, Discord, Telegram, or any service from over 100 supported "
 "services!"
 msgstr ""
+"שלח הודעות ישירות לכל שירות הודעות שאתה משתמש בו.<br>לדוגמה: Slack, Discord,"
+" Telegram או כל שירות מתוך למעלה מ-100 שירותים נתמכים!"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use default Apprise URLs"
-msgstr ""
+msgstr "השתמש בכתובות URL של Apprise המוגדרות כברירת מחדל"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4198,6 +4213,9 @@ msgid ""
 "Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
 "space to identify more than one URL."
 msgstr ""
+"Apprise מגדיר מידע על חיבור שירות באמצעות כתובות URL.<br>קרא את הוויקי של "
+"Apprise כדי ללמוד כיצד להגדיר את כתובת ה-URL עבור כל שירות.<br>השתמש בפסיק "
+"ו/או רווח כדי לזהות יותר מכתובת URL אחת."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4660,6 +4678,8 @@ msgid ""
 "Are you sure you want to delete all folders in your Temporary Download "
 "Folder? This cannot be undone!"
 msgstr ""
+"האם אתה בטוח שברצונך למחוק את כל התיקיות בתיקיית ההורדות הזמנית שלך? לא ניתן"
+" לבטל פעולה זו!"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
@@ -4918,7 +4938,7 @@ msgstr "התחל אשף"
 #. Tooltip for disabled Next button
 #: sabnzbd/skintext.py
 msgid "Click on Test Server before continuing"
-msgstr ""
+msgstr "לחץ על בדיקת שרת לפני המשך"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

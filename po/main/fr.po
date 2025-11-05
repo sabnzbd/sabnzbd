@@ -4358,11 +4358,14 @@ msgid ""
 "example: Slack, Discord, Telegram, or any service from over 100 supported "
 "services!"
 msgstr ""
+"Envoyez des notifications directement vers n'importe quel service de "
+"notification que vous utilisez.<br>Par exemple : Slack, Discord, Telegram ou"
+" tout autre service parmi plus de 100 services pris en charge !"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use default Apprise URLs"
-msgstr ""
+msgstr "Utiliser les URLs Apprise par défaut"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4370,6 +4373,10 @@ msgid ""
 "Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
 "space to identify more than one URL."
 msgstr ""
+"Apprise définit les informations de connexion au service à l'aide "
+"d'URL.<br>Consultez le wiki Apprise pour savoir comment définir l'URL de "
+"chaque service.<br>Utilisez une virgule et/ou un espace pour identifier "
+"plusieurs URL."
 
 #: sabnzbd/skintext.py
 msgid ""

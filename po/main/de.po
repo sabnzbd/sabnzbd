@@ -15,14 +15,14 @@
 # Stefan Rodriguez Galeano, 2024
 # M Z, 2024
 # Gjelbrim Haskaj, 2024
-# Safihre <safihre@sabnzbd.org>, 2024
 # Media Cat, 2025
+# Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Media Cat, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: German (https://app.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -58,6 +58,8 @@ msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
 msgstr ""
+"OpenSSL kann nicht verknüpft werden, optimierte SSL-Verbindungsfunktionen "
+"werden nicht verwendet."
 
 #. Error message
 #: SABnzbd.py
@@ -384,11 +386,11 @@ msgstr "Kontingent"
 
 #: sabnzbd/bpsmeter.py
 msgid "Quota limit warning (%d%%)"
-msgstr ""
+msgstr "Warnung zur Kontingentgrenze (%d%%)"
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "Download nach Kontingentzurücksetzung fortgesetzt"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -2478,7 +2480,7 @@ msgstr "Erneut versuchen"
 #. History page button
 #: sabnzbd/skintext.py
 msgid "Mark as Completed & Remove Temporary Files"
-msgstr ""
+msgstr "Als abgeschlossen markieren und temporäre Dateien entfernen"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -3861,6 +3863,9 @@ msgid ""
 " follow with K,M,G.<br />Checked every few minutes. Notification is sent "
 "when quota is spent."
 msgstr ""
+"Kontingent für diesen Server, gezählt ab dem Zeitpunkt der Festlegung. In "
+"Bytes, optional gefolgt von K,M,G.<br />Wird alle paar Minuten überprüft. "
+"Benachrichtigung wird gesendet, wenn das Kontingent aufgebraucht ist."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -4372,11 +4377,14 @@ msgid ""
 "example: Slack, Discord, Telegram, or any service from over 100 supported "
 "services!"
 msgstr ""
+"Senden Sie Benachrichtigungen direkt an jeden von Ihnen genutzten "
+"Benachrichtigungsdienst.<br>Zum Beispiel: Slack, Discord, Telegram oder "
+"jeden anderen Dienst aus über 100 unterstützten Diensten!"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use default Apprise URLs"
-msgstr ""
+msgstr "Standard-Apprise-URLs verwenden"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4384,6 +4392,10 @@ msgid ""
 "Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
 "space to identify more than one URL."
 msgstr ""
+"Apprise definiert Dienstverbindungsinformationen über URLs.<br>Lesen Sie das"
+" Apprise-Wiki, um zu erfahren, wie Sie die URL für jeden Dienst "
+"definieren.<br>Verwenden Sie ein Komma und/oder Leerzeichen, um mehr als "
+"eine URL anzugeben."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4857,6 +4869,8 @@ msgid ""
 "Are you sure you want to delete all folders in your Temporary Download "
 "Folder? This cannot be undone!"
 msgstr ""
+"Sind Sie sicher, dass Sie alle Ordner in Ihrem temporären Download-Ordner "
+"löschen möchten? Dies kann nicht rückgängig gemacht werden!"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
@@ -5116,7 +5130,7 @@ msgstr "Assistenten starten"
 #. Tooltip for disabled Next button
 #: sabnzbd/skintext.py
 msgid "Click on Test Server before continuing"
-msgstr ""
+msgstr "Klicken Sie auf \"Server testen\", bevor Sie fortfahren"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

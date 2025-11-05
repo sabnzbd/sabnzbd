@@ -373,11 +373,11 @@ msgstr "Cuota"
 
 #: sabnzbd/bpsmeter.py
 msgid "Quota limit warning (%d%%)"
-msgstr ""
+msgstr "Advertencia de límite de cuota (%d%%)"
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "Descarga reanudada después de reiniciar la cuota"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -2469,7 +2469,7 @@ msgstr "Reintentar"
 #. History page button
 #: sabnzbd/skintext.py
 msgid "Mark as Completed & Remove Temporary Files"
-msgstr ""
+msgstr "Marcar como completado y eliminar archivos temporales"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -3831,6 +3831,9 @@ msgid ""
 " follow with K,M,G.<br />Checked every few minutes. Notification is sent "
 "when quota is spent."
 msgstr ""
+"Cuota para este servidor, contada desde el momento en que se establece. En "
+"bytes, opcionalmente seguido de K,M,G.<br />Comprobado cada pocos minutos. "
+"Se envía una notificación cuando se agota la cuota."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -4343,11 +4346,14 @@ msgid ""
 "example: Slack, Discord, Telegram, or any service from over 100 supported "
 "services!"
 msgstr ""
+"Envíe notificaciones directamente a cualquier servicio de notificaciones que"
+" utilice.<br>Por ejemplo: Slack, Discord, Telegram o cualquier servicio de "
+"más de 100 servicios compatibles."
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use default Apprise URLs"
-msgstr ""
+msgstr "Usar URLs de Apprise predeterminadas"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4355,6 +4361,9 @@ msgid ""
 "Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
 "space to identify more than one URL."
 msgstr ""
+"Apprise define la información de conexión del servicio mediante URLs.<br>Lea"
+" el wiki de Apprise para saber cómo definir la URL de cada servicio.<br>Use "
+"una coma y/o espacio para identificar más de una URL."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4831,6 +4840,8 @@ msgid ""
 "Are you sure you want to delete all folders in your Temporary Download "
 "Folder? This cannot be undone!"
 msgstr ""
+"¿Está seguro de que desea eliminar todas las carpetas en su carpeta de "
+"descargas temporales? ¡Esto no se puede deshacer!"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
@@ -5090,7 +5101,7 @@ msgstr "Iniciar Asistente"
 #. Tooltip for disabled Next button
 #: sabnzbd/skintext.py
 msgid "Click on Test Server before continuing"
-msgstr ""
+msgstr "Haga clic en Probar servidor antes de continuar"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"

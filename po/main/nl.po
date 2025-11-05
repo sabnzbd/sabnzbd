@@ -44,6 +44,8 @@ msgid ""
 "Unable to link to OpenSSL, optimized SSL connection functions will not be "
 "used."
 msgstr ""
+"Kan niet koppelen aan OpenSSL, geoptimaliseerde SSL-verbindingsfuncties "
+"worden niet gebruikt."
 
 #. Error message
 #: SABnzbd.py
@@ -366,11 +368,11 @@ msgstr "Quotum"
 
 #: sabnzbd/bpsmeter.py
 msgid "Quota limit warning (%d%%)"
-msgstr ""
+msgstr "Waarschuwing quotumlimiet (%d%%)"
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "Downloaden hervat na quotumreset"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -2445,7 +2447,7 @@ msgstr "Opnieuw"
 #. History page button
 #: sabnzbd/skintext.py
 msgid "Mark as Completed & Remove Temporary Files"
-msgstr ""
+msgstr "Markeer als voltooid en verwijder tijdelijke bestanden"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
@@ -3802,6 +3804,9 @@ msgid ""
 " follow with K,M,G.<br />Checked every few minutes. Notification is sent "
 "when quota is spent."
 msgstr ""
+"Quotum voor deze server, geteld vanaf het moment dat het is ingesteld. In "
+"bytes, optioneel gevolgd door K,M,G.<br />Wordt om de paar minuten "
+"gecontroleerd. Melding wordt verzonden wanneer het quotum is opgebruikt."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -4311,11 +4316,14 @@ msgid ""
 "example: Slack, Discord, Telegram, or any service from over 100 supported "
 "services!"
 msgstr ""
+"Stuur meldingen rechtstreeks naar elke meldingsservice die u "
+"gebruikt.<br>Bijvoorbeeld: Slack, Discord, Telegram of elke andere service "
+"uit meer dan 100 ondersteunde services!"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
 msgid "Use default Apprise URLs"
-msgstr ""
+msgstr "Gebruik standaard Apprise-URL's"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4323,6 +4331,10 @@ msgid ""
 "Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
 "space to identify more than one URL."
 msgstr ""
+"Apprise definieert serviceverbindingsinformatie met behulp van "
+"URL's.<br>Lees de Apprise-wiki om te leren hoe u de URL voor elke service "
+"definieert.<br>Gebruik een komma en/of spatie om meer dan één URL te "
+"identificeren."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4793,6 +4805,8 @@ msgid ""
 "Are you sure you want to delete all folders in your Temporary Download "
 "Folder? This cannot be undone!"
 msgstr ""
+"Weet u zeker dat u alle mappen in uw tijdelijke downloadmap wilt "
+"verwijderen? Dit kan niet ongedaan worden gemaakt!"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
@@ -5052,7 +5066,7 @@ msgstr "Wizard starten"
 #. Tooltip for disabled Next button
 #: sabnzbd/skintext.py
 msgid "Click on Test Server before continuing"
-msgstr ""
+msgstr "Klik op Test server voordat u doorgaat"
 
 #: sabnzbd/skintext.py
 msgid "Restore backup"
