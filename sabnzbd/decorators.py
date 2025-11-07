@@ -20,7 +20,8 @@
 ##############################################################################
 import time
 import functools
-from typing import Union, Callable
+import concurrent.futures
+from typing import Union, Callable, Optional, Any
 from threading import Lock, RLock, Condition
 
 
@@ -33,6 +34,9 @@ DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 
 # All operations that modify downloader state need to be locked
 DOWNLOADER_LOCK = RLock()
+
+# General threadpool
+THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
 
 def synchronized(lock: Union[Lock, RLock]):
@@ -113,3 +117,28 @@ def conditional_cache(cache_time: int):
         return wrapper
 
     return decorator
+
+
+def timeout(max_timeout: int, timeout_return_value: Optional[Any] = None):
+    """Timeout decorator, parameter in seconds.
+
+    :param max_timeout: Maximum time in seconds before timeout
+    :param timeout_return_value: Default value to return on timeout (defaults to None)
+    """
+
+    def timeout_decorator(item: Callable) -> Callable:
+        """Wrap the original function."""
+
+        @functools.wraps(item)
+        def func_wrapper(*args, **kwargs):
+            """Closure for function."""
+            # Raises a TimeoutError if execution exceeds max_timeout
+            # Raises a RuntimeError is SABnzbd is already shutting down when called
+            try:
+                return THREAD_POOL.submit(item, *args, **kwargs).result(max_timeout)
+            except (TimeoutError, RuntimeError):
+                return timeout_return_value
+
+        return func_wrapper
+
+    return timeout_decorator

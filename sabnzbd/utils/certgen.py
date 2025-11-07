@@ -13,7 +13,7 @@ from cryptography.x509.oid import NameOID
 import datetime
 import socket
 
-from sabnzbd.getipaddress import local_ipv4
+from sabnzbd.get_ipaddress import local_ipv4
 
 
 def generate_key(key_size=2048, output_file="key.pem"):

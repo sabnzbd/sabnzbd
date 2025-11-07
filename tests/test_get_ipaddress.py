@@ -20,7 +20,7 @@ tests.test_utils.test_check_dir - Testing SABnzbd checkdir util
 """
 
 from sabnzbd.cfg import selftest_host
-from sabnzbd.getipaddress import *
+from sabnzbd.get_ipaddress import *
 from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr
 
 

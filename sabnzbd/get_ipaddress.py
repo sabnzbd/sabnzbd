@@ -19,57 +19,36 @@
 sabnzbd.getipaddress
 """
 
-import functools
 import logging
 import socket
 import time
 import urllib.error
 import urllib.request
-from typing import Callable, Optional
+from typing import Optional, List, Tuple
 
 import socks
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
-from sabnzbd.get_addrinfo import get_fastest_addrinfo, family_type
+from sabnzbd.get_fastest_addrinfo import get_fastest_addrinfo, family_type
 from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
+from sabnzbd.decorators import timeout
 
 
-def timeout(max_timeout: int):
-    """Timeout decorator, parameter in seconds."""
-
-    def timeout_decorator(item: Callable) -> Callable:
-        """Wrap the original function."""
-
-        @functools.wraps(item)
-        def func_wrapper(*args, **kwargs):
-            """Closure for function."""
-            # Raises a TimeoutError if execution exceeds max_timeout
-            # Raises a RuntimeError is SABnzbd is already shutting down when called
-            try:
-                return sabnzbd.THREAD_POOL.submit(item, *args, **kwargs).result(max_timeout)
-            except (TimeoutError, RuntimeError):
-                return None
-
-        return func_wrapper
-
-    return timeout_decorator
+@timeout(DEF_NETWORKING_SHORT_TIMEOUT, timeout_return_value=[])
+def addresslookup(myhost: str, port: int = 80) -> List[Tuple]:
+    return socket.getaddrinfo(myhost, port)
 
 
-@timeout(DEF_NETWORKING_SHORT_TIMEOUT)
-def addresslookup(myhost):
-    return socket.getaddrinfo(myhost, 80)
+@timeout(DEF_NETWORKING_SHORT_TIMEOUT, timeout_return_value=[])
+def addresslookup4(myhost: str, port: int = 80) -> List[Tuple]:
+    return socket.getaddrinfo(myhost, port, socket.AF_INET)
 
 
-@timeout(DEF_NETWORKING_SHORT_TIMEOUT)
-def addresslookup4(myhost):
-    return socket.getaddrinfo(myhost, 80, socket.AF_INET)
-
-
-@timeout(DEF_NETWORKING_SHORT_TIMEOUT)
-def addresslookup6(myhost):
-    return socket.getaddrinfo(myhost, 80, socket.AF_INET6)
+@timeout(DEF_NETWORKING_SHORT_TIMEOUT, timeout_return_value=[])
+def addresslookup6(myhost: str, port: int = 80) -> List[Tuple]:
+    return socket.getaddrinfo(myhost, port, socket.AF_INET6)
 
 
 def active_socks5_proxy() -> Optional[str]:

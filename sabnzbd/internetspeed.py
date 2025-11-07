@@ -31,7 +31,7 @@ from typing import Dict
 import sabctools
 import sabnzbd
 from sabnzbd.constants import DEF_NETWORKING_SHORT_TIMEOUT
-from sabnzbd.get_addrinfo import get_fastest_addrinfo, family_type
+from sabnzbd.get_fastest_addrinfo import get_fastest_addrinfo, family_type
 
 TEST_HOSTNAME = "sabnzbd.org"
 TEST_PORT = 443

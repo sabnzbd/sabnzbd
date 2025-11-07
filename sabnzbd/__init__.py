@@ -91,7 +91,7 @@ import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.nzbparser as nzbparser
 import sabnzbd.nzbstuff
-import sabnzbd.getipaddress
+import sabnzbd.get_ipaddress
 import sabnzbd.newsunpack
 import sabnzbd.par2file
 import sabnzbd.api
@@ -172,8 +172,6 @@ RESTORE_DATA = None
 # Condition used to handle the main loop in SABnzbd.py
 SABSTOP_CONDITION = Condition(Lock())
 
-# General threadpool
-THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
@@ -349,7 +347,7 @@ def halt():
 
         sabnzbd.directunpacker.abort_all()
 
-        sabnzbd.THREAD_POOL.shutdown(wait=False)
+        sabnzbd.decorators.THREAD_POOL.shutdown(wait=False)
 
         logging.debug("Stopping RSSReader")
         sabnzbd.RSSReader.stop()

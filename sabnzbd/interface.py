@@ -55,7 +55,7 @@ from sabnzbd.misc import (
     get_cpu_name,
     clean_comma_separated_list,
 )
-from sabnzbd.get_addrinfo import get_fastest_addrinfo
+from sabnzbd.get_fastest_addrinfo import get_fastest_addrinfo
 from sabnzbd.filesystem import (
     real_path,
     globber,

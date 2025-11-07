@@ -80,7 +80,7 @@ from sabnzbd.misc import (
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
 from sabnzbd.encoding import xml_name, utob
-from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
+from sabnzbd.get_ipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
 from sabnzbd.nzbstuff import NzbObject

@@ -44,7 +44,7 @@ from collections.abc import Iterable
 from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
 
 import sabnzbd
-import sabnzbd.getipaddress
+import sabnzbd.get_ipaddress
 from sabnzbd.constants import (
     DEFAULT_PRIORITY,
     MEBI,

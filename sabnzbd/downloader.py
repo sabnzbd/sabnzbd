@@ -35,7 +35,7 @@ from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue
-from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
+from sabnzbd.get_fastest_addrinfo import get_fastest_addrinfo, AddrInfo
 from sabnzbd.constants import SOFT_QUEUE_LIMIT
 
 

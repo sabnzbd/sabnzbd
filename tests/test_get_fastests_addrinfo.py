@@ -25,7 +25,7 @@ import socket
 import pytest
 from flaky import flaky
 
-from sabnzbd.get_addrinfo import get_fastest_addrinfo, IPV6_MAPPING
+from sabnzbd.get_fastest_addrinfo import get_fastest_addrinfo, IPV6_MAPPING
 from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr
 
 

@@ -19,13 +19,10 @@
 tests.test_decorator - Testing decorators in decorators.py
 """
 
-import pytest
-import time
-import functools
-import threading
-from unittest.mock import Mock
 
-from sabnzbd.decorators import synchronized, NzbQueueLocker, conditional_cache, NZBQUEUE_LOCK, DOWNLOADER_CV
+import threading
+
+from sabnzbd.decorators import synchronized, NzbQueueLocker, conditional_cache, timeout
 from tests.testhelper import *
 
 
@@ -315,3 +312,70 @@ class TestConditionalCache:
         assert all(result == "result_test" for result in results)
         # call_count should be small (ideally 1, but could be more due to race conditions)
         assert call_count <= 5
+
+
+class TestTimeoutDecorator:
+    def test_timeout_decorator_with_exception(self):
+        """Test that timeout decorator handles exceptions from wrapped functions."""
+
+        @timeout(2, timeout_return_value="error")
+        def function_that_raises():
+            raise ValueError("Test exception")
+
+        # The exception should propagate through the decorator
+        with pytest.raises(ValueError, match="Test exception"):
+            function_that_raises()
+
+    def test_timeout_decorator_multiple_exceptions(self):
+        """Test that multiple exceptions don't affect thread pool workers."""
+
+        call_count = [0]
+
+        @timeout(2, timeout_return_value="default_value")
+        def function_that_counts_and_raises():
+            call_count[0] += 1
+            raise RuntimeError(f"Call {call_count[0]}")
+
+        # Call the function multiple times - if workers were being closed,
+        # we'd eventually run out or see other issues
+        for i in range(5):
+            result = function_that_counts_and_raises()
+            # RuntimeError is caught by the decorator and returns the default value
+            assert result == "default_value"
+
+        # Verify all calls were made
+        assert call_count[0] == 5
+
+    def test_timeout_decorator_with_timeout(self):
+        """Test that timeout decorator properly handles timeouts."""
+
+        @timeout(1, timeout_return_value={})
+        def function_that_sleeps():
+            time.sleep(10)
+            return "Should not reach here"
+
+        # Should return empty dict on timeout
+        result = function_that_sleeps()
+        assert result == {}
+
+    def test_timeout_decorator_success(self):
+        """Test that timeout decorator allows successful execution."""
+
+        @timeout(2, timeout_return_value="failure")
+        def function_that_succeeds():
+            return "success"
+
+        result = function_that_succeeds()
+        assert result == "success"
+
+    def test_timeout_decorator_default_none(self):
+        """Test that timeout decorator defaults to None when no default is specified."""
+
+        @timeout(1)
+        def function_that_sleeps():
+            time.sleep(10)
+            return "Should not reach here"
+
+        # Should return None on timeout when no default specified
+        result = function_that_sleeps()
+        assert result is None

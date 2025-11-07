@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.get_addrinfo - Concurrent IP address testing: find the fastest IPv4/IPv6 connection
+sabnzbd.get_fastest_addrinfo - Concurrent IP address testing: find the fastest IPv4/IPv6 connection
 """
 
 import socket
