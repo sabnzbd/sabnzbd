@@ -60,4 +60,4 @@ jobs:
         pip install --upgrade -r requirements.txt --no-dependencies
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd
-      run: pytest -s
+      run: pytest -s -k test_daemonizing

@@ -36,7 +36,6 @@ DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 DOWNLOADER_LOCK = RLock()
 
 # General threadpool
-THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
 
 def synchronized(lock: Union[Lock, RLock]):
@@ -135,6 +134,8 @@ def timeout(max_timeout: int, timeout_return_value: Optional[Any] = None):
             # Raises a TimeoutError if execution exceeds max_timeout
             # Raises a RuntimeError is SABnzbd is already shutting down when called
             try:
+                THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+
                 return THREAD_POOL.submit(item, *args, **kwargs).result(max_timeout)
             except (TimeoutError, RuntimeError, concurrent.futures._base.TimeoutError):
                 # Python <3.11 require specific TimeoutError
