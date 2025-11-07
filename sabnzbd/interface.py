@@ -38,6 +38,7 @@ from typing import Optional, Callable, Union, Any, Dict, List
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
+from sabnzbd.get_ipaddress import addresslookup
 from sabnzbd.misc import (
     to_units,
     from_units,
@@ -610,7 +611,7 @@ def get_access_info():
     socks = [host]
 
     try:
-        addresses = socket.getaddrinfo(host, None)
+        addresses = addresslookup(host, None)
     except Exception:
         addresses = []
 

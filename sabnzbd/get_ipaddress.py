@@ -37,17 +37,17 @@ from sabnzbd.decorators import timeout
 
 
 @timeout(DEF_NETWORKING_SHORT_TIMEOUT, timeout_return_value=[])
-def addresslookup(myhost: str, port: int = 80) -> List[Tuple]:
+def addresslookup(myhost: str, port: Optional[int] = 80) -> List[Tuple]:
     return socket.getaddrinfo(myhost, port)
 
 
 @timeout(DEF_NETWORKING_SHORT_TIMEOUT, timeout_return_value=[])
-def addresslookup4(myhost: str, port: int = 80) -> List[Tuple]:
+def addresslookup4(myhost: str, port: Optional[int] = 80) -> List[Tuple]:
     return socket.getaddrinfo(myhost, port, socket.AF_INET)
 
 
 @timeout(DEF_NETWORKING_SHORT_TIMEOUT, timeout_return_value=[])
-def addresslookup6(myhost: str, port: int = 80) -> List[Tuple]:
+def addresslookup6(myhost: str, port: Optional[int] = 80) -> List[Tuple]:
     return socket.getaddrinfo(myhost, port, socket.AF_INET6)
 
 

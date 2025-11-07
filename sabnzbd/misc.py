@@ -58,6 +58,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache
 from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file
+from sabnzbd.get_ipaddress import addresslookup
 
 if sabnzbd.WINDOWS:
     try:
@@ -1183,10 +1184,10 @@ def ip_extract() -> List[str]:
 
     if sabnzbd.WINDOWS or not program:
         try:
-            info = socket.getaddrinfo(socket.gethostname(), None)
+            info = addresslookup(socket.gethostname(), None)
         except Exception:
             # Hostname does not resolve, use localhost
-            info = socket.getaddrinfo("localhost", None)
+            info = addresslookup("localhost", None)
         for item in info:
             ips.append(item[4][0])
     else:

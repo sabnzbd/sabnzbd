@@ -99,6 +99,7 @@ from sabnzbd.misc import (
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
+from sabnzbd.get_ipaddress import addresslookup
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.notifier as notifier
@@ -489,14 +490,14 @@ def all_localhosts():
     ips = ["127.0.0.1"]
     try:
         # Check whether IPv6 is available and enabled
-        info = socket.getaddrinfo("::1", None)
+        info = addresslookup("::1", None)
         af, socktype, proto, _canonname, _sa = info[0]
         s = socket.socket(af, socktype, proto)
         s.close()
     except socket.error:
         return ips
     try:
-        info = socket.getaddrinfo("localhost", None)
+        info = addresslookup("localhost", None)
     except socket.error:
         # localhost does not resolve
         return ips
@@ -515,7 +516,7 @@ def all_localhosts():
 def check_resolve(host):
     """Return True if 'host' resolves"""
     try:
-        socket.getaddrinfo(host, None)
+        addresslookup(host, None)
     except socket.error:
         # Does not resolve
         return False
@@ -541,19 +542,19 @@ def get_webhost(web_host, web_port, https_port):
     ipv4 = ipv6 = False
     localhost = hostip = "localhost"
     try:
-        info = socket.getaddrinfo(socket.gethostname(), None)
+        info = addresslookup(socket.gethostname(), None)
     except socket.error:
         # Hostname does not resolve
         try:
             # Valid user defined name?
-            info = socket.getaddrinfo(web_host, None)
+            info = addresslookup(web_host, None)
         except socket.error:
             if not is_localhost(web_host):
                 web_host = "0.0.0.0"
             try:
-                info = socket.getaddrinfo(localhost, None)
+                info = addresslookup(localhost, None)
             except socket.error:
-                info = socket.getaddrinfo("127.0.0.1", None)
+                info = addresslookup("127.0.0.1", None)
                 localhost = "127.0.0.1"
     for item in info:
         ip = str(item[4][0])
@@ -611,7 +612,7 @@ def get_webhost(web_host, web_port, https_port):
             web_host = web_host.strip("[]")
         else:
             try:
-                socket.getaddrinfo(web_host, None)
+                addresslookup(web_host, None)
             except socket.error:
                 web_host = web_host.strip("[]")
 

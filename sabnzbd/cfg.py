@@ -198,7 +198,9 @@ def validate_host(value: str) -> ValidateResult:
 
     # not a plain IPv4 nor IPv6 address, so let's check if it's a name that resolves to IPv4
     try:
-        socket.getaddrinfo(value, None, socket.AF_INET)
+        if not sabnzbd.get_ipaddress.addresslookup4(value, None):
+            raise ValueError
+
         # all good
         logging.debug("Valid host name")
         return None, value
@@ -207,7 +209,9 @@ def validate_host(value: str) -> ValidateResult:
 
     # ... and if not: does it resolve to IPv6 ... ?
     try:
-        socket.getaddrinfo(value, None, socket.AF_INET6)
+        if not sabnzbd.get_ipaddress.addresslookup6(value, None):
+            raise ValueError
+
         # all good
         logging.debug("Valid host name")
         return None, value

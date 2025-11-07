@@ -136,7 +136,8 @@ def timeout(max_timeout: int, timeout_return_value: Optional[Any] = None):
             # Raises a RuntimeError is SABnzbd is already shutting down when called
             try:
                 return THREAD_POOL.submit(item, *args, **kwargs).result(max_timeout)
-            except (TimeoutError, RuntimeError):
+            except (TimeoutError, RuntimeError, concurrent.futures._base.TimeoutError):
+                # Python <3.11 require specific TimeoutError
                 return timeout_return_value
 
         return func_wrapper
