@@ -753,7 +753,7 @@ class Downloader(Thread):
 
             elif nw.status_code == 223:
                 article_done = True
-                logging.debug("Article <%s> is present", article.article)
+                logging.debug(f"Article {article.article} is present on {nw.server.host}")
 
             elif nw.status_code in (411, 423, 430, 451):
                 article_done = True
