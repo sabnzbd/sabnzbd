@@ -78,8 +78,9 @@ RE_EMAIL = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 RE_SIMPLE_STRING = re.compile(r"^[a-zA-Z0-9._-]+$")
 RE_ALPHANUMERIC = re.compile(r"^[a-zA-Z0-9]+$")
 
-# Import email validator
+# Import validators
 from sabnzbd.validators.email_validator import EmailValidator, email_validator
+from sabnzbd.validators.host_validator import HostValidator, host_validator
 
 # Export common types and base classes
 __all__ = [
@@ -95,4 +96,7 @@ __all__ = [
     # Email validator
     "EmailValidator",
     "email_validator",
+    # Host validator
+    "HostValidator",
+    "host_validator",
 ]
