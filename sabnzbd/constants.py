@@ -97,12 +97,12 @@ CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
 }
 
 # Constants affecting download performance
-MAX_ASSEMBLER_QUEUE = 12
+MAX_ASSEMBLER_QUEUE = 100
 SOFT_QUEUE_LIMIT = 0.5
 # Percentage of cache to use before adding file to assembler
 ASSEMBLER_WRITE_THRESHOLD = 5
-NNTP_BUFFER_SIZE = int(800 * KIBI)
-NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
+NNTP_BUFFER_SIZE = int(4 * MEBI)
+NTTP_MAX_BUFFER_SIZE = int(32 * MEBI)
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2

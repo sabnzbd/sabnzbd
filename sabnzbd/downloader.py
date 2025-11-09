@@ -50,7 +50,7 @@ _PENALTY_SHORT = 1  # Minimal penalty when no_penalties is set
 _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 
 # Wait this many seconds between checking idle servers for new articles or busy threads for timeout
-_SERVER_CHECK_DELAY = 0.5
+_SERVER_CHECK_DELAY = 0.1
 # Wait this many seconds between updates of the BPSMeter
 _BPSMETER_UPDATE_DELAY = 0.05
 # How many articles should be prefetched when checking the next articles?
@@ -654,7 +654,7 @@ class Downloader(Thread):
 
                 # Use select to find sockets ready for reading/writing
                 if readkeys := self.read_fds.keys():
-                    read, _, _ = select.select(readkeys, (), (), 1.0)
+                    read, _, _ = select.select(readkeys, (), (), 0.1)
                 else:
                     read = []
                     BPSMeter.reset()
