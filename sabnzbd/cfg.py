@@ -22,38 +22,42 @@ sabnzbd.cfg - Configuration Parameters
 import logging
 import os
 import re
-import argparse
 import socket
-import ipaddress
 from typing import List, Tuple, Union
 
 import sabnzbd
 from sabnzbd.config import (
     OptionBool,
+    OptionDir,
+    OptionList,
     OptionNumber,
     OptionPassword,
-    OptionDir,
     OptionStr,
-    OptionList,
     create_api_key,
     get_servers,
     save_config,
 )
 from sabnzbd.constants import (
-    DEF_HOST,
-    DEF_PORT,
-    DEF_STD_WEB_DIR,
     DEF_ADMIN_DIR,
-    DEF_DOWNLOAD_DIR,
-    DEF_NZBBACK_DIR,
-    DEF_SCANRATE,
     DEF_COMPLETE_DIR,
+    DEF_DOWNLOAD_DIR,
     DEF_FOLDER_MAX,
-    DEF_STD_WEB_COLOR,
+    DEF_HOST,
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
+    DEF_NZBBACK_DIR,
+    DEF_PORT,
+    DEF_SCANRATE,
+    DEF_STD_WEB_COLOR,
+    DEF_STD_WEB_DIR,
 )
-from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
+from sabnzbd.filesystem import (
+    is_network_path,
+    is_valid_script,
+    real_path,
+    same_directory,
+)
+from sabnzbd.validators import email_validator
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
@@ -104,13 +108,19 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
             # Mark of the web propagation: -om[-|1][=list]
             parser.add_argument("-om", "-om1", "-om-", nargs="?", type=str)
             # Priority and sleep time: -ri<p>[:<s>] (p: 0-15, s: 0-1000)
-            parser.add_argument(*("-ri" + str(p) for p in range(16)), action="store_true")
+            parser.add_argument(
+                *("-ri" + str(p) for p in range(16)), action="store_true"
+            )
 
         try:
             # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
             # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
             parser.parse_args(
-                re.sub(r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)", r"\1\2\3", value)
+                re.sub(
+                    r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)",
+                    r"\1\2\3",
+                    value,
+                )
                 .lower()
                 .split()
             )
@@ -156,18 +166,6 @@ def validate_url_base(value: str) -> Tuple[None, str]:
 
 
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
-
-
-def validate_email(value: Union[List, str]) -> ValidateResult:
-    if email_endjob() or email_full() or email_rss():
-        if isinstance(value, list):
-            values = value
-        else:
-            values = [value]
-        for addr in values:
-            if not (addr and RE_VAL.match(addr)):
-                return T("%s is not a valid email address") % addr, None
-    return None, value
 
 
 def validate_server(value: str) -> ValidateResult:
@@ -244,17 +242,24 @@ def validate_permissions(value: str) -> ValidateResult:
     # Check if we at least have user-permissions
     if oct_value < int("700", 8):
         sabnzbd.misc.helpful_warning(
-            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."), value
+            T(
+                "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
+            ),
+            value,
         )
     return None, value
 
 
 def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
     """Allow only when queues are empty and not a network-path"""
-    if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
+    if not sabnzbd.__INITIALIZED__ or (
+        sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()
+    ):
         # We allow it, but send a warning
         if is_network_path(real_path(root, value)):
-            sabnzbd.misc.helpful_warning(T('Network path "%s" should not be used here'), value)
+            sabnzbd.misc.helpful_warning(
+                T('Network path "%s" should not be used here'), value
+            )
         return validate_default_if_empty(root, value, default)
     else:
         return T("Queue not empty, cannot change folder."), None
@@ -275,7 +280,9 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
 
     if same_directory(check_download_dir, check_complete_dir):
         return (
-            T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
+            T(
+                "The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"
+            ),
             None,
         )
     elif default == DEF_COMPLETE_DIR:
@@ -285,7 +292,9 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
         return validate_safedir(root, value, default)
 
 
-def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
+def validate_scriptdir_not_appdir(
+    root: str, value: str, default: str
+) -> Tuple[None, str]:
     """Warn users to not use the Program Files folder for their scripts"""
     # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
@@ -311,7 +320,9 @@ def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None
 ##############################################################################
 
 # Increase everytime we do a configuration conversion
-config_conversion_version = OptionNumber("misc", "config_conversion_version", default_val=0)
+config_conversion_version = OptionNumber(
+    "misc", "config_conversion_version", default_val=0
+)
 
 # This should be here so it's initialized first when the config is read
 helpful_warnings = OptionBool("misc", "helpful_warnings", True)
@@ -387,12 +398,16 @@ complete_dir = OptionDir(
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
-script_dir = OptionDir("misc", "script_dir", writable=False, validation=validate_scriptdir_not_appdir)
+script_dir = OptionDir(
+    "misc", "script_dir", writable=False, validation=validate_scriptdir_not_appdir
+)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
 backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
-dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
+dirscan_speed = OptionNumber(
+    "misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600
+)
 password_file = OptionDir("misc", "password_file", "", create=False)
 log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_default_if_empty)
 
@@ -415,9 +430,13 @@ fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
 pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
-end_queue_script = OptionStr("misc", "end_queue_script", "None", validation=validate_script)
+end_queue_script = OptionStr(
+    "misc", "end_queue_script", "None", validation=validate_script
+)
 no_dupes = OptionNumber("misc", "no_dupes", 0)
-no_series_dupes = OptionNumber("misc", "no_series_dupes", 0)  # Kept for converting to no_smart_dupes
+no_series_dupes = OptionNumber(
+    "misc", "no_series_dupes", 0
+)  # Kept for converting to no_smart_dupes
 no_smart_dupes = OptionNumber("misc", "no_smart_dupes", 0)
 dupes_propercheck = OptionBool("misc", "dupes_propercheck", True)
 pause_on_pwrar = OptionNumber("misc", "pause_on_pwrar", 1)
@@ -435,11 +454,15 @@ pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
 enable_all_par = OptionBool("misc", "enable_all_par", False)
 sanitize_safe = OptionBool("misc", "sanitize_safe", False)
 cleanup_list = OptionList("misc", "cleanup_list", validation=lower_case_ext)
-unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower_case_ext)
+unwanted_extensions = OptionList(
+    "misc", "unwanted_extensions", validation=lower_case_ext
+)
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
-history_retention = OptionStr("misc", "history_retention", "0")  # Kept for converting to split option
+history_retention = OptionStr(
+    "misc", "history_retention", "0"
+)  # Kept for converting to split option
 history_retention_option = OptionStr("misc", "history_retention_option", "all")
 history_retention_number = OptionNumber("misc", "history_retention_number", minval=1)
 
@@ -457,7 +480,9 @@ tv_categories = OptionList("misc", "tv_categories", ["tv"], public=False)
 
 enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False, public=False)
 movie_sort_string = OptionStr("misc", "movie_sort_string", public=False)
-movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False, public=False)
+movie_sort_extra = OptionStr(
+    "misc", "movie_sort_extra", "-cd%1", strip=False, public=False
+)
 movie_categories = OptionList("misc", "movie_categories", ["movies"], public=False)
 
 enable_date_sorting = OptionBool("misc", "enable_date_sorting", False, public=False)
@@ -508,9 +533,15 @@ enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 verify_xff_header = OptionBool("misc", "verify_xff_header", False)
 
 # Text values
-rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
-quick_check_ext_ignore = OptionList("misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"], validation=lower_case_ext)
-req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, minval=100, maxval=200)
+rss_odd_titles = OptionList(
+    "misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"]
+)
+quick_check_ext_ignore = OptionList(
+    "misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"], validation=lower_case_ext
+)
+req_completion_rate = OptionNumber(
+    "misc", "req_completion_rate", 100.2, minval=100, maxval=200
+)
 selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
 episode_rename_limit = OptionStr("misc", "episode_rename_limit", "20M")
@@ -518,7 +549,9 @@ size_limit = OptionStr("misc", "size_limit", "0")
 direct_unpack_threads = OptionNumber("misc", "direct_unpack_threads", 3, minval=1)
 history_limit = OptionNumber("misc", "history_limit", 10, minval=0)
 wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, minval=1, maxval=60)
-max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000)
+max_foldername_length = OptionNumber(
+    "misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000
+)
 marker_file = OptionStr("misc", "nomedia_marker")
 ipv6_servers = OptionBool("misc", "ipv6_servers", True)
 url_base = OptionStr("misc", "url_base", "", validation=validate_url_base)
@@ -528,9 +561,13 @@ max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
 receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
 switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
-ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
+ssdp_broadcast_interval = OptionNumber(
+    "misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600
+)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
-unrar_parameters = OptionStr("misc", "unrar_parameters", validation=supported_unrar_parameters)
+unrar_parameters = OptionStr(
+    "misc", "unrar_parameters", validation=supported_unrar_parameters
+)
 outgoing_nntp_ip = OptionStr("misc", "outgoing_nntp_ip")
 
 
@@ -539,8 +576,8 @@ outgoing_nntp_ip = OptionStr("misc", "outgoing_nntp_ip")
 ##############################################################################
 # [email]
 email_server = OptionStr("misc", "email_server", validation=validate_server)
-email_to = OptionList("misc", "email_to", validation=validate_email)
-email_from = OptionStr("misc", "email_from", validation=validate_email)
+email_to = OptionStr("misc", "email_to", validation=email_validator)
+email_from = OptionStr("misc", "email_from", validation=email_validator)
 email_account = OptionStr("misc", "email_account")
 email_pwd = OptionPassword("misc", "email_pwd")
 email_endjob = OptionNumber("misc", "email_endjob", 0, 0, 2)
@@ -584,7 +621,9 @@ acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", False
 acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
-ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WINDOWS and not sabnzbd.MACOS)
+ntfosd_enable = OptionBool(
+    "ntfosd", "ntfosd_enable", not sabnzbd.WINDOWS and not sabnzbd.MACOS
+)
 ntfosd_cats = OptionList("ntfosd", "ntfosd_cats", ["*"])
 ntfosd_prio_startup = OptionBool("ntfosd", "ntfosd_prio_startup", False)
 ntfosd_prio_download = OptionBool("ntfosd", "ntfosd_prio_download", False)
@@ -647,7 +686,9 @@ pushbullet_apikey = OptionStr("pushbullet", "pushbullet_apikey")
 pushbullet_device = OptionStr("pushbullet", "pushbullet_device")
 pushbullet_prio_startup = OptionBool("pushbullet", "pushbullet_prio_startup", False)
 pushbullet_prio_download = OptionBool("pushbullet", "pushbullet_prio_download", False)
-pushbullet_prio_pause_resume = OptionBool("pushbullet", "pushbullet_prio_pause_resume", False)
+pushbullet_prio_pause_resume = OptionBool(
+    "pushbullet", "pushbullet_prio_pause_resume", False
+)
 pushbullet_prio_pp = OptionBool("pushbullet", "pushbullet_prio_pp", False)
 pushbullet_prio_complete = OptionBool("pushbullet", "pushbullet_prio_complete", True)
 pushbullet_prio_failed = OptionBool("pushbullet", "pushbullet_prio_failed", True)
@@ -656,7 +697,9 @@ pushbullet_prio_quota = OptionBool("pushbullet", "pushbullet_prio_quota", True)
 pushbullet_prio_new_login = OptionBool("pushbullet", "pushbullet_prio_new_login", False)
 pushbullet_prio_warning = OptionBool("pushbullet", "pushbullet_prio_warning", False)
 pushbullet_prio_error = OptionBool("pushbullet", "pushbullet_prio_error", False)
-pushbullet_prio_queue_done = OptionBool("pushbullet", "pushbullet_prio_queue_done", False)
+pushbullet_prio_queue_done = OptionBool(
+    "pushbullet", "pushbullet_prio_queue_done", False
+)
 pushbullet_prio_other = OptionBool("pushbullet", "pushbullet_prio_other", True)
 
 # [apprise]
@@ -664,29 +707,49 @@ apprise_enable = OptionBool("apprise", "apprise_enable")
 apprise_cats = OptionList("apprise", "apprise_cats", ["*"])
 apprise_urls = OptionStr("apprise", "apprise_urls")
 apprise_target_startup = OptionStr("apprise", "apprise_target_startup")
-apprise_target_startup_enable = OptionBool("apprise", "apprise_target_startup_enable", False)
+apprise_target_startup_enable = OptionBool(
+    "apprise", "apprise_target_startup_enable", False
+)
 apprise_target_download = OptionStr("apprise", "apprise_target_download")
-apprise_target_download_enable = OptionBool("apprise", "apprise_target_download_enable", False)
+apprise_target_download_enable = OptionBool(
+    "apprise", "apprise_target_download_enable", False
+)
 apprise_target_pause_resume = OptionStr("apprise", "apprise_target_pause_resume")
-apprise_target_pause_resume_enable = OptionBool("apprise", "apprise_target_pause_resume_enable", False)
+apprise_target_pause_resume_enable = OptionBool(
+    "apprise", "apprise_target_pause_resume_enable", False
+)
 apprise_target_pp = OptionStr("apprise", "apprise_target_pp")
 apprise_target_pp_enable = OptionBool("apprise", "apprise_target_pp_enable", False)
 apprise_target_complete = OptionStr("apprise", "apprise_target_complete")
-apprise_target_complete_enable = OptionBool("apprise", "apprise_target_complete_enable", True)
+apprise_target_complete_enable = OptionBool(
+    "apprise", "apprise_target_complete_enable", True
+)
 apprise_target_failed = OptionStr("apprise", "apprise_target_failed")
-apprise_target_failed_enable = OptionBool("apprise", "apprise_target_failed_enable", True)
+apprise_target_failed_enable = OptionBool(
+    "apprise", "apprise_target_failed_enable", True
+)
 apprise_target_disk_full = OptionStr("apprise", "apprise_target_disk_full")
-apprise_target_disk_full_enable = OptionBool("apprise", "apprise_target_disk_full_enable", False)
+apprise_target_disk_full_enable = OptionBool(
+    "apprise", "apprise_target_disk_full_enable", False
+)
 apprise_target_quota = OptionStr("apprise", "apprise_target_quota")
 apprise_target_quota_enable = OptionBool("apprise", "apprise_target_quota_enable", True)
 apprise_target_new_login = OptionStr("apprise", "apprise_target_new_login")
-apprise_target_new_login_enable = OptionBool("apprise", "apprise_target_new_login_enable", True)
+apprise_target_new_login_enable = OptionBool(
+    "apprise", "apprise_target_new_login_enable", True
+)
 apprise_target_warning = OptionStr("apprise", "apprise_target_warning")
-apprise_target_warning_enable = OptionBool("apprise", "apprise_target_warning_enable", False)
+apprise_target_warning_enable = OptionBool(
+    "apprise", "apprise_target_warning_enable", False
+)
 apprise_target_error = OptionStr("apprise", "apprise_target_error")
-apprise_target_error_enable = OptionBool("apprise", "apprise_target_error_enable", False)
+apprise_target_error_enable = OptionBool(
+    "apprise", "apprise_target_error_enable", False
+)
 apprise_target_queue_done = OptionStr("apprise", "apprise_target_queue_done")
-apprise_target_query_done_enable = OptionBool("apprise", "apprise_target_queue_done_enable", False)
+apprise_target_query_done_enable = OptionBool(
+    "apprise", "apprise_target_queue_done_enable", False
+)
 apprise_target_other = OptionStr("apprise", "apprise_target_other")
 apprise_target_other_enable = OptionBool("apprise", "apprise_target_other_enable", True)
 
@@ -835,7 +898,11 @@ def config_conversions():
         logging.info("Config conversion set 3")
         if sabnzbd.WINDOWS and par_option():
             # Just empty it, so we don't pass the wrong parameters
-            logging.warning(T("The par2 application was switched, any custom par2 parameters were removed"))
+            logging.warning(
+                T(
+                    "The par2 application was switched, any custom par2 parameters were removed"
+                )
+            )
             par_option.set("")
 
         # Done
