@@ -58,7 +58,7 @@ from sabnzbd.filesystem import (
     real_path,
     same_directory,
 )
-from sabnzbd.validators import email_validator, host_validator
+from sabnzbd.validators import email_validator, host_validator, script_validator
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
@@ -175,15 +175,6 @@ def validate_server(value: str) -> ValidateResult:
         return T("Server address required"), None
     else:
         return None, value
-
-
-def validate_script(value: str) -> ValidateResult:
-    """Check if value is a valid script"""
-    if not sabnzbd.__INITIALIZED__ or (value and is_valid_script(value)):
-        return None, value
-    elif sabnzbd.misc.is_none(value):
-        return None, "None"
-    return T("%s is not a valid script") % value, None
 
 
 def validate_permissions(value: str) -> ValidateResult:
@@ -389,9 +380,9 @@ ionice = OptionStr("misc", "ionice", validation=clean_nice_ionice_parameters)
 fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
-pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
+pre_script = OptionStr("misc", "pre_script", "None", validation=script_validator)
 end_queue_script = OptionStr(
-    "misc", "end_queue_script", "None", validation=validate_script
+    "misc", "end_queue_script", "None", validation=script_validator
 )
 no_dupes = OptionNumber("misc", "no_dupes", 0)
 no_series_dupes = OptionNumber(
@@ -716,7 +707,7 @@ apprise_target_other_enable = OptionBool("apprise", "apprise_target_other_enable
 # [nscript]
 nscript_enable = OptionBool("nscript", "nscript_enable")
 nscript_cats = OptionList("nscript", "nscript_cats", ["*"])
-nscript_script = OptionStr("nscript", "nscript_script", validation=validate_script)
+nscript_script = OptionStr("nscript", "nscript_script", validation=script_validator)
 nscript_parameters = OptionStr("nscript", "nscript_parameters")
 nscript_prio_startup = OptionBool("nscript", "nscript_prio_startup", False)
 nscript_prio_download = OptionBool("nscript", "nscript_prio_download", False)
