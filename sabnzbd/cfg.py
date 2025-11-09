@@ -58,7 +58,12 @@ from sabnzbd.filesystem import (
     real_path,
     same_directory,
 )
-from sabnzbd.validators import email_validator, host_validator, script_validator
+from sabnzbd.validators import (
+    email_validator,
+    host_validator,
+    permissions_validator,
+    script_validator,
+)
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
@@ -175,30 +180,6 @@ def validate_server(value: str) -> ValidateResult:
         return T("Server address required"), None
     else:
         return None, value
-
-
-def validate_permissions(value: str) -> ValidateResult:
-    """Check the permissions for correct input"""
-    # Octal verification
-    if not value:
-        return None, value
-    try:
-        oct_value = int(value, 8)
-        # Block setting it to 0
-        if not oct_value:
-            raise ValueError
-    except ValueError:
-        return T("%s is not a correct octal value") % value, None
-
-    # Check if we at least have user-permissions
-    if oct_value < int("700", 8):
-        sabnzbd.misc.helpful_warning(
-            T(
-                "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
-            ),
-            value,
-        )
-    return None, value
 
 
 def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
@@ -329,7 +310,7 @@ socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 ##############################################################################
 # Config - Folders
 ##############################################################################
-permissions = OptionStr("misc", "permissions", validation=validate_permissions)
+permissions = OptionStr("misc", "permissions", validation=permissions_validator)
 download_dir = OptionDir(
     "misc",
     "download_dir",

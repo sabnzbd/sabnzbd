@@ -81,6 +81,10 @@ RE_ALPHANUMERIC = re.compile(r"^[a-zA-Z0-9]+$")
 # Import validators
 from sabnzbd.validators.email_validator import EmailValidator, email_validator
 from sabnzbd.validators.host_validator import HostValidator, host_validator
+from sabnzbd.validators.permissions_validator import (
+    PermissionsValidator,
+    permissions_validator,
+)
 from sabnzbd.validators.script_validator import ScriptValidator, script_validator
 
 # Export common types and base classes
@@ -100,6 +104,9 @@ __all__ = [
     # Host validator
     "HostValidator",
     "host_validator",
+    # Permissions validator
+    "PermissionsValidator",
+    "permissions_validator",
     # Script validator
     "ScriptValidator",
     "script_validator",
