@@ -41,9 +41,14 @@ class BaseValidator(ABC, Generic[T]):
     """Abstract base class for all validators"""
 
     @abstractmethod
-    def validate(self, value: T) -> Tuple[Optional[str], T]:
+    def validate(self, value: T, *args, **kwargs) -> Tuple[Optional[str], T]:
         """
         Validate a value.
+
+        Args:
+            value: The value to validate
+            *args: Additional positional arguments for contextual validators
+            **kwargs: Additional keyword arguments for contextual validators
 
         Returns:
             Tuple[Optional[str], T]: (error_message, validated_value)
@@ -51,12 +56,24 @@ class BaseValidator(ABC, Generic[T]):
         """
         pass
 
-    def __call__(self, value: T) -> Tuple[Optional[str], T]:
-        return self.validate(value)
+    def __call__(self, value: T, *args, **kwargs) -> Tuple[Optional[str], T]:
+        return self.validate(value, *args, **kwargs)
 
 
 class StringValidator(BaseValidator[str]):
     """Base validator for string values"""
+
+    pass
+
+
+class ContextualValidator(BaseValidator[str]):
+    """Base validator for string values that require additional context"""
+
+    pass
+
+
+class DirectoryValidator(BaseValidator[str]):
+    """Base validator for directory paths"""
 
     pass
 
@@ -85,6 +102,7 @@ from sabnzbd.validators.permissions_validator import (
     PermissionsValidator,
     permissions_validator,
 )
+from sabnzbd.validators.safe_dir_validator import SafeDirValidator, safe_dir_validator
 from sabnzbd.validators.script_validator import ScriptValidator, script_validator
 from sabnzbd.validators.server_validator import ServerValidator, server_validator
 from sabnzbd.validators.single_tag_validator import (
@@ -116,6 +134,9 @@ __all__ = [
     # Script validator
     "ScriptValidator",
     "script_validator",
+    # Safe directory validator
+    "SafeDirValidator",
+    "safe_dir_validator",
     # Server validator
     "ServerValidator",
     "server_validator",

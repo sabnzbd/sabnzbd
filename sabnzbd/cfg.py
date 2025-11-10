@@ -62,6 +62,7 @@ from sabnzbd.validators import (
     email_validator,
     host_validator,
     permissions_validator,
+    safe_dir_validator,
     script_validator,
     server_validator,
     url_base_validator,
@@ -157,21 +158,6 @@ def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
-    """Allow only when queues are empty and not a network-path"""
-    if not sabnzbd.__INITIALIZED__ or (
-        sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()
-    ):
-        # We allow it, but send a warning
-        if is_network_path(real_path(root, value)):
-            sabnzbd.misc.helpful_warning(
-                T('Network path "%s" should not be used here'), value
-            )
-        return validate_default_if_empty(root, value, default)
-    else:
-        return T("Queue not empty, cannot change folder."), None
-
-
 def validate_download_vs_complete_dir(root: str, value: str, default: str):
     """Make sure download_dir and complete_dir are not identical
     or that download_dir is not a subfolder of complete_dir"""
@@ -196,7 +182,7 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
         # The complete_dir allows UNC
         return validate_default_if_empty(root, value, default)
     else:
-        return validate_safedir(root, value, default)
+        return safe_dir_validator(root, value, default)
 
 
 def validate_scriptdir_not_appdir(
@@ -309,7 +295,7 @@ script_dir = OptionDir(
     "misc", "script_dir", writable=False, validation=validate_scriptdir_not_appdir
 )
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
-admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
+admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=safe_dir_validator)
 backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
 dirscan_speed = OptionNumber(
