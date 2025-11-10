@@ -39,9 +39,7 @@ class TestSafeDirValidator(unittest.TestCase):
     @patch("sabnzbd.validators.safe_dir_validator.sabnzbd.__INITIALIZED__", True)
     @patch.object(SafeDirValidator, "_postprocessor_empty")
     @patch.object(SafeDirValidator, "_nzbqueue_is_empty")
-    def test_safe_dir_validator_empty_queues_allows_change(
-        self, mock_is_empty, mock_empty
-    ):
+    def test_safe_dir_validator_empty_queues_allows_change(self, mock_is_empty, mock_empty):
         """Test that directory change is allowed when queues are empty"""
         mock_empty.return_value = True
         mock_is_empty.return_value = True
@@ -53,9 +51,7 @@ class TestSafeDirValidator(unittest.TestCase):
     @patch("sabnzbd.validators.safe_dir_validator.sabnzbd.__INITIALIZED__", True)
     @patch.object(SafeDirValidator, "_postprocessor_empty")
     @patch.object(SafeDirValidator, "_nzbqueue_is_empty")
-    def test_safe_dir_validator_non_empty_queues_blocks_change(
-        self, mock_is_empty, mock_empty
-    ):
+    def test_safe_dir_validator_non_empty_queues_blocks_change(self, mock_is_empty, mock_empty):
         """Test that directory change is blocked when queues are not empty"""
         mock_empty.return_value = False
         mock_is_empty.return_value = False
@@ -76,9 +72,7 @@ class TestSafeDirValidator(unittest.TestCase):
     @patch.object(SafeDirValidator, "_postprocessor_empty")
     @patch.object(SafeDirValidator, "_nzbqueue_is_empty")
     @patch("sabnzbd.validators.safe_dir_validator.sabnzbd.misc.helpful_warning")
-    def test_safe_dir_validator_network_path_warning(
-        self, mock_warning, mock_is_empty, mock_empty
-    ):
+    def test_safe_dir_validator_network_path_warning(self, mock_warning, mock_is_empty, mock_empty):
         """Test that network paths trigger warnings"""
         mock_empty.return_value = True
         mock_is_empty.return_value = True
@@ -104,9 +98,7 @@ class TestSafeDirValidator(unittest.TestCase):
     @patch.object(SafeDirValidator, "_postprocessor_empty")
     @patch.object(SafeDirValidator, "_nzbqueue_is_empty")
     @patch("sabnzbd.validators.safe_dir_validator.sabnzbd.misc.helpful_warning")
-    def test_safe_dir_validator_local_path_no_warning(
-        self, mock_warning, mock_is_empty, mock_empty
-    ):
+    def test_safe_dir_validator_local_path_no_warning(self, mock_warning, mock_is_empty, mock_empty):
         """Test that local paths don't trigger warnings"""
         mock_empty.return_value = True
         mock_is_empty.return_value = True
@@ -131,9 +123,7 @@ class TestSafeDirValidator(unittest.TestCase):
     @patch("sabnzbd.validators.safe_dir_validator.sabnzbd.__INITIALIZED__", True)
     @patch.object(SafeDirValidator, "_postprocessor_empty")
     @patch.object(SafeDirValidator, "_nzbqueue_is_empty")
-    def test_safe_dir_validator_empty_value_uses_default(
-        self, mock_is_empty, mock_empty
-    ):
+    def test_safe_dir_validator_empty_value_uses_default(self, mock_is_empty, mock_empty):
         """Test that empty value returns default"""
         mock_empty.return_value = True
         mock_is_empty.return_value = True
@@ -154,9 +144,7 @@ class TestSafeDirValidator(unittest.TestCase):
     @patch("sabnzbd.validators.safe_dir_validator.sabnzbd.__INITIALIZED__", True)
     @patch.object(SafeDirValidator, "_postprocessor_empty")
     @patch.object(SafeDirValidator, "_nzbqueue_is_empty")
-    def test_safe_dir_validator_non_empty_value_preserved(
-        self, mock_is_empty, mock_empty
-    ):
+    def test_safe_dir_validator_non_empty_value_preserved(self, mock_is_empty, mock_empty):
         """Test that non-empty value is preserved"""
         mock_empty.return_value = True
         mock_is_empty.return_value = True
@@ -170,9 +158,7 @@ class TestSafeDirValidator(unittest.TestCase):
                 return_value=(None, "/custom/path"),
             ),
         ):
-            error, result = self.validator.validate(
-                self.root, "/custom/path", self.default
-            )
+            error, result = self.validator.validate(self.root, "/custom/path", self.default)
             self.assertIsNone(error)
             self.assertEqual(result, "/custom/path")
 
@@ -257,9 +243,7 @@ class TestSafeDirValidator(unittest.TestCase):
         self.assertIsNone(error)
         self.assertEqual(result, self.default)
 
-        error, result = self.validator._validate_default_if_empty(
-            "/custom/path", self.default
-        )
+        error, result = self.validator._validate_default_if_empty("/custom/path", self.default)
         self.assertIsNone(error)
         self.assertEqual(result, "/custom/path")
 

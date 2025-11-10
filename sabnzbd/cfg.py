@@ -94,9 +94,7 @@ class ErrorCatchingArgumentParser(argparse.ArgumentParser):
         raise ValueError(message)
 
 
-def _validate_parameters_with_parser(
-    value: str, parser: ErrorCatchingArgumentParser
-) -> ValidateResult:
+def _validate_parameters_with_parser(value: str, parser: ErrorCatchingArgumentParser) -> ValidateResult:
     """Helper function to validate parameters using an ArgumentParser.
 
     Args:
@@ -146,9 +144,7 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
             # Mark of the web propagation: -om[-|1][=list]
             parser.add_argument("-om", "-om1", "-om-", nargs="?", type=str)
             # Priority and sleep time: -ri<p>[:<s>] (p: 0-15, s: 0-1000)
-            parser.add_argument(
-                *("-ri" + str(p) for p in range(16)), action="store_true"
-            )
+            parser.add_argument(*("-ri" + str(p) for p in range(16)), action="store_true")
 
         # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
         # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
@@ -279,9 +275,7 @@ nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=safe_dir_validator)
 backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
-dirscan_speed = OptionNumber(
-    "misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600
-)
+dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
 password_file = OptionDir("misc", "password_file", "", create=False)
 log_dir = OptionDir("misc", "log_dir", "logs", validation=default_if_empty_validator)
 
@@ -328,9 +322,7 @@ unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
-history_retention = OptionStr(
-    "misc", "history_retention", "0"
-)  # Kept for converting to split option
+history_retention = OptionStr("misc", "history_retention", "0")  # Kept for converting to split option
 history_retention_option = OptionStr("misc", "history_retention_option", "all")
 history_retention_number = OptionNumber("misc", "history_retention_number", minval=1)
 

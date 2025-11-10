@@ -30,14 +30,10 @@ class SafeDirValidator(ContextualValidator):
 
     def validate(self, root: str, value: str, default: str) -> ValidateResult:
         """Allow only when queues are empty and not a network-path"""
-        if not sabnzbd.__INITIALIZED__ or (
-            self._postprocessor_empty() and self._nzbqueue_is_empty()
-        ):
+        if not sabnzbd.__INITIALIZED__ or (self._postprocessor_empty() and self._nzbqueue_is_empty()):
             # We allow it, but send a warning
             if self._is_network_path(self._real_path(root, value)):
-                sabnzbd.misc.helpful_warning(
-                    T('Network path "%s" should not be used here'), value
-                )
+                sabnzbd.misc.helpful_warning(T('Network path "%s" should not be used here'), value)
             return self._validate_default_if_empty(value, default)
         else:
             return T("Queue not empty, cannot change folder."), None

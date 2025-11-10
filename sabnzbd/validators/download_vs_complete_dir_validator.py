@@ -44,9 +44,7 @@ class DownloadVsCompleteDirValidator(ContextualValidator):
 
         if self._same_directory(check_download_dir, check_complete_dir):
             return (
-                T(
-                    "The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"
-                ),
+                T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
                 None,
             )
         elif default == DEF_COMPLETE_DIR:
@@ -75,17 +73,13 @@ class DownloadVsCompleteDirValidator(ContextualValidator):
 
         return same_directory(path1, path2)
 
-    def _default_if_empty_validator(
-        self, root: str, value: str, default: str
-    ) -> ValidateResult:
+    def _default_if_empty_validator(self, root: str, value: str, default: str) -> ValidateResult:
         """Use default if empty validator"""
         from sabnzbd.validators import default_if_empty_validator
 
         return default_if_empty_validator(root, value, default)
 
-    def _safe_dir_validator(
-        self, root: str, value: str, default: str
-    ) -> ValidateResult:
+    def _safe_dir_validator(self, root: str, value: str, default: str) -> ValidateResult:
         """Use safe directory validator"""
         from sabnzbd.validators import safe_dir_validator
 

@@ -94,9 +94,7 @@ class TestDefaultIfEmptyValidator(unittest.TestCase):
         self.assertEqual(result, self.default)
 
         # Test that the instance works correctly with non-empty value
-        error, result = default_if_empty_validator(
-            self.root, "/custom/path", self.default
-        )
+        error, result = default_if_empty_validator(self.root, "/custom/path", self.default)
         self.assertIsNone(error)
         self.assertEqual(result, "/custom/path")
 
@@ -170,9 +168,7 @@ class TestDefaultIfEmptyValidator(unittest.TestCase):
                 self.assertIsNone(error)
                 self.assertEqual(result, self.default)
 
-                error, result = self.validator.validate(
-                    root, "/custom/path", self.default
-                )
+                error, result = self.validator.validate(root, "/custom/path", self.default)
                 self.assertIsNone(error)
                 self.assertEqual(result, "/custom/path")
 

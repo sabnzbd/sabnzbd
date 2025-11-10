@@ -265,16 +265,12 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.enable_https.callback(ConfigCallbacks.guard_restart)
     cfg.socks5_proxy_url.callback(ConfigCallbacks.guard_restart)
     cfg.top_only.callback(lambda: ConfigCallbacks.guard_top_only(cfg.top_only))
-    cfg.pause_on_post_processing.callback(
-        lambda: ConfigCallbacks.guard_pause_on_pp(cfg.pause_on_post_processing)
-    )
+    cfg.pause_on_post_processing.callback(lambda: ConfigCallbacks.guard_pause_on_pp(cfg.pause_on_post_processing))
     cfg.quota_size.callback(ConfigCallbacks.guard_quota_size)
     cfg.quota_day.callback(ConfigCallbacks.guard_quota_dp)
     cfg.quota_period.callback(ConfigCallbacks.guard_quota_dp)
     cfg.language.callback(lambda: ConfigCallbacks.guard_language(cfg.language))
-    cfg.enable_https_verification.callback(
-        lambda: ConfigCallbacks.guard_https_ver(cfg.enable_https_verification)
-    )
+    cfg.enable_https_verification.callback(lambda: ConfigCallbacks.guard_https_ver(cfg.enable_https_verification))
     ConfigCallbacks.guard_https_ver(cfg.enable_https_verification)
 
     # Set language files
@@ -480,18 +476,12 @@ def delayed_startup_actions():
     logging.info("Python-version = %s", sys.version)
     logging.info("CPU architecture = %s", platform.uname().machine)
     logging.info("Platform = %s", misc.get_platform_description())
-    logging.info(
-        "JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__
-    )
+    logging.info("JSON-module = %s %s", sabnzbd.api.json.__name__, sabnzbd.api.json.__version__)
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
-    if (
-        not sabnzbd.WINDOWS
-        and not sabnzbd.MACOS
-        and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower())
-    ):
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
         misc.helpful_warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."

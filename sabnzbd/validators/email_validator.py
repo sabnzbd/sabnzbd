@@ -30,11 +30,7 @@ class EmailValidator(StringValidator):
 
     def validate(self, value: Union[str, list]) -> ValidateResult:
         """Validate email address(es)"""
-        if (
-            sabnzbd.cfg.email_endjob()
-            or sabnzbd.cfg.email_full()
-            or sabnzbd.cfg.email_rss()
-        ):
+        if sabnzbd.cfg.email_endjob() or sabnzbd.cfg.email_full() or sabnzbd.cfg.email_rss():
             if isinstance(value, list):
                 values = value
             else:

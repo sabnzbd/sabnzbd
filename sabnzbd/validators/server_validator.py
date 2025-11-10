@@ -30,9 +30,7 @@ class ServerValidator(StringValidator):
 
     def validate(self, value: str) -> ValidateResult:
         """Check if server non-empty when email notifications are enabled"""
-        if value == "" and (
-            self._email_endjob() or self._email_full() or self._email_rss()
-        ):
+        if value == "" and (self._email_endjob() or self._email_full() or self._email_rss()):
             return T("Server address required"), None
         else:
             return None, value

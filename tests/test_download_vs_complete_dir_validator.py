@@ -53,18 +53,14 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
         mock_same.return_value = True
 
         # Test with complete_dir default
-        error, result = self.validator.validate(
-            self.root, "/downloads", self.default_complete
-        )
+        error, result = self.validator.validate(self.root, "/downloads", self.default_complete)
         self.assertIsNotNone(error)
         self.assertIn("Completed Download Folder", error)
         self.assertIn("Temporary Download Folder", error)
         self.assertIsNone(result)
 
         # Test with download_dir default
-        error, result = self.validator.validate(
-            self.root, "/downloads", self.default_download
-        )
+        error, result = self.validator.validate(self.root, "/downloads", self.default_download)
         self.assertIsNotNone(error)
         self.assertIn("Completed Download Folder", error)
         self.assertIn("Temporary Download Folder", error)
@@ -83,14 +79,10 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
         mock_same.return_value = False
         mock_default.return_value = (None, "/new/complete")
 
-        error, result = self.validator.validate(
-            self.root, "/new/complete", self.default_complete
-        )
+        error, result = self.validator.validate(self.root, "/new/complete", self.default_complete)
         self.assertIsNone(error)
         self.assertEqual(result, "/new/complete")
-        mock_default.assert_called_once_with(
-            self.root, "/new/complete", self.default_complete
-        )
+        mock_default.assert_called_once_with(self.root, "/new/complete", self.default_complete)
 
     @patch.object(DownloadVsCompleteDirValidator, "_get_download_dir_path")
     @patch.object(DownloadVsCompleteDirValidator, "_get_complete_dir_path")
@@ -105,14 +97,10 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
         mock_same.return_value = False
         mock_safe.return_value = (None, "/new/download")
 
-        error, result = self.validator.validate(
-            self.root, "/new/download", self.default_download
-        )
+        error, result = self.validator.validate(self.root, "/new/download", self.default_download)
         self.assertIsNone(error)
         self.assertEqual(result, "/new/download")
-        mock_safe.assert_called_once_with(
-            self.root, "/new/download", self.default_download
-        )
+        mock_safe.assert_called_once_with(self.root, "/new/download", self.default_download)
 
     def test_download_vs_complete_dir_validator_invalid_default_raises_error(self):
         """Test that invalid default raises ValueError"""
@@ -144,16 +132,12 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
             mock_safe.return_value = (None, "/downloads/temp")
 
             # Test complete_dir
-            error, result = self.validator.validate(
-                self.root, "/downloads/complete", self.default_complete
-            )
+            error, result = self.validator.validate(self.root, "/downloads/complete", self.default_complete)
             self.assertIsNone(error)
             self.assertEqual(result, "/downloads/complete")
 
             # Test download_dir
-            error, result = self.validator.validate(
-                self.root, "/downloads/temp", self.default_download
-            )
+            error, result = self.validator.validate(self.root, "/downloads/temp", self.default_download)
             self.assertIsNone(error)
             self.assertEqual(result, "/downloads/temp")
 
@@ -165,27 +149,17 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
 
         # Test that the instance works correctly
         with (
-            patch.object(
-                download_vs_complete_dir_validator, "_get_download_dir_path"
-            ) as mock_get_download,
-            patch.object(
-                download_vs_complete_dir_validator, "_get_complete_dir_path"
-            ) as mock_get_complete,
-            patch.object(
-                download_vs_complete_dir_validator, "_same_directory"
-            ) as mock_same,
-            patch.object(
-                download_vs_complete_dir_validator, "_default_if_empty_validator"
-            ) as mock_default,
+            patch.object(download_vs_complete_dir_validator, "_get_download_dir_path") as mock_get_download,
+            patch.object(download_vs_complete_dir_validator, "_get_complete_dir_path") as mock_get_complete,
+            patch.object(download_vs_complete_dir_validator, "_same_directory") as mock_same,
+            patch.object(download_vs_complete_dir_validator, "_default_if_empty_validator") as mock_default,
         ):
             mock_get_download.return_value = "/downloads"
             mock_get_complete.return_value = "/completed"
             mock_same.return_value = False
             mock_default.return_value = (None, "/new/complete")
 
-            error, result = download_vs_complete_dir_validator(
-                self.root, "/new/complete", self.default_complete
-            )
+            error, result = download_vs_complete_dir_validator(self.root, "/new/complete", self.default_complete)
             self.assertIsNone(error)
             self.assertEqual(result, "/new/complete")
 
@@ -222,9 +196,7 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
         # Test _default_if_empty_validator
         with patch("sabnzbd.validators.default_if_empty_validator") as mock_default:
             mock_default.return_value = (None, "/default/path")
-            error, result = self.validator._default_if_empty_validator(
-                self.root, "", self.default_complete
-            )
+            error, result = self.validator._default_if_empty_validator(self.root, "", self.default_complete)
             self.assertIsNone(error)
             self.assertEqual(result, "/default/path")
             mock_default.assert_called_once_with(self.root, "", self.default_complete)
@@ -232,21 +204,15 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
         # Test _safe_dir_validator
         with patch("sabnzbd.validators.safe_dir_validator") as mock_safe:
             mock_safe.return_value = (None, "/safe/path")
-            error, result = self.validator._safe_dir_validator(
-                self.root, "/safe/path", self.default_download
-            )
+            error, result = self.validator._safe_dir_validator(self.root, "/safe/path", self.default_download)
             self.assertIsNone(error)
             self.assertEqual(result, "/safe/path")
-            mock_safe.assert_called_once_with(
-                self.root, "/safe/path", self.default_download
-            )
+            mock_safe.assert_called_once_with(self.root, "/safe/path", self.default_download)
 
     @patch.object(DownloadVsCompleteDirValidator, "_get_download_dir_path")
     @patch.object(DownloadVsCompleteDirValidator, "_get_complete_dir_path")
     @patch.object(DownloadVsCompleteDirValidator, "_same_directory")
-    def test_download_vs_complete_dir_validator_edge_cases(
-        self, mock_same, mock_get_complete, mock_get_download
-    ):
+    def test_download_vs_complete_dir_validator_edge_cases(self, mock_same, mock_get_complete, mock_get_download):
         """Test edge cases for download vs complete directory validation"""
         mock_get_download.return_value = "/downloads"
         mock_get_complete.return_value = "/completed"
@@ -260,24 +226,18 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
             mock_safe.return_value = (None, "/safe/path")
 
             # Test with empty value for complete_dir
-            error, result = self.validator.validate(
-                self.root, "", self.default_complete
-            )
+            error, result = self.validator.validate(self.root, "", self.default_complete)
             self.assertIsNone(error)
             self.assertEqual(result, "/default/path")
 
             # Test with empty value for download_dir
-            error, result = self.validator.validate(
-                self.root, "", self.default_download
-            )
+            error, result = self.validator.validate(self.root, "", self.default_download)
             self.assertIsNone(error)
             self.assertEqual(result, "/safe/path")
 
             # Test with None value
             mock_default.return_value = (None, None)
-            error, result = self.validator.validate(
-                self.root, None, self.default_complete
-            )
+            error, result = self.validator.validate(self.root, None, self.default_complete)
             self.assertIsNone(error)
             self.assertIsNone(result)
 
@@ -292,9 +252,7 @@ class TestDownloadVsCompleteDirValidator(unittest.TestCase):
         mock_get_complete.return_value = "/downloads"
         mock_same.return_value = True  # Same directory detection includes subfolders
 
-        error, result = self.validator.validate(
-            self.root, "/downloads", self.default_complete
-        )
+        error, result = self.validator.validate(self.root, "/downloads", self.default_complete)
         self.assertIsNotNone(error)
         self.assertIn("Completed Download Folder", error)
         self.assertIn("Temporary Download Folder", error)

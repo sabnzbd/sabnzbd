@@ -129,7 +129,7 @@ class Option:
         global CFG_MODIFIED
         if value is not None:
             # Use get() to make sure we use default if nothing was set yet
-            if (isinstance(value, list) or isinstance(value, dict) or value != self.get()):
+            if isinstance(value, list) or isinstance(value, dict) or value != self.get():
                 self.__value = value
                 CFG_MODIFIED = True
                 if self.__callback:
@@ -906,9 +906,7 @@ def _read_config(path, try_backup=False):
 
     try:
         # Let configobj open the file
-        CFG_OBJ = configobj.ConfigObj(
-            infile=path, default_encoding="utf-8", encoding="utf-8"
-        )
+        CFG_OBJ = configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
     except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
         if try_backup:
             # No luck!
@@ -1206,7 +1204,7 @@ def get_rss() -> Dict[str, ConfigRSS]:
             # Create a new corrected list
             new_feed_uris = []
             for feed_uri in feed.uri():
-                if (new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme):
+                if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
                     # Current one has no scheme but previous one does, append to previous
                     new_feed_uris[-1] += "," + feed_uri
                     have_new_uri = True

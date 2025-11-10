@@ -46,9 +46,7 @@ class PermissionsValidator(StringValidator):
         # Check if we at least have user-permissions
         if oct_value < int("700", 8):
             sabnzbd.misc.helpful_warning(
-                T(
-                    "Permissions setting of %s might deny SABnzbd access to the files and folders it creates."
-                ),
+                T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."),
                 value,
             )
         return None, value

@@ -88,9 +88,7 @@ class ConfigConverter:
         logging.info("Config conversion set 3")
         if sabnzbd.WINDOWS and par_option():
             # Just empty it, so we don't pass the wrong parameters
-            logging.warning(
-                "The par2 application was switched, any custom par2 parameters were removed"
-            )
+            logging.warning("The par2 application was switched, any custom par2 parameters were removed")
             par_option.set("")
 
         # Done
