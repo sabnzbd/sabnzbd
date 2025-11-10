@@ -63,6 +63,7 @@ from sabnzbd.validators import (
     host_validator,
     permissions_validator,
     safe_dir_validator,
+    script_dir_not_appdir_validator,
     script_validator,
     server_validator,
     url_base_validator,
@@ -185,21 +186,6 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
         return safe_dir_validator(root, value, default)
 
 
-def validate_scriptdir_not_appdir(
-    root: str, value: str, default: str
-) -> Tuple[None, str]:
-    """Warn users to not use the Program Files folder for their scripts"""
-    # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
-    if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
-        # Warn, but do not block
-        sabnzbd.misc.helpful_warning(
-            T(
-                "Do not use a folder in the application folder as your Scripts Folder, it might be emptied during updates."
-            )
-        )
-    return None, value
-
-
 def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None, str]:
     """If value is empty, return default"""
     if value:
@@ -292,7 +278,7 @@ complete_dir = OptionDir(
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
 script_dir = OptionDir(
-    "misc", "script_dir", writable=False, validation=validate_scriptdir_not_appdir
+    "misc", "script_dir", writable=False, validation=script_dir_not_appdir_validator
 )
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=safe_dir_validator)

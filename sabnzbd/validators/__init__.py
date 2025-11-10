@@ -84,12 +84,6 @@ class ListValidator(BaseValidator[List[str]]):
     pass
 
 
-class DirectoryValidator(BaseValidator[str]):
-    """Base validator for directory paths"""
-
-    pass
-
-
 # Common regular expressions for validation
 RE_EMAIL = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 RE_SIMPLE_STRING = re.compile(r"^[a-zA-Z0-9._-]+$")
@@ -103,6 +97,10 @@ from sabnzbd.validators.permissions_validator import (
     permissions_validator,
 )
 from sabnzbd.validators.safe_dir_validator import SafeDirValidator, safe_dir_validator
+from sabnzbd.validators.script_dir_not_appdir_validator import (
+    ScriptDirNotAppDirValidator,
+    script_dir_not_appdir_validator,
+)
 from sabnzbd.validators.script_validator import ScriptValidator, script_validator
 from sabnzbd.validators.server_validator import ServerValidator, server_validator
 from sabnzbd.validators.single_tag_validator import (
@@ -137,6 +135,9 @@ __all__ = [
     # Safe directory validator
     "SafeDirValidator",
     "safe_dir_validator",
+    # Script directory not app directory validator
+    "ScriptDirNotAppDirValidator",
+    "script_dir_not_appdir_validator",
     # Server validator
     "ServerValidator",
     "server_validator",
