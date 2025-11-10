@@ -19,6 +19,7 @@
 sabnzbd.config - Configuration Support
 """
 
+import io
 import logging
 import os
 import re
@@ -26,25 +27,32 @@ import shutil
 import threading
 import time
 import uuid
-import io
 import zipfile
-from typing import List, Dict, Any, Callable, Optional, Union, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 import configobj
 
 import sabnzbd
 from sabnzbd.constants import (
-    CONFIG_VERSION,
-    NORMAL_PRIORITY,
-    DEFAULT_PRIORITY,
     CONFIG_BACKUP_FILES,
     CONFIG_BACKUP_HTTPS,
+    CONFIG_VERSION,
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
+    DEFAULT_PRIORITY,
+    NORMAL_PRIORITY,
 )
 from sabnzbd.decorators import synchronized
-from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
+from sabnzbd.filesystem import (
+    clip_path,
+    create_real_path,
+    is_writable,
+    real_path,
+    remove_file,
+    renamer,
+)
+from sabnzbd.validators import single_tag_validator
 
 CONFIG_LOCK = threading.RLock()
 
@@ -121,7 +129,11 @@ class Option:
         global CFG_MODIFIED
         if value is not None:
             # Use get() to make sure we use default if nothing was set yet
-            if isinstance(value, list) or isinstance(value, dict) or value != self.get():
+            if (
+                isinstance(value, list)
+                or isinstance(value, dict)
+                or value != self.get()
+            ):
                 self.__value = value
                 CFG_MODIFIED = True
                 if self.__callback:
@@ -163,7 +175,9 @@ class OptionNumber(Option):
         self.__maxval: Optional[float] = maxval
         self.__validation: Optional[Callable] = validation
         self.__int: bool = isinstance(default_val, int)
-        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
+        super().__init__(
+            section, keyword, default_val, add=add, public=public, protect=protect
+        )
 
     def set(self, value: Any):
         """set new value, limited by range"""
@@ -202,7 +216,9 @@ class OptionBool(Option):
         public: bool = True,
         protect: bool = False,
     ):
-        super().__init__(section, keyword, int(default_val), add=add, public=public, protect=protect)
+        super().__init__(
+            section, keyword, int(default_val), add=add, public=public, protect=protect
+        )
 
     def set(self, value: Any):
         # Store the value as integer, easier to parse when reading the config.
@@ -234,12 +250,16 @@ class OptionDir(Option):
         self.__apply_permissions: bool = apply_permissions
         self.__create: bool = create
         self.__writable: bool = writable
-        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
+        super().__init__(
+            section, keyword, default_val, add=add, public=public, protect=protect
+        )
 
     def create_path(self, path: Optional[str] = None):
         if not path:
             path = self.get()
-        return create_real_path(self.keyword, self.__root, path, self.__apply_permissions, self.__writable)
+        return create_real_path(
+            self.keyword, self.__root, path, self.__apply_permissions, self.__writable
+        )
 
     def get(self) -> str:
         """Return value, corrected for platform"""
@@ -316,7 +336,9 @@ class OptionList(Option):
         self.__validation: Optional[Callable] = validation
         if default_val is None:
             default_val = []
-        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
+        super().__init__(
+            section, keyword, default_val, add=add, public=public, protect=protect
+        )
 
     def set(self, value: Union[str, List]) -> Optional[str]:
         """Set the list given a comma-separated string or a list"""
@@ -362,7 +384,9 @@ class OptionStr(Option):
     ):
         self.__validation: Optional[Callable] = validation
         self.__strip: bool = strip
-        super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
+        super().__init__(
+            section, keyword, default_val, add=add, public=public, protect=protect
+        )
 
     def get_float(self) -> float:
         """Return value converted to a float, allowing KMGT notation"""
@@ -392,7 +416,9 @@ class OptionStr(Option):
 class OptionPassword(Option):
     """Password class."""
 
-    def __init__(self, section: str, keyword: str, default_val: str = "", add: bool = True):
+    def __init__(
+        self, section: str, keyword: str, default_val: str = "", add: bool = True
+    ):
         self.get_string = self.get_stars
         super().__init__(section, keyword, default_val, add=add)
 
@@ -431,7 +457,9 @@ class ConfigServer:
         name = "servers," + self.__name
 
         self.displayname = OptionStr(name, "displayname", add=False)
-        self.host = OptionStr(name, "host", validation=sabnzbd.cfg.all_lowercase, add=False)
+        self.host = OptionStr(
+            name, "host", validation=sabnzbd.cfg.all_lowercase, add=False
+        )
         self.port = OptionNumber(name, "port", 119, 0, 2**16 - 1, add=False)
         self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
         self.username = OptionStr(name, "username", add=False)
@@ -539,7 +567,9 @@ class ConfigCat:
         self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", "Default", add=False)
         self.dir = OptionDir(name, "dir", add=False, create=False)
-        self.newzbin = OptionList(name, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
+        self.newzbin = OptionList(
+            name, "newzbin", add=False, validation=single_tag_validator
+        )
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
@@ -591,7 +621,15 @@ class ConfigSorter:
 
     def set_dict(self, values: Dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
-        for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
+        for kw in (
+            "order",
+            "min_size",
+            "multipart_label",
+            "sort_string",
+            "sort_cats",
+            "sort_type",
+            "is_active",
+        ):
             try:
                 value = values[kw]
                 getattr(self, kw).set(value)
@@ -694,7 +732,9 @@ class ConfigRSS:
         self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", add=False)
         self.enable = OptionBool(name, "enable", add=False)
-        self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
+        self.priority = OptionNumber(
+            name, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False
+        )
         self.filters = OptionFilters(name, "filters", add=False)
         self.filters.set([["", "", "", "A", "*", DEFAULT_PRIORITY, "1"]])
 
@@ -898,11 +938,17 @@ def _read_config(path, try_backup=False):
 
     try:
         # Let configobj open the file
-        CFG_OBJ = configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
+        CFG_OBJ = configobj.ConfigObj(
+            infile=path, default_encoding="utf-8", encoding="utf-8"
+        )
     except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
         if try_backup:
             # No luck!
-            return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
+            return (
+                False,
+                '"%s" is not a valid configuration file<br>Error message: %s'
+                % (path, strerror),
+            )
         else:
             # Try backup file
             return _read_config(path, True)
@@ -925,7 +971,9 @@ def _read_config(path, try_backup=False):
             for option in CFG_DATABASE[section]:
                 config_option = CFG_DATABASE[section][option]
                 try:
-                    config_option.set(CFG_OBJ[config_option.section][config_option.keyword])
+                    config_option.set(
+                        CFG_OBJ[config_option.section][config_option.keyword]
+                    )
                 except KeyError:
                     pass
 
@@ -967,13 +1015,17 @@ def save_config(force=False):
             for subsection in CFG_DATABASE[section]:
                 if subsection not in CFG_OBJ[section]:
                     CFG_OBJ[section][subsection] = {}
-                CFG_OBJ[section][subsection] = CFG_DATABASE[section][subsection].get_dict()
+                CFG_OBJ[section][subsection] = CFG_DATABASE[section][
+                    subsection
+                ].get_dict()
         else:
             for option in CFG_DATABASE[section]:
                 config_option = CFG_DATABASE[section][option]
                 if config_option.section not in CFG_OBJ:
                     CFG_OBJ[config_option.section] = {}
-                CFG_OBJ[config_option.section][config_option.keyword] = CFG_DATABASE[section][option]()
+                CFG_OBJ[config_option.section][config_option.keyword] = CFG_DATABASE[
+                    section
+                ][option]()
 
     res = False
     filename = CFG_OBJ.filename
@@ -1017,7 +1069,10 @@ def save_config(force=False):
 def create_config_backup() -> Union[str, bool]:
     """Put config data in a zip file, returns path on success"""
     admin_path = sabnzbd.cfg.admin_dir.get_path()
-    output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))
+    output_filename = "sabnzbd_backup_%s_%s.zip" % (
+        sabnzbd.__version__,
+        time.strftime("%Y.%m.%d_%H.%M.%S"),
+    )
 
     # Check if there is a backup folder set, use complete otherwise
     if sabnzbd.cfg.backup_dir():
@@ -1025,11 +1080,15 @@ def create_config_backup() -> Union[str, bool]:
     else:
         backup_dir = sabnzbd.cfg.complete_dir.get_path()
     complete_path = os.path.join(backup_dir, output_filename)
-    logging.debug("Backing up %s + %s in %s", admin_path, CFG_OBJ.filename, complete_path)
+    logging.debug(
+        "Backing up %s + %s in %s", admin_path, CFG_OBJ.filename, complete_path
+    )
 
     try:
         with open(complete_path, "wb") as zip_buffer:
-            with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
+            with zipfile.ZipFile(
+                zip_buffer, "a", zipfile.ZIP_DEFLATED, False
+            ) as zip_ref:
                 for filename in CONFIG_BACKUP_FILES:
                     full_path = os.path.join(admin_path, filename)
                     if os.path.isfile(full_path):
@@ -1040,7 +1099,11 @@ def create_config_backup() -> Union[str, bool]:
                     # Only accept HTTPS config files that were successfully loaded by cherrypy on
                     # startup to protect against last-minute breaking config changes as well as
                     # inclusion of unrelated files in the backup through manipulated settings.
-                    if full_path and os.path.isfile(full_path) and full_path in sabnzbd.CONFIG_BACKUP_HTTPS_OK:
+                    if (
+                        full_path
+                        and os.path.isfile(full_path)
+                        and full_path in sabnzbd.CONFIG_BACKUP_HTTPS_OK
+                    ):
                         logging.debug("Adding %s file %s to backup", setting, full_path)
                         with open(full_path, "rb") as data:
                             # Add the https cert/key/chain files with a fixed relative filename,
@@ -1085,12 +1148,18 @@ def restore_config_backup(config_backup_data: bytes):
                     try:
                         zip_ref.getinfo(filename)
                         destination_file = os.path.join(adminpath, filename)
-                        logging.debug("Writing backup of %s to %s", filename, destination_file)
+                        logging.debug(
+                            "Writing backup of %s to %s", filename, destination_file
+                        )
                         with open(destination_file, "wb") as destination_ref:
                             destination_ref.write(zip_ref.read(filename))
                         # For HTTPS config files, point the associated setting to the restored file
                         if setting := CONFIG_BACKUP_HTTPS.get(filename):
-                            logging.debug("Setting value of %s to restored file %s", setting, filename)
+                            logging.debug(
+                                "Setting value of %s to restored file %s",
+                                setting,
+                                filename,
+                            )
                             getattr(sabnzbd.cfg, setting).set(filename)
                             CFG_MODIFIED = True
                     except KeyError:
@@ -1124,7 +1193,9 @@ def get_ordered_sorters() -> List[Dict]:
     """Return sorters as an ordered list"""
     database_sorters = get_sorters()
 
-    sorters = [database_sorters[sorter].get_dict() for sorter in database_sorters.keys()]
+    sorters = [
+        database_sorters[sorter].get_dict() for sorter in database_sorters.keys()
+    ]
     sorters.sort(key=lambda sorter: sorter["order"])
 
     return sorters
@@ -1142,7 +1213,9 @@ def get_categories() -> Dict[str, ConfigCat]:
 
     # Add Default categories
     if "*" not in cats:
-        ConfigCat("*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
+        ConfigCat(
+            "*", {"order": 0, "pp": "3", "script": "None", "priority": NORMAL_PRIORITY}
+        )
         # Add some category suggestions
         ConfigCat("movies", {"order": 1})
         ConfigCat("tv", {"order": 2})
@@ -1194,7 +1267,11 @@ def get_rss() -> Dict[str, ConfigRSS]:
             # Create a new corrected list
             new_feed_uris = []
             for feed_uri in feed.uri():
-                if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
+                if (
+                    new_feed_uris
+                    and not urlparse(feed_uri).scheme
+                    and urlparse(new_feed_uris[-1]).scheme
+                ):
                     # Current one has no scheme but previous one does, append to previous
                     new_feed_uris[-1] += "," + feed_uri
                     have_new_uri = True
@@ -1221,7 +1298,9 @@ def clean_section_name(section: str) -> str:
     Unfortuantly, ConfigObj doesn't do this for us."""
     new_section_name = section.strip("[]")
     if not new_section_name:
-        raise ValueError("Invalid section name %s, nothing left after cleaning" % section)
+        raise ValueError(
+            "Invalid section name %s, nothing left after cleaning" % section
+        )
     return new_section_name
 
 

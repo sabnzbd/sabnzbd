@@ -153,16 +153,6 @@ def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
     return None, value.lower().strip(" .")
 
 
-def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
-    """Don't split single indexer tags like "TV > HD"
-    into ['TV', '>', 'HD']
-    """
-    if len(value) == 3:
-        if value[1] == ">":
-            return None, [" ".join(value)]
-    return None, value
-
-
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 

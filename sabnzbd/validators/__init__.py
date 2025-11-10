@@ -86,6 +86,10 @@ from sabnzbd.validators.permissions_validator import (
     permissions_validator,
 )
 from sabnzbd.validators.script_validator import ScriptValidator, script_validator
+from sabnzbd.validators.single_tag_validator import (
+    SingleTagValidator,
+    single_tag_validator,
+)
 from sabnzbd.validators.url_base_validator import UrlBaseValidator, url_base_validator
 
 # Export common types and base classes
@@ -114,4 +118,7 @@ __all__ = [
     # URL base validator
     "UrlBaseValidator",
     "url_base_validator",
+    # Single tag validator
+    "SingleTagValidator",
+    "single_tag_validator",
 ]
