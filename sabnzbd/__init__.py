@@ -15,18 +15,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import concurrent.futures
-import ctypes.util
-import datetime
-import logging
 import os
-import platform
-import ssl
-import sys
+import logging
+import datetime
+import ctypes.util
 import time
-from threading import Condition, Lock
+import ssl
 
 import cherrypy
+import platform
+import concurrent.futures
+import sys
+from threading import Lock, Condition
 
 ##############################################################################
 # Determine platform flags
@@ -65,12 +65,9 @@ elif os.name == "posix":
     if platform.system().lower() == "darwin":
         MACOS = True
         MACOSARM64 = platform.uname().machine == "arm64"
-        MACOSLIBC = ctypes.CDLL(
-            ctypes.util.find_library("c"), use_errno=True
-        )  # the MacOS C library
+        MACOSLIBC = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the MacOS C library
         try:
             import Foundation
-
             import sabnzbd.utils.sleepless as sleepless
 
             FOUNDATION = True
@@ -79,43 +76,45 @@ elif os.name == "posix":
 
 
 # Imported to be referenced from other files directly
-import sabnzbd.api
-import sabnzbd.articlecache
-import sabnzbd.assembler
-import sabnzbd.bpsmeter
-import sabnzbd.cfg as cfg
-import sabnzbd.config as config
-import sabnzbd.database
-import sabnzbd.decoder
-import sabnzbd.directunpacker as directunpacker
-import sabnzbd.dirscanner
-import sabnzbd.downloader
-import sabnzbd.emailer as emailer
-import sabnzbd.encoding as encoding
-import sabnzbd.filesystem as filesystem
-import sabnzbd.getipaddress
-import sabnzbd.interface
-import sabnzbd.lang as lang
+from sabnzbd.version import __version__, __baseline__
 
 # Now we can import safely
 import sabnzbd.misc as misc
-import sabnzbd.newsunpack
-import sabnzbd.notifier as notifier
-import sabnzbd.nzbparser as nzbparser
-import sabnzbd.nzbqueue
-import sabnzbd.nzbstuff
-import sabnzbd.par2file
-import sabnzbd.postproc
+import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
 import sabnzbd.rss as rss
-import sabnzbd.scheduler as scheduler
-import sabnzbd.sorting
+import sabnzbd.emailer as emailer
+import sabnzbd.encoding as encoding
+import sabnzbd.config as config
+import sabnzbd.cfg as cfg
+import sabnzbd.database
+import sabnzbd.lang as lang
+import sabnzbd.nzbparser as nzbparser
+import sabnzbd.nzbstuff
+import sabnzbd.getipaddress
+import sabnzbd.newsunpack
+import sabnzbd.par2file
+import sabnzbd.api
+import sabnzbd.interface
+import sabnzbd.zconfig
+import sabnzbd.directunpacker as directunpacker
+import sabnzbd.dirscanner
 import sabnzbd.urlgrabber
+import sabnzbd.nzbqueue
+import sabnzbd.postproc
+import sabnzbd.downloader
+import sabnzbd.decoder
+import sabnzbd.assembler
+import sabnzbd.articlecache
+import sabnzbd.bpsmeter
+import sabnzbd.scheduler as scheduler
+import sabnzbd.notifier as notifier
+import sabnzbd.sorting
+from sabnzbd.decorators import synchronized
+import sabnzbd.utils.ssdp
 import sabnzbd.utils.checkdir
 import sabnzbd.utils.ssdp
-import sabnzbd.zconfig
-from sabnzbd.decorators import synchronized
-from sabnzbd.version import __baseline__, __version__
+
 
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
@@ -213,9 +212,7 @@ INIT_LOCK = Lock()
 
 def get_db_connection(thread_index=0):
     # Create a connection and store it in the current thread
-    if not (
-        hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_db
-    ):
+    if not (hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_dbabnzbd.downloader.Downloader():
         cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
     return cherrypy.thread_data.history_db
 
@@ -312,9 +309,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.ArticleCache = sabnzbd.articlecache.ArticleCache()
     sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
     sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
-    sabnzbd.Downloader = sabnzbd.downloader.Downloader(
-        sabnzbd.BPSMeter.read() or pause_downloader
-    )
+    sabnzbd.Downloader = sabnzbd.downloader.Downloader(sabnzbd.BPSMeter.read() or pause_downloader)
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
     sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
     sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
@@ -507,27 +502,19 @@ def delayed_startup_actions():
     # Verify umask, we need at least 700
     if not sabnzbd.WINDOWS and sabnzbd.ORG_UMASK > int("077", 8):
         misc.helpful_warning(
-            T(
-                "Current umask (%o) might deny SABnzbd access to the files and folders it creates."
-            ),
+            T("Current umask (%o) might deny SABnzbd access to the files and folders it creates."),
             sabnzbd.ORG_UMASK,
         )
 
     # List the number of certificates available (can take up to 1.5 seconds)
     if cfg.log_level() > 1:
-        logging.debug(
-            "Available certificates = %s",
-            repr(ssl.create_default_context().cert_store_stats()),
-        )
+        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
 
     # First we do a dircheck
     complete_dir = sabnzbd.cfg.complete_dir.get_path()
     if sabnzbd.utils.checkdir.isFAT(complete_dir):
         misc.helpful_warning(
-            T(
-                "Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB"
-            )
-            % complete_dir
+            T("Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB") % complete_dir
         )
     else:
         logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
@@ -558,9 +545,7 @@ def delayed_startup_actions():
         # VPN in addition to a standard household LAN).
         if misc.is_lan_addr(external_host) and (
             (not sabnzbd.cfg.local_ranges())
-            or any(
-                misc.ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges()
-            )
+            or any(misc.ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges())
         ):
             # Start Bonjour and SSDP
             sabnzbd.zconfig.set_bonjour(external_host, cfg.web_port())
