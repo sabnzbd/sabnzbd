@@ -7,7 +7,7 @@ cffi==2.0.0
 pycparser==2.23
 feedparser==6.0.12
 configobj==5.0.9
-cheroot==11.1.0
+cheroot==11.1.2
 six==1.17.0
 cherrypy==18.10.0
 jaraco.functools==4.3.0
@@ -69,7 +69,7 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 requests==2.32.5
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
-markdown==3.9
+markdown==3.10
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
