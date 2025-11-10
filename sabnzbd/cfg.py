@@ -81,10 +81,46 @@ ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None
 # Default Validation handlers
 ##############################################################################
 class ErrorCatchingArgumentParser(argparse.ArgumentParser):
-    def error(self, status=0, message=None):
-        # Need to override so it doesn't raise SystemExit
-        if status:
-            raise ValueError
+    """Custom ArgumentParser that raises ValueError instead of SystemExit.
+
+    This prevents the application from exiting when invalid command-line parameters
+    are encountered during configuration validation.
+    """
+
+    def error(self, message: str) -> None:
+        """Override to raise ValueError instead of SystemExit.
+
+        Args:
+            message: The error message describing the validation failure
+
+        Raises:
+            ValueError: Always raised with the provided error message
+        """
+        raise ValueError(message)
+
+
+def _validate_parameters_with_parser(
+    value: str, parser: ErrorCatchingArgumentParser
+) -> ValidateResult:
+    """Helper function to validate parameters using an ArgumentParser.
+
+    Args:
+        value: The parameter string to validate
+        parser: Configured ArgumentParser instance
+
+    Returns:
+        ValidationResult with error message or validated value
+    """
+    if not value:
+        return None, value
+
+    try:
+        parser.parse_args(value.split())
+        return None, value
+    except ValueError:
+        msg = "%s: %s" % (T("Incorrect parameter"), value)
+        logging.error(msg)
+        return msg, None
 
 
 def clean_nice_ionice_parameters(value: str) -> ValidateResult:
@@ -100,13 +136,7 @@ def clean_nice_ionice_parameters(value: str) -> ValidateResult:
         parser.add_argument("-c", "--class", type=int)
         parser.add_argument("-t", "--ignore", action="store_true")
 
-        try:
-            parser.parse_args(value.split())
-        except ValueError:
-            # Also log at start-up if invalid parameter was set in the ini
-            msg = "%s: %s" % (T("Incorrect parameter"), value)
-            logging.error(msg)
-            return msg, None
+        return _validate_parameters_with_parser(value, parser)
     return None, value
 
 
@@ -125,35 +155,41 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
                 *("-ri" + str(p) for p in range(16)), action="store_true"
             )
 
-        try:
-            # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
-            # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
-            parser.parse_args(
-                re.sub(
-                    r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)",
-                    r"\1\2\3",
-                    value,
-                )
-                .lower()
-                .split()
-            )
-        except ValueError:
-            # Also log at start-up if invalid parameter was set in the ini
-            msg = "%s: %s" % (T("Incorrect parameter"), value)
-            logging.error(msg)
-            return msg, None
+        # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
+        # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
+        processed_value = re.sub(
+            r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)",
+            r"\1\2\3",
+            value,
+        ).lower()
+
+        return _validate_parameters_with_parser(processed_value, parser)
     return None, value
 
 
 def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
-    """Lowercase and strip everything!"""
+    """Lowercase and strip everything!
+
+    Args:
+        value: String or list of strings to process
+
+    Returns:
+        Tuple with (None, processed_value) where all text is lowercased and stripped
+    """
     if isinstance(value, list):
         return None, [item.lower().strip() for item in value]
     return None, value.lower().strip()
 
 
 def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
-    """Generate lower case extension(s), without dot"""
+    """Generate lower case extension(s), without dot
+
+    Args:
+        value: String or list of strings representing file extensions
+
+    Returns:
+        Tuple with (None, processed_value) where extensions are lowercased and dots are removed
+    """
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
