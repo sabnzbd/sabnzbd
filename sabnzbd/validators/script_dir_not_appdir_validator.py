@@ -22,8 +22,20 @@ sabnzbd.validators.script_dir_not_appdir_validator - Script directory validation
 import os
 from typing import Optional, Tuple
 
-import sabnzbd
 from sabnzbd.validators import ContextualValidator, ValidateResult
+
+
+# Lazy imports to avoid circular dependencies
+def _helpful_warning(message, *args):
+    """Lazy import wrapper for helpful_warning"""
+    from sabnzbd.misc import helpful_warning
+    return helpful_warning(message, *args)
+
+
+def _get_prog_dir():
+    """Lazy import wrapper for DIR_PROG"""
+    import sabnzbd
+    return sabnzbd.DIR_PROG
 
 
 class ScriptDirNotAppDirValidator(ContextualValidator):
@@ -32,9 +44,9 @@ class ScriptDirNotAppDirValidator(ContextualValidator):
     def validate(self, root: str, value: str, default: str) -> ValidateResult:
         """Warn users to not use the Program Files folder for their scripts"""
         # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
-        if value and self._same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
+        if value and self._same_directory(_get_prog_dir(), os.path.join(root, value)):
             # Warn, but do not block
-            sabnzbd.misc.helpful_warning(
+            _helpful_warning(
                 T(
                     "Do not use a folder in the application folder as your Scripts Folder, it might be emptied during updates."
                 )

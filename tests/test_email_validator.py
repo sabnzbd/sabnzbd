@@ -92,7 +92,7 @@ class TestEmailValidator:
         assert result is None
 
     def test_email_validator_conditional_validation(self):
-        """Test that email validation only happens when email notifications are enabled"""
+        """Test that email validation always validates email format regardless of notification settings"""
         validator = EmailValidator()
 
         # Mock email functions to return False (no email notifications enabled)
@@ -105,10 +105,11 @@ class TestEmailValidator:
             mock_full.return_value = False
             mock_rss.return_value = False
 
-            # Even invalid email should pass when email notifications are disabled
+            # Email validation should still happen even when notifications are disabled
             error, result = validator.validate("invalid-email")
-            assert error is None
-            assert result == "invalid-email"
+            assert error is not None
+            assert "not a valid email address" in error
+            assert result is None
 
     def test_email_validator_instance(self):
         """Test the convenience validator instance"""

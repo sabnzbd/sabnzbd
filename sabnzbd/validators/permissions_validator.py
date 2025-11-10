@@ -21,8 +21,14 @@ sabnzbd.validators.permissions_validator - Octal permissions validation utilitie
 
 from typing import Optional, Tuple
 
-import sabnzbd
 from sabnzbd.validators import StringValidator, ValidateResult
+
+
+# Lazy import to avoid circular dependencies
+def _helpful_warning(message, *args):
+    """Lazy import wrapper for helpful_warning"""
+    from sabnzbd.misc import helpful_warning
+    return helpful_warning(message, *args)
 
 
 class PermissionsValidator(StringValidator):
@@ -45,7 +51,7 @@ class PermissionsValidator(StringValidator):
 
         # Check if we at least have user-permissions
         if oct_value < int("700", 8):
-            sabnzbd.misc.helpful_warning(
+            _helpful_warning(
                 T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."),
                 value,
             )

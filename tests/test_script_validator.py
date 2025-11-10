@@ -49,7 +49,10 @@ class TestScriptValidator:
         validator = ScriptValidator()
 
         # Invalid script (mocked)
-        with patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid:
+        with (
+            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
+            patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
+        ):
             mock_is_valid.return_value = False
             error, result = validator.validate("invalid_script.xyz")
             assert error is not None
@@ -84,7 +87,7 @@ class TestScriptValidator:
 
         # When not initialized, any script should pass
         with (
-            patch("sabnzbd.__INITIALIZED__", False),
+            patch("sabnzbd.validators.script_validator._is_initialized", return_value=False),
             patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
         ):
             mock_is_valid.return_value = False  # Script is invalid
@@ -94,7 +97,7 @@ class TestScriptValidator:
 
         # When initialized, validation should be enforced
         with (
-            patch("sabnzbd.__INITIALIZED__", True),
+            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
             patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
         ):
             mock_is_valid.return_value = False
@@ -110,14 +113,20 @@ class TestScriptValidator:
         assert callable(script_validator)
 
         # Test that the instance works correctly with valid script
-        with patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid:
+        with (
+            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
+            patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
+        ):
             mock_is_valid.return_value = True
             error, result = script_validator("test_script.py")
             assert error is None
             assert result == "test_script.py"
 
         # Test that the instance works correctly with invalid script
-        with patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid:
+        with (
+            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
+            patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
+        ):
             mock_is_valid.return_value = False
             error, result = script_validator("invalid_script.xyz")
             assert error is not None

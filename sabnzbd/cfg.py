@@ -94,24 +94,27 @@ class ErrorCatchingArgumentParser(argparse.ArgumentParser):
         raise ValueError(message)
 
 
-def _validate_parameters_with_parser(value: str, parser: ErrorCatchingArgumentParser) -> ValidateResult:
+def _validate_parameters_with_parser(value: str, parser: ErrorCatchingArgumentParser, return_original: Optional[str] = None) -> ValidateResult:
     """Helper function to validate parameters using an ArgumentParser.
 
     Args:
         value: The parameter string to validate
         parser: Configured ArgumentParser instance
+        return_original: If provided, return this value on success instead of the processed value
 
     Returns:
         ValidationResult with error message or validated value
     """
     if not value:
-        return None, value
+        return None, return_original or value
 
     try:
         parser.parse_args(value.split())
-        return None, value
+        return None, return_original or value
     except ValueError:
-        msg = "%s: %s" % (T("Incorrect parameter"), value)
+        # Always show the original value in error messages for clarity
+        error_value = return_original if return_original is not None else value
+        msg = "%s: %s" % (T("Incorrect parameter"), error_value)
         logging.error(msg)
         return msg, None
 
@@ -152,9 +155,11 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
             r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)",
             r"\1\2\3",
             value,
-        ).lower()
+        )
 
-        return _validate_parameters_with_parser(processed_value, parser)
+        # Convert to lowercase for parsing but preserve original case for return value
+        parsed_value = processed_value.lower()
+        return _validate_parameters_with_parser(parsed_value, parser, return_original=value)
     return None, value
 
 

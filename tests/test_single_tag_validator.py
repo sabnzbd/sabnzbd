@@ -192,6 +192,13 @@ class TestSingleTagValidator(unittest.TestCase):
                 self.assertIsNone(error)
                 self.assertEqual(result, expected_value)
 
+    def test_single_tag_validator_from_cfg_tests(self):
+        """Test cases originally from cfg.py test file"""
+        assert single_tag_validator(["TV", ">", "HD"]) == (None, ["TV > HD"])
+        assert single_tag_validator(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
+        assert single_tag_validator(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
+        assert single_tag_validator(["alt.group"]) == (None, ["alt.group"])
+
 
 if __name__ == "__main__":
     unittest.main()

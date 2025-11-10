@@ -196,12 +196,6 @@ class TestValidators:
             assert msg.startswith("Incorrect parameter")
             assert value == None
 
-    def test_validate_single_tag(self):
-        assert cfg.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
-        assert cfg.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
-        assert cfg.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
-        assert cfg.validate_single_tag(["alt.group"]) == (None, ["alt.group"])
-
     def test_all_lowercase(self):
         assert cfg.all_lowercase("") == (None, "")
         assert cfg.all_lowercase("Bla") == (None, "bla")
@@ -214,19 +208,4 @@ class TestValidators:
         assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
 
-    def test_validate_safedir(self):
-        assert cfg.validate_safedir("", "", "def") == (None, "def")
-        assert cfg.validate_safedir("", "C:\\", "") == (None, "C:\\")
 
-    def test_validate_host(self):
-        # valid input
-        assert cfg.validate_host("127.0.0.1") == (None, "127.0.0.1")
-        assert cfg.validate_host("0.0.0.0") == (None, "0.0.0.0")
-        assert cfg.validate_host("1.1.1.1") == (None, "1.1.1.1")
-        assert cfg.validate_host("::1") == (None, "::1")
-        assert cfg.validate_host("::") == (None, "::")
-
-        # non-valid input. Should return None as second parameter
-        assert not cfg.validate_host("0.0.0.0.")[1]  # Trailing dot
-        assert not cfg.validate_host("kajkdjflkjasd")[1]  # does not resolve
-        assert not cfg.validate_host("100")[1]  # just a number

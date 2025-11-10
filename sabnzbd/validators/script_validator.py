@@ -21,11 +21,15 @@ sabnzbd.validators.script_validator - Script validation utilities
 
 from typing import Optional, Tuple
 
-import sabnzbd
 from sabnzbd.validators import StringValidator, ValidateResult
 
 
 # Lazy imports to avoid circular dependencies
+def _is_initialized():
+    """Lazy import wrapper for __INITIALIZED__"""
+    import sabnzbd
+    return sabnzbd.__INITIALIZED__
+
 def _is_none(value):
     """Lazy import wrapper for is_none"""
     from sabnzbd.misc import is_none
@@ -45,7 +49,7 @@ class ScriptValidator(StringValidator):
 
     def validate(self, value: str) -> ValidateResult:
         """Check if value is a valid script"""
-        if not sabnzbd.__INITIALIZED__ or (value and _is_valid_script(value)):
+        if not _is_initialized() or (value and _is_valid_script(value)):
             return None, value
         elif _is_none(value):
             return None, "None"

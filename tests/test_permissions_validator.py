@@ -102,7 +102,7 @@ class TestPermissionsValidator(unittest.TestCase):
         assert "0" in error
         assert result is None
 
-    @patch("sabnzbd.validators.permissions_validator.sabnzbd.misc.helpful_warning")
+    @patch("sabnzbd.validators.permissions_validator._helpful_warning")
     def test_permissions_validator_low_permissions_warning(self, mock_warning):
         """Test that low permissions trigger a warning"""
         validator = PermissionsValidator()
@@ -124,7 +124,7 @@ class TestPermissionsValidator(unittest.TestCase):
             else:
                 mock_warning.assert_not_called()
 
-    @patch("sabnzbd.validators.permissions_validator.sabnzbd.misc.helpful_warning")
+    @patch("sabnzbd.validators.permissions_validator._helpful_warning")
     def test_permissions_validator_adequate_permissions_no_warning(self, mock_warning):
         """Test that adequate permissions don't trigger warnings"""
         validator = PermissionsValidator()

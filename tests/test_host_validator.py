@@ -19,6 +19,7 @@
 Tests for sabnzbd.validators.host_validator module
 """
 
+import socket
 from unittest.mock import patch
 
 import pytest
@@ -158,16 +159,34 @@ class TestHostValidator:
             assert result == "sub.domain.example.com"
 
         # Invalid: multiple dots without domain
-        error, result = validator.validate("..")
-        assert error is not None
-        assert "Invalid hostname" in error
-        assert result is None
+        with patch("socket.getaddrinfo") as mock_getaddrinfo:
+            mock_getaddrinfo.side_effect = socket.gaierror("Invalid hostname")
+            error, result = validator.validate("..")
+            assert error is not None
+            assert "Invalid hostname" in error
+            assert result is None
 
         # Invalid: special characters
-        error, result = validator.validate("host@name")
-        assert error is not None
-        assert "Invalid hostname" in error
-        assert result is None
+        with patch("socket.getaddrinfo") as mock_getaddrinfo:
+            mock_getaddrinfo.side_effect = socket.gaierror("Invalid hostname")
+            error, result = validator.validate("host@name")
+            assert error is not None
+            assert "Invalid hostname" in error
+            assert result is None
+
+    def test_host_validator_from_cfg_tests(self):
+        """Test cases originally from cfg.py test file"""
+        # valid input
+        assert host_validator("127.0.0.1") == (None, "127.0.0.1")
+        assert host_validator("0.0.0.0") == (None, "0.0.0.0")
+        assert host_validator("1.1.1.1") == (None, "1.1.1.1")
+        assert host_validator("::1") == (None, "::1")
+        assert host_validator("::") == (None, "::")
+
+        # non-valid input. Should return None as second parameter
+        assert not host_validator("0.0.0.0.")[1]  # Trailing dot
+        assert not host_validator("kajkdjflkjasd")[1]  # does not resolve
+        assert not host_validator("100")[1]  # just a number
 
 
 if __name__ == "__main__":
