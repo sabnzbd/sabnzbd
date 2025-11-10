@@ -63,6 +63,7 @@ from sabnzbd.validators import (
     host_validator,
     permissions_validator,
     script_validator,
+    url_base_validator,
 )
 
 # Validators currently only are made for string/list-of-strings
@@ -159,15 +160,6 @@ def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
     if len(value) == 3:
         if value[1] == ">":
             return None, [" ".join(value)]
-    return None, value
-
-
-def validate_url_base(value: str) -> Tuple[None, str]:
-    """Strips the right slash and adds starting slash, if not present"""
-    if value and isinstance(value, str):
-        if not value.startswith("/"):
-            value = "/" + value
-        return None, value.rstrip("/")
     return None, value
 
 
@@ -486,7 +478,7 @@ max_foldername_length = OptionNumber(
 )
 marker_file = OptionStr("misc", "nomedia_marker")
 ipv6_servers = OptionBool("misc", "ipv6_servers", True)
-url_base = OptionStr("misc", "url_base", "", validation=validate_url_base)
+url_base = OptionStr("misc", "url_base", "", validation=url_base_validator)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
