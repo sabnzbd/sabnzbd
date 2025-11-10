@@ -63,6 +63,7 @@ from sabnzbd.validators import (
     host_validator,
     permissions_validator,
     script_validator,
+    server_validator,
     url_base_validator,
 )
 
@@ -154,14 +155,6 @@ def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
 
 
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
-
-
-def validate_server(value: str) -> ValidateResult:
-    """Check if server non-empty"""
-    if value == "" and (email_endjob() or email_full() or email_rss()):
-        return T("Server address required"), None
-    else:
-        return None, value
 
 
 def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
@@ -489,7 +482,7 @@ outgoing_nntp_ip = OptionStr("misc", "outgoing_nntp_ip")
 # Config - Notifications
 ##############################################################################
 # [email]
-email_server = OptionStr("misc", "email_server", validation=validate_server)
+email_server = OptionStr("misc", "email_server", validation=server_validator)
 email_to = OptionStr("misc", "email_to", validation=email_validator)
 email_from = OptionStr("misc", "email_from", validation=email_validator)
 email_account = OptionStr("misc", "email_account")

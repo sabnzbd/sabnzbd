@@ -86,6 +86,7 @@ from sabnzbd.validators.permissions_validator import (
     permissions_validator,
 )
 from sabnzbd.validators.script_validator import ScriptValidator, script_validator
+from sabnzbd.validators.server_validator import ServerValidator, server_validator
 from sabnzbd.validators.single_tag_validator import (
     SingleTagValidator,
     single_tag_validator,
@@ -115,6 +116,9 @@ __all__ = [
     # Script validator
     "ScriptValidator",
     "script_validator",
+    # Server validator
+    "ServerValidator",
+    "server_validator",
     # URL base validator
     "UrlBaseValidator",
     "url_base_validator",
