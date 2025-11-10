@@ -59,6 +59,7 @@ from sabnzbd.filesystem import (
     same_directory,
 )
 from sabnzbd.validators import (
+    default_if_empty_validator,
     email_validator,
     host_validator,
     permissions_validator,
@@ -181,17 +182,9 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
         )
     elif default == DEF_COMPLETE_DIR:
         # The complete_dir allows UNC
-        return validate_default_if_empty(root, value, default)
+        return default_if_empty_validator(root, value, default)
     else:
         return safe_dir_validator(root, value, default)
-
-
-def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None, str]:
-    """If value is empty, return default"""
-    if value:
-        return None, value
-    else:
-        return None, default
 
 
 ##############################################################################
@@ -288,7 +281,7 @@ dirscan_speed = OptionNumber(
     "misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600
 )
 password_file = OptionDir("misc", "password_file", "", create=False)
-log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_default_if_empty)
+log_dir = OptionDir("misc", "log_dir", "logs", validation=default_if_empty_validator)
 
 
 ##############################################################################

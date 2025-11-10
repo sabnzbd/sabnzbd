@@ -21,13 +21,13 @@ sabnzbd.validators.default_if_empty_validator - Default value substitution utili
 
 from typing import Optional, Tuple
 
-from sabnzbd.validators import StringValidator, ValidateResult
+from sabnzbd.validators import ContextualValidator, ValidateResult
 
 
-class DefaultIfEmptyValidator(StringValidator):
+class DefaultIfEmptyValidator(ContextualValidator):
     """Validator that returns default value if input is empty"""
 
-    def validate(self, value: str, default: str = "") -> ValidateResult:
+    def validate(self, root: str, value: str, default: str) -> ValidateResult:
         """If value is empty, return default"""
         if value:
             return None, value
@@ -36,7 +36,6 @@ class DefaultIfEmptyValidator(StringValidator):
 
 
 # Convenience instance for common usage
-# Note: This validator requires default parameter, so it's used differently
 default_if_empty_validator = DefaultIfEmptyValidator()
 
 

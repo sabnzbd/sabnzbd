@@ -90,6 +90,10 @@ RE_SIMPLE_STRING = re.compile(r"^[a-zA-Z0-9._-]+$")
 RE_ALPHANUMERIC = re.compile(r"^[a-zA-Z0-9]+$")
 
 # Import validators
+from sabnzbd.validators.default_if_empty_validator import (
+    DefaultIfEmptyValidator,
+    default_if_empty_validator,
+)
 from sabnzbd.validators.email_validator import EmailValidator, email_validator
 from sabnzbd.validators.host_validator import HostValidator, host_validator
 from sabnzbd.validators.permissions_validator import (
@@ -138,6 +142,9 @@ __all__ = [
     # Script directory not app directory validator
     "ScriptDirNotAppDirValidator",
     "script_dir_not_appdir_validator",
+    # Default if empty validator
+    "DefaultIfEmptyValidator",
+    "default_if_empty_validator",
     # Server validator
     "ServerValidator",
     "server_validator",
