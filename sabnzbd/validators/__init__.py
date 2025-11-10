@@ -94,6 +94,10 @@ from sabnzbd.validators.default_if_empty_validator import (
     DefaultIfEmptyValidator,
     default_if_empty_validator,
 )
+from sabnzbd.validators.download_vs_complete_dir_validator import (
+    DownloadVsCompleteDirValidator,
+    download_vs_complete_dir_validator,
+)
 from sabnzbd.validators.email_validator import EmailValidator, email_validator
 from sabnzbd.validators.host_validator import HostValidator, host_validator
 from sabnzbd.validators.permissions_validator import (
@@ -145,6 +149,9 @@ __all__ = [
     # Default if empty validator
     "DefaultIfEmptyValidator",
     "default_if_empty_validator",
+    # Download vs complete directory validator
+    "DownloadVsCompleteDirValidator",
+    "download_vs_complete_dir_validator",
     # Server validator
     "ServerValidator",
     "server_validator",

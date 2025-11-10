@@ -60,6 +60,7 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.validators import (
     default_if_empty_validator,
+    download_vs_complete_dir_validator,
     email_validator,
     host_validator,
     permissions_validator,
@@ -67,6 +68,7 @@ from sabnzbd.validators import (
     script_dir_not_appdir_validator,
     script_validator,
     server_validator,
+    single_tag_validator,
     url_base_validator,
 )
 
@@ -160,33 +162,6 @@ def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_download_vs_complete_dir(root: str, value: str, default: str):
-    """Make sure download_dir and complete_dir are not identical
-    or that download_dir is not a subfolder of complete_dir"""
-    # Check what new value we are trying to set
-    if default == DEF_COMPLETE_DIR:
-        check_download_dir = download_dir.get_path()
-        check_complete_dir = real_path(root, value)
-    elif default == DEF_DOWNLOAD_DIR:
-        check_download_dir = real_path(root, value)
-        check_complete_dir = complete_dir.get_path()
-    else:
-        raise ValueError("Validator can only be used for download_dir/complete_dir")
-
-    if same_directory(check_download_dir, check_complete_dir):
-        return (
-            T(
-                "The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"
-            ),
-            None,
-        )
-    elif default == DEF_COMPLETE_DIR:
-        # The complete_dir allows UNC
-        return default_if_empty_validator(root, value, default)
-    else:
-        return safe_dir_validator(root, value, default)
-
-
 ##############################################################################
 # Special settings
 ##############################################################################
@@ -257,7 +232,7 @@ download_dir = OptionDir(
     DEF_DOWNLOAD_DIR,
     create=False,  # Flag is modified and directory is created during initialize!
     apply_permissions=True,
-    validation=validate_download_vs_complete_dir,
+    validation=download_vs_complete_dir_validator,
 )
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
@@ -266,7 +241,7 @@ complete_dir = OptionDir(
     DEF_COMPLETE_DIR,
     create=False,  # Flag is modified and directory is created during initialize!
     apply_permissions=True,
-    validation=validate_download_vs_complete_dir,
+    validation=download_vs_complete_dir_validator,
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
