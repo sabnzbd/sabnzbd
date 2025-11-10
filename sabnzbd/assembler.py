@@ -39,7 +39,7 @@ from sabnzbd.filesystem import (
     has_unwanted_extension,
     get_basename,
 )
-from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
+from sabnzbd.constants import Status, GIGI, DEF_MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
@@ -48,6 +48,7 @@ import sabnzbd.par2file as par2file
 class Assembler(Thread):
     def __init__(self):
         super().__init__()
+        self.max_queue_size: int = cfg.assembler_max_queue_size()
         self.queue: queue.Queue[Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]] = queue.Queue()
 
     def stop(self):
@@ -57,7 +58,7 @@ class Assembler(Thread):
         self.queue.put((nzo, nzf, file_done))
 
     def queue_level(self) -> float:
-        return self.queue.qsize() / MAX_ASSEMBLER_QUEUE
+        return self.queue.qsize() / self.max_queue_size
 
     def run(self):
         while 1:

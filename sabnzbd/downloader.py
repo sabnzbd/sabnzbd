@@ -36,7 +36,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue
 from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
-from sabnzbd.constants import SOFT_QUEUE_LIMIT
+from sabnzbd.constants import SOFT_ASSEMBLER_QUEUE_LIMIT
 
 
 # Timeout penalty in minutes for each cause
@@ -451,6 +451,15 @@ class Downloader(Thread):
             self.bandwidth_perc = 0
             self.bandwidth_limit = 0
 
+        # Increase limits for faster connections
+        if limit > from_units("150M"):
+            if cfg.receive_threads() == cfg.receive_threads.default:
+                cfg.receive_threads.set(4)
+                logging.info("Receive threads set to 4")
+            if cfg.assembler_max_queue_size() == cfg.assembler_max_queue_size.default:
+                cfg.assembler_max_queue_size.set(30)
+                logging.info("Assembler max_queue_size set to 30")
+
     def sleep_time_set(self):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
         logging.debug("Sleep time: %f seconds", self.sleep_time)
@@ -826,8 +835,8 @@ class Downloader(Thread):
 
     def check_assembler_levels(self):
         """Check the Assembler queue to see if we need to delay, depending on queue size"""
-        if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
-            time.sleep(min((assembler_level - SOFT_QUEUE_LIMIT) / 4, 0.15))
+        if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_ASSEMBLER_QUEUE_LIMIT:
+            time.sleep(min((assembler_level - SOFT_ASSEMBLER_QUEUE_LIMIT) / 4, 0.15))
             sabnzbd.BPSMeter.delayed_assembler += 1
             logged_counter = 0
 

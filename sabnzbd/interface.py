@@ -906,6 +906,7 @@ SPECIAL_VALUE_LIST = (
     "max_foldername_length",
     "url_base",
     "receive_threads",
+    "assembler_max_queue_size",
     "switchinterval",
     "direct_unpack_threads",
     "selftest_host",
