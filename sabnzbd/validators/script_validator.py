@@ -28,7 +28,9 @@ from sabnzbd.validators import StringValidator, ValidateResult
 def _is_initialized():
     """Lazy import wrapper for __INITIALIZED__"""
     import sabnzbd
+
     return sabnzbd.__INITIALIZED__
+
 
 def _is_none(value):
     """Lazy import wrapper for is_none"""

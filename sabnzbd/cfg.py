@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import sabnzbd
 from sabnzbd.config import (
@@ -94,7 +94,9 @@ class ErrorCatchingArgumentParser(argparse.ArgumentParser):
         raise ValueError(message)
 
 
-def _validate_parameters_with_parser(value: str, parser: ErrorCatchingArgumentParser, return_original: Optional[str] = None) -> ValidateResult:
+def _validate_parameters_with_parser(
+    value: str, parser: ErrorCatchingArgumentParser, return_original: Optional[str] = None
+) -> ValidateResult:
     """Helper function to validate parameters using an ArgumentParser.
 
     Args:

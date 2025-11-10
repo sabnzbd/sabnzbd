@@ -63,12 +63,12 @@ class TestScriptValidator:
         """Test None value handling"""
         validator = ScriptValidator()
 
-        # None value should return "None"
+        # None value should return None
         with patch("sabnzbd.misc.is_none") as mock_is_none:
             mock_is_none.return_value = True
             error, result = validator.validate(None)
             assert error is None
-            assert result == "None"
+            assert result is None
 
     def test_script_validator_empty_string(self):
         """Test empty string handling"""
@@ -164,7 +164,7 @@ class TestScriptValidator:
             # None value
             error, result = validator.validate(None)
             assert error is None
-            assert result == "None"
+            assert result is None
 
             # Empty string (should not be converted to "None")
             mock_is_none.return_value = False

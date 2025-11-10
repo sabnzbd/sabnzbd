@@ -87,9 +87,7 @@ class TestSafeDirValidator(unittest.TestCase):
                 return_value=(None, "//network/share"),
             ),
         ):
-            error, result = self.validator.validate(
-                self.root, "//network/share", self.default
-            )
+            error, result = self.validator.validate(self.root, "//network/share", self.default)
             self.assertIsNone(error)
             self.assertEqual(result, "//network/share")
             mock_warning.assert_called_once()
@@ -113,9 +111,7 @@ class TestSafeDirValidator(unittest.TestCase):
                 return_value=(None, "/local/path"),
             ),
         ):
-            error, result = self.validator.validate(
-                self.root, "/local/path", self.default
-            )
+            error, result = self.validator.validate(self.root, "/local/path", self.default)
             self.assertIsNone(error)
             self.assertEqual(result, "/local/path")
             mock_warning.assert_not_called()
@@ -177,9 +173,7 @@ class TestSafeDirValidator(unittest.TestCase):
                 "_validate_default_if_empty",
                 return_value=(None, "/test/path"),
             ),
-            patch(
-                "sabnzbd.validators.safe_dir_validator._is_initialized", return_value=True
-            ),
+            patch("sabnzbd.validators.safe_dir_validator._is_initialized", return_value=True),
             patch.object(
                 safe_dir_validator,
                 "_postprocessor_empty",
@@ -199,9 +193,7 @@ class TestSafeDirValidator(unittest.TestCase):
         """Test edge cases for safe directory validation"""
         # Test with None values
         with (
-            patch(
-                "sabnzbd.validators.safe_dir_validator._is_initialized", return_value=True
-            ),
+            patch("sabnzbd.validators.safe_dir_validator._is_initialized", return_value=True),
             patch.object(
                 self.validator,
                 "_postprocessor_empty",
@@ -214,9 +206,7 @@ class TestSafeDirValidator(unittest.TestCase):
             ),
             patch.object(self.validator, "_is_network_path", return_value=False),
             patch.object(self.validator, "_real_path", return_value=""),
-            patch.object(
-                self.validator, "_validate_default_if_empty", return_value=(None, "")
-            ),
+            patch.object(self.validator, "_validate_default_if_empty", return_value=(None, "")),
         ):
             error, result = self.validator.validate(self.root, "", self.default)
             self.assertIsNone(error)
@@ -246,7 +236,6 @@ class TestSafeDirValidator(unittest.TestCase):
         error, result = self.validator._validate_default_if_empty("/custom/path", self.default)
         self.assertIsNone(error)
         self.assertEqual(result, "/custom/path")
-
 
     def test_safe_dir_validator_from_cfg_tests(self):
         """Test cases originally from cfg.py test file"""

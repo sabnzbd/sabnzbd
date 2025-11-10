@@ -29,12 +29,14 @@ from sabnzbd.validators import ContextualValidator, ValidateResult
 def _helpful_warning(message, *args):
     """Lazy import wrapper for helpful_warning"""
     from sabnzbd.misc import helpful_warning
+
     return helpful_warning(message, *args)
 
 
 def _get_prog_dir():
     """Lazy import wrapper for DIR_PROG"""
     import sabnzbd
+
     return sabnzbd.DIR_PROG
 
 

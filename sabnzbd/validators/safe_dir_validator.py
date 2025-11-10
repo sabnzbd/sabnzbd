@@ -28,36 +28,42 @@ from sabnzbd.validators import ContextualValidator, ValidateResult
 def _is_network_path(path):
     """Lazy import wrapper for is_network_path"""
     from sabnzbd.filesystem import is_network_path
+
     return is_network_path(path)
 
 
 def _real_path(root, value):
     """Lazy import wrapper for real_path"""
     from sabnzbd.filesystem import real_path
+
     return real_path(root, value)
 
 
 def _postprocessor_empty():
     """Lazy import wrapper for PostProcessor.empty"""
     from sabnzbd import PostProcessor
+
     return PostProcessor.empty()
 
 
 def _nzbqueue_is_empty():
     """Lazy import wrapper for NzbQueue.is_empty"""
     from sabnzbd import NzbQueue
+
     return NzbQueue.is_empty()
 
 
 def _helpful_warning(message, *args):
     """Lazy import wrapper for helpful_warning"""
     from sabnzbd.misc import helpful_warning
+
     return helpful_warning(message, *args)
 
 
 def _is_initialized():
     """Lazy import wrapper for __INITIALIZED__"""
     import sabnzbd
+
     return sabnzbd.__INITIALIZED__
 
 

@@ -207,5 +207,3 @@ class TestValidators:
         assert cfg.lower_case_ext(".Bla") == (None, "bla")
         assert cfg.lower_case_ext([".foo", ".bar"]) == (None, ["foo", "bar"])
         assert cfg.lower_case_ext([".foo ", " .bar"]) == (None, ["foo", "bar"])
-
-

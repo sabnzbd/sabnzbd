@@ -981,9 +981,7 @@ def save_config(force=False):
                 config_option = CFG_DATABASE[section][option]
                 if config_option.section not in CFG_OBJ:
                     CFG_OBJ[config_option.section] = {}
-                CFG_OBJ[config_option.section][config_option.keyword] = CFG_DATABASE[
-                    section
-                ][option]()
+                CFG_OBJ[config_option.section][config_option.keyword] = CFG_DATABASE[section][option]()
 
     res = False
     filename = CFG_OBJ.filename

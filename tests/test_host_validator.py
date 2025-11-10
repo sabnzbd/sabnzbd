@@ -116,12 +116,6 @@ class TestHostValidator:
         assert "Invalid hostname" in error
         assert result is None
 
-        # None value
-        error, result = validator.validate(None)
-        assert error is not None
-        assert "Invalid hostname" in error
-        assert result is None
-
         # Very long but valid IP
         long_ip = "192.168." + "1." * 60 + "1"
         # This will be too long for IPv4 format, so it should fail

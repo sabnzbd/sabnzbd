@@ -52,47 +52,67 @@ class TestEmailValidator:
         """Test invalid email addresses"""
         validator = EmailValidator()
 
-        # Invalid email format - missing @
-        error, result = validator.validate("invalid-email")
-        assert error is not None
-        assert "not a valid email address" in error
-        assert result is None
+        # Mock email functions to return True (email notifications enabled)
+        with (
+            patch("sabnzbd.cfg.email_endjob") as mock_endjob,
+            patch("sabnzbd.cfg.email_full") as mock_full,
+            patch("sabnzbd.cfg.email_rss") as mock_rss,
+        ):
+            mock_endjob.return_value = True
+            mock_full.return_value = True
+            mock_rss.return_value = True
 
-        # Invalid email - missing domain
-        error, result = validator.validate("user@")
-        assert error is not None
-        assert "not a valid email address" in error
-        assert result is None
+            # Invalid email format - missing @
+            error, result = validator.validate("invalid-email")
+            assert error is not None
+            assert "not a valid email address" in error
+            assert result is None
 
-        # Invalid email - missing local part
-        error, result = validator.validate("@domain.com")
-        assert error is not None
-        assert "not a valid email address" in error
-        assert result is None
+            # Invalid email - missing domain
+            error, result = validator.validate("user@")
+            assert error is not None
+            assert "not a valid email address" in error
+            assert result is None
 
-        # Invalid email - multiple @ symbols
-        error, result = validator.validate("user@domain@com")
-        assert error is not None
-        assert "not a valid email address" in error
-        assert result is None
+            # Invalid email - missing local part
+            error, result = validator.validate("@domain.com")
+            assert error is not None
+            assert "not a valid email address" in error
+            assert result is None
+
+            # Invalid email - multiple @ symbols
+            error, result = validator.validate("user@domain@com")
+            assert error is not None
+            assert "not a valid email address" in error
+            assert result is None
 
     def test_email_validator_email_list(self):
         """Test email validation with lists"""
         validator = EmailValidator()
 
-        # Valid email list
-        error, result = validator.validate(["test@example.com", "user@domain.org"])
-        assert error is None
-        assert result == ["test@example.com", "user@domain.org"]
+        # Mock email functions to return True (email notifications enabled)
+        with (
+            patch("sabnzbd.cfg.email_endjob") as mock_endjob,
+            patch("sabnzbd.cfg.email_full") as mock_full,
+            patch("sabnzbd.cfg.email_rss") as mock_rss,
+        ):
+            mock_endjob.return_value = True
+            mock_full.return_value = True
+            mock_rss.return_value = True
 
-        # Invalid email in list
-        error, result = validator.validate(["valid@example.com", "invalid"])
-        assert error is not None
-        assert "not a valid email address" in error
-        assert result is None
+            # Valid email list
+            error, result = validator.validate(["test@example.com", "user@domain.org"])
+            assert error is None
+            assert result == ["test@example.com", "user@domain.org"]
+
+            # Invalid email in list
+            error, result = validator.validate(["valid@example.com", "invalid"])
+            assert error is not None
+            assert "not a valid email address" in error
+            assert result is None
 
     def test_email_validator_conditional_validation(self):
-        """Test that email validation always validates email format regardless of notification settings"""
+        """Test that email validation only happens when email notifications are enabled"""
         validator = EmailValidator()
 
         # Mock email functions to return False (no email notifications enabled)
@@ -105,11 +125,10 @@ class TestEmailValidator:
             mock_full.return_value = False
             mock_rss.return_value = False
 
-            # Email validation should still happen even when notifications are disabled
+            # Email validation should NOT happen when notifications are disabled
             error, result = validator.validate("invalid-email")
-            assert error is not None
-            assert "not a valid email address" in error
-            assert result is None
+            assert error is None
+            assert result == "invalid-email"
 
     def test_email_validator_instance(self):
         """Test the convenience validator instance"""
@@ -117,10 +136,20 @@ class TestEmailValidator:
         assert email_validator is not None
         assert callable(email_validator)
 
-        # Test that the instance works correctly
-        error, result = email_validator("test@example.com")
-        assert error is None
-        assert result == "test@example.com"
+        # Mock email functions to return True (email notifications enabled)
+        with (
+            patch("sabnzbd.cfg.email_endjob") as mock_endjob,
+            patch("sabnzbd.cfg.email_full") as mock_full,
+            patch("sabnzbd.cfg.email_rss") as mock_rss,
+        ):
+            mock_endjob.return_value = True
+            mock_full.return_value = True
+            mock_rss.return_value = True
+
+            # Test that the instance works correctly
+            error, result = email_validator("test@example.com")
+            assert error is None
+            assert result == "test@example.com"
 
     def test_email_validator_edge_cases(self):
         """Test edge cases for email validation"""

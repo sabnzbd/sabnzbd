@@ -28,6 +28,7 @@ from sabnzbd.validators import StringValidator, ValidateResult
 def _helpful_warning(message, *args):
     """Lazy import wrapper for helpful_warning"""
     from sabnzbd.misc import helpful_warning
+
     return helpful_warning(message, *args)
 
 
