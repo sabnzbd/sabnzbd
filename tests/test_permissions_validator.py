@@ -23,8 +23,13 @@ import unittest
 from unittest.mock import patch
 
 import pytest
+import importlib
 
 from sabnzbd.validators import PermissionsValidator, permissions_validator
+
+
+# Import the actual module for patching
+permissions_validator_module = importlib.import_module("sabnzbd.validators.permissions_validator")
 
 
 class TestPermissionsValidator(unittest.TestCase):
@@ -102,7 +107,7 @@ class TestPermissionsValidator(unittest.TestCase):
         assert "0" in error
         assert result is None
 
-    @patch("sabnzbd.validators.permissions_validator._helpful_warning")
+    @patch.object(permissions_validator_module, "_helpful_warning")
     def test_permissions_validator_low_permissions_warning(self, mock_warning):
         """Test that low permissions trigger a warning"""
         validator = PermissionsValidator()
@@ -124,7 +129,7 @@ class TestPermissionsValidator(unittest.TestCase):
             else:
                 mock_warning.assert_not_called()
 
-    @patch("sabnzbd.validators.permissions_validator._helpful_warning")
+    @patch.object(permissions_validator_module, "_helpful_warning")
     def test_permissions_validator_adequate_permissions_no_warning(self, mock_warning):
         """Test that adequate permissions don't trigger warnings"""
         validator = PermissionsValidator()

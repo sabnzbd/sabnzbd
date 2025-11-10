@@ -23,11 +23,16 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 import pytest
+import importlib
 
 from sabnzbd.validators import (
     ScriptDirNotAppDirValidator,
     script_dir_not_appdir_validator,
 )
+
+
+# Import the actual module for patching
+script_dir_not_appdir_validator_module = importlib.import_module("sabnzbd.validators.script_dir_not_appdir_validator")
 
 
 class TestScriptDirNotAppDirValidator(unittest.TestCase):
@@ -39,62 +44,50 @@ class TestScriptDirNotAppDirValidator(unittest.TestCase):
         self.root = "/test/root"
         self.default = "/default/path"
 
-    @patch("sabnzbd.validators.script_dir_not_appdir_validator._helpful_warning")
+    @patch.object(script_dir_not_appdir_validator_module, "_helpful_warning")
     def test_script_dir_not_appdir_validator_app_directory_warning(self, mock_warning):
         """Test that app directory usage triggers warning"""
         # Mock same_directory to return True (app directory detected)
         with (
             patch.object(self.validator, "_same_directory", return_value=True),
-            patch(
-                "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                return_value="/app",
-            ),
+            patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
         ):
             error, result = self.validator.validate(self.root, "/app/scripts", self.default)
             self.assertIsNone(error)
             self.assertEqual(result, "/app/scripts")
             mock_warning.assert_called_once()
 
-    @patch("sabnzbd.validators.script_dir_not_appdir_validator._helpful_warning")
+    @patch.object(script_dir_not_appdir_validator_module, "_helpful_warning")
     def test_script_dir_not_appdir_validator_non_app_directory_no_warning(self, mock_warning):
         """Test that non-app directory doesn't trigger warning"""
         # Mock same_directory to return False (not app directory)
         with (
             patch.object(self.validator, "_same_directory", return_value=False),
-            patch(
-                "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                return_value="/app",
-            ),
+            patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
         ):
             error, result = self.validator.validate(self.root, "/custom/scripts", self.default)
             self.assertIsNone(error)
             self.assertEqual(result, "/custom/scripts")
             mock_warning.assert_not_called()
 
-    @patch("sabnzbd.validators.script_dir_not_appdir_validator._helpful_warning")
+    @patch.object(script_dir_not_appdir_validator_module, "_helpful_warning")
     def test_script_dir_not_appdir_validator_empty_value_no_warning(self, mock_warning):
         """Test that empty value doesn't trigger warning"""
         with (
             patch.object(self.validator, "_same_directory", return_value=False),
-            patch(
-                "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                return_value="/app",
-            ),
+            patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
         ):
             error, result = self.validator.validate(self.root, "", self.default)
             self.assertIsNone(error)
             self.assertEqual(result, "")
             mock_warning.assert_not_called()
 
-    @patch("sabnzbd.validators.script_dir_not_appdir_validator._helpful_warning")
+    @patch.object(script_dir_not_appdir_validator_module, "_helpful_warning")
     def test_script_dir_not_appdir_validator_none_value_no_warning(self, mock_warning):
         """Test that None value doesn't trigger warning"""
         with (
             patch.object(self.validator, "_same_directory", return_value=False),
-            patch(
-                "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                return_value="/app",
-            ),
+            patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
         ):
             error, result = self.validator.validate(self.root, None, self.default)
             self.assertIsNone(error)
@@ -110,11 +103,8 @@ class TestScriptDirNotAppDirValidator(unittest.TestCase):
         # Test that the instance works correctly with non-app directory
         with (
             patch.object(script_dir_not_appdir_validator, "_same_directory", return_value=False),
-            patch("sabnzbd.validators.script_dir_not_appdir_validator._helpful_warning") as mock_warning,
-            patch(
-                "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                return_value="/app",
-            ),
+            patch.object(script_dir_not_appdir_validator_module, "_helpful_warning") as mock_warning,
+            patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
         ):
             error, result = script_dir_not_appdir_validator(self.root, "/custom/scripts", self.default)
             self.assertIsNone(error)
@@ -124,11 +114,8 @@ class TestScriptDirNotAppDirValidator(unittest.TestCase):
         # Test that the instance works correctly with app directory
         with (
             patch.object(script_dir_not_appdir_validator, "_same_directory", return_value=True),
-            patch("sabnzbd.validators.script_dir_not_appdir_validator._helpful_warning") as mock_warning,
-            patch(
-                "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                return_value="/app",
-            ),
+            patch.object(script_dir_not_appdir_validator_module, "_helpful_warning") as mock_warning,
+            patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
         ):
             error, result = script_dir_not_appdir_validator(self.root, "/app/scripts", self.default)
             self.assertIsNone(error)
@@ -139,10 +126,7 @@ class TestScriptDirNotAppDirValidator(unittest.TestCase):
         """Test edge cases for script directory validation"""
         with (
             patch.object(self.validator, "_same_directory", return_value=False),
-            patch(
-                "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                return_value="/app",
-            ),
+            patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
         ):
             # Test with whitespace-only value
             error, result = self.validator.validate(self.root, "   ", self.default)
@@ -164,7 +148,7 @@ class TestScriptDirNotAppDirValidator(unittest.TestCase):
             self.assertTrue(result)
             mock_same.assert_called_once_with("/path1", "/path2")
 
-    @patch("sabnzbd.validators.script_dir_not_appdir_validator._helpful_warning")
+    @patch.object(script_dir_not_appdir_validator_module, "_helpful_warning")
     def test_script_dir_not_appdir_validator_various_paths(self, mock_warning):
         """Test various path scenarios"""
         test_cases = [
@@ -181,10 +165,7 @@ class TestScriptDirNotAppDirValidator(unittest.TestCase):
             with self.subTest(path=path):
                 with (
                     patch.object(self.validator, "_same_directory", return_value=is_app_directory),
-                    patch(
-                        "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                        return_value="/app",
-                    ),
+                    patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
                 ):
                     error, result = self.validator.validate(self.root, path, self.default)
                     self.assertIsNone(error)
@@ -211,10 +192,7 @@ class TestScriptDirNotAppDirValidator(unittest.TestCase):
             with self.subTest(value=value):
                 with (
                     patch.object(self.validator, "_same_directory", return_value=False),
-                    patch(
-                        "sabnzbd.validators.script_dir_not_appdir_validator._get_prog_dir",
-                        return_value="/app",
-                    ),
+                    patch.object(script_dir_not_appdir_validator_module, "_get_prog_dir", return_value="/app"),
                 ):
                     error, result = self.validator.validate(self.root, value, self.default)
                     self.assertIsNone(error)

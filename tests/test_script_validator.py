@@ -22,8 +22,13 @@ Tests for sabnzbd.validators.script_validator module
 from unittest.mock import patch
 
 import pytest
+import importlib
 
 from sabnzbd.validators import ScriptValidator, script_validator
+
+
+# Import the actual module for patching
+script_validator_module = importlib.import_module("sabnzbd.validators.script_validator")
 
 
 class TestScriptValidator:
@@ -50,7 +55,7 @@ class TestScriptValidator:
 
         # Invalid script (mocked)
         with (
-            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
+            patch.object(script_validator_module, "_is_initialized", return_value=True),
             patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
         ):
             mock_is_valid.return_value = False
@@ -87,7 +92,7 @@ class TestScriptValidator:
 
         # When not initialized, any script should pass
         with (
-            patch("sabnzbd.validators.script_validator._is_initialized", return_value=False),
+            patch.object(script_validator_module, "_is_initialized", return_value=False),
             patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
         ):
             mock_is_valid.return_value = False  # Script is invalid
@@ -97,7 +102,7 @@ class TestScriptValidator:
 
         # When initialized, validation should be enforced
         with (
-            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
+            patch.object(script_validator_module, "_is_initialized", return_value=True),
             patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
         ):
             mock_is_valid.return_value = False
@@ -114,7 +119,7 @@ class TestScriptValidator:
 
         # Test that the instance works correctly with valid script
         with (
-            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
+            patch.object(script_validator_module, "_is_initialized", return_value=True),
             patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
         ):
             mock_is_valid.return_value = True
@@ -124,7 +129,7 @@ class TestScriptValidator:
 
         # Test that the instance works correctly with invalid script
         with (
-            patch("sabnzbd.validators.script_validator._is_initialized", return_value=True),
+            patch.object(script_validator_module, "_is_initialized", return_value=True),
             patch("sabnzbd.filesystem.is_valid_script") as mock_is_valid,
         ):
             mock_is_valid.return_value = False
