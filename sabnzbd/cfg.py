@@ -52,12 +52,6 @@ from sabnzbd.constants import (
     DEF_STD_WEB_COLOR,
     DEF_STD_WEB_DIR,
 )
-from sabnzbd.filesystem import (
-    is_network_path,
-    is_valid_script,
-    real_path,
-    same_directory,
-)
 from sabnzbd.validators import (
     default_if_empty_validator,
     download_vs_complete_dir_validator,
@@ -68,7 +62,6 @@ from sabnzbd.validators import (
     script_dir_not_appdir_validator,
     script_validator,
     server_validator,
-    single_tag_validator,
     url_base_validator,
 )
 
@@ -726,82 +719,3 @@ def guard_language():
 def guard_https_ver():
     """Callback for change of https verification"""
     sabnzbd.misc.set_https_verification(enable_https_verification())
-
-
-##############################################################################
-# Conversions
-##############################################################################
-
-
-def config_conversions():
-    """Update sections of the config, only once"""
-    # Basic old conversions
-    if config_conversion_version() < 1:
-        logging.info("Config conversion set 1")
-        # Convert auto-sort
-        if auto_sort() == "0":
-            auto_sort.set("")
-        elif auto_sort() == "1":
-            auto_sort.set("avg_age asc")
-
-        # Convert old series/date/movie sorters
-        if not sorters_converted():
-            sabnzbd.misc.convert_sorter_settings()
-            sorters_converted.set(True)
-
-        # Convert duplicate settings
-        if no_series_dupes():
-            no_smart_dupes.set(no_series_dupes())
-            no_series_dupes.set(0)
-
-        # Convert history retention setting
-        if history_retention():
-            sabnzbd.misc.convert_history_retention()
-            history_retention.set("")
-
-        # Add hostname to the whitelist
-        if not host_whitelist():
-            host_whitelist.set(socket.gethostname())
-
-        # Set cache limit for new users
-        if not cache_limit():
-            cache_limit.set(sabnzbd.misc.get_cache_limit())
-
-        # Done
-        config_conversion_version.set(1)
-
-    # url_base conversion
-    if config_conversion_version() < 2:
-        # We did not end up applying this conversion, so we skip this conversion_version
-        logging.info("Config conversion set 2")
-        config_conversion_version.set(2)
-
-    # Switch to par2cmdline-turbo on Windows
-    if config_conversion_version() < 3:
-        logging.info("Config conversion set 3")
-        if sabnzbd.WINDOWS and par_option():
-            # Just empty it, so we don't pass the wrong parameters
-            logging.warning(
-                T(
-                    "The par2 application was switched, any custom par2 parameters were removed"
-                )
-            )
-            par_option.set("")
-
-        # Done
-        config_conversion_version.set(3)
-
-    # Convert Certificate Validation
-    if config_conversion_version() < 4:
-        logging.info("Config conversion set 4")
-
-        all_servers = get_servers()
-        for server in all_servers:
-            if all_servers[server].ssl_verify() == 2:
-                all_servers[server].ssl_verify.set(3)
-
-        # Done
-        config_conversion_version.set(4)
-
-    # Make sure we store the new values
-    save_config()
