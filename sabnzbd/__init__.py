@@ -212,7 +212,7 @@ INIT_LOCK = Lock()
 
 def get_db_connection(thread_index=0):
     # Create a connection and store it in the current thread
-    if not (hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_dbabnzbd.downloader.Downloader():
+    if not (hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_db):
         cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
     return cherrypy.thread_data.history_db
 
