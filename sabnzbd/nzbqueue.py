@@ -768,10 +768,9 @@ class NzbQueue:
             nzo.removed_from_queue = True
             if nzo.precheck:
                 nzo.save_to_disk()
-                # Check result
-                enough, _ = nzo.check_availability_ratio()
-                if enough:
-                    # Enough data present, do real download
+                # If not enough data is present, fail flag will be set (also used by postproc)
+                if not nzo.fail_msg:
+                    # Send back for real download
                     self.send_back(nzo)
                     return
                 else:
