@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import sabnzbd
 from sabnzbd.config import (
@@ -54,7 +54,19 @@ from sabnzbd.constants import (
     DEF_HTTPS_KEY_FILE,
     DEF_MAX_ASSEMBLER_QUEUE,
 )
-from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
+
+from sabnzbd.validators import (
+    default_if_empty_validator,
+    download_vs_complete_dir_validator,
+    email_validator,
+    host_validator,
+    permissions_validator,
+    safe_dir_validator,
+    script_dir_not_appdir_validator,
+    script_validator,
+    server_validator,
+    url_base_validator,
+)
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
@@ -65,10 +77,49 @@ ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None
 # Default Validation handlers
 ##############################################################################
 class ErrorCatchingArgumentParser(argparse.ArgumentParser):
-    def error(self, status=0, message=None):
-        # Need to override so it doesn't raise SystemExit
-        if status:
-            raise ValueError
+    """Custom ArgumentParser that raises ValueError instead of SystemExit.
+
+    This prevents the application from exiting when invalid command-line parameters
+    are encountered during configuration validation.
+    """
+
+    def error(self, message: str) -> None:
+        """Override to raise ValueError instead of SystemExit.
+
+        Args:
+            message: The error message describing the validation failure
+
+        Raises:
+            ValueError: Always raised with the provided error message
+        """
+        raise ValueError(message)
+
+
+def _validate_parameters_with_parser(
+    value: str, parser: ErrorCatchingArgumentParser, return_original: Optional[str] = None
+) -> ValidateResult:
+    """Helper function to validate parameters using an ArgumentParser.
+
+    Args:
+        value: The parameter string to validate
+        parser: Configured ArgumentParser instance
+        return_original: If provided, return this value on success instead of the processed value
+
+    Returns:
+        ValidationResult with error message or validated value
+    """
+    if not value:
+        return None, return_original or value
+
+    try:
+        parser.parse_args(value.split())
+        return None, return_original or value
+    except ValueError:
+        # Always show the original value in error messages for clarity
+        error_value = return_original if return_original is not None else value
+        msg = "%s: %s" % (T("Incorrect parameter"), error_value)
+        logging.error(msg)
+        return msg, None
 
 
 def clean_nice_ionice_parameters(value: str) -> ValidateResult:
@@ -84,13 +135,7 @@ def clean_nice_ionice_parameters(value: str) -> ValidateResult:
         parser.add_argument("-c", "--class", type=int)
         parser.add_argument("-t", "--ignore", action="store_true")
 
-        try:
-            parser.parse_args(value.split())
-        except ValueError:
-            # Also log at start-up if invalid parameter was set in the ini
-            msg = "%s: %s" % (T("Incorrect parameter"), value)
-            logging.error(msg)
-            return msg, None
+        return _validate_parameters_with_parser(value, parser)
     return None, value
 
 
@@ -107,204 +152,49 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
             # Priority and sleep time: -ri<p>[:<s>] (p: 0-15, s: 0-1000)
             parser.add_argument(*("-ri" + str(p) for p in range(16)), action="store_true")
 
-        try:
-            # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
-            # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
-            parser.parse_args(
-                re.sub(r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)", r"\1\2\3", value)
-                .lower()
-                .split()
-            )
-        except ValueError:
-            # Also log at start-up if invalid parameter was set in the ini
-            msg = "%s: %s" % (T("Incorrect parameter"), value)
-            logging.error(msg)
-            return msg, None
+        # Make the regexp and argument parsing case-insensitive, as unrar seems to do that as well, and
+        # strip the sleep time from valid forms of -ri to avoid handling ~16k combinations of <p> and <s>
+        processed_value = re.sub(
+            r"(?i)(^|\s)(-ri(?:1[0-5]|[0-9]))(?::(?:1000|[1-9][0-9]{,2}|0))?($|\s)",
+            r"\1\2\3",
+            value,
+        )
+
+        # Convert to lowercase for parsing but preserve original case for return value
+        parsed_value = processed_value.lower()
+        return _validate_parameters_with_parser(parsed_value, parser, return_original=value)
     return None, value
 
 
 def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
-    """Lowercase and strip everything!"""
+    """Lowercase and strip everything!
+
+    Args:
+        value: String or list of strings to process
+
+    Returns:
+        Tuple with (None, processed_value) where all text is lowercased and stripped
+    """
     if isinstance(value, list):
         return None, [item.lower().strip() for item in value]
     return None, value.lower().strip()
 
 
 def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
-    """Generate lower case extension(s), without dot"""
+    """Generate lower case extension(s), without dot
+
+    Args:
+        value: String or list of strings representing file extensions
+
+    Returns:
+        Tuple with (None, processed_value) where extensions are lowercased and dots are removed
+    """
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
 
 
-def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
-    """Don't split single indexer tags like "TV > HD"
-    into ['TV', '>', 'HD']
-    """
-    if len(value) == 3:
-        if value[1] == ">":
-            return None, [" ".join(value)]
-    return None, value
-
-
-def validate_url_base(value: str) -> Tuple[None, str]:
-    """Strips the right slash and adds starting slash, if not present"""
-    if value and isinstance(value, str):
-        if not value.startswith("/"):
-            value = "/" + value
-        return None, value.rstrip("/")
-    return None, value
-
-
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
-
-
-def validate_email(value: Union[List, str]) -> ValidateResult:
-    if email_endjob() or email_full() or email_rss():
-        if isinstance(value, list):
-            values = value
-        else:
-            values = [value]
-        for addr in values:
-            if not (addr and RE_VAL.match(addr)):
-                return T("%s is not a valid email address") % addr, None
-    return None, value
-
-
-def validate_server(value: str) -> ValidateResult:
-    """Check if server non-empty"""
-    if value == "" and (email_endjob() or email_full() or email_rss()):
-        return T("Server address required"), None
-    else:
-        return None, value
-
-
-def validate_host(value: str) -> ValidateResult:
-    """Check if host is valid: an IP address, or a name/FQDN that resolves to an IP address"""
-    # easy: value is a plain IPv4 or IPv6 address:
-    try:
-        ipaddress.ip_address(value)
-        # valid host, so return it
-        return None, value
-    except Exception:
-        pass
-
-    # we don't want a plain number. As socket.getaddrinfo("100", ...) allows that, we have to pre-check
-    try:
-        int(value)
-        # plain int as input, which is not allowed
-        return T("Invalid server address."), None
-    except Exception:
-        pass
-
-    # not a plain IPv4 nor IPv6 address, so let's check if it's a name that resolves to IPv4
-    try:
-        socket.getaddrinfo(value, None, socket.AF_INET)
-        # all good
-        logging.debug("Valid host name")
-        return None, value
-    except Exception:
-        pass
-
-    # ... and if not: does it resolve to IPv6 ... ?
-    try:
-        socket.getaddrinfo(value, None, socket.AF_INET6)
-        # all good
-        logging.debug("Valid host name")
-        return None, value
-    except Exception:
-        logging.debug("No valid host name")
-        pass
-
-    # if we get here, it is not valid host, so return None
-    return T("Invalid server address."), None
-
-
-def validate_script(value: str) -> ValidateResult:
-    """Check if value is a valid script"""
-    if not sabnzbd.__INITIALIZED__ or (value and is_valid_script(value)):
-        return None, value
-    elif sabnzbd.misc.is_none(value):
-        return None, "None"
-    return T("%s is not a valid script") % value, None
-
-
-def validate_permissions(value: str) -> ValidateResult:
-    """Check the permissions for correct input"""
-    # Octal verification
-    if not value:
-        return None, value
-    try:
-        oct_value = int(value, 8)
-        # Block setting it to 0
-        if not oct_value:
-            raise ValueError
-    except ValueError:
-        return T("%s is not a correct octal value") % value, None
-
-    # Check if we at least have user-permissions
-    if oct_value < int("700", 8):
-        sabnzbd.misc.helpful_warning(
-            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."), value
-        )
-    return None, value
-
-
-def validate_safedir(root: str, value: str, default: str) -> ValidateResult:
-    """Allow only when queues are empty and not a network-path"""
-    if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
-        # We allow it, but send a warning
-        if is_network_path(real_path(root, value)):
-            sabnzbd.misc.helpful_warning(T('Network path "%s" should not be used here'), value)
-        return validate_default_if_empty(root, value, default)
-    else:
-        return T("Queue not empty, cannot change folder."), None
-
-
-def validate_download_vs_complete_dir(root: str, value: str, default: str):
-    """Make sure download_dir and complete_dir are not identical
-    or that download_dir is not a subfolder of complete_dir"""
-    # Check what new value we are trying to set
-    if default == DEF_COMPLETE_DIR:
-        check_download_dir = download_dir.get_path()
-        check_complete_dir = real_path(root, value)
-    elif default == DEF_DOWNLOAD_DIR:
-        check_download_dir = real_path(root, value)
-        check_complete_dir = complete_dir.get_path()
-    else:
-        raise ValueError("Validator can only be used for download_dir/complete_dir")
-
-    if same_directory(check_download_dir, check_complete_dir):
-        return (
-            T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
-            None,
-        )
-    elif default == DEF_COMPLETE_DIR:
-        # The complete_dir allows UNC
-        return validate_default_if_empty(root, value, default)
-    else:
-        return validate_safedir(root, value, default)
-
-
-def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
-    """Warn users to not use the Program Files folder for their scripts"""
-    # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
-    if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
-        # Warn, but do not block
-        sabnzbd.misc.helpful_warning(
-            T(
-                "Do not use a folder in the application folder as your Scripts Folder, it might be emptied during updates."
-            )
-        )
-    return None, value
-
-
-def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None, str]:
-    """If value is empty, return default"""
-    if value:
-        return None, value
-    else:
-        return None, default
 
 
 ##############################################################################
@@ -346,7 +236,7 @@ version_check = OptionNumber("misc", "check_new_rel", 1)
 autobrowser = OptionBool("misc", "auto_browser", True)
 language = OptionStr("misc", "language", "en")
 enable_https_verification = OptionBool("misc", "enable_https_verification", True)
-web_host = OptionStr("misc", "host", DEF_HOST, validation=validate_host)
+web_host = OptionStr("misc", "host", DEF_HOST, validation=host_validator)
 web_port = OptionStr("misc", "port", DEF_PORT)
 https_port = OptionStr("misc", "https_port")
 username = OptionStr("misc", "username")
@@ -368,14 +258,14 @@ socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 ##############################################################################
 # Config - Folders
 ##############################################################################
-permissions = OptionStr("misc", "permissions", validation=validate_permissions)
+permissions = OptionStr("misc", "permissions", validation=permissions_validator)
 download_dir = OptionDir(
     "misc",
     "download_dir",
     DEF_DOWNLOAD_DIR,
     create=False,  # Flag is modified and directory is created during initialize!
     apply_permissions=True,
-    validation=validate_download_vs_complete_dir,
+    validation=download_vs_complete_dir_validator,
 )
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
@@ -384,18 +274,18 @@ complete_dir = OptionDir(
     DEF_COMPLETE_DIR,
     create=False,  # Flag is modified and directory is created during initialize!
     apply_permissions=True,
-    validation=validate_download_vs_complete_dir,
+    validation=download_vs_complete_dir_validator,
 )
 complete_free = OptionStr("misc", "complete_free")
 fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
-script_dir = OptionDir("misc", "script_dir", writable=False, validation=validate_scriptdir_not_appdir)
+script_dir = OptionDir("misc", "script_dir", writable=False, validation=script_dir_not_appdir_validator)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
-admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
+admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=safe_dir_validator)
 backup_dir = OptionDir("misc", "backup_dir")
 dirscan_dir = OptionDir("misc", "dirscan_dir", writable=False)
 dirscan_speed = OptionNumber("misc", "dirscan_speed", DEF_SCANRATE, minval=0, maxval=3600)
 password_file = OptionDir("misc", "password_file", "", create=False)
-log_dir = OptionDir("misc", "log_dir", "logs", validation=validate_default_if_empty)
+log_dir = OptionDir("misc", "log_dir", "logs", validation=default_if_empty_validator)
 
 
 ##############################################################################
@@ -415,8 +305,8 @@ ionice = OptionStr("misc", "ionice", validation=clean_nice_ionice_parameters)
 fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
-pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
-end_queue_script = OptionStr("misc", "end_queue_script", "None", validation=validate_script)
+pre_script = OptionStr("misc", "pre_script", "None", validation=script_validator)
+end_queue_script = OptionStr("misc", "end_queue_script", "None", validation=script_validator)
 no_dupes = OptionNumber("misc", "no_dupes", 0)
 no_series_dupes = OptionNumber("misc", "no_series_dupes", 0)  # Kept for converting to no_smart_dupes
 no_smart_dupes = OptionNumber("misc", "no_smart_dupes", 0)
@@ -522,7 +412,7 @@ wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, minval=1, maxval=60)
 max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, minval=20, maxval=65000)
 marker_file = OptionStr("misc", "nomedia_marker")
 ipv6_servers = OptionBool("misc", "ipv6_servers", True)
-url_base = OptionStr("misc", "url_base", "", validation=validate_url_base)
+url_base = OptionStr("misc", "url_base", "", validation=url_base_validator)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
@@ -540,9 +430,9 @@ outgoing_nntp_ip = OptionStr("misc", "outgoing_nntp_ip")
 # Config - Notifications
 ##############################################################################
 # [email]
-email_server = OptionStr("misc", "email_server", validation=validate_server)
-email_to = OptionList("misc", "email_to", validation=validate_email)
-email_from = OptionStr("misc", "email_from", validation=validate_email)
+email_server = OptionStr("misc", "email_server", validation=server_validator)
+email_to = OptionList("misc", "email_to", validation=email_validator)
+email_from = OptionStr("misc", "email_from", validation=email_validator)
 email_account = OptionStr("misc", "email_account")
 email_pwd = OptionPassword("misc", "email_pwd")
 email_endjob = OptionNumber("misc", "email_endjob", 0, 0, 2)
@@ -695,7 +585,7 @@ apprise_target_other_enable = OptionBool("apprise", "apprise_target_other_enable
 # [nscript]
 nscript_enable = OptionBool("nscript", "nscript_enable")
 nscript_cats = OptionList("nscript", "nscript_cats", ["*"])
-nscript_script = OptionStr("nscript", "nscript_script", validation=validate_script)
+nscript_script = OptionStr("nscript", "nscript_script", validation=script_validator)
 nscript_parameters = OptionStr("nscript", "nscript_parameters")
 nscript_prio_startup = OptionBool("nscript", "nscript_prio_startup", False)
 nscript_prio_download = OptionBool("nscript", "nscript_prio_download", False)
@@ -732,128 +622,3 @@ def set_root_folders2():
     https_cert.set_root(admin_dir.get_path())
     https_key.set_root(admin_dir.get_path())
     https_chain.set_root(admin_dir.get_path())
-
-
-##############################################################################
-# Callbacks for settings
-##############################################################################
-def new_limit():
-    """Callback for article cache changes"""
-    if sabnzbd.__INITIALIZED__:
-        # Only update after full startup
-        sabnzbd.ArticleCache.new_limit(cache_limit.get_int())
-
-
-def guard_restart():
-    """Callback for config options requiring a restart"""
-    sabnzbd.RESTART_REQ = True
-
-
-def guard_top_only():
-    """Callback for change of top_only option"""
-    sabnzbd.NzbQueue.set_top_only(top_only())
-
-
-def guard_pause_on_pp():
-    """Callback for change of pause-download-on-pp"""
-    if pause_on_post_processing():
-        pass  # Not safe to idle downloader, because we don't know
-        # if post-processing is active now
-    else:
-        sabnzbd.Downloader.resume_from_postproc()
-
-
-def guard_quota_size():
-    """Callback for change of quota_size"""
-    sabnzbd.BPSMeter.change_quota()
-
-
-def guard_quota_dp():
-    """Callback for change of quota_day or quota_period"""
-    sabnzbd.Scheduler.restart()
-
-
-def guard_language():
-    """Callback for change of the interface language"""
-    sabnzbd.lang.set_language(language())
-    sabnzbd.api.clear_trans_cache()
-
-
-def guard_https_ver():
-    """Callback for change of https verification"""
-    sabnzbd.misc.set_https_verification(enable_https_verification())
-
-
-##############################################################################
-# Conversions
-##############################################################################
-
-
-def config_conversions():
-    """Update sections of the config, only once"""
-    # Basic old conversions
-    if config_conversion_version() < 1:
-        logging.info("Config conversion set 1")
-        # Convert auto-sort
-        if auto_sort() == "0":
-            auto_sort.set("")
-        elif auto_sort() == "1":
-            auto_sort.set("avg_age asc")
-
-        # Convert old series/date/movie sorters
-        if not sorters_converted():
-            sabnzbd.misc.convert_sorter_settings()
-            sorters_converted.set(True)
-
-        # Convert duplicate settings
-        if no_series_dupes():
-            no_smart_dupes.set(no_series_dupes())
-            no_series_dupes.set(0)
-
-        # Convert history retention setting
-        if history_retention():
-            sabnzbd.misc.convert_history_retention()
-            history_retention.set("")
-
-        # Add hostname to the whitelist
-        if not host_whitelist():
-            host_whitelist.set(socket.gethostname())
-
-        # Set cache limit for new users
-        if not cache_limit():
-            cache_limit.set(sabnzbd.misc.get_cache_limit())
-
-        # Done
-        config_conversion_version.set(1)
-
-    # url_base conversion
-    if config_conversion_version() < 2:
-        # We did not end up applying this conversion, so we skip this conversion_version
-        logging.info("Config conversion set 2")
-        config_conversion_version.set(2)
-
-    # Switch to par2cmdline-turbo on Windows
-    if config_conversion_version() < 3:
-        logging.info("Config conversion set 3")
-        if sabnzbd.WINDOWS and par_option():
-            # Just empty it, so we don't pass the wrong parameters
-            logging.warning(T("The par2 application was switched, any custom par2 parameters were removed"))
-            par_option.set("")
-
-        # Done
-        config_conversion_version.set(3)
-
-    # Convert Certificate Validation
-    if config_conversion_version() < 4:
-        logging.info("Config conversion set 4")
-
-        all_servers = get_servers()
-        for server in all_servers:
-            if all_servers[server].ssl_verify() == 2:
-                all_servers[server].ssl_verify.set(3)
-
-        # Done
-        config_conversion_version.set(4)
-
-    # Make sure we store the new values
-    save_config()

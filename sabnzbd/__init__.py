@@ -115,6 +115,7 @@ import sabnzbd.utils.ssdp
 import sabnzbd.utils.checkdir
 import sabnzbd.utils.ssdp
 
+
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
 Assembler: sabnzbd.assembler.Assembler
@@ -247,28 +248,30 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.complete_dir.create_path()
 
     # Set call backs for Config items
-    cfg.cache_limit.callback(cfg.new_limit)
-    cfg.web_host.callback(cfg.guard_restart)
-    cfg.web_port.callback(cfg.guard_restart)
-    cfg.web_dir.callback(cfg.guard_restart)
-    cfg.web_color.callback(cfg.guard_restart)
+    from sabnzbd.config_callbacks import ConfigCallbacks
+
+    cfg.cache_limit.callback(lambda: ConfigCallbacks.new_limit(cfg.cache_limit))
+    cfg.web_host.callback(ConfigCallbacks.guard_restart)
+    cfg.web_port.callback(ConfigCallbacks.guard_restart)
+    cfg.web_dir.callback(ConfigCallbacks.guard_restart)
+    cfg.web_color.callback(ConfigCallbacks.guard_restart)
     cfg.url_base.callback(trigger_restart)
-    cfg.username.callback(cfg.guard_restart)
-    cfg.password.callback(cfg.guard_restart)
-    cfg.log_dir.callback(cfg.guard_restart)
-    cfg.https_port.callback(cfg.guard_restart)
-    cfg.https_cert.callback(cfg.guard_restart)
-    cfg.https_key.callback(cfg.guard_restart)
-    cfg.enable_https.callback(cfg.guard_restart)
-    cfg.socks5_proxy_url.callback(cfg.guard_restart)
-    cfg.top_only.callback(cfg.guard_top_only)
-    cfg.pause_on_post_processing.callback(cfg.guard_pause_on_pp)
-    cfg.quota_size.callback(cfg.guard_quota_size)
-    cfg.quota_day.callback(cfg.guard_quota_dp)
-    cfg.quota_period.callback(cfg.guard_quota_dp)
-    cfg.language.callback(cfg.guard_language)
-    cfg.enable_https_verification.callback(cfg.guard_https_ver)
-    cfg.guard_https_ver()
+    cfg.username.callback(ConfigCallbacks.guard_restart)
+    cfg.password.callback(ConfigCallbacks.guard_restart)
+    cfg.log_dir.callback(ConfigCallbacks.guard_restart)
+    cfg.https_port.callback(ConfigCallbacks.guard_restart)
+    cfg.https_cert.callback(ConfigCallbacks.guard_restart)
+    cfg.https_key.callback(ConfigCallbacks.guard_restart)
+    cfg.enable_https.callback(ConfigCallbacks.guard_restart)
+    cfg.socks5_proxy_url.callback(ConfigCallbacks.guard_restart)
+    cfg.top_only.callback(lambda: ConfigCallbacks.guard_top_only(cfg.top_only))
+    cfg.pause_on_post_processing.callback(lambda: ConfigCallbacks.guard_pause_on_pp(cfg.pause_on_post_processing))
+    cfg.quota_size.callback(ConfigCallbacks.guard_quota_size)
+    cfg.quota_day.callback(ConfigCallbacks.guard_quota_dp)
+    cfg.quota_period.callback(ConfigCallbacks.guard_quota_dp)
+    cfg.language.callback(lambda: ConfigCallbacks.guard_language(cfg.language))
+    cfg.enable_https_verification.callback(lambda: ConfigCallbacks.guard_https_ver(cfg.enable_https_verification))
+    ConfigCallbacks.guard_https_ver(cfg.enable_https_verification)
 
     # Set language files
     lang.set_locale_info("SABnzbd", DIR_LANGUAGE)
@@ -279,7 +282,19 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     misc.change_queue_complete_action(cfg.queue_complete(), new=False)
 
     # Do any config conversions
-    cfg.config_conversions()
+    from sabnzbd.config_migrations import ConfigConverter
+
+    ConfigConverter.run_all_conversions(
+        cfg.config_conversion_version,
+        cfg.auto_sort,
+        cfg.sorters_converted,
+        cfg.no_series_dupes,
+        cfg.no_smart_dupes,
+        cfg.history_retention,
+        cfg.host_whitelist,
+        cfg.cache_limit,
+        cfg.par_option,
+    )
 
     # Do repair if requested
     if misc.check_repair_request():

@@ -19,6 +19,7 @@
 sabnzbd.config - Configuration Support
 """
 
+import io
 import logging
 import os
 import re
@@ -26,25 +27,32 @@ import shutil
 import threading
 import time
 import uuid
-import io
 import zipfile
-from typing import List, Dict, Any, Callable, Optional, Union, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 import configobj
 
 import sabnzbd
 from sabnzbd.constants import (
-    CONFIG_VERSION,
-    NORMAL_PRIORITY,
-    DEFAULT_PRIORITY,
     CONFIG_BACKUP_FILES,
     CONFIG_BACKUP_HTTPS,
+    CONFIG_VERSION,
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
+    DEFAULT_PRIORITY,
+    NORMAL_PRIORITY,
 )
 from sabnzbd.decorators import synchronized
-from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
+from sabnzbd.filesystem import (
+    clip_path,
+    create_real_path,
+    is_writable,
+    real_path,
+    remove_file,
+    renamer,
+)
+from sabnzbd.validators import single_tag_validator
 
 CONFIG_LOCK = threading.RLock()
 
@@ -539,7 +547,7 @@ class ConfigCat:
         self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", "Default", add=False)
         self.dir = OptionDir(name, "dir", add=False, create=False)
-        self.newzbin = OptionList(name, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
+        self.newzbin = OptionList(name, "newzbin", add=False, validation=single_tag_validator)
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
@@ -902,7 +910,7 @@ def _read_config(path, try_backup=False):
     except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
         if try_backup:
             # No luck!
-            return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
+            return (False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror))
         else:
             # Try backup file
             return _read_config(path, True)
