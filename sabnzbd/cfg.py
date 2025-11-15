@@ -53,6 +53,7 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
     DEF_MAX_ASSEMBLER_QUEUE,
+    PIPELINING_REQUESTS,
 )
 from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
 
@@ -534,6 +535,7 @@ ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, mi
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
 unrar_parameters = OptionStr("misc", "unrar_parameters", validation=supported_unrar_parameters)
 outgoing_nntp_ip = OptionStr("misc", "outgoing_nntp_ip")
+pipelining_requests = OptionNumber("misc", "pipelining_requests", PIPELINING_REQUESTS, minval=1, maxval=30)
 
 
 ##############################################################################

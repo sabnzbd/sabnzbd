@@ -22,8 +22,10 @@ sabnzbd.nzbqueue - nzb queue
 import os
 import logging
 import time
+from collections import deque
+
 import cherrypy._cpreqbody
-from typing import List, Dict, Union, Tuple, Optional
+from typing import List, Dict, Union, Tuple, Optional, Deque
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject, Article
@@ -692,7 +694,7 @@ class NzbQueue:
                 return False
         return False
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int):
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """
@@ -705,12 +707,12 @@ class NzbQueue:
                 and not nzo.propagation_delay_left
             ) or nzo.priority == FORCE_PRIORITY:
                 if not nzo.server_in_try_list(server):
-                    if articles := nzo.get_articles(server, servers, fetch_limit):
-                        return articles
+                    nzo.get_articles(server, servers, fetch_limit)
+                    if server.article_queue:
+                        break
                 # Stop after first job that wasn't paused/propagating/etc
                 if self.__top_only:
-                    return []
-        return []
+                    break
 
     def register_article(self, article: Article, success: bool = True):
         """Register the articles we tried
@@ -893,11 +895,14 @@ class NzbQueue:
 
                     if nzf.all_servers_in_try_list(active_servers):
                         # Check for articles where all active servers have already been tried
-                        for article in nzf.articles[:]:
-                            if article.all_servers_in_try_list(active_servers):
-                                logging.debug("Removing article %s with bad trylist in file %s", article, nzf.filename)
-                                nzo.increase_bad_articles_counter("missing_articles")
-                                sabnzbd.NzbQueue.register_article(article, success=False)
+                        with nzf:
+                            for article in nzf.articles:
+                                if article.all_servers_in_try_list(active_servers):
+                                    logging.debug(
+                                        "Removing article %s with bad trylist in file %s", article, nzf.filename
+                                    )
+                                    nzo.increase_bad_articles_counter("missing_articles")
+                                    sabnzbd.NzbQueue.register_article(article, success=False)
 
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()

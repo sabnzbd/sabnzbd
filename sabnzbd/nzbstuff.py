@@ -26,7 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO, Set
+from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO, Set, Deque
 
 # SABnzbd modules
 import sabnzbd
@@ -118,11 +118,12 @@ class TryList:
     """TryList keeps track of which servers have been tried for a specific article"""
 
     # Pre-define attributes to save memory
-    __slots__ = ("try_list",)
+    __slots__ = ("try_list", "lock")
 
     def __init__(self):
         # Sets are faster than lists
         self.try_list: Set[Server] = set()
+        self.lock = threading.RLock()
 
     def server_in_try_list(self, server: Server) -> bool:
         """Return whether specified server has been tried"""
@@ -151,12 +152,19 @@ class TryList:
         with TRYLIST_LOCK:
             self.try_list = set()
 
+    def __enter__(self):
+        self.lock.acquire()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.lock.release()
+
     def __getstate__(self):
         """Save the servers"""
         return set(server.id for server in self.try_list)
 
     def __setstate__(self, servers_ids: List[str]):
         self.try_list = set()
+        self.lock = threading.RLock()
         for server in sabnzbd.Downloader.servers:
             if server.id in servers_ids:
                 self.add_to_try_list(server)
@@ -347,7 +355,7 @@ class NzbFile(TryList):
         self.setname: Optional[str] = None
 
         # Articles are removed from "articles" after being fetched
-        self.articles: List[Article] = []
+        self.articles: Dict[Article, Article] = {}
         self.decodetable: List[Article] = []
 
         self.bytes: int = file_bytes
@@ -402,17 +410,18 @@ class NzbFile(TryList):
     def add_article(self, article_info):
         """Add article to object database and return article object"""
         article = Article(article_info[0], article_info[1], self)
-        self.articles.append(article)
-        self.decodetable.append(article)
+        with self.lock:
+            self.articles[article] = article
+            self.decodetable.append(article)
         return article
 
     def remove_article(self, article: Article, success: bool) -> int:
         """Handle completed article, possibly end of file"""
-        if article in self.articles:
-            self.articles.remove(article)
-            if success:
-                self.bytes_left -= article.bytes
-        return len(self.articles)
+        with self.lock:
+            if self.articles.pop(article, None) is not None:
+                if success:
+                    self.bytes_left -= article.bytes
+            return len(self.articles)
 
     def set_par2(self, setname, vol, blocks):
         """Designate this file as a par2 file"""
@@ -427,14 +436,15 @@ class NzbFile(TryList):
         else:
             self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> Deque[Article]:
         """Get next articles to be downloaded"""
-        articles = []
-        for article in self.articles:
-            if article := article.get_article(server, servers):
-                articles.append(article)
-                if len(articles) >= fetch_limit:
-                    return articles
+        articles = server.article_queue
+        with self.lock:
+            for article in self.articles:
+                if article := article.get_article(server, servers):
+                    articles.append(article)
+                    if len(articles) >= fetch_limit:
+                        return articles
         self.add_to_try_list(server)
         return articles
 
@@ -443,8 +453,9 @@ class NzbFile(TryList):
         """Reset all try lists. Locked so reset is performed
         for all items at the same time without chance of another
         thread changing any of the items while we are resetting"""
-        for art in self.articles:
-            art.reset_try_list()
+        with self.lock:
+            for art in self.articles:
+                art.reset_try_list()
         self.reset_try_list()
 
     def prepare_filepath(self):
@@ -459,7 +470,10 @@ class NzbFile(TryList):
     @property
     def completed(self):
         """Is this file completed?"""
-        return self.import_finished and not bool(self.articles)
+        if not self.import_finished:
+            return False
+        with self.lock:
+            return not self.articles
 
     def remove_admin(self):
         """Remove article database from disk (sabnzbd_nzf_<id>)"""
@@ -486,6 +500,9 @@ class NzbFile(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
+        if isinstance(self.articles, list):
+            # Converted from list to dict
+            self.articles = {x: x for x in self.articles}
 
     def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the number bytes and first article
@@ -1625,8 +1642,8 @@ class NzbObject(TryList):
         self.nzo_info[bad_article_type] += 1
         self.bad_articles += 1
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
-        articles = []
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> Deque[Article]:
+        articles: Deque[Article] = server.article_queue
         nzf_remove_list = []
 
         # Did we go through all first-articles?
@@ -1661,7 +1678,8 @@ class NzbObject(TryList):
                             else:
                                 break
 
-                        if articles := nzf.get_articles(server, servers, fetch_limit):
+                        nzf.get_articles(server, servers, fetch_limit)
+                        if articles:
                             break
 
         # Remove all files for which admin could not be read

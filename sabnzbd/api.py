@@ -1392,7 +1392,7 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
         nw.init_connect()
         while not nw.connected:
             nw.recv_chunk()
-            nw.finish_connect(nw.status_code)
+            nw.write()
 
     except socket.timeout:
         if port != 119 and not ssl:
@@ -1414,9 +1414,9 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
         return False, str(err)
 
     if not username or not password:
-        nw.nntp.sock.sendall(b"ARTICLE <test@home>\r\n")
+        nw.queue(b"ARTICLE <test@home>\r\n")
         try:
-            nw.reset_data_buffer()
+            nw.write()
             nw.recv_chunk()
         except Exception as err:
             # Some internal error, not always safe to close connection
@@ -1424,13 +1424,13 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
 
     # Parse result
     return_status = ()
-    if nw.status_code:
-        if nw.status_code == 480:
+    if status := int_conv(nw.data_view[:3]):
+        if status == 480:
             return_status = (False, T("Server requires username and password."))
-        elif nw.status_code < 300 or nw.status_code in (411, 423, 430):
+        elif status < 300 or status in (411, 423, 430):
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
-        elif nw.status_code == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
+        elif status == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
             return_status = (False, T("Authentication failed, check username/password."))
         elif sabnzbd.downloader.clues_too_many(nw.nntp_msg):
             return_status = (False, T("Too many connections, please pause downloading or try again later"))
@@ -1502,13 +1502,13 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
         for nw in server.busy_threads.copy():
             if nw.connected:
                 activeconn += 1
-            if nw.article:
+            if article := nw.article:
                 serverconnections.append(
                     {
                         "thrdnum": nw.thrdnum,
-                        "art_name": nw.article.article,
-                        "nzf_name": nw.article.nzf.filename,
-                        "nzo_name": nw.article.nzf.nzo.final_name,
+                        "art_name": article.article,
+                        "nzf_name": article.nzf.filename,
+                        "nzo_name": article.nzf.nzo.final_name,
                     }
                 )
 
