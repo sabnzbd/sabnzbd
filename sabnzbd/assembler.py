@@ -30,7 +30,7 @@ import rarfile
 import glob
 
 import sabnzbd
-from sabnzbd.misc import get_all_passwords, match_str, SABRarFile
+from sabnzbd.misc import get_all_passwords, match_str, SABRarFile, build_and_run_command
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -39,20 +39,27 @@ from sabnzbd.filesystem import (
     get_filename,
     has_unwanted_extension,
     get_basename,
+    make_script_path,
 )
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
 
-def get_biggest_file_in_dir(directory: str) -> Optional[str]:
-    """Return the biggest file in a directory"""
-    pattern = os.path.join(directory, "**/*")
-    all_files = [path for path in glob.glob(pattern, recursive=True) if os.path.isfile(path)]
-    if not all_files:
-        return None, 0
-    all_files = sorted(all_files, key=os.path.getsize)[::-1]  # reversed, so big to small. Format [start:stop:step]
-    return all_files[0], os.path.getsize(all_files[0])
+def run_intermediate_script(script_path: str, target_dir: str):
+    """Run the intermediate script on the given directory"""
+    script_path = make_script_path(script_path) # full path
+    command = [script_path,target_dir]
+    logging.debug("SJ: Running intermediate script: %s", ' '.join(command))
+    try:
+        p = build_and_run_command(command)
+    except:
+        logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
+        return None  # TODO remove this line, and handle exception correctly
+
+    output = p.stdout.read()
+    ret = p.wait()
+    logging.info("SJ: Intermediate script returned %s and output=\n%s", ret, output)
 
 class Assembler(Thread):
     def __init__(self):
@@ -109,21 +116,19 @@ class Assembler(Thread):
 
                         # Intermediate script
                         if cfg.intermediate_script() and nzo.bytes_downloaded > 400_000_000:
-                            logging.info(f"SJ Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
+                            logging.info(f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
                             incomplete_dir = nzo.download_path
                             logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")  
-                            biggest_file, biggest_file_size = get_biggest_file_in_dir(incomplete_dir)
-                            logging.info(f"SJ Intermediate: incomplete biggest_file: {biggest_file}, size: {biggest_file_size}")
+                            run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
+
 
                             if nzo.direct_unpack_progress:
                                 # direct unpacker active instance found
-                                try:
-                                    direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
-                                    logging.info(f"SJ: direct_unpack_dir: {direct_unpack_dir}")
-                                    biggest_file, biggest_file_size = get_biggest_file_in_dir(direct_unpack_dir)
-                                    logging.info(f"SJ Intermediate: direct_unpack biggest_file: {biggest_file}, size: {biggest_file_size}")
+                                direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
+                                logging.info(f"SJ: direct_unpack_dir: {direct_unpack_dir}")
+                                run_intermediate_script(cfg.intermediate_script(), direct_unpack_dir)
                             else:
-                                logging.info("SJ Intermediate: no direct unpacker active instance found")
+                                logging.info("SJ: Intermediate: no direct unpacker active instance found")
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
