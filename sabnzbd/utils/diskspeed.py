@@ -7,7 +7,7 @@ import sys
 import logging
 import time
 
-_DUMP_DATA_SIZE = 10 * 1024 * 1024
+_DUMP_DATA_SIZE = 256 * 1024 * 1024 # Increased buffer for better write performance
 
 
 def diskspeedmeasure(dirname: str) -> float:
@@ -18,30 +18,28 @@ def diskspeedmeasure(dirname: str) -> float:
     """
     dump_data = os.urandom(_DUMP_DATA_SIZE)
     start = time.time()
-    maxtime = 0.5  # sec
+    maxtime = 3  # sec
     total_written = 0
     filename = os.path.join(dirname, "outputTESTING.txt")
-
+    
     try:
         # Use low-level I/O
-        try:
-            fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY | os.O_BINARY, 0o777)
-        except AttributeError:
-            fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)
-
+        fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY | getattr(os, "os.O_BINARY", 0) | os.O_SYNC, 0o777)
+        start = time.perf_counter()
+        maxtime += start
+        
         # Start looping
-        total_time = 0.0
-        while total_time < maxtime:
-            start = time.time()
-            os.write(fp_testfile, dump_data)
+        while time.perf_counter() < maxtime:
+            total_written += os.write(fp_testfile, dump_data)
             os.fsync(fp_testfile)
-            total_time += time.time() - start
-            total_written += _DUMP_DATA_SIZE
+
+        total_time = time.perf_counter() - start
 
         # Have to use low-level close
         os.close(fp_testfile)
         # Remove the file
         os.remove(filename)
+
     except OSError:
         # Could not write, so ... report 0.0
         logging.debug("Failed to measure disk speed on %s", dirname)
@@ -66,7 +64,12 @@ if __name__ == "__main__":
         print("Using current working directory")
 
     try:
-        SPEED = max(diskspeedmeasure(DIRNAME), diskspeedmeasure(DIRNAME))
+        measure = 0.0
+        tries = 2
+        for _ in range(tries):
+            measure +=diskspeedmeasure(DIRNAME)
+        SPEED = measure / tries
+
         if SPEED:
             print("Disk writing speed: %.2f Mbytes per second" % SPEED)
         else:
