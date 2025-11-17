@@ -30,7 +30,12 @@ import rarfile
 import glob
 
 import sabnzbd
-from sabnzbd.misc import get_all_passwords, match_str, SABRarFile, build_and_run_command
+from sabnzbd.misc import (
+    get_all_passwords,
+    match_str,
+    SABRarFile,
+    build_and_run_command,
+)
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -55,12 +60,20 @@ def run_intermediate_script(script_path: str, target_dir: str):
     try:
         p = build_and_run_command(command)
     except:
-        logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
+        logging.debug(
+            "Failed script %s, Traceback: ",
+            script_path,
+            exc_info=True,
+        )
         return None  # TODO remove this line, and handle exception correctly
 
     output = p.stdout.read()
     ret = p.wait()
-    logging.info("SJ: Intermediate script returned %s and output=\n%s", ret, output)
+    logging.info(
+        "SJ: Intermediate script returned %s and output=\n%s",
+        ret,
+        output,
+    )
 
 
 class Assembler(Thread):
@@ -126,13 +139,19 @@ class Assembler(Thread):
                             logging.info(f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
                             incomplete_dir = nzo.download_path
                             logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
-                            run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
+                            run_intermediate_script(
+                                cfg.intermediate_script(),
+                                incomplete_dir,
+                            )
 
                             if nzo.direct_unpack_progress:
                                 # direct unpacker active instance found
                                 direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
                                 logging.info(f"SJ: direct_unpack_dir: {direct_unpack_dir}")
-                                run_intermediate_script(cfg.intermediate_script(), direct_unpack_dir)
+                                run_intermediate_script(
+                                    cfg.intermediate_script(),
+                                    direct_unpack_dir,
+                                )
                             else:
                                 logging.info("SJ: Intermediate: no direct unpacker active instance found")
 
@@ -164,7 +183,10 @@ class Assembler(Thread):
                                 filepath,
                             )
                     except Exception:
-                        logging.error(T("Fatal error in Assembler"), exc_info=True)
+                        logging.error(
+                            T("Fatal error in Assembler"),
+                            exc_info=True,
+                        )
                         break
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
@@ -202,7 +224,11 @@ class Assembler(Thread):
             sabnzbd.Downloader.pause()
             if cfg.fulldisk_autoresume():
                 sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
-            sabnzbd.notifier.send_notification("SABnzbd", T("Too little diskspace forcing PAUSE"), "disk_full")
+            sabnzbd.notifier.send_notification(
+                "SABnzbd",
+                T("Too little diskspace forcing PAUSE"),
+                "disk_full",
+            )
             sabnzbd.emailer.diskfull_mail()
 
     @staticmethod
@@ -237,7 +263,10 @@ class Assembler(Thread):
                         nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
-                        logging.info("No data found when trying to write %s", article)
+                        logging.info(
+                            "No data found when trying to write %s",
+                            article,
+                        )
                 else:
                     # If the article was not decoded but the file
                     # is done, it is just a missing piece, so keep writing
@@ -279,7 +308,10 @@ class Assembler(Thread):
                     nzf.nzo.final_name,
                     unwanted_file,
                 )
-            logging.debug(T("Unwanted extension is in rar file %s"), nzf.filename)
+            logging.debug(
+                T("Unwanted extension is in rar file %s"),
+                nzf.filename,
+            )
             if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                 logging.debug("Unwanted extension ... pausing")
                 nzo.unwanted_ext = 1
@@ -431,6 +463,10 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                 zf.close()
                 del zf
         except rarfile.Error as e:
-            logging.info("Error during inspection of RAR-file %s: %s", filepath, e)
+            logging.info(
+                "Error during inspection of RAR-file %s: %s",
+                filepath,
+                e,
+            )
 
     return encrypted, unwanted
