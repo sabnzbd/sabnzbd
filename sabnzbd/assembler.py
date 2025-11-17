@@ -30,12 +30,7 @@ import rarfile
 import glob
 
 import sabnzbd
-from sabnzbd.misc import (
-    get_all_passwords,
-    match_str,
-    SABRarFile,
-    build_and_run_command,
-)
+from sabnzbd.misc import get_all_passwords, match_str, SABRarFile, build_and_run_command
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -51,43 +46,30 @@ import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
 
-
 def run_intermediate_script(script_path: str, target_dir: str):
     """Run the intermediate script on the given directory"""
-    script_path = make_script_path(script_path)  # full path
-    command = [script_path, target_dir]
-    logging.debug("SJ: Running intermediate script: %s", " ".join(command))
+    script_path = make_script_path(script_path) # full path
+    command = [script_path,target_dir]
+    logging.debug("SJ: Running intermediate script: %s", ' '.join(command))
     try:
         p = build_and_run_command(command)
     except:
-        logging.debug("Failed script %s, Traceback: ",script_path,exc_info=True)
+        logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
         return None  # TODO remove this line, and handle exception correctly
 
     output = p.stdout.read()
     ret = p.wait()
-    logging.info(
-        "SJ: Intermediate script returned %s and output=\n%s",
-        ret,
-        output,
-    )
-
+    logging.info("SJ: Intermediate script returned %s and output=\n%s", ret, output)
 
 class Assembler(Thread):
     def __init__(self):
         super().__init__()
-        self.queue: queue.Queue[
-            Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]
-        ] = queue.Queue()
+        self.queue: queue.Queue[Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]] = queue.Queue()
 
     def stop(self):
         self.queue.put((None, None, None))
 
-    def process(
-        self,
-        nzo: NzbObject,
-        nzf: Optional[NzbFile] = None,
-        file_done: Optional[bool] = None,
-    ):
+    def process(self, nzo: NzbObject, nzf: Optional[NzbFile] = None, file_done: Optional[bool] = None):
         self.queue.put((nzo, nzf, file_done))
 
     def queue_level(self) -> float:
@@ -133,38 +115,20 @@ class Assembler(Thread):
                             nzo.handle_par2(nzf, filepath)
 
                         # Intermediate script
-                        if (
-                            cfg.intermediate_script()
-                            and nzo.bytes_downloaded > 400_000_000
-                        ):
-                            logging.info(
-                                f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}"
-                            )
+                        if cfg.intermediate_script() and nzo.bytes_downloaded > 400_000_000:
+                            logging.info(f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
                             incomplete_dir = nzo.download_path
-                            logging.info(
-                                f"SJ Intermediate: incomplete_dir: {incomplete_dir}"
-                            )
-                            run_intermediate_script(
-                                cfg.intermediate_script(),
-                                incomplete_dir,
-                            )
+                            logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")  
+                            run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
+
 
                             if nzo.direct_unpack_progress:
                                 # direct unpacker active instance found
-                                direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[
-                                    0
-                                ]
-                                logging.info(
-                                    f"SJ: direct_unpack_dir: {direct_unpack_dir}"
-                                )
-                                run_intermediate_script(
-                                    cfg.intermediate_script(),
-                                    direct_unpack_dir,
-                                )
+                                direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
+                                logging.info(f"SJ: direct_unpack_dir: {direct_unpack_dir}")
+                                run_intermediate_script(cfg.intermediate_script(), direct_unpack_dir)
                             else:
-                                logging.info(
-                                    "SJ: Intermediate: no direct unpacker active instance found"
-                                )
+                                logging.info("SJ: Intermediate: no direct unpacker active instance found")
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
@@ -173,33 +137,21 @@ class Assembler(Thread):
                             if err.errno == 28:
                                 logging.error(T("Disk full! Forcing Pause"))
                             else:
-                                logging.error(
-                                    T("Disk error on creating file %s"),
-                                    clip_path(filepath),
-                                )
+                                logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
                             if sabnzbd.WINDOWS:
                                 logging.info(
                                     "Winerror: %s - %s",
                                     err.winerror,
-                                    hex(
-                                        ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32
-                                    ),
+                                    hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2**32),
                                 )
                             logging.info("Traceback: ", exc_info=True)
                             # Pause without saving
                             sabnzbd.Downloader.pause()
                         else:
-                            logging.debug(
-                                "Ignoring error %s for %s, already finished or in post-proc",
-                                err,
-                                filepath,
-                            )
+                            logging.debug("Ignoring error %s for %s, already finished or in post-proc", err, filepath)
                     except Exception:
-                        logging.error(
-                            T("Fatal error in Assembler"),
-                            exc_info=True,
-                        )
+                        logging.error(T("Fatal error in Assembler"), exc_info=True)
                         break
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
@@ -237,11 +189,7 @@ class Assembler(Thread):
             sabnzbd.Downloader.pause()
             if cfg.fulldisk_autoresume():
                 sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
-            sabnzbd.notifier.send_notification(
-                "SABnzbd",
-                T("Too little diskspace forcing PAUSE"),
-                "disk_full",
-            )
+            sabnzbd.notifier.send_notification("SABnzbd", T("Too little diskspace forcing PAUSE"), "disk_full")
             sabnzbd.emailer.diskfull_mail()
 
     @staticmethod
@@ -276,10 +224,7 @@ class Assembler(Thread):
                         nzf.update_crc32(article.crc32, len(data))
                         article.on_disk = True
                     else:
-                        logging.info(
-                            "No data found when trying to write %s",
-                            article,
-                        )
+                        logging.info("No data found when trying to write %s", article)
                 else:
                     # If the article was not decoded but the file
                     # is done, it is just a missing piece, so keep writing
@@ -297,23 +242,17 @@ class Assembler(Thread):
     @staticmethod
     def check_encrypted_and_unwanted(nzo: NzbObject, nzf: NzbFile):
         """Encryption and unwanted extension detection"""
-        rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(
-            nzo, nzf.filepath
-        )
+        rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, nzf.filepath)
         if rar_encrypted:
             if cfg.pause_on_pwrar() == 1:
                 logging.warning(
-                    T(
-                        'Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                    ),
+                    T('Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'),
                     nzo.final_name,
                 )
                 nzo.pause()
             else:
                 logging.warning(
-                    T(
-                        'Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                    ),
+                    T('Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'),
                     nzo.final_name,
                 )
                 nzo.fail_msg = T("Aborted, encryption detected")
@@ -327,10 +266,7 @@ class Assembler(Thread):
                     nzf.nzo.final_name,
                     unwanted_file,
                 )
-            logging.debug(
-                T("Unwanted extension is in rar file %s"),
-                nzf.filename,
-            )
+            logging.debug(T("Unwanted extension is in rar file %s"), nzf.filename)
             if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                 logging.debug("Unwanted extension ... pausing")
                 nzo.unwanted_ext = 1
@@ -361,29 +297,20 @@ def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
             # Only warn once
             if nzo.encrypted == 0:
                 logging.warning(
-                    T(
-                        'Job "%s" is probably encrypted due to RAR with same name inside this RAR'
-                    ),
-                    nzo.final_name,
+                    T('Job "%s" is probably encrypted due to RAR with same name inside this RAR'), nzo.final_name
                 )
                 nzo.encrypted = 1
             return True
         elif "password" in name and ext not in SAFE_EXTS:
             # Only warn once
             if nzo.encrypted == 0:
-                logging.warning(
-                    T('Job "%s" is probably encrypted: "password" in filename "%s"'),
-                    nzo.final_name,
-                    name,
-                )
+                logging.warning(T('Job "%s" is probably encrypted: "password" in filename "%s"'), nzo.final_name, name)
                 nzo.encrypted = 1
             return True
     return False
 
 
-def check_encrypted_and_unwanted_files(
-    nzo: NzbObject, filepath: str
-) -> Tuple[bool, Optional[str]]:
+def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[bool, Optional[str]]:
     """Combines check for unwanted and encrypted files to save on CPU and IO"""
     encrypted = False
     unwanted = None
@@ -406,9 +333,7 @@ def check_encrypted_and_unwanted_files(
                 if (
                     nzo.encrypted == 0
                     and cfg.pause_on_pwrar()
-                    and (
-                        zf.needs_password() or is_cloaked(nzo, filepath, zf.namelist())
-                    )
+                    and (zf.needs_password() or is_cloaked(nzo, filepath, zf.namelist()))
                 ):
                     # Load all passwords
                     passwords = get_all_passwords(nzo)
@@ -426,11 +351,7 @@ def check_encrypted_and_unwanted_files(
 
                         for password in passwords:
                             if password:
-                                logging.info(
-                                    'Trying password "%s" on job "%s"',
-                                    password,
-                                    nzo.final_name,
-                                )
+                                logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
                                     zf.trigger_parse()
@@ -442,13 +363,7 @@ def check_encrypted_and_unwanted_files(
                                 except rarfile.RarCRCError as e:
                                     # CRC errors can be thrown for wrong password or
                                     # missing the next volume (with correct password)
-                                    if match_str(
-                                        str(e),
-                                        (
-                                            "cannot find volume",
-                                            "unexpected end of archive",
-                                        ),
-                                    ):
+                                    if match_str(str(e), ("cannot find volume", "unexpected end of archive")):
                                         # We assume this one worked!
                                         password_hit = password
                                         break
@@ -466,11 +381,7 @@ def check_encrypted_and_unwanted_files(
                             # Record the successful password
                             nzo.correct_password = password_hit
                             # Don't check other files
-                            logging.info(
-                                'Password "%s" matches for job "%s"',
-                                password_hit,
-                                nzo.final_name,
-                            )
+                            logging.info('Password "%s" matches for job "%s"', password_hit, nzo.final_name)
                             nzo.encrypted = -1
                             encrypted = False
                         else:
@@ -488,10 +399,6 @@ def check_encrypted_and_unwanted_files(
                 zf.close()
                 del zf
         except rarfile.Error as e:
-            logging.info(
-                "Error during inspection of RAR-file %s: %s",
-                filepath,
-                e,
-            )
+            logging.info("Error during inspection of RAR-file %s: %s", filepath, e)
 
     return encrypted, unwanted
