@@ -388,7 +388,10 @@ def get_user_profile_paths():
             try:
                 root = os.environ["AppData"]
                 user = os.environ["USERPROFILE"]
-                sabnzbd.DIR_LCLDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
+                sabnzbd.DIR_LCLDATA = "%s\\%s" % (
+                    root.replace("\\Roaming", "\\Local"),
+                    DEF_WORKDIR,
+                )
                 sabnzbd.DIR_HOME = user
             except Exception:
                 pass
@@ -411,7 +414,10 @@ def get_user_profile_paths():
             return
 
     # Nothing worked
-    panic("Cannot access the user profile.", "Please start with sabnzbd.ini file in another location")
+    panic(
+        "Cannot access the user profile.",
+        "Please start with sabnzbd.ini file in another location",
+    )
     exit_sab(2)
 
 
@@ -421,7 +427,10 @@ def print_modules():
         # Yes, we have SABCTools, and it's the correct version, so it's enabled
         logging.info("SABCTools module (v%s)... found!", sabnzbd.decoder.SABCTOOLS_VERSION)
         logging.info("SABCTools module is using SIMD set: %s", sabnzbd.decoder.SABCTOOLS_SIMD)
-        logging.info("SABCTools module is linked to OpenSSL: %s", sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED)
+        logging.info(
+            "SABCTools module is linked to OpenSSL: %s",
+            sabnzbd.decoder.SABCTOOLS_OPENSSL_LINKED,
+        )
 
         # Check if we managed to link, warning for now
         # It won't work on OpenSSL < 1.1.1 anyway, so we skip the check there
@@ -454,9 +463,16 @@ def print_modules():
         if sabnzbd.newsunpack.RAR_PROBLEM:
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
-            helpful_warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
+            helpful_warning(
+                T("Your UNRAR version is %s, we recommend version %s or higher.<br />"),
+                have_str,
+                want_str,
+            )
         elif not (sabnzbd.WINDOWS or sabnzbd.MACOS):
-            logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
+            logging.info(
+                "UNRAR binary version %.2f",
+                (float(sabnzbd.newsunpack.RAR_VERSION) / 100),
+            )
     else:
         logging.error(T("unrar binary... NOT found"))
         # Do not allow downloading
@@ -788,7 +804,15 @@ def commandline_handler():
         exit_sab(2)
 
     # Check for Win32 service commands
-    if args and args[0] in ("install", "update", "remove", "start", "stop", "restart", "debug"):
+    if args and args[0] in (
+        "install",
+        "update",
+        "remove",
+        "start",
+        "stop",
+        "restart",
+        "debug",
+    ):
         service = args[0]
         serv_opts.extend(args)
 
@@ -799,7 +823,15 @@ def commandline_handler():
                 upload_nzbs.append(os.path.abspath(entry))
 
     for opt, arg in opts:
-        if opt in ("password", "username", "startup", "perfmonini", "perfmondll", "interactive", "wait"):
+        if opt in (
+            "password",
+            "username",
+            "startup",
+            "perfmonini",
+            "perfmondll",
+            "interactive",
+            "wait",
+        ):
             # Service option, just collect
             if service:
                 serv_opts.append(opt)
@@ -978,7 +1010,10 @@ def main():
         try:
             os.makedirs(sabnzbd.DIR_LCLDATA)
         except IOError:
-            panic('Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA, "Check specified INI file location.")
+            panic(
+                'Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA,
+                "Check specified INI file location.",
+            )
             exit_sab(1)
 
     sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA)
@@ -1031,7 +1066,11 @@ def main():
                 pass
             else:
                 if not url:
-                    url = "https://%s:%s%s/api?" % (browserhost, port, sabnzbd.cfg.url_base())
+                    url = "https://%s:%s%s/api?" % (
+                        browserhost,
+                        port,
+                        sabnzbd.cfg.url_base(),
+                    )
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
@@ -1060,7 +1099,11 @@ def main():
                 pass
             else:
                 if not url:
-                    url = "http://%s:%s%s/api?" % (browserhost, web_port, sabnzbd.cfg.url_base())
+                    url = "http://%s:%s%s/api?" % (
+                        browserhost,
+                        web_port,
+                        sabnzbd.cfg.url_base(),
+                    )
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
@@ -1367,9 +1410,17 @@ def main():
 
     # Set URL for browser
     if enable_https:
-        sabnzbd.BROWSER_URL = "https://%s:%s%s" % (browserhost, web_port, sabnzbd.cfg.url_base())
+        sabnzbd.BROWSER_URL = "https://%s:%s%s" % (
+            browserhost,
+            web_port,
+            sabnzbd.cfg.url_base(),
+        )
     else:
-        sabnzbd.BROWSER_URL = "http://%s:%s%s" % (browserhost, web_port, sabnzbd.cfg.url_base())
+        sabnzbd.BROWSER_URL = "http://%s:%s%s" % (
+            browserhost,
+            web_port,
+            sabnzbd.cfg.url_base(),
+        )
 
     if sabnzbd.WINDOWS:
         # Write URL for uploads and version check directly to registry
@@ -1466,7 +1517,11 @@ def main():
                 if sabnzbd.MACOS:
                     # On macOS restart of app instead of embedded python
                     my_args = " ".join(sys.argv[1:])
-                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), sys.executable, my_args)
+                    cmd = 'kill -9 %s && open "%s" --args %s' % (
+                        os.getpid(),
+                        sys.executable,
+                        my_args,
+                    )
                     logging.info("Launching: %s", cmd)
                     os.system(cmd)
                 elif sabnzbd.WIN_SERVICE:
@@ -1550,7 +1605,11 @@ if sabnzbd.WINDOWS:
 
         def Logger(self, state, msg):
             win32evtlogutil.ReportEvent(
-                self._svc_display_name_, state, 0, servicemanager.EVENTLOG_INFORMATION_TYPE, (self._svc_name_, msg)
+                self._svc_display_name_,
+                state,
+                0,
+                servicemanager.EVENTLOG_INFORMATION_TYPE,
+                (self._svc_name_, msg),
             )
 
         def ErrLogger(self, msg, text):
