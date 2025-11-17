@@ -34,7 +34,7 @@ import copy
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
-from typing import Optional, Callable, Union, Any, Dict, List
+from typing import Optional, Callable, Union, Any
 from guessit.api import properties as guessit_properties
 
 import sabnzbd

@@ -30,7 +30,7 @@ import zipfile
 import tempfile
 
 import cherrypy._cpreqbody
-from typing import Optional, Dict, Any, Union, List, Tuple
+from typing import Optional, Any, Union
 
 import sabnzbd
 from sabnzbd import nzbstuff

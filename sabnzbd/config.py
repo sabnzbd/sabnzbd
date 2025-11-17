@@ -307,7 +307,7 @@ class OptionList(Option):
         self,
         section: str,
         keyword: str,
-        default_val: Union[str, List, None] = None,
+        default_val: Union[str, list, None] = None,
         validation: Optional[Callable] = None,
         add: bool = True,
         public: bool = True,
@@ -318,7 +318,7 @@ class OptionList(Option):
             default_val = []
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
-    def set(self, value: Union[str, List]) -> Optional[str]:
+    def set(self, value: Union[str, list]) -> Optional[str]:
         """Set the list given a comma-separated string or a list"""
         error = None
         if value is not None:

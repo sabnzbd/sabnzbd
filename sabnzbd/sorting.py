@@ -25,7 +25,7 @@ import re
 import guessit
 from rebulk.match import MatchesDict
 from string import whitespace, punctuation
-from typing import Optional, Union, List, Tuple, Dict
+from typing import Optional, Union
 
 import sabnzbd
 from sabnzbd.filesystem import (

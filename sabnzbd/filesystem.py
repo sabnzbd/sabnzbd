@@ -33,7 +33,7 @@ import fnmatch
 import stat
 import ctypes
 import random
-from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
+from typing import Union, Any, Optional, BinaryIO
 
 try:
     import win32api
@@ -330,7 +330,7 @@ def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] =
     return output_filelist
 
 
-def strip_extensions(name: str, ext_to_remove: tuple[str, ...] = (".nzb", ".par", ".par2")):
+def strip_extensions(name: str, ext_to_remove: tuple[str, ...] = (".nzb", ".par", ".par2")) -> str:
     """Strip extensions from a filename, without sanitizing the filename"""
     name_base, ext = os.path.splitext(name)
     while ext.lower() in ext_to_remove:
@@ -613,7 +613,7 @@ def make_script_path(script: str) -> Optional[str]:
     return script_path
 
 
-def get_admin_path(name: str, future: bool):
+def get_admin_path(name: str, future: bool) -> str:
     """Return news-style full path to job-admin folder of names job
     or else the old cache path
     """
@@ -660,7 +660,7 @@ def set_permissions(path: str, recursive: bool = True):
 UNWANTED_FILE_PERMISSIONS = stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
 
 
-def removexbits(path: str, custom_permissions: int = None):
+def removexbits(path: str, custom_permissions: Optional[int] = None):
     """Remove all the x-bits from files, respecting current or custom permissions"""
     if os.path.isfile(path):
         # Use custom permissions as base
@@ -1033,7 +1033,7 @@ def diskspace(force: bool = False) -> dict[str, tuple[float, float]]:
     }
 
 
-def get_new_id(prefix, folder, check_list=None):
+def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> str:
     """Return unique prefixed admin identifier within folder
     optionally making sure that id is not in the check_list.
     """
@@ -1054,7 +1054,7 @@ def get_new_id(prefix, folder, check_list=None):
     raise IOError
 
 
-def save_data(data, _id, path, do_pickle=True, silent=False):
+def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bool = False):
     """Save data to a diskfile"""
     if not silent:
         logging.debug("[%s] Saving data for %s in %s", sabnzbd.misc.caller_name(), _id, path)
@@ -1081,7 +1081,7 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                 time.sleep(0.1)
 
 
-def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
+def load_data(data_id: str, path: str, remove: bool = True, do_pickle: bool = True, silent: bool = False) -> Any:
     """Read data from disk file"""
     path = os.path.join(path, data_id)
 
@@ -1129,7 +1129,7 @@ def save_admin(data: Any, data_id: str):
     save_data(data, data_id, sabnzbd.cfg.admin_dir.get_path())
 
 
-def load_admin(data_id: str, remove=False, silent=False) -> Any:
+def load_admin(data_id: str, remove: bool = False, silent: bool = False) -> Any:
     """Read data in admin folder in specified format"""
     logging.debug("[%s] Loading data for %s", sabnzbd.misc.caller_name(), data_id)
     return load_data(data_id, sabnzbd.cfg.admin_dir.get_path(), remove=remove, silent=silent)
@@ -1196,7 +1196,7 @@ def purge_log_files():
             logging.debug("Finished puring log files")
 
 
-def directory_is_writable_with_file(mydir, myfilename):
+def directory_is_writable_with_file(mydir: str, myfilename: str) -> bool:
     filename = os.path.join(mydir, myfilename)
     if os.path.exists(filename):
         try:

@@ -22,7 +22,7 @@ import io
 import os
 import time
 from http.client import RemoteDisconnected
-from typing import BinaryIO, Optional, Dict, List
+from typing import BinaryIO, Optional
 
 import pytest
 from random import choice, randint

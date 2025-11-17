@@ -25,7 +25,7 @@ import subprocess
 import time
 import threading
 import logging
-from typing import Optional, Dict, List, Tuple
+from typing import Optional
 
 import sabnzbd
 import sabnzbd.cfg as cfg

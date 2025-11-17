@@ -29,7 +29,7 @@ import io
 import shutil
 import functools
 import rarfile
-from typing import BinaryIO, Optional, Any, Union
+from typing import BinaryIO, Optional, Any, Union, Callable
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
@@ -866,7 +866,7 @@ def rar_extract_core(
 ##############################################################################
 # 7Zip Functions
 ##############################################################################
-def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: list[str]):
+def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: list[str]) -> tuple[bool, list[str]]:
     """Unpack multiple sets '7z' of 7Zip files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
@@ -1762,7 +1762,7 @@ def sfv_check(sfvs: list[str], nzo: NzbObject) -> bool:
     return result
 
 
-def parse_sfv(sfv_filename):
+def parse_sfv(sfv_filename: str) -> dict[str, bytes]:
     """Parse SFV file and return dictionary of crc32's and filenames"""
     results = {}
     with open(sfv_filename, mode="rb") as sfv_list:
@@ -1787,12 +1787,12 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def pre_queue(nzo: NzbObject, pp, cat):
+def pre_queue(nzo: NzbObject, pp: str, cat: str) -> list[Any]:
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied separate since they can change.
     """
 
-    def fix(p):
+    def fix(p: Any) -> str:
         # If added via API, some items can still be "None" (as a string)
         if is_none(p):
             return ""
@@ -1909,6 +1909,6 @@ class SevenZip:
             p.wait()
         return data
 
-    def close(self):
+    def close(self) -> None:
         """Close file"""
         pass

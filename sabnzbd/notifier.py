@@ -31,7 +31,7 @@ import http.client
 import json
 import apprise
 from threading import Thread
-from typing import Optional, Dict, Union
+from typing import Optional, Union
 
 import sabnzbd
 import sabnzbd.cfg
