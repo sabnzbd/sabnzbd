@@ -46,11 +46,12 @@ import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
 
+
 def run_intermediate_script(script_path: str, target_dir: str):
     """Run the intermediate script on the given directory"""
-    script_path = make_script_path(script_path) # full path
-    command = [script_path,target_dir]
-    logging.debug("SJ: Running intermediate script: %s", ' '.join(command))
+    script_path = make_script_path(script_path)  # full path
+    command = [script_path, target_dir]
+    logging.debug("SJ: Running intermediate script: %s", " ".join(command))
     try:
         p = build_and_run_command(command)
     except:
@@ -60,6 +61,7 @@ def run_intermediate_script(script_path: str, target_dir: str):
     output = p.stdout.read()
     ret = p.wait()
     logging.info("SJ: Intermediate script returned %s and output=\n%s", ret, output)
+
 
 class Assembler(Thread):
     def __init__(self):
@@ -118,9 +120,8 @@ class Assembler(Thread):
                         if cfg.intermediate_script() and nzo.bytes_downloaded > 400_000_000:
                             logging.info(f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
                             incomplete_dir = nzo.download_path
-                            logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")  
+                            logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
                             run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
-
 
                             if nzo.direct_unpack_progress:
                                 # direct unpacker active instance found
