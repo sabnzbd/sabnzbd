@@ -128,7 +128,7 @@ class DirScanner(threading.Thread):
 
     def get_suspected_files(
         self, folder: str, catdir: Optional[str] = None
-    ) -> Generator[Tuple[str, Optional[str], Optional[os.stat_result]], None, None]:
+    ) -> Generator[tuple[str, Optional[str], Optional[os.stat_result]], None, None]:
         """Generator listing possible paths to NZB files"""
 
         if catdir is None:
@@ -222,17 +222,15 @@ class DirScanner(threading.Thread):
 
     async def scan_async(self, dirscan_dir: str):
         """Do one scan of the watched folder"""
-        # On Python 3.8 we first need an event loop before we can create a asyncio.Lock
-        if not self.lock:
-            with DIR_SCANNER_LOCK:
-                self.lock = asyncio.Lock()
+        with DIR_SCANNER_LOCK:
+            self.lock = asyncio.Lock()
 
         async with self.lock:
             if sabnzbd.PAUSED_ALL:
                 return
 
-            files: Set[str] = set()
-            futures: Set[asyncio.Task] = set()
+            files: set[str] = set()
+            futures: set[asyncio.Task] = set()
 
             for path, catdir, stat_tuple in self.get_suspected_files(dirscan_dir):
                 files.add(path)

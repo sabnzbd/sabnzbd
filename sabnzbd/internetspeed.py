@@ -26,7 +26,6 @@ import socket
 import ssl
 import time
 import threading
-from typing import Dict
 
 import sabctools
 import sabnzbd
@@ -44,7 +43,7 @@ NR_CONNECTIONS = 5
 TIME_LIMIT = 3
 
 
-def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: Dict[ssl.SSLSocket, float]):
+def internetspeed_worker(secure_sock: ssl.SSLSocket, socket_speed: dict[ssl.SSLSocket, float]):
     """Worker to perform the requests in parallel"""
     secure_sock.sendall(TEST_REQUEST.encode())
     empty_buffer = memoryview(sabctools.bytearray_malloc(BUFFER_SIZE))

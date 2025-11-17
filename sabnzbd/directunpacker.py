@@ -62,11 +62,11 @@ class DirectUnpacker(threading.Thread):
         self.rarfile_nzf: Optional[NzbFile] = None
         self.cur_setname: Optional[str] = None
         self.cur_volume: int = 0
-        self.total_volumes: Dict[str, int] = {}
+        self.total_volumes: dict[str, int] = {}
         self.unpack_time: float = 0.0
 
-        self.success_sets: Dict[str, Tuple[List[str], List[str]]] = {}
-        self.next_sets: List[NzbFile] = []
+        self.success_sets: dict[str, tuple[list[str], list[str]]] = {}
+        self.next_sets: list[NzbFile] = []
 
         self.duplicate_lines: int = 0
 

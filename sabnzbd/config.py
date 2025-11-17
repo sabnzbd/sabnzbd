@@ -28,7 +28,7 @@ import time
 import uuid
 import io
 import zipfile
-from typing import List, Dict, Any, Callable, Optional, Union, Tuple
+from typing import Any, Callable, Optional, Union
 from urllib.parse import urlparse
 
 import configobj
@@ -101,14 +101,14 @@ class Option:
     def get_string(self) -> str:
         return str(self.get())
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return value as a dictionary.
         Will not show non-public options if needed for the API"""
         if not self.__public and for_public_api:
             return {}
         return {self.__keyword: self.get()}
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set value based on dictionary"""
         if not self.__protect:
             try:
@@ -341,7 +341,7 @@ class OptionList(Option):
         """Return the default list as a comma-separated string"""
         return ", ".join(self.default)
 
-    def __call__(self) -> List[str]:
+    def __call__(self) -> list[str]:
         """get() replacement"""
         return self.get()
 
@@ -406,7 +406,7 @@ class OptionPassword(Option):
             return "*" * 10
         return ""
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, str]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, str]:
         """Return value a dictionary"""
         if for_public_api:
             return {self.keyword: self.get_stars()}
@@ -454,7 +454,7 @@ class ConfigServer:
         self.set_dict(values)
         add_to_database("servers", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         # Replace usage_at_start value with most recent statistics if the user changes the quota value
         # Only when we are updating it from the Config
@@ -491,7 +491,7 @@ class ConfigServer:
         if not self.displayname():
             self.displayname.set(self.__name)
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -531,7 +531,7 @@ class ConfigServer:
 class ConfigCat:
     """Class defining a single category"""
 
-    def __init__(self, name: str, values: Dict[str, Any]):
+    def __init__(self, name: str, values: dict[str, Any]):
         self.__name = clean_section_name(name)
         name = "categories," + self.__name
 
@@ -545,7 +545,7 @@ class ConfigCat:
         self.set_dict(values)
         add_to_database("categories", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
             try:
@@ -554,7 +554,7 @@ class ConfigCat:
             except KeyError:
                 continue
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -589,7 +589,7 @@ class ConfigSorter:
         self.set_dict(values)
         add_to_database("sorters", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
             try:
@@ -598,7 +598,7 @@ class ConfigSorter:
             except KeyError:
                 continue
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -639,7 +639,7 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def update(self, pos: int, value: Tuple):
+    def update(self, pos: int, value: tuple):
         """Update filter 'pos' definition, value is a list
         Append if 'pos' outside list
         """
@@ -659,14 +659,14 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, str]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, str]:
         """Return filter list as a dictionary with keys 'filter[0-9]+'"""
         output_dict = {}
         for n, rss_filter in enumerate(self.get()):
             output_dict[f"filter{n}"] = rss_filter
         return output_dict
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Create filter list from dictionary with keys 'filter[0-9]+'"""
         filters = []
         # We don't know how many filters there are, so just assume all values are filters
@@ -677,7 +677,7 @@ class OptionFilters(Option):
         if filters:
             self.set(filters)
 
-    def __call__(self) -> List[List[str]]:
+    def __call__(self) -> list[list[str]]:
         """get() replacement"""
         return self.get()
 
@@ -701,7 +701,7 @@ class ConfigRSS:
         self.set_dict(values)
         add_to_database("rss", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
             try:
@@ -711,7 +711,7 @@ class ConfigRSS:
                 continue
         self.filters.set_dict(values)
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -755,7 +755,7 @@ AllConfigTypes = Union[
     ConfigRSS,
     ConfigServer,
 ]
-CFG_DATABASE: Dict[str, Dict[str, AllConfigTypes]] = {}
+CFG_DATABASE: dict[str, dict[str, AllConfigTypes]] = {}
 
 
 @synchronized(CONFIG_LOCK)
@@ -1103,7 +1103,7 @@ def restore_config_backup(config_backup_data: bytes):
 
 
 @synchronized(CONFIG_LOCK)
-def get_servers() -> Dict[str, ConfigServer]:
+def get_servers() -> dict[str, ConfigServer]:
     global CFG_DATABASE
     try:
         return CFG_DATABASE["servers"]
@@ -1112,7 +1112,7 @@ def get_servers() -> Dict[str, ConfigServer]:
 
 
 @synchronized(CONFIG_LOCK)
-def get_sorters() -> Dict[str, ConfigSorter]:
+def get_sorters() -> dict[str, ConfigSorter]:
     global CFG_DATABASE
     try:
         return CFG_DATABASE["sorters"]
@@ -1120,7 +1120,7 @@ def get_sorters() -> Dict[str, ConfigSorter]:
         return {}
 
 
-def get_ordered_sorters() -> List[Dict]:
+def get_ordered_sorters() -> list[dict]:
     """Return sorters as an ordered list"""
     database_sorters = get_sorters()
 
@@ -1131,7 +1131,7 @@ def get_ordered_sorters() -> List[Dict]:
 
 
 @synchronized(CONFIG_LOCK)
-def get_categories() -> Dict[str, ConfigCat]:
+def get_categories() -> dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
     """
@@ -1163,7 +1163,7 @@ def get_category(cat: str = "*") -> ConfigCat:
         return cats["*"]
 
 
-def get_ordered_categories() -> List[Dict]:
+def get_ordered_categories() -> list[dict]:
     """Return list-copy of categories section that's ordered
     by user's ordering including Default-category
     """
@@ -1183,7 +1183,7 @@ def get_ordered_categories() -> List[Dict]:
 
 
 @synchronized(CONFIG_LOCK)
-def get_rss() -> Dict[str, ConfigRSS]:
+def get_rss() -> dict[str, ConfigRSS]:
     global CFG_DATABASE
     try:
         # We have to remove non-separator commas by detecting if they are valid URL's

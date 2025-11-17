@@ -22,7 +22,7 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
-from typing import List, Dict, Optional
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, KIBI
@@ -132,20 +132,20 @@ class BPSMeter:
         self.speed_log_time = t
         self.last_update = t
         self.bps = 0.0
-        self.bps_list: List[int] = []
+        self.bps_list: list[int] = []
 
-        self.server_bps: Dict[str, float] = {}
-        self.cached_amount: Dict[str, int] = {}
+        self.server_bps: dict[str, float] = {}
+        self.cached_amount: dict[str, int] = {}
         self.sum_cached_amount: int = 0
-        self.day_total: Dict[str, int] = {}
-        self.week_total: Dict[str, int] = {}
-        self.month_total: Dict[str, int] = {}
-        self.grand_total: Dict[str, int] = {}
+        self.day_total: dict[str, int] = {}
+        self.week_total: dict[str, int] = {}
+        self.month_total: dict[str, int] = {}
+        self.grand_total: dict[str, int] = {}
 
-        self.timeline_total: Dict[str, Dict[str, int]] = {}
+        self.timeline_total: dict[str, dict[str, int]] = {}
 
-        self.article_stats_tried: Dict[str, Dict[str, int]] = {}
-        self.article_stats_failed: Dict[str, Dict[str, int]] = {}
+        self.article_stats_tried: dict[str, dict[str, int]] = {}
+        self.article_stats_failed: dict[str, dict[str, int]] = {}
 
         self.delayed_assembler: int = 0
 

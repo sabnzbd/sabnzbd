@@ -27,7 +27,7 @@ import sys
 import threading
 import sqlite3
 from sqlite3 import Connection, Cursor
-from typing import Optional, List, Sequence, Dict, Any, Tuple, Union
+from typing import Optional, Sequence, Any
 
 import sabnzbd
 import sabnzbd.cfg
@@ -237,7 +237,7 @@ class HistoryDB:
         self.execute("""UPDATE history SET status = ? WHERE nzo_id = ?""", (Status.COMPLETED, job))
         logging.info("[%s] Marked job %s as completed", caller_name(), job)
 
-    def get_failed_paths(self, search: Optional[str] = None) -> List[str]:
+    def get_failed_paths(self, search: Optional[str] = None) -> list[str]:
         """Return list of all storage paths of failed jobs (may contain non-existing or empty paths)"""
         search = convert_search(search)
         fetch_ok = self.execute(
@@ -315,10 +315,10 @@ class HistoryDB:
         limit: Optional[int] = None,
         archive: Optional[bool] = None,
         search: Optional[str] = None,
-        categories: Optional[List[str]] = None,
-        statuses: Optional[List[str]] = None,
-        nzo_ids: Optional[List[str]] = None,
-    ) -> Tuple[List[Dict[str, Any]], int]:
+        categories: Optional[list[str]] = None,
+        statuses: Optional[list[str]] = None,
+        nzo_ids: Optional[list[str]] = None,
+    ) -> tuple[list[dict[str, Any]], int]:
         """Return records for specified jobs"""
         command_args = [convert_search(search)]
 
@@ -397,7 +397,7 @@ class HistoryDB:
             total = self.cursor.fetchone()["COUNT(*)"]
         return total > 0
 
-    def get_history_size(self) -> Tuple[int, int, int]:
+    def get_history_size(self) -> tuple[int, int, int]:
         """Returns the total size of the history and
         amounts downloaded in the last month and week
         """
@@ -457,7 +457,7 @@ class HistoryDB:
             return path
         return path
 
-    def get_other(self, nzo_id: str) -> Tuple[str, str, str, str, str]:
+    def get_other(self, nzo_id: str) -> tuple[str, str, str, str, str]:
         """Return additional data for job `nzo_id`"""
         if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", (nzo_id,)):
             try:
@@ -554,7 +554,7 @@ def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_ou
     )
 
 
-def unpack_history_info(item: sqlite3.Row) -> Dict[str, Any]:
+def unpack_history_info(item: sqlite3.Row) -> dict[str, Any]:
     """Expands the single line stage_log from the DB
     into a python dictionary for use in the history display
     """

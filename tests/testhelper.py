@@ -149,13 +149,13 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.text
 
 
-def create_nzb(nzb_dir: str, metadata: Optional[Dict[str, str]] = None) -> str:
+def create_nzb(nzb_dir: str, metadata: Optional[dict[str, str]] = None) -> str:
     """Create NZB from directory using SABNews"""
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
     return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata)
 
 
-def create_and_read_nzb_fp(nzbdir: str, metadata: Optional[Dict[str, str]] = None) -> BinaryIO:
+def create_and_read_nzb_fp(nzbdir: str, metadata: Optional[dict[str, str]] = None) -> BinaryIO:
     """Create NZB, return data and delete file"""
     # Create NZB-file to import
     nzb_path = create_nzb(nzbdir, metadata)
@@ -332,7 +332,7 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, ".btn.btn-success").click()
         self.no_page_crash()
 
-    def download_nzb(self, nzb_dir: str, file_output: List[str], dir_name_as_job_name: bool = False):
+    def download_nzb(self, nzb_dir: str, file_output: list[str], dir_name_as_job_name: bool = False):
         # Verify if the server was setup before we start
         self.is_server_configured()
 

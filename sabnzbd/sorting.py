@@ -179,7 +179,7 @@ class Sorter:
         self.get_showdescriptions()
         self.get_date()
 
-    def format_series_numbers(self, numbers: Union[int, List[int]], info_name: str):
+    def format_series_numbers(self, numbers: Union[int, list[int]], info_name: str):
         """Format the numbers in both plain and alternative (zero-padded) format and set as showinfo"""
         # Guessit returns multiple episodes or seasons as a list of integers, single values as int
         if isinstance(numbers, int):
@@ -417,7 +417,7 @@ class Sorter:
         # The normpath function translates "" to "." which results in an incorrect path
         return os.path.normpath(path) if path else path
 
-    def _rename_season_pack(self, files: List[str], base_path: str, all_job_files: List[str] = []) -> bool:
+    def _rename_season_pack(self, files: list[str], base_path: str, all_job_files: list[str] = []) -> bool:
         success = False
         for f in files:
             f_name, f_ext = os.path.splitext(os.path.basename(f))
@@ -476,7 +476,7 @@ class Sorter:
                 )
         return success
 
-    def _rename_sequential(self, sequential_files: Dict[str, str], base_path: str) -> bool:
+    def _rename_sequential(self, sequential_files: dict[str, str], base_path: str) -> bool:
         success = False
         for index, f in sequential_files.items():
             filepath = self._to_filepath(f, base_path)
@@ -515,7 +515,7 @@ class Sorter:
             and os.stat(filepath).st_size >= self.rename_limit
         )
 
-    def rename(self, files: List[str], base_path: str) -> Tuple[str, bool]:
+    def rename(self, files: list[str], base_path: str) -> tuple[str, bool]:
         if not self.rename_files:
             return move_to_parent_directory(base_path)
 
@@ -607,7 +607,7 @@ def ends_in_file(path: str) -> bool:
     return bool(RE_ENDEXT.search(path) or RE_ENDFN.search(path))
 
 
-def move_to_parent_directory(workdir: str) -> Tuple[str, bool]:
+def move_to_parent_directory(workdir: str) -> tuple[str, bool]:
     """Move all files under 'workdir' into 'workdir/..'"""
     # Determine 'folder'/..
     workdir = os.path.abspath(os.path.normpath(workdir))
@@ -696,7 +696,7 @@ def guess_what(name: str) -> MatchesDict:
     return guess
 
 
-def path_subst(path: str, mapping: List[Tuple[str, str]]) -> str:
+def path_subst(path: str, mapping: list[tuple[str, str]]) -> str:
     """Replace the sort string elements in the path with the real values provided by the mapping;
     non-elements are copied verbatim."""
     # Added ugly hack to prevent %ext from being masked by %e
@@ -719,7 +719,7 @@ def path_subst(path: str, mapping: List[Tuple[str, str]]) -> str:
 
 def get_titles(
     nzo: Optional[NzbObject], guess: Optional[MatchesDict], jobname: str, titleing: bool = False
-) -> Tuple[str, str, str]:
+) -> tuple[str, str, str]:
     """Get the title from NZB metadata or jobname, and return it in various formats. Formatting
     mostly deals with working around quirks of Python's str.title(). NZB metadata is used as-is,
     further processing done only for info obtained from guessit or the jobname."""
@@ -779,7 +779,7 @@ def replace_word(word_input: str, one: str, two: str) -> str:
     return word_input
 
 
-def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict]) -> Tuple[str, str, str]:
+def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict]) -> tuple[str, str, str]:
     """Try to get an episode title or similar description from the NZB metadata or jobname, e.g.
     'Download This' in Show.S01E23.Download.This.1080p.HDTV.x264 and return multiple formats"""
     ep_name = None
@@ -836,7 +836,7 @@ def strip_path_elements(path: str) -> str:
     return "\\\\" + path if is_unc else path
 
 
-def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[List[str]] = None):
+def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[list[str]] = None):
     """Rename all other files in the 'folder' hierarchy after 'name'
     and move them to the root of 'folder'.
     Files having extension 'skip_ext' will be moved, but not renamed.
@@ -921,7 +921,7 @@ def eval_sort(sort_string: str, job_name: str, multipart_label: str = "") -> Opt
     return sorted_path
 
 
-def check_for_multiple(files: List[str]) -> Optional[Dict[str, str]]:
+def check_for_multiple(files: list[str]) -> Optional[dict[str, str]]:
     """Return a dictionary of a single set of files that look like parts of
     a multi-part post. Takes a limited set of indicators from guessit into
     consideration and only accepts numerical sequences. The files argument

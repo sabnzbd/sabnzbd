@@ -27,7 +27,7 @@ import sys
 import ssl
 import time
 from datetime import date
-from typing import List, Dict, Optional, Union, Set
+from typing import Optional, Union
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWNLOADER_LOCK
@@ -135,9 +135,9 @@ class Server:
         self.username: Optional[str] = username
         self.password: Optional[str] = password
 
-        self.busy_threads: Set[NewsWrapper] = set()
+        self.busy_threads: set[NewsWrapper] = set()
         self.next_busy_threads_check: float = 0
-        self.idle_threads: Set[NewsWrapper] = set()
+        self.idle_threads: set[NewsWrapper] = set()
         self.next_article_search: float = 0
         self.active: bool = True
         self.bad_cons: int = 0
@@ -148,7 +148,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        self.article_queue: List[sabnzbd.nzbstuff.Article] = []
+        self.article_queue: list[sabnzbd.nzbstuff.Article] = []
 
         # Skip during server testing
         if threads:
@@ -290,10 +290,10 @@ class Downloader(Thread):
 
         self.force_disconnect: bool = False
 
-        self.read_fds: Dict[int, NewsWrapper] = {}
+        self.read_fds: dict[int, NewsWrapper] = {}
 
-        self.servers: List[Server] = []
-        self.timers: Dict[str, List[float]] = {}
+        self.servers: list[Server] = []
+        self.timers: dict[str, list[float]] = {}
 
         for server in config.get_servers():
             self.init_server(None, server)
@@ -694,7 +694,7 @@ class Downloader(Thread):
         except Exception:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
-    def process_nw_worker(self, read_fds: Dict[int, NewsWrapper], nw_queue: MultiAddQueue):
+    def process_nw_worker(self, read_fds: dict[int, NewsWrapper], nw_queue: MultiAddQueue):
         """Worker for the daemon thread to process results.
         Wrapped in try/except because in case of an exception, logging
         might get lost and the queue.join() would block forever."""

@@ -23,7 +23,6 @@ from tests.testhelper import *
 import shutil
 import zipfile
 import os
-from typing import List
 
 import sabnzbd.cfg
 from sabnzbd.constants import (
@@ -87,7 +86,7 @@ class TestConfig:
             return zip_buffer.getvalue()
 
     @staticmethod
-    def create_and_verify_backup(admin_dir: str, must_haves: List[str]):
+    def create_and_verify_backup(admin_dir: str, must_haves: list[str]):
         # Create the backup
         config_backup_path = config.create_config_backup()
         assert os.path.exists(config_backup_path)

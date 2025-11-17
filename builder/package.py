@@ -28,7 +28,6 @@ import urllib.request
 import urllib.error
 import configobj
 import packaging.version
-from typing import List
 
 from constants import (
     RELEASE_VERSION,
@@ -70,7 +69,7 @@ def delete_files_glob(glob_pattern: str, allow_no_matches: bool = False):
             raise FileNotFoundError(f"No files found that match '{glob_pattern}'")
 
 
-def run_external_command(command: List[str], print_output: bool = True, **kwargs):
+def run_external_command(command: list[str], print_output: bool = True, **kwargs):
     """Wrapper to ease the use of calling external programs"""
     process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
     output, _ = process.communicate()

@@ -314,7 +314,7 @@ def sanitize_and_trim_path(path: str) -> str:
     return os.path.abspath(os.path.normpath(new_path))
 
 
-def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] = None) -> List[str]:
+def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] = None) -> list[str]:
     """Sanitize each file in the folder or list of filepaths, return list of new names"""
     logging.info("Checking if any resulting filenames need to be sanitized")
     if folder:
@@ -330,7 +330,7 @@ def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] =
     return output_filelist
 
 
-def strip_extensions(name: str, ext_to_remove: Tuple[str, ...] = (".nzb", ".par", ".par2")):
+def strip_extensions(name: str, ext_to_remove: tuple[str, ...] = (".nzb", ".par", ".par2")):
     """Strip extensions from a filename, without sanitizing the filename"""
     name_base, ext = os.path.splitext(name)
     while ext.lower() in ext_to_remove:
@@ -378,7 +378,7 @@ def real_path(loc: str, path: str) -> str:
 
 def create_real_path(
     name: str, loc: str, path: str, apply_permissions: bool = False, writable: bool = True
-) -> Tuple[bool, str, Optional[str]]:
+) -> tuple[bool, str, Optional[str]]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
     'name' is used for logging.
@@ -484,7 +484,7 @@ TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
 
 def build_filelists(
     workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
-) -> Tuple[List[str], List[str], List[str], List[str]]:
+) -> tuple[list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
@@ -535,7 +535,7 @@ def safe_fnmatch(f: str, pattern: str) -> bool:
         return False
 
 
-def globber(path: str, pattern: str = "*") -> List[str]:
+def globber(path: str, pattern: str = "*") -> list[str]:
     """Return matching base file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
@@ -543,7 +543,7 @@ def globber(path: str, pattern: str = "*") -> List[str]:
     return []
 
 
-def globber_full(path: str, pattern: str = "*") -> List[str]:
+def globber_full(path: str, pattern: str = "*") -> list[str]:
     """Return matching full file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
@@ -572,7 +572,7 @@ def is_valid_script(basename: str) -> bool:
     return basename in list_scripts(default=False, none=False)
 
 
-def list_scripts(default: bool = False, none: bool = True) -> List[str]:
+def list_scripts(default: bool = False, none: bool = True) -> list[str]:
     """Return a list of script names, optionally with 'Default' added"""
     lst = []
     path = sabnzbd.cfg.script_dir.get_path()
@@ -783,7 +783,7 @@ def get_unique_filename(path: str) -> str:
 
 
 @synchronized(DIR_LOCK)
-def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
+def listdir_full(input_dir: str, recursive: bool = True) -> list[str]:
     """List all files in dirs and sub-dirs"""
     filelist = []
     for root, dirs, files in os.walk(input_dir):
@@ -797,7 +797,7 @@ def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
 
 
 @synchronized(DIR_LOCK)
-def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
+def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
     """Move a file to a new path, optionally give unique filename
     Return (ok, new_path)
     """
@@ -990,7 +990,7 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
+def diskspace_base(dir_to_check: str) -> tuple[float, float]:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
     x = "x"
@@ -1024,7 +1024,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
 
 
 @conditional_cache(cache_time=10)
-def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
+def diskspace(force: bool = False) -> dict[str, tuple[float, float]]:
     """Wrapper to keep results cached by conditional_cache
     If called with force=True, the wrapper will clear the results"""
     return {
@@ -1253,7 +1253,7 @@ def check_filesystem_capabilities(test_dir: str) -> bool:
     return allgood
 
 
-def get_win_drives() -> List[str]:
+def get_win_drives() -> list[str]:
     """Return list of detected drives, adapted from:
     http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
     """
@@ -1281,7 +1281,7 @@ PATHBROWSER_JUNKFOLDERS = (
 )
 
 
-def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) -> List[Dict[str, str]]:
+def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) -> list[dict[str, str]]:
     """Returns a list of dictionaries with the folders and folders contained at the given path
     Give the empty string as the path to list the contents of the root path
     under Unix this means "/", on Windows this will be a list of drive letters

@@ -178,7 +178,7 @@ def is_none(inp: Any) -> bool:
     return not inp or (isinstance(inp, str) and inp.lower() == "none")
 
 
-def clean_comma_separated_list(inp: Any) -> List[str]:
+def clean_comma_separated_list(inp: Any) -> list[str]:
     """Return a list of stripped values from a string or list, empty ones removed"""
     result_ids = []
     if isinstance(inp, str):
@@ -217,7 +217,7 @@ def cat_pp_script_sanitizer(
     cat: Optional[str] = None,
     pp: Optional[Union[int, str]] = None,
     script: Optional[str] = None,
-) -> Tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
+) -> tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
     """Basic sanitizer from outside input to a bit more predictable values"""
     # * and Default are valid values
     if safe_lower(cat) in ("", "none"):
@@ -246,7 +246,7 @@ def name_to_cat(fname, cat=None):
     return fname, cat
 
 
-def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str, int]:
+def cat_to_opts(cat, pp=None, script=None, priority=None) -> tuple[str, int, str, int]:
     """Derive options from category, if options not already defined.
     Specified options have priority over category-options.
     If no valid category is given, special category '*' will supply default values
@@ -279,7 +279,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str
     return cat, pp, script, priority
 
 
-def pp_to_opts(pp: Optional[int]) -> Tuple[bool, bool, bool]:
+def pp_to_opts(pp: Optional[int]) -> tuple[bool, bool, bool]:
     """Convert numeric processing options to (repair, unpack, delete)"""
     # Convert the pp to an int
     pp = int_conv(pp)
@@ -988,7 +988,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     return True
 
 
-def get_all_passwords(nzo) -> List[str]:
+def get_all_passwords(nzo) -> list[str]:
     """Get all passwords, from the NZB, meta and password file. In case a working password is
     already known, try it first."""
     passwords = []
@@ -1170,7 +1170,7 @@ def is_local_addr(ip: str) -> bool:
         return is_lan_addr(ip)
 
 
-def ip_extract() -> List[str]:
+def ip_extract() -> list[str]:
     """Return list of IP addresses of this system"""
     ips = []
     program = find_on_path("ip")
@@ -1215,7 +1215,7 @@ def get_base_url(url: str) -> str:
         return ""
 
 
-def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
+def match_str(text: AnyStr, matches: tuple[AnyStr, ...]) -> Optional[AnyStr]:
     """Return first matching element of list 'matches' in 'text', otherwise None"""
     text = text.lower()
     for match in matches:
@@ -1224,7 +1224,7 @@ def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
     return None
 
 
-def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclude_items: Tuple[str, ...] = ()):
+def recursive_html_escape(input_dict_or_list: Union[dict[str, Any], List], exclude_items: tuple[str, ...] = ()):
     """Recursively update the input_dict in-place with html-safe values"""
     if isinstance(input_dict_or_list, (dict, list)):
         if isinstance(input_dict_or_list, dict):
@@ -1245,7 +1245,7 @@ def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclu
         raise ValueError("Expected dict or str, got %s" % type(input_dict_or_list))
 
 
-def list2cmdline_unrar(lst: List[str]) -> str:
+def list2cmdline_unrar(lst: list[str]) -> str:
     """convert list to a unrar.exe-compatible command string
     Unrar uses "" instead of \" to escape the double quote"""
     nlst = []
@@ -1259,7 +1259,7 @@ def list2cmdline_unrar(lst: List[str]) -> str:
     return " ".join(nlst)
 
 
-def build_and_run_command(command: List[str], windows_unrar_command: bool = False, text_mode: bool = True, **kwargs):
+def build_and_run_command(command: list[str], windows_unrar_command: bool = False, text_mode: bool = True, **kwargs):
     """Builds and then runs command with necessary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
@@ -1326,7 +1326,7 @@ def build_and_run_command(command: List[str], windows_unrar_command: bool = Fals
     return subprocess.Popen(command, **popen_kwargs)
 
 
-def run_command(cmd: List[str], **kwargs):
+def run_command(cmd: list[str], **kwargs):
     """Run simple external command and return output as a string."""
     with build_and_run_command(cmd, **kwargs) as p:
         txt = p.stdout.read()
@@ -1514,8 +1514,8 @@ def convert_sorter_settings():
         min_size: Union[str|int] = "50M"
         multipart_label: Optional[str] = ""
         sort_string: str
-        sort_cats: List[str]
-        sort_type: List[int]
+        sort_cats: list[str]
+        sort_type: list[int]
         is_active: bool = 1
     }
 

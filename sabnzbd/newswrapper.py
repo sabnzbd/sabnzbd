@@ -178,7 +178,7 @@ class NewsWrapper:
         self.nntp.sock.sendall(command)
         self.reset_data_buffer()
 
-    def recv_chunk(self) -> Tuple[int, bool, bool]:
+    def recv_chunk(self) -> tuple[int, bool, bool]:
         """Receive data, return #bytes, end-of-line, end-of-article"""
         # Resize the buffer in the extremely unlikely case that it got full
         if self.data_position == len(self.data):
