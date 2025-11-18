@@ -540,21 +540,19 @@ def get_webhost(web_host, web_port, https_port):
     # If only APIPA's or IPV6 are found, fall back to localhost
     ipv4 = ipv6 = False
     localhost = hostip = "localhost"
+
     try:
-        info = socket.getaddrinfo(socket.gethostname(), None)
+        # Valid user defined name?
+        info = socket.getaddrinfo(web_host, None)
     except socket.error:
-        # Hostname does not resolve
+        if not is_localhost(web_host):
+            web_host = "0.0.0.0"
         try:
-            # Valid user defined name?
-            info = socket.getaddrinfo(web_host, None)
+            info = socket.getaddrinfo(localhost, None)
         except socket.error:
-            if not is_localhost(web_host):
-                web_host = "0.0.0.0"
-            try:
-                info = socket.getaddrinfo(localhost, None)
-            except socket.error:
-                info = socket.getaddrinfo("127.0.0.1", None)
-                localhost = "127.0.0.1"
+            info = socket.getaddrinfo("127.0.0.1", None)
+            localhost = "127.0.0.1"
+
     for item in info:
         ip = str(item[4][0])
         if ip.startswith("169.254."):
