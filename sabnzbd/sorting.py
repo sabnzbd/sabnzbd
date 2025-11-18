@@ -283,7 +283,7 @@ class Sorter:
         if ends_in_file(sort_string):
             extension = True
             if sort_string.endswith(".%ext"):
-                sort_string = sort_string[:-5]  # Strip '.%ext' off the end; other %ext may remain in sort_string
+                sort_string = sort_string.removesuffix(".%ext")  # Strip '.%ext' off the end; other %ext may remain
             if self.is_season_pack:
                 # Create a record of the filename part of the sort_string
                 _, self.season_pack_setname = os.path.split(sort_string)
@@ -658,7 +658,7 @@ def guess_what(name: str) -> MatchesDict:
 
     if digit_fix:
         # Unfix the title
-        guess["title"] = guess.get("title", "")[len(digit_fix) :]
+        guess["title"] = guess.get("title", "").removeprefix(digit_fix)
 
     # Handle weird anime episode notation, that results in the episode number ending up as the episode title
     if (

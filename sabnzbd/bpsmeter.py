@@ -382,7 +382,7 @@ class BPSMeter:
 
         # Always trim the list to the max-length
         if len(self.bps_list) > BPS_LIST_MAX:
-            self.bps_list = self.bps_list[len(self.bps_list) - BPS_LIST_MAX :]
+            self.bps_list = self.bps_list[-BPS_LIST_MAX:]
 
     def get_sums(self):
         """return tuple of grand, month, week, day totals"""

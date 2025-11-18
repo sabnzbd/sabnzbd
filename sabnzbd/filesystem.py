@@ -295,10 +295,10 @@ def sanitize_and_trim_path(path: str) -> str:
     if sabnzbd.WINDOWS:
         if path.startswith("\\\\?\\UNC\\"):
             new_path = "\\\\?\\UNC\\"
-            path = path[8:]
+            path = path.removeprefix("\\\\?\\UNC\\")
         elif path.startswith("\\\\?\\"):
             new_path = "\\\\?\\"
-            path = path[4:]
+            path = path.removeprefix("\\\\?\\")
 
     path = path.replace("\\", "/")
     parts = path.split("/")

@@ -1579,7 +1579,7 @@ def convert_sorter_settings():
 def convert_history_retention():
     """Convert single-option to the split history retention setting"""
     if "d" in cfg.history_retention():
-        days_to_keep = int_conv(cfg.history_retention().strip()[:-1])
+        days_to_keep = int_conv(cfg.history_retention().strip().removesuffix("d"))
         cfg.history_retention_option.set("days-delete")
         cfg.history_retention_number.set(days_to_keep)
     else:
