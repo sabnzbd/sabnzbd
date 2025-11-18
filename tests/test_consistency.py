@@ -68,7 +68,10 @@ class TestWiki:
         config_diff = {}
         for url in ("general", "switches", "special"):
             config_tree = lxml.html.fromstring(
-                requests.get("http://%s:%s/config/%s/" % (SAB_HOST, SAB_PORT, url)).content
+                requests.get(
+                    "http://%s:%s/config/%s/" % (SAB_HOST, SAB_PORT, url),
+                    headers={"User-Agent": "SABnzbd/%s" % sabnzbd.__version__},
+                ).content
             )
             # Have to remove some decorating stuff and empty values
             config_labels = [
@@ -79,7 +82,10 @@ class TestWiki:
             # Parse the version info to get the right Wiki version
             version = re.search(r"(\d+\.\d+)\.(\d+)([a-zA-Z]*)(\d*)", sabnzbd.__version__).group(1)
             wiki_tree = lxml.html.fromstring(
-                requests.get("https://sabnzbd.org/wiki/configuration/%s/%s" % (version, url)).content
+                requests.get(
+                    "https://sabnzbd.org/wiki/configuration/%s/%s" % (version, url),
+                    headers={"User-Agent": "SABnzbd/%s" % sabnzbd.__version__},
+                ).content
             )
 
             # Special-page needs different label locator

@@ -23,7 +23,8 @@
     "jaraco.collections",
     "sabctools",
     "paho-mqtt",
-    "werkzeug"
+    "werkzeug",
+    "tavern" 
   ],
   "packageRules": [
     {
