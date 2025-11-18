@@ -7,8 +7,14 @@ import sys
 import logging
 import time
 
-_DUMP_DATA_SIZE = 256 * 1024 * 1024 # Increased buffer for better write performance
+BUFFERSIZE = [
+    16 * 1024 * 1024,
+    32 * 1024 * 1024,
+    128 * 1024 * 1024
+]
 
+# Prepare the whole buffer now for better write performance later
+buffer = os.urandom(BUFFERSIZE[-1]); # Dump 128 MB of trash in RAM
 
 def diskspeedmeasure(dirname: str) -> float:
     """Returns writing speed to my_dirname in MB/s
@@ -16,25 +22,27 @@ def diskspeedmeasure(dirname: str) -> float:
     Then divide bytes written by time passed
     In case of problems (ie non-writable dir or file), return 0.0
     """
-    dump_data = os.urandom(_DUMP_DATA_SIZE)
     start = time.time()
-    maxtime = 3  # sec
+    maxtime = 1 # sec
     total_written = 0
+    total_time = 0
     filename = os.path.join(dirname, "outputTESTING.txt")
-    
+
     try:
         # Use low-level I/O
-        fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY | getattr(os, "os.O_BINARY", 0) | os.O_SYNC, 0o777)
+        fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_SYNC", 0), 0o777)
         start = time.perf_counter()
         maxtime += start
         
         # Start looping
-        while time.perf_counter() < maxtime:
-            total_written += os.write(fp_testfile, dump_data)
+        for i in range(len(BUFFERSIZE)):
+            # Stop writing next buffer block, if time exceeds limit
+            if time.perf_counter() >= maxtime:
+                break
+            total_written += os.write(fp_testfile, buffer[0:BUFFERSIZE[i]])
             os.fsync(fp_testfile)
-
+            
         total_time = time.perf_counter() - start
-
         # Have to use low-level close
         os.close(fp_testfile)
         # Remove the file
@@ -64,14 +72,9 @@ if __name__ == "__main__":
         print("Using current working directory")
 
     try:
-        measure = 0.0
-        tries = 2
-        for _ in range(tries):
-            measure +=diskspeedmeasure(DIRNAME)
-        SPEED = measure / tries
-
+        SPEED = max(diskspeedmeasure(DIRNAME), diskspeedmeasure(DIRNAME))
         if SPEED:
-            print("Disk writing speed: %.2f Mbytes per second" % SPEED)
+            print("Disk writing speed: %.2f MBytes per second" % SPEED)
         else:
             print("No measurement possible. Check that directory is writable.")
     except Exception:
