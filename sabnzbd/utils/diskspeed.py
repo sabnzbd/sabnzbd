@@ -9,6 +9,7 @@ import time
 
 BUFFERSIZE = 16 * 1024 * 1024
 
+
 def diskspeedmeasure(dirname: str) -> float:
     """Returns writing speed to my_dirname in MB/s
     method: keep writing a file, until certain time is passed.
@@ -16,22 +17,25 @@ def diskspeedmeasure(dirname: str) -> float:
     In case of problems (ie non-writable dir or file), return 0.0
     """
     # Prepare the whole buffer now for better write performance later
-    buffer = os.urandom(BUFFERSIZE); # Dump 16 MB of trash in RAM
+    buffer = os.urandom(BUFFERSIZE); 
+    # Dump 16 MB of trash in RAM
     
     start = time.time()
-    maxtime = 1 # sec
+    maxtime = 1  # sec
     total_written = 0
     total_time = 0
     filename = os.path.join(dirname, "outputTESTING.txt")
 
     try:
         # Use low-level I/O
-        fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_SYNC", 0), 0o777)
+        fp_testfile = os.open(
+            filename, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_SYNC", 0), 0o777
+            )
         start = time.perf_counter()
         maxtime += start
-        
+
         # Start looping
-        for i in range(1,5):
+        for i in range(1, 5):
             # Stop writing next buffer block, if time exceeds limit
             if time.perf_counter() >= maxtime:
                 break
