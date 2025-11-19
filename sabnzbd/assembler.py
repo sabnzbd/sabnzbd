@@ -118,11 +118,11 @@ class Assembler(Thread):
 
                         # Intermediate script
                         if cfg.intermediate_script() and nzo.bytes_downloaded > 400_000_000:
-                            logging.info(f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
-                            incomplete_dir = nzo.download_path
-                            logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
-                            run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
 
+                            logging.info("SJ: Running intermediate script for %s", nzo.final_name)
+                            logging.info(f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
+                            # Determine relevant directory
+                            # Use case #1: with rar-files, and directunpack:
                             if nzo.direct_unpack_progress:
                                 # direct unpacker active instance found
                                 direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
@@ -130,6 +130,10 @@ class Assembler(Thread):
                                 run_intermediate_script(cfg.intermediate_script(), direct_unpack_dir)
                             else:
                                 logging.info("SJ: Intermediate: no direct unpacker active instance found")
+                                # Use case 2: no DirectUnpack, but incomplete download dir contains post without rar-files
+                                incomplete_dir = nzo.download_path
+                                logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
+                                run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
