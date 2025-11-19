@@ -28,7 +28,7 @@ import time
 import logging
 import ssl
 import sabctools
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, Callable
 
 import sabnzbd
 import sabnzbd.cfg
@@ -132,7 +132,7 @@ class NewsWrapper:
         self.nntp = NNTP(self, self.server.addrinfo)
         self.timeout = time.time() + self.server.timeout
 
-    def finish_connect(self, code: int):
+    def finish_connect(self, code: int, message: str) -> None:
         """Perform login options"""
         if not (self.server.username or self.server.password or self.force_login):
             self.connected = True
@@ -150,7 +150,7 @@ class NewsWrapper:
             self.pass_ok = False
 
         if code in (400, 500, 502):
-            raise NNTPPermanentError(self.nntp_msg, code)
+            raise NNTPPermanentError(message, code)
         elif not self.user_sent:
             command = utob("authinfo user %s\r\n" % self.server.username)
             self.queue(command)
@@ -172,7 +172,7 @@ class NewsWrapper:
         elif self.user_ok and not self.pass_ok:
             if code != 281:
                 # Assume that login failed (code 481 or other)
-                raise NNTPPermanentError(self.nntp_msg, code)
+                raise NNTPPermanentError(message, code)
             else:
                 self.connected = True
 
@@ -204,26 +204,6 @@ class NewsWrapper:
         else:
             command = utob("ARTICLE <%s>\r\n" % article.article)
         self.queue(command, article)
-
-    def handle_remainder(self):
-        while self.decoder_remainder:
-            if self.decoder is None:
-                self.decoder = sabctools.Decoder()
-                self.article = self.response_queue.popleft()
-            # Are there unprocessed bytes that we need to try first?
-            status, self.decoder_remainder = self.decoder.decode(self.decoder_remainder)
-            if status:
-                self.command_complete(status, self.decoder)
-            elif self.decoder_remainder:
-                # Unprocessable; copy to start of buffer and read more
-                # Rare if the buffer is large enough to hold the end of a response and the next yenc headers
-                self.data_position = len(self.decoder_remainder)
-                self.data_view[: self.data_position] = self.decoder_remainder
-                self.decoder_remainder = None
-                break
-            else:
-                self.data_position = 0
-                break
 
     def command_complete(self, status: sabctools.DecodingStatus, decoder: sabctools.Decoder):
         article = self.article
@@ -319,8 +299,16 @@ class NewsWrapper:
                 )
                 return
 
-    def recv_chunk(self, nbytes: int = 0) -> Tuple[int, Optional[int]]:
-        """Receive data, return #bytes, end-of-line, end-of-article"""
+    def recv_chunk(
+        self,
+        nbytes: int = 0,
+        on_response: Optional[Callable[[int, str], None]] = None,
+    ) -> Tuple[int, Optional[int]]:
+        """Receive data, return #bytes, #pendingbytes
+        :param nbytes: maximum number of bytes to read
+        :param on_response: callback for each complete response received
+        :return: #bytes, #pendingbytes
+        """
         # Sanity check before we go any further
         if self.decoder and self.decoder.bytes_read > NTTP_MAX_BUFFER_SIZE:
             raise BufferError("Maximum data buffer size exceeded")
@@ -353,10 +341,31 @@ class NewsWrapper:
                 self.article = self.response_queue.popleft()
             status, self.decoder_remainder = self.decoder.decode(self.data_view[: self.data_position])
             if status:
+                if on_response:
+                    on_response(self.decoder.status_code, self.decoder.message)
                 self.command_complete(status, self.decoder)
             if self.decoder_remainder is None:
                 self.data_position = 0
-            self.handle_remainder()
+            while self.decoder_remainder:
+                if self.decoder is None:
+                    self.decoder = sabctools.Decoder()
+                    self.article = self.response_queue.popleft()
+                # Are there unprocessed bytes that we need to try first?
+                status, self.decoder_remainder = self.decoder.decode(self.decoder_remainder)
+                if status:
+                    if on_response:
+                        on_response(self.decoder.status_code, self.decoder.message)
+                    self.command_complete(status, self.decoder)
+                elif self.decoder_remainder:
+                    # Unprocessable; copy to start of buffer and read more
+                    # Rare if the buffer is large enough to hold the end of a response and the next yenc headers
+                    self.data_position = len(self.decoder_remainder)
+                    self.data_view[: self.data_position] = self.decoder_remainder
+                    self.decoder_remainder = None
+                    break
+                else:
+                    self.data_position = 0
+                    break
 
         # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
         # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger

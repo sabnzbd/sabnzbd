@@ -30,6 +30,8 @@ import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any, Union
 
+import sabctools
+
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
 try:
@@ -1387,12 +1389,20 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
         # Sorry, no clever analysis:
         return False, T('Server address "%s:%s" is not valid.') % (host, port)
 
+    nw = NewsWrapper(server=test_server, thrdnum=-1, block=True)
+    nntp_code: int = 0
+    nntp_message: str = ""
+
+    def on_response(code: int, message: str):
+        nonlocal nntp_code, nntp_message
+        nntp_code = code
+        nntp_message = message
+
     try:
-        nw = NewsWrapper(server=test_server, thrdnum=-1, block=True)
         nw.init_connect()
         while not nw.connected:
-            nw.recv_chunk()
             nw.write()
+            nw.recv_chunk(on_response=on_response)
 
     except socket.timeout:
         if port != 119 and not ssl:
@@ -1417,27 +1427,27 @@ def test_nntp_server_dict(kwargs: Dict[str, Union[str, List[str]]]) -> Tuple[boo
         nw.queue(b"ARTICLE <test@home>\r\n")
         try:
             nw.write()
-            nw.recv_chunk()
+            nw.recv_chunk(on_response=on_response)
         except Exception as err:
             # Some internal error, not always safe to close connection
             return False, str(err)
 
     # Parse result
     return_status = ()
-    if status := int_conv(nw.data_view[:3]):
-        if status == 480:
+    if nntp_code:
+        if nntp_code == 480:
             return_status = (False, T("Server requires username and password."))
-        elif status < 300 or status in (411, 423, 430):
+        elif nntp_code < 300 or nntp_code in (411, 423, 430):
             # If no username/password set and we requested fake-article, it will return 430 Not Found
             return_status = (True, T("Connection Successful!"))
-        elif status == 502 or sabnzbd.downloader.clues_login(nw.nntp_msg):
+        elif nntp_code == 502 or sabnzbd.downloader.clues_login(nntp_message):
             return_status = (False, T("Authentication failed, check username/password."))
-        elif sabnzbd.downloader.clues_too_many(nw.nntp_msg):
+        elif sabnzbd.downloader.clues_too_many(nntp_message):
             return_status = (False, T("Too many connections, please pause downloading or try again later"))
 
     # Fallback in case no data was received or unknown status
     if not return_status:
-        return_status = (False, T("Could not determine connection result (%s)") % nw.nntp_msg)
+        return_status = (False, T("Could not determine connection result (%s)") % nntp_message)
 
     # Close the connection and return result
     nw.hard_reset()

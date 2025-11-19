@@ -804,7 +804,7 @@ class Downloader(Thread):
     def finish_connect_nw(self, nw: NewsWrapper, decoder: sabctools.Decoder) -> bool:
         server = nw.server
         try:
-            nw.finish_connect(decoder.status_code)
+            nw.finish_connect(decoder.status_code, decoder.message)
             if sabnzbd.LOG_ALL:
                 logging.debug("%s@%s last message -> %d", nw.thrdnum, server.host, decoder.status_code)
         except NNTPPermanentError as error:
