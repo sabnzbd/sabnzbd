@@ -17,7 +17,7 @@ def diskspeedmeasure(dirname: str) -> float:
     In case of problems (ie non-writable dir or file), return 0.0
     """
     # Prepare the whole buffer now for better write performance later
-    buffer = os.urandom(BUFFERSIZE) 
+    buffer = os.urandom(BUFFERSIZE)
     # Dump 16 MB of trash in RAM
 
     start = time.time()
