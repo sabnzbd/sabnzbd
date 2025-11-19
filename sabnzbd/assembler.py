@@ -117,10 +117,16 @@ class Assembler(Thread):
                             nzo.handle_par2(nzf, filepath)
 
                         # Intermediate script
-                        if cfg.intermediate_script() and nzo.bytes_downloaded > 400_000_000:
+                        if (
+                            cfg.intermediate_script()
+                            and nzo.bytes_downloaded > 400_000_000
+                            and nzo.intermediate_script_runtimes < 3
+                        ):
 
                             logging.info("SJ: Running intermediate script for %s", nzo.final_name)
-                            logging.info(f"SJ: Intermediate: nzb.bytes_downloaded: {nzo.bytes_downloaded}")
+                            logging.info(
+                                f"SJ: Intermediate: on run {nzo.intermediate_script_runtimes}: nzb.bytes_downloaded: {nzo.bytes_downloaded}"
+                            )
                             # Determine relevant directory
                             # Use case #1: with rar-files, and directunpack:
                             if nzo.direct_unpack_progress:
@@ -134,6 +140,7 @@ class Assembler(Thread):
                                 incomplete_dir = nzo.download_path
                                 logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
                                 run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
+                            nzo.intermediate_script_runtimes += 1
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error

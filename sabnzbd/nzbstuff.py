@@ -592,6 +592,7 @@ NzbObjectSaver = (
     "unwanted_ext",
     "renames",
     "time_added",
+    "intermediate_script_runtimes",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -740,6 +741,7 @@ class NzbObject(TryList):
         self.url_tries = 0
         self.pp_active = False
         self.md5sum: Optional[str] = None
+        self.intermediate_script_runtimes = 0
 
         # Path is empty in case of a future NZB
         self.download_path = ""
