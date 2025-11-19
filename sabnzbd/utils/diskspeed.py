@@ -17,9 +17,9 @@ def diskspeedmeasure(dirname: str) -> float:
     In case of problems (ie non-writable dir or file), return 0.0
     """
     # Prepare the whole buffer now for better write performance later
-    buffer = os.urandom(BUFFERSIZE); 
+    buffer = os.urandom(BUFFERSIZE) 
     # Dump 16 MB of trash in RAM
-    
+
     start = time.time()
     maxtime = 1  # sec
     total_written = 0
@@ -30,7 +30,7 @@ def diskspeedmeasure(dirname: str) -> float:
         # Use low-level I/O
         fp_testfile = os.open(
             filename, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_SYNC", 0), 0o777
-            )
+        )
         start = time.perf_counter()
         maxtime += start
 
@@ -42,7 +42,7 @@ def diskspeedmeasure(dirname: str) -> float:
             # Increase chunk size after each iteration
             total_written += os.write(fp_testfile, buffer * (i**2))
             os.fsync(fp_testfile)
-            
+
         total_time = time.perf_counter() - start
         # Have to use low-level close
         os.close(fp_testfile)
