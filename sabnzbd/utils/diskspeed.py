@@ -7,14 +7,7 @@ import sys
 import logging
 import time
 
-BUFFERSIZE = [
-    16 * 1024 * 1024,
-    32 * 1024 * 1024,
-    128 * 1024 * 1024
-]
-
-# Prepare the whole buffer now for better write performance later
-buffer = os.urandom(BUFFERSIZE[-1]); # Dump 128 MB of trash in RAM
+BUFFERSIZE = 16 * 1024 * 1024
 
 def diskspeedmeasure(dirname: str) -> float:
     """Returns writing speed to my_dirname in MB/s
@@ -22,6 +15,9 @@ def diskspeedmeasure(dirname: str) -> float:
     Then divide bytes written by time passed
     In case of problems (ie non-writable dir or file), return 0.0
     """
+    # Prepare the whole buffer now for better write performance later
+    buffer = os.urandom(BUFFERSIZE); # Dump 16 MB of trash in RAM
+    
     start = time.time()
     maxtime = 1 # sec
     total_written = 0
@@ -35,11 +31,12 @@ def diskspeedmeasure(dirname: str) -> float:
         maxtime += start
         
         # Start looping
-        for i in range(len(BUFFERSIZE)):
+        for i in range(1,5):
             # Stop writing next buffer block, if time exceeds limit
             if time.perf_counter() >= maxtime:
                 break
-            total_written += os.write(fp_testfile, buffer[0:BUFFERSIZE[i]])
+            # Increase chunk size after each iteration
+            total_written += os.write(fp_testfile, buffer * (i**2))
             os.fsync(fp_testfile)
             
         total_time = time.perf_counter() - start
