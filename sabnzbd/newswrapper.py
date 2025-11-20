@@ -217,46 +217,25 @@ class NewsWrapper:
         if sabnzbd.LOG_ALL:
             logging.debug("Thread %s@%s: %s %s", self.thrdnum, server.host, decoder.status_code, status)
 
-        # Some duplication to sort in this
-        if not article or status is sabctools.DecodingStatus.AUTH:
-            if not sabnzbd.Downloader.finish_connect_nw(self, decoder):
-                return
-            if self.connected:
-                logging.info("Connecting %s@%s finished", self.thrdnum, server.host)
-            if article:
-                article.allow_new_fetcher()
-        elif decoder.status_code in (220, 222):
-            # Successful data, clear "bad" counter
-            server.bad_cons = 0
-            server.errormsg = server.warning = ""
+        article_done = decoder.status_code in (220, 222)
 
-            # Decode
-            sabnzbd.Downloader.decode(article, decoder)
-
-            with DOWNLOADER_LOCK:
-                # Update statistics only when we fetched a whole article
-                # The side effect is that we don't count things like article-not-available messages
-                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, decoder.bytes_read)
-
-            if sabnzbd.LOG_ALL:
-                logging.debug("Thread %s@%s: %s done", self.thrdnum, server.host, article.article)
-        else:
-            # Response code depends on request command:
-            # 220 = ARTICLE, 222 = BODY
-            if not self.connected or decoder.status_code == 480:
-                if not sabnzbd.Downloader.finish_connect_nw(self):
+        # Response code depends on request command:
+        # 220 = ARTICLE, 222 = BODY
+        if not article_done:
+            if not self.connected or not article or status is sabctools.DecodingStatus.AUTH:
+                if not sabnzbd.Downloader.finish_connect_nw(self, decoder):
                     return
                 if self.connected:
                     logging.info("Connecting %s@%s finished", self.thrdnum, server.host)
-                    self.body(article)
-                elif article:
-                    # Not sure if this is correct
-                    article.allow_new_fetcher()
+                    if article:
+                        article.allow_new_fetcher()
 
             elif decoder.status_code == 223:
+                article_done = True
                 logging.debug("Article <%s> is present on %s", article.article, server.host)
 
             elif decoder.status_code in (411, 423, 430, 451):
+                article_done = True
                 logging.debug(
                     "Thread %s@%s: Article %s missing (error=%s)",
                     self.thrdnum,
@@ -271,6 +250,7 @@ class NewsWrapper:
                     if not server.have_stat:
                         # Hopless server, just discard
                         logging.info("Server %s does not support STAT or HEAD, precheck not possible", server.host)
+                        article_done = True
                     else:
                         # Assume "STAT" command is not supported
                         server.have_stat = False
@@ -298,6 +278,17 @@ class NewsWrapper:
                     self, f"Server error or unknown status code: {decoder.status_code}", wait=False
                 )
                 return
+
+        if article_done:
+            # Successful data, clear "bad" counter
+            server.bad_cons = 0
+            server.errormsg = server.warning = ""
+
+            # Decode
+            sabnzbd.Downloader.decode(article, decoder)
+
+            if sabnzbd.LOG_ALL:
+                logging.debug("Thread %s@%s: %s done", self.thrdnum, server.host, article.article)
 
     def recv_chunk(
         self,
