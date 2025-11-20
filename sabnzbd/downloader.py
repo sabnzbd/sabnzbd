@@ -684,9 +684,10 @@ class Downloader(Thread):
                     self.last_max_chunk_size = 0
 
                 # Use select to find sockets ready for reading/writing
-                if self.selector.get_map() and (events := self.selector.select(timeout=1.0)):
-                    for key, ev in events:
-                        process_nw_queue.put((key.data, ev))
+                if self.selector.get_map():
+                    if events := self.selector.select(timeout=1.0):
+                        for key, ev in events:
+                            process_nw_queue.put((key.data, ev))
                 else:
                     events = []
                     BPSMeter.reset()
