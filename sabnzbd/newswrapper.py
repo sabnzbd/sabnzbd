@@ -217,7 +217,11 @@ class NewsWrapper:
         if sabnzbd.LOG_ALL:
             logging.debug("Thread %s@%s: %s %s", self.thrdnum, server.host, decoder.status_code, status)
 
-        article_done = decoder.status_code in (220, 222)
+        if article_done := decoder.status_code in (220, 222) and article:
+            with DOWNLOADER_LOCK:
+                # Update statistics only when we fetched a whole article
+                # The side effect is that we don't count things like article-not-available messages
+                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, decoder.bytes_read)
 
         # Response code depends on request command:
         # 220 = ARTICLE, 222 = BODY
