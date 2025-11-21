@@ -37,7 +37,6 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.misc import SABRarFile
-import rarfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 # Need a lock to make sure start and stop is handled correctly

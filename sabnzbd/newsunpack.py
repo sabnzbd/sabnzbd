@@ -29,7 +29,7 @@ import io
 import shutil
 import functools
 import rarfile
-from typing import BinaryIO, Optional, Any, Union, Callable
+from typing import BinaryIO, Optional, Any, Union
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou

@@ -29,7 +29,7 @@ from typing import Optional
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
-from sabnzbd.filesystem import get_basename, get_ext
+from sabnzbd.filesystem import get_basename
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI

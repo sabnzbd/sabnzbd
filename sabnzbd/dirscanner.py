@@ -23,7 +23,7 @@ import asyncio
 import os
 import logging
 import threading
-from typing import Generator, Set, Optional, Tuple
+from typing import Generator, Optional
 
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES, AddNzbFileResult

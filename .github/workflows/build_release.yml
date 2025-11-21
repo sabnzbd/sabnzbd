@@ -10,7 +10,7 @@ jobs:
   build_windows:
     name: Build Windows binary
     runs-on: windows-2022
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v5
     - name: Set up Python
@@ -83,8 +83,8 @@ jobs:
 
   build_macos:
     name: Build macOS binary
-    runs-on: macos-14
-    timeout-minutes: 30
+    runs-on: macos-latest
+    timeout-minutes: 15
     env:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
@@ -160,7 +160,7 @@ jobs:
 
   build-snap:
     name: Build Snap Packages (${{ matrix.linux_arch }})
-    timeout-minutes: 30
+    timeout-minutes: 10
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

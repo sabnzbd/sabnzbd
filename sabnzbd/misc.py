@@ -41,7 +41,7 @@ import math
 import rarfile
 from threading import Thread
 from collections.abc import Iterable
-from typing import Union, Tuple, Any, AnyStr, Optional, Collection
+from typing import Union, Any, AnyStr, Optional, Collection
 
 import sabnzbd
 import sabnzbd.getipaddress

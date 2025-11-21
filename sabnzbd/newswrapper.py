@@ -26,7 +26,7 @@ import time
 import logging
 import ssl
 import sabctools
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 import sabnzbd
 import sabnzbd.cfg

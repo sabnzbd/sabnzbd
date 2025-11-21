@@ -27,7 +27,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from warnings import warn
 
-from sabnzbd.constants import DEF_INI_FILE
 from tests.testhelper import *
 
 

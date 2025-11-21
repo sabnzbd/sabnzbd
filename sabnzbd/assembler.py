@@ -39,7 +39,7 @@ from sabnzbd.filesystem import (
     has_unwanted_extension,
     get_basename,
 )
-from sabnzbd.constants import Status, GIGI, DEF_MAX_ASSEMBLER_QUEUE
+from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file

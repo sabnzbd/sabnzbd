@@ -23,7 +23,6 @@ import socket
 import threading
 import time
 import logging
-import functools
 from dataclasses import dataclass
 from more_itertools import roundrobin
 from typing import Union, Optional
