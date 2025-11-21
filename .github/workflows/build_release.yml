@@ -83,7 +83,7 @@ jobs:
 
   build_macos:
     name: Build macOS binary
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 15
     env:
       # We need the official Python, because the GA ones only support newer macOS versions
