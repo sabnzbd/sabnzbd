@@ -34,7 +34,7 @@ import copy
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
-from typing import Optional, Callable, Union, Any, Dict, List
+from typing import Optional, Callable, Union, Any
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -264,7 +264,7 @@ def check_hostname():
 COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 
 
-def remote_ip_from_xff(xff_ips: List[str]) -> str:
+def remote_ip_from_xff(xff_ips: list[str]) -> str:
     # Per MDN docs, the first non-local/non-trusted IP (rtl) is our "client"
     # However, it's possible that all IPs are local/trusted, so we may also
     # return the first ip in the list as it "should" be the client
@@ -399,7 +399,7 @@ def check_apikey(kwargs):
         return _MSG_APIKEY_INCORRECT
 
 
-def template_filtered_response(file: str, search_list: Dict[str, Any]):
+def template_filtered_response(file: str, search_list: dict[str, Any]):
     """Wrapper for Cheetah response"""
     # We need a copy, because otherwise source-dicts might be modified
     search_list_copy = copy.deepcopy(search_list)

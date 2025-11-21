@@ -31,7 +31,7 @@ import http.client
 import json
 import apprise
 from threading import Thread
-from typing import Optional, Dict, Union
+from typing import Optional, Union
 
 import sabnzbd
 import sabnzbd.cfg
@@ -160,7 +160,7 @@ def send_notification(
     msg: str,
     notification_type: str,
     job_cat: Optional[str] = None,
-    actions: Optional[Dict[str, str]] = None,
+    actions: Optional[dict[str, str]] = None,
 ):
     """Send Notification message"""
     logging.info("Sending notification: %s - %s (type=%s, job_cat=%s)", title, msg, notification_type, job_cat)
@@ -243,7 +243,7 @@ def send_notify_osd(title, message):
         return error
 
 
-def send_notification_center(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
+def send_notification_center(title: str, msg: str, notification_type: str, actions: Optional[dict[str, str]] = None):
     """Send message to macOS Notification Center.
     Only 1 button is possible on macOS!"""
     logging.debug("Sending macOS notification")
@@ -531,7 +531,7 @@ def send_nscript(title, msg, notification_type, force=False, test=None):
     return ""
 
 
-def send_windows(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
+def send_windows(title: str, msg: str, notification_type: str, actions: Optional[dict[str, str]] = None):
     """Send Windows notifications, either fancy with buttons (Windows 10+) or basic ones"""
     # Skip any notifications if ran as a Windows Service, it can result in crashes
     if sabnzbd.WIN_SERVICE:

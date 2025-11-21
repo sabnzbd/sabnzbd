@@ -32,7 +32,7 @@ from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
 import base64
-from typing import Tuple, Optional, Union, List, Dict, Any
+from typing import Optional, Union, Any
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -57,7 +57,7 @@ from sabnzbd.nzbstuff import NzbObject, NzbRejected, NzbRejectToHistory
 class URLGrabber(Thread):
     def __init__(self):
         super().__init__()
-        self.queue: queue.Queue[Tuple[Optional[str], Optional[NzbObject]]] = queue.Queue()
+        self.queue: queue.Queue[tuple[Optional[str], Optional[NzbObject]]] = queue.Queue()
         self.shutdown = False
 
     def add(self, url: str, future_nzo: NzbObject, when: Optional[int] = None):
@@ -417,9 +417,9 @@ def add_url(
     priority: Optional[Union[int, str]] = None,
     nzbname: Optional[str] = None,
     password: Optional[str] = None,
-    nzo_info: Optional[Dict[str, Any]] = None,
+    nzo_info: Optional[dict[str, Any]] = None,
     dup_check: bool = True,
-) -> Tuple[AddNzbFileResult, List[str]]:
+) -> tuple[AddNzbFileResult, list[str]]:
     """Add NZB based on a URL, attributes optional"""
     if not url.lower().startswith("http"):
         return AddNzbFileResult.NO_FILES_FOUND, []

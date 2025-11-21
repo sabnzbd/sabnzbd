@@ -25,7 +25,7 @@ import subprocess
 import time
 import threading
 import logging
-from typing import Optional, Dict, List, Tuple
+from typing import Optional
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -37,7 +37,6 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.misc import SABRarFile
-import rarfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 # Need a lock to make sure start and stop is handled correctly
@@ -62,11 +61,11 @@ class DirectUnpacker(threading.Thread):
         self.rarfile_nzf: Optional[NzbFile] = None
         self.cur_setname: Optional[str] = None
         self.cur_volume: int = 0
-        self.total_volumes: Dict[str, int] = {}
+        self.total_volumes: dict[str, int] = {}
         self.unpack_time: float = 0.0
 
-        self.success_sets: Dict[str, Tuple[List[str], List[str]]] = {}
-        self.next_sets: List[NzbFile] = []
+        self.success_sets: dict[str, tuple[list[str], list[str]]] = {}
+        self.next_sets: list[NzbFile] = []
 
         self.duplicate_lines: int = 0
 

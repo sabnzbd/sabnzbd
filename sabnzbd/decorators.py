@@ -70,7 +70,7 @@ def conditional_cache(cache_time: int):
     Empty results (None, empty collections, empty strings, False, 0) are not cached.
     If a keyword argument of `force=True` is used, the cache is skipped.
 
-    Unhashable types (such as List) can not be used as an input to the wrapped function in the current implementation!
+    Unhashable types (such as list) can not be used as an input to the wrapped function in the current implementation!
 
     :param cache_time: Time in seconds to cache non-empty results
     """

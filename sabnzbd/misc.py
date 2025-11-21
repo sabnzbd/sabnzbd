@@ -41,7 +41,7 @@ import math
 import rarfile
 from threading import Thread
 from collections.abc import Iterable
-from typing import Union, Tuple, Any, AnyStr, Optional, List, Dict, Collection
+from typing import Union, Any, AnyStr, Optional, Collection
 
 import sabnzbd
 import sabnzbd.getipaddress
@@ -178,7 +178,7 @@ def is_none(inp: Any) -> bool:
     return not inp or (isinstance(inp, str) and inp.lower() == "none")
 
 
-def clean_comma_separated_list(inp: Any) -> List[str]:
+def clean_comma_separated_list(inp: Any) -> list[str]:
     """Return a list of stripped values from a string or list, empty ones removed"""
     result_ids = []
     if isinstance(inp, str):
@@ -190,7 +190,7 @@ def clean_comma_separated_list(inp: Any) -> List[str]:
     return result_ids
 
 
-def cmp(x, y):
+def cmp(x: Any, y: Any) -> int:
     """
     Replacement for built-in function cmp that was removed in Python 3
 
@@ -217,7 +217,7 @@ def cat_pp_script_sanitizer(
     cat: Optional[str] = None,
     pp: Optional[Union[int, str]] = None,
     script: Optional[str] = None,
-) -> Tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
+) -> tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
     """Basic sanitizer from outside input to a bit more predictable values"""
     # * and Default are valid values
     if safe_lower(cat) in ("", "none"):
@@ -234,7 +234,7 @@ def cat_pp_script_sanitizer(
     return cat, pp, script
 
 
-def name_to_cat(fname, cat=None):
+def name_to_cat(fname: str, cat: Optional[str] = None) -> tuple[str, Optional[str]]:
     """Retrieve category from file name, but only if "cat" is None."""
     if cat is None and fname.startswith("{{"):
         n = fname.find("}}")
@@ -246,7 +246,9 @@ def name_to_cat(fname, cat=None):
     return fname, cat
 
 
-def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str, int]:
+def cat_to_opts(
+    cat: Optional[str], pp: Optional[int] = None, script: Optional[str] = None, priority: Optional[int] = None
+) -> tuple[str, int, str, int]:
     """Derive options from category, if options not already defined.
     Specified options have priority over category-options.
     If no valid category is given, special category '*' will supply default values
@@ -279,7 +281,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str
     return cat, pp, script, priority
 
 
-def pp_to_opts(pp: Optional[int]) -> Tuple[bool, bool, bool]:
+def pp_to_opts(pp: Optional[int]) -> tuple[bool, bool, bool]:
     """Convert numeric processing options to (repair, unpack, delete)"""
     # Convert the pp to an int
     pp = int_conv(pp)
@@ -331,12 +333,12 @@ _wildcard_to_regex = {
 }
 
 
-def wildcard_to_re(text):
+def wildcard_to_re(text: str) -> str:
     """Convert plain wildcard string (with '*' and '?') to regex."""
     return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
 
 
-def convert_filter(text):
+def convert_filter(text: str) -> Optional[re.Pattern]:
     """Return compiled regex.
     If string starts with re: it's a real regex
     else quote all regex specials, replace '*' by '.*'
@@ -353,7 +355,7 @@ def convert_filter(text):
         return None
 
 
-def cat_convert(cat):
+def cat_convert(cat: Optional[str]) -> Optional[str]:
     """Convert indexer's category/group-name to user categories.
     If no match found, but indexer-cat equals user-cat, then return user-cat
     If no match found, but the indexer-cat starts with the user-cat, return user-cat
@@ -397,7 +399,7 @@ _SERVICE_KEY = "SYSTEM\\CurrentControlSet\\services\\"
 _SERVICE_PARM = "CommandLine"
 
 
-def get_serv_parms(service):
+def get_serv_parms(service: str) -> list[str]:
     """Get the service command line parameters from Registry"""
     service_parms = []
     try:
@@ -416,7 +418,7 @@ def get_serv_parms(service):
     return service_parms
 
 
-def set_serv_parms(service, args):
+def set_serv_parms(service: str, args: list) -> bool:
     """Set the service command line parameters in Registry"""
     serv = []
     for arg in args:
@@ -444,7 +446,7 @@ def get_from_url(url: str) -> Optional[str]:
         return None
 
 
-def convert_version(text):
+def convert_version(text: str) -> tuple[int, bool]:
     """Convert version string to numerical value and a testversion indicator"""
     version = 0
     test = True
@@ -551,7 +553,7 @@ def check_latest_version():
         )
 
 
-def upload_file_to_sabnzbd(url, fp):
+def upload_file_to_sabnzbd(url: str, fp: str):
     """Function for uploading nzbs to a running SABnzbd instance"""
     try:
         fp = urllib.parse.quote_plus(fp)
@@ -644,7 +646,7 @@ def to_units(val: Union[int, float], postfix="") -> str:
     return f"{sign}{val:.{decimals}f}{units}"
 
 
-def caller_name(skip=2):
+def caller_name(skip: int = 2) -> str:
     """Get a name of a caller in the format module.method
     Originally used: https://gist.github.com/techtonik/2151727
     Adapted for speed by using sys calls directly
@@ -682,7 +684,7 @@ def exit_sab(value: int):
     os._exit(value)
 
 
-def split_host(srv):
+def split_host(srv: Optional[str]) -> tuple[Optional[str], Optional[int]]:
     """Split host:port notation, allowing for IPV6"""
     if not srv:
         return None, None
@@ -704,7 +706,7 @@ def split_host(srv):
     return out[0], port
 
 
-def get_cache_limit():
+def get_cache_limit() -> str:
     """Depending on OS, calculate cache limits.
     In ArticleCache it will make sure we stay
     within system limits for 32/64 bit
@@ -742,7 +744,7 @@ def get_cache_limit():
     return ""
 
 
-def get_windows_memory():
+def get_windows_memory() -> int:
     """Use ctypes to extract available memory"""
 
     class MEMORYSTATUSEX(ctypes.Structure):
@@ -768,14 +770,14 @@ def get_windows_memory():
     return stat.ullTotalPhys
 
 
-def get_macos_memory():
+def get_macos_memory() -> float:
     """Use system-call to extract total memory on macOS"""
     system_output = run_command(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
 
 
 @conditional_cache(cache_time=3600)
-def get_cpu_name():
+def get_cpu_name() -> Optional[str]:
     """Find the CPU name (which needs a different method per OS), and return it
     If none found, return platform.platform()"""
 
@@ -875,7 +877,7 @@ def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
     return False
 
 
-def memory_usage():
+def memory_usage() -> Optional[str]:
     try:
         # Probably only works on Linux because it uses /proc/<pid>/statm
         with open("/proc/%d/statm" % os.getpid()) as t:
@@ -897,7 +899,7 @@ except Exception:
 _HAVE_STATM = _PAGE_SIZE and memory_usage()
 
 
-def loadavg():
+def loadavg() -> str:
     """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
     if not sabnzbd.WINDOWS and not sabnzbd.MACOS:
@@ -972,7 +974,7 @@ def bool_conv(value: Any) -> bool:
     return bool(int_conv(value))
 
 
-def create_https_certificates(ssl_cert, ssl_key):
+def create_https_certificates(ssl_cert: str, ssl_key: str) -> bool:
     """Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key'"""
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
@@ -988,7 +990,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     return True
 
 
-def get_all_passwords(nzo) -> List[str]:
+def get_all_passwords(nzo) -> list[str]:
     """Get all passwords, from the NZB, meta and password file. In case a working password is
     already known, try it first."""
     passwords = []
@@ -1051,7 +1053,7 @@ def is_sample(filename: str) -> bool:
     return bool(re.search(RE_SAMPLE, filename))
 
 
-def find_on_path(targets):
+def find_on_path(targets: Union[str, tuple[str, ...]]) -> Optional[str]:
     """Search the PATH for a program and return full path"""
     if sabnzbd.WINDOWS:
         paths = os.getenv("PATH").split(";")
@@ -1170,7 +1172,7 @@ def is_local_addr(ip: str) -> bool:
         return is_lan_addr(ip)
 
 
-def ip_extract() -> List[str]:
+def ip_extract() -> list[str]:
     """Return list of IP addresses of this system"""
     ips = []
     program = find_on_path("ip")
@@ -1215,7 +1217,7 @@ def get_base_url(url: str) -> str:
         return ""
 
 
-def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
+def match_str(text: AnyStr, matches: tuple[AnyStr, ...]) -> Optional[AnyStr]:
     """Return first matching element of list 'matches' in 'text', otherwise None"""
     text = text.lower()
     for match in matches:
@@ -1224,7 +1226,7 @@ def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
     return None
 
 
-def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclude_items: Tuple[str, ...] = ()):
+def recursive_html_escape(input_dict_or_list: Union[dict[str, Any], list], exclude_items: tuple[str, ...] = ()):
     """Recursively update the input_dict in-place with html-safe values"""
     if isinstance(input_dict_or_list, (dict, list)):
         if isinstance(input_dict_or_list, dict):
@@ -1245,7 +1247,7 @@ def recursive_html_escape(input_dict_or_list: Union[Dict[str, Any], List], exclu
         raise ValueError("Expected dict or str, got %s" % type(input_dict_or_list))
 
 
-def list2cmdline_unrar(lst: List[str]) -> str:
+def list2cmdline_unrar(lst: list[str]) -> str:
     """convert list to a unrar.exe-compatible command string
     Unrar uses "" instead of \" to escape the double quote"""
     nlst = []
@@ -1259,7 +1261,9 @@ def list2cmdline_unrar(lst: List[str]) -> str:
     return " ".join(nlst)
 
 
-def build_and_run_command(command: List[str], windows_unrar_command: bool = False, text_mode: bool = True, **kwargs):
+def build_and_run_command(
+    command: list[str], windows_unrar_command: bool = False, text_mode: bool = True, **kwargs
+) -> subprocess.Popen:
     """Builds and then runs command with necessary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
@@ -1326,7 +1330,7 @@ def build_and_run_command(command: List[str], windows_unrar_command: bool = Fals
     return subprocess.Popen(command, **popen_kwargs)
 
 
-def run_command(cmd: List[str], **kwargs):
+def run_command(cmd: list[str], **kwargs) -> str:
     """Run simple external command and return output as a string."""
     with build_and_run_command(cmd, **kwargs) as p:
         txt = p.stdout.read()
@@ -1359,7 +1363,7 @@ def set_socks5_proxy():
         socket.socket = socks.socksocket
 
 
-def set_https_verification(value):
+def set_https_verification(value: bool) -> bool:
     """Set HTTPS-verification state while returning current setting
     False = disable verification
     """
@@ -1381,7 +1385,7 @@ def request_repair():
         pass
 
 
-def check_repair_request():
+def check_repair_request() -> bool:
     """Return True if repair request found, remove afterwards"""
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     if os.path.exists(path):
@@ -1514,8 +1518,8 @@ def convert_sorter_settings():
         min_size: Union[str|int] = "50M"
         multipart_label: Optional[str] = ""
         sort_string: str
-        sort_cats: List[str]
-        sort_type: List[int]
+        sort_cats: list[str]
+        sort_type: list[int]
         is_active: bool = 1
     }
 
@@ -1575,7 +1579,7 @@ def convert_sorter_settings():
 def convert_history_retention():
     """Convert single-option to the split history retention setting"""
     if "d" in cfg.history_retention():
-        days_to_keep = int_conv(cfg.history_retention().strip()[:-1])
+        days_to_keep = int_conv(cfg.history_retention().strip().removesuffix("d"))
         cfg.history_retention_option.set("days-delete")
         cfg.history_retention_number.set(days_to_keep)
     else:
@@ -1615,7 +1619,7 @@ class SABRarFile(rarfile.RarFile):
                 self._file_parser._info_list.append(rar_obj)
                 self._file_parser._info_map[rar_obj.filename.rstrip("/")] = rar_obj
 
-    def filelist(self):
+    def filelist(self) -> list[str]:
         """Return list of filenames in archive."""
         return [f.filename for f in self.infolist() if not f.isdir()]
 

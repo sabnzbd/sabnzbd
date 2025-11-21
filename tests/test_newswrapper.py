@@ -76,7 +76,7 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
     sending any traffic but already prefills what would be the sender ip address.
     """
     s: Optional[socket.socket] = None
-    address_to_connect_to: Optional[Tuple[str, int]] = None
+    address_to_connect_to: Optional[tuple[str, int]] = None
     if protocol_version == IPProtocolVersion.IPV4:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Google DNS IPv4

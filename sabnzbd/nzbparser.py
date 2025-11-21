@@ -30,7 +30,7 @@ import zipfile
 import tempfile
 
 import cherrypy._cpreqbody
-from typing import Optional, Dict, Any, Union, List, Tuple
+from typing import Optional, Any, Union
 
 import sabnzbd
 from sabnzbd import nzbstuff
@@ -152,12 +152,12 @@ def process_nzb_archive_file(
     priority: Optional[Union[int, str]] = None,
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
-    nzo_info: Optional[Dict[str, Any]] = None,
+    nzo_info: Optional[dict[str, Any]] = None,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
     dup_check: bool = True,
-) -> Tuple[AddNzbFileResult, List[str]]:
+) -> tuple[AddNzbFileResult, list[str]]:
     """Analyse archive and create job(s).
     Accepts archive files with ONLY nzb/nfo/folder files in it.
     """
@@ -271,12 +271,12 @@ def process_single_nzb(
     priority: Optional[Union[int, str]] = None,
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
-    nzo_info: Optional[Dict[str, Any]] = None,
+    nzo_info: Optional[dict[str, Any]] = None,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
     dup_check: bool = True,
-) -> Tuple[AddNzbFileResult, List[str]]:
+) -> tuple[AddNzbFileResult, list[str]]:
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
     """

@@ -38,14 +38,13 @@ from sabnzbd.par2file import is_par2_file, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
 from sabnzbd.misc import match_str
 from sabnzbd.constants import IGNORED_MOVIE_FOLDERS
-from typing import List
 
 # Files to exclude and minimal file size for renaming
 EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2", ".mts", ".m2ts", ".cpi", ".clpi", ".mpl", ".mpls", ".bdm", ".bdmv")
 MIN_FILE_SIZE = 10 * 1024 * 1024
 
 
-def decode_par2(parfile: str) -> List[str]:
+def decode_par2(parfile: str) -> list[str]:
     """Parse a par2 file and rename files listed in the par2 to their real name. Return list of generated files"""
     # Check if really a par2 file
     if not is_par2_file(parfile):
@@ -77,7 +76,7 @@ def decode_par2(parfile: str) -> List[str]:
     return new_files
 
 
-def recover_par2_names(filelist: List[str]) -> List[str]:
+def recover_par2_names(filelist: list[str]) -> list[str]:
     """Find par2 files and use them for renaming"""
     # Check that files exists
     filelist = [f for f in filelist if os.path.isfile(f)]
@@ -168,7 +167,7 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     return True  # default is obfuscated
 
 
-def get_biggest_file(filelist: List[str]) -> str:
+def get_biggest_file(filelist: list[str]) -> str:
     """Returns biggest file if that file is much bigger than the other files
     If only one file exists, return that. If no file, return None
     Note: the files in filelist must exist, because their sizes on disk are checked"""
@@ -190,7 +189,7 @@ def get_biggest_file(filelist: List[str]) -> str:
             return None
 
 
-def deobfuscate(nzo, filelist: List[str], usefulname: str) -> List[str]:
+def deobfuscate(nzo, filelist: list[str], usefulname: str) -> list[str]:
     """
     For files in filelist:
     1. if a file has no meaningful extension, add it (for example ".txt" or ".png")
@@ -321,7 +320,7 @@ def without_extension(fullpathfilename: str) -> str:
     return os.path.splitext(fullpathfilename)[0]
 
 
-def deobfuscate_subtitles(nzo, filelist: List[str]):
+def deobfuscate_subtitles(nzo, filelist: list[str]):
     """
     input:
     nzo, so we can update result via set_unpack_info()

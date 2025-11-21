@@ -27,7 +27,7 @@ import re
 import gc
 import queue
 import rarfile
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.newsunpack import (
@@ -107,7 +107,7 @@ class PostProcessor(Thread):
         super().__init__()
 
         # This history queue is simply used to log what active items to display in the web_ui
-        self.history_queue: List[NzbObject] = []
+        self.history_queue: list[NzbObject] = []
         self.load()
 
         # Fast-queue for jobs already finished by DirectUnpack
@@ -195,7 +195,7 @@ class PostProcessor(Thread):
         self.slow_queue.put(None)
         self.fast_queue.put(None)
 
-    def cancel_pp(self, nzo_ids: List[str]) -> Optional[bool]:
+    def cancel_pp(self, nzo_ids: list[str]) -> Optional[bool]:
         """Abort Direct Unpack and change the status, so that the PP is canceled"""
         result = None
         for nzo in self.history_queue:
@@ -220,10 +220,10 @@ class PostProcessor(Thread):
     def get_queue(
         self,
         search: Optional[str] = None,
-        categories: Optional[List[str]] = None,
-        statuses: Optional[List[str]] = None,
-        nzo_ids: Optional[List[str]] = None,
-    ) -> List[NzbObject]:
+        categories: Optional[list[str]] = None,
+        statuses: Optional[list[str]] = None,
+        nzo_ids: Optional[list[str]] = None,
+    ) -> list[NzbObject]:
         """Return list of NZOs that still need to be processed.
         Optionally filtered by the search terms"""
         re_search = None
@@ -693,7 +693,7 @@ def process_job(nzo: NzbObject) -> bool:
     return True
 
 
-def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Optional[str]]:
+def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Optional[str]]:
     """Based on the information that we have, generate
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
@@ -757,7 +757,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     return tmp_workdir_complete, workdir_complete, file_sorter, not create_job_dir, marker_file
 
 
-def parring(nzo: NzbObject) -> Tuple[bool, bool]:
+def parring(nzo: NzbObject) -> tuple[bool, bool]:
     """Perform par processing. Returns: (par_error, re_add)"""
     logging.info("Starting verification and repair of %s", nzo.final_name)
     par_error = False
@@ -876,7 +876,7 @@ def try_sfv_check(nzo: NzbObject) -> Optional[bool]:
     return True
 
 
-def try_rar_check(nzo: NzbObject, rars: List[str]) -> bool:
+def try_rar_check(nzo: NzbObject, rars: list[str]) -> bool:
     """Attempt to verify set using the RARs
     Return True if verified, False when failed
     When setname is '', all RAR files will be used, otherwise only the matching one
@@ -1221,7 +1221,7 @@ def remove_samples(path: str):
         logging.info("Skipping sample-removal, false-positive")
 
 
-def rename_and_collapse_folder(oldpath: str, newpath: str, files: List[str]) -> List[str]:
+def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> list[str]:
     """Rename folder, collapsing when there's just a single subfolder
     oldpath --> newpath OR oldpath/subfolder --> newpath
     Modify list of filenames accordingly
@@ -1273,7 +1273,7 @@ def del_marker(path: str):
             logging.info("Traceback: ", exc_info=True)
 
 
-def remove_from_list(name: Optional[str], lst: List[str]):
+def remove_from_list(name: Optional[str], lst: list[str]):
     if name:
         for n in range(len(lst)):
             if lst[n].endswith(name):

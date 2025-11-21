@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple, Union
+from typing import Union
 
 import sabnzbd
 from sabnzbd.config import (
@@ -59,7 +59,7 @@ from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_ne
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
-ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None]]
+ValidateResult = Union[tuple[None, str], tuple[None, list[str]], tuple[str, None]]
 
 
 ##############################################################################
@@ -124,21 +124,21 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
     return None, value
 
 
-def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
+def all_lowercase(value: Union[str, list]) -> tuple[None, Union[str, list]]:
     """Lowercase and strip everything!"""
     if isinstance(value, list):
         return None, [item.lower().strip() for item in value]
     return None, value.lower().strip()
 
 
-def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
+def lower_case_ext(value: Union[str, list]) -> tuple[None, Union[str, list]]:
     """Generate lower case extension(s), without dot"""
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
 
 
-def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
+def validate_single_tag(value: list[str]) -> tuple[None, list[str]]:
     """Don't split single indexer tags like "TV > HD"
     into ['TV', '>', 'HD']
     """
@@ -148,7 +148,7 @@ def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
     return None, value
 
 
-def validate_url_base(value: str) -> Tuple[None, str]:
+def validate_url_base(value: str) -> tuple[None, str]:
     """Strips the right slash and adds starting slash, if not present"""
     if value and isinstance(value, str):
         if not value.startswith("/"):
@@ -160,7 +160,7 @@ def validate_url_base(value: str) -> Tuple[None, str]:
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_email(value: Union[List, str]) -> ValidateResult:
+def validate_email(value: Union[list, str]) -> ValidateResult:
     if email_endjob() or email_full() or email_rss():
         if isinstance(value, list):
             values = value
@@ -287,7 +287,7 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
         return validate_safedir(root, value, default)
 
 
-def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
+def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> tuple[None, str]:
     """Warn users to not use the Program Files folder for their scripts"""
     # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
@@ -300,7 +300,7 @@ def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[
     return None, value
 
 
-def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None, str]:
+def validate_default_if_empty(root: str, value: str, default: str) -> tuple[None, str]:
     """If value is empty, return default"""
     if value:
         return None, value
@@ -507,7 +507,7 @@ no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
-verify_xff_header = OptionBool("misc", "verify_xff_header", False)
+verify_xff_header = OptionBool("misc", "verify_xff_header", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])

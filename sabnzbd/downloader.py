@@ -28,7 +28,7 @@ import sys
 import ssl
 import time
 from datetime import date
-from typing import List, Dict, Optional, Union, Set, Deque
+from typing import Optional, Union, Deque
 
 import sabctools
 
@@ -138,9 +138,9 @@ class Server:
         self.username: Optional[str] = username
         self.password: Optional[str] = password
 
-        self.busy_threads: Set[NewsWrapper] = set()
+        self.busy_threads: set[NewsWrapper] = set()
         self.next_busy_threads_check: float = 0
-        self.idle_threads: Set[NewsWrapper] = set()
+        self.idle_threads: set[NewsWrapper] = set()
         self.next_article_search: float = 0
         self.active: bool = True
         self.bad_cons: int = 0
@@ -298,8 +298,8 @@ class Downloader(Thread):
 
         self.selector: selectors.DefaultSelector = selectors.DefaultSelector()
 
-        self.servers: List[Server] = []
-        self.timers: Dict[str, List[float]] = {}
+        self.servers: list[Server] = []
+        self.timers: dict[str, list[float]] = {}
 
         for server in config.get_servers():
             self.init_server(None, server)

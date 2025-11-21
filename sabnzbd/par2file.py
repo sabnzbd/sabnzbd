@@ -25,11 +25,11 @@ import re
 import struct
 import sabctools
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple
+from typing import Optional
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding
-from sabnzbd.filesystem import get_basename, get_ext
+from sabnzbd.filesystem import get_basename
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 SCAN_LIMIT = 10 * MEBI
@@ -71,7 +71,7 @@ def is_par2_file(filepath: str) -> bool:
     return False
 
 
-def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, int]:
+def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, int]:
     """Check if file is a par2-file and determine vol/block
     return setname, vol, block
     setname is empty when not a par2 file
@@ -103,7 +103,7 @@ def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, i
     return setname, vol, block
 
 
-def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Tuple[str, Dict[str, FilePar2Info]]:
+def parse_par2_file(fname: str, md5of16k: dict[bytes, str]) -> tuple[str, dict[str, FilePar2Info]]:
     """Get the hash table and the first-16k hash table from a PAR2 file
     Return as dictionary, indexed on names or hashes for the first-16 table
     The input md5of16k is modified in place and thus not returned!

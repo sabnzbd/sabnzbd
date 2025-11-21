@@ -25,7 +25,7 @@ import logging
 import re
 from threading import Thread
 import ctypes
-from typing import Tuple, Optional, List
+from typing import Optional
 import rarfile
 
 import sabnzbd
@@ -39,7 +39,7 @@ from sabnzbd.filesystem import (
     has_unwanted_extension,
     get_basename,
 )
-from sabnzbd.constants import Status, GIGI, DEF_MAX_ASSEMBLER_QUEUE
+from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.par2file as par2file
@@ -49,7 +49,7 @@ class Assembler(Thread):
     def __init__(self):
         super().__init__()
         self.max_queue_size: int = cfg.assembler_max_queue_size()
-        self.queue: queue.Queue[Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]] = queue.Queue()
+        self.queue: queue.Queue[tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]] = queue.Queue()
 
     def stop(self):
         self.queue.put((None, None, None))
@@ -250,7 +250,7 @@ RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)
 SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
 
-def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
+def is_cloaked(nzo: NzbObject, path: str, names: list[str]) -> bool:
     """Return True if this is likely to be a cloaked encrypted post"""
     fname = get_basename(get_filename(path.lower()))
     for name in names:
@@ -279,7 +279,7 @@ def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
     return False
 
 
-def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[bool, Optional[str]]:
+def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[bool, Optional[str]]:
     """Combines check for unwanted and encrypted files to save on CPU and IO"""
     encrypted = False
     unwanted = None

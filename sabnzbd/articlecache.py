@@ -22,7 +22,7 @@ sabnzbd.articlecache - Article cache handling
 import logging
 import threading
 import struct
-from typing import Dict, Collection
+from typing import Collection
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -39,7 +39,7 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_table: Dict[Article, memoryview] = {}  # Dict of buffered articles
+        self.__article_table: dict[Article, memoryview] = {}  # Dict of buffered articles
 
         self.assembler_write_trigger: int = 1
 

@@ -19,9 +19,7 @@
 """
 sabnzbd.utils.rarvolinfo - Find out volume number and/or original extension of a rar file. Useful with obfuscated files
 """
-import logging
 import os
-
 import rarfile
 
 

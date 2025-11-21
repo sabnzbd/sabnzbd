@@ -7,10 +7,9 @@ Functions to check if the path filesystem uses FAT
 import sys
 import os
 import subprocess
-from typing import List
 
 
-def getcmdoutput(cmd: List[str]) -> List[str]:
+def getcmdoutput(cmd: list[str]) -> list[str]:
     """execute cmd, and return a list of output lines"""
     subprocess_kwargs = {
         "bufsize": 0,
