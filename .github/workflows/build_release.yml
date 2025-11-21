@@ -160,7 +160,7 @@ jobs:
 
   build-snap:
     name: Build Snap Packages (${{ matrix.linux_arch }})
-    timeout-minutes: 10
+    timeout-minutes: 30
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
