@@ -543,7 +543,7 @@ class Downloader(Thread):
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
         # Handle broken articles directly
-        if not decoder or decoder.status is sabctools.DecodingStatus.NOT_FOUND:
+        if not decoder or not decoder.bytes_decoded:
             if not article.search_new_server():
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
                 sabnzbd.NzbQueue.register_article(article, success=False)

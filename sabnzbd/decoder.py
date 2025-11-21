@@ -193,7 +193,7 @@ def decode_uu(article: Article, decoder: sabctools.Decoder) -> memoryview:
     If there are headers, they will be separated from the body by at least one
     empty line. In case of no headers, the first line seems to always be the nntp
     response code (220/222) directly followed by the msg body."""
-    if not decoder.status:
+    if not decoder.bytes_decoded:
         logging.debug("No data to decode")
         raise BadUu
 

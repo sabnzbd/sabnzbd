@@ -212,7 +212,7 @@ class NewsWrapper:
             command = utob("ARTICLE <%s>\r\n" % article.article)
         self.queue(command, article)
 
-    def command_complete(self, status: sabctools.DecodingStatus, decoder: sabctools.Decoder):
+    def command_complete(self, decoder: sabctools.Decoder):
         article = self._article
         server = self.server
 
@@ -221,9 +221,6 @@ class NewsWrapper:
         self.data_position = 0
         self.decoder = None
         self.concurrent_requests.release()
-
-        if sabnzbd.LOG_ALL:
-            logging.debug("Thread %s@%s: %s %s", self.thrdnum, server.host, decoder.status_code, status)
 
         if article_done := decoder.status_code in (220, 222) and article:
             with DOWNLOADER_LOCK:
@@ -234,7 +231,7 @@ class NewsWrapper:
         # Response code depends on request command:
         # 220 = ARTICLE, 222 = BODY
         if not article_done:
-            if not self.connected or not article or status is sabctools.DecodingStatus.AUTH:
+            if not self.connected or not article or decoder.status_code in (281, 381, 480, 481, 482):
                 if not sabnzbd.Downloader.finish_connect_nw(self, decoder):
                     return
                 if self.connected:
@@ -343,11 +340,11 @@ class NewsWrapper:
                 self.decoder = sabctools.Decoder()
                 with self.lock:
                     self._article = self._response_queue.popleft()
-            status, self.decoder_remainder = self.decoder.decode(self.data_view[: self.data_position])
-            if status:
+            eof, self.decoder_remainder = self.decoder.decode(self.data_view[: self.data_position])
+            if eof:
                 if on_response:
                     on_response(self.decoder.status_code, self.decoder.message)
-                self.command_complete(status, self.decoder)
+                self.command_complete(self.decoder)
             if self.decoder_remainder is None:
                 self.data_position = 0
             while self.decoder_remainder:
@@ -356,11 +353,11 @@ class NewsWrapper:
                     with self.lock:
                         self._article = self._response_queue.popleft()
                 # Are there unprocessed bytes that we need to try first?
-                status, self.decoder_remainder = self.decoder.decode(self.decoder_remainder)
-                if status:
+                eof, self.decoder_remainder = self.decoder.decode(self.decoder_remainder)
+                if eof:
                     if on_response:
                         on_response(self.decoder.status_code, self.decoder.message)
-                    self.command_complete(status, self.decoder)
+                    self.command_complete(self.decoder)
                 elif self.decoder_remainder:
                     # Unprocessable; copy to start of buffer and read more
                     # Rare if the buffer is large enough to hold the end of a response and the next yenc headers
