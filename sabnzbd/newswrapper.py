@@ -416,11 +416,13 @@ class NewsWrapper:
                     # Concurrency limit reached; do nothing
                     pass
             else:
+                # Is it safe to shut down this socket?
                 if (
-                    not self.command_queue
+                    not self.send_buffer
+                    and not self.command_queue
                     and not self.response_queue
                     and not self.article
-                    and time.time() > self.timeout
+                    and (not server.active or server.restart or time.time() > self.timeout)
                 ):
                     # Make socket available again
                     server.busy_threads.discard(self)
