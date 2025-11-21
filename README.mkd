@@ -1,23 +1,22 @@
-Release Notes - SABnzbd 4.5.0 Release Candidate 1
+Release Notes - SABnzbd 4.6.0 Alpha 1
 =========================================================
 
-This is the first Release Candidate for the 4.5.0 release.
+This is the first test release of version 4.6.
 
-## New features in 4.5.0
+## New features in 4.6.0
 
-* Improved failure detection by downloading additional par2 files right away.
-* Added more diagnostic information about the system.
-* Use XFF headers for login validation if `verify_xff_header` is enabled.
-* Added Turkish translation (by @cardpuncher).
-* Added `unrar_parameters` option to supply custom Unrar parameters.
-* Windows: Removed MultiPar support.
-* Windows and macOS: Updated Python to 3.13.2, 7zip to 24.09,
-  Unrar to 7.10 and par2cmdline-turbo to 1.2.0.
+* Dynamically increase Assembler limits on faster connections.
+* Improved disk speed measurement in Status window.
+* Enable `verify_xff_header` by default.
+* Dropped support for Python 3.8.
 
-## Bug fixes since 4.4.0
+## Bug fixes since 4.5.0
 
-* Handle filenames that exceed maximum filesystem lengths.
-* Directly decompress gzip responses when retrieving NZB's.
+* `Check before download` could get stuck or fail to reject.
+* Windows: Tray icon disappears after Explorer restart.
+* Correct mobile layout if `Full Width` is enabled.
+* macOS: Slow to start on some network setups.
+
 
 ## Upgrade notices
 
