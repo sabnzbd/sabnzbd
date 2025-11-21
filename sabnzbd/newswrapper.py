@@ -58,7 +58,7 @@ class NewsWrapper:
         "thrdnum",
         "blocking",
         "timeout",
-        "article",
+        "_article",
         "decoder",
         "decoder_remainder",
         "data",
@@ -76,7 +76,8 @@ class NewsWrapper:
         "command_queue",
         "command_queue_condition",
         "concurrent_requests",
-        "response_queue",
+        "_response_queue",
+        "lock",
     )
 
     def __init__(self, server, thrdnum, block=False):
@@ -85,7 +86,7 @@ class NewsWrapper:
         self.blocking: bool = block
 
         self.timeout: Optional[float] = None
-        self.article: Optional[sabnzbd.nzbstuff.Article] = None
+        self._article: Optional[sabnzbd.nzbstuff.Article] = None
 
         self.decoder: Optional[sabctools.Decoder] = None
         self.decoder_remainder: Optional[memoryview] = None
@@ -108,17 +109,23 @@ class NewsWrapper:
         self.command_queue: deque[tuple[bytes, Optional[sabnzbd.nzbstuff.Article]]] = deque(maxlen=20)
         self.command_queue_condition = threading.Condition()
         self.concurrent_requests: threading.Semaphore = threading.Semaphore(sabnzbd.cfg.pipelining_requests())
-        self.response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque(
+        self._response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque(
             [
                 # On connect first "response" will be 200 Welcome
                 None,
             ]
         )
+        self.lock: threading.Lock = threading.Lock()
 
     @property
-    def nntp_msg(self) -> str:
-        # TODO: Decoder could store this
-        return ubtou(self.data[: self.data_position]).strip()
+    def article(self) -> Optional[sabnzbd.nzbstuff.Article]:
+        """The article currently being downloaded"""
+        with self.lock:
+            if self._article:
+                return self._article
+            if self._response_queue:
+                return self._response_queue[0]
+            return None
 
     def init_connect(self):
         """Setup the connection in NNTP object"""
@@ -206,10 +213,11 @@ class NewsWrapper:
         self.queue(command, article)
 
     def command_complete(self, status: sabctools.DecodingStatus, decoder: sabctools.Decoder):
-        article = self.article
+        article = self._article
         server = self.server
 
-        self.article = None
+        with self.lock:
+            self._article = None
         self.data_position = 0
         self.decoder = None
         self.concurrent_requests.release()
@@ -333,7 +341,8 @@ class NewsWrapper:
         if self.data_position:
             if self.decoder is None:
                 self.decoder = sabctools.Decoder()
-                self.article = self.response_queue.popleft()
+                with self.lock:
+                    self._article = self._response_queue.popleft()
             status, self.decoder_remainder = self.decoder.decode(self.data_view[: self.data_position])
             if status:
                 if on_response:
@@ -344,7 +353,8 @@ class NewsWrapper:
             while self.decoder_remainder:
                 if self.decoder is None:
                     self.decoder = sabctools.Decoder()
-                    self.article = self.response_queue.popleft()
+                    with self.lock:
+                        self._article = self._response_queue.popleft()
                 # Are there unprocessed bytes that we need to try first?
                 status, self.decoder_remainder = self.decoder.decode(self.decoder_remainder)
                 if status:
@@ -401,7 +411,7 @@ class NewsWrapper:
                     if article is not None and article.nzf.nzo.removed_from_queue:
                         self.concurrent_requests.release()
                         return
-                    self.response_queue.append(article)
+                    self._response_queue.append(article)
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s", self.thrdnum, server.host, command)
                     try:
@@ -424,8 +434,8 @@ class NewsWrapper:
                 if (
                     not self.send_buffer
                     and not self.command_queue
-                    and not self.response_queue
-                    and not self.article
+                    and not self._response_queue
+                    and not self._article
                     and (not server.active or server.restart or time.time() > self.timeout)
                 ):
                     # Make socket available again
