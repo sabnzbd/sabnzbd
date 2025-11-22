@@ -284,7 +284,7 @@ class NewsWrapper:
 
                 # Ditch this thread, we don't know what data we got now so the buffer can be bad
                 sabnzbd.Downloader.reset_nw(
-                    self, f"Server error or unknown status code: {decoder.status_code}", wait=False
+                    self, f"Server error or unknown status code: {decoder.status_code}", wait=False, article=article
                 )
                 return
 
@@ -453,6 +453,20 @@ class NewsWrapper:
 
     def hard_reset(self, wait: bool = True):
         """Destroy and restart"""
+        with self.lock:
+            # Drain unsent requests
+            while self.command_queue:
+                _, article = self.command_queue.popleft()
+                if article:
+                    self.discard(article, count_article_try=False, retry_article=True)
+            # Drain responses
+            if article := self._article:
+                self._article = None
+                self.discard(article, count_article_try=False, retry_article=True)
+            while self._response_queue:
+                if article := self._response_queue.popleft():
+                    self.discard(article, count_article_try=False, retry_article=True)
+
         if self.nntp:
             self.nntp.close(send_quit=self.connected)
             self.nntp = None
@@ -467,6 +481,28 @@ class NewsWrapper:
         else:
             # Reset for internal reasons, just wait 5 sec
             self.timeout = time.time() + 5
+
+    def discard(
+        self,
+        article: "sabnzbd.nzbstuff.Article",
+        count_article_try: bool = True,
+        retry_article: bool = True,
+    ) -> None:
+        """Discard an article back to the queue"""
+        if not article.nzf.nzo.removed_from_queue:
+            # Only some errors should count towards the total tries for each server
+            if count_article_try:
+                article.tries += 1
+
+            # Do we discard, or try again for this server
+            if not retry_article or (not self.server.required and article.tries > sabnzbd.cfg.max_art_tries()):
+                # Too many tries on this server, consider article missing
+                sabnzbd.Downloader.decode(article)
+                article.tries = 0
+            else:
+                # Allow all servers again for this article
+                # Do not use the article_queue, as the server could already have been disabled when we get here!
+                article.allow_new_fetcher()
 
     def __repr__(self):
         return "<NewsWrapper: server=%s:%s, thread=%s, connected=%s>" % (

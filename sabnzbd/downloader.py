@@ -893,6 +893,7 @@ class Downloader(Thread):
         wait: bool = True,
         count_article_try: bool = True,
         retry_article: bool = True,
+        article: Optional[sabnzbd.nzbstuff.Article] = None,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
@@ -908,23 +909,9 @@ class Downloader(Thread):
         # Make sure it is not in the readable sockets
         self.remove_socket(nw)
 
-        # Drain queues
-        while nw.command_queue:
-            _, article = nw.command_queue.popleft()
-            if not article.nzf.nzo.removed_from_queue:
-                # Only some errors should count towards the total tries for each server
-                if count_article_try:
-                    article.tries += 1
-
-                # Do we discard, or try again for this server
-                if not retry_article or (not nw.server.required and article.tries > cfg.max_art_tries()):
-                    # Too many tries on this server, consider article missing
-                    self.decode(article)
-                    article.tries = 0
-                else:
-                    # Allow all servers again for this article
-                    # Do not use the article_queue, as the server could already have been disabled when we get here!
-                    article.allow_new_fetcher()
+        # Discard the article request which failed
+        if article:
+            nw.discard(article, count_article_try=count_article_try, retry_article=retry_article)
 
         # Reset connection object
         nw.hard_reset(wait)
