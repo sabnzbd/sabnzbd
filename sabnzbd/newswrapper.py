@@ -74,7 +74,6 @@ class NewsWrapper:
         "pass_ok",
         "force_login",
         "command_queue",
-        "command_queue_condition",
         "concurrent_requests",
         "_response_queue",
         "lock",
@@ -107,7 +106,6 @@ class NewsWrapper:
 
         # Command queue and concurrency
         self.command_queue: deque[tuple[bytes, Optional[sabnzbd.nzbstuff.Article]]] = deque(maxlen=20)
-        self.command_queue_condition = threading.Condition()
         self.concurrent_requests: threading.Semaphore = threading.Semaphore(sabnzbd.cfg.pipelining_requests())
         self._response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque(
             [
@@ -190,13 +188,8 @@ class NewsWrapper:
         command: bytes,
         article: Optional["sabnzbd.nzbstuff.Article"] = None,
     ) -> None:
-        with self.command_queue_condition:
-            while len(self.command_queue) >= self.command_queue.maxlen:
-                # Wait until there's room in the queue
-                self.command_queue_condition.wait(timeout=1.0)
-            self.command_queue.append((command, article))
-            # Notify any thread waiting for commands
-            self.command_queue_condition.notify_all()
+        """Add a command to the command queue"""
+        self.command_queue.append((command, article))
 
     def body(self, article: "sabnzbd.nzbstuff.Article"):
         """Request the body of the article"""
@@ -383,9 +376,6 @@ class NewsWrapper:
                 if self.send_buffer:
                     # Still unsent data — wait for next EVENT_WRITE
                     return
-                # Finished sending, notify producers waiting for queue space
-                with self.command_queue_condition:
-                    self.command_queue_condition.notify_all()
 
             if (
                 self.connected
@@ -414,10 +404,6 @@ class NewsWrapper:
                         if sent < len(command):
                             # Partial send — keep remainder
                             self.send_buffer = command[sent:]
-                        else:
-                            # Fully sent
-                            with self.command_queue_condition:
-                                self.command_queue_condition.notify_all()
                     except (BlockingIOError, ssl.SSLWantWriteError):
                         # Can't send now — store full command for later
                         self.send_buffer = command
