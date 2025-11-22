@@ -232,11 +232,11 @@ class NewsWrapper:
         # 220 = ARTICLE, 222 = BODY
         if not article_done:
             if not self.connected or not article or decoder.status_code in (281, 381, 480, 481, 482):
+                self.discard(article, count_article_try=False)
                 if not sabnzbd.Downloader.finish_connect_nw(self, decoder):
                     return
                 if self.connected:
                     logging.info("Connecting %s@%s finished", self.thrdnum, server.host)
-                self.discard(article, count_article_try=False)
 
             elif decoder.status_code == 223:
                 article_done = True
