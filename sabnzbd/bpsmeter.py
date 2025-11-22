@@ -254,8 +254,6 @@ class BPSMeter:
             self.week_total[server] = 0
         if server not in self.month_total:
             self.month_total[server] = 0
-        if server not in self.month_total:
-            self.month_total[server] = 0
         if server not in self.grand_total:
             self.grand_total[server] = 0
         if server not in self.timeline_total:
@@ -302,45 +300,51 @@ class BPSMeter:
             for server in sabnzbd.Downloader.servers[:]:
                 self.init_server_stats(server.id)
 
+        # Cache dict references for faster access
+        day_total = self.day_total
+        week_total = self.week_total
+        month_total = self.month_total
+        grand_total = self.grand_total
+        timeline_total = self.timeline_total
+        cached_amount = self.cached_amount
+        server_bps = self.server_bps
+
+        start_time = self.start_time
+        last_update = self.last_update
+        # Minimum epsilon to avoid division by zero
+        dt_total = max(t - start_time, 1e-6)
+        dt_last = max(last_update - start_time, 1e-6)
+
         # Add amounts that have been stored temporarily to statistics
         for srv in self.cached_amount:
-            if self.cached_amount[srv]:
-                self.day_total[srv] += self.cached_amount[srv]
-                self.week_total[srv] += self.cached_amount[srv]
-                self.month_total[srv] += self.cached_amount[srv]
-                self.grand_total[srv] += self.cached_amount[srv]
-                self.timeline_total[srv][self.day_label] += self.cached_amount[srv]
+            if cached := self.cached_amount[srv]:
+                day_total[srv] += cached
+                week_total[srv] += cached
+                month_total[srv] += cached
+                grand_total[srv] += cached
+                timeline_total[srv][self.day_label] += cached
+
+                # Reset for next time
+                cached_amount[srv] = 0
 
             # Update server bps
-            try:
-                self.server_bps[srv] = (
-                    self.server_bps[srv] * (self.last_update - self.start_time) + self.cached_amount[srv]
-                ) / (t - self.start_time)
-            except ZeroDivisionError:
-                self.server_bps[srv] = 0.0
-
-            # Reset for next time
-            self.cached_amount[srv] = 0
+            server_bps[srv] = (server_bps[srv] * dt_last + cached) / dt_total
 
         # Quota check
+        total_cached = self.sum_cached_amount
         if self.have_quota and self.quota_enabled:
-            self.left -= self.sum_cached_amount
+            self.left -= total_cached
             self.check_quota()
 
         # Speedometer
-        try:
-            self.bps = (self.bps * (self.last_update - self.start_time) + self.sum_cached_amount) / (
-                t - self.start_time
-            )
-        except ZeroDivisionError:
-            self.bps = 0.0
+        self.bps = (self.bps * dt_last + total_cached) / dt_total
 
         self.sum_cached_amount = 0
         self.last_update = t
 
         check_time = t - 5.0
 
-        if self.start_time < check_time:
+        if start_time < check_time:
             self.start_time = check_time
 
         if self.bps < 0.01:
