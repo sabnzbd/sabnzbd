@@ -118,7 +118,7 @@ class NewsWrapper:
         self.lock: threading.Lock = threading.Lock()
 
     @property
-    def article(self) -> Optional[sabnzbd.nzbstuff.Article]:
+    def article(self) -> Optional["sabnzbd.nzbstuff.Article"]:
         """The article currently being downloaded"""
         with self.lock:
             if self._article:
