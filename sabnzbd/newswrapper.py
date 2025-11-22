@@ -236,8 +236,7 @@ class NewsWrapper:
                     return
                 if self.connected:
                     logging.info("Connecting %s@%s finished", self.thrdnum, server.host)
-                    if article:
-                        article.allow_new_fetcher()
+                self.discard(article, count_article_try=False)
 
             elif decoder.status_code == 223:
                 article_done = True
@@ -268,8 +267,7 @@ class NewsWrapper:
                     # Assume "BODY" command is not supported
                     server.have_body = False
                     logging.debug("Server %s does not support BODY", server.host)
-                if article:
-                    article.allow_new_fetcher()
+                self.discard(article, count_article_try=False)
 
             else:
                 # Don't warn for (internal) server errors during downloading
@@ -484,12 +482,12 @@ class NewsWrapper:
 
     def discard(
         self,
-        article: "sabnzbd.nzbstuff.Article",
+        article: Optional["sabnzbd.nzbstuff.Article"],
         count_article_try: bool = True,
         retry_article: bool = True,
     ) -> None:
         """Discard an article back to the queue"""
-        if not article.nzf.nzo.removed_from_queue:
+        if article and not article.nzf.nzo.removed_from_queue:
             # Only some errors should count towards the total tries for each server
             if count_article_try:
                 article.tries += 1

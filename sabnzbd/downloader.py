@@ -910,8 +910,7 @@ class Downloader(Thread):
         self.remove_socket(nw)
 
         # Discard the article request which failed
-        if article:
-            nw.discard(article, count_article_try=count_article_try, retry_article=retry_article)
+        nw.discard(article, count_article_try=count_article_try, retry_article=retry_article)
 
         # Reset connection object
         nw.hard_reset(wait)
