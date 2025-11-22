@@ -58,9 +58,17 @@ def run_intermediate_script(script_path: str, target_dir: str):
         logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
         return None  # TODO remove this line, and handle exception correctly
 
-    output = p.stdout.read()
+    output = p.stdout.read() # with 6th line (so: [5] in python) the Priority
     ret = p.wait()
     logging.info("SJ: Intermediate script returned %s and output=\n%s", ret, output)
+    priority = 0 # default
+    if ret == 0:
+        split_output = output.splitlines()
+        try:
+            priority = int(split_output[5])
+        except:
+            pass
+    return priority
 
 
 class Assembler(Thread):
@@ -133,13 +141,15 @@ class Assembler(Thread):
                                 # direct unpacker active instance found
                                 direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
                                 logging.info(f"SJ: direct_unpack_dir: {direct_unpack_dir}")
-                                run_intermediate_script(cfg.intermediate_script(), direct_unpack_dir)
+                                priority = run_intermediate_script(cfg.intermediate_script(), direct_unpack_dir)
                             else:
                                 logging.info("SJ: Intermediate: no direct unpacker active instance found")
                                 # Use case 2: no DirectUnpack, but incomplete download dir contains post without rar-files
                                 incomplete_dir = nzo.download_path
                                 logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
-                                run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
+                                priority = run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
+                            logging.debug(f"SJ: Intermediate script priority returned: {priority}")
+                            nzo.priority = priority # or check for successful run?
                             nzo.intermediate_script_runtimes += 1
 
                     except IOError as err:
