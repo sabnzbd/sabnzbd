@@ -27,13 +27,13 @@ from threading import Thread
 import time
 import logging
 import ssl
-import sabctools
 from typing import Optional, Tuple, Union, Callable
 
+import sabctools
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DEF_NETWORKING_TIMEOUT, NNTP_BUFFER_SIZE, NTTP_MAX_BUFFER_SIZE
-from sabnzbd.encoding import utob, ubtou
+from sabnzbd.encoding import utob
 from sabnzbd.get_addrinfo import AddrInfo
 from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 

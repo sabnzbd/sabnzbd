@@ -26,7 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import Any, Optional, Union, BinaryIO, Union, Deque
+from typing import Any, Optional, BinaryIO, Union, Deque
 
 # SABnzbd modules
 import sabnzbd
