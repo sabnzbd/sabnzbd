@@ -533,7 +533,7 @@ class Downloader(Thread):
             server.addrinfo = None
 
     @staticmethod
-    def decode(article, decoder=None):
+    def decode(article: "sabnzbd.nzbstuff.Article", decoder: Optional[sabctools.Decoder] = None):
         """Decode article"""
         # Need a better way of draining requests
         if article.nzf.nzo.removed_from_queue:
@@ -893,7 +893,7 @@ class Downloader(Thread):
         wait: bool = True,
         count_article_try: bool = True,
         retry_article: bool = True,
-        article: Optional[sabnzbd.nzbstuff.Article] = None,
+        article: Optional["sabnzbd.nzbstuff.Article"] = None,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
