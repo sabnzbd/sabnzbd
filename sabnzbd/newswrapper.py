@@ -452,13 +452,6 @@ class NewsWrapper:
                     self.discard(article, count_article_try=False, retry_article=True)
 
         if self.nntp:
-            # Discard any received data
-            while True:
-                try:
-                    if not self.nntp.sock.recv(4096):
-                        break
-                except Exception:
-                    break
             self.nntp.close(send_quit=self.connected)
             self.nntp = None
 
