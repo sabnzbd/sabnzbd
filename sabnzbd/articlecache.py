@@ -39,7 +39,7 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_table: dict[Article, memoryview] = {}  # Dict of buffered articles
+        self.__article_table: dict[Article, bytes] = {}  # Dict of buffered articles
 
         self.assembler_write_trigger: int = 1
 
@@ -83,7 +83,7 @@ class ArticleCache:
         """Is there space left in the set limit?"""
         return self.__cache_size < self.__cache_limit
 
-    def save_article(self, article: Article, data: memoryview):
+    def save_article(self, article: Article, data: bytes):
         """Save article in cache, either memory or disk"""
         nzo = article.nzf.nzo
         # Skip if already post-processing or fully finished
@@ -130,10 +130,9 @@ class ArticleCache:
                 logging.debug("Failed to load %s from cache, probably already deleted", article)
                 return data
         elif article.art_id:
-            raw = sabnzbd.filesystem.load_data(
+            data = sabnzbd.filesystem.load_data(
                 article.art_id, nzo.admin_path, remove=True, do_pickle=False, silent=True
             )
-            data = memoryview(raw) if raw else None
         nzo.saved_articles.discard(article)
         return data
 

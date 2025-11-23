@@ -48,7 +48,7 @@ except Exception:
 
 
 class BadData(Exception):
-    def __init__(self, data: memoryview):
+    def __init__(self, data: bytearray):
         super().__init__()
         self.data = data
 
@@ -62,7 +62,7 @@ class BadUu(Exception):
 
 
 def decode(article: Article, decoder: sabctools.Decoder):
-    decoded_data: Optional[memoryview] = None
+    decoded_data: Optional[bytearray] = None
     nzo = article.nzf.nzo
     art_id = article.article
 
@@ -157,9 +157,9 @@ def decode(article: Article, decoder: sabctools.Decoder):
     sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, decoder: sabctools.Decoder) -> memoryview:
+def decode_yenc(article: Article, decoder: sabctools.Decoder) -> bytearray:
     # Let SABCTools do all the heavy lifting
-    decoded_data = memoryview(decoder)
+    decoded_data = decoder.data
     article.file_size = decoder.file_size
     article.data_begin = decoder.part_begin
     article.data_size = decoder.part_size
@@ -172,7 +172,7 @@ def decode_yenc(article: Article, decoder: sabctools.Decoder) -> memoryview:
     if not nzf.filename_checked and (file_name := decoder.file_name):
         # Set the md5-of-16k if this is the first article
         if article.lowest_partnum:
-            nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
+            nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
 
         # Try the rename, even if it's not the first article
         # For example when the first article was missing
@@ -188,7 +188,7 @@ def decode_yenc(article: Article, decoder: sabctools.Decoder) -> memoryview:
     return decoded_data
 
 
-def decode_uu(article: Article, decoder: sabctools.Decoder) -> memoryview:
+def decode_uu(article: Article, decoder: sabctools.Decoder) -> bytearray:
     """Try to uu-decode an article. The raw_data may or may not contain headers.
     If there are headers, they will be separated from the body by at least one
     empty line. In case of no headers, the first line seems to always be the nntp
@@ -197,18 +197,18 @@ def decode_uu(article: Article, decoder: sabctools.Decoder) -> memoryview:
         logging.debug("No data to decode")
         raise BadUu
 
-    decoded_data = memoryview(decoder)
+    decoded_data = decoder.data
 
     article.nzf.type = "uu"
 
     if article.lowest_partnum:
-        article.nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
+        article.nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
         # Handle the filename
         if not article.nzf.filename_checked and decoder.file_name:
             article.nzf.nzo.verify_nzf_filename(article.nzf, decoder.file_name)
 
     article.crc32 = crc32(decoded_data)
-    return memoryview(decoded_data)
+    return decoded_data
 
 
 def search_new_server(article: Article) -> bool:
