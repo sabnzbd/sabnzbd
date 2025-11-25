@@ -533,7 +533,7 @@ class Downloader(Thread):
             server.addrinfo = None
 
     @staticmethod
-    def decode(article: "sabnzbd.nzbstuff.Article", decoder: Optional[sabctools.Decoder] = None):
+    def decode(article: "sabnzbd.nzbstuff.Article", response: Optional[sabctools.NNTPResponse] = None):
         """Decode article"""
         # Need a better way of draining requests
         if article.nzf.nzo.removed_from_queue:
@@ -543,14 +543,14 @@ class Downloader(Thread):
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
         # Handle broken articles directly
-        if not decoder or not decoder.bytes_decoded:
+        if not response or not response.bytes_decoded:
             if not article.search_new_server():
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
                 sabnzbd.NzbQueue.register_article(article, success=False)
             return
 
         # Decode and send to article cache
-        sabnzbd.decoder.decode(article, decoder)
+        sabnzbd.decoder.decode(article, response)
 
     def run(self):
         # Warn if there are servers defined, but none are valid
@@ -802,12 +802,12 @@ class Downloader(Thread):
                 logged_counter += 1
 
     @synchronized(DOWNLOADER_LOCK)
-    def finish_connect_nw(self, nw: NewsWrapper, decoder: sabctools.Decoder) -> bool:
+    def finish_connect_nw(self, nw: NewsWrapper, response: sabctools.NNTPResponse) -> bool:
         server = nw.server
         try:
-            nw.finish_connect(decoder.status_code, decoder.message)
+            nw.finish_connect(response.status_code, response.message)
             if sabnzbd.LOG_ALL:
-                logging.debug("%s@%s last message -> %d", nw.thrdnum, server.host, decoder.status_code)
+                logging.debug("%s@%s last message -> %d", nw.thrdnum, server.host, response.status_code)
         except NNTPPermanentError as error:
             # Handle login problems
             block = False

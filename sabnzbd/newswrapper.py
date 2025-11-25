@@ -58,12 +58,7 @@ class NewsWrapper:
         "thrdnum",
         "blocking",
         "timeout",
-        "_article",
         "decoder",
-        "decoder_remainder",
-        "data",
-        "data_view",
-        "data_position",
         "send_buffer",
         "nntp",
         "connected",
@@ -85,13 +80,8 @@ class NewsWrapper:
         self.blocking: bool = block
 
         self.timeout: Optional[float] = None
-        self._article: Optional[sabnzbd.nzbstuff.Article] = None
 
         self.decoder: Optional[sabctools.Decoder] = None
-        self.decoder_remainder: Optional[memoryview] = None
-        self.data: Optional[bytearray] = None
-        self.data_view: Optional[memoryview] = None
-        self.data_position: int = 0
         self.send_buffer = b""
 
         self.nntp: Optional[NNTP] = None
@@ -119,8 +109,6 @@ class NewsWrapper:
     def article(self) -> Optional["sabnzbd.nzbstuff.Article"]:
         """The article currently being downloaded"""
         with self.lock:
-            if self._article:
-                return self._article
             if self._response_queue:
                 return self._response_queue[0]
             return None
@@ -132,8 +120,7 @@ class NewsWrapper:
             raise socket.error(errno.EADDRNOTAVAIL, T("Invalid server address."))
 
         # Construct buffer and NNTP object
-        self.data = sabctools.bytearray_malloc(NNTP_BUFFER_SIZE)
-        self.data_view = memoryview(self.data)
+        self.decoder = sabctools.Decoder(NNTP_BUFFER_SIZE)
         self.nntp = NNTP(self, self.server.addrinfo)
         self.timeout = time.time() + self.server.timeout
 
@@ -205,47 +192,41 @@ class NewsWrapper:
             command = utob("ARTICLE <%s>\r\n" % article.article)
         self.queue(command, article)
 
-    def command_complete(self, decoder: sabctools.Decoder):
-        article = self._article
+    def command_complete(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbstuff.Article"]) -> None:
+        self.concurrent_requests.release()
         server = self.server
 
-        with self.lock:
-            self._article = None
-        self.data_position = 0
-        self.decoder = None
-        self.concurrent_requests.release()
-
-        if article_done := decoder.status_code in (220, 222) and article:
+        if article_done := response.status_code in (220, 222) and article:
             with DOWNLOADER_LOCK:
                 # Update statistics only when we fetched a whole article
                 # The side effect is that we don't count things like article-not-available messages
-                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, decoder.bytes_read)
+                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, response.bytes_read)
 
         # Response code depends on request command:
         # 220 = ARTICLE, 222 = BODY
         if not article_done:
-            if not self.connected or not article or decoder.status_code in (281, 381, 480, 481, 482):
+            if not self.connected or not article or response.status_code in (281, 381, 480, 481, 482):
                 self.discard(article, count_article_try=False)
-                if not sabnzbd.Downloader.finish_connect_nw(self, decoder):
+                if not sabnzbd.Downloader.finish_connect_nw(self, response):
                     return
                 if self.connected:
                     logging.info("Connecting %s@%s finished", self.thrdnum, server.host)
 
-            elif decoder.status_code == 223:
+            elif response.status_code == 223:
                 article_done = True
                 logging.debug("Article <%s> is present on %s", article.article, server.host)
 
-            elif decoder.status_code in (411, 423, 430, 451):
+            elif response.status_code in (411, 423, 430, 451):
                 article_done = True
                 logging.debug(
                     "Thread %s@%s: Article %s missing (error=%s)",
                     self.thrdnum,
                     server.host,
                     article.article,
-                    decoder.status_code,
+                    response.status_code,
                 )
 
-            elif decoder.status_code == 500:
+            elif response.status_code == 500:
                 if article.nzf.nzo.precheck:
                     # Did we try "STAT" already?
                     if not server.have_stat:
@@ -264,18 +245,18 @@ class NewsWrapper:
 
             else:
                 # Don't warn for (internal) server errors during downloading
-                if decoder.status_code not in (400, 502, 503):
+                if response.status_code not in (400, 502, 503):
                     logging.warning(
                         T("%s@%s: Received unknown status code %s for article %s"),
                         self.thrdnum,
                         server.host,
-                        decoder.status_code,
+                        response.status_code,
                         article.article,
                     )
 
                 # Ditch this thread, we don't know what data we got now so the buffer can be bad
                 sabnzbd.Downloader.reset_nw(
-                    self, f"Server error or unknown status code: {decoder.status_code}", wait=False, article=article
+                    self, f"Server error or unknown status code: {response.status_code}", wait=False, article=article
                 )
                 return
 
@@ -285,7 +266,7 @@ class NewsWrapper:
             server.errormsg = server.warning = ""
 
             # Decode
-            sabnzbd.Downloader.decode(article, decoder)
+            sabnzbd.Downloader.decode(article, response)
 
             if sabnzbd.LOG_ALL:
                 logging.debug("Thread %s@%s: %s done", self.thrdnum, server.host, article.article)
@@ -300,70 +281,34 @@ class NewsWrapper:
         :param on_response: callback for each complete response received
         :return: #bytes, #pendingbytes
         """
-        # Sanity check before we go any further
-        if self.decoder and self.decoder.bytes_read > NTTP_MAX_BUFFER_SIZE:
-            raise BufferError("Maximum data buffer size exceeded")
-
-        # Receive data into the pre-allocated buffer
-        if self.nntp.nw.server.ssl and not self.nntp.nw.blocking and sabctools.openssl_linked:
+        # Receive data into the decoder pre-allocated buffer
+        if not nbytes and self.nntp.nw.server.ssl and not self.nntp.nw.blocking and sabctools.openssl_linked:
             # Use patched version when downloading
-            bytes_recv = sabctools.unlocked_ssl_recv_into(
-                self.nntp.sock,
-                (
-                    self.data_view[self.data_position : self.data_position + nbytes]
-                    if nbytes > 0
-                    else self.data_view[self.data_position :]
-                ),
-            )
+            bytes_recv = sabctools.unlocked_ssl_recv_into(self.nntp.sock, self.decoder)
         else:
-            bytes_recv = self.nntp.sock.recv_into(self.data_view[self.data_position :], nbytes=nbytes)
+            bytes_recv = self.nntp.sock.recv_into(self.decoder, nbytes=nbytes)
 
         # No data received
         if bytes_recv == 0:
             raise ConnectionError("Server closed connection")
 
-        # Success, move timeout and internal data position
+        # Success, move timeout
         self.timeout = time.time() + self.server.timeout
-        self.data_position += bytes_recv
 
-        if self.data_position:
-            if self.decoder is None:
-                self.decoder = sabctools.Decoder()
-                with self.lock:
-                    self._article = self._response_queue.popleft()
-            eof, self.decoder_remainder = self.decoder.decode(self.data_view[: self.data_position])
-            if eof:
-                if on_response:
-                    on_response(self.decoder.status_code, self.decoder.message)
-                self.command_complete(self.decoder)
-            if self.decoder_remainder is None:
-                self.data_position = 0
-            while self.decoder_remainder:
-                if self.decoder is None:
-                    self.decoder = sabctools.Decoder()
-                    with self.lock:
-                        self._article = self._response_queue.popleft()
-                # Are there unprocessed bytes that we need to try first?
-                eof, self.decoder_remainder = self.decoder.decode(self.decoder_remainder)
-                if eof:
-                    if on_response:
-                        on_response(self.decoder.status_code, self.decoder.message)
-                    self.command_complete(self.decoder)
-                elif self.decoder_remainder:
-                    # Unprocessable; copy to start of buffer and read more
-                    # Rare if the buffer is large enough to hold the end of a response and the next yenc headers
-                    self.data_position = len(self.decoder_remainder)
-                    self.data_view[: self.data_position] = self.decoder_remainder
-                    self.decoder_remainder = None
-                    break
-                else:
-                    self.data_position = 0
-                    break
+        self.decoder.process(bytes_recv)
+        for response in self.decoder:
+            with self.lock:
+                article = self._response_queue.popleft()
+            if on_response:
+                on_response(response.status_code, response.message)
+            self.command_complete(response, article)
 
         # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
         # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
-        # another recv_chunk so the buffer is increased and the data from the SSL-layer is read. See #27275252.
-        return bytes_recv, pending if self.server.ssl and self.nntp and (pending := self.nntp.sock.pending()) else None
+        # another recv_chunk so the buffer is increased and the data from the SSL-layer is read. See #2752.
+        if self.server.ssl and self.nntp and (pending := self.nntp.sock.pending()):
+            return bytes_recv, pending
+        return bytes_recv, None
 
     def write(self):
         server = self.server
@@ -416,7 +361,6 @@ class NewsWrapper:
                     not self.send_buffer
                     and not self.command_queue
                     and not self._response_queue
-                    and not self._article
                     and (not server.active or server.restart or time.time() > self.timeout)
                 ):
                     # Make socket available again
@@ -444,9 +388,6 @@ class NewsWrapper:
                 if article:
                     self.discard(article, count_article_try=False, retry_article=True)
             # Drain responses
-            if article := self._article:
-                self._article = None
-                self.discard(article, count_article_try=False, retry_article=True)
             while self._response_queue:
                 if article := self._response_queue.popleft():
                     self.discard(article, count_article_try=False, retry_article=True)

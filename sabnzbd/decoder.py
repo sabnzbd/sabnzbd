@@ -61,7 +61,7 @@ class BadUu(Exception):
     pass
 
 
-def decode(article: Article, decoder: sabctools.Decoder):
+def decode(article: Article, decoder: sabctools.NNTPResponse):
     decoded_data: Optional[bytearray] = None
     nzo = article.nzf.nzo
     art_id = article.article
@@ -157,19 +157,19 @@ def decode(article: Article, decoder: sabctools.Decoder):
     sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode_yenc(article: Article, decoder: sabctools.Decoder) -> bytearray:
+def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray:
     # Let SABCTools do all the heavy lifting
-    decoded_data = decoder.data
-    article.file_size = decoder.file_size
-    article.data_begin = decoder.part_begin
-    article.data_size = decoder.part_size
+    decoded_data = response.data
+    article.file_size = response.file_size
+    article.data_begin = response.part_begin
+    article.data_size = response.part_size
 
     nzf = article.nzf
     # Assume it is yenc
     nzf.type = "yenc"
 
     # Only set the name if it was found and not obfuscated
-    if not nzf.filename_checked and (file_name := decoder.file_name):
+    if not nzf.filename_checked and (file_name := response.file_name):
         # Set the md5-of-16k if this is the first article
         if article.lowest_partnum:
             nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
@@ -179,7 +179,7 @@ def decode_yenc(article: Article, decoder: sabctools.Decoder) -> bytearray:
         nzf.nzo.verify_nzf_filename(nzf, file_name)
 
     # CRC check
-    if (crc := decoder.crc) is None:
+    if (crc := response.crc) is None:
         logging.info("CRC Error in %s", article.article)
         raise BadData(decoded_data)
 
@@ -188,24 +188,24 @@ def decode_yenc(article: Article, decoder: sabctools.Decoder) -> bytearray:
     return decoded_data
 
 
-def decode_uu(article: Article, decoder: sabctools.Decoder) -> bytearray:
+def decode_uu(article: Article, response: sabctools.NNTPResponse) -> bytearray:
     """Try to uu-decode an article. The raw_data may or may not contain headers.
     If there are headers, they will be separated from the body by at least one
     empty line. In case of no headers, the first line seems to always be the nntp
     response code (220/222) directly followed by the msg body."""
-    if not decoder.bytes_decoded:
+    if not response.bytes_decoded:
         logging.debug("No data to decode")
         raise BadUu
 
-    decoded_data = decoder.data
+    decoded_data = response.data
 
     article.nzf.type = "uu"
 
     if article.lowest_partnum:
         article.nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
         # Handle the filename
-        if not article.nzf.filename_checked and decoder.file_name:
-            article.nzf.nzo.verify_nzf_filename(article.nzf, decoder.file_name)
+        if not article.nzf.filename_checked and response.file_name:
+            article.nzf.nzo.verify_nzf_filename(article.nzf, response.file_name)
 
     article.crc32 = crc32(decoded_data)
     return decoded_data
