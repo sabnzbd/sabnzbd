@@ -197,6 +197,9 @@ def decode_uu(article: Article, response: sabctools.NNTPResponse) -> bytearray:
         logging.debug("No data to decode")
         raise BadUu
 
+    if response.baddata:
+        raise BadData(response.data)
+
     decoded_data = response.data
 
     article.nzf.type = "uu"

@@ -21,9 +21,13 @@ tests.test_decoder- Testing functions in decoder.py
 import binascii
 import os
 import pytest
+from io import BytesIO
 
 from random import randint
 from unittest import mock
+
+import sabctools
+from sabctools import NNTPResponse
 
 import sabnzbd.decoder as decoder
 from sabnzbd.nzbstuff import Article
@@ -111,7 +115,7 @@ class TestUuDecoder:
                 result.append(END_DATA)
 
         # Signal the end of the message with a dot on a line of its own
-        data.append(b".")
+        data.append(b".\r\n")
 
         # Join the data with \r\n line endings, just like we get from socket reads
         data = b"\r\n".join(data)
@@ -120,22 +124,26 @@ class TestUuDecoder:
 
         return article, bytearray(data), result
 
-    def test_no_data(self):
-        with pytest.raises(decoder.BadUu):
-            assert decoder.decode_uu(None, None)
+    @staticmethod
+    def _response(raw_data: bytes) -> NNTPResponse:
+        dec = sabctools.Decoder(len(raw_data))
+        reader = BytesIO(raw_data)
+        reader.readinto(dec)
+        dec.process(len(raw_data))
+        return next(dec)
 
     @pytest.mark.parametrize(
         "raw_data",
         [
-            b"",
-            b"\r\n\r\n",
-            b"foobar\r\n",  # Plenty of list items, but (too) few actual lines
-            b"222 0 <artid@woteva>\r\nX-Too-Short: yup\r\n",
+            b"222 0 <foo@bar>\r\n.\r\n",
+            b"222 0 <foo@bar>\r\n\r\n.\r\n",
+            b"222 0 <foo@bar>\r\nfoobar\r\n.\r\n",  # Plenty of list items, but (too) few actual lines
+            b"222 0 <foo@bar>\r\nX-Too-Short: yup\r\n.\r\n",
         ],
     )
     def test_short_data(self, raw_data):
         with pytest.raises(decoder.BadUu):
-            assert decoder.decode_uu(None, bytearray(raw_data))
+            assert decoder.decode_uu(Article("foo@bar", 4321, None), self._response(raw_data))
 
     @pytest.mark.parametrize(
         "raw_data",
@@ -158,7 +166,8 @@ class TestUuDecoder:
         with pytest.raises(decoder.BadUu):
             raw_data = bytearray(raw_data)
             raw_data.extend(filler)
-            assert decoder.decode_uu(article, raw_data)
+            raw_data.extend(b".\r\n")
+            assert decoder.decode_uu(article, self._response(raw_data))
 
     @pytest.mark.parametrize("insert_empty_line", [True, False])
     @pytest.mark.parametrize("insert_excess_empty_lines", [True, False])
@@ -194,7 +203,7 @@ class TestUuDecoder:
             insert_dot_stuffing_line,
             begin_line,
         )
-        assert decoder.decode_uu(article, raw_data) == expected_result
+        assert decoder.decode_uu(article, self._response(raw_data)) == expected_result
         assert article.nzf.filename_checked
 
     @pytest.mark.parametrize("insert_empty_line", [True, False])
@@ -205,7 +214,7 @@ class TestUuDecoder:
         decoded_data = expected_data = b""
         for part in ("begin", "middle", "middle", "end"):
             article, data, result = self._generate_msg_part(part, insert_empty_line, False, False, True)
-            decoded_data += decoder.decode_uu(article, data)
+            decoded_data += decoder.decode_uu(article, self._response(data))
             expected_data += result
 
         # Verify results
@@ -223,4 +232,6 @@ class TestUuDecoder:
         article.lowest_partnum = False
         filler = b"\r\n".join(VALID_UU_LINES[:4]) + b"\r\n"
         with pytest.raises(decoder.BadData):
-            assert decoder.decode_uu(article, bytearray(b"222 0 <foo@bar>\r\n" + filler + bad_data + b"\r\n"))
+            assert decoder.decode_uu(
+                article, self._response(bytearray(b"222 0 <foo@bar>\r\n" + filler + bad_data + b"\r\n.\r\n"))
+            )
