@@ -40,6 +40,9 @@ from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_NETWORKING_TIMEOUT)
 
+# Command requests queued up for this socket
+_MAX_COMMAND_QUEUE_LENGTH = 20
+
 
 class NNTPPermanentError(Exception):
     def __init__(self, msg: str, code: int):
@@ -95,7 +98,9 @@ class NewsWrapper:
         self.group: Optional[str] = None
 
         # Command queue and concurrency
-        self.command_queue: deque[tuple[bytes, Optional[sabnzbd.nzbstuff.Article]]] = deque(maxlen=20)
+        self.command_queue: deque[tuple[bytes, Optional[sabnzbd.nzbstuff.Article]]] = deque(
+            maxlen=min(_MAX_COMMAND_QUEUE_LENGTH, sabnzbd.cfg.pipelining_requests() * 3)
+        )
         self.concurrent_requests: threading.Semaphore = threading.Semaphore(sabnzbd.cfg.pipelining_requests())
         self._response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque(
             [
@@ -145,7 +150,7 @@ class NewsWrapper:
             raise NNTPPermanentError(message, code)
         elif not self.user_sent:
             command = utob("authinfo user %s\r\n" % self.server.username)
-            self.queue(command)
+            self.queue_command(command)
             self.user_sent = True
         elif not self.user_ok:
             if code == 381:
@@ -159,7 +164,7 @@ class NewsWrapper:
 
         if self.user_ok and not self.pass_sent:
             command = utob("authinfo pass %s\r\n" % self.server.password)
-            self.queue(command)
+            self.queue_command(command)
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if code != 281:
@@ -170,7 +175,7 @@ class NewsWrapper:
 
         self.timeout = time.time() + self.server.timeout
 
-    def queue(
+    def queue_command(
         self,
         command: bytes,
         article: Optional["sabnzbd.nzbstuff.Article"] = None,
@@ -178,7 +183,7 @@ class NewsWrapper:
         """Add a command to the command queue"""
         self.command_queue.append((command, article))
 
-    def body(self, article: "sabnzbd.nzbstuff.Article"):
+    def queue_article(self, article: "sabnzbd.nzbstuff.Article"):
         """Request the body of the article"""
         self.timeout = time.time() + self.server.timeout
         if article.nzf.nzo.precheck:
@@ -190,9 +195,10 @@ class NewsWrapper:
             command = utob("BODY <%s>\r\n" % article.article)
         else:
             command = utob("ARTICLE <%s>\r\n" % article.article)
-        self.queue(command, article)
+        self.queue_command(command, article)
 
-    def command_complete(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbstuff.Article"]) -> None:
+    def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbstuff.Article"]) -> None:
+        """A response to a NNTP request is received"""
         self.concurrent_requests.release()
         server = self.server
         article_done = response.status_code in (220, 222) and article
@@ -272,7 +278,7 @@ class NewsWrapper:
             if sabnzbd.LOG_ALL:
                 logging.debug("Thread %s@%s: %s done", self.thrdnum, server.host, article.article)
 
-    def recv_chunk(
+    def read(
         self,
         nbytes: int = 0,
         on_response: Optional[Callable[[int, str], None]] = None,
@@ -302,7 +308,7 @@ class NewsWrapper:
                 article = self._response_queue.popleft()
             if on_response:
                 on_response(response.status_code, response.message)
-            self.command_complete(response, article)
+            self.on_response(response, article)
 
         # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
         # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
@@ -312,6 +318,7 @@ class NewsWrapper:
         return bytes_recv, None
 
     def write(self):
+        """Send data to server"""
         server = self.server
 
         try:
@@ -320,7 +327,7 @@ class NewsWrapper:
                 sent = self.nntp.sock.send(self.send_buffer)
                 self.send_buffer = self.send_buffer[sent:]
                 if self.send_buffer:
-                    # Still unsent data — wait for next EVENT_WRITE
+                    # Still unsent data, wait for next EVENT_WRITE
                     return
 
             if (
@@ -333,7 +340,7 @@ class NewsWrapper:
                 and len(self.command_queue) < self.command_queue.maxlen
                 and (article := self.server.get_article())
             ):
-                self.body(article)
+                self.queue_article(article)
 
             # If no pending buffer, try to send new command
             if not self.send_buffer and self.command_queue:
@@ -348,10 +355,10 @@ class NewsWrapper:
                     try:
                         sent = self.nntp.sock.send(command)
                         if sent < len(command):
-                            # Partial send — keep remainder
+                            # Partial send, store remainder
                             self.send_buffer = command[sent:]
                     except (BlockingIOError, ssl.SSLWantWriteError):
-                        # Can't send now — store full command for later
+                        # Can't send now, store full command
                         self.send_buffer = command
                 else:
                     # Concurrency limit reached; do nothing

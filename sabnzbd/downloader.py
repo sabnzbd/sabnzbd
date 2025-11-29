@@ -737,7 +737,7 @@ class Downloader(Thread):
 
         while True:
             try:
-                n, bytes_pending = nw.recv_chunk(nbytes=bytes_pending)
+                n, bytes_pending = nw.read(nbytes=bytes_pending)
                 bytes_received += n
             except ssl.SSLWantReadError:
                 return

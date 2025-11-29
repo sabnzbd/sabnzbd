@@ -1402,7 +1402,7 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
         nw.init_connect()
         while not nw.connected:
             nw.write()
-            nw.recv_chunk(on_response=on_response)
+            nw.read(on_response=on_response)
 
     except socket.timeout:
         if port != 119 and not ssl:
@@ -1424,10 +1424,10 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
         return False, str(err)
 
     if not username or not password:
-        nw.queue(b"ARTICLE <test@home>\r\n")
+        nw.queue_command(b"ARTICLE <test@home>\r\n")
         try:
             nw.write()
-            nw.recv_chunk(on_response=on_response)
+            nw.read(on_response=on_response)
         except Exception as err:
             # Some internal error, not always safe to close connection
             return False, str(err)
