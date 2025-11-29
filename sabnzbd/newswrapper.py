@@ -101,13 +101,10 @@ class NewsWrapper:
         self.command_queue: deque[tuple[bytes, Optional[sabnzbd.nzbstuff.Article]]] = deque(
             maxlen=min(_MAX_COMMAND_QUEUE_LENGTH, sabnzbd.cfg.pipelining_requests() * 3)
         )
-        self.concurrent_requests: threading.Semaphore = threading.Semaphore(sabnzbd.cfg.pipelining_requests())
-        self._response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque(
-            [
-                # On connect first "response" will be 200 Welcome
-                None,
-            ]
+        self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
+            sabnzbd.cfg.pipelining_requests()
         )
+        self._response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque()
         self.lock: threading.Lock = threading.Lock()
 
     @property
@@ -128,6 +125,10 @@ class NewsWrapper:
         self.decoder = sabctools.Decoder(NNTP_BUFFER_SIZE)
         self.nntp = NNTP(self, self.server.addrinfo)
         self.timeout = time.time() + self.server.timeout
+
+        # On connect the first "response" will be 200 Welcome
+        self._response_queue.append(None)
+        self.concurrent_requests.acquire()
 
     def finish_connect(self, code: int, message: str) -> None:
         """Perform login options"""
