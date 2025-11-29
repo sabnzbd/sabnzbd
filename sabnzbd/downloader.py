@@ -370,25 +370,18 @@ class Downloader(Thread):
     def add_socket(self, fileno: int, nw: NewsWrapper):
         """Add a socket ready to be used to the list to be watched"""
         try:
-            if sabnzbd.LOG_ALL:
-                logging.debug("%s@%s: register %d", nw.thrdnum, nw.server.host, fileno)
-            # Needs to only add EVENT_WRITE when required and/or self.selector.modify in main loop
             self.selector.register(fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
         except KeyError:
-            if sabnzbd.LOG_ALL:
-                logging.debug("%s@%s: already registered %d", nw.thrdnum, nw.server.host, fileno)
+            pass
 
     @synchronized(DOWNLOADER_LOCK)
     def remove_socket(self, nw: NewsWrapper):
         """Remove a socket to be watched"""
         if nw.nntp:
             try:
-                if sabnzbd.LOG_ALL:
-                    logging.debug("%s@%s: unregister %d", nw.thrdnum, nw.server.host, nw.nntp.fileno)
                 self.selector.unregister(nw.nntp.fileno)
             except KeyError:
-                if sabnzbd.LOG_ALL:
-                    logging.debug("%s@%s: already unregistered %d", nw.thrdnum, nw.server.host, nw.nntp.fileno)
+                pass
 
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
