@@ -436,7 +436,7 @@ class NzbFile(TryList):
         else:
             self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
-    def get_articles(self, server: Server, servers: list[Server], fetch_limit: int) -> Deque[Article]:
+    def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
         """Get next articles to be downloaded"""
         articles = server.article_queue
         with self.lock:
@@ -444,9 +444,8 @@ class NzbFile(TryList):
                 if article := article.get_article(server, servers):
                     articles.append(article)
                     if len(articles) >= fetch_limit:
-                        return articles
+                        return
         self.add_to_try_list(server)
-        return articles
 
     @synchronized(TRYLIST_LOCK)
     def reset_all_try_lists(self):
@@ -1642,7 +1641,8 @@ class NzbObject(TryList):
         self.nzo_info[bad_article_type] += 1
         self.bad_articles += 1
 
-    def get_articles(self, server: Server, servers: list[Server], fetch_limit: int) -> Deque[Article]:
+    def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
+        """Assign articles server up to the fetch_limit"""
         articles: Deque[Article] = server.article_queue
         nzf_remove_list = []
 
@@ -1694,7 +1694,6 @@ class NzbObject(TryList):
         if not articles:
             # No articles for this server, block for next time
             self.add_to_try_list(server)
-        return articles
 
     @synchronized(NZO_LOCK)
     def move_top_bulk(self, nzf_ids: list[str]):
