@@ -195,8 +195,9 @@ class NewsWrapper:
     def command_complete(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbstuff.Article"]) -> None:
         self.concurrent_requests.release()
         server = self.server
+        article_done = response.status_code in (220, 222) and article
 
-        if article_done := response.status_code in (220, 222) and article:
+        if article_done:
             with DOWNLOADER_LOCK:
                 # Update statistics only when we fetched a whole article
                 # The side effect is that we don't count things like article-not-available messages
