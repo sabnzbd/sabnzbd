@@ -153,10 +153,7 @@ class Assembler(Thread):
                             if priority != 0:
                                 # only change priority if the script returned non-zero priority ... aka took a decision
                                 logging.info(f"SJ: Setting priority to {priority} for job {nzo.final_name}")
-                                nzo.priority = int(
-                                    priority
-                                )  # or check for successful run? And/or: check if priotiy is non-zero too have less impact
-
+                                nzo.priority = priority
                             nzo.intermediate_script_runtimes += 1
 
                     except IOError as err:
