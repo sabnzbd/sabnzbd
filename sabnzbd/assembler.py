@@ -124,11 +124,13 @@ class Assembler(Thread):
                             # Parse par2 files, cloaked or not
                             nzo.handle_par2(nzf, filepath)
 
-                        # Intermediate script
+                        logging.debug(
+                            f"SJ: intermediate pre-check {cfg.intermediate_script()}, {nzo.bytes_downloaded}, {nzo.intermediate_script_runtimes}"
+                        )
                         if (
                             cfg.intermediate_script()
                             and nzo.bytes_downloaded > 400_000_000
-                            and nzo.intermediate_script_runtimes < 3
+                            and nzo.intermediate_script_runtimes < 99
                         ):
 
                             logging.info("SJ: Running intermediate script for %s", nzo.final_name)
