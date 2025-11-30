@@ -189,10 +189,7 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray
 
 
 def decode_uu(article: Article, response: sabctools.NNTPResponse) -> bytearray:
-    """Try to uu-decode an article. The raw_data may or may not contain headers.
-    If there are headers, they will be separated from the body by at least one
-    empty line. In case of no headers, the first line seems to always be the nntp
-    response code (220/222) directly followed by the msg body."""
+    """Process a uu-decoded response"""
     if not response.bytes_decoded:
         logging.debug("No data to decode")
         raise BadUu
@@ -201,16 +198,21 @@ def decode_uu(article: Article, response: sabctools.NNTPResponse) -> bytearray:
         raise BadData(response.data)
 
     decoded_data = response.data
+    nzf = article.nzf
+    nzf.type = "uu"
 
-    article.nzf.type = "uu"
+    # Only set the name if it was found and not obfuscated
+    if not nzf.filename_checked and (file_name := response.file_name):
+        # Set the md5-of-16k if this is the first article
+        if article.lowest_partnum:
+            nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
 
-    if article.lowest_partnum:
-        article.nzf.md5of16k = hashlib.md5(memoryview(decoded_data)[:16384]).digest()
-        # Handle the filename
-        if not article.nzf.filename_checked and response.file_name:
-            article.nzf.nzo.verify_nzf_filename(article.nzf, response.file_name)
+        # Try the rename, even if it's not the first article
+        # For example when the first article was missing
+        nzf.nzo.verify_nzf_filename(nzf, file_name)
 
-    article.crc32 = crc32(decoded_data)
+    article.crc32 = response.crc
+
     return decoded_data
 
 
