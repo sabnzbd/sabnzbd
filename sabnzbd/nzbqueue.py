@@ -730,20 +730,13 @@ class NzbQueue:
 
         articles_left, file_done, post_done = nzo.remove_article(article, success)
 
-        # Write data if file is done or at trigger time
-        # Skip if the file is already queued, since all available articles will then be written
-        if (
-            file_done
-            or (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
-            or (articles_left and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0)
-        ):
-            if not nzo.precheck:
-                # The type is only set if sabctools could decode the article
-                if nzf.type:
-                    sabnzbd.Assembler.process(nzo, nzf, file_done)
-                elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
-                    # Broken par2 file, try to get another one
-                    nzo.promote_par2(nzf)
+        if not nzo.precheck:
+            # The type is only set if sabctools could decode the article
+            if nzf.type:
+                sabnzbd.Assembler.process(nzo, nzf, file_done, article=article, articles_left=articles_left)
+            elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
+                # Broken par2 file, try to get another one
+                nzo.promote_par2(nzf)
 
         # Save bookkeeping in case of crash
         if file_done and (nzo.next_save is None or time.time() > nzo.next_save):

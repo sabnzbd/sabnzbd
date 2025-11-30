@@ -42,6 +42,7 @@ try:
 except ImportError:
     pass
 
+import sabctools
 import sabnzbd
 from sabnzbd.decorators import synchronized, conditional_cache
 from sabnzbd.constants import (
@@ -1081,7 +1082,9 @@ def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bo
                 time.sleep(0.1)
 
 
-def load_data(data_id: str, path: str, remove: bool = True, do_pickle: bool = True, silent: bool = False) -> Any:
+def load_data(
+    data_id: str, path: str, remove: bool = True, do_pickle: bool = True, silent: bool = False, mutable: bool = False
+) -> Any:
     """Read data from disk file"""
     path = os.path.join(path, data_id)
 
@@ -1100,6 +1103,9 @@ def load_data(data_id: str, path: str, remove: bool = True, do_pickle: bool = Tr
                 except UnicodeDecodeError:
                     # Could be Python 2 data that we can load using old encoding
                     data = pickle.load(data_file, encoding="latin1")
+            elif mutable:
+                data = bytearray(os.fstat(data_file.fileno()).st_size)
+                data_file.readinto(data)
             else:
                 data = data_file.read()
 
@@ -1222,7 +1228,7 @@ def directory_is_writable(test_dir: str) -> bool:
     return True
 
 
-def check_filesystem_capabilities(test_dir: str) -> bool:
+def check_filesystem_capabilities(test_dir: str, is_download_dir: bool = False) -> bool:
     """Checks if we can write long and unicode filenames to the given directory.
     If not on Windows, also check for special chars like slashes and :
     Returns True if all OK, otherwise False"""
@@ -1248,6 +1254,15 @@ def check_filesystem_capabilities(test_dir: str) -> bool:
         sabnzbd.misc.helpful_warning(
             T("%s is not writable with special character filenames. This can cause problems."), test_dir
         )
+        allgood = False
+
+    # sparse files allow efficient use of empty space in files
+    if is_download_dir and sabnzbd.cfg.direct_write.get() and not is_sparse_supported(test_dir):
+        sabnzbd.cfg.direct_write.set(False)
+
+        # Writing to correct file offsets will be disabled, and it won't be possible to flush the article cache
+        # directly to the destination file
+        sabnzbd.misc.helpful_warning(T("%s does not support sparse files. Disabling direct write mode."), test_dir)
         allgood = False
 
     return allgood
@@ -1418,3 +1433,35 @@ def nzf_cmp_name(nzf1, nzf2):
     if m2 and m2.group(1) == ".rar":
         nzf2_name = nzf2_name.replace(".rar", ".r//")
     return sabnzbd.misc.cmp(nzf1_name, nzf2_name)
+
+
+def is_sparse(path: str) -> bool:
+    """Check if a path is a sparse file"""
+    info = os.stat(path)
+    if sabnzbd.WINDOWS:
+        return bool(info.st_file_attributes & stat.FILE_ATTRIBUTE_SPARSE_FILE)
+
+    # Linux and macOS
+    if info.st_blocks * 512 < info.st_size:
+        return True
+
+    # Filesystem with SEEK_HOLE (ZFS)
+    try:
+        with open(path, "rb") as f:
+            pos = f.seek(0, os.SEEK_HOLE)
+            return pos < info.st_size
+    except (AttributeError, OSError):
+        pass
+
+    return False
+
+
+def is_sparse_supported(check_dir: str) -> bool:
+    """Check if a directory supports sparse files"""
+    sparse_file = tempfile.NamedTemporaryFile(dir=check_dir, delete=False)
+    try:
+        sabctools.sparse(sparse_file.fileno(), 64)
+        sparse_file.close()
+        return is_sparse(sparse_file.name)
+    finally:
+        os.remove(sparse_file.name)

@@ -215,6 +215,11 @@
                         <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" class="smaller_input" />
                         <span class="desc">$T('explain-cache_limitstr').replace("64M", "256M").replace("128M", "512M")</span>
                     </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="direct_write">$T('opt-direct_write')</label>
+                        <input type="checkbox" name="direct_write" id="direct_write" value="1" <!--#if int($direct_write) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-direct_write')</span>
+                    </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     </div>

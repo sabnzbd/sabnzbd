@@ -189,6 +189,14 @@ class Article(TryList):
         logging.info("Article %s unavailable on all servers, discarding", self.article)
         return False
 
+    @property
+    def can_direct_write(self) -> bool:
+        return (
+            self.data_size  # decoder sets data_size to 0 when offsets or file_size are outside allowed range
+            and self.nzf.type == "yenc"
+            and self.nzf.prepare_filepath()
+        )
+
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
         dict_ = {}

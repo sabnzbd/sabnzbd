@@ -75,12 +75,13 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("lock",)
+    __slots__ = NzbFileSaver + ("lock", "file_lock", "assembler_next_index")
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
         super().__init__()
-        self.lock = threading.RLock()
+        self.lock: threading.RLock = threading.RLock()
+        self.file_lock: threading.RLock = threading.RLock()
 
         self.date: datetime.datetime = date
         self.type: Optional[str] = None
@@ -108,6 +109,7 @@ class NzbFile(TryList):
         self.crc32: Optional[int] = 0
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
+        self.assembler_next_index: int = 0
 
         # Add first article to decodetable, this way we can check
         # if this is maybe a duplicate nzf
@@ -171,10 +173,11 @@ class NzbFile(TryList):
         self.blocks = int_conv(blocks)
 
     def update_crc32(self, crc32: Optional[int], length: int) -> None:
-        if self.crc32 is None or crc32 is None:
-            self.crc32 = None
-        else:
-            self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
+        with self.lock:
+            if self.crc32 is None or crc32 is None:
+                self.crc32 = None
+            else:
+                self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
         """Get next articles to be downloaded"""
@@ -261,6 +264,8 @@ class NzbFile(TryList):
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
         self.lock = threading.RLock()
+        self.file_lock = threading.RLock()
+        self.assembler_next_index = 0
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}

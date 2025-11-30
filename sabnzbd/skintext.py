@@ -306,6 +306,12 @@ SKIN_TEXT = {
     "explain-cache_limitstr": TT(
         'Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'
     ),
+    "opt-direct_write": TT("Direct Write"),
+    "explain-direct_write": TT(
+        "Reduces disk activity by writing complete files whenever possible, or when the cache reaches 90% capacity.<br />"
+        "It works best on filesystems that support sparse files (creating files without pre-allocating space).<br />"
+        "For optimal performance, use an SSD for the Temporary Download Folder and set the Article Cache Limit large enough to hold typical file sizes."
+    ),
     "create-backup": TT("Create backup"),
     "explain-create_backup": TT(
         "Create a backup of the configuration file and databases in the Backup Folder.<br>"

@@ -354,6 +354,7 @@ username = OptionStr("misc", "username")
 password = OptionPassword("misc", "password")
 bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
+direct_write = OptionBool("misc", "direct_write", True)
 web_dir = OptionStr("misc", "web_dir", DEF_STD_WEB_DIR)
 web_color = OptionStr("misc", "web_color", DEF_STD_WEB_COLOR)
 https_cert = OptionDir("misc", "https_cert", DEF_HTTPS_CERT_FILE, create=False)
@@ -743,6 +744,7 @@ def new_limit():
     if sabnzbd.__INITIALIZED__:
         # Only update after full startup
         sabnzbd.ArticleCache.new_limit(cache_limit.get_int())
+        sabnzbd.Assembler.new_limit(sabnzbd.ArticleCache.cache_info().cache_limit)
 
 
 def guard_restart():

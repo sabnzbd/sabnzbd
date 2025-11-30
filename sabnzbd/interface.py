@@ -965,6 +965,7 @@ GENERAL_LIST = (
     "username",
     "language",
     "cache_limit",
+    "direct_write",
     "inet_exposure",
     "enable_https",
     "https_port",
