@@ -58,10 +58,10 @@ def run_intermediate_script(script_path: str, target_dir: str):
         logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
         return None  # TODO remove this line, and handle exception correctly
 
-    output = p.stdout.read() # with 6th line (so: [5] in python) the Priority
+    output = p.stdout.read()  # with 6th line (so: [5] in python) the Priority
     ret = p.wait()
     logging.info("SJ: Intermediate script returned %s and output=\n%s", ret, output)
-    priority = 0 # default
+    priority = 0  # default
     if ret == 0:
         split_output = output.splitlines()
         try:
@@ -136,20 +136,27 @@ class Assembler(Thread):
                                 f"SJ: Intermediate: on run {nzo.intermediate_script_runtimes}: nzb.bytes_downloaded: {nzo.bytes_downloaded}"
                             )
                             # Determine relevant directory
-                            # Use case #1: with rar-files, and directunpack:
+
                             if nzo.direct_unpack_progress:
+                                # Use case #1: with rar-files, and directunpack
                                 # direct unpacker active instance found
                                 direct_unpack_dir = nzo.direct_unpacker.unpack_dir_info[0]
                                 logging.info(f"SJ: direct_unpack_dir: {direct_unpack_dir}")
                                 priority = run_intermediate_script(cfg.intermediate_script(), direct_unpack_dir)
                             else:
                                 logging.info("SJ: Intermediate: no direct unpacker active instance found")
-                                # Use case 2: no DirectUnpack, but incomplete download dir contains post without rar-files
+                                # Use case 2: no DirectUnpack, but incomplete download dir might contain post without rar-files
                                 incomplete_dir = nzo.download_path
                                 logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
                                 priority = run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
                             logging.debug(f"SJ: Intermediate script priority returned: {priority}")
-                            nzo.priority = priority # or check for successful run?
+                            if priority != 0:
+                                # only change priority if the script returned non-zero priority ... aka took a decision
+                                logging.info(f"SJ: Setting priority to {priority} for job {nzo.final_name}")
+                                nzo.priority = int(
+                                    priority
+                                )  # or check for successful run? And/or: check if priotiy is non-zero too have less impact
+
                             nzo.intermediate_script_runtimes += 1
 
                     except IOError as err:
