@@ -337,7 +337,11 @@ class Scheduler:
                 sabnzbd.downloader.unpause_all()
             sabnzbd.Downloader.set_paused_state(paused or paused_all)
 
-        sabnzbd.PostProcessor.paused = pause_post
+        # Handle pause_post state with proper notification
+        if pause_post and not sabnzbd.PostProcessor.paused:
+            sabnzbd.PostProcessor.pause()
+        elif not pause_post and sabnzbd.PostProcessor.paused:
+            sabnzbd.PostProcessor.resume()
         if speedlimit is not None:
             sabnzbd.Downloader.limit_speed(speedlimit)
 
@@ -506,11 +510,11 @@ def sort_schedules(all_events, now=None):
 
 
 def pp_pause():
-    sabnzbd.PostProcessor.paused = True
+    sabnzbd.PostProcessor.pause()
 
 
 def pp_resume():
-    sabnzbd.PostProcessor.paused = False
+    sabnzbd.PostProcessor.resume()
 
 
 def enable_server(server):
