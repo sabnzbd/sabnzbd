@@ -289,18 +289,19 @@ class PostProcessor(Thread):
 
             # Wait for work to be available (no timeout!)
             self.work_available.wait()
-            self.work_available.clear()  # Reset for next iteration
 
             # Check if we should stop
             if self.__stop:
                 break
 
-            # If paused, loop back
+            # If paused, clear event and wait for resume
             if self.paused:
+                self.work_available.clear()
                 continue
 
-            # If queues are empty (spurious wake or race condition), loop back
+            # If queues are empty (spurious wake or race condition), clear and loop back
             if self.slow_queue.empty() and self.fast_queue.empty():
+                self.work_available.clear()
                 continue
 
             # Something in the fast queue?
