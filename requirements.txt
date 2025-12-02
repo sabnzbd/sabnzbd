@@ -1,8 +1,8 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
 apprise==1.9.5
-sabctools @ git+https://github.com/mnightingale/sabctools@feature/streaming_decoder
-CT3==3.4.0
+sabctools==8.2.6
+CT3==3.4.0.post5
 cffi==2.0.0
 pycparser==2.23
 feedparser==6.0.12

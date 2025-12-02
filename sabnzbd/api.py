@@ -783,12 +783,12 @@ def _api_watched_now(name: str, kwargs: dict[str, Union[str, list[str]]]) -> byt
 
 
 def _api_resume_pp(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
-    sabnzbd.PostProcessor.paused = False
+    sabnzbd.PostProcessor.resume()
     return report()
 
 
 def _api_pause_pp(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
-    sabnzbd.PostProcessor.paused = True
+    sabnzbd.PostProcessor.pause()
     return report()
 
 

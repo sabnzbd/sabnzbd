@@ -421,8 +421,9 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def resume_from_postproc(self):
-        logging.info("Post-processing finished, resuming download")
-        self.paused_for_postproc = False
+        if self.paused_for_postproc:
+            logging.info("Post-processing finished, resuming download")
+            self.paused_for_postproc = False
 
     @NzbQueueLocker
     def disconnect(self):

@@ -649,7 +649,7 @@ def rar_extract_core(
     start = time.time()
 
     logging.debug("Extraction path: %s", extraction_path)
-    logging.debug("Found rar version: %s", rarfile.is_rarfile(rarfile_path))
+    logging.debug("Found rar version: %s", rarfile.get_rar_version(rarfile_path))
 
     if password:
         password_command = "-p%s" % password

@@ -39,7 +39,7 @@ from sabnzbd.newsunpack import (
     rar_sort,
     is_sfv_file,
 )
-from threading import Thread
+from threading import Thread, Event
 from sabnzbd.misc import (
     on_cleanup_list,
     is_sample,
@@ -116,6 +116,9 @@ class PostProcessor(Thread):
         # Regular queue for jobs that might need more attention
         self.slow_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
 
+        # Event to signal when work is available or state changes
+        self.work_available = Event()
+
         # Load all old jobs
         for nzo in self.history_queue:
             self.process(nzo)
@@ -180,6 +183,9 @@ class PostProcessor(Thread):
         self.save()
         history_updated()
 
+        # Signal that work is available
+        self.work_available.set()
+
     def remove(self, nzo: NzbObject):
         """Remove given nzo from the queue"""
         try:
@@ -192,8 +198,20 @@ class PostProcessor(Thread):
     def stop(self):
         """Stop thread after finishing running job"""
         self.__stop = True
-        self.slow_queue.put(None)
-        self.fast_queue.put(None)
+        # Wake up the processor thread to check stop flag
+        self.work_available.set()
+
+    def pause(self):
+        """Pause post-processing"""
+        self.paused = True
+        logging.info("Pausing post-processing")
+
+    def resume(self):
+        """Resume post-processing"""
+        self.paused = False
+        logging.info("Resuming post-processing")
+        # Wake up the processor thread
+        self.work_available.set()
 
     def cancel_pp(self, nzo_ids: list[str]) -> Optional[bool]:
         """Abort Direct Unpack and change the status, so that the PP is canceled"""
@@ -265,27 +283,40 @@ class PostProcessor(Thread):
         while not self.__stop:
             self.__busy = False
 
-            if self.paused:
-                time.sleep(5)
-                continue
-
             # Set NzbObject object to None so references from this thread do not keep the
             # object alive until the next job is added to post-processing (see #1628)
             nzo = None
 
+            # Wait for work to be available (no timeout!)
+            self.work_available.wait()
+
+            # Check if we should stop
+            if self.__stop:
+                break
+
+            # If paused, clear event and wait for resume
+            if self.paused:
+                self.work_available.clear()
+                continue
+
+            # If queues are empty (spurious wake or race condition), clear and loop back
+            if self.slow_queue.empty() and self.fast_queue.empty():
+                self.work_available.clear()
+                continue
+
             # Something in the fast queue?
             try:
-                # Every few fast-jobs we should check allow a
+                # Every few fast-jobs we should allow a
                 # slow job so that they don't wait forever
                 if self.__fast_job_count >= MAX_FAST_JOB_COUNT and self.slow_queue.qsize():
                     raise queue.Empty
 
-                nzo = self.fast_queue.get(timeout=2)
+                nzo = self.fast_queue.get_nowait()
                 self.__fast_job_count += 1
             except queue.Empty:
                 # Try the slow queue
                 try:
-                    nzo = self.slow_queue.get(timeout=2)
+                    nzo = self.slow_queue.get_nowait()
                     # Reset fast-counter
                     self.__fast_job_count = 0
                 except queue.Empty:
@@ -295,10 +326,6 @@ class PostProcessor(Thread):
                         handle_empty_queue()
                     # No fast or slow jobs, better luck next loop!
                     continue
-
-            # Stop job
-            if not nzo:
-                continue
 
             # Job was already deleted.
             if not nzo.work_name:
@@ -328,7 +355,7 @@ class PostProcessor(Thread):
             self.external_process = None
             check_eoq = True
 
-            # Allow download to proceed
+            # Allow download to proceed if it was paused for post-processing
             sabnzbd.Downloader.resume_from_postproc()
 
 
