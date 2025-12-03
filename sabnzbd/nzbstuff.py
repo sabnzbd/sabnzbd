@@ -118,12 +118,11 @@ class TryList:
     """TryList keeps track of which servers have been tried for a specific article"""
 
     # Pre-define attributes to save memory
-    __slots__ = ("try_list", "lock")
+    __slots__ = ("try_list",)
 
     def __init__(self):
         # Sets are faster than lists
         self.try_list: set[Server] = set()
-        self.lock = threading.RLock()
 
     def server_in_try_list(self, server: Server) -> bool:
         """Return whether specified server has been tried"""
@@ -152,19 +151,12 @@ class TryList:
         with TRYLIST_LOCK:
             self.try_list = set()
 
-    def __enter__(self):
-        self.lock.acquire()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.lock.release()
-
     def __getstate__(self):
         """Save the servers"""
         return set(server.id for server in self.try_list)
 
     def __setstate__(self, servers_ids: list[str]):
         self.try_list = set()
-        self.lock = threading.RLock()
         for server in sabnzbd.Downloader.servers:
             if server.id in servers_ids:
                 self.add_to_try_list(server)
@@ -336,11 +328,12 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver
+    __slots__ = NzbFileSaver + ("lock",)
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
         super().__init__()
+        self.lock = threading.RLock()
 
         self.date: datetime.datetime = date
         self.type: Optional[str] = None
@@ -482,6 +475,12 @@ class NzbFile(TryList):
         except Exception:
             pass
 
+    def __enter__(self):
+        self.lock.acquire()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.lock.release()
+
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
         dict_ = {}
@@ -499,6 +498,7 @@ class NzbFile(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
+        self.lock = threading.RLock()
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}
