@@ -22,7 +22,6 @@ sabnzbd.nzbqueue - nzb queue
 import os
 import logging
 import time
-
 import cherrypy._cpreqbody
 from typing import Union, Optional
 
