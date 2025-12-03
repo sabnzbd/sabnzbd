@@ -115,15 +115,16 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
             article_success = True
         else:
             # Examine the headers (for precheck) or body (for download).
-            for line in decoder.lines:
-                lline = line.lower()
-                if lline.startswith("message-id:"):
-                    article_success = True
-                # Look for DMCA clues (while skipping "X-" headers)
-                if not lline.startswith("x-") and match_str(lline, ("dmca", "removed", "cancel", "blocked")):
-                    article_success = False
-                    logging.info("Article removed from server (%s)", art_id)
-                    break
+            if lines := decoder.lines:
+                for line in lines:
+                    lline = line.lower()
+                    if lline.startswith("message-id:"):
+                        article_success = True
+                    # Look for DMCA clues (while skipping "X-" headers)
+                    if not lline.startswith("x-") and match_str(lline, ("dmca", "removed", "cancel", "blocked")):
+                        article_success = False
+                        logging.info("Article removed from server (%s)", art_id)
+                        break
 
         # Pre-check, proper article found so just register
         if nzo.precheck and article_success and sabnzbd.LOG_ALL:
