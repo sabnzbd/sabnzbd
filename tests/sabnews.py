@@ -59,7 +59,7 @@ class NewsServerSession:
                 message = await self.reader.readuntil(b"\r\n")
                 logging.debug("Data received: %s", message.strip())
                 await self.handle_command(message.strip())
-        except ConnectionResetError, asyncio.IncompleteReadError:
+        except (ConnectionResetError, asyncio.IncompleteReadError):
             logging.debug("Client closed connection")
 
     async def handle_command(self, message: bytes):
