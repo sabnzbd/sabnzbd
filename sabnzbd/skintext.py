@@ -442,7 +442,7 @@ SKIN_TEXT = {
         "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
     ),
     "opt-sfv_check": TT("Enable SFV-based checks"),
-    "explain-sfv_check": TT("Do an extra verification based on SFV files."),
+    "explain-sfv_check": TT("If no par2 files are available, use sfv files (if present) to verify files"),
     "opt-script_can_fail": TT("User script can flag job as failed"),
     "explain-script_can_fail": TT(
         "When the user script returns a non-zero exit code, the job will be flagged as failed."
