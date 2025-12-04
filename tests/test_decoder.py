@@ -27,8 +27,6 @@ from random import randint
 from unittest import mock
 
 import sabctools
-from sabctools import NNTPResponse
-
 import sabnzbd.decoder as decoder
 from sabnzbd.nzbstuff import Article
 
@@ -125,7 +123,7 @@ class TestUuDecoder:
         return article, bytearray(data), result
 
     @staticmethod
-    def _response(raw_data: bytes) -> NNTPResponse:
+    def _response(raw_data: bytes) -> sabctools.NNTPResponse:
         dec = sabctools.Decoder(len(raw_data))
         reader = BytesIO(raw_data)
         reader.readinto(dec)
