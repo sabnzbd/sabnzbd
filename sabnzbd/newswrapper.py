@@ -32,16 +32,13 @@ from typing import Optional, Tuple, Union, Callable
 import sabctools
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DEF_NETWORKING_TIMEOUT, NNTP_BUFFER_SIZE, NTTP_MAX_BUFFER_SIZE
+from sabnzbd.constants import DEF_NETWORKING_TIMEOUT, NNTP_BUFFER_SIZE, Status, FORCE_PRIORITY
 from sabnzbd.encoding import utob
 from sabnzbd.get_addrinfo import AddrInfo
 from sabnzbd.decorators import synchronized, DOWNLOADER_LOCK
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_NETWORKING_TIMEOUT)
-
-# Command requests queued up for this socket
-_MAX_COMMAND_QUEUE_LENGTH = 20
 
 
 class NNTPPermanentError(Exception):
@@ -71,7 +68,7 @@ class NewsWrapper:
         "user_ok",
         "pass_ok",
         "force_login",
-        "command_queue",
+        "next_request",
         "concurrent_requests",
         "_response_queue",
         "lock",
@@ -98,9 +95,7 @@ class NewsWrapper:
         self.group: Optional[str] = None
 
         # Command queue and concurrency
-        self.command_queue: deque[tuple[bytes, Optional[sabnzbd.nzbstuff.Article]]] = deque(
-            maxlen=min(_MAX_COMMAND_QUEUE_LENGTH, sabnzbd.cfg.pipelining_requests() * 3)
-        )
+        self.next_request: Optional[tuple[bytes, Optional["sabnzbd.nzbstuff.Article"]]] = None
         self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
             sabnzbd.cfg.pipelining_requests()
         )
@@ -182,9 +177,9 @@ class NewsWrapper:
         article: Optional["sabnzbd.nzbstuff.Article"] = None,
     ) -> None:
         """Add a command to the command queue"""
-        self.command_queue.append((command, article))
+        self.next_request = command, article
 
-    def queue_article(self, article: "sabnzbd.nzbstuff.Article"):
+    def body(self, article: "sabnzbd.nzbstuff.Article") -> tuple[bytes, "sabnzbd.nzbstuff.Article"]:
         """Request the body of the article"""
         self.timeout = time.time() + self.server.timeout
         if article.nzf.nzo.precheck:
@@ -196,7 +191,7 @@ class NewsWrapper:
             command = utob("BODY <%s>\r\n" % article.article)
         else:
             command = utob("ARTICLE <%s>\r\n" % article.article)
-        self.queue_command(command, article)
+        return command, article
 
     def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbstuff.Article"]) -> None:
         """A response to a NNTP request is received"""
@@ -331,25 +326,35 @@ class NewsWrapper:
                     # Still unsent data, wait for next EVENT_WRITE
                     return
 
-            if (
-                self.connected
-                and server.active
-                and not server.restart
-                and not (
-                    sabnzbd.Downloader.paused or sabnzbd.Downloader.shutdown or sabnzbd.Downloader.paused_for_postproc
-                )
-                and len(self.command_queue) < self.command_queue.maxlen
-                and (article := self.server.get_article())
-            ):
-                self.queue_article(article)
+            if self.connected:
+                if (
+                    server.active
+                    and not server.restart
+                    and not (
+                        sabnzbd.Downloader.paused
+                        or sabnzbd.Downloader.shutdown
+                        or sabnzbd.Downloader.paused_for_postproc
+                    )
+                ):
+                    # Prepare the next request
+                    if not self.next_request and (article := server.get_article()):
+                        self.next_request = self.body(article)
+                elif self.next_request and self.next_request[1]:
+                    # Discard the next request
+                    self.discard(self.next_request[1], count_article_try=False, retry_article=True)
+                    self.next_request = None
 
             # If no pending buffer, try to send new command
-            if not self.send_buffer and self.command_queue:
+            if not self.send_buffer and self.next_request:
                 if self.concurrent_requests.acquire(blocking=False):
-                    command, article = self.command_queue.popleft()
-                    if article is not None and article.nzf.nzo.removed_from_queue:
-                        self.concurrent_requests.release()
-                        return
+                    command, article = self.next_request
+                    self.next_request = None
+                    if article:
+                        nzo = article.nzf.nzo
+                        if nzo.removed_from_queue or nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY:
+                            self.discard(article, count_article_try=False, retry_article=True)
+                            self.concurrent_requests.release()
+                            return
                     self._response_queue.append(article)
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s", self.thrdnum, server.host, command)
@@ -368,7 +373,7 @@ class NewsWrapper:
                 # Is it safe to shut down this socket?
                 if (
                     not self.send_buffer
-                    and not self.command_queue
+                    and not self.next_request
                     and not self._response_queue
                     and (not server.active or server.restart or time.time() > self.timeout)
                 ):
@@ -392,10 +397,11 @@ class NewsWrapper:
         """Destroy and restart"""
         with self.lock:
             # Drain unsent requests
-            while self.command_queue:
-                _, article = self.command_queue.popleft()
+            if self.next_request:
+                _, article = self.next_request
                 if article:
                     self.discard(article, count_article_try=False, retry_article=True)
+                self.next_request = None
             # Drain responses
             while self._response_queue:
                 if article := self._response_queue.popleft():
