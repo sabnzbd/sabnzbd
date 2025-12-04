@@ -22,7 +22,6 @@ sabnzbd.decoder - article decoder
 import logging
 import hashlib
 from typing import Optional
-from zlib import crc32
 
 import sabnzbd
 from sabnzbd.constants import SABCTOOLS_VERSION_REQUIRED
