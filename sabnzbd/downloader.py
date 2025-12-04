@@ -367,12 +367,13 @@ class Downloader(Thread):
             self.servers.sort(key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
 
     @synchronized(DOWNLOADER_LOCK)
-    def add_socket(self, fileno: int, nw: NewsWrapper):
+    def add_socket(self, nw: NewsWrapper):
         """Add a socket ready to be used to the list to be watched"""
-        try:
-            self.selector.register(fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
-        except KeyError:
-            pass
+        if nw.nntp:
+            try:
+                self.selector.register(nw.nntp.fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
+            except KeyError:
+                pass
 
     @synchronized(DOWNLOADER_LOCK)
     def remove_socket(self, nw: NewsWrapper):
@@ -635,7 +636,7 @@ class Downloader(Thread):
                         server.busy_threads.add(nw)
 
                         if nw.connected:
-                            pass
+                            self.add_socket(nw)
                         else:
                             try:
                                 logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)

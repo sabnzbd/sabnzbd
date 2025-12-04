@@ -565,7 +565,7 @@ class NNTP:
                 # Locked, so it can't interleave with any of the Downloader "__nw" actions
                 with DOWNLOADER_LOCK:
                     if not self.closed:
-                        sabnzbd.Downloader.add_socket(self.fileno, self.nw)
+                        sabnzbd.Downloader.add_socket(self.nw)
         except OSError as e:
             self.error(e)
 
