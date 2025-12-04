@@ -37,9 +37,9 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 # Expecting the following message-id:
-# ARTICLE <file=folder/filename.mkv|part=4|start=5000|size=5000>
+# ARTICLE <file=folder/filename.mkv|part=4|start=5000|size=5000>\r\n
 ARTICLE_INFO = re.compile(
-    b"^(ARTICLE|BODY) (?P<message_id><file=(?P<file>.*)\\|part=(?P<part>\\d+)\\|start=(?P<start>\\d+)\\|size=(?P<size>\\d+)>)$",
+    b"^(ARTICLE|BODY) (?P<message_id><file=(?P<file>.*)\\|part=(?P<part>\\d+)\\|start=(?P<start>\\d+)\\|size=(?P<size>\\d+)>)\\r\\n$",
     re.MULTILINE,
 )
 YENC_ESCAPE = [0x00, 0x0A, 0x0D, ord("="), ord(".")]
@@ -58,7 +58,7 @@ class NewsServerSession:
             while not self.reader.at_eof():
                 message = await self.reader.readuntil(b"\r\n")
                 logging.debug("Data received: %s", message.strip())
-                await self.handle_command(message.strip())
+                await self.handle_command(message)
         except (ConnectionResetError, asyncio.IncompleteReadError):
             logging.debug("Client closed connection")
 
