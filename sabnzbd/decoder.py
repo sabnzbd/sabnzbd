@@ -75,7 +75,7 @@ def decode(article: Article, decoder: sabctools.NNTPResponse):
         if sabnzbd.LOG_ALL:
             logging.debug("Decoding %s", art_id)
 
-        if decoder.format == sabctools.EncodingFormat.UU:
+        if decoder.format is sabctools.EncodingFormat.UU:
             decoded_data = decode_uu(article, decoder)
         else:
             decoded_data = decode_yenc(article, decoder)
