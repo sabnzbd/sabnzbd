@@ -3519,8 +3519,9 @@ msgid "Enable SFV-based checks"
 msgstr "SFV-basierte Überprüfung aktivieren"
 
 #: sabnzbd/skintext.py
-msgid "Do an extra verification based on SFV files."
-msgstr "Zusätzliche Überprüfung mittels SFV-Dateien durchführen"
+msgid ""
+"If no par2 files are available, use sfv files (if present) to verify files"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
