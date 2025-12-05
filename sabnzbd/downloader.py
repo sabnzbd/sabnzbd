@@ -368,10 +368,21 @@ class Downloader(Thread):
 
     @synchronized(DOWNLOADER_LOCK)
     def add_socket(self, nw: NewsWrapper):
-        """Add a socket ready to be used to the list to be watched"""
+        """Add a socket to be watched for read or write availability"""
         if nw.nntp:
             try:
                 self.selector.register(nw.nntp.fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
+                nw.selector_events = selectors.EVENT_READ | selectors.EVENT_WRITE
+            except KeyError:
+                pass
+
+    @synchronized(DOWNLOADER_LOCK)
+    def modify_socket(self, nw: NewsWrapper, events: int):
+        """Modify the events socket are watched for"""
+        if nw.nntp and nw.selector_events != events:
+            try:
+                self.selector.modify(nw.nntp.fileno, events, nw)
+                nw.selector_events = events
             except KeyError:
                 pass
 
@@ -381,6 +392,7 @@ class Downloader(Thread):
         if nw.nntp:
             try:
                 self.selector.unregister(nw.nntp.fileno)
+                nw.selector_events = 0
             except KeyError:
                 pass
 

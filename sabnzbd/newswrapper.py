@@ -23,6 +23,7 @@ import errno
 import socket
 import threading
 from collections import deque
+from selectors import EVENT_READ, EVENT_WRITE
 from threading import Thread
 import time
 import logging
@@ -71,6 +72,7 @@ class NewsWrapper:
         "next_request",
         "concurrent_requests",
         "_response_queue",
+        "selector_events",
         "lock",
     )
 
@@ -100,6 +102,7 @@ class NewsWrapper:
             sabnzbd.cfg.pipelining_requests()
         )
         self._response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque()
+        self.selector_events = 0
         self.lock: threading.Lock = threading.Lock()
 
     @property
@@ -196,6 +199,7 @@ class NewsWrapper:
     def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbstuff.Article"]) -> None:
         """A response to a NNTP request is received"""
         self.concurrent_requests.release()
+        sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
         server = self.server
         article_done = response.status_code in (220, 222) and article
 
@@ -367,8 +371,8 @@ class NewsWrapper:
                         # Can't send now, store full command
                         self.send_buffer = command
                 else:
-                    # Concurrency limit reached; do nothing
-                    pass
+                    # Concurrency limit reached
+                    sabnzbd.Downloader.modify_socket(self, EVENT_READ)
             else:
                 # Is it safe to shut down this socket?
                 if (
