@@ -1177,7 +1177,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     for nzb_file in files:
         filename = get_filename(nzb_file)
     
-        if multiple_nzbs && cfg.multi_nzb_keep_prefix():
+        if multiple_nzbs and cfg.multi_nzb_keep_prefix():
             this_nzbname = "%s_%s" % (nzbname, filename)
         elif multiple_nzbs:
             # Job name based on nzb filename
