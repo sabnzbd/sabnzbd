@@ -1172,11 +1172,11 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
 
     # For multiple NZBs, cannot use the current job name
     multiple_nzbs = len(files) != 1
-    
+
     # Process all NZB files
     for nzb_file in files:
         filename = get_filename(nzb_file)
-    
+
         if multiple_nzbs and cfg.multi_nzb_keep_prefix():
             this_nzbname = "%s_%s" % (nzbname, filename)
         elif multiple_nzbs:
@@ -1184,7 +1184,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
             this_nzbname = None
         else:
             this_nzbname = nzbname
-            
+
         process_single_nzb(
             filename,
             nzb_file,
