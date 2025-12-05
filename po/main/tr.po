@@ -597,11 +597,6 @@ msgstr "%s@%s başlatması şu sebepten dolayı başarısız oldu: %s"
 msgid "Fatal error in Downloader"
 msgstr "İndirici'de ölümcül hata"
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr "%s@%s: bilinmeyen durum kodu %s, şu makale için alındı: %s"
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "%s [%s] sunucusuna çok fazla bağlantı"
@@ -622,11 +617,6 @@ msgstr "%s [%s] sunucusunda oturum açılışı başarısız oldu"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "%s@%s bağlantısı başarısız oldu, mesaj=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "İndiricide şüpheli hata"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1259,6 +1249,16 @@ msgstr "SFV doğrulaması deneniyor"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "kaldı"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s: bilinmeyen durum kodu %s, şu makale için alındı: %s"
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "İndiricide şüpheli hata"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

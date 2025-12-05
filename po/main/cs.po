@@ -560,11 +560,6 @@ msgstr ""
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Příliš mnoho spojení k serveru %s [%s]"
@@ -583,11 +578,6 @@ msgstr "Přihlášení k serveru %s se nezdařilo [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr ""
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Nejspíše chyba downloaderu"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1206,6 +1196,16 @@ msgstr "Zkouším SFV ověření"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr ""
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Nejspíše chyba downloaderu"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

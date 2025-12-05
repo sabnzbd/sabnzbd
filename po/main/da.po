@@ -585,11 +585,6 @@ msgstr "Det lykkedes ikke at initialisere %s@%s med begrundelse %s"
 msgid "Fatal error in Downloader"
 msgstr "Alvorlig fejl i Downloader"
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr "%s@%s: Modtog ukendt statuskode %s for artikel %s"
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Alt for mange forbindelser til serveren %s [%s]"
@@ -610,11 +605,6 @@ msgstr "Det lykkedes ikke at logge på serveren %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Forbindelse %s@%s mislykkedes, besked %s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Suspect fejl i downloader"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1247,6 +1237,16 @@ msgstr "Forsøger SFV verifikation"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "tilbage"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s: Modtog ukendt statuskode %s for artikel %s"
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Suspect fejl i downloader"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

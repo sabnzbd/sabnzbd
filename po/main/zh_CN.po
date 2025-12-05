@@ -550,11 +550,6 @@ msgstr "无法初始化 %s@%s，原因为: %s"
 msgid "Fatal error in Downloader"
 msgstr "下载器出现致命错误"
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr "%s@%s：收到文章 %s 的未知状态码 %s"
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "服务器 %s 连接数过多 [%s]"
@@ -573,11 +568,6 @@ msgstr "无法登录服务器 %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "连接 %s@%s 失败，消息=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "下载器疑似错误"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1196,6 +1186,16 @@ msgstr "正在尝试  SFV 验证"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "剩余"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s：收到文章 %s 的未知状态码 %s"
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "下载器疑似错误"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

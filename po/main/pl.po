@@ -554,11 +554,6 @@ msgstr "Błąd podczas inicjalizacji %s@%s: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Zbyt wiele połączeń do serwera %s [%s]"
@@ -577,11 +572,6 @@ msgstr "Błąd logowania do serwera %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Błąd połączenia %s@%s, komunikat=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Nieobsługiwany błąd w module pobierania"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1210,6 +1200,16 @@ msgstr "Próba weryfikacji SFV"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "pozostało"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Nieobsługiwany błąd w module pobierania"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

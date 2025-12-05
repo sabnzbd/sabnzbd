@@ -606,11 +606,6 @@ msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
 msgid "Fatal error in Downloader"
 msgstr "Erreur fatale dans le Téléchargeur"
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s"
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Trop de connexions au serveur %s [%s]"
@@ -631,11 +626,6 @@ msgstr "Échec de la connexion au serveur %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "La connexion à %s@%s a échoué, message=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Erreur suspecte dans le téléchargeur"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1281,6 +1271,16 @@ msgstr "Essai vérification SFV"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "restant"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s"
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Erreur suspecte dans le téléchargeur"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

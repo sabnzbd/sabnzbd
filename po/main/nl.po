@@ -600,11 +600,6 @@ msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 msgid "Fatal error in Downloader"
 msgstr "Onherstelbare fout in de Downloader"
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr "%s@%s: Onbekende statuscode %s ontvangen voor artikel %s"
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Te veel verbindingen met server %s [%s]"
@@ -625,11 +620,6 @@ msgstr "Aanmelden bij server %s mislukt [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Verbinding %s@%s mislukt, bericht=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Vedachte fout in downloader"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1271,6 +1261,16 @@ msgstr "Probeer SFV-verificatie"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "over"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s: Onbekende statuscode %s ontvangen voor artikel %s"
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Vedachte fout in downloader"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

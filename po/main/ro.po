@@ -576,11 +576,6 @@ msgstr "Nu am putu inițializa %s@%s din cauza următorului motiv: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Prea multe conexiuni la serverul %s [%s]"
@@ -599,11 +594,6 @@ msgstr "Autentificare nereuşită la serverul %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Conectare %s@%s eșuată, mesaj=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Eroare suspectă în sistemul de descprcare"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1235,6 +1225,16 @@ msgstr "Încerc verificare SFV"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "rămas"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Eroare suspectă în sistemul de descprcare"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

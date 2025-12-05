@@ -508,11 +508,6 @@ msgstr ""
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr ""
@@ -528,11 +523,6 @@ msgstr ""
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
-msgstr ""
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
 msgstr ""
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
@@ -1125,6 +1115,16 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
 msgstr ""
 
 #: sabnzbd/newswrapper.py

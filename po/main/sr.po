@@ -550,11 +550,6 @@ msgstr "Neuspešna inicijalizacija %s@%s iz razloga: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Previše konekcija ka serveru %s [%s]"
@@ -573,11 +568,6 @@ msgstr "Неуспешно пријављивање на сервер %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Povezivanje na %s@%s neuspešno, poruka=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Sumnja u grešku u programu za download"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1200,6 +1190,16 @@ msgstr "Pokušaj SFV provere"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "остало"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Sumnja u grešku u programu za download"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

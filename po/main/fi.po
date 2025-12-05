@@ -556,11 +556,6 @@ msgstr "Alustaminen epäonnistui kohteessa %s@%s syy: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Liikaa yhteyksiä palvelimelle %s [%s]"
@@ -579,11 +574,6 @@ msgstr "Kirjautuminen palvelimelle %s epäonnistui [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Yhdistäminen %s@%s epäonnistui, viesti=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Mahdollinen virhe lataajassa"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1207,6 +1197,16 @@ msgstr "Yritetään SFV varmennusta"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "jäljellä"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Mahdollinen virhe lataajassa"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"

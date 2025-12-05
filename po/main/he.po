@@ -567,11 +567,6 @@ msgstr "כישלון באתחול %s@%s עם סיבה: %s"
 msgid "Fatal error in Downloader"
 msgstr "שגיאה גורלית במורידן"
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr "%s@%s: קוד בלתי ידוע של מעמד התקבל %s עבור מאמר %s"
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "יותר מדי חיבורים לשרת %s [%s]"
@@ -592,11 +587,6 @@ msgstr "כניסה נכשלה עבור שרת %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "התחברות אל %s@%s נכשלה, הודעה=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "הורדה חשודה במורידן"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -1220,6 +1210,16 @@ msgstr "מנסה וידוא SFV"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "left"
 msgstr "נותר"
+
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s: קוד בלתי ידוע של מעמד התקבל %s עבור מאמר %s"
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "הורדה חשודה במורידן"
 
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
