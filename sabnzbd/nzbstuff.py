@@ -447,9 +447,24 @@ class NzbFile(TryList):
             art.reset_try_list()
         self.reset_try_list()
 
+    def first_article_processed(self) -> bool:
+        """Check if the first article has been processed.
+        This ensures we have attempted to extract md5of16k and filename information
+        before creating the filepath.
+        """
+        # The first article of decodetable is always the lowest
+        first_article = self.decodetable[0]
+        # If it's still in nzo.first_articles, it hasn't been processed yet
+        return first_article not in self.nzo.first_articles
+
     def prepare_filepath(self):
         """Do all checks before making the final path"""
         if not self.filepath:
+            # Wait for the first article to be processed so we can get md5of16k
+            # and proper filename before creating the filepath
+            if not self.first_article_processed():
+                return None
+
             self.nzo.verify_nzf_filename(self)
             filename = sanitize_filename(self.filename)
             self.filepath = get_unique_filename(os.path.join(self.nzo.download_path, filename))
