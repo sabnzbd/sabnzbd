@@ -64,6 +64,7 @@ from sabnzbd.filesystem import (
     SEVENMULTI_RE,
     is_size,
     get_basename,
+    create_all_dirs,
 )
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.cfg as cfg
@@ -625,6 +626,12 @@ def rar_extract(
     new_files = []
     rars = []
     passwords = get_all_passwords(nzo)
+
+    # Sanity check, does the folder exist? Could be removed by aborted Direct Unpack
+    if not os.path.exists(extraction_path):
+        # Similar to prepare_extraction_path
+        extraction_path = create_all_dirs(extraction_path, apply_permissions=True)
+        logging.info("Extraction path (re)created because it was missing: %s", extraction_path)
 
     for password in passwords:
         if password:
