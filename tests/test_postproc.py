@@ -352,9 +352,7 @@ class TestPostProc:
         assert fp2 == "/watched/job1/file2.nzb"
         assert kw2["nzbname"] == "MyBatch_file2.nzb"
 
-    def test_nzb_redirect_multiple_nzbs_drop_name_when_setting_disabled(
-        self, monkeypatch
-    ):
+    def test_nzb_redirect_multiple_nzbs_drop_name_when_setting_disabled(self, monkeypatch):
         """Multiple NZBs + setting disabled → no nzbname (legacy behavior)."""
 
         calls = []
