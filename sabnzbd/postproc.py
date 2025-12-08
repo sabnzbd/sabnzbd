@@ -518,10 +518,10 @@ def process_job(nzo: NzbObject) -> bool:
 
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
+                nzb_list = None
                 if flag_repair:
                     nzb_list = process_nzb_only_download(tmp_workdir_complete, nzo)
-                else:
-                    nzb_list = None
+
                 if nzb_list:
                     nzo.set_unpack_info("Download", T("Sent %s to queue") % nzb_list)
                     cleanup_empty_directories(tmp_workdir_complete)
@@ -1169,14 +1169,14 @@ def process_nzb_only_download(workdir: str, nzo: NzbObject) -> Optional[list[str
             if get_ext(nzb_file) != ".nzb":
                 return None
 
-        # Determine name based on number of files
-        nzb_filename = get_filename(nzb_file)
-        nzbname = nzo.final_name
-        if len(files) > 1:
-            nzbname = f"{nzo.final_name} - {nzb_filename}"
-
         # Process all NZB files
+        new_nzbname = nzo.final_name
         for nzb_file in files:
+            # Determine name based on number of files
+            nzb_filename = get_filename(nzb_file)
+            if len(files) > 1:
+                new_nzbname = f"{nzo.final_name} - {nzb_filename}"
+
             process_single_nzb(
                 nzb_filename,
                 nzb_file,
@@ -1185,7 +1185,7 @@ def process_nzb_only_download(workdir: str, nzo: NzbObject) -> Optional[list[str
                 cat=nzo.cat,
                 url=nzo.url,
                 priority=nzo.priority,
-                nzbname=nzbname,
+                nzbname=new_nzbname,
                 dup_check=False,
             )
         return files
