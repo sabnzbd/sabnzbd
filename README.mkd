@@ -1,13 +1,19 @@
-Release Notes - SABnzbd 4.6.0 Alpha 1
+Release Notes - SABnzbd 4.6.0 Alpha 2
 =========================================================
 
-This is the first test release of version 4.6.
+This is the second test release of version 4.6.
 
 ## New features in 4.6.0
 
+* Added default support for NNTP Pipelining which eliminates idle waiting
+  between requests, significantly improving speeds on high-latency connections.
+  Read more here: https://sabnzbd.org/wiki/advanced/nntp-pipelining
 * Dynamically increase Assembler limits on faster connections.
 * Improved disk speed measurement in Status window.
 * Enable `verify_xff_header` by default.
+* Reduce delays between jobs during post-processing.
+* If a download only has `.nzb` files inside, the new downloads
+  will include the name of the original download.
 * Dropped support for Python 3.8.
 
 ## Bug fixes since 4.5.0
@@ -15,6 +21,7 @@ This is the first test release of version 4.6.
 * `Check before download` could get stuck or fail to reject.
 * Windows: Tray icon disappears after Explorer restart.
 * Correct mobile layout if `Full Width` is enabled.
+* Aborted Direct Unpack could result in no files being unpacked.
 * macOS: Slow to start on some network setups.
 
 
