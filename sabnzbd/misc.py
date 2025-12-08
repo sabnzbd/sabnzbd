@@ -57,7 +57,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions
 
 if sabnzbd.WINDOWS:
     try:
@@ -84,6 +84,10 @@ RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
 RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
 RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
+
+# Name patterns for NZB parsing
+RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
+RE_SUBJECT_BASIC_FILENAME = re.compile(r"\b([\w\-+()' .,]+(?:\[[\w\-/+()' .,]*][\w\-+()' .,]*)*\.[A-Za-z0-9]{2,4})\b")
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime("%p"))
@@ -1589,6 +1593,66 @@ def convert_history_retention():
             cfg.history_retention_number.set(to_keep)
         elif to_keep < 0:
             cfg.history_retention_option.set("all-delete")
+
+
+def scan_password(name: str) -> tuple[str, Optional[str]]:
+    """Get password (if any) from the title"""
+    if "http://" in name or "https://" in name:
+        return name, None
+
+    # Strip any unwanted usenet-related extensions
+    name = strip_extensions(name)
+
+    # Identify any braces
+    braces = name[1:].find("{{")
+    if braces < 0:
+        braces = len(name)
+    else:
+        braces += 1
+    slash = name.find("/")
+
+    # Look for name/password, but make sure that '/' comes before any {{
+    if 0 < slash < braces and "password=" not in name:
+        # Is it maybe in 'name / password' notation?
+        if slash == name.find(" / ") + 1 and name[: slash - 1].strip(". "):
+            # Remove the extra space after name and before password
+            return name[: slash - 1].strip(". "), name[slash + 2 :]
+        if name[:slash].strip(". "):
+            return name[:slash].strip(". "), name[slash + 1 :]
+
+    # Look for "name password=password"
+    pw = name.find("password=")
+    if pw > 0 and name[:pw].strip(". "):
+        return name[:pw].strip(". "), name[pw + 9 :]
+
+    # Look for name{{password}}
+    if braces < len(name):
+        closing_braces = name.rfind("}}")
+        if closing_braces > braces and name[:braces].strip(". "):
+            return name[:braces].strip(". "), name[braces + 2 : closing_braces]
+
+    # Look again for name/password
+    if slash > 0 and name[:slash].strip(". "):
+        return name[:slash].strip(". "), name[slash + 1 :]
+
+    # No password found
+    return name, None
+
+
+def subject_name_extractor(subject: str) -> str:
+    """Try to extract a file name from a subject line, return `subject` if in doubt"""
+    # Filename nicely wrapped in quotes
+    for name in re.findall(RE_SUBJECT_FILENAME_QUOTES, subject):
+        if name := name.strip(' "'):
+            return name
+
+    # Found nothing? Try a basic filename-like search
+    for name in re.findall(RE_SUBJECT_BASIC_FILENAME, subject):
+        if name := name.strip():
+            return name
+
+    # Return the subject
+    return subject
 
 
 ##

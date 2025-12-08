@@ -66,7 +66,7 @@ from sabnzbd.filesystem import (
     get_basename,
     create_all_dirs,
 )
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzb import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
 

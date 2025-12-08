@@ -498,9 +498,14 @@ def convert_search(search: str) -> str:
     return search
 
 
-def build_history_info(nzo, workdir_complete: str, postproc_time: int, script_output: str, script_line: str):
+def build_history_info(
+    nzo: "sabnzbd.nzbobject.NzbObject",
+    workdir_complete: str,
+    postproc_time: int,
+    script_output: str,
+    script_line: str,
+):
     """Collects all the information needed for the database"""
-    nzo: sabnzbd.nzbstuff.NzbObject
     completed = int(time.time())
     pp = PP_LOOKUP.get(opts_to_pp(nzo.repair, nzo.unpack, nzo.delete), "X")
 

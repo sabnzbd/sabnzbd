@@ -73,7 +73,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,

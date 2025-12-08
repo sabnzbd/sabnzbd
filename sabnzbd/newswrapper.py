@@ -97,16 +97,16 @@ class NewsWrapper:
         self.group: Optional[str] = None
 
         # Command queue and concurrency
-        self.next_request: Optional[tuple[bytes, Optional["sabnzbd.nzbstuff.Article"]]] = None
+        self.next_request: Optional[tuple[bytes, Optional["sabnzbd.nzbarticle.Article"]]] = None
         self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
             sabnzbd.cfg.pipelining_requests()
         )
-        self._response_queue: deque[Optional[sabnzbd.nzbstuff.Article]] = deque()
+        self._response_queue: deque[Optional[sabnzbd.nzbarticle.Article]] = deque()
         self.selector_events = 0
         self.lock: threading.Lock = threading.Lock()
 
     @property
-    def article(self) -> Optional["sabnzbd.nzbstuff.Article"]:
+    def article(self) -> Optional["sabnzbd.nzbarticle.Article"]:
         """The article currently being downloaded"""
         with self.lock:
             if self._response_queue:
@@ -177,12 +177,12 @@ class NewsWrapper:
     def queue_command(
         self,
         command: bytes,
-        article: Optional["sabnzbd.nzbstuff.Article"] = None,
+        article: Optional["sabnzbd.nzbarticle.Article"] = None,
     ) -> None:
         """Add a command to the command queue"""
         self.next_request = command, article
 
-    def body(self, article: "sabnzbd.nzbstuff.Article") -> tuple[bytes, "sabnzbd.nzbstuff.Article"]:
+    def body(self, article: "sabnzbd.nzbarticle.Article") -> tuple[bytes, "sabnzbd.nzbarticle.Article"]:
         """Request the body of the article"""
         self.timeout = time.time() + self.server.timeout
         if article.nzf.nzo.precheck:
@@ -196,7 +196,7 @@ class NewsWrapper:
             command = utob("ARTICLE <%s>\r\n" % article.article)
         return command, article
 
-    def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbstuff.Article"]) -> None:
+    def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzbarticle.Article"]) -> None:
         """A response to a NNTP request is received"""
         self.concurrent_requests.release()
         sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
@@ -428,7 +428,7 @@ class NewsWrapper:
 
     def discard(
         self,
-        article: Optional["sabnzbd.nzbstuff.Article"],
+        article: Optional["sabnzbd.nzbarticle.Article"],
         count_article_try: bool = True,
         retry_article: bool = True,
     ) -> None:

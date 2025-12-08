@@ -41,7 +41,7 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
-from sabnzbd.nzbstuff import NzbObject, NzbFile
+from sabnzbd.nzb import NzbFile, NzbObject
 import sabnzbd.par2file as par2file
 
 

@@ -51,7 +51,7 @@ import sabnzbd.notifier as notifier
 from sabnzbd.decorators import NZBQUEUE_LOCK
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.nzbparser import AddNzbFileResult
-from sabnzbd.nzbstuff import NzbObject, NzbRejected, NzbRejectToHistory
+from sabnzbd.nzb import NzbObject
 
 
 class URLGrabber(Thread):

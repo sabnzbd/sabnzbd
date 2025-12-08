@@ -31,7 +31,7 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
 from sabnzbd.filesystem import remove_all, real_path, remove_file, get_basename, clip_path
-from sabnzbd.nzbstuff import NzbObject, NzbFile
+from sabnzbd.nzb import NzbFile, NzbObject
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left

@@ -28,7 +28,7 @@ from unittest import mock
 
 import sabctools
 import sabnzbd.decoder as decoder
-from sabnzbd.nzbstuff import Article
+from sabnzbd.nzb import Article
 
 
 def uu(data: bytes):

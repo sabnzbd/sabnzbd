@@ -26,7 +26,7 @@ import cherrypy._cpreqbody
 from typing import Union, Optional
 
 import sabnzbd
-from sabnzbd.nzbstuff import NzbObject, Article
+from sabnzbd.nzb import Article, NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower, duplicate_warning
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
 from sabnzbd.nzbparser import process_single_nzb

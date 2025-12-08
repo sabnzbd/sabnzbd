@@ -1256,3 +1256,21 @@ class TestOtherFileSystemFunctions:
     )
     def test_strip_extensions(self, name, ext_to_remove, output):
         assert filesystem.strip_extensions(name, ext_to_remove) == output
+
+    @pytest.mark.parametrize(
+        "file_name, clean_file_name",
+        [
+            ("my_awesome_nzb_file.pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file.....pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file....par2..", "my_awesome_nzb_file"),
+            (" my_awesome_nzb_file  .pAr.nZb", "my_awesome_nzb_file"),
+            ("with.extension.and.period.par2.", "with.extension.and.period"),
+            ("nothing.in.here", "nothing.in.here"),
+            ("  just.space  ", "just.space"),
+            ("http://test.par2  ", "http://test.par2"),
+        ],
+    )
+    def test_create_work_name(self, file_name, clean_file_name):
+        # Only test stuff specific for create_work_name
+        # The sanitizing is already tested in tests for sanitize_foldername
+        assert filesystem.create_work_name(file_name) == clean_file_name
