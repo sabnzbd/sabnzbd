@@ -3505,6 +3505,8 @@ msgstr "Activer les contrôles SFV"
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
 msgstr ""
+"Si aucun fichier par2 n'est disponible, utiliser les fichiers sfv (si "
+"présents) pour vérifier les fichiers"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
