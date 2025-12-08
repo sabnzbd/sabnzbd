@@ -257,3 +257,143 @@ class TestPostProc:
                 assert tmp_workdir_complete == workdir_complete
 
         _func()
+
+    def test_nzb_redirect_single_nzb_uses_given_nzbname(self, monkeypatch):
+        """Single NZB: the given nzbname must be used as-is, regardless of configuration."""
+
+        calls = []
+
+        def fake_listdir_full(wdir):
+            return ["/watched/job1/file1.nzb"]
+
+        def fake_get_ext(path):
+            return ".nzb"
+
+        def fake_get_filename(path):
+            return "file1.nzb"
+
+        def fake_process_single_nzb(filename, fullpath, **kwargs):
+            calls.append((filename, fullpath, kwargs))
+
+        monkeypatch.setattr(postproc, "listdir_full", fake_listdir_full)
+        monkeypatch.setattr(postproc, "get_ext", fake_get_ext)
+        monkeypatch.setattr(postproc, "get_filename", fake_get_filename)
+        monkeypatch.setattr(postproc, "process_single_nzb", fake_process_single_nzb)
+
+        # Configuration does not matter for a single NZB
+
+        monkeypatch.setattr(postproc.cfg, "multi_nzb_keep_prefix", lambda: 0)
+
+        result = postproc.nzb_redirect(
+            "/watched/job1",
+            "MyBatch",
+            pp=0,
+            script=None,
+            cat=None,
+            priority=0,
+        )
+
+        assert result == ["/watched/job1/file1.nzb"]
+        assert len(calls) == 1
+
+        filename, fullpath, kwargs = calls[0]
+        assert filename == "file1.nzb"
+        assert fullpath == "/watched/job1/file1.nzb"
+        assert kwargs["nzbname"] == "MyBatch"  # unchanged
+
+    def test_nzb_redirect_multiple_nzbs_keep_prefix(self, monkeypatch):
+        """Multiple NZBs + setting enabled → prefix retained and filename appended."""
+
+        calls = []
+
+        def fake_listdir_full(wdir):
+            return ["/watched/job1/file1.nzb", "/watched/job1/file2.nzb"]
+
+        def fake_get_ext(path):
+            return ".nzb"
+
+        def fake_get_filename(path):
+            return path.rsplit("/", 1)[-1]
+
+        def fake_process_single_nzb(filename, fullpath, **kwargs):
+            calls.append((filename, fullpath, kwargs))
+
+        monkeypatch.setattr(postproc, "listdir_full", fake_listdir_full)
+        monkeypatch.setattr(postproc, "get_ext", fake_get_ext)
+        monkeypatch.setattr(postproc, "get_filename", fake_get_filename)
+        monkeypatch.setattr(postproc, "process_single_nzb", fake_process_single_nzb)
+
+        # New setting enabled → keep prefix and append filename
+
+        monkeypatch.setattr(postproc.cfg, "multi_nzb_keep_prefix", lambda: 1)
+
+        result = postproc.nzb_redirect(
+            "/watched/job1",
+            "MyBatch",
+            pp=0,
+            script=None,
+            cat=None,
+            priority=0,
+        )
+
+        assert result == [
+            "/watched/job1/file1.nzb",
+            "/watched/job1/file2.nzb",
+        ]
+        assert len(calls) == 2
+
+        (fn1, fp1, kw1), (fn2, fp2, kw2) = calls
+
+        assert fn1 == "file1.nzb"
+        assert fp1 == "/watched/job1/file1.nzb"
+        assert kw1["nzbname"] == "MyBatch_file1.nzb"
+
+        assert fn2 == "file2.nzb"
+        assert fp2 == "/watched/job1/file2.nzb"
+        assert kw2["nzbname"] == "MyBatch_file2.nzb"
+
+    def test_nzb_redirect_multiple_nzbs_drop_name_when_setting_disabled(
+        self, monkeypatch
+    ):
+        """Multiple NZBs + setting disabled → no nzbname (legacy behavior)."""
+
+        calls = []
+
+        def fake_listdir_full(wdir):
+            return ["/watched/job1/file1.nzb", "/watched/job1/file2.nzb"]
+
+        def fake_get_ext(path):
+            return ".nzb"
+
+        def fake_get_filename(path):
+            return path.rsplit("/", 1)[-1]
+
+        def fake_process_single_nzb(filename, fullpath, **kwargs):
+            calls.append((filename, fullpath, kwargs))
+
+        monkeypatch.setattr(postproc, "listdir_full", fake_listdir_full)
+        monkeypatch.setattr(postproc, "get_ext", fake_get_ext)
+        monkeypatch.setattr(postproc, "get_filename", fake_get_filename)
+        monkeypatch.setattr(postproc, "process_single_nzb", fake_process_single_nzb)
+
+        # Setting disabled → original behavior
+
+        monkeypatch.setattr(postproc.cfg, "multi_nzb_keep_prefix", lambda: 0)
+
+        result = postproc.nzb_redirect(
+            "/watched/job1",
+            "MyBatch",
+            pp=0,
+            script=None,
+            cat=None,
+            priority=0,
+        )
+
+        assert result == [
+            "/watched/job1/file1.nzb",
+            "/watched/job1/file2.nzb",
+        ]
+        assert len(calls) == 2
+
+        for _, _, kwargs in calls:
+            assert kwargs["nzbname"] is None
