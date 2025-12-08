@@ -419,14 +419,13 @@ def process_job(nzo: NzbObject) -> bool:
                 par_error = True
                 unpack_error = 1
 
-        script = nzo.script
         logging.info(
             "Starting Post-Processing on %s => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s",
             filename,
             flag_repair,
             flag_unpack,
             nzo.delete,
-            script,
+            nzo.script,
             nzo.cat,
         )
 
@@ -520,7 +519,7 @@ def process_job(nzo: NzbObject) -> bool:
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
                 if flag_repair:
-                    nzb_list = nzb_redirect(tmp_workdir_complete, nzo.final_name, nzo.pp, script, nzo.cat, nzo.priority)
+                    nzb_list = process_nzb_only_download(tmp_workdir_complete, nzo)
                 else:
                     nzb_list = None
                 if nzb_list:
@@ -530,9 +529,10 @@ def process_job(nzo: NzbObject) -> bool:
                     # Full cleanup including nzb's
                     cleanup_list(tmp_workdir_complete, skip_nzb=False)
 
-        script_ret = 0
-        script_error = False
+        # No further processing for NZB-only downloads
         if not nzb_list:
+            script_ret = 0
+            script_error = False
             # Give destination its final name
             if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
                 if not all_ok:
@@ -584,11 +584,11 @@ def process_job(nzo: NzbObject) -> bool:
                     deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
                 # Run the user script
-                if script_path := make_script_path(script):
+                if script_path := make_script_path(nzo.script):
                     # Set the current nzo status to "Ext Script...". Used in History
                     nzo.status = Status.RUNNING
-                    nzo.set_action_line(T("Running script"), script)
-                    nzo.set_unpack_info("Script", T("Running user script %s") % script, unique=True)
+                    nzo.set_action_line(T("Running script"), nzo.script)
+                    nzo.set_unpack_info("Script", T("Running user script %s") % nzo.script, unique=True)
                     script_log, script_ret = external_processing(
                         script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
                     )
@@ -601,7 +601,7 @@ def process_job(nzo: NzbObject) -> bool:
                         else:
                             script_line = T("Script exit code is %s") % script_ret
                     elif not script_line:
-                        script_line = T("Ran %s") % script
+                        script_line = T("Ran %s") % nzo.script
                     nzo.set_unpack_info("Script", script_line, unique=True)
 
                     # Maybe bad script result should fail job
@@ -610,29 +610,29 @@ def process_job(nzo: NzbObject) -> bool:
                         all_ok = False
                         nzo.fail_msg = script_line
 
-        # Email the results
-        if not nzb_list and cfg.email_endjob():
-            if cfg.email_endjob() == 1 or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
-                emailer.endjob(
-                    nzo.final_name,
-                    nzo.cat,
-                    all_ok,
-                    workdir_complete,
-                    nzo.bytes_downloaded,
-                    nzo.fail_msg,
-                    nzo.unpack_info,
-                    script,
-                    script_log,
-                    script_ret,
-                )
+            # Email the results
+            if cfg.email_endjob():
+                if cfg.email_endjob() == 1 or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
+                    emailer.endjob(
+                        nzo.final_name,
+                        nzo.cat,
+                        all_ok,
+                        workdir_complete,
+                        nzo.bytes_downloaded,
+                        nzo.fail_msg,
+                        nzo.unpack_info,
+                        nzo.script,
+                        script_log,
+                        script_ret,
+                    )
 
-        if script_log and len(script_log.rstrip().split("\n")) > 1:
-            # Can do this only now, otherwise it would show up in the email
-            nzo.set_unpack_info(
-                "Script",
-                '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_line, nzo.nzo_id, T("More")),
-                unique=True,
-            )
+            if script_log and len(script_log.rstrip().split("\n")) > 1:
+                # Can do this only now, otherwise it would show up in the email
+                nzo.set_unpack_info(
+                    "Script",
+                    '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_line, nzo.nzo_id, T("More")),
+                    unique=True,
+                )
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):
@@ -1159,34 +1159,36 @@ def prefix(path: str, pre: str) -> str:
     return os.path.join(p, pre + d)
 
 
-def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
+def process_nzb_only_download(workdir: str, nzo: NzbObject) -> Optional[list[str]]:
     """Check if this job contains only NZB files,
     if so send to queue and remove if on clean-up list
     Returns list of processed NZB's
     """
-    files = listdir_full(wdir)
+    if files := listdir_full(workdir):
+        for nzb_file in files:
+            if get_ext(nzb_file) != ".nzb":
+                return None
 
-    for nzb_file in files:
-        if get_ext(nzb_file) != ".nzb":
-            return None
+        # Determine name based on number of files
+        nzb_filename = get_filename(nzb_file)
+        nzbname = nzo.final_name
+        if len(files) > 1:
+            nzbname = f"{nzo.final_name} - {nzb_filename}"
 
-    # For multiple NZBs, cannot use the current job name
-    if len(files) != 1:
-        nzbname = None
-
-    # Process all NZB files
-    for nzb_file in files:
-        process_single_nzb(
-            get_filename(nzb_file),
-            nzb_file,
-            pp=pp,
-            script=script,
-            cat=cat,
-            priority=priority,
-            dup_check=False,
-            nzbname=nzbname,
-        )
-    return files
+        # Process all NZB files
+        for nzb_file in files:
+            process_single_nzb(
+                nzb_filename,
+                nzb_file,
+                pp=nzo.pp,
+                script=nzo.script,
+                cat=nzo.cat,
+                url=nzo.url,
+                priority=nzo.priority,
+                nzbname=nzbname,
+                dup_check=False,
+            )
+        return files
 
 
 def one_file_or_folder(folder: str) -> str:
