@@ -326,7 +326,7 @@ msgstr "Extensie nedorită în fișierul RAR al „%s”. Fișierul nedorit este
 msgid "Unwanted extension is in rar file %s"
 msgstr "Extensii fișier nedorite în fișierul rar %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Oprit, extensii nedorite detectate"
 
@@ -1417,102 +1417,17 @@ msgstr "Eroare încărcare %s, fişier corupt detectat"
 msgid "NZB added to queue"
 msgstr "NZB adăugat în coadă"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorăm duplicat NZB \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "Eșuare duplicat NZB „%s”"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "NZB duplicat"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Fişier NZB gol %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "Scriptul pre-coadă a marcat sarcina ca nereușită"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Extensie nedorită în fișierul %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Anulat nu poate fi finalizat"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Eroare importare %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUPLICAT"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "ENCRIPTAT"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "PREA MARE"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "INCOMPLET"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "NEDORIT"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "AŞTEAPTĂ %s sec"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "SE PROPAGHEAZĂ %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Descărcat în %s cu o medie de %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Vârsta"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s articolele au fost incorecte"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s articolele au fost lipsă"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s articolele au avut duplicate diferite"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Întrerupem duplicat NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4536,6 +4451,11 @@ msgstr "Şterge"
 msgid "Filename"
 msgstr "Nume de fișier"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Vârsta"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Spațiu liber"
@@ -4963,6 +4883,10 @@ msgstr "Fișierul nu este pe server"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr ""
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Fişier NZB gol %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

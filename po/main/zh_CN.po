@@ -310,7 +310,7 @@ msgstr "RAR 文件“%s”中出现不需要的扩展名。不需要的文件名
 msgid "Unwanted extension is in rar file %s"
 msgstr "rar 文件中出现不需要的扩展名 %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "已中止，侦测到不需要的扩展名"
 
@@ -1376,102 +1376,17 @@ msgstr "无法加载 %s，侦测到损坏文件"
 msgid "NZB added to queue"
 msgstr "NZB 已添加到队列"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "正在忽略重复 NZB \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "失败于重复的 NZB 文件 \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "重复的 NZB 文件"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "无效的 NZB 文件 %s，跳过（错误：%s）"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "空 NZB 文件 %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "预队列脚本将任务标记为失败的"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "文件 %s 中有不需要的扩展名 (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "已中止，无法完成"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "导入 %s 出错"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "*重复*"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr "备选"
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "*加密*"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "*太大*"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "*不完整*"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "不需要"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "*等待* %s 秒"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "传播延迟生效，等待 %s 分钟"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "已下载，耗时 %s，平均速度 %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "发布时间"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s 篇文章损坏"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s 篇文章缺失"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s 篇文章存在未匹配的重复"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "正在暂停重复 NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4442,6 +4357,11 @@ msgstr "删除"
 msgid "Filename"
 msgstr "文件名"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "发布时间"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "剩余空间"
@@ -4864,6 +4784,10 @@ msgstr "服务器上无此文件"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "服务器无法完成请求"
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "空 NZB 文件 %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

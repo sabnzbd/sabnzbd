@@ -331,7 +331,7 @@ msgstr "I \"%s\" uønsket extension i RAR fil. Uønsket fil er \"%s\" "
 msgid "Unwanted extension is in rar file %s"
 msgstr "Uønsket extension i rar fil %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Afbrudt, uønsket extension fundet"
 
@@ -1432,102 +1432,17 @@ msgstr "Downloadnings fejl %s, ødelagt fil fundet"
 msgid "NZB added to queue"
 msgstr "NZB tilføjet i køen"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorerer identiske NZB \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "Fejler dublet NZB \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "Dublet NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "Ødelagt NZB fil %s, springer over (årsag=%s)"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Tom NZB fil %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "Før-kø script job markeret som mislykkedet"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Uønsket filtype i fil %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Afbrudt, kan ikke afsluttes"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Det lykkedes ikke at importere %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUPLIKERE"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr "ALTERNATIV"
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "KRYPTEREDE"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "FOR STOR"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "UFULDSTÆNDIG"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "UØNSKET"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "VENT %s sekunder"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "PROPAGATING %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Hentede i %s med et gennemsnit på %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Alder"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s artikler misdannede"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s artikler manglede"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s artikler havde ikke-matchende dubletter"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Pause duplikeret NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4620,6 +4535,11 @@ msgstr "Slet"
 msgid "Filename"
 msgstr "Filnavn"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Alder"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Ledig diskplads"
@@ -5052,6 +4972,10 @@ msgstr "Fil ikke på server"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "Serveren kunne ikke fuldføre anmodningen"
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Tom NZB fil %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

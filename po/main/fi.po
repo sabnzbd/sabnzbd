@@ -315,7 +315,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Ei toivottu tiedostopääte on rar arkistossa %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Peruutettu, ei toivottu tiedostopääte havaittu"
 
@@ -1387,102 +1387,17 @@ msgstr "Virhe ladattaessa %s, korruptoitunut tiedosto havaittu"
 msgid "NZB added to queue"
 msgstr "NZB lisätty jonoon"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Tyhjä NZB tiedosto %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Peruutettu, ei voi valmistua"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Virhe tuotaessa %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "KAKSOISKAPPALE"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "SALATTU"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "LIIAN SUURI"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "KESKENERÄINEN"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "EI TOIVOTTU"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "ODOTA %s sekuntia"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "LEVITETÄÄN %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Ladattiin ajassa %s keskilatausnopeudella %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Ikä"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s artikkelia oli väärin muotoiltuja"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s artikkelia puuttui"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s artikkelissa oli ei-vastaavia kaksoiskappaleita"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4519,6 +4434,11 @@ msgstr "Poista"
 msgid "Filename"
 msgstr "Tiedostonimi"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Ikä"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Vapaa tila"
@@ -4948,6 +4868,10 @@ msgstr "Tiedostoa ei ole palvelimella"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr ""
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Tyhjä NZB tiedosto %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

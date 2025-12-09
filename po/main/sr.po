@@ -309,7 +309,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Neželjena ekstenzija je u rar datoteci %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Prekinuto, detektovana neželjena ekstenzija"
 
@@ -1380,102 +1380,17 @@ msgstr "Грешка учитавање %s, покварена датотека 
 msgid "NZB added to queue"
 msgstr "NZB додат у ред"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Игнорисање дуплог NZB-а \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Празан NZB %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Поништено, не може да се заврши"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Грешка увоза %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "ДУПЛИКАТ"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "ШИФРИРАНО"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "ПРЕВЕЛИКО"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "НЕПОТПУНО"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "NEŽELJENI"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "Чекање %s сек"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Преузето за %s на просек од %sБ/с"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Старост"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s артикла нису добро формирани"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s артикла недостају"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s артикла нису дупликате"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Паузирам због дуплог NZB-а \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4478,6 +4393,11 @@ msgstr "Обриши"
 msgid "Filename"
 msgstr "Име датотеке"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Старост"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Слободан простор"
@@ -4903,6 +4823,10 @@ msgstr ""
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr ""
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Празан NZB %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

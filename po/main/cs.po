@@ -316,7 +316,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Neočekávaná přípona v rar souboru %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Přerušeno, nalezena neočekávaná připona"
 
@@ -1388,102 +1388,17 @@ msgstr "Nelze nahrát %s, detekován porušený soubor"
 msgid "NZB added to queue"
 msgstr "NZB přidáno do fronty"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignoruji duplikátní NZB \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "Nezdařilo se duplikovat NZB \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "Duplikátní NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Prázdný NZB soubor %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Nechtěná přípona v souboru %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Zrušeno, nelze dokončit"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Chyba při importu %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUPLIKÁT"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "ŠIFROVANÉ"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "PŘÍLIŠ VELKÝ"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "NEKOMPLETNÍ"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "NECHTĚNÝ"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "ČEKÁNÍ %s s"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "PROPAGUJI %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Staženo do %s s průměrnou rychlostí %s B/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Stáří"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Pozastavuji duplikátní NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4413,6 +4328,11 @@ msgstr ""
 msgid "Filename"
 msgstr ""
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Stáří"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr ""
@@ -4831,6 +4751,10 @@ msgstr ""
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr ""
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Prázdný NZB soubor %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

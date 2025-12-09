@@ -337,7 +337,7 @@ msgstr "Ongewenste extensie ontdekt in \"%s\". Het ongewenste bestand is \"%s\" 
 msgid "Unwanted extension is in rar file %s"
 msgstr "De ongewenste extensie zit in RAR-bestand %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Afgebroken, ongewenste extensie ontdekt"
 
@@ -1457,102 +1457,17 @@ msgstr "Fout bij inladen van %s, corrupt bestand gevonden"
 msgid "NZB added to queue"
 msgstr "Download aan wachtrij toegevoegd"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Dubbele download \"%s\" overgeslagen"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "Download '%s' geweigerd omdat het een dubbele is"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "Dubbele download"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "Corrupte NZB %s wordt overgeslagen (foutmelding: %s)"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "NZB-bestand %s is leeg"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "Wachtrij filter script heeft de download afgekeurd"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Ongewenste extensie gevonden in %s (%s) "
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Afgebroken, kan niet voltooid worden"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Fout bij importeren van %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUBBEL"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr "ALTERNATIEF"
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "VERSLEUTELD"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "TE GROOT"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "ONVOLLEDIG"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "ONGEWENST"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "WACHT %s sec"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "VERSPREIDINGSWACHTTIJD %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Gedownload in %s met een gemiddelde snelheid van %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Leeftijd"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s artikelen zijn misvormd"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s artikelen ontbreken"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s artikelen hadden afwijkende duplicaten"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Dubbele download \"%s\" gepauzeerd"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4673,6 +4588,11 @@ msgstr "Verwijder"
 msgid "Filename"
 msgstr "Bestandsnaam"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Leeftijd"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Vrije ruimte"
@@ -5106,6 +5026,10 @@ msgstr "Bestand bestaat niet op de server"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "De server kon de opdracht niet uitvoeren"
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "NZB-bestand %s is leeg"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

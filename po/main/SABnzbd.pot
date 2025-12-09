@@ -279,7 +279,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr ""
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr ""
 
@@ -1300,101 +1300,16 @@ msgstr ""
 msgid "NZB added to queue"
 msgstr ""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr ""
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr ""
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
 msgstr ""
 
 #: sabnzbd/panic.py
@@ -4189,6 +4104,11 @@ msgstr ""
 msgid "Filename"
 msgstr ""
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr ""
@@ -4596,6 +4516,10 @@ msgstr ""
 
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
+msgstr ""
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
 msgstr ""
 
 #. Error message

@@ -320,7 +320,7 @@ msgstr "בעבודה \"%s\" יש סיומת בלתי רצויה בתוך קוב�
 msgid "Unwanted extension is in rar file %s"
 msgstr "סיומת בלתי רצויה בקובץ rar %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "בוטל, סיומת בלתי רצויה התגלתה"
 
@@ -1404,102 +1404,17 @@ msgstr "שגיאה בטעינת %s, קובץ פגום התגלה"
 msgid "NZB added to queue"
 msgstr "NZB התווסף לתור"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "מתעלם מן NZB כפול \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "מכשיל NZB כפול \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "NZB כפול"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "קובץ NZB בלתי תקף %s, מדלג (שגיאה: %s)"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "קובץ NZB ריק %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "תסריט קדם־תור סומן כנכשל"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "סיומת בלתי רצויה בקובץ %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "בוטל, לא יכול להיות שלם"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "שגיאה ביבוא %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "כפול"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr "חלופה"
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "מוצפן"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "גדול מדי"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "בלתי שלם"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "בלתי רצוי"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "המתן %s שניות"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "מפיץ %s דקות"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "ירד תוך %s בממוצע של %s ב/ש"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "גיל"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s מאמרים עוותו"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s מאמרים היו חסרים"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "אל %s מאמרים יש כפילויות בלתי תואמות"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "משהה NZB כפול \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4546,6 +4461,11 @@ msgstr "מחק"
 msgid "Filename"
 msgstr "שם קובץ"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "גיל"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "שטח פנוי"
@@ -4978,6 +4898,10 @@ msgstr "קובץ לא על השרת"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "השרת לא היה יכול להשלים בקשה"
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "קובץ NZB ריק %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

@@ -340,7 +340,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "L'estensione non desiderata è nel file rar %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Annullato, rilevata estensione non desiderata"
 
@@ -1454,102 +1454,17 @@ msgstr "Errore durante il caricamento di %s, rilevato file corrotto"
 msgid "NZB added to queue"
 msgstr "NZB aggiunto alla coda"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorando NZB duplicato \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "Fallimento NZB duplicato \"%s\""
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "NZB duplicato"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "File NZB non valido %s, saltato (errore: %s)"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "File NZB vuoto %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "Lo script pre-coda ha contrassegnato il processo come fallito"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Estensione non desiderata nel file %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Annullato, non può essere completato"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Errore durante l'importazione di %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUPLICATO"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr "ALTERNATIVO"
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "CRITTOGRAFATO"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "TROPPO GRANDE"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "INCOMPLETO"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "NON DESIDERATO"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "ATTENDI %s sec"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "PROPAGAZIONE %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Scaricato in %s a una media di %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Età"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s articoli erano malformati"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s articoli erano mancanti"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s articoli avevano duplicati non corrispondenti"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Messa in pausa NZB duplicato \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4675,6 +4590,11 @@ msgstr "Elimina"
 msgid "Filename"
 msgstr "Nome file"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Età"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Spazio libero"
@@ -5110,6 +5030,10 @@ msgstr "File non presente sul server"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "Il server non ha potuto completare la richiesta"
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "File NZB vuoto %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

@@ -342,7 +342,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "İstenmeyen uzantı %s rar dosyasındadır"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
 msgstr "İptal edildi, istenmeyen uzantı tespit edildi"
 
@@ -1445,102 +1445,17 @@ msgstr "%s yüklenirken hata, bozuk dosya tespit edildi"
 msgid "NZB added to queue"
 msgstr "NZB kuyruğa ilave edildi"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Yinelenmiş NZB \"%s\" dikkate alınmıyor"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Failing duplicate NZB \"%s\""
 msgstr "\"%s\" NSB dosyasının yinelenmesi başarısız"
 
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
+#: sabnzbd/nzbqueue.py
 msgid "Duplicate NZB"
 msgstr "Yinelenmiş NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "Geçersiz NZB dosyası %s, atlanıyor (hata: %s)"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Boş NZB dosyası %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "Kuyruk öncesi betiği işi başarısız oldu olarak işaretlemiş"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "%s (%s) dosyasında İstenmeyen Uzantı"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "İptal edildi, tamamlanamıyor"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "%s unsurunun içe aktarılmasında hata"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "YİNELENMİŞ"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr "ALTERNATİF"
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "ŞİFRELENMİŞ"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "ÇOK BÜYÜK"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "TAMAMLANMAMIŞ"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "İSTENMEYEN"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "%s saniye BEKLEYİN"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "YAYINLANIYOR %s dakika"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "%s içinde ortalama %sB/s hızında indirildi"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Yaş"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s makale yanlış şekillendirilmişti"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s makale eksikti"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s makale eşleşmeyen yinelenmişler bulunduruyordu"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Yinelenmiş NZB \"%s\" duraklatılıyor"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4661,6 +4576,11 @@ msgstr "Sil"
 msgid "Filename"
 msgstr "Dosya ismi"
 
+#. Job details page, file age column header
+#: sabnzbd/skintext.py
+msgid "Age"
+msgstr "Yaş"
+
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Boş alan"
@@ -5099,6 +5019,10 @@ msgstr "Dosya sunucuda yok"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "Sunucu talebi tamamlayamadı"
+
+#: sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Boş NZB dosyası %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py
