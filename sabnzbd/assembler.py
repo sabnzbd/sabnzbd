@@ -100,6 +100,8 @@ class Assembler(Thread):
                 if file_done and not sabnzbd.Downloader.paused:
                     self.diskspace_check(nzo, nzf)
 
+                logging.debug("SJ: remove me - in assembler run loop")
+
                 # Prepare filepath
                 if filepath := nzf.prepare_filepath():
                     try:
@@ -152,10 +154,12 @@ class Assembler(Thread):
                                 logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
                                 priority = run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
                             logging.debug(f"SJ: Intermediate script priority returned: {priority}")
-                            if priority != 0:
+                            if True:  # priority != 0:
                                 # only change priority if the script returned non-zero priority ... aka took a decision
-                                logging.info(f"SJ: Setting priority to {priority} for job {nzo.final_name}")
-                                nzo.priority = priority
+                                logging.debug("SJ: trying to set priority via NzbQueue.set_priority")
+                                result = sabnzbd.NzbQueue.set_priority([nzo.nzo_id], priority)
+                                logging.debug(f"SJ: still here ... and NzbQueue.set_priority result: {result}")
+
                             nzo.intermediate_script_runtimes += 1
 
                     except IOError as err:
