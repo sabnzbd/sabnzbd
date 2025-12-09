@@ -288,6 +288,10 @@ class NewsWrapper:
         :param on_response: callback for each complete response received
         :return: #bytes, #pendingbytes
         """
+        # NewsWrapper is being reset
+        if not self.decoder:
+            return 0, None
+
         # Receive data into the decoder pre-allocated buffer
         if not nbytes and self.nntp.nw.server.ssl and not self.nntp.nw.blocking and sabctools.openssl_linked:
             # Use patched version when downloading
@@ -379,7 +383,7 @@ class NewsWrapper:
                     not self.send_buffer
                     and not self.next_request
                     and not self._response_queue
-                    and (not server.active or server.restart or time.time() > self.timeout)
+                    and (not server.active or server.restart or not self.timeout or time.time() > self.timeout)
                 ):
                     # Make socket available again
                     server.busy_threads.discard(self)
