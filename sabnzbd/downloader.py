@@ -749,7 +749,7 @@ class Downloader(Thread):
         bytes_received: int = 0
         bytes_pending: int = 0
 
-        while True:
+        while nw.decoder:
             try:
                 n, bytes_pending = nw.read(nbytes=bytes_pending)
                 bytes_received += n
