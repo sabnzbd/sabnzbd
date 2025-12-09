@@ -837,6 +837,94 @@ class TestMisc:
 
         _func()
 
+    @pytest.mark.parametrize(
+        "argument, name, password",
+        [
+            ("my_awesome_nzb_file{{password}}", "my_awesome_nzb_file", "password"),
+            ("file_with_text_after_pw{{passw0rd}}_[180519]", "file_with_text_after_pw", "passw0rd"),
+            ("file_without_pw", "file_without_pw", None),
+            ("multiple_pw{{first-pw}}_{{second-pw}}", "multiple_pw", "first-pw}}_{{second-pw"),  # Greed is Good
+            ("デビアン", "デビアン", None),  # Unicode
+            ("Gentoo_Hobby_Edition {{secret}}", "Gentoo_Hobby_Edition", "secret"),  # Space between name and password
+            ("Test {{secret}}.nzb", "Test", "secret"),
+            ("Mandrake{{top{{secret}}", "Mandrake", "top{{secret"),  # Double opening {{
+            ("Красная}}{{Шляпа}}", "Красная}}", "Шляпа"),  # Double closing }}
+            ("{{Jobname{{PassWord}}", "{{Jobname", "PassWord"),  # {{ at start
+            ("Hello/kITTY", "Hello", "kITTY"),  # Notation with slash
+            ("Hello/kITTY.nzb", "Hello", "kITTY"),  # Notation with slash and extension
+            ("/Jobname", "/Jobname", None),  # Slash at start
+            ("Jobname/Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces
+            ("Jobname / Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces and extra spaces
+            ("Jobname / Top{{Secret}}.nzb", "Jobname", "Top{{Secret}}"),
+            ("לינוקס/معلومات سرية", "לינוקס", "معلومات سرية"),  # LTR with slash
+            ("לינוקס{{معلومات سرية}}", "לינוקס", "معلومات سرية"),  # LTR with brackets
+            ("thư điện tử password=mật_khẩu", "thư điện tử", "mật_khẩu"),  # Password= notation
+            ("password=PartOfTheJobname", "password=PartOfTheJobname", None),  # Password= at the start
+            ("Job password=Test.par2", "Job", "Test"),  # Password= including extension
+            ("Job}}Name{{FTW", "Job}}Name{{FTW", None),  # Both {{ and }} present but incorrect order (no password)
+            ("./Text", "./Text", None),  # Name would end up empty after the function strips the dot
+        ],
+    )
+    def test_scan_password(self, argument, name, password):
+        assert misc.scan_password(argument) == (name, password)
+
+    @pytest.mark.parametrize(
+        "subject, filename",
+        [
+            ('Great stuff (001/143) - "Filename.txt" yEnc (1/1)', "Filename.txt"),
+            (
+                '"910a284f98ebf57f6a531cd96da48838.vol01-03.par2" yEnc (1/3)',
+                "910a284f98ebf57f6a531cd96da48838.vol01-03.par2",
+            ),
+            ('Subject-KrzpfTest [02/30] - ""KrzpfTest.part.nzb"" yEnc', "KrzpfTest.part.nzb"),
+            (
+                '[PRiVATE]-[WtFnZb]-[Supertje-_S03E11-12_-blabla_+_blabla_WEBDL-480p.mkv]-[4/12] - "" yEnc 9786 (1/1366)',
+                "Supertje-_S03E11-12_-blabla_+_blabla_WEBDL-480p.mkv",
+            ),
+            (
+                '[N3wZ] MAlXD245333\\::[PRiVATE]-[WtFnZb]-[Show.S04E04.720p.AMZN.WEBRip.x264-GalaxyTV.mkv]-[1/2] - "" yEnc  293197257 (1/573)',
+                "Show.S04E04.720p.AMZN.WEBRip.x264-GalaxyTV.mkv",
+            ),
+            (
+                'reftestnzb bf1664007a71 [1/6] - "20b9152c-57eb-4d02-9586-66e30b8e3ac2" yEnc (1/22) 15728640',
+                "20b9152c-57eb-4d02-9586-66e30b8e3ac2",
+            ),
+            (
+                "Re: REQ Author Child's The Book-Thanks much - Child, Lee - Author - The Book.epub (1/1)",
+                "REQ Author Child's The Book-Thanks much - Child, Lee - Author - The Book.epub",
+            ),
+            ('63258-0[001/101] - "63258-2.0" yEnc (1/250) (1/250)', "63258-2.0"),
+            # If specified between ", the extension is allowed to be too long
+            ('63258-0[001/101] - "63258-2.0toolong" yEnc (1/250) (1/250)', "63258-2.0toolong"),
+            (
+                "Singer - A Album (2005) - [04/25] - 02 Sweetest Somebody (I Know).flac",
+                "Singer - A Album (2005) - [04/25] - 02 Sweetest Somebody (I Know).flac",
+            ),
+            ("<>random!>", "<>random!>"),
+            ("nZb]-[Supertje-_S03E11-12_", "nZb]-[Supertje-_S03E11-12_"),
+            ("Bla [Now it's done.exe]", "Now it's done.exe"),
+            # If specified between [], the extension should be a valid one
+            ("Bla [Now it's done.123nonsense]", "Bla [Now it's done.123nonsense]"),
+            ('[PRiVATE]-[WtFnZb]-[00000.clpi]-[1/46] - "" yEnc  788 (1/1)', "00000.clpi"),
+            (
+                '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
+                "Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv",
+            ),
+            (
+                "[PRiVATE]-[WtFnZb]-[219]-[1/series.name.s01e01.1080p.web.h264-group.mkv] - "
+                " yEnc (1/[PRiVATE] \\c2b510b594\\::686ea969999193.155368eba4965e56a8cd263382e012.f2712fdc::/97bd201cf931/) 1 (1/0)",
+                "series.name.s01e01.1080p.web.h264-group.mkv",
+            ),
+            (
+                "[PRiVATE]-[WtFnZb]-[/More.Bla.S02E01.1080p.WEB.h264-EDITH[eztv.re].mkv-WtF[nZb]/"
+                'More.Bla.S02E01.1080p.WEB.h264-EDITH.mkv]-[1/2] - "" yEnc  2990558544 (1/4173)',
+                "More.Bla.S02E01.1080p.WEB.h264-EDITH[eztv.re].mkv",
+            ),
+        ],
+    )
+    def test_name_extractor(self, subject, filename):
+        assert misc.subject_name_extractor(subject) == filename
+
 
 class TestBuildAndRunCommand:
     # Path should exist

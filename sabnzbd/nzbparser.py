@@ -33,7 +33,15 @@ import cherrypy._cpreqbody
 from typing import Optional, Any, Union
 
 import sabnzbd
-from sabnzbd import nzbstuff
+from sabnzbd.nzb import (
+    NzbObject,
+    NzbEmpty,
+    NzbRejected,
+    NzbPreQueueRejected,
+    NzbRejectToHistory,
+    NzbFile,
+    SkippedNzbFile,
+)
 from sabnzbd.encoding import utob, correct_cherrypy_encoding
 from sabnzbd.filesystem import (
     get_filename,
@@ -204,7 +212,7 @@ def process_nzb_archive_file(
                 if datap:
                     nzo = None
                     try:
-                        nzo = nzbstuff.NzbObject(
+                        nzo = NzbObject(
                             name,
                             pp=pp,
                             script=script,
@@ -220,13 +228,13 @@ def process_nzb_archive_file(
                             dup_check=dup_check,
                         )
                     except (
-                        sabnzbd.nzbstuff.NzbEmpty,
-                        sabnzbd.nzbstuff.NzbRejected,
-                        sabnzbd.nzbstuff.NzbPreQueueRejected,
+                        NzbEmpty,
+                        NzbRejected,
+                        NzbPreQueueRejected,
                     ):
                         # Empty or fully rejected (including pre-queue rejections)
                         pass
-                    except sabnzbd.nzbstuff.NzbRejectToHistory as err:
+                    except NzbRejectToHistory as err:
                         # Duplicate or unwanted extension directed to history
                         sabnzbd.NzbQueue.fail_to_history(err.nzo)
                         nzo_ids.append(err.nzo.nzo_id)
@@ -315,7 +323,7 @@ def process_single_nzb(
     nzo = None
     nzo_ids = []
     try:
-        nzo = nzbstuff.NzbObject(
+        nzo = NzbObject(
             filename,
             pp=pp,
             script=script,
@@ -330,16 +338,16 @@ def process_single_nzb(
             nzo_id=nzo_id,
             dup_check=dup_check,
         )
-    except sabnzbd.nzbstuff.NzbEmpty:
+    except NzbEmpty:
         # Malformed or might not be an NZB file
         result = AddNzbFileResult.NO_FILES_FOUND
-    except sabnzbd.nzbstuff.NzbRejected:
+    except NzbRejected:
         # Rejected as duplicate
         result = AddNzbFileResult.ERROR
-    except sabnzbd.nzbstuff.NzbPreQueueRejected:
+    except NzbPreQueueRejected:
         # Rejected by pre-queue script - should be silently ignored for URL fetches
         result = AddNzbFileResult.PREQUEUE_REJECTED
-    except sabnzbd.nzbstuff.NzbRejectToHistory as err:
+    except NzbRejectToHistory as err:
         # Duplicate or unwanted extension directed to history
         sabnzbd.NzbQueue.fail_to_history(err.nzo)
         nzo_ids.append(err.nzo.nzo_id)
@@ -366,7 +374,7 @@ def process_single_nzb(
 
 def nzbfile_parser(full_nzb_path: str, nzo):
     # For type-hinting
-    nzo: sabnzbd.nzbstuff.NzbObject
+    nzo: NzbObject
 
     # Hash for dupe-checking
     md5sum = hashlib.md5()
@@ -470,8 +478,8 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
                 # Create NZF
                 try:
-                    nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
-                except sabnzbd.nzbstuff.SkippedNzbFile:
+                    nzf = NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
+                except SkippedNzbFile:
                     # Did not meet requirements, so continue
                     skipped_files += 1
                     continue

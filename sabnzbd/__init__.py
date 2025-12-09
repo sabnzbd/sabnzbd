@@ -82,15 +82,15 @@ from sabnzbd.version import __version__, __baseline__
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
-import sabnzbd.rss as rss
-import sabnzbd.emailer as emailer
 import sabnzbd.encoding as encoding
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
+import sabnzbd.nzb
 import sabnzbd.nzbparser as nzbparser
-import sabnzbd.nzbstuff
+import sabnzbd.rss as rss
+import sabnzbd.emailer as emailer
 import sabnzbd.getipaddress
 import sabnzbd.newsunpack
 import sabnzbd.par2file

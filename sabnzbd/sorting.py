@@ -47,7 +47,8 @@ from sabnzbd.constants import (
     GUESSIT_SORT_TYPES,
 )
 from sabnzbd.misc import is_sample, from_units, sort_to_opts
-from sabnzbd.nzbstuff import NzbObject, scan_password
+from sabnzbd.misc import scan_password
+from sabnzbd.nzb import NzbObject
 
 # Do not rename .vob files as they are usually DVD's
 EXCLUDED_FILE_EXTS = (".vob", ".bin")

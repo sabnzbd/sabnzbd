@@ -1367,3 +1367,54 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
         )
 
     return file_list
+
+
+def create_work_name(name: str) -> str:
+    """Remove ".nzb" and ".par(2)" and sanitize, skip URL's"""
+    if name.find("://") < 0:
+        # Invalid charters need to be removed before and after (see unit-tests)
+        return sanitize_foldername(strip_extensions(sanitize_foldername(name)))
+    else:
+        return name.strip()
+
+
+def nzf_cmp_name(nzf1, nzf2):
+    """Comparison function for sorting NZB files.
+    The comparison will sort .par2 files to the top of the queue followed by .rar files,
+    they will then be sorted by name.
+
+    Note: nzf1 and nzf2 should be NzbFile objects, but we can't import that here
+    to avoid circular dependencies.
+    """
+    nzf1_name = nzf1.filename.lower()
+    nzf2_name = nzf2.filename.lower()
+
+    # Determine vol-pars
+    is_par1 = ".vol" in nzf1_name and ".par2" in nzf1_name
+    is_par2 = ".vol" in nzf2_name and ".par2" in nzf2_name
+
+    # mini-par2 in front
+    if not is_par1 and nzf1_name.endswith(".par2"):
+        return -1
+    if not is_par2 and nzf2_name.endswith(".par2"):
+        return 1
+
+    # vol-pars go to the back
+    if is_par1 and not is_par2:
+        return 1
+    if is_par2 and not is_par1:
+        return -1
+
+    # Prioritize .rar files above any other type of file (other than vol-par)
+    m1 = RAR_RE.search(nzf1_name)
+    m2 = RAR_RE.search(nzf2_name)
+    if m1 and not (is_par2 or m2):
+        return -1
+    elif m2 and not (is_par1 or m1):
+        return 1
+    # Force .rar to come before 'r00'
+    if m1 and m1.group(1) == ".rar":
+        nzf1_name = nzf1_name.replace(".rar", ".r//")
+    if m2 and m2.group(1) == ".rar":
+        nzf2_name = nzf2_name.replace(".rar", ".r//")
+    return sabnzbd.misc.cmp(nzf1_name, nzf2_name)

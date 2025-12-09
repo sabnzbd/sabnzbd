@@ -189,7 +189,7 @@ def get_biggest_file(filelist: list[str]) -> str:
             return None
 
 
-def deobfuscate(nzo, filelist: list[str], usefulname: str) -> list[str]:
+def deobfuscate(nzo: "sabnzbd.nzbobject.NzbObject", filelist: list[str], usefulname: str) -> list[str]:
     """
     For files in filelist:
     1. if a file has no meaningful extension, add it (for example ".txt" or ".png")
@@ -226,9 +226,6 @@ def deobfuscate(nzo, filelist: list[str], usefulname: str) -> list[str]:
     No renaming because the filename looks OK already (not obfuscated)
 
     """
-
-    # Can't be imported directly due to circular import
-    nzo: sabnzbd.nzbstuff.NzbObject
 
     # to be sure, only keep really existing files and remove any duplicates:
     filtered_filelist = list(set(f for f in filelist if os.path.isfile(f)))
@@ -320,7 +317,7 @@ def without_extension(fullpathfilename: str) -> str:
     return os.path.splitext(fullpathfilename)[0]
 
 
-def deobfuscate_subtitles(nzo, filelist: list[str]):
+def deobfuscate_subtitles(nzo: "sabnzbd.nzbobject.NzbObject", filelist: list[str]):
     """
     input:
     nzo, so we can update result via set_unpack_info()
@@ -345,10 +342,6 @@ def deobfuscate_subtitles(nzo, filelist: list[str]):
     Something.else.txt
 
     """
-
-    # Can't be imported directly due to circular import
-    nzo: sabnzbd.nzbstuff.NzbObject
-
     # find .srt files
     if not (srt_files := [f for f in filelist if f.endswith(".srt")]):
         logging.debug("No .srt files found, so nothing to do")

@@ -85,7 +85,7 @@ from sabnzbd.encoding import xml_name, utob
 from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzb import TryList, NzbObject
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.emailer
 import sabnzbd.sorting
@@ -1006,7 +1006,7 @@ def _api_gc_stats(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
     # Collect before we check
     gc.collect()
     # We cannot create any lists/dicts, as they would create a reference
-    return report(data=[str(obj) for obj in gc.get_objects() if isinstance(obj, sabnzbd.nzbstuff.TryList)])
+    return report(data=[str(obj) for obj in gc.get_objects() if isinstance(obj, TryList)])
 
 
 ##############################################################################

@@ -27,7 +27,7 @@ from typing import Collection
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import GIGI, ANFO, ASSEMBLER_WRITE_THRESHOLD
-from sabnzbd.nzbstuff import Article
+from sabnzbd.nzb import Article
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.

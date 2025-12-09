@@ -25,7 +25,7 @@ from typing import Optional
 
 import sabnzbd
 from sabnzbd.constants import SABCTOOLS_VERSION_REQUIRED
-from sabnzbd.nzbstuff import Article
+from sabnzbd.nzb import Article
 from sabnzbd.misc import match_str
 
 # Check for correct SABCTools version
