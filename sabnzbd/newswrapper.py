@@ -74,6 +74,7 @@ class NewsWrapper:
         "_response_queue",
         "selector_events",
         "lock",
+        "reset_gen",
     )
 
     def __init__(self, server, thrdnum, block=False):
@@ -104,6 +105,9 @@ class NewsWrapper:
         self._response_queue: deque[Optional[sabnzbd.nzbarticle.Article]] = deque()
         self.selector_events = 0
         self.lock: threading.Lock = threading.Lock()
+        # Preserve reset generation across resets
+        if not hasattr(self, "reset_gen"):
+            self.reset_gen: int = 0
 
     @property
     def article(self) -> Optional["sabnzbd.nzbarticle.Article"]:
@@ -279,15 +283,17 @@ class NewsWrapper:
                 logging.debug("Thread %s@%s: %s done", self.thrdnum, server.host, article.article)
 
     def read(
-        self,
-        nbytes: int = 0,
-        on_response: Optional[Callable[[int, str], None]] = None,
+        self, nbytes: int = 0, on_response: Optional[Callable[[int, str], None]] = None, gen: Optional[int] = None
     ) -> Tuple[int, Optional[int]]:
         """Receive data, return #bytes, #pendingbytes
         :param nbytes: maximum number of bytes to read
         :param on_response: callback for each complete response received
+        :param gen: expected reset generation
         :return: #bytes, #pendingbytes
         """
+        if gen is None:
+            gen = self.reset_gen
+
         # NewsWrapper is being reset
         if not self.decoder:
             return 0, None
@@ -308,7 +314,12 @@ class NewsWrapper:
 
         self.decoder.process(bytes_recv)
         for response in self.decoder:
+            if self.reset_gen != gen:
+                break
             with self.lock:
+                # Re-check under lock to avoid racing with hard_reset
+                if self.reset_gen != gen or not self._response_queue:
+                    break
                 article = self._response_queue.popleft()
             if on_response:
                 on_response(response.status_code, response.message)
@@ -404,6 +415,8 @@ class NewsWrapper:
     def hard_reset(self, wait: bool = True):
         """Destroy and restart"""
         with self.lock:
+            # Increase generation so concurrent uses can observe the reset
+            self.reset_gen += 1
             # Drain unsent requests
             if self.next_request:
                 _, article = self.next_request
