@@ -31,19 +31,15 @@ if not os.path.exists(dirname):
     sys.exit(1)
 
 
-# And this is an example: set priority based on first letter of dirname
-prio = 2  # default priority
-# set prio to 1 if first letter of dirname is A-M
-first_letter = os.path.basename(dirname)[0].upper()
-if first_letter >= "A" and first_letter <= "H":
-    prio = 1
-elif first_letter >= "P" and first_letter <= "Z":
-    prio = -1
 
-if dirname.find("AAA") != -1:
+prio = 0  # default priority
+# check if dirname (aka nzb jobname) contains "lower" ignoring case
+if dirname.lower().find("force") != -1:
     prio = 2  # Force
-elif dirname.find("ZZZ") != -1:
-    prio = -2  # Paused
+elif dirname.lower().find("high") != -1:
+    prio = 1  # High
+elif dirname.find("low") != -1:
+    prio = -1  # Low
 
 # same output as SABnzbd pre-queue script:
 
