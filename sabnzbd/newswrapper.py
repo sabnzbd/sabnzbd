@@ -74,12 +74,14 @@ class NewsWrapper:
         "_response_queue",
         "selector_events",
         "lock",
+        "generation",
     )
 
-    def __init__(self, server, thrdnum, block=False):
+    def __init__(self, server: "sabnzbd.downloader.Server", thrdnum: int, block: bool = False, generation: int = 0):
         self.server: sabnzbd.downloader.Server = server
         self.thrdnum: int = thrdnum
         self.blocking: bool = block
+        self.generation: int = generation
 
         self.timeout: Optional[float] = None
 
@@ -282,12 +284,17 @@ class NewsWrapper:
         self,
         nbytes: int = 0,
         on_response: Optional[Callable[[int, str], None]] = None,
+        generation: Optional[int] = None,
     ) -> Tuple[int, Optional[int]]:
         """Receive data, return #bytes, #pendingbytes
         :param nbytes: maximum number of bytes to read
         :param on_response: callback for each complete response received
+        :param generation: expected reset generation
         :return: #bytes, #pendingbytes
         """
+        if generation is None:
+            generation = self.generation
+
         # NewsWrapper is being reset
         if not self.decoder:
             return 0, None
@@ -308,7 +315,12 @@ class NewsWrapper:
 
         self.decoder.process(bytes_recv)
         for response in self.decoder:
+            if self.generation != generation:
+                break
             with self.lock:
+                # Re-check under lock to avoid racing with hard_reset
+                if self.generation != generation or not self._response_queue:
+                    break
                 article = self._response_queue.popleft()
             if on_response:
                 on_response(response.status_code, response.message)
@@ -419,8 +431,9 @@ class NewsWrapper:
             self.nntp.close(send_quit=self.connected)
             self.nntp = None
 
-        # Reset all variables (including the NNTP connection)
-        self.__init__(self.server, self.thrdnum)
+        with self.lock:
+            # Reset all variables (including the NNTP connection) and increment the generation counter
+            self.__init__(self.server, self.thrdnum, generation=self.generation + 1)
 
         # Wait before re-using this newswrapper
         if wait:
