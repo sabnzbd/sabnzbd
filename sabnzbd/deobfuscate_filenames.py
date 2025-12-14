@@ -189,7 +189,7 @@ def get_biggest_file(filelist: list[str]) -> str:
             return None
 
 
-def deobfuscate(nzo: "sabnzbd.nzbobject.NzbObject", filelist: list[str], usefulname: str) -> list[str]:
+def deobfuscate(nzo: "sabnzbd.nzb.NzbObject", filelist: list[str], usefulname: str) -> list[str]:
     """
     For files in filelist:
     1. if a file has no meaningful extension, add it (for example ".txt" or ".png")
@@ -317,7 +317,7 @@ def without_extension(fullpathfilename: str) -> str:
     return os.path.splitext(fullpathfilename)[0]
 
 
-def deobfuscate_subtitles(nzo: "sabnzbd.nzbobject.NzbObject", filelist: list[str]):
+def deobfuscate_subtitles(nzo: "sabnzbd.nzb.NzbObject", filelist: list[str]):
     """
     input:
     nzo, so we can update result via set_unpack_info()

@@ -151,7 +151,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        self.article_queue: Deque[sabnzbd.nzbarticle.Article] = deque()
+        self.article_queue: Deque[sabnzbd.nzb.Article] = deque()
 
         # Skip during server testing
         if threads:
@@ -540,7 +540,7 @@ class Downloader(Thread):
             server.addrinfo = None
 
     @staticmethod
-    def decode(article: "sabnzbd.nzbarticle.Article", response: Optional[sabctools.NNTPResponse] = None):
+    def decode(article: "sabnzbd.nzb.Article", response: Optional[sabctools.NNTPResponse] = None):
         """Decode article"""
         # Need a better way of draining requests
         if article.nzf.nzo.removed_from_queue:
@@ -900,7 +900,7 @@ class Downloader(Thread):
         wait: bool = True,
         count_article_try: bool = True,
         retry_article: bool = True,
-        article: Optional["sabnzbd.nzbarticle.Article"] = None,
+        article: Optional["sabnzbd.nzb.Article"] = None,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
