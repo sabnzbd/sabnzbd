@@ -108,7 +108,6 @@ class Assembler(Thread):
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
 
-
                         # interemediate checking:
                         logging.debug(
                             f"SJ: intermediate check {cfg.intermediate_script()}, {nzo.bytes_downloaded}, {nzo.intermediate_script_runtimes}"
@@ -147,7 +146,6 @@ class Assembler(Thread):
 
                             nzo.intermediate_script_runtimes += 1
 
-
                         # Continue after partly written data
                         if not file_done:
                             logging.debug("SJ: File %s not done yet, continuing", filepath)
@@ -166,7 +164,6 @@ class Assembler(Thread):
                         elif par2file.is_par2_file(filepath):
                             # Parse par2 files, cloaked or not
                             nzo.handle_par2(nzf, filepath)
-
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
