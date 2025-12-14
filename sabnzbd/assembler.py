@@ -100,7 +100,7 @@ class Assembler(Thread):
                 if file_done and not sabnzbd.Downloader.paused:
                     self.diskspace_check(nzo, nzf)
 
-                logging.debug("SJ: remove me - in assembler run loop")
+                logging.debug(f"SJ: remove me - in assembler run loop. Bytes_downloaded: {nzo.bytes_downloaded}")
 
                 # Prepare filepath
                 if filepath := nzf.prepare_filepath():
@@ -108,26 +108,10 @@ class Assembler(Thread):
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done)
 
-                        # Continue after partly written data
-                        if not file_done:
-                            continue
 
-                        # Clean-up admin data
-                        logging.info("Decoding finished %s", filepath)
-                        nzf.remove_admin()
-
-                        # Do rar-related processing
-                        if rarfile.is_rarfile(filepath):
-                            # Check for encrypted files, unwanted extensions and add to direct unpack
-                            self.check_encrypted_and_unwanted(nzo, nzf)
-                            nzo.add_to_direct_unpacker(nzf)
-
-                        elif par2file.is_par2_file(filepath):
-                            # Parse par2 files, cloaked or not
-                            nzo.handle_par2(nzf, filepath)
-
+                        # interemediate checking:
                         logging.debug(
-                            f"SJ: intermediate pre-check {cfg.intermediate_script()}, {nzo.bytes_downloaded}, {nzo.intermediate_script_runtimes}"
+                            f"SJ: intermediate check {cfg.intermediate_script()}, {nzo.bytes_downloaded}, {nzo.intermediate_script_runtimes}"
                         )
                         if (
                             cfg.intermediate_script()
@@ -154,6 +138,7 @@ class Assembler(Thread):
                                 logging.info(f"SJ Intermediate: incomplete_dir: {incomplete_dir}")
                                 priority = run_intermediate_script(cfg.intermediate_script(), incomplete_dir)
                             logging.debug(f"SJ: Intermediate script priority returned: {priority}")
+
                             if True:  # priority != 0:
                                 # only change priority if the script returned non-zero priority ... aka took a decision
                                 logging.debug("SJ: trying to set priority via NzbQueue.set_priority")
@@ -161,6 +146,27 @@ class Assembler(Thread):
                                 logging.debug(f"SJ: still here ... and NzbQueue.set_priority result: {result}")
 
                             nzo.intermediate_script_runtimes += 1
+
+
+                        # Continue after partly written data
+                        if not file_done:
+                            logging.debug("SJ: File %s not done yet, continuing", filepath)
+                            continue
+
+                        # Clean-up admin data
+                        logging.info("Decoding finished %s", filepath)
+                        nzf.remove_admin()
+
+                        # Do rar-related processing
+                        if rarfile.is_rarfile(filepath):
+                            # Check for encrypted files, unwanted extensions and add to direct unpack
+                            self.check_encrypted_and_unwanted(nzo, nzf)
+                            nzo.add_to_direct_unpacker(nzf)
+
+                        elif par2file.is_par2_file(filepath):
+                            # Parse par2 files, cloaked or not
+                            nzo.handle_par2(nzf, filepath)
+
 
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
