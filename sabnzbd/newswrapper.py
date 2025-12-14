@@ -77,7 +77,7 @@ class NewsWrapper:
         "generation",
     )
 
-    def __init__(self, server: sabnzbd.downloader.Server, thrdnum: int, block: bool = False, generation: int = 0):
+    def __init__(self, server: "sabnzbd.downloader.Server", thrdnum: int, block: bool = False, generation: int = 0):
         self.server: sabnzbd.downloader.Server = server
         self.thrdnum: int = thrdnum
         self.blocking: bool = block
