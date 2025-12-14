@@ -74,13 +74,14 @@ class NewsWrapper:
         "_response_queue",
         "selector_events",
         "lock",
-        "reset_gen",
+        "generation",
     )
 
-    def __init__(self, server, thrdnum, block=False):
+    def __init__(self, server: sabnzbd.downloader.Server, thrdnum: int, block: bool = False, generation: int = 0):
         self.server: sabnzbd.downloader.Server = server
         self.thrdnum: int = thrdnum
         self.blocking: bool = block
+        self.generation: int = generation
 
         self.timeout: Optional[float] = None
 
@@ -105,9 +106,6 @@ class NewsWrapper:
         self._response_queue: deque[Optional[sabnzbd.nzbarticle.Article]] = deque()
         self.selector_events = 0
         self.lock: threading.Lock = threading.Lock()
-        # Preserve reset generation across resets
-        if not hasattr(self, "reset_gen"):
-            self.reset_gen: int = 0
 
     @property
     def article(self) -> Optional["sabnzbd.nzbarticle.Article"]:
@@ -283,16 +281,19 @@ class NewsWrapper:
                 logging.debug("Thread %s@%s: %s done", self.thrdnum, server.host, article.article)
 
     def read(
-        self, nbytes: int = 0, on_response: Optional[Callable[[int, str], None]] = None, gen: Optional[int] = None
+        self,
+        nbytes: int = 0,
+        on_response: Optional[Callable[[int, str], None]] = None,
+        generation: Optional[int] = None,
     ) -> Tuple[int, Optional[int]]:
         """Receive data, return #bytes, #pendingbytes
         :param nbytes: maximum number of bytes to read
         :param on_response: callback for each complete response received
-        :param gen: expected reset generation
+        :param generation: expected reset generation
         :return: #bytes, #pendingbytes
         """
-        if gen is None:
-            gen = self.reset_gen
+        if generation is None:
+            generation = self.generation
 
         # NewsWrapper is being reset
         if not self.decoder:
@@ -314,11 +315,11 @@ class NewsWrapper:
 
         self.decoder.process(bytes_recv)
         for response in self.decoder:
-            if self.reset_gen != gen:
+            if self.generation != generation:
                 break
             with self.lock:
                 # Re-check under lock to avoid racing with hard_reset
-                if self.reset_gen != gen or not self._response_queue:
+                if self.generation != generation or not self._response_queue:
                     break
                 article = self._response_queue.popleft()
             if on_response:
@@ -416,7 +417,7 @@ class NewsWrapper:
         """Destroy and restart"""
         with self.lock:
             # Increase generation so concurrent uses can observe the reset
-            self.reset_gen += 1
+            self.generation += 1
             # Drain unsent requests
             if self.next_request:
                 _, article = self.next_request
@@ -433,7 +434,7 @@ class NewsWrapper:
             self.nntp = None
 
         # Reset all variables (including the NNTP connection)
-        self.__init__(self.server, self.thrdnum)
+        self.__init__(self.server, self.thrdnum, generation=self.generation)
 
         # Wait before re-using this newswrapper
         if wait:

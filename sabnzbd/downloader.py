@@ -695,7 +695,7 @@ class Downloader(Thread):
                     if events := self.selector.select(timeout=1.0):
                         for key, ev in events:
                             nw = key.data
-                            process_nw_queue.put((nw, ev, nw.reset_gen))
+                            process_nw_queue.put((nw, ev, nw.generation))
                 else:
                     events = []
                     BPSMeter.reset()
@@ -739,26 +739,26 @@ class Downloader(Thread):
             logging.error(T("Fatal error in Downloader"), exc_info=True)
             self.pause()
 
-    def process_nw(self, nw: NewsWrapper, event: int, gen: int):
+    def process_nw(self, nw: NewsWrapper, event: int, generation: int):
         """Receive data from a NewsWrapper and handle the response"""
         # Drop stale items
-        if nw.reset_gen != gen:
+        if nw.generation != generation:
             return
         if event & selectors.EVENT_READ:
-            self.process_nw_read(nw, gen)
+            self.process_nw_read(nw, generation)
             # If read caused a reset, don't proceed to write
-            if nw.reset_gen != gen:
+            if nw.generation != generation:
                 return
         if event & selectors.EVENT_WRITE:
             nw.write()
 
-    def process_nw_read(self, nw: NewsWrapper, gen: int) -> None:
+    def process_nw_read(self, nw: NewsWrapper, generation: int) -> None:
         bytes_received: int = 0
         bytes_pending: int = 0
 
-        while nw.decoder and nw.reset_gen == gen:
+        while nw.decoder and nw.generation == generation:
             try:
-                n, bytes_pending = nw.read(nbytes=bytes_pending, gen=gen)
+                n, bytes_pending = nw.read(nbytes=bytes_pending, generation=generation)
                 bytes_received += n
             except ssl.SSLWantReadError:
                 return
@@ -776,7 +776,7 @@ class Downloader(Thread):
                 break
 
         # Ignore metrics for reset connections
-        if nw.reset_gen != gen:
+        if nw.generation != generation:
             return
 
         server = nw.server
