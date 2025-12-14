@@ -416,8 +416,6 @@ class NewsWrapper:
     def hard_reset(self, wait: bool = True):
         """Destroy and restart"""
         with self.lock:
-            # Increase generation so concurrent uses can observe the reset
-            self.generation += 1
             # Drain unsent requests
             if self.next_request:
                 _, article = self.next_request
@@ -433,8 +431,9 @@ class NewsWrapper:
             self.nntp.close(send_quit=self.connected)
             self.nntp = None
 
-        # Reset all variables (including the NNTP connection)
-        self.__init__(self.server, self.thrdnum, generation=self.generation)
+        with self.lock:
+            # Reset all variables (including the NNTP connection) and increment the generation counter
+            self.__init__(self.server, self.thrdnum, generation=self.generation + 1)
 
         # Wait before re-using this newswrapper
         if wait:
