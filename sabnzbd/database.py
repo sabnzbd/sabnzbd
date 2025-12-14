@@ -499,7 +499,7 @@ def convert_search(search: str) -> str:
 
 
 def build_history_info(
-    nzo: "sabnzbd.nzbobject.NzbObject",
+    nzo: "sabnzbd.nzb.NzbObject",
     workdir_complete: str,
     postproc_time: int,
     script_output: str,
