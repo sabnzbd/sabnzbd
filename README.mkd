@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 4.6.0 Alpha 2
+Release Notes - SABnzbd 4.6.0 Beta 1
 =========================================================
 
-This is the second test release of version 4.6.
+This is the first beta release of version 4.6.
 
 ## New features in 4.6.0
 
