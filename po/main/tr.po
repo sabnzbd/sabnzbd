@@ -3,14 +3,14 @@
 # 
 # Translators:
 # Taylan Tatlı, 2025
-# mauron, 2025
 # Safihre <safihre@sabnzbd.org>, 2025
+# mauron, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: mauron, 2025\n"
 "Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3376,6 +3376,8 @@ msgstr "SFV temelli kontrolleri etkinleştir"
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
 msgstr ""
+"Eğer hiçbir par2 dosyası mevcut değilse dosyaları kontrole etmek için "
+"(mevcutsa) sfv dosyalarını kullan"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
