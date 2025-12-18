@@ -3376,7 +3376,7 @@ msgstr "SFV temelli kontrolleri etkinleştir"
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
 msgstr ""
-"Eğer hiçbir par2 dosyası mevcut değilse dosyaları kontrole etmek için "
+"Eğer hiçbir par2 dosyası mevcut değilse, dosyaları kontrol etmek için "
 "(mevcutsa) sfv dosyalarını kullan"
 
 #: sabnzbd/skintext.py
