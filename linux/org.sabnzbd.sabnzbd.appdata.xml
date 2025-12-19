@@ -30,28 +30,72 @@
   <url type="faq">https://sabnzbd.org/wiki/faq</url>
   <url type="contact">https://sabnzbd.org/live-chat.html</url>
   <releases>
-    <release version="4.6.0" date="2025-12-24" type="stable"/>
-    <release version="4.5.5" date="2025-10-24" type="stable"/>
-    <release version="4.5.4" date="2025-10-22" type="stable"/>
-    <release version="4.5.3" date="2025-08-25" type="stable"/>
-    <release version="4.5.2" date="2025-07-09" type="stable"/>
-    <release version="4.5.1" date="2025-04-11" type="stable"/>
-    <release version="4.5.0" date="2025-04-01" type="stable"/>
-    <release version="4.4.1" date="2024-12-23" type="stable"/>
-    <release version="4.4.0" date="2024-12-09" type="stable"/>
-    <release version="4.3.3" date="2024-08-01" type="stable"/>
-    <release version="4.3.2" date="2024-05-30" type="stable"/>
-    <release version="4.3.1" date="2024-05-03" type="stable"/>
-    <release version="4.3.0" date="2024-05-01" type="stable"/>
-    <release version="4.2.2" date="2024-02-01" type="stable"/>
-    <release version="4.2.1" date="2024-01-05" type="stable"/>
-    <release version="4.2.0" date="2024-01-03" type="stable"/>
-    <release version="4.1.0" date="2023-09-26" type="stable"/>
-    <release version="4.0.3" date="2023-06-16" type="stable"/>
-    <release version="4.0.2" date="2023-06-09" type="stable"/>
-    <release version="4.0.1" date="2023-05-01" type="stable"/>
-    <release version="4.0.0" date="2023-04-28" type="stable"/>
-    <release version="3.7.2" date="2023-02-05" type="stable"/>
+    <release version="4.6.0" date="2025-12-24" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.6.0</url>
+    </release>
+    <release version="4.5.5" date="2025-10-24" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.5</url>
+    </release>
+    <release version="4.5.4" date="2025-10-22" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.4</url>
+    </release>
+    <release version="4.5.3" date="2025-08-25" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.3</url>
+    </release>
+    <release version="4.5.2" date="2025-07-09" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.2</url>
+    </release>
+    <release version="4.5.1" date="2025-04-11" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.1</url>
+    </release>
+    <release version="4.5.0" date="2025-04-01" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.5.0</url>
+    </release>
+    <release version="4.4.1" date="2024-12-23" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.4.1</url>
+    </release>
+    <release version="4.4.0" date="2024-12-09" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.4.0</url>
+    </release>
+    <release version="4.3.3" date="2024-08-01" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.3</url>
+    </release>
+    <release version="4.3.2" date="2024-05-30" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.2</url>
+    </release>
+    <release version="4.3.1" date="2024-05-03" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.1</url>
+    </release>
+    <release version="4.3.0" date="2024-05-01" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.3.0</url>
+    </release>
+    <release version="4.2.2" date="2024-02-01" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.2.2</url>
+    </release>
+    <release version="4.2.1" date="2024-01-05" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.2.1</url>
+    </release>
+    <release version="4.2.0" date="2024-01-03" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.2.0</url>
+    </release>
+    <release version="4.1.0" date="2023-09-26" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.1.0</url>
+    </release>
+    <release version="4.0.3" date="2023-06-16" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.0.3</url>
+    </release>
+    <release version="4.0.2" date="2023-06-09" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.0.2</url>
+    </release>
+    <release version="4.0.1" date="2023-05-01" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.0.1</url>
+    </release>
+    <release version="4.0.0" date="2023-04-28" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/4.0.0</url>
+    </release>
+    <release version="3.7.2" date="2023-02-05" type="stable">
+      <url type="details">https://github.com/sabnzbd/sabnzbd/releases/tag/3.7.2</url>
+    </release>
   </releases>
   <launchable type="desktop-id">sabnzbd.desktop</launchable>
   <provides>
