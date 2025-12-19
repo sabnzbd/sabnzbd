@@ -1025,7 +1025,7 @@ msgid "Update Available!"
 msgstr "Mise à Jour disponible!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "Échec de l'upload du fichier : %s"
 

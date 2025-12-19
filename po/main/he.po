@@ -973,7 +973,7 @@ msgid "Update Available!"
 msgstr "עדכון זמין!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "כישלון בהעלאת קובץ: %s"
 

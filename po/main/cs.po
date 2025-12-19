@@ -955,7 +955,7 @@ msgid "Update Available!"
 msgstr "Dostupná aktualizace!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "Nezdařilo se nahrát soubor: %s"
 

@@ -996,7 +996,7 @@ msgid "Update Available!"
 msgstr "Opdatering tilgængelig!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "Kunne ikke uploade fil: %s"
 

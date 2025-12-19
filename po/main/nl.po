@@ -1019,7 +1019,7 @@ msgid "Update Available!"
 msgstr "Update beschikbaar!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "Kon het volgende bestand niet uploaden: %s"
 
