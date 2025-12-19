@@ -899,6 +899,7 @@ SKIN_TEXT = {
     "Glitter-notification-removing1": TT("Removing job"),  # Notification window
     "Glitter-notification-removing": TT("Removing jobs"),  # Notification window
     "Glitter-notification-shutdown": TT("Shutting down"),  # Notification window
+    "Glitter-notification-upload-failed": TT("Failed to upload file: %s"),  # Notification window
     # Wizard
     "wizard-quickstart": TT("SABnzbd Quick-Start Wizard"),
     "wizard-version": TT("SABnzbd Version"),

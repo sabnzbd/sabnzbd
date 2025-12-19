@@ -69,6 +69,10 @@ legend,
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.main-notification-box-uploading-failed {
+    color: #F95151;
+}
+
 .container,
 .modal-body,
 .modal-footer {
