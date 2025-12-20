@@ -32,11 +32,12 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WINDOWS = MACOS = MACOSARM64 = FOUNDATION = False
+WINDOWS = WINDOWSARM64 = MACOS = MACOSARM64 = FOUNDATION = False
 KERNEL32 = LIBC = MACOSLIBC = PLATFORM = None
 
 if os.name == "nt":
     WINDOWS = True
+    WINDOWSARM64 = platform.uname().machine == "ARM64"
 
     if platform.uname().machine not in ["AMD64", "ARM64"]:
         print("SABnzbd only supports 64-bit Windows")

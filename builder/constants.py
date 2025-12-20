@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os
+import platform
 import re
 
 # Constants
@@ -43,10 +44,16 @@ RELEASE_VERSION_BASE = f"{RELEASE_VERSION_TUPLE[0]}.{RELEASE_VERSION_TUPLE[1]}.{
 RELEASE_NAME = "SABnzbd-%s" % RELEASE_VERSION
 RELEASE_TITLE = "SABnzbd %s" % RELEASE_VERSION
 RELEASE_SRC = RELEASE_NAME + "-src.tar.gz"
-RELEASE_BINARY = RELEASE_NAME + "-win64-bin.zip"
-RELEASE_INSTALLER = RELEASE_NAME + "-win-setup.exe"
+RELEASE_WIN_BIN_X64 = RELEASE_NAME + "-win64-bin.zip"
+RELEASE_WIN_BIN_ARM64 = RELEASE_NAME + "-win-arm64-bin.zip"
+RELEASE_WIN_INSTALLER = RELEASE_NAME + "-win-setup.exe"
 RELEASE_MACOS = RELEASE_NAME + "-macos.dmg"
 RELEASE_README = "README.mkd"
+
+# Detect architecture
+RELEASE_WIN_BIN = RELEASE_WIN_BIN_X64
+if platform.machine() == "ARM64":
+    RELEASE_WIN_BIN = RELEASE_WIN_BIN_ARM64
 
 # Used in package.py and SABnzbd.spec
 EXTRA_FILES = [

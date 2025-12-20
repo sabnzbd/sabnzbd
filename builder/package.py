@@ -35,8 +35,8 @@ from constants import (
     VERSION_FILE,
     RELEASE_README,
     RELEASE_NAME,
-    RELEASE_BINARY,
-    RELEASE_INSTALLER,
+    RELEASE_WIN_BIN,
+    RELEASE_WIN_INSTALLER,
     ON_GITHUB_ACTIONS,
     RELEASE_THIS,
     RELEASE_SRC,
@@ -257,7 +257,7 @@ if __name__ == "__main__":
 
         # Remove any leftovers
         safe_remove(RELEASE_NAME)
-        safe_remove(RELEASE_BINARY)
+        safe_remove(RELEASE_WIN_BIN)
 
         # Run PyInstaller and check output
         shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
@@ -275,8 +275,8 @@ if __name__ == "__main__":
         test_sab_binary("dist/SABnzbd/SABnzbd.exe")
 
         # Create the archive
-        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, "SABnzbd"], cwd="dist")
-        shutil.move(f"dist/{RELEASE_BINARY}", RELEASE_BINARY)
+        run_external_command(["win/7zip/7za.exe", "a", RELEASE_WIN_BIN, "SABnzbd"], cwd="dist")
+        shutil.move(f"dist/{RELEASE_WIN_BIN}", RELEASE_WIN_BIN)
 
     if "installer" in sys.argv:
         # Check if we have the dist folder
@@ -284,10 +284,10 @@ if __name__ == "__main__":
             raise FileNotFoundError("SABnzbd executable not found, run binary creation first")
 
         # Check if we have a signed version
-        if os.path.exists(f"signed/{RELEASE_BINARY}"):
+        if os.path.exists(f"signed/{RELEASE_WIN_BIN}"):
             print("Using signed version of SABnzbd binaries")
             safe_remove("dist/SABnzbd")
-            run_external_command(["win/7zip/7za.exe", "x", "-odist", f"signed/{RELEASE_BINARY}"])
+            run_external_command(["win/7zip/7za.exe", "x", "-odist", f"signed/{RELEASE_WIN_BIN}"])
 
             # Make sure it exists
             if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
@@ -310,7 +310,7 @@ if __name__ == "__main__":
                 "/V3",
                 "/DSAB_VERSION=%s" % RELEASE_VERSION,
                 "/DSAB_VERSIONKEY=%s" % ".".join(map(str, RELEASE_VERSION_TUPLE)),
-                "/DSAB_FILE=%s" % RELEASE_INSTALLER,
+                "/DSAB_FILE=%s" % RELEASE_WIN_INSTALLER,
                 "NSIS_Installer.nsi.tmp",
             ]
         )

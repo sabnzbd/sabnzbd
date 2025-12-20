@@ -118,7 +118,14 @@ def find_programs(curdir: str):
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "macos/7zip/7zz")
 
     if sabnzbd.WINDOWS:
-        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
+        if sabnzbd.WINDOWSARM64:
+            # ARM64 version of par2
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/arm64/par2.exe")
+        else:
+            # Regular x64 version
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
+
+        # UnRAR has no arm64 version, so we skip it also for 7zip
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:

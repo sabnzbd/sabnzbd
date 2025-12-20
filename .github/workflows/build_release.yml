@@ -8,8 +8,18 @@ env:
 
 jobs:
   build_windows:
-    name: Build Windows binary
-    runs-on: windows-2022
+    name: Build Windows binary (${{ matrix.architecture }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: x64
+            runs-on: windows-2022
+          - architecture: arm64
+            runs-on: windows-11-arm
+
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v6
@@ -17,7 +27,7 @@ jobs:
       uses: actions/setup-python@v6
       with:
         python-version: "3.14"
-        architecture: "x64"
+        architecture: ${{ matrix.architecture }}
         cache: pip
         cache-dependency-path: "**/requirements.txt"
     - name: Install Python dependencies
@@ -34,8 +44,8 @@ jobs:
       uses: actions/upload-artifact@v6
       id: upload-unsigned-binary
       with:
-        path: "*-win64-bin.zip"
-        name: Windows standalone binary
+        path: "*-win*-bin.zip"
+        name: Windows standalone binary (${{ matrix.architecture }})
     - name: Sign Windows standalone binary
       uses: signpath/github-action-submit-signing-request@v2
       if: contains(github.ref, 'refs/tags/')
@@ -52,19 +62,21 @@ jobs:
       uses: actions/upload-artifact@v6
       if: contains(github.ref, 'refs/tags/')
       with:
-        name: Windows standalone binary (signed)
+        name: Windows standalone binary (${{ matrix.architecture }}, signed)
         path: "signed"
     - name: Build Windows installer
+      if: matrix.architecture == 'x64'
       run: python builder/package.py installer
     - name: Upload Windows installer
+      if: matrix.architecture == 'x64'
       uses: actions/upload-artifact@v6
       id: upload-unsigned-installer
       with:
         path: "*-win-setup.exe"
-        name: Windows installer
+        name: Windows installer (${{ matrix.architecture }})
     - name: Sign Windows installer
+      if: matrix.architecture == 'x64' && contains(github.ref, 'refs/tags/')
       uses: signpath/github-action-submit-signing-request@v2
-      if: contains(github.ref, 'refs/tags/')
       with:
         api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
         organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
@@ -75,10 +87,10 @@ jobs:
         wait-for-completion: true
         output-artifact-directory: "signed"
     - name: Upload Windows installer (signed)
-      if: contains(github.ref, 'refs/tags/')
+      if: matrix.architecture == 'x64' && contains(github.ref, 'refs/tags/')
       uses: actions/upload-artifact@v6
       with:
-        name: Windows installer (signed)
+        name: Windows installer (${{ matrix.architecture }}, signed)
         path: "signed/*-win-setup.exe"
 
   build_macos:
@@ -167,7 +179,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            linux_arch: amd64
+            linux_arch: x64
           - os: ubuntu-24.04-arm
             linux_arch: arm64
 
