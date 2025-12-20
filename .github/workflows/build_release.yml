@@ -9,7 +9,17 @@ env:
 jobs:
   build_windows:
     name: Build Windows binary
-    runs-on: windows-2022
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: x64
+            runs-on: windows-2022
+          - architecture: arm64
+            runs-on: windows-11-arm
+
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v6
@@ -17,7 +27,7 @@ jobs:
       uses: actions/setup-python@v6
       with:
         python-version: "3.14"
-        architecture: "x64"
+        architecture: "${{ matrix.architecture }}"
         cache: pip
         cache-dependency-path: "**/requirements.txt"
     - name: Install Python dependencies
@@ -35,7 +45,7 @@ jobs:
       id: upload-unsigned-binary
       with:
         path: "*-win64-bin.zip"
-        name: Windows standalone binary
+        name: Windows standalone ${{ matrix.architecture }} binary
     - name: Sign Windows standalone binary
       uses: signpath/github-action-submit-signing-request@v2
       if: contains(github.ref, 'refs/tags/')
@@ -52,7 +62,7 @@ jobs:
       uses: actions/upload-artifact@v6
       if: contains(github.ref, 'refs/tags/')
       with:
-        name: Windows standalone binary (signed)
+        name: Windows standalone ${{ matrix.architecture }} binary (signed)
         path: "signed"
     - name: Build Windows installer
       run: python builder/package.py installer
@@ -61,7 +71,7 @@ jobs:
       id: upload-unsigned-installer
       with:
         path: "*-win-setup.exe"
-        name: Windows installer
+        name: Windows ${{ matrix.architecture }} installer
     - name: Sign Windows installer
       uses: signpath/github-action-submit-signing-request@v2
       if: contains(github.ref, 'refs/tags/')
@@ -78,7 +88,7 @@ jobs:
       if: contains(github.ref, 'refs/tags/')
       uses: actions/upload-artifact@v6
       with:
-        name: Windows installer (signed)
+        name: Windows ${{ matrix.architecture }} installer (signed)
         path: "signed/*-win-setup.exe"
 
   build_macos:
