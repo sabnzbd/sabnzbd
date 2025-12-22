@@ -482,6 +482,10 @@ def delayed_startup_actions():
             sabnzbd.ORG_UMASK,
         )
 
+    # Check if maybe we are running x64 version on ARM hardware
+    if sabnzbd.WINDOWSARM64 and "AMD64" in sys.version:
+        misc.helpful_warning(T("Windows ARM version of SABnzbd is available from our Downloads page!"))
+
     # List the number of certificates available (can take up to 1.5 seconds)
     if cfg.log_level() > 1:
         logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
