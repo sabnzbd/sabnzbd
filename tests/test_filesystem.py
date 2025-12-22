@@ -663,7 +663,7 @@ class TestListdirFull(ffs.TestCase):
         ):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
-        assert filesystem.listdir_full("/rsc") == ["/rsc/base_file", "/rsc/not._base_file"]
+        assert sorted(filesystem.listdir_full("/rsc")) == ["/rsc/base_file", "/rsc/not._base_file"]
 
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
@@ -750,7 +750,7 @@ class TestListdirFullWin(ffs.TestCase):
         ):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
-        assert filesystem.listdir_full(r"f:\rsc") == [r"f:\rsc\base_file", r"f:\rsc\not._base_file"]
+        assert sorted(filesystem.listdir_full(r"f:\rsc")) == [r"f:\rsc\base_file", r"f:\rsc\not._base_file"]
 
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
