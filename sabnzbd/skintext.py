@@ -574,6 +574,11 @@ SKIN_TEXT = {
         "For unreliable servers, will be ignored longer in case of failures"
     ),  #: Explain server optional tickbox
     "srv-enable": TT("Enable"),  #: Enable server tickbox
+    "srv-pipelining_requests": TT("Articles per request"),
+    "explain-pipelining_requests": TT(
+        "Request multiple articles per connection without waiting for each response first.<br />"
+        "This can improve download speeds, especially on connections with higher latency."
+    ),
     "button-addServer": TT("Add Server"),  #: Button: Add server
     "button-delServer": TT("Remove Server"),  #: Button: Remove server
     "button-testServer": TT("Test Server"),  #: Button: Test server

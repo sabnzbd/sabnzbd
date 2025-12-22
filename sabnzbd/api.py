@@ -57,6 +57,7 @@ from sabnzbd.constants import (
     PP_LOOKUP,
     STAGES,
     DEF_NETWORKING_TEST_TIMEOUT,
+    DEF_PIPELINING_REQUESTS,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -1309,6 +1310,7 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 3))
     ssl_ciphers = kwargs.get("ssl_ciphers", "").strip()
+    pipelining_requests = int_conv(kwargs.get("pipelining_requests", DEF_PIPELINING_REQUESTS))
 
     if not host:
         return False, T("The hostname is not set.")
@@ -1345,6 +1347,7 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
             use_ssl=ssl,
             ssl_verify=ssl_verify,
             ssl_ciphers=ssl_ciphers,
+            pipelining_requests=lambda: pipelining_requests,
             username=username,
             password=password,
         )

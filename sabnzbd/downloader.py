@@ -85,6 +85,7 @@ class Server:
         "retention",
         "username",
         "password",
+        "pipelining_requests",
         "busy_threads",
         "next_busy_threads_check",
         "idle_threads",
@@ -113,6 +114,7 @@ class Server:
         use_ssl,
         ssl_verify,
         ssl_ciphers,
+        pipelining_requests,
         username=None,
         password=None,
         required=False,
@@ -137,6 +139,7 @@ class Server:
         self.retention: int = retention
         self.username: Optional[str] = username
         self.password: Optional[str] = password
+        self.pipelining_requests: Callable[[], int] = pipelining_requests
 
         self.busy_threads: set[NewsWrapper] = set()
         self.next_busy_threads_check: float = 0
@@ -325,6 +328,7 @@ class Downloader(Thread):
             ssl = srv.ssl()
             ssl_verify = srv.ssl_verify()
             ssl_ciphers = srv.ssl_ciphers()
+            pipelining_requests = srv.pipelining_requests
             username = srv.username()
             password = srv.password()
             required = srv.required()
@@ -355,6 +359,7 @@ class Downloader(Thread):
                     ssl,
                     ssl_verify,
                     ssl_ciphers,
+                    pipelining_requests,
                     username,
                     password,
                     required,

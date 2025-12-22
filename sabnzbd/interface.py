@@ -913,7 +913,6 @@ SPECIAL_VALUE_LIST = (
     "ssdp_broadcast_interval",
     "unrar_parameters",
     "outgoing_nntp_ip",
-    "pipelining_requests",
 )
 SPECIAL_LIST_LIST = (
     "rss_odd_titles",

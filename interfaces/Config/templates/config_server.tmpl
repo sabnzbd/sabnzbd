@@ -118,6 +118,12 @@
                         <span class="desc">$T('explain-optional')</span>
                     </div>
                     <div class="field-pair advanced-settings">
+                        <label class="config" for="pipelining_requests">$T('srv-pipelining_requests')</label>
+                        <input type="number" name="pipelining_requests" id="pipelining_requests" min="1" max="20" value="1" />
+                        <span class="desc">$T('explain-pipelining_requests')<br>$T('readwiki')
+                        <a href="https://sabnzbd.org/wiki/advanced/nntp-pipelining" target="_blank">https://sabnzbd.org/wiki/advanced/nntp-pipelining</a></span>
+                    </div>
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="expire_date">$T('srv-expire_date')</label>
                         <input type="date" name="expire_date" id="expire_date" />
                         <span class="desc">$T('srv-explain-expire_date')</span>
@@ -247,6 +253,12 @@
                             <label class="config" for="optional$cur">$T('srv-optional')</label>
                             <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($server['optional']) != 0 then 'checked="checked"' else ""#--> />
                             <span class="desc">$T('explain-optional')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="pipelining_requests$cur">$T('srv-pipelining_requests')</label>
+                            <input type="number" name="pipelining_requests" id="pipelining_requests$cur" value="$server['pipelining_requests']" min="1" max="20" required />
+                            <span class="desc">$T('explain-pipelining_requests')<br>$T('readwiki')
+                            <a href="https://sabnzbd.org/wiki/advanced/nntp-pipelining" target="_blank">https://sabnzbd.org/wiki/advanced/nntp-pipelining</a></span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="expire_date$cur">$T('srv-expire_date')</label>

@@ -42,6 +42,7 @@ from sabnzbd.constants import (
     CONFIG_BACKUP_HTTPS,
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
+    DEF_PIPELINING_REQUESTS,
 )
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
@@ -444,6 +445,7 @@ class ConfigServer:
         self.enable = OptionBool(name, "enable", True, add=False)
         self.required = OptionBool(name, "required", False, add=False)
         self.optional = OptionBool(name, "optional", False, add=False)
+        self.pipelining_requests = OptionNumber(name, "pipelining_requests", DEF_PIPELINING_REQUESTS, 1, 20, add=False)
         self.retention = OptionNumber(name, "retention", 0, add=False)
         self.expire_date = OptionStr(name, "expire_date", add=False)
         self.quota = OptionStr(name, "quota", add=False)
@@ -476,6 +478,7 @@ class ConfigServer:
             "enable",
             "required",
             "optional",
+            "pipelining_requests",
             "retention",
             "expire_date",
             "quota",
@@ -511,6 +514,7 @@ class ConfigServer:
         output_dict["enable"] = self.enable()
         output_dict["required"] = self.required()
         output_dict["optional"] = self.optional()
+        output_dict["pipelining_requests"] = self.pipelining_requests()
         output_dict["retention"] = self.retention()
         output_dict["expire_date"] = self.expire_date()
         output_dict["quota"] = self.quota()

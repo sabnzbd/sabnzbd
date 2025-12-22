@@ -101,7 +101,7 @@ class NewsWrapper:
         # Command queue and concurrency
         self.next_request: Optional[tuple[bytes, Optional["sabnzbd.nzb.Article"]]] = None
         self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
-            sabnzbd.cfg.pipelining_requests()
+            self.server.pipelining_requests()
         )
         self._response_queue: deque[Optional[sabnzbd.nzb.Article]] = deque()
         self.selector_events = 0

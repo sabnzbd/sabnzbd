@@ -269,7 +269,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.language.callback(cfg.guard_language)
     cfg.enable_https_verification.callback(cfg.guard_https_ver)
     cfg.guard_https_ver()
-    cfg.pipelining_requests.callback(cfg.guard_restart)
 
     # Set language files
     lang.set_locale_info("SABnzbd", DIR_LANGUAGE)
