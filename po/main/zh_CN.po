@@ -142,6 +142,11 @@ msgstr "当前 umask (%o) 可能会拒绝 SABnzbd 访问其创建的文件和文
 
 #. Warning message
 #: sabnzbd/__init__.py
+msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
