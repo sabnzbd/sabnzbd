@@ -10,7 +10,7 @@ configobj==5.0.9
 cheroot==11.1.2
 six==1.17.0
 cherrypy==18.10.0
-jaraco.functools==4.3.0
+jaraco.functools==4.4.0
 jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
