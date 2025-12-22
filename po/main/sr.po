@@ -3644,6 +3644,17 @@ msgstr ""
 msgid "Enable"
 msgstr "Омогући"
 
+#: sabnzbd/skintext.py
+msgid "Articles per request"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Request multiple articles per connection without waiting for each response "
+"first.<br />This can improve download speeds, especially on connections with"
+" higher latency."
+msgstr ""
+
 #. Button: Remove server
 #: sabnzbd/skintext.py
 msgid "Remove Server"

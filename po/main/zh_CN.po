@@ -3605,6 +3605,17 @@ msgstr "对于不稳定的服务器，在失败后将会被忽略更长的时间
 msgid "Enable"
 msgstr "启用"
 
+#: sabnzbd/skintext.py
+msgid "Articles per request"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Request multiple articles per connection without waiting for each response "
+"first.<br />This can improve download speeds, especially on connections with"
+" higher latency."
+msgstr ""
+
 #. Button: Remove server
 #: sabnzbd/skintext.py
 msgid "Remove Server"
