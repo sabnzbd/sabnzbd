@@ -25,6 +25,8 @@ import time
 import datetime
 import threading
 import urllib.parse
+from dataclasses import dataclass, field
+from typing import Union, Optional, Iterator
 
 import sabnzbd
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY
@@ -142,43 +144,7 @@ class RSSReader:
             return T('Incorrect RSS feed description "%s"') % feed
 
         uris = feeds.uri()
-        defCat = feeds.cat()
-
-        if not notdefault(defCat) or defCat not in sabnzbd.api.list_cats(default=False):
-            defCat = None
-        defPP = feeds.pp()
-        if not notdefault(defPP):
-            defPP = None
-        defScript = feeds.script()
-        if not notdefault(defScript):
-            defScript = None
-        defPrio = feeds.priority()
-        if not notdefault(defPrio):
-            defPrio = None
-
-        # Preparations, convert filters to regex's
-        regexes = []
-        reTypes = []
-        reCats = []
-        rePPs = []
-        rePrios = []
-        reScripts = []
-        reEnabled = []
-        for feed_filter in feeds.filters():
-            reCat = feed_filter[0]
-            if defCat in ("", "*"):
-                reCat = None
-            reCats.append(reCat)
-            rePPs.append(feed_filter[1])
-            reScripts.append(feed_filter[2])
-            reTypes.append(feed_filter[3])
-            if feed_filter[3] in ("<", ">", "F", "S"):
-                regexes.append(feed_filter[4])
-            else:
-                regexes.append(convert_filter(feed_filter[4]))
-            rePrios.append(feed_filter[5])
-            reEnabled.append(feed_filter[6] != "0")
-        regcount = len(regexes)
+        filters = prepare_feed(feeds)
 
         # Set first if this is the very first scan of this URI
         first = (feed not in self.jobs) and ignoreFirst
@@ -302,71 +268,71 @@ class RSSReader:
                     # Match this title against all filters
                     logging.debug("Trying title %s", title)
                     result = False
-                    myCat = defCat
-                    myPP = defPP
-                    myScript = defScript
-                    myPrio = defPrio
+                    myCat = filters.default_category
+                    myPP = filters.default_pp
+                    myScript = filters.default_script
+                    myPrio = filters.default_priority
                     n = 0
-                    if ("F" in reTypes or "S" in reTypes) and (not season or not episode):
+                    if filters.has_type("F", "S") and (not season or not episode):
                         show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
                         season = show_analysis.info.get("season_num")
                         episode = show_analysis.info.get("episode_num")
 
                     # Match against all filters until an positive or negative match
                     logging.debug("Size %s", size)
-                    for n in range(regcount):
-                        if reEnabled[n]:
-                            if category and reTypes[n] == "C":
-                                found = re.search(regexes[n], category)
+                    for rule in filters:
+                        if rule.enabled:
+                            if category and rule.type == "C":
+                                found = re.search(rule.regex, category)
                                 if not found:
                                     logging.debug("Filter rejected on rule %d", n)
                                     result = False
                                     break
-                            elif reTypes[n] == "<" and size and from_units(regexes[n]) < size:
+                            elif rule.type == "<" and size and from_units(rule.regex) < size:
                                 # "Size at most" : too large
                                 logging.debug("Filter rejected on rule %d", n)
                                 result = False
                                 break
-                            elif reTypes[n] == ">" and size and from_units(regexes[n]) > size:
+                            elif rule.type == ">" and size and from_units(rule.regex) > size:
                                 # "Size at least" : too small
                                 logging.debug("Filter rejected on rule %d", n)
                                 result = False
                                 break
-                            elif reTypes[n] == "F" and not ep_match(season, episode, regexes[n]):
+                            elif rule.type == "F" and not ep_match(season, episode, rule.regex):
                                 # "Starting from SxxEyy", too early episode
                                 logging.debug("Filter requirement match on rule %d", n)
                                 result = False
                                 break
-                            elif reTypes[n] == "S" and ep_match(season, episode, regexes[n], title):
+                            elif rule.type == "S" and ep_match(season, episode, rule.regex, title):
                                 logging.debug("Filter matched on rule %d", n)
                                 result = True
                                 break
                             else:
-                                if regexes[n]:
-                                    found = re.search(regexes[n], title)
+                                if rule.regex:
+                                    found = re.search(rule.regex, title)
                                 else:
                                     found = False
-                                if reTypes[n] == "M" and not found:
+                                if rule.type == "M" and not found:
                                     logging.debug("Filter rejected on rule %d", n)
                                     result = False
                                     break
-                                if found and reTypes[n] == "A":
+                                if found and rule.type == "A":
                                     logging.debug("Filter matched on rule %d", n)
                                     result = True
                                     break
-                                if found and reTypes[n] == "R":
+                                if found and rule.type == "R":
                                     logging.debug("Filter rejected on rule %d", n)
                                     result = False
                                     break
 
-                    if len(reCats):
-                        if not result and defCat:
+                    if filters and (rule := filters.rules[-1]):
+                        if not result and filters.default_category:
                             # Apply Feed-category on non-matched items
-                            myCat = defCat
-                        elif result and notdefault(reCats[n]):
+                            myCat = filters.default_category
+                        elif result and notdefault(rule.category):
                             # Use the matched info
-                            myCat = reCats[n]
-                        elif category and not defCat:
+                            myCat = rule.category
+                        elif category and not filters.default_category:
                             # No result and no Feed-category
                             myCat = cat_convert(category)
 
@@ -374,17 +340,17 @@ class RSSReader:
                             myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
                         else:
                             myCat = catPP = catScript = catPrio = None
-                        if notdefault(rePPs[n]):
-                            myPP = rePPs[n]
-                        elif not (reCats[n] or category):
+                        if notdefault(rule.pp):
+                            myPP = rule.pp
+                        elif not (rule.category or category):
                             myPP = catPP
-                        if notdefault(reScripts[n]):
-                            myScript = reScripts[n]
-                        elif not (notdefault(reCats[n]) or category):
+                        if notdefault(rule.script):
+                            myScript = rule.script
+                        elif not (notdefault(rule.category) or category):
                             myScript = catScript
-                        if rePrios[n] not in (str(DEFAULT_PRIORITY), ""):
-                            myPrio = rePrios[n]
-                        elif not ((rePrios[n] != str(DEFAULT_PRIORITY)) or category):
+                        if rule.priority not in (str(DEFAULT_PRIORITY), ""):
+                            myPrio = rule.priority
+                        elif not ((rule.priority != str(DEFAULT_PRIORITY)) or category):
                             myPrio = catPrio
 
                     act = download and not first
@@ -530,6 +496,83 @@ class RSSReader:
             for item in self.jobs[feed]:
                 if self.jobs[feed][item]["status"] == "D":
                     self.jobs[feed][item]["status"] = "D-"
+
+
+@dataclass
+class FeedRule:
+    regex: Union[str, re.Pattern]
+    type: str
+    category: Optional[str] = None
+    pp: Optional[str] = None
+    priority: Optional[int] = None
+    script: Optional[str] = None
+    enabled: bool = True
+
+    def __post_init__(self):
+        # Convert regex if needed
+        if self.type not in {"<", ">", "F", "S"}:
+            self.regex = convert_filter(self.regex)
+
+
+@dataclass
+class FeedConfig:
+    default_category: Optional[str] = None
+    default_pp: Optional[str] = None
+    default_script: Optional[str] = None
+    default_priority: Optional[int] = None
+    rules: list[FeedRule] = field(default_factory=list)
+
+    def __post_init__(self):
+        # Normalise categories for all rules automatically
+        if self.default_category in ("", "*"):
+            for rule in self.rules:
+                rule.category = None
+
+    def __bool__(self):
+        return bool(self.rules)  # True if there are any rules
+
+    def __iter__(self) -> Iterator[FeedRule]:
+        """Allow iteration directly over FeedConfig to access rules."""
+        return iter(self.rules)
+
+    def has_type(self, *types: str) -> bool:
+        """Check if any rule matches the given types"""
+        return any(rule.type in types for rule in self.rules)
+
+
+def prepare_feed(c: config.ConfigRSS) -> FeedConfig:
+    def normalise_default(value):
+        return value if notdefault(value) else None
+
+    default_category = normalise_default(c.cat())
+    if default_category not in sabnzbd.api.list_cats(default=False):
+        default_category = None
+    default_pp = normalise_default(c.pp())
+    default_script = normalise_default(c.script())
+    default_priority = normalise_default(c.priority())
+
+    # Preparations, convert filters to regex's
+    rules: list[FeedRule] = []
+    for cat, pp, script, ftype, regex, priority, enabled in c.filters():
+        rules.append(
+            FeedRule(
+                regex=regex,
+                type=ftype,
+                category=cat,
+                pp=pp,
+                priority=priority,
+                script=script,
+                enabled=(enabled != "0"),
+            )
+        )
+
+    return FeedConfig(
+        default_category=default_category,
+        default_pp=default_pp,
+        default_script=default_script,
+        default_priority=default_priority,
+        rules=rules,
+    )
 
 
 def patch_feedparser():
