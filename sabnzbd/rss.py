@@ -25,8 +25,8 @@ import time
 import datetime
 import threading
 import urllib.parse
-from dataclasses import dataclass
-from typing import Union, Optional
+from dataclasses import dataclass, field
+from typing import Union, Optional, Iterator
 
 import sabnzbd
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY
@@ -280,7 +280,7 @@ class RSSReader:
 
                     # Match against all filters until an positive or negative match
                     logging.debug("Size %s", size)
-                    for rule in filters.rules:
+                    for rule in filters:
                         if rule.enabled:
                             if category and rule.type == "C":
                                 found = re.search(rule.regex, category)
@@ -325,7 +325,7 @@ class RSSReader:
                                     result = False
                                     break
 
-                    if filters.rules and (rule := filters.rules[-1]):
+                    if filters and (rule := filters.rules[-1]):
                         if not result and filters.default_category:
                             # Apply Feed-category on non-matched items
                             myCat = filters.default_category
@@ -502,23 +502,41 @@ class RSSReader:
 class FeedRule:
     regex: Union[str, re.Pattern]
     type: str
-    category: Optional[str]
-    pp: Optional[str]
-    priority: Optional[int]
-    script: Optional[str]
-    enabled: bool
+    category: Optional[str] = None
+    pp: Optional[str] = None
+    priority: Optional[int] = None
+    script: Optional[str] = None
+    enabled: bool = True
+
+    def __post_init__(self):
+        # Convert regex if needed
+        if self.type not in {"<", ">", "F", "S"}:
+            self.regex = convert_filter(self.regex)
 
 
 @dataclass
 class FeedConfig:
-    default_category: Optional[str]
-    default_pp: Optional[str]
-    default_script: Optional[str]
-    default_priority: Optional[int]
-    rules: list[FeedRule]
+    default_category: Optional[str] = None
+    default_pp: Optional[str] = None
+    default_script: Optional[str] = None
+    default_priority: Optional[int] = None
+    rules: list[FeedRule] = field(default_factory=list)
+
+    def __post_init__(self):
+        # Normalise categories for all rules automatically
+        if self.default_category in ("", "*"):
+            for rule in self.rules:
+                rule.category = None
+
+    def __bool__(self):
+        return bool(self.rules)  # True if there are any rules
+
+    def __iter__(self) -> Iterator[FeedRule]:
+        """Allow iteration directly over FeedConfig to access rules."""
+        return iter(self.rules)
 
     def has_type(self, *types: str) -> bool:
-        """Check if any of the types exists in config"""
+        """Check if any rule matches the given types"""
         return any(rule.type in types for rule in self.rules)
 
 
@@ -536,11 +554,9 @@ def prepare_feed(c: config.ConfigRSS) -> FeedConfig:
     # Preparations, convert filters to regex's
     rules: list[FeedRule] = []
     for cat, pp, script, ftype, regex, priority, enabled in c.filters():
-        if default_category in ("", "*"):
-            cat = None
         rules.append(
             FeedRule(
-                regex=regex if ftype in {"<", ">", "F", "S"} else convert_filter(regex),
+                regex=regex,
                 type=ftype,
                 category=cat,
                 pp=pp,
