@@ -1269,7 +1269,7 @@ class ConfigRss:
                     active_feed,
                     download=self.__refresh_download,
                     force=self.__refresh_force,
-                    ignoreFirst=self.__refresh_ignore,
+                    ignore_first=self.__refresh_ignore,
                     readout=readout,
                 )
             else:
