@@ -80,6 +80,9 @@ class Assembler(Thread):
         self.assembler_write_trigger = int(limit * ASSEMBLER_WRITE_THRESHOLD / 100 / 750_000) + 1
         logging.debug("Assembler trigger = %d", self.assembler_write_trigger)
 
+    def change_direct_write(self, direct_write: bool) -> None:
+        self.direct_write = direct_write
+
     def process(
         self,
         nzo: NzbObject = None,
@@ -285,19 +288,17 @@ class Assembler(Thread):
 
                 if fd is None:
                     fd, direct_write = Assembler.open(nzf, direct_write and article.can_direct_write, article.file_size)
-                    if force and skipped and not direct_write:
-                        # Abort a forced direct write if the article is not suitable for direct write; will write when file_done
-                        if file_done:
-                            os.lseek(fd, 0, os.SEEK_END)
-                        else:
-                            break
+                    if force and not direct_write:
+                        # Can only be force if we wanted direct_write
+                        # file_done will always be queued separately
+                        break
                 elif direct_write and not article.can_direct_write:
                     # Opened for direct write but encountered an invalid article; revert to append mode
-                    if force and skipped:
-                        # Abort if skipped an article not yet decoded
+                    if force:
                         break
                     if file_done:
-                        os.lseek(fd, 0, os.SEEK_END)
+                        with nzf.file_lock:
+                            os.lseek(fd, 0, os.SEEK_END)
                     direct_write = False
 
                 if direct_write:
@@ -325,6 +326,7 @@ class Assembler(Thread):
             fd, direct_write = self.open(nzf, True, article.file_size)
             try:
                 if not direct_write:
+                    cfg.direct_write.set(False)
                     return False
                 self.write_at_offset(fd, nzf, article, data)
             finally:
@@ -425,6 +427,7 @@ class Assembler(Thread):
                             sabctools.sparse(fd, file_size)
                         except OSError:
                             logging.debug("Sparse call failed for %s", nzf.filepath)
+                            cfg.direct_write.set(False)
                             direct_write = False
                             os.lseek(fd, 0, os.SEEK_END)
                 else:

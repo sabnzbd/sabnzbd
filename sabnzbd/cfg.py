@@ -747,6 +747,12 @@ def new_limit():
         sabnzbd.Assembler.new_limit(sabnzbd.ArticleCache.cache_info().cache_limit)
 
 
+def new_direct_write():
+    """Callback for direct write changes"""
+    sabnzbd.Assembler.change_direct_write(direct_write.get())
+    sabnzbd.ArticleCache.change_direct_write(direct_write.get())
+
+
 def guard_restart():
     """Callback for config options requiring a restart"""
     sabnzbd.RESTART_REQ = True

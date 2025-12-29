@@ -64,6 +64,9 @@ class ArticleCache(threading.Thread):
         if sabnzbd.MACOS or sabnzbd.WINDOWS or (struct.calcsize("P") * 8) == 64:
             self.__cache_upper_limit = 4 * GIGI
 
+    def change_direct_write(self, direct_write: bool) -> None:
+        self.__direct_write = direct_write
+
     def stop(self):
         self.shutdown = True
         with self.__cache_size_cv:
@@ -234,12 +237,13 @@ class ArticleCache(threading.Thread):
                     lambda: self.shutdown or self.__cache_size <= self.__cache_size_lower, timeout=2.0
                 )
 
-        nzf = article.nzf
         # Direct write to destination if cache is being used
         if self.__cache_limit and sabnzbd.Assembler.assemble_article(article, data):
             with NZO_LOCK:
-                nzf.nzo.saved_articles.discard(article)
+                article.nzf.nzo.saved_articles.discard(article)
             return
 
         # Fallback to disk cache
-        sabnzbd.filesystem.save_data(data, article.get_art_id(), nzf.nzo.admin_path, do_pickle=False, silent=True)
+        sabnzbd.filesystem.save_data(
+            data, article.get_art_id(), article.nzf.nzo.admin_path, do_pickle=False, silent=True
+        )
