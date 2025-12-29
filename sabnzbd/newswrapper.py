@@ -351,7 +351,7 @@ class NewsWrapper:
                     server.active
                     and not server.restart
                     and not (
-                        sabnzbd.Downloader.paused
+                        sabnzbd.Downloader.no_active_jobs()
                         or sabnzbd.Downloader.shutdown
                         or sabnzbd.Downloader.paused_for_postproc
                     )
