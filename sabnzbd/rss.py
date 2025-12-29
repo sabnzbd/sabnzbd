@@ -26,7 +26,7 @@ import datetime
 import threading
 import urllib.parse
 from dataclasses import dataclass, field
-from typing import Union, Optional, Iterator
+from typing import Union, Optional
 
 import sabnzbd
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY
@@ -53,9 +53,45 @@ import feedparser
 ##############################################################################
 
 
-def notdefault(item):
-    """Return True if not 'Default|''|*'"""
-    return bool(item) and str(item).lower() not in ("default", "*", "", str(DEFAULT_PRIORITY))
+def _normalise_default(value: Optional[str]) -> Optional[str]:
+    """Normalise default values to None"""
+    if not value:
+        return None
+    v = str(value).strip()
+    if v.lower() in ("", "*", "default"):
+        return None
+    return v
+
+
+def _normalise_priority(value) -> Optional[int]:
+    """Normalise default priority values to None"""
+    if value in (None, "", "*", "default", DEFAULT_PRIORITY):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _normalise_pp(value) -> Optional[int]:
+    """Normalise pp value to an int between 0 and 3, or None if invalid/empty."""
+    if value in (None, ""):
+        return None
+    try:
+        iv = int(value)
+        if 0 <= iv <= 3:
+            return iv
+    except (TypeError, ValueError):
+        pass
+    return None
+
+
+def coalesce(*args):
+    """Return first value which is not None"""
+    for a in args:
+        if a is not None:
+            return a
+    return None
 
 
 def remove_obsolete(jobs, new_jobs):
@@ -144,7 +180,7 @@ class RSSReader:
             return T('Incorrect RSS feed description "%s"') % feed
 
         uris = feeds.uri()
-        filters = prepare_feed(feeds)
+        filters = FeedConfig.from_config(feeds)
 
         # Set first if this is the very first scan of this URI
         first = (feed not in self.jobs) and ignoreFirst
@@ -267,143 +303,41 @@ class RSSReader:
                 if jobstat in "NGB" or (jobstat == "X" and readout):
                     # Match this title against all filters
                     logging.debug("Trying title %s", title)
-                    result = False
-                    myCat = filters.default_category
-                    myPP = filters.default_pp
-                    myScript = filters.default_script
-                    myPrio = filters.default_priority
-                    n = 0
-                    if filters.has_type("F", "S") and (not season or not episode):
-                        show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
-                        season = show_analysis.info.get("season_num")
-                        episode = show_analysis.info.get("episode_num")
+                    match = filters.evaluate(
+                        title=title,
+                        category=category,
+                        size=size,
+                        season=season,
+                        episode=episode,
+                    )
 
-                    # Match against all filters until an positive or negative match
-                    logging.debug("Size %s", size)
-                    for rule in filters:
-                        if rule.enabled:
-                            if category and rule.type == "C":
-                                found = re.search(rule.regex, category)
-                                if not found:
-                                    logging.debug("Filter rejected on rule %d", n)
-                                    result = False
-                                    break
-                            elif rule.type == "<" and size and from_units(rule.regex) < size:
-                                # "Size at most" : too large
-                                logging.debug("Filter rejected on rule %d", n)
-                                result = False
-                                break
-                            elif rule.type == ">" and size and from_units(rule.regex) > size:
-                                # "Size at least" : too small
-                                logging.debug("Filter rejected on rule %d", n)
-                                result = False
-                                break
-                            elif rule.type == "F" and not ep_match(season, episode, rule.regex):
-                                # "Starting from SxxEyy", too early episode
-                                logging.debug("Filter requirement match on rule %d", n)
-                                result = False
-                                break
-                            elif rule.type == "S" and ep_match(season, episode, rule.regex, title):
-                                logging.debug("Filter matched on rule %d", n)
-                                result = True
-                                break
-                            else:
-                                if rule.regex:
-                                    found = re.search(rule.regex, title)
-                                else:
-                                    found = False
-                                if rule.type == "M" and not found:
-                                    logging.debug("Filter rejected on rule %d", n)
-                                    result = False
-                                    break
-                                if found and rule.type == "A":
-                                    logging.debug("Filter matched on rule %d", n)
-                                    result = True
-                                    break
-                                if found and rule.type == "R":
-                                    logging.debug("Filter rejected on rule %d", n)
-                                    result = False
-                                    break
+                    job = jobs.get(link)
+                    is_starred = job and job.get("status", "").endswith("*")
+                    star = first or is_starred
+                    act = (download and not first and not is_starred) or force
 
-                    if filters and (rule := filters.rules[-1]):
-                        if not result and filters.default_category:
-                            # Apply Feed-category on non-matched items
-                            myCat = filters.default_category
-                        elif result and notdefault(rule.category):
-                            # Use the matched info
-                            myCat = rule.category
-                        elif category and not filters.default_category:
-                            # No result and no Feed-category
-                            myCat = cat_convert(category)
-
-                        if myCat:
-                            myCat, catPP, catScript, catPrio = cat_to_opts(myCat)
-                        else:
-                            myCat = catPP = catScript = catPrio = None
-                        if notdefault(rule.pp):
-                            myPP = rule.pp
-                        elif not (rule.category or category):
-                            myPP = catPP
-                        if notdefault(rule.script):
-                            myScript = rule.script
-                        elif not (notdefault(rule.category) or category):
-                            myScript = catScript
-                        if rule.priority not in (str(DEFAULT_PRIORITY), ""):
-                            myPrio = rule.priority
-                        elif not ((rule.priority != str(DEFAULT_PRIORITY)) or category):
-                            myPrio = catPrio
-
-                    act = download and not first
-                    if link in jobs:
-                        act = act and not jobs[link].get("status", "").endswith("*")
-                        act = act or force
-                        star = first or jobs[link].get("status", "").endswith("*")
-                    else:
-                        star = first
-                    if result:
-                        _HandleLink(
-                            feed,
-                            jobs,
-                            link,
-                            infourl,
-                            title,
-                            size,
-                            age,
-                            season,
-                            episode,
-                            "G",
-                            category,
-                            myCat,
-                            myPP,
-                            myScript,
-                            act,
-                            star,
-                            priority=myPrio,
-                            rule=n,
-                        )
-                        if act:
-                            new_downloads.append(title)
-                    else:
-                        _HandleLink(
-                            feed,
-                            jobs,
-                            link,
-                            infourl,
-                            title,
-                            size,
-                            age,
-                            season,
-                            episode,
-                            "B",
-                            category,
-                            myCat,
-                            myPP,
-                            myScript,
-                            False,
-                            star,
-                            priority=myPrio,
-                            rule=n,
-                        )
+                    _HandleLink(
+                        feed=feed,
+                        jobs=jobs,
+                        link=link,
+                        infourl=infourl,
+                        title=title,
+                        size=size,
+                        age=age,
+                        season=match.season,
+                        episode=match.episode,
+                        flag="G" if match.matched else "B",
+                        orgcat=category,
+                        cat=match.category,
+                        pp=match.pp,
+                        script=match.script,
+                        download=act and match.matched,
+                        star=star,
+                        priority=match.priority,
+                        rule=match.rule_index,
+                    )
+                    if match.matched and act:
+                        new_downloads.append(title)
 
         # Send email if wanted and not "forced"
         if new_downloads and cfg.email_rss() and not force:
@@ -498,13 +432,25 @@ class RSSReader:
                     self.jobs[feed][item]["status"] = "D-"
 
 
+@dataclass(frozen=True)
+class FeedMatch:
+    matched: bool
+    rule_index: int
+    season: int
+    episode: int
+    category: Optional[str] = None
+    priority: Optional[int] = None
+    pp: Optional[int] = None
+    script: Optional[str] = None
+
+
 @dataclass
 class FeedRule:
     regex: Union[str, re.Pattern]
     type: str
     category: Optional[str] = None
-    pp: Optional[str] = None
     priority: Optional[int] = None
+    pp: Optional[int] = None
     script: Optional[str] = None
     enabled: bool = True
 
@@ -512,67 +458,210 @@ class FeedRule:
         # Convert regex if needed
         if self.type not in {"<", ">", "F", "S"}:
             self.regex = convert_filter(self.regex)
+        # Normalise "default-ish" values to None
+        self.category = _normalise_default(self.category)
+        self.priority = _normalise_priority(self.priority)
+        self.pp = _normalise_pp(self.pp)
+        self.script = _normalise_default(self.script)
 
 
 @dataclass
 class FeedConfig:
     default_category: Optional[str] = None
-    default_pp: Optional[str] = None
-    default_script: Optional[str] = None
     default_priority: Optional[int] = None
+    default_pp: Optional[int] = None
+    default_script: Optional[str] = None
     rules: list[FeedRule] = field(default_factory=list)
 
     def __post_init__(self):
-        # Normalise categories for all rules automatically
-        if self.default_category in ("", "*"):
-            for rule in self.rules:
-                rule.category = None
-
-    def __bool__(self):
-        return bool(self.rules)  # True if there are any rules
-
-    def __iter__(self) -> Iterator[FeedRule]:
-        """Allow iteration directly over FeedConfig to access rules."""
-        return iter(self.rules)
+        self.default_category = _normalise_default(self.default_category)
+        if self.default_category not in sabnzbd.api.list_cats(default=False):
+            self.default_category = None
+        self.default_priority = _normalise_priority(self.default_priority)
+        self.default_pp = _normalise_pp(self.default_pp)
+        self.default_script = _normalise_default(self.default_script)
 
     def has_type(self, *types: str) -> bool:
         """Check if any rule matches the given types"""
         return any(rule.type in types for rule in self.rules)
 
-
-def prepare_feed(c: config.ConfigRSS) -> FeedConfig:
-    def normalise_default(value):
-        return value if notdefault(value) else None
-
-    default_category = normalise_default(c.cat())
-    if default_category not in sabnzbd.api.list_cats(default=False):
-        default_category = None
-    default_pp = normalise_default(c.pp())
-    default_script = normalise_default(c.script())
-    default_priority = normalise_default(c.priority())
-
-    # Preparations, convert filters to regex's
-    rules: list[FeedRule] = []
-    for cat, pp, script, ftype, regex, priority, enabled in c.filters():
-        rules.append(
-            FeedRule(
-                regex=regex,
-                type=ftype,
-                category=cat,
-                pp=pp,
-                priority=priority,
-                script=script,
-                enabled=(enabled != "0"),
+    @classmethod
+    def from_config(cls, c: config.ConfigRSS) -> "FeedConfig":
+        """Build a FeedConfig from a RSS config."""
+        rules: list[FeedRule] = []
+        for cat, pp, script, ftype, regex, priority, enabled in c.filters():
+            rules.append(
+                FeedRule(
+                    regex=regex,
+                    type=ftype,
+                    category=cat,
+                    priority=priority,
+                    pp=pp,
+                    script=script,
+                    enabled=(enabled != "0"),
+                )
             )
+
+        return cls(
+            default_category=c.cat(),
+            default_priority=c.priority(),
+            default_pp=c.pp(),
+            default_script=c.script(),
+            rules=rules,
         )
 
-    return FeedConfig(
-        default_category=default_category,
-        default_pp=default_pp,
-        default_script=default_script,
-        default_priority=default_priority,
-        rules=rules,
-    )
+    def evaluate(
+        self,
+        *,
+        title: str,
+        category: Optional[str],
+        size: int,
+        season: int,
+        episode: int,
+    ) -> FeedMatch:
+        """Evaluate rules for a single RSS entry."""
+        result: bool = False
+        matched_rule: Optional[FeedRule] = None
+        matched_index: int = 0
+        cur_season: int = season
+        cur_episode: int = episode
+
+        # Start from feed defaults for options.
+        my_category: Optional[str] = self.default_category
+        my_pp: Optional[str] = self.default_pp
+        my_script: Optional[str] = self.default_script
+        my_priority: Optional[int] = self.default_priority
+
+        # If there are no rules; return early
+        if not self.rules:
+            return FeedMatch(
+                matched=result,
+                rule_index=matched_index,
+                season=int_conv(cur_season),
+                episode=int_conv(cur_episode),
+                category=my_category,
+                pp=my_pp,
+                script=my_script,
+                priority=my_priority,
+            )
+
+        # Fill in missing season / episode information when F/S rules exist
+        if self.has_type("F", "S") and (not cur_season or not cur_episode):
+            show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
+            cur_season = show_analysis.info.get("season_num")
+            cur_episode = show_analysis.info.get("episode_num")
+
+        # Match against all filters until a positive or negative match
+        logging.debug("Size %s", size)
+        for idx, rule in enumerate(self.rules):
+            if not rule.enabled:
+                continue
+
+            if category and rule.type == "C":
+                found = re.search(rule.regex, category)
+                if not found:
+                    logging.debug("Filter rejected on rule %d", idx)
+                    result = False
+                    matched_index = idx
+                    break
+            elif rule.type == "<" and size and from_units(rule.regex) < size:
+                # "Size at most" : too large
+                logging.debug("Filter rejected on rule %d", idx)
+                result = False
+                matched_index = idx
+                break
+            elif rule.type == ">" and size and from_units(rule.regex) > size:
+                # "Size at least" : too small
+                logging.debug("Filter rejected on rule %d", idx)
+                result = False
+                matched_index = idx
+                break
+            elif rule.type == "F" and not ep_match(cur_season, cur_episode, rule.regex):
+                # "Starting from SxxEyy", too early episode
+                logging.debug("Filter requirement match on rule %d", idx)
+                result = False
+                matched_index = idx
+                break
+            elif rule.type == "S" and ep_match(cur_season, cur_episode, rule.regex, title):
+                logging.debug("Filter matched on rule %d", idx)
+                result = True
+                matched_index = idx
+                matched_rule = rule
+                break
+            else:
+                if rule.regex:
+                    found = re.search(rule.regex, title)
+                else:
+                    found = False
+
+                if rule.type == "M" and not found:
+                    logging.debug("Filter rejected on rule %d", idx)
+                    result = False
+                    matched_index = idx
+                    break
+                if found and rule.type == "A":
+                    logging.debug("Filter matched on rule %d", idx)
+                    result = True
+                    matched_index = idx
+                    matched_rule = rule
+                    break
+                if found and rule.type == "R":
+                    logging.debug("Filter rejected on rule %d", idx)
+                    result = False
+                    matched_index = idx
+                    break
+
+        if matched_rule is None:
+            # No rule matched; keep my_category/my_pp/my_script/my_priority at feed defaults,
+            # or use original category if there is no default.
+            if category is not None and self.default_category is None:
+                my_category = cat_convert(category)
+            if my_category:
+                my_category, category_pp, category_script, category_priority = cat_to_opts(my_category)
+                category_pp = _normalise_pp(category_pp)
+                category_script = _normalise_default(category_script)
+                category_priority = _normalise_priority(category_priority)
+            else:
+                my_category = category_pp = category_script = category_priority = None
+            # pp/script/priority only come from category defaults in this case
+            my_pp = coalesce(category_pp, self.default_pp)
+            my_script = category_script or self.default_script
+            my_priority = coalesce(category_priority, self.default_priority)
+
+            return FeedMatch(
+                matched=result,
+                rule_index=matched_index,
+                season=int_conv(cur_season),
+                episode=int_conv(cur_episode),
+                category=my_category,
+                pp=my_pp,
+                script=my_script,
+                priority=my_priority,
+            )
+
+        # At this point we know a rule fired and matched_rule is not None.
+        my_category = matched_rule.category or cat_convert(category) or self.default_category
+        if my_category:
+            my_category, category_pp, category_script, category_priority = cat_to_opts(my_category)
+            category_pp = _normalise_pp(category_pp)
+            category_script = _normalise_default(category_script)
+            category_priority = _normalise_priority(category_priority)
+        else:
+            my_category = category_pp = category_script = category_priority = None
+        my_pp = coalesce(matched_rule.pp, category_pp, self.default_pp)
+        my_script = matched_rule.script or category_script or self.default_script
+        my_priority = coalesce(matched_rule.priority, category_priority, self.default_priority)
+
+        return FeedMatch(
+            matched=result,
+            rule_index=matched_index,
+            season=int_conv(cur_season),
+            episode=int_conv(cur_episode),
+            category=my_category,
+            pp=my_pp,
+            script=my_script,
+            priority=my_priority,
+        )
 
 
 def patch_feedparser():
@@ -653,14 +742,14 @@ def _HandleLink(
     jobs[link]["cat"] = cat
     jobs[link]["pp"] = pp
     jobs[link]["script"] = script
-    jobs[link]["prio"] = str(priority)
+    jobs[link]["prio"] = str(priority) if priority is not None else str(DEFAULT_PRIORITY)
     jobs[link]["orgcat"] = orgcat
     jobs[link]["size"] = size
     jobs[link]["age"] = age
     jobs[link]["time"] = time.time()
     jobs[link]["rule"] = str(rule)
-    jobs[link]["season"] = season
-    jobs[link]["episode"] = episode
+    jobs[link]["season"] = str(season)
+    jobs[link]["episode"] = str(episode)
 
     if special_rss_site(link):
         nzbname = None
