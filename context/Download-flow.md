@@ -16,7 +16,8 @@
 
 5. **Request scheduling & pipelining**  
    - `write()` chooses the next article command (`STAT/HEAD` for precheck, `BODY` or `ARTICLE` otherwise).  
-   - Concurrency is limited by `server.pipelining_requests`; commands are queued and sent; partial writes are buffered.
+   - Concurrency is limited by `server.pipelining_requests`; commands are queued and sent with `sock.sendall`, so there is no local send buffer. 
+   - Sockets stay registered for `EVENT_WRITE`: without write readiness events, a temporarily full kernel send buffer could stall queued commands when there is nothing to read, so WRITE interest is needed to resume sending promptly.
 
 6. **Receiving data**  
    - Selector events route to `process_nw_read`; `NewsWrapper.read` pulls bytes (SSL optimized via sabctools), parses NNTP responses, and calls `on_response`.  

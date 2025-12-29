@@ -60,7 +60,6 @@ class NewsWrapper:
         "blocking",
         "timeout",
         "decoder",
-        "send_buffer",
         "nntp",
         "connected",
         "user_sent",
@@ -86,7 +85,6 @@ class NewsWrapper:
         self.timeout: Optional[float] = None
 
         self.decoder: Optional[sabctools.Decoder] = None
-        self.send_buffer = b""
 
         self.nntp: Optional[NNTP] = None
 
@@ -338,14 +336,6 @@ class NewsWrapper:
         server = self.server
 
         try:
-            # First, try to flush any remaining data
-            if self.send_buffer:
-                sent = self.nntp.sock.send(self.send_buffer)
-                self.send_buffer = self.send_buffer[sent:]
-                if self.send_buffer:
-                    # Still unsent data, wait for next EVENT_WRITE
-                    return
-
             if self.connected:
                 if (
                     server.active
@@ -364,8 +354,8 @@ class NewsWrapper:
                     self.discard(self.next_request[1], count_article_try=False, retry_article=True)
                     self.next_request = None
 
-            # If no pending buffer, try to send new command
-            if not self.send_buffer and self.next_request:
+            # If available, try to send new command
+            if self.next_request:
                 if self.concurrent_requests.acquire(blocking=False):
                     command, article = self.next_request
                     self.next_request = None
@@ -375,25 +365,20 @@ class NewsWrapper:
                             self.discard(article, count_article_try=False, retry_article=True)
                             self.concurrent_requests.release()
                             return
-                    self._response_queue.append(article)
+
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s", self.thrdnum, server.host, command)
-                    try:
-                        sent = self.nntp.sock.send(command)
-                        if sent < len(command):
-                            # Partial send, store remainder
-                            self.send_buffer = command[sent:]
-                    except (BlockingIOError, ssl.SSLWantWriteError):
-                        # Can't send now, store full command
-                        self.send_buffer = command
+
+                    # If this fails, it will propagate and throw a Downloader-error
+                    self.nntp.sock.sendall(command)
+                    self._response_queue.append(article)
                 else:
                     # Concurrency limit reached
                     sabnzbd.Downloader.modify_socket(self, EVENT_READ)
             else:
                 # Is it safe to shut down this socket?
                 if (
-                    not self.send_buffer
-                    and not self.next_request
+                    not self.next_request
                     and not self._response_queue
                     and (not server.active or server.restart or not self.timeout or time.time() > self.timeout)
                 ):
@@ -402,9 +387,6 @@ class NewsWrapper:
                     server.idle_threads.add(self)
                     sabnzbd.Downloader.remove_socket(self)
 
-        except (BlockingIOError, ssl.SSLWantWriteError):
-            # Socket not currently writable — just try again later
-            return
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
             sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True)
