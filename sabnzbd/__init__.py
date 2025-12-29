@@ -250,6 +250,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
     cfg.direct_write.callback(cfg.new_direct_write)
+    cfg.download_dir.callback(cfg.new_download_dir)
     cfg.web_host.callback(cfg.guard_restart)
     cfg.web_port.callback(cfg.guard_restart)
     cfg.web_dir.callback(cfg.guard_restart)

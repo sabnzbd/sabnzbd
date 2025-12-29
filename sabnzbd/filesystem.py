@@ -1257,15 +1257,21 @@ def check_filesystem_capabilities(test_dir: str, is_download_dir: bool = False) 
         allgood = False
 
     # sparse files allow efficient use of empty space in files
-    if is_download_dir and sabnzbd.cfg.direct_write.get() and not is_sparse_supported(test_dir):
-        sabnzbd.cfg.direct_write.set(False)
-
+    if is_download_dir and not check_sparse_and_disable(test_dir):
         # Writing to correct file offsets will be disabled, and it won't be possible to flush the article cache
         # directly to the destination file
         sabnzbd.misc.helpful_warning(T("%s does not support sparse files. Disabling direct write mode."), test_dir)
         allgood = False
 
     return allgood
+
+
+def check_sparse_and_disable(test_dir: str) -> bool:
+    """Check if sparse files are supported, otherwise disable direct write mode"""
+    if sabnzbd.cfg.direct_write.get() and not is_sparse_supported(test_dir):
+        sabnzbd.cfg.direct_write.set(False)
+        return False
+    return True
 
 
 def get_win_drives() -> list[str]:

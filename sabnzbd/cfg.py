@@ -25,6 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
+import threading
 from typing import Union
 
 import sabnzbd
@@ -751,6 +752,12 @@ def new_direct_write():
     """Callback for direct write changes"""
     sabnzbd.Assembler.change_direct_write(direct_write.get())
     sabnzbd.ArticleCache.change_direct_write(direct_write.get())
+
+
+def new_download_dir():
+    """Callback for download dir changes"""
+    if direct_write.get():
+        threading.Thread(target=sabnzbd.filesystem.check_sparse_and_disable, args=(download_dir.get_path(),)).start()
 
 
 def guard_restart():
