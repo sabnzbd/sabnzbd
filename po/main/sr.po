@@ -1669,6 +1669,14 @@ msgstr "Greška pri gašenju sistema"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Nađen prazan RSS unos (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Некомпатибилан Фид"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1694,14 +1702,6 @@ msgstr "Server %s koristi nepouzdan HTTPS sertifikat"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS фид %s је празан"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Некомпатибилан Фид"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Nađen prazan RSS unos (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

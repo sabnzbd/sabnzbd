@@ -1558,6 +1558,14 @@ msgstr ""
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr ""
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr ""
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1582,14 +1590,6 @@ msgstr ""
 #. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
-msgstr ""
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr ""
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
 msgstr ""
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py

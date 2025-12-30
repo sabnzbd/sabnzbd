@@ -1649,6 +1649,14 @@ msgstr ""
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Prázdný RSS záznam nalezen (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Nekompatibilní kanál"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1674,14 +1682,6 @@ msgstr ""
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS kanál %s byl prázdný"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Nekompatibilní kanál"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Prázdný RSS záznam nalezen (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

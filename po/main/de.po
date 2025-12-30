@@ -1779,6 +1779,14 @@ msgstr "Fehler beim Herunterfahren des Systems"
 msgid "Received a DBus exception %s"
 msgstr "DBus-Ausnahmefehler empfangen %s "
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Leerer RSS-Feed gefunden: %s"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Inkompatibeler RSS-Feed"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1804,14 +1812,6 @@ msgstr "Der Server %s nutzt ein nicht vertrauenswürdiges HTTPS-Zertifikat"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-Feed %s war leer"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Inkompatibeler RSS-Feed"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Leerer RSS-Feed gefunden: %s"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

@@ -1693,6 +1693,14 @@ msgstr "Erro ao desligar o sistema"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Entrada RSS vazia encontrada (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Feed incompatível"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1719,14 +1727,6 @@ msgstr "Servidor %s usa um certificado HTTPS não confiável"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "O feed RSS %s estava vazio"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Feed incompatível"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Entrada RSS vazia encontrada (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

@@ -1695,6 +1695,14 @@ msgstr "שגיאה בזמן כיבוי מערכת"
 msgid "Received a DBus exception %s"
 msgstr "חריגת DBus התקבלה %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "כניסת RSS ריקה נמצאה (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "הזנה בלתי תואמת"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1720,14 +1728,6 @@ msgstr "השרת %s משתמש בתעודת HTTPS בלתי מהימנה"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "הזנת RSS %s הייתה ריקה"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "הזנה בלתי תואמת"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "כניסת RSS ריקה נמצאה (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

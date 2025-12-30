@@ -1676,6 +1676,14 @@ msgstr "Не удалось завершить работу системы"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Обнаружена пустая запись RSS (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Несовместимая лента"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1701,14 +1709,6 @@ msgstr ""
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-лента %s была пустой"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Несовместимая лента"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Обнаружена пустая запись RSS (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

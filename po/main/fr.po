@@ -1765,6 +1765,14 @@ msgstr "Erreur lors de l'arrêt du système"
 msgid "Received a DBus exception %s"
 msgstr "Exception DBus reçue %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Entrée vide de flux RSS trouvée (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Flux incompatible"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1791,14 +1799,6 @@ msgstr "Le serveur %s utilise un certificat de sécurité HTTPS non authentifié
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Le flux RSS %s était vide"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Flux incompatible"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Entrée vide de flux RSS trouvée (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

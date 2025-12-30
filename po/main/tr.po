@@ -1738,6 +1738,14 @@ msgstr "Sistemin kapatılması esnasında hata"
 msgid "Received a DBus exception %s"
 msgstr "Bir DBUS istisnası alındı %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Boş RSS girdisi bulundu (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Uyumsuz besleme"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1763,14 +1771,6 @@ msgstr "%s sunucusu güvenilmez bir HTTPS sertifikası kullanıyor"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "%s RSS Beselemesi boştu"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Uyumsuz besleme"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Boş RSS girdisi bulundu (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

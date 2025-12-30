@@ -1723,6 +1723,14 @@ msgstr "Fejl ved lukning af system"
 msgid "Received a DBus exception %s"
 msgstr "Modtog en DBus-undtagelse %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Tom RSS post blev fundet (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Inkompatibel feed"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1748,14 +1756,6 @@ msgstr "Server %s bruger et upålideligt HTTPS-certifikat"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS Feed %s er tom"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Inkompatibel feed"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Tom RSS post blev fundet (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

@@ -1683,6 +1683,14 @@ msgstr "Wyłączenie systemu nie powiodło się"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Znaleziono pusty wpis RSS (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Niekompatybilny kanał"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1708,14 +1716,6 @@ msgstr "Serwer %s używa niezaufanego certyfikatu HTTPS"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Kanał RSS %s był pusty"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Niekompatybilny kanał"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Znaleziono pusty wpis RSS (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

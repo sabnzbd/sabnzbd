@@ -1767,6 +1767,14 @@ msgstr "Error al apagarel sistema"
 msgid "Received a DBus exception %s"
 msgstr "Se ha recibido una excepción DBus %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Entrada RSS vacía (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Canal Incorrecto"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1794,14 +1802,6 @@ msgstr "El servidor %s utiliza un certificado HTTPS no fiable"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "El canal RSS %s estaba vacío"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Canal Incorrecto"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Entrada RSS vacía (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

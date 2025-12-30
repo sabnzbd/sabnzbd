@@ -1665,6 +1665,14 @@ msgstr "关闭系统时出错"
 msgid "Received a DBus exception %s"
 msgstr "收到 DBus 异常 %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "发现空的 RSS 条目 (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "feed 不兼容"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1690,14 +1698,6 @@ msgstr "服务器 %s 使用的 HTTPS 证书不受信任"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS Feed %s 为空"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "feed 不兼容"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "发现空的 RSS 条目 (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

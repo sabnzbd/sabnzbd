@@ -1674,6 +1674,14 @@ msgstr "Feil under avslutting av systemet"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Tom RSS post funnet (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Ukompatibel nyhetsstrøm"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1699,14 +1707,6 @@ msgstr "Server %s bruker et usikkert HTTP sertifikat"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-kilde %s var tom"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Ukompatibel nyhetsstrøm"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Tom RSS post funnet (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

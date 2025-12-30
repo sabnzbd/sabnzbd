@@ -1676,6 +1676,14 @@ msgstr "Virhe sammutettaessa järjestelmää"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Tyhjä RSS kohde löytyi (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Puutteellinen syöte"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1701,14 +1709,6 @@ msgstr "Palvelin %s käyttää epäluotettavaa HTTPS sertifikaattia"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS syöte %s oli tyhjä"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Puutteellinen syöte"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Tyhjä RSS kohde löytyi (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

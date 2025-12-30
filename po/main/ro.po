@@ -1712,6 +1712,14 @@ msgstr "Eroare la oprirea sistemului"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Valoare RSS gasită a fost goală (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Fulx RSS incompatibil"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1737,14 +1745,6 @@ msgstr "Serverul %s utilizează un certificat HTTPS nesigur"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Fluxul RSS %s a fost gol"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Fulx RSS incompatibil"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Valoare RSS gasită a fost goală (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

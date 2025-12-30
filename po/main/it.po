@@ -1746,6 +1746,14 @@ msgstr "Errore durante lo spegnimento del sistema"
 msgid "Received a DBus exception %s"
 msgstr "Ricevuta un'eccezione DBus %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Trovata voce RSS vuota (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Feed incompatibile"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1771,14 +1779,6 @@ msgstr "Il server %s utilizza un certificato HTTPS non attendibile"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Il feed RSS %s era vuoto"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Feed incompatibile"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Trovata voce RSS vuota (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

@@ -1749,6 +1749,14 @@ msgstr "Fout bij het afsluiten van het systeem"
 msgid "Received a DBus exception %s"
 msgstr "DBus foutmelding %s "
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Lege RSS-feed gevonden (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Ongeschikte RSS-feed"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1774,14 +1782,6 @@ msgstr "Server %s gebruikt een onbetrouwbaar HTTPS-certificaat"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-feed %s is leeg"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Ongeschikte RSS-feed"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Lege RSS-feed gevonden (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
