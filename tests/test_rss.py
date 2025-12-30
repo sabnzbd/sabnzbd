@@ -20,9 +20,9 @@ tests.test_misc - Testing functions in misc.py
 """
 
 import datetime
-import time
 import uuid
 from typing import Optional
+import random
 
 import configobj
 import pytest
@@ -33,7 +33,79 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 import sabnzbd.rss as rss
 import sabnzbd.config
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY, PAUSED_PRIORITY
+from sabnzbd.database import HistoryDB
+from sabnzbd.rss import RSSState, ResolvedEntry, RSSReader, RSSRepository
 from tests.testhelper import httpserver_handler_data_dir
+
+
+@pytest.fixture
+def tmp_rss(tmp_path, monkeypatch):
+    db_path = tmp_path / "history.db"
+    monkeypatch.setattr(HistoryDB, "db_path", str(db_path))
+    monkeypatch.setattr(HistoryDB, "startup_done", False)
+
+    store = HistoryDB()
+    repo = RSSRepository(store)
+    reader = rss.RSSReader()
+
+    yield repo, reader
+
+    store.close()
+
+
+def _build_random_store(
+    repo: rss.RSSRepository,
+    rnd: Optional[random.Random] = None,
+    min_feeds: int = 1,
+    max_feeds: int = 3,
+    min_jobs: int = 1,
+    max_jobs: int = 5,
+):
+    """Create an RSSStore filled with a random number of feeds and jobs.
+
+    The randomness is controlled via the provided Random instance so tests
+    remain deterministic while still exercising varying sizes and shapes of
+    data.
+    """
+
+    if rnd is None:
+        rnd = random.Random(42)
+
+    feeds: list[str] = []
+    links_by_feed: dict[str, list[str]] = {}
+
+    num_feeds = rnd.randint(min_feeds, max_feeds)
+    for fi in range(num_feeds):
+        feed_name = f"feed-{fi}"
+        feeds.append(feed_name)
+        links: list[str] = []
+
+        num_jobs = rnd.randint(min_jobs, max_jobs)
+        for ji in range(num_jobs):
+            link = f"http://example.test/{feed_name}/{ji}"
+            links.append(link)
+            entry = ResolvedEntry(
+                feed=feed_name,
+                link=link,
+                title=f"Title {fi}-{ji}",
+                infourl=f"http://example.test/info/{fi}/{ji}",
+                size=1000 + ji,
+                age=datetime.datetime.now(datetime.timezone.utc),
+                season=1,
+                episode=1,
+                category="category",
+                cat="cat",
+                pp=0,
+                script=None,
+                priority=0,
+                rule=0,
+                state=RSSState.GOOD,
+            )
+            repo.upsert(entry)
+
+        links_by_feed[feed_name] = links
+
+    return feeds, links_by_feed
 
 
 class TestRSS:
@@ -72,127 +144,122 @@ class TestRSS:
         sabnzbd.config.ConfigCat("tv", {})
         sabnzbd.config.ConfigCat("movies", {})
 
-    def test_rss_newznab_parser(self):
+    def test_rss_newznab_parser(self, httpserver: HTTPServer, tmp_rss):
         """Test basic RSS-parsing of custom elements
         Harder to test in functional test
         """
+        httpserver.expect_request("/rss_newznab_test.xml").respond_with_handler(httpserver_handler_data_dir)
+
         feed_name = "TestFeedNewznab"
-        self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_newznab_test.xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_newznab_test.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
-        rss_obj.process_feed(feed_name)
+        repo, reader = tmp_rss
+        reader.process_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey" in rss_obj.jobs[feed_name]
+        assert repo.has_feed(feed_name)
+        job = repo.find_job_by_url(feed_name, "https://cdn.example.com/cdn?t=get&id=FakeKey&apikey=FakeKey")
+        assert job is not None
 
         # Check some job-data
-        job_data = rss_obj.jobs[feed_name]["https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey"]
-        assert job_data["title"] == "FakeShow.S04E03.720p.WEB.H264-Obfuscated"
-        assert job_data["infourl"] == "https://nzbgeek.info/geekseek.php?guid=FakeKey"
-        assert job_data["orgcat"] == "TV > HD"
-        assert job_data["cat"] == "tv"
-        assert job_data["episode"] == 3
-        assert job_data["season"] == 4
-        assert job_data["size"] == 1209464000
+        assert job.title == "FakeShow.S04E03.720p.WEB.H264-Obfuscated"
+        assert job.infourl == "https://example.com/download.php?guid=FakeKey"
+        assert job.category == "TV > HD"
+        assert job.cat == "tv"
+        assert job.episode == 3
+        assert job.season == 4
+        assert job.size == 1209464000
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
-    def test_rss_nzedb_parser(self):
+    def test_rss_nzedb_parser(self, httpserver: HTTPServer, tmp_rss):
+        httpserver.expect_request("/rss_nzedb_test.xml").respond_with_handler(httpserver_handler_data_dir)
+
         feed_name = "TestFeednZEDb"
-        self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_nzedb_test.xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_nzedb_test.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
-        rss_obj.process_feed(feed_name)
+        repo, reader = tmp_rss
+        reader.process_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey" in rss_obj.jobs[feed_name]
+        assert repo.has_feed(feed_name)
+        job = repo.find_job_by_url(feed_name, "https://example.com/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
+        assert job is not None
 
         # Check some job-data
         # Added fake season and episode to test file
-        job_data = rss_obj.jobs[feed_name]["https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey"]
-        assert job_data["title"] == "Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER"
-        assert job_data["infourl"] == "https://nzbfinder.ws/details/FakeKey"
-        assert job_data["orgcat"] == "Movies > HD"
-        assert job_data["cat"] == "movies"
-        assert job_data["episode"] == 720
-        assert job_data["season"] == 2018
-        assert job_data["size"] == 5164539914
+        assert job.title == "Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER"
+        assert job.infourl == "https://example.com/details/FakeKey"
+        assert job.category == "Movies > HD"
+        assert job.cat == "movies"
+        assert job.episode == 720
+        assert job.season == 2018
+        assert job.size == 5164539914
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
-    def test_rss_link(self, httpserver: HTTPServer):
+    def test_rss_link(self, httpserver: HTTPServer, tmp_rss):
         httpserver.expect_request("/rss_link.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedLink"
         self.setup_rss(feed_name, httpserver.url_for("/rss_link.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
-        rss_obj.process_feed(feed_name)
+        repo, reader = tmp_rss
+        reader.process_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "http://LINK" in rss_obj.jobs[feed_name]
+        assert repo.has_feed(feed_name)
+        job = repo.find_job_by_url(feed_name, "http://LINK")
+        assert job is not None
 
         # Check some job-data
-        job_data = rss_obj.jobs[feed_name]["http://LINK"]
-        assert job_data["title"] == "TITLE"
-        assert job_data["infourl"] == "https://sabnzbd.org/rss_link"
-        assert job_data["size"] == 200
+        assert job.title == "TITLE"
+        assert job.infourl == "https://sabnzbd.org/rss_link"
+        assert job.size == 200
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
-    def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer):
+    def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer, tmp_rss):
         httpserver.expect_request("/rss_enclosure_no_nzb.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedEnclosureNoNZB"
         self.setup_rss(feed_name, httpserver.url_for("/rss_enclosure_no_nzb.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
-        rss_obj.process_feed(feed_name)
+        repo, reader = tmp_rss
+        reader.process_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert not rss_obj.jobs[feed_name]
+        assert not repo.has_feed(feed_name)
 
-    def test_rss_enclosure_multiple(self, httpserver: HTTPServer):
+    def test_rss_enclosure_multiple(self, httpserver: HTTPServer, tmp_rss):
         httpserver.expect_request("/rss_enclosure_multiple.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedEnclosureMultiple"
         self.setup_rss(feed_name, httpserver.url_for("/rss_enclosure_multiple.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
-        rss_obj.process_feed(feed_name)
+        repo, reader = tmp_rss
+        reader.process_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "http://NZB_LINK" in rss_obj.jobs[feed_name]
+        assert repo.has_feed(feed_name)
+        job = repo.find_job_by_url(feed_name, "http://NZB_LINK")
+        assert job is not None
 
         # Check some job-data
-        job_data = rss_obj.jobs[feed_name]["http://NZB_LINK"]
-        assert job_data["title"] == "TITLE"
-        assert job_data["infourl"] == "https://sabnzbd.org/rss_enclosure_multiple"
-        assert job_data["size"] == 200
+        assert job.title == "TITLE"
+        assert job.infourl == "https://sabnzbd.org/rss_enclosure_multiple"
+        assert job.size == 200
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
     @pytest.mark.parametrize(
         "defaults, filters, title, category, size, season, episode, expected_match",
@@ -246,7 +313,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                {"rule": 0, "season": 0, "episode": 0, "prio": LOW_PRIORITY},
+                {"rule": 0, "season": 0, "episode": 0, "priority": LOW_PRIORITY},
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -256,7 +323,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                {"rule": 0, "season": 0, "episode": 0, "prio": HIGH_PRIORITY},
+                {"rule": 0, "season": 0, "episode": 0, "priority": HIGH_PRIORITY},
             ),
             (
                 (None, 1, None, None),
@@ -293,7 +360,7 @@ class TestRSS:
                     "cat": "evaluator",
                     "pp": 1,
                     "script": None,
-                    "prio": DEFAULT_PRIORITY,
+                    "priority": DEFAULT_PRIORITY,
                 },
             ),
             (  # category with rule overrides
@@ -311,7 +378,7 @@ class TestRSS:
                     "cat": "evaluator",
                     "pp": 2,
                     "script": "override.py",
-                    "prio": DEFAULT_PRIORITY,
+                    "priority": DEFAULT_PRIORITY,
                 },
             ),
             (
@@ -327,7 +394,7 @@ class TestRSS:
                     "season": 0,
                     "episode": 0,
                     "cat": "tv",
-                    "prio": PAUSED_PRIORITY,
+                    "priority": PAUSED_PRIORITY,
                 },
             ),
             (
@@ -343,7 +410,7 @@ class TestRSS:
                     "season": 3,
                     "episode": 5,
                     "cat": "tv",
-                    "prio": PAUSED_PRIORITY,
+                    "priority": PAUSED_PRIORITY,
                 },
             ),
         ],
@@ -351,6 +418,7 @@ class TestRSS:
     def test_feedconfig_evaluator(
         self,
         httpserver: HTTPServer,
+        tmp_rss: RSSReader,
         defaults: tuple[Optional[str], Optional[str], Optional[str], Optional[int]],
         filters: list[tuple[str, str, str, str, str, int, str]],
         title: str,
@@ -440,15 +508,318 @@ class TestRSS:
         )
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
-        rss_obj.process_feed(feed_name)
+        repo, reader = tmp_rss
+        reader.process_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "http://LINK" in rss_obj.jobs[feed_name]
+        assert repo.has_feed(feed_name)
+        job = repo.find_job_by_url(feed_name, "http://LINK")
+        assert job is not None
 
         # Check some job-data
-        job_data = rss_obj.jobs[feed_name]["http://LINK"]
-        for k, v in expected_match.items():
-            assert k in job_data
-            assert job_data[k] == v, f"Expected {k!r}: {job_data[k]!r} == {v!r}"
+        for k, expected in expected_match.items():
+            actual = getattr(job, k, None)
+            assert actual == expected, f"Expected {k!r}: {actual!r} == {expected!r}"
+
+    def test_rssstore_random_crud(self, tmp_rss):
+        rnd = random.Random(123)
+        repo, _reader = tmp_rss
+        feeds, links_by_feed = _build_random_store(
+            repo,
+            rnd,
+            min_feeds=2,
+            max_feeds=3,
+            min_jobs=1,
+            max_jobs=4,
+        )
+
+        # Basic structure and accessors
+        db_feeds = set(repo.get_feeds())
+        for feed in feeds:
+            assert feed in db_feeds
+
+        for feed in feeds:
+            entries = list(repo.get_feed_jobs(feed))
+            assert {e.link for e in entries} == set(links_by_feed[feed])
+
+        # Pick one concrete feed/link to exercise per-job helpers
+        feed = feeds[0]
+        link = links_by_feed[feed][0]
+
+        job = repo.find_job_by_url(feed, link)
+        assert job is not None
+        assert job.link == link
+
+        # flag_downloaded + clear_downloaded modify status as expected
+        repo.flag_downloaded(feed, link)
+        job_after_flag = repo.find_job_by_url(feed, link)
+        assert job_after_flag is not None
+        assert job_after_flag.state is RSSState.DOWNLOADED
+        assert job_after_flag.downloaded_at is not None
+        assert job_after_flag.is_downloaded
+
+        repo.clear_downloaded(feed)
+        job_after_clear = repo.find_job_by_url(feed, link)
+        assert job_after_clear is not None
+        assert job_after_clear.state is RSSState.DOWNLOADED
+        assert job_after_clear.downloaded_at is not None
+        assert job_after_clear.archived_at is not None
+        assert job_after_clear.is_downloaded
+
+        # get_jobs should return all jobs for a feed
+        jobs_from_get_jobs = list(repo.get_feed_jobs(feed=feed))
+        assert {j.link for j in jobs_from_get_jobs} == set(links_by_feed[feed])
+
+        # is_duplicate should detect similar jobs in other feeds
+        duplicate_candidate = ResolvedEntry(
+            feed="other-feed",
+            link="http://example.test/other-feed/dup",
+            title=job.title,
+            infourl=job.infourl,
+            size=int(job.size * 1.02),
+            age=job.age,
+            season=job.season,
+            episode=job.episode,
+            category=job.category,
+        )
+        assert repo.is_duplicate(duplicate_candidate)
+
+        # rename_feed + clear_feed work on arbitrary feeds
+        new_feed_name = feed + "-renamed"
+        repo.rename(feed, new_feed_name)
+        feeds_after_rename = set(repo.get_feeds())
+        assert new_feed_name in feeds_after_rename
+        assert feed not in feeds_after_rename
+
+        repo.clear_feed(new_feed_name)
+        feeds_after_clear = set(repo.get_feeds())
+        assert new_feed_name not in feeds_after_clear
+
+        # delete_feed removes remaining test feeds
+        for remaining in list(feeds[1:]):
+            repo.clear_feed(remaining)
+            assert remaining not in set(repo.get_feeds())
+
+    def test_rssstore_remove_obsolete_marks_and_purges(self, tmp_rss):
+        """remove_obsolete should mark old G/B items as X and purge expired X."""
+        repo, _reader = tmp_rss
+        feed = "feed-remove"
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        old_age = now - datetime.timedelta(days=4)
+        new_age = now - datetime.timedelta(days=1)
+
+        # Old good item that should be kept because it is part of the new_urls set
+        keep_url = "http://example.test/keep"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=keep_url,
+                title="keep",
+                infourl=None,
+                size=10,
+                age=old_age,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.GOOD,
+            )
+        )
+
+        # Old good item that is not in new_urls: should be marked X and purged
+        purge_old_g_url = "http://example.test/purge-old-g"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=purge_old_g_url,
+                title="old-g",
+                infourl=None,
+                size=20,
+                age=old_age,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.GOOD,
+            )
+        )
+
+        # Old X item should be purged directly
+        purge_old_x_url = "http://example.test/purge-old-x"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=purge_old_x_url,
+                title="old-x",
+                infourl=None,
+                size=30,
+                age=old_age,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.EXPIRED,
+            )
+        )
+
+        # Recent X item should be kept
+        keep_x_url = "http://example.test/keep-young-x"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=keep_x_url,
+                title="young-x",
+                infourl=None,
+                size=40,
+                age=new_age,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.EXPIRED,
+            )
+        )
+
+        # Run remove_obsolete with only keep_url as the set of current URLs
+        repo.remove_obsolete(feed, {keep_url})
+
+        jobs = {e.link: e for e in repo.get_feed_jobs(feed=feed)}
+
+        # keep_url should still exist and remain G
+        assert keep_url in jobs
+        assert jobs[keep_url].state is RSSState.GOOD
+
+        # Old G not in new_urls should have been purged entirely
+        assert purge_old_g_url not in jobs
+
+        # Old X should have been purged
+        assert purge_old_x_url not in jobs
+
+        # Young X should still exist
+        assert keep_x_url in jobs
+        assert jobs[keep_x_url].state is RSSState.EXPIRED
+
+    def test_rss_is_starred_persists_and_affects_later_runs(self, httpserver: HTTPServer, tmp_rss, mocker):
+        """Initial scan should mark GOOD entries as starred and persist this across runs.
+
+        On the initial run with ignore_first=True, matching entries should be stored
+        as GOOD+initial_scan (is_starred=True) but not downloaded. On a subsequent
+        run, those same entries should still be present, still starred, and still
+        not auto-downloaded.
+        """
+        repo, reader = tmp_rss
+        feed_name = "StarredFeed"
+        # Simple feed with one tv item that will match default accept rule
+        item_xml = """
+        <item>
+            <title>Show.S01E01.720p</title>
+            <link>http://example.test/starred-episode</link>
+            <guid>http://example.test/info/starred-episode</guid>
+            <category>tv</category>
+            <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+        </item>
+        """
+        feed_xml = f"""
+        <?xml version=\"1.0\" encoding=\"utf-8\"?>
+        <rss version=\"2.0\">
+          <channel>
+            <title>Starred</title>
+            {item_xml}
+          </channel>
+        </rss>
+        """
+
+        httpserver.expect_request("/rss_starred.xml").respond_with_data(feed_xml, content_type="application/rss+xml")
+
+        # Configure feed; no special filters needed because a default accept rule is added
+        self.setup_rss(feed_name, httpserver.url_for("/rss_starred.xml"))
+
+        # First run: ignore_first=True, download=True (scheduled-like behaviour)
+        # This should mark the entry as GOOD+initial_scan, but not download it
+        msg_first = reader.process_feed(feed_name, download=True, ignore_first=True)
+        assert msg_first == ""
+
+        job_first = repo.find_job_by_url(feed_name, "http://example.test/starred-episode")
+        assert job_first is not None
+        assert job_first.state is RSSState.GOOD
+        assert job_first.is_starred  # initial_scan True + GOOD
+        assert job_first.downloaded_at is None
+
+        # Simulate a later run: readout only, no download
+        msg_second = reader.process_feed(feed_name, download=True, ignore_first=False)
+        assert msg_second == ""
+
+        job_second = repo.find_job_by_url(feed_name, "http://example.test/starred-episode")
+        assert job_second is not None
+        # Still GOOD and still from initial scan
+        assert job_second.state is RSSState.GOOD
+        assert job_second.is_starred
+        # And it should still not have been auto-downloaded
+        assert job_second.downloaded_at is None
+
+        # Third phase: force download; this should clear the starred status
+        add_url_mock = mocker.patch("sabnzbd.urlgrabber.add_url")
+        msg_third = reader.process_feed(feed_name, download=True, ignore_first=False, force=True)
+        assert msg_third == ""
+        assert add_url_mock.call_count == 1
+
+        job_third = repo.find_job_by_url(feed_name, "http://example.test/starred-episode")
+        assert job_third is not None
+        assert job_third.state is RSSState.DOWNLOADED
+        assert job_third.downloaded_at is not None
+        # Starred status should no longer apply once downloaded
+        assert not job_third.is_starred
+
+    def test_rssreader_multi_uri_deduplicates_entries(self, httpserver: HTTPServer, tmp_rss):
+        """A feed with multiple URIs should not create duplicate jobs for the same link."""
+        repo, reader = tmp_rss
+        shared_link = "http://example.test/shared"
+        a_only_link = "http://example.test/a-only"
+        b_only_link = "http://example.test/b-only"
+
+        item_template = """
+        <item>
+            <title>{title}</title>
+            <link>{link}</link>
+            <guid>{guid}</guid>
+            <category>tv</category>
+            <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+        </item>
+        """
+        feed_template = """
+        <?xml version=\"1.0\" encoding=\"utf-8\"?>
+        <rss version=\"2.0\">
+        <channel>
+            <title>Multi</title>
+            {items}
+        </channel>
+        </rss>
+        """
+
+        xml_a = feed_template.format(
+            items=(
+                item_template.format(title="Shared", link=shared_link, guid="http://example.test/info/shared-a")
+                + item_template.format(title="OnlyA", link=a_only_link, guid="http://example.test/info/a-only")
+            )
+        )
+        xml_b = feed_template.format(
+            items=(
+                item_template.format(title="Shared", link=shared_link, guid="http://example.test/info/shared-b")
+                + item_template.format(title="OnlyB", link=b_only_link, guid="http://example.test/info/b-only")
+            )
+        )
+
+        httpserver.expect_request("/rss_multi_a.xml").respond_with_data(xml_a, content_type="application/rss+xml")
+        httpserver.expect_request("/rss_multi_b.xml").respond_with_data(xml_b, content_type="application/rss+xml")
+
+        feed_name = "MultiURI"
+        uri_a = httpserver.url_for("/rss_multi_a.xml")
+        uri_b = httpserver.url_for("/rss_multi_b.xml")
+        multi_uri = f"{uri_a} {uri_b}"
+
+        self.setup_rss(feed_name, multi_uri)
+
+        reader.process_feed(feed_name)
+
+        entries = list(repo.get_feed_jobs(feed=feed_name))
+        links = {e.link for e in entries}
+
+        # Shared link must only appear once
+        assert links == {shared_link, a_only_link, b_only_link}

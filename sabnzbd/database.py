@@ -144,6 +144,10 @@ class HistoryDB:
                 except:
                     self.connection.rollback()
                     raise
+            if version < 8:
+                _ = self.execute("PRAGMA user_version = 8;") and self.create_rss_table()
+                repo = sabnzbd.rss.RSSRepository(self)
+                repo.import_rss_records()
 
             HistoryDB.startup_done = True
 
@@ -230,9 +234,45 @@ class HistoryDB:
             "time_added" INTEGER
         )
         """)
-        self.execute("PRAGMA user_version = 7;")
+        self.execute("PRAGMA user_version = 8;")
         self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
         self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
+        self.create_rss_table()
+
+    def create_rss_table(self):
+        """Create the rss history table"""
+        return (
+            self.execute("""
+            CREATE TABLE rss (
+                "id" INTEGER PRIMARY KEY,
+                "feed" TEXT NOT NULL,
+                "state" TEXT NOT NULL,
+                "title" TEXT NOT NULL,
+                "url" TEXT NOT NULL,
+                "infourl" TEXT,
+                "category" TEXT,
+                "cat" TEXT,
+                "pp" INTEGER,
+                "script" TEXT,
+                "priority" INTEGER,
+                "season" INTEGER,
+                "episode" INTEGER,
+                "size" INTEGER,
+                "rule" INTEGER,
+                "age" INTEGER NOT NULL,
+                "initial_scan" INTEGER,
+                "seen_at" INTEGER NOT NULL,
+                "downloaded_at" INTEGER,
+                "archived_at" INTEGER,
+                UNIQUE (feed, url)
+            );
+            """)
+            and self.execute("CREATE INDEX idx_rss_feed ON rss(feed)")
+            and self.execute("CREATE INDEX idx_rss_feed_state ON rss(feed, state)")
+            and self.execute(
+                "CREATE INDEX idx_rss_feed_state_downloaded_at_age ON rss(feed, state, downloaded_at DESC, age DESC)"
+            )
+        )
 
     def close(self):
         """Close database connection"""
@@ -514,7 +554,7 @@ class HistoryDB:
         self.close()
 
 
-def convert_search(search: str) -> str:
+def convert_search(search: Optional[str]) -> str:
     """Convert classic wildcard to SQL wildcard"""
     if not search or not isinstance(search, str):
         # Default value
