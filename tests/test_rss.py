@@ -29,7 +29,7 @@ from pytest_httpserver import HTTPServer
 import sabnzbd.rss as rss
 import sabnzbd.config
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
-from sabnzbd.rss import FeedMatch, FeedConfig
+from sabnzbd.rss import FeedEvaluation, FeedConfig
 from tests.testhelper import httpserver_handler_data_dir
 
 
@@ -203,7 +203,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=True, rule_index=0, season=0, episode=0),
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0),
             ),
             (
                 (None, None, None, None),
@@ -213,7 +213,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=True, rule_index=1, season=0, episode=0),
+                FeedEvaluation(matched=True, rule_index=1, season=0, episode=0),
             ),
             (
                 (None, None, None, None),
@@ -223,7 +223,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=True, rule_index=1, season=5, episode=2),
+                FeedEvaluation(matched=True, rule_index=1, season=5, episode=2),
             ),
             (
                 (None, None, None, None),
@@ -233,7 +233,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=False, rule_index=0, season=1, episode=2),
+                FeedEvaluation(matched=False, rule_index=0, season=1, episode=2),
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -243,7 +243,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=True, rule_index=0, season=0, episode=0, priority=LOW_PRIORITY),
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, priority=LOW_PRIORITY),
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -253,7 +253,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=True, rule_index=0, season=0, episode=0, priority=HIGH_PRIORITY),
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, priority=HIGH_PRIORITY),
             ),
             (
                 (None, 1, None, None),
@@ -263,7 +263,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=True, rule_index=0, season=0, episode=0, pp=1),
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, pp=1),
             ),
             (
                 (None, 1, None, None),
@@ -273,7 +273,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(matched=True, rule_index=0, season=0, episode=0, pp=3),
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, pp=3),
             ),
             (  # category overrides
                 ("tv", 1, DEFAULT_PRIORITY, ""),
@@ -283,7 +283,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(
+                FeedEvaluation(
                     matched=True,
                     rule_index=0,
                     season=0,
@@ -302,7 +302,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedMatch(
+                FeedEvaluation(
                     matched=True,
                     rule_index=0,
                     season=0,
@@ -325,7 +325,7 @@ class TestRSS:
         size: int,
         season: int,
         episode: int,
-        expected_match: FeedMatch,
+        expected_match: FeedEvaluation,
     ):
         default_category, default_pp, default_script, default_priority = defaults
         feed_name = "Evaluator"
