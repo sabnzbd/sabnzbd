@@ -38,6 +38,7 @@ from typing import Optional, Callable, Union, Any
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
+from sabnzbd.rss import RSSStatus
 from sabnzbd.misc import (
     to_units,
     from_units,
@@ -1945,7 +1946,7 @@ def GetRssLog(feed):
 
         # Now we apply some formatting
         job["title"] = job["title"]
-        job["skip"] = "*" * int(job.get("status", "").endswith("*"))
+        job["skip"] = "*" * int(RSSStatus(job.get("status", RSSStatus.BAD)).is_starred)
         # These fields could be empty
         job["cat"] = job.get("cat", "")
         job["size"] = job.get("size", "")
@@ -1987,11 +1988,12 @@ def GetRssLog(feed):
     jobs = sabnzbd.RSSReader.show_result(feed).values()
     good, bad, done = ([], [], [])
     for job in jobs:
-        if job["status"][0] == "G":
+        status = RSSStatus(job["status"])
+        if status.is_good:
             good.append(make_item(job))
-        elif job["status"][0] == "B":
+        elif status.is_bad:
             bad.append(make_item(job))
-        elif job["status"] == "D":
+        elif status == RSSStatus.DOWNLOADED:
             done.append(make_item(job))
 
     try:

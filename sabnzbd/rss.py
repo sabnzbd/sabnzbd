@@ -26,6 +26,7 @@ import datetime
 import threading
 import urllib.parse
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Union, Optional
 
 import sabnzbd
@@ -52,6 +53,60 @@ RSS_LOCK = threading.RLock()
 _RE_SP = re.compile(r"s*(\d+)[ex](\d+)", re.I)
 _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
+
+
+class RSSStatus(str, Enum):
+    """RSS Job status values.
+
+    Status values indicate the state of an RSS feed entry:
+    - GOOD: Matched by filter rules (should be grabbed)
+    - BAD: Rejected by filter rules
+    - DOWNLOADED: Successfully downloaded to queue
+    - EXPIRED: No longer in feed (marked for cleanup)
+    - GOOD_INITIAL: Good match from initial batch (starred)
+    - DOWNLOADED_HIDDEN: Downloaded but hidden from display
+    """
+
+    GOOD = "G"
+    BAD = "B"
+    DOWNLOADED = "D"
+    EXPIRED = "X"
+    GOOD_INITIAL = "G*"  # Good match from first scan (starred)
+    DOWNLOADED_HIDDEN = "D-"  # Downloaded but not displayed anymore
+
+    @property
+    def is_good(self) -> bool:
+        """Check if status represents a good match (G or G*)"""
+        return self in (RSSStatus.GOOD, RSSStatus.GOOD_INITIAL)
+
+    @property
+    def is_downloaded(self) -> bool:
+        """Check if status represents a download (D or D-)"""
+        return self in (RSSStatus.DOWNLOADED, RSSStatus.DOWNLOADED_HIDDEN)
+
+    @property
+    def is_bad(self) -> bool:
+        """Check if status represents a bad match"""
+        return self == RSSStatus.BAD
+
+    @property
+    def is_expired(self) -> bool:
+        """Check if status is expired"""
+        return self == RSSStatus.EXPIRED
+
+    @property
+    def is_starred(self) -> bool:
+        """Check if status is starred (from initial batch)"""
+        return self == RSSStatus.GOOD_INITIAL
+
+    @property
+    def base_status(self) -> "RSSStatus":
+        """Get base status (G* -> G, D- -> D)"""
+        if self == RSSStatus.GOOD_INITIAL:
+            return RSSStatus.GOOD
+        elif self == RSSStatus.DOWNLOADED_HIDDEN:
+            return RSSStatus.DOWNLOADED
+        return self
 
 
 @dataclass(frozen=True)
@@ -209,7 +264,7 @@ class ResolvedEntry:
     priority: Optional[int]
     rule: int
 
-    status: str  # "G", "B", "G*", "D"
+    status: RSSStatus
     download: bool
 
 
@@ -507,9 +562,7 @@ class RSSReader:
         # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
         #        Each element is another dictionary:
-        #           status : 'D', 'G', 'B', 'X' (downloaded, good-match, bad-match, obsolete)
-        #               '*' added means: from the initial batch
-        #               '-' added to 'D' means downloaded, but not displayed anymore
+        #           status : RSSStatus enum (DOWNLOADED, GOOD, BAD, EXPIRED, GOOD_INITIAL, DOWNLOADED_HIDDEN)
         #           title : Title
         #           url : URL
         #           cat : category
@@ -699,7 +752,7 @@ class RSSReader:
 
     @staticmethod
     def remove_obsolete(jobs: dict[str, dict], new_jobs: list[str]):
-        """Expire G/B links that are not in new_jobs (mark them 'X')
+        """Expire G/B links that are not in new_jobs (mark them EXPIRED)
         Expired links older than 3 days are removed from 'jobs'
         """
         now = time.time()
@@ -707,9 +760,10 @@ class RSSReader:
         for old in list(jobs):
             tm = jobs[old]["time"]
             if old not in new_jobs:
-                if jobs[old].get("status", " ")[0] in ("G", "B"):
-                    jobs[old]["status"] = "X"
-            if jobs[old]["status"] == "X" and tm < limit:
+                status = RSSStatus(jobs[old].get("status", RSSStatus.BAD))
+                if status.is_good or status.is_bad:
+                    jobs[old]["status"] = RSSStatus.EXPIRED
+            if jobs[old]["status"] == RSSStatus.EXPIRED and tm < limit:
                 logging.debug("Purging link %s", old)
                 del jobs[old]
 
@@ -784,9 +838,13 @@ class RSSReader:
         """
         link = entry.link
         job = jobs.get(link)
-        job_status = job.get("status", " ")[0] if job else "N"
+        if job:
+            job_status = RSSStatus(job.get("status"))
+        else:
+            job_status = None
 
-        if job_status not in "NGB" and not (job_status == "X" and readout):
+        # Skip if already processed (unless expired and we're doing a readout)
+        if job_status and not (job_status.is_good or job_status.is_bad) and not (job_status.is_expired and readout):
             return None, None, None
 
         # Match this title against all filters
@@ -799,7 +857,7 @@ class RSSReader:
             episode=entry.episode,
         )
 
-        is_starred = job and job.get("status", "").endswith("*")
+        is_starred = job and RSSStatus(job.get("status")).is_starred
         star = first or is_starred
         should_download = (download and not first and not is_starred) or force
 
@@ -826,7 +884,7 @@ class RSSReader:
             "status": update.status,
         }
 
-        if update.status == "D":
+        if update.status.is_downloaded:
             jobs[update.link]["time_downloaded"] = time.localtime()
 
     @staticmethod
@@ -876,13 +934,13 @@ class RSSReader:
         Returns True if the entry was queued for download.
         """
         if should_download and evaluation.matched:
-            status = "D"
+            status = RSSStatus.DOWNLOADED
         elif is_starred and evaluation.matched:
-            status = "G*"
+            status = RSSStatus.GOOD_INITIAL
         elif evaluation.matched:
-            status = "G"
+            status = RSSStatus.GOOD
         else:
-            status = "B"
+            status = RSSStatus.BAD
 
         update = ResolvedEntry(
             link=entry.link,
@@ -899,7 +957,7 @@ class RSSReader:
             priority=evaluation.priority,
             rule=evaluation.rule_index,
             status=status,
-            download=(status == "D"),
+            download=status.is_downloaded,
         )
 
         self.update_job_entry(jobs, update)
@@ -966,7 +1024,7 @@ class RSSReader:
             lst = self.jobs[feed]
             for link in lst:
                 if lst[link].get("url", "") == fid:
-                    lst[link]["status"] = "D"
+                    lst[link]["status"] = RSSStatus.DOWNLOADED
                     lst[link]["time_downloaded"] = time.localtime()
 
     @synchronized(RSS_LOCK)
@@ -989,8 +1047,9 @@ class RSSReader:
         # Mark downloaded jobs, so that they won't be displayed any more.
         if feed in self.jobs:
             for item in self.jobs[feed]:
-                if self.jobs[feed][item]["status"] == "D":
-                    self.jobs[feed][item]["status"] = "D-"
+                status = RSSStatus(self.jobs[feed][item]["status"])
+                if status == RSSStatus.DOWNLOADED:
+                    self.jobs[feed][item]["status"] = RSSStatus.DOWNLOADED_HIDDEN
 
 
 def _normalise_str_or_none(value: Optional[str]) -> Optional[str]:
