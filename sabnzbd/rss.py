@@ -484,25 +484,10 @@ class FeedConfig:
         return cat, pp, script, priority
 
 
-class RSSReader:
+class RSSStore:
+    """Storage for RSS jobs."""
+
     def __init__(self):
-        self.jobs = {}
-        self.next_run = time.time()
-        self.shutdown = False
-
-        try:
-            self.jobs = sabnzbd.filesystem.load_admin(RSS_FILE_NAME)
-            if self.jobs:
-                for feed in self.jobs:
-                    self.remove_obsolete(self.jobs[feed], list(self.jobs[feed]))
-        except Exception:
-            logging.warning(T("Cannot read %s"), RSS_FILE_NAME)
-            logging.info("Traceback: ", exc_info=True)
-
-        # Storage needs to be dict
-        if not self.jobs:
-            self.jobs = {}
-
         # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
         #        Each element is another dictionary:
@@ -521,9 +506,121 @@ class RSSReader:
         #           age : age in datetime format as specified by feed
         #           season : season number (if applicable)
         #           episode : episode number (if applicable)
+        self.jobs: dict[str, dict[str, dict]] = {}
+
+    @synchronized(RSS_LOCK)
+    def load(self, filename: str):
+        """Load jobs from a file."""
+
+        try:
+            self.jobs = sabnzbd.filesystem.load_admin(filename)
+        except Exception:
+            logging.warning(T("Cannot read %s"), filename)
+            logging.info("Traceback: ", exc_info=True)
+
+        # Storage needs to be dict
+        if not self.jobs:
+            self.jobs = {}
+
+    @synchronized(RSS_LOCK)
+    def save(self, filename: str):
+        sabnzbd.filesystem.save_admin(self.jobs, filename)
+
+    @synchronized(RSS_LOCK)
+    def get_feed_jobs(self, feed: str) -> dict[str, dict]:
+        return self.jobs.setdefault(feed, {})
+
+    @synchronized(RSS_LOCK)
+    def has_feed(self, feed: str) -> bool:
+        return feed in self.jobs
+
+    @synchronized(RSS_LOCK)
+    def update_job(self, feed: str, link: str, data: dict):
+        feed_jobs = self.get_feed_jobs(feed)
+        feed_jobs[link] = data
+
+    @synchronized(RSS_LOCK)
+    def delete_feed(self, feed: str):
+        if feed in self.jobs:
+            del self.jobs[feed]
+
+    @synchronized(RSS_LOCK)
+    def rename_feed(self, old_feed: str, new_feed: str):
+        if old_feed in self.jobs:
+            self.jobs[new_feed] = self.jobs.pop(old_feed)
+
+    @synchronized(RSS_LOCK)
+    def show_result(self, feed: str) -> dict[str, dict]:
+        return self.jobs.get(feed, {}) or {}
+
+    @synchronized(RSS_LOCK)
+    def flag_downloaded(self, feed: str, fid: str):
+        if feed not in self.jobs:
+            return
+        lst = self.jobs[feed]
+        for link, job in lst.items():
+            if job.get("url", "") == fid:
+                job["status"] = "D"
+                job["time_downloaded"] = time.localtime()
+                break
+
+    @synchronized(RSS_LOCK)
+    def lookup_url(self, feed: str, url: str):
+        if not url or feed not in self.jobs:
+            return None
+        lst = self.jobs[feed]
+        for job in lst.values():
+            if job.get("url") == url:
+                return job
+        return None
+
+    @synchronized(RSS_LOCK)
+    def clear_feed(self, feed: str):
+        """Remove any previous references to this feed name, and start fresh."""
+
+        self.delete_feed(feed)
+
+    @synchronized(RSS_LOCK)
+    def clear_downloaded(self, feed: str):
+        """Mark downloaded jobs so that they won't be displayed any more."""
+
+        if feed not in self.jobs:
+            return
+        for job in self.jobs[feed].values():
+            if job.get("status") == "D":
+                job["status"] = "D-"
+
+    @synchronized(RSS_LOCK)
+    def all_jobs(self) -> dict[str, dict[str, dict]]:
+        return self.jobs
+
+
+class RSSReader:
+    def __init__(self):
+        self.store = RSSStore()
+        self.next_run = time.time()
+        self.shutdown = False
+
+        # Load persisted jobs through the RSSStore abstraction
+        self.store.load(RSS_FILE_NAME)
+
+        # Clean up obsolete entries in all feeds
+        for feed, feed_jobs in self.store.all_jobs().items():
+            self.remove_obsolete(feed_jobs, list(feed_jobs))
 
         # Patch feedparser
         self.patch_feedparser()
+
+    @property
+    def jobs(self) -> dict[str, dict[str, dict]]:
+        """Backward compatible access to the underlying RSS jobs store.
+
+        Exposes the internal store so existing callers/tests using
+        ``rss_obj.jobs`` keep working while ``RSSStore`` is the single
+        source of truth.
+        """
+
+        return self.store.all_jobs()
 
     def stop(self):
         self.shutdown = True
@@ -639,12 +736,10 @@ class RSSReader:
         filters = FeedConfig.from_config(feeds)
 
         # Set first if this is the very first scan of this URI
-        first = (feed not in self.jobs) and ignore_first
+        first = (not self.store.has_feed(feed)) and ignore_first
 
-        # In case of a new feed, ensure we have a jobs dict
-        if feed not in self.jobs:
-            self.jobs[feed] = {}
-        jobs = self.jobs[feed]
+        # Ensure we have a jobs dict for this feed
+        jobs = self.store.get_feed_jobs(feed)
 
         return uris, filters, first, jobs, ""
 
@@ -936,60 +1031,39 @@ class RSSReader:
 
     @synchronized(RSS_LOCK)
     def show_result(self, feed):
-        if feed in self.jobs:
-            try:
-                return self.jobs[feed]
-            except Exception:
-                return {}
-        else:
-            return {}
+        return self.store.show_result(feed)
 
     @synchronized(RSS_LOCK)
     def save(self):
-        sabnzbd.filesystem.save_admin(self.jobs, RSS_FILE_NAME)
+        """Persist all RSS jobs using the shared RSSStore."""
+
+        self.store.save(RSS_FILE_NAME)
 
     @synchronized(RSS_LOCK)
     def delete(self, feed):
-        if feed in self.jobs:
-            del self.jobs[feed]
+        self.store.delete_feed(feed)
 
     @synchronized(RSS_LOCK)
     def rename(self, old_feed, new_feed):
-        if old_feed in self.jobs:
-            old_data = self.jobs.pop(old_feed)
-            self.jobs[new_feed] = old_data
+        self.store.rename_feed(old_feed, new_feed)
 
     @synchronized(RSS_LOCK)
     def flag_downloaded(self, feed, fid):
-        if feed in self.jobs:
-            lst = self.jobs[feed]
-            for link in lst:
-                if lst[link].get("url", "") == fid:
-                    lst[link]["status"] = "D"
-                    lst[link]["time_downloaded"] = time.localtime()
+        self.store.flag_downloaded(feed, fid)
 
     @synchronized(RSS_LOCK)
     def lookup_url(self, feed, url):
-        if url and feed in self.jobs:
-            lst = self.jobs[feed]
-            for link in lst:
-                if lst[link].get("url") == url:
-                    return lst[link]
-        return None
+        return self.store.lookup_url(feed, url)
 
     @synchronized(RSS_LOCK)
     def clear_feed(self, feed):
         # Remove any previous references to this feed name, and start fresh
-        if feed in self.jobs:
-            del self.jobs[feed]
+        self.store.clear_feed(feed)
 
     @synchronized(RSS_LOCK)
     def clear_downloaded(self, feed):
         # Mark downloaded jobs, so that they won't be displayed any more.
-        if feed in self.jobs:
-            for item in self.jobs[feed]:
-                if self.jobs[feed][item]["status"] == "D":
-                    self.jobs[feed][item]["status"] = "D-"
+        self.store.clear_downloaded(feed)
 
 
 def _normalise_str_or_none(value: Optional[str]) -> Optional[str]:
