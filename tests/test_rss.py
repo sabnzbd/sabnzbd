@@ -20,17 +20,81 @@ tests.test_misc - Testing functions in misc.py
 """
 
 import datetime
+import random
 from typing import Optional
 
 import configobj
 import pytest
 from pytest_httpserver import HTTPServer
 
+import sabnzbd
 import sabnzbd.rss as rss
 import sabnzbd.config
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
-from sabnzbd.rss import FeedEvaluation, FeedConfig, RSSStore
+from sabnzbd.rss import FeedEvaluation, FeedConfig
 from tests.testhelper import httpserver_handler_data_dir
+
+
+@pytest.fixture
+def tmp_rssstore(tmp_path, monkeypatch):
+    db_path = tmp_path / "rssstore.db"
+    monkeypatch.setattr(rss.RSSStore, "db_path", str(db_path))
+    monkeypatch.setattr(rss.RSSStore, "startup_done", False)
+
+
+def _build_random_store(
+    rnd: Optional[random.Random] = None,
+    min_feeds: int = 1,
+    max_feeds: int = 3,
+    min_jobs: int = 1,
+    max_jobs: int = 5,
+):
+    """Create an RSSStore filled with a random number of feeds and jobs.
+
+    The randomness is controlled via the provided Random instance so tests
+    remain deterministic while still exercising varying sizes and shapes of
+    data.
+    """
+
+    if rnd is None:
+        rnd = random.Random(42)
+
+    store = rss.RSSStore()
+    feeds: list[str] = []
+    links_by_feed: dict[str, list[str]] = {}
+
+    num_feeds = rnd.randint(min_feeds, max_feeds)
+    for fi in range(num_feeds):
+        feed_name = f"feed-{fi}"
+        feeds.append(feed_name)
+        links: list[str] = []
+
+        num_jobs = rnd.randint(min_jobs, max_jobs)
+        for ji in range(num_jobs):
+            link = f"http://example.test/{feed_name}/{ji}"
+            links.append(link)
+            entry = rss.ResolvedEntry(
+                feed=feed_name,
+                link=link,
+                title=f"Title {fi}-{ji}",
+                infourl=f"http://example.test/info/{fi}/{ji}",
+                size=1000 + ji,
+                age=datetime.datetime.now(datetime.timezone.utc),
+                season=1,
+                episode=1,
+                orgcat="orgcat",
+                cat="cat",
+                pp=0,
+                script=None,
+                priority=0,
+                rule=0,
+                status="G",
+            )
+            store.upsert(entry)
+
+        links_by_feed[feed_name] = links
+
+    return store, feeds, links_by_feed
 
 
 class TestRSS:
@@ -69,7 +133,7 @@ class TestRSS:
         sabnzbd.config.ConfigCat("tv", {})
         sabnzbd.config.ConfigCat("movies", {})
 
-    def test_rss_newznab_parser(self):
+    def test_rss_newznab_parser(self, tmp_rssstore):
         """Test basic RSS-parsing of custom elements
         Harder to test in functional test
         """
@@ -99,7 +163,7 @@ class TestRSS:
         adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
-    def test_rss_nzedb_parser(self):
+    def test_rss_nzedb_parser(self, tmp_rssstore):
         feed_name = "TestFeednZEDb"
         self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_nzedb_test.xml")
 
@@ -127,7 +191,7 @@ class TestRSS:
         adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
-    def test_rss_link(self, httpserver: HTTPServer):
+    def test_rss_link(self, httpserver: HTTPServer, tmp_rssstore):
         httpserver.expect_request("/rss_link.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedLink"
@@ -152,7 +216,7 @@ class TestRSS:
         adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
-    def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer):
+    def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer, tmp_rssstore):
         httpserver.expect_request("/rss_enclosure_no_nzb.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedEnclosureNoNZB"
@@ -165,7 +229,7 @@ class TestRSS:
         # Is the feed processed?
         assert not rss_obj.store.has_feed(feed_name)
 
-    def test_rss_enclosure_multiple(self, httpserver: HTTPServer):
+    def test_rss_enclosure_multiple(self, httpserver: HTTPServer, tmp_rssstore):
         httpserver.expect_request("/rss_enclosure_multiple.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedEnclosureMultiple"
@@ -350,3 +414,253 @@ class TestRSS:
         result_match = feed_cfg.evaluate(title=title, category=category, size=size, season=season, episode=episode)
 
         assert result_match == expected_match
+
+    def test_rssstore_random_crud(self, tmp_rssstore):
+        rnd = random.Random(123)
+        store, feeds, links_by_feed = _build_random_store(
+            rnd,
+            min_feeds=2,
+            max_feeds=3,
+            min_jobs=1,
+            max_jobs=4,
+        )
+
+        # Basic structure and accessors
+        db_feeds = set(store.get_feeds())
+        for feed in feeds:
+            assert feed in db_feeds
+
+        for feed in feeds:
+            entries = list(store.show_result(feed))
+            assert {e.link for e in entries} == set(links_by_feed[feed])
+
+        # Pick one concrete feed/link to exercise per-job helpers
+        feed = feeds[0]
+        link = links_by_feed[feed][0]
+
+        job = store.get_job(feed, link)
+        assert job is not None
+        assert job.link == link
+
+        # flag_downloaded + clear_downloaded modify status as expected
+        store.flag_downloaded(feed, link)
+        job_after_flag = store.get_job(feed, link)
+        assert job_after_flag is not None
+        assert job_after_flag.status == "D"
+        assert job_after_flag.downloaded_at is not None
+
+        store.clear_downloaded(feed)
+        job_after_clear = store.get_job(feed, link)
+        assert job_after_clear is not None
+        assert job_after_clear.status == "D-"
+
+        # get_jobs should return all jobs for a feed
+        jobs_from_get_jobs = list(store.get_jobs(feed=feed))
+        assert {j.link for j in jobs_from_get_jobs} == set(links_by_feed[feed])
+
+        # is_duplicate should detect similar jobs in other feeds
+        duplicate_candidate = rss.ResolvedEntry(
+            feed="other-feed",
+            link="http://example.test/other-feed/dup",
+            title=job.title,
+            infourl=job.infourl,
+            size=int(job.size * 1.02),
+            age=job.age,
+            season=job.season,
+            episode=job.episode,
+            orgcat=job.orgcat,
+        )
+        assert store.is_duplicate(duplicate_candidate)
+
+        # rename_feed + clear_feed work on arbitrary feeds
+        new_feed_name = feed + "-renamed"
+        store.rename_feed(feed, new_feed_name)
+        feeds_after_rename = set(store.get_feeds())
+        assert new_feed_name in feeds_after_rename
+        assert feed not in feeds_after_rename
+
+        store.clear_feed(new_feed_name)
+        feeds_after_clear = set(store.get_feeds())
+        assert new_feed_name not in feeds_after_clear
+
+        # delete_feed removes remaining test feeds
+        for remaining in list(feeds[1:]):
+            store.delete_feed(remaining)
+            assert remaining not in set(store.get_feeds())
+
+    def test_rssstore_remove_obsolete_marks_and_purges(self, tmp_rssstore):
+        """remove_obsolete should mark old G/B items as X and purge expired X."""
+        store = rss.RSSStore()
+        feed = "feed-remove"
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        old_age = now - datetime.timedelta(days=4)
+        new_age = now - datetime.timedelta(days=1)
+
+        # Old good item that should be kept because it is part of the new_urls set
+        keep_url = "http://example.test/keep"
+        store.upsert(
+            rss.ResolvedEntry(
+                feed=feed,
+                link=keep_url,
+                title="keep",
+                infourl=None,
+                size=10,
+                age=old_age,
+                season=1,
+                episode=1,
+                orgcat=None,
+                status="G",
+            )
+        )
+
+        # Old good item that is not in new_urls: should be marked X and purged
+        purge_old_g_url = "http://example.test/purge-old-g"
+        store.upsert(
+            rss.ResolvedEntry(
+                feed=feed,
+                link=purge_old_g_url,
+                title="old-g",
+                infourl=None,
+                size=20,
+                age=old_age,
+                season=1,
+                episode=1,
+                orgcat=None,
+                status="G",
+            )
+        )
+
+        # Old X item should be purged directly
+        purge_old_x_url = "http://example.test/purge-old-x"
+        store.upsert(
+            rss.ResolvedEntry(
+                feed=feed,
+                link=purge_old_x_url,
+                title="old-x",
+                infourl=None,
+                size=30,
+                age=old_age,
+                season=1,
+                episode=1,
+                orgcat=None,
+                status="X",
+            )
+        )
+
+        # Recent X item should be kept
+        keep_x_url = "http://example.test/keep-young-x"
+        store.upsert(
+            rss.ResolvedEntry(
+                feed=feed,
+                link=keep_x_url,
+                title="young-x",
+                infourl=None,
+                size=40,
+                age=new_age,
+                season=1,
+                episode=1,
+                orgcat=None,
+                status="X",
+            )
+        )
+
+        # Run remove_obsolete with only keep_url as the set of current URLs
+        store.remove_obsolete(feed, {keep_url})
+
+        jobs = {e.link: e for e in store.get_jobs(feed=feed)}
+
+        # keep_url should still exist and remain G
+        assert keep_url in jobs
+        assert jobs[keep_url].status == "G"
+
+        # Old G not in new_urls should have been purged entirely
+        assert purge_old_g_url not in jobs
+
+        # Old X should have been purged
+        assert purge_old_x_url not in jobs
+
+        # Young X should still exist
+        assert keep_x_url in jobs
+        assert jobs[keep_x_url].status == "X"
+
+        store.close()
+
+    def test_rssreader_store_lifecycle(self, tmp_rssstore):
+        """RSSReader.store setter should register and close stores properly."""
+
+        reader = rss.RSSReader()
+        store = rss.RSSStore()
+
+        closed = {"value": False}
+
+        def fake_close():
+            closed["value"] = True
+
+        store.close = fake_close
+
+        # Inject our store and verify it's used
+        reader.store = store
+        assert reader.store is store
+
+        # Stopping the reader should close all active stores
+        reader.stop()
+        assert closed["value"]
+
+    def test_rssreader_multi_uri_deduplicates_entries(self, httpserver: HTTPServer, tmp_rssstore):
+        """A feed with multiple URIs should not create duplicate jobs for the same link."""
+
+        shared_link = "http://example.test/shared"
+        a_only_link = "http://example.test/a-only"
+        b_only_link = "http://example.test/b-only"
+
+        item_template = """
+        <item>
+            <title>{title}</title>
+            <link>{link}</link>
+            <guid>{guid}</guid>
+            <category>tv</category>
+            <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+        </item>
+        """
+        feed_template = """
+        <?xml version=\"1.0\" encoding=\"utf-8\"?>
+        <rss version=\"2.0\">
+        <channel>
+            <title>Multi</title>
+            {items}
+        </channel>
+        </rss>
+        """
+
+        xml_a = feed_template.format(
+            items=(
+                item_template.format(title="Shared", link=shared_link, guid="http://example.test/info/shared-a")
+                + item_template.format(title="OnlyA", link=a_only_link, guid="http://example.test/info/a-only")
+            )
+        )
+        xml_b = feed_template.format(
+            items=(
+                item_template.format(title="Shared", link=shared_link, guid="http://example.test/info/shared-b")
+                + item_template.format(title="OnlyB", link=b_only_link, guid="http://example.test/info/b-only")
+            )
+        )
+
+        httpserver.expect_request("/rss_multi_a.xml").respond_with_data(xml_a, content_type="application/rss+xml")
+        httpserver.expect_request("/rss_multi_b.xml").respond_with_data(xml_b, content_type="application/rss+xml")
+
+        feed_name = "MultiURI"
+        uri_a = httpserver.url_for("/rss_multi_a.xml")
+        uri_b = httpserver.url_for("/rss_multi_b.xml")
+        multi_uri = f"{uri_a} {uri_b}"
+
+        self.setup_rss(feed_name, multi_uri)
+
+        reader = rss.RSSReader()
+        reader.run_feed(feed_name)
+
+        entries = list(reader.store.get_jobs(feed=feed_name))
+        links = {e.link for e in entries}
+
+        # Shared link must only appear once
+        assert links == {shared_link, a_only_link, b_only_link}
