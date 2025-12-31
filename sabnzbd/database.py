@@ -78,7 +78,6 @@ class HistoryDB:
         if not HistoryDB.startup_done:
             if create_table:
                 self.create_history_db()
-                self.create_rss_table()
 
             # When an object (table, index, or trigger) is dropped from the database, it leaves behind empty space
             # http://www.sqlite.org/lang_vacuum.html
