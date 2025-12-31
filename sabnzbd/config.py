@@ -740,7 +740,7 @@ class ConfigRSS:
         # Sanitize the name before using it
         new_name = clean_section_name(new_name)
         delete_from_database("rss", self.__name)
-        sabnzbd.RSSReader.rename(self.__name, new_name)
+        sabnzbd.RSSReader.store.rename(self.__name, new_name)
         self.__name = new_name
         add_to_database("rss", self.__name, self)
         return self.__name

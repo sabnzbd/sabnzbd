@@ -19,6 +19,7 @@
 sabnzbd.interface - webinterface
 """
 
+import dataclasses
 import os
 import time
 import datetime
@@ -92,6 +93,7 @@ from sabnzbd.api import (
     build_header,
     Ttemplate,
 )
+from sabnzbd.rss import ResolvedEntry
 
 ##############################################################################
 # Security functions
@@ -1279,7 +1281,6 @@ class ConfigRss:
                 msg = ""
             self.__evaluate = False
             if readout:
-                sabnzbd.RSSReader.save()
                 self.__last_msg = msg
             else:
                 msg = self.__last_msg
@@ -1388,7 +1389,7 @@ class ConfigRss:
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
-                sabnzbd.RSSReader.clear_feed(feed)
+                sabnzbd.RSSReader.store.clear_feed(feed)
                 config.save_config()
                 self.__refresh_readout = feed
                 self.__refresh_download = False
@@ -1444,7 +1445,7 @@ class ConfigRss:
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
-        sabnzbd.RSSReader.clear_feed(kwargs.get("feed"))
+        sabnzbd.RSSReader.store.clear_feed(kwargs.get("feed"))
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1480,7 +1481,7 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
         """Remove processed RSS jobs from UI"""
-        sabnzbd.RSSReader.clear_downloaded(kwargs["feed"])
+        sabnzbd.RSSReader.store.clear_downloaded(kwargs["feed"])
         self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
@@ -1514,12 +1515,12 @@ class ConfigRss:
         """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
-        if att := sabnzbd.RSSReader.lookup_url(feed, url):
+        if att := sabnzbd.RSSReader.store.get_job(feed, url):
             nzbname = kwargs.get("nzbname")
-            pp = att.get("pp")
-            cat = att.get("cat")
-            script = att.get("script")
-            priority = att.get("prio")
+            pp = att.pp
+            cat = att.cat
+            script = att.script
+            priority = att.priority
 
             if url:
                 logging.info("Adding %s (%s) to queue", url, nzbname)
@@ -1533,7 +1534,7 @@ class ConfigRss:
                     nzo_info={"RSS": feed},
                 )
             # Need to pass the title instead
-            sabnzbd.RSSReader.flag_downloaded(feed, url)
+            sabnzbd.RSSReader.store.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1942,69 +1943,62 @@ def ShowString(name, msg):
 
 
 def GetRssLog(feed):
-    def make_item(job):
+    def make_item(entry: ResolvedEntry):
         # Make a copy
-        job = job.copy()
+        job: dict = {
+            "url": entry.link,
+            "rule": entry.rule,
+            "title": entry.title,
+            "skip": "*" if entry.status.endswith("*") else "",
+            "cat": entry.cat,
+            "size": entry.size,
+            "infourl": entry.infourl,
+        }
 
         # Now we apply some formatting
-        job["title"] = job["title"]
-        job["skip"] = "*" * int(job.get("status", "").endswith("*"))
         # These fields could be empty
-        job["cat"] = job.get("cat", "")
-        job["size"] = job.get("size", "")
-        job["infourl"] = job.get("infourl", "")
 
         # Auto-fetched jobs didn't have these fields set
-        if job.get("url"):
-            job["baselink"] = get_base_url(job.get("url"))
-            if sabnzbd.rss.special_rss_site(job.get("url")):
+        if entry.link:
+            job["baselink"] = get_base_url(entry.link)
+            if sabnzbd.rss.special_rss_site(entry.link):
                 job["nzbname"] = ""
             else:
-                job["nzbname"] = job["title"]
+                job["nzbname"] = entry.title
         else:
             job["baselink"] = ""
-            job["nzbname"] = job["title"]
+            job["nzbname"] = entry.title
 
-        if job.get("size", 0):
-            job["size_units"] = to_units(job["size"])
+        if entry.size:
+            job["size_units"] = to_units(entry.size)
         else:
             job["size_units"] = "-"
 
         # And we add extra fields for sorting
-        if job.get("age", 0):
-            job["age_ms"] = (job["age"] - datetime.datetime(1970, 1, 1)).total_seconds()
-            job["age"] = calc_age(job["age"], True)
+        if entry.age:
+            job["age_ms"] = int(entry.age.timestamp())
+            job["age"] = calc_age(entry.age, True)
         else:
             job["age_ms"] = ""
             job["age"] = ""
 
-        if job.get("time_downloaded"):
-            job["time_downloaded_ms"] = time.mktime(job["time_downloaded"])
-            job["time_downloaded"] = time.strftime(time_format("%H:%M %a %d %b"), job["time_downloaded"])
+        if entry.downloaded_at:
+            job["time_downloaded_ms"] = int(entry.downloaded_at.timestamp())
+            job["time_downloaded"] = entry.downloaded_at.astimezone().strftime(time_format("%H:%M %a %d %b"))
         else:
             job["time_downloaded_ms"] = ""
             job["time_downloaded"] = ""
 
         return job
 
-    jobs = sabnzbd.RSSReader.show_result(feed).values()
     good, bad, done = ([], [], [])
-    for job in jobs:
-        if job["status"][0] == "G":
+    for job in sabnzbd.RSSReader.store.show_result(feed):
+        if job.status[0] == "G":
             good.append(make_item(job))
-        elif job["status"][0] == "B":
+        elif job.status[0] == "B":
             bad.append(make_item(job))
-        elif job["status"] == "D":
+        elif job.status == "D":
             done.append(make_item(job))
-
-    try:
-        # Sort based on actual age, in try-catch just to be sure
-        good.sort(key=lambda job: job["age_ms"], reverse=True)
-        bad.sort(key=lambda job: job["age_ms"], reverse=True)
-        done.sort(key=lambda job: job["time_downloaded_ms"], reverse=True)
-    except Exception:
-        # Let the javascript do it then..
-        pass
 
     return done, good, bad
 

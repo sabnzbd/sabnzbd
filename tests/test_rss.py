@@ -20,7 +20,6 @@ tests.test_misc - Testing functions in misc.py
 """
 
 import datetime
-import time
 from typing import Optional
 
 import configobj
@@ -30,7 +29,7 @@ from pytest_httpserver import HTTPServer
 import sabnzbd.rss as rss
 import sabnzbd.config
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
-from sabnzbd.rss import FeedEvaluation, FeedConfig
+from sabnzbd.rss import FeedEvaluation, FeedConfig, RSSStore
 from tests.testhelper import httpserver_handler_data_dir
 
 
@@ -82,23 +81,23 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey" in rss_obj.jobs[feed_name]
+        assert rss_obj.store.has_feed(feed_name)
+        job = rss_obj.store.get_job(feed_name, "https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey")
+        assert job is not None
 
         # Check some job-data
-        job_data = rss_obj.jobs[feed_name]["https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey"]
-        assert job_data["title"] == "FakeShow.S04E03.720p.WEB.H264-Obfuscated"
-        assert job_data["infourl"] == "https://nzbgeek.info/geekseek.php?guid=FakeKey"
-        assert job_data["orgcat"] == "TV > HD"
-        assert job_data["cat"] == "tv"
-        assert job_data["episode"] == "3"
-        assert job_data["season"] == "4"
-        assert job_data["size"] == 1209464000
+        assert job.title == "FakeShow.S04E03.720p.WEB.H264-Obfuscated"
+        assert job.infourl == "https://nzbgeek.info/geekseek.php?guid=FakeKey"
+        assert job.orgcat == "TV > HD"
+        assert job.cat == "tv"
+        assert job.episode == 3
+        assert job.season == 4
+        assert job.size == 1209464000
 
         # feedparser returns UTC so SABnzbd converts to locale
         # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
     def test_rss_nzedb_parser(self):
         feed_name = "TestFeednZEDb"
@@ -109,24 +108,24 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey" in rss_obj.jobs[feed_name]
+        assert rss_obj.store.has_feed(feed_name)
+        job = rss_obj.store.get_job(feed_name, "https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
+        assert job is not None
 
         # Check some job-data
         # Added fake season and episode to test file
-        job_data = rss_obj.jobs[feed_name]["https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey"]
-        assert job_data["title"] == "Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER"
-        assert job_data["infourl"] == "https://nzbfinder.ws/details/FakeKey"
-        assert job_data["orgcat"] == "Movies > HD"
-        assert job_data["cat"] == "movies"
-        assert job_data["episode"] == "720"
-        assert job_data["season"] == "2018"
-        assert job_data["size"] == 5164539914
+        assert job.title == "Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER"
+        assert job.infourl == "https://nzbfinder.ws/details/FakeKey"
+        assert job.orgcat == "Movies > HD"
+        assert job.cat == "movies"
+        assert job.episode == 720
+        assert job.season == 2018
+        assert job.size == 5164539914
 
         # feedparser returns UTC so SABnzbd converts to locale
         # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
     def test_rss_link(self, httpserver: HTTPServer):
         httpserver.expect_request("/rss_link.xml").respond_with_handler(httpserver_handler_data_dir)
@@ -139,19 +138,19 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "http://LINK" in rss_obj.jobs[feed_name]
+        assert rss_obj.store.has_feed(feed_name)
+        job = rss_obj.store.get_job(feed_name, "http://LINK")
+        assert job is not None
 
         # Check some job-data
-        job_data = rss_obj.jobs[feed_name]["http://LINK"]
-        assert job_data["title"] == "TITLE"
-        assert job_data["infourl"] == "https://sabnzbd.org/rss_link"
-        assert job_data["size"] == 200
+        assert job.title == "TITLE"
+        assert job.infourl == "https://sabnzbd.org/rss_link"
+        assert job.size == 200
 
         # feedparser returns UTC so SABnzbd converts to locale
         # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
     def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer):
         httpserver.expect_request("/rss_enclosure_no_nzb.xml").respond_with_handler(httpserver_handler_data_dir)
@@ -164,8 +163,7 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert not rss_obj.jobs[feed_name]
+        assert not rss_obj.store.has_feed(feed_name)
 
     def test_rss_enclosure_multiple(self, httpserver: HTTPServer):
         httpserver.expect_request("/rss_enclosure_multiple.xml").respond_with_handler(httpserver_handler_data_dir)
@@ -178,19 +176,19 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert feed_name in rss_obj.jobs
-        assert "http://NZB_LINK" in rss_obj.jobs[feed_name]
+        assert rss_obj.store.has_feed(feed_name)
+        job = rss_obj.store.get_job(feed_name, "http://NZB_LINK")
+        assert job is not None
 
         # Check some job-data
-        job_data = rss_obj.jobs[feed_name]["http://NZB_LINK"]
-        assert job_data["title"] == "TITLE"
-        assert job_data["infourl"] == "https://sabnzbd.org/rss_enclosure_multiple"
-        assert job_data["size"] == 200
+        assert job.title == "TITLE"
+        assert job.infourl == "https://sabnzbd.org/rss_enclosure_multiple"
+        assert job.size == 200
 
         # feedparser returns UTC so SABnzbd converts to locale
         # of the system, so now we have to return to UTC
-        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1) - datetime.timedelta(seconds=time.timezone)
-        assert job_data["age"] == adjusted_date
+        adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
+        assert job.age == adjusted_date
 
     @pytest.mark.parametrize(
         "defaults, filters, title, category, size, season, episode, expected_match",

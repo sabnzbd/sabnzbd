@@ -217,6 +217,25 @@ def get_db_connection(thread_index=0):
     return cherrypy.thread_data.history_db
 
 
+class RSSManager:
+    """Closes CherryPy created database connections"""
+
+    def __init__(self, bus):
+        self.bus = bus
+        self.threads: dict[int, sabnzbd.rss.RSSStore] = {}
+
+    def subscribe(self):
+        self.bus.subscribe("start_thread", self._start_thread)
+        self.bus.subscribe("stop_thread", self._stop_thread)
+
+    def _start_thread(self, thread_id: int):
+        self.threads[thread_id] = RSSReader.store
+
+    def _stop_thread(self, thread_id: int):
+        self.threads[thread_id].close()
+        del self.threads[thread_id]
+
+
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader=False, clean_up=False, repair=0):
     if sabnzbd.__INITIALIZED__:
@@ -228,6 +247,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
 
     # Set global database connection for Web-UI threads
     cherrypy.engine.subscribe("start_thread", get_db_connection)
+    RSSManager(cherrypy.engine).subscribe()
 
     # Paused?
     pause_downloader = pause_downloader or cfg.start_paused()
@@ -455,7 +475,6 @@ def save_state():
     sabnzbd.BPSMeter.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
-    sabnzbd.RSSReader.save()
 
 
 def delayed_startup_actions():
