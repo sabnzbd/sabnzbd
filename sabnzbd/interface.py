@@ -19,7 +19,6 @@
 sabnzbd.interface - webinterface
 """
 
-import dataclasses
 import os
 import time
 import datetime
@@ -1389,7 +1388,7 @@ class ConfigRss:
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
-                sabnzbd.RSSReader.store.clear_feed(feed)
+                sabnzbd.RSSReader.store.rss_clear_feed(feed)
                 config.save_config()
                 self.__refresh_readout = feed
                 self.__refresh_download = False
@@ -1445,7 +1444,7 @@ class ConfigRss:
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
-        sabnzbd.RSSReader.store.clear_feed(kwargs.get("feed"))
+        sabnzbd.RSSReader.store.rss_clear_feed(kwargs.get("feed"))
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1481,7 +1480,7 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
         """Remove processed RSS jobs from UI"""
-        sabnzbd.RSSReader.store.clear_downloaded(kwargs["feed"])
+        sabnzbd.RSSReader.store.rss_clear_downloaded(kwargs["feed"])
         self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
@@ -1515,7 +1514,7 @@ class ConfigRss:
         """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
-        if att := sabnzbd.RSSReader.store.get_job(feed, url):
+        if att := sabnzbd.RSSReader.store.rss_get_job(feed, url):
             nzbname = kwargs.get("nzbname")
             pp = att.pp
             cat = att.cat
@@ -1534,7 +1533,7 @@ class ConfigRss:
                     nzo_info={"RSS": feed},
                 )
             # Need to pass the title instead
-            sabnzbd.RSSReader.store.flag_downloaded(feed, url)
+            sabnzbd.RSSReader.store.rss_flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1992,7 +1991,7 @@ def GetRssLog(feed):
         return job
 
     good, bad, done = ([], [], [])
-    for job in sabnzbd.RSSReader.store.show_result(feed):
+    for job in sabnzbd.RSSReader.store.rss_show_result(feed):
         if job.status[0] == "G":
             good.append(make_item(job))
         elif job.status[0] == "B":

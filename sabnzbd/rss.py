@@ -19,24 +19,18 @@
 sabnzbd.rss - rss client functionality
 """
 
-import os
 import re
 import logging
-import sys
 import time
 import datetime
 import threading
 import urllib.parse
 import weakref
 from dataclasses import dataclass, field
-from typing import Union, Optional, Sequence, Any, Generator, Iterable
-import sqlite3
-from sqlite3 import Connection, Cursor
-import more_itertools
+from typing import Union, Optional
 
 import sabnzbd
-from sabnzbd.constants import RSS_FILE_NAME, DB_RSS_FILE_NAME, DEFAULT_PRIORITY
-from sabnzbd.database import convert_search
+from sabnzbd.database import HistoryDB
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -51,178 +45,19 @@ from sabnzbd.misc import (
     helpful_warning,
 )
 import sabnzbd.emailer as emailer
-from sabnzbd.filesystem import remove_file
+from sabnzbd.rssmodels import (
+    ResolvedEntry,
+    NormalisedEntry,
+    normalise_pp,
+    normalise_str_or_none,
+    normalise_priority,
+    first_not_none,
+)
 
 import feedparser
 
 RSS_LOCK = threading.RLock()
 _RE_SP = re.compile(r"s*(\d+)[ex](\d+)", re.I)
-_RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
-_RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
-_RE_BR = re.compile(r"<br\s*/?>", re.I)  # Strip content after first <br/>
-_RE_TAG = re.compile(r"<[^>]+>")  # Strip HTML tags from descriptions
-
-
-@dataclass
-class NormalisedEntry:
-    link: Optional[str]
-    infourl: Optional[str]
-    orgcat: Optional[str]
-    title: str
-    size: int
-    age: Optional[datetime.datetime]
-    season: int
-    episode: int
-
-
-@dataclass
-class ResolvedEntry(NormalisedEntry):
-    feed: str
-    cat: Optional[str] = None
-    pp: Optional[int] = None
-    script: Optional[str] = None
-    priority: Optional[int] = None
-    rule: Optional[int] = None
-    status: str = "N"  # New
-    downloaded_at: Optional[datetime.datetime] = None
-
-    def __post_init__(self):
-        # Normalise "default-ish" values to None
-        self.cat = _normalise_str_or_none(self.cat)
-        self.priority = _normalise_priority(self.priority)
-        self.pp = _normalise_pp(self.pp)
-        self.script = _normalise_str_or_none(self.script)
-
-    def merge(self, existing: "ResolvedEntry"):
-        """Merge existing entry into self"""
-        self.cat = existing.cat
-        self.pp = existing.pp
-        self.script = existing.script
-        self.priority = existing.priority
-        self.rule = existing.rule
-        self.status = existing.status
-        self.downloaded_at = existing.downloaded_at
-
-    @classmethod
-    def from_sqlite(cls, item: sqlite3.Row):
-        return cls(
-            feed=item["feed"],
-            link=item["url"],
-            title=item["title"],
-            infourl=item["infourl"],
-            size=item["size"],
-            age=datetime.datetime.fromtimestamp(item["age"], tz=datetime.timezone.utc).astimezone(),
-            season=item["season"],
-            episode=item["episode"],
-            orgcat=item["orgcat"],
-            cat=item["category"],
-            pp=item["pp"],
-            script=item["script"],
-            priority=item["priority"],
-            rule=item["rule"],
-            status=item["status"],
-            downloaded_at=(
-                datetime.datetime.fromtimestamp(item["downloaded_at"], tz=datetime.timezone.utc).astimezone()
-                if item["downloaded_at"]
-                else None
-            ),
-        )
-
-    @classmethod
-    def from_feed(cls, feed: str, entry: feedparser.FeedParserDict) -> Optional["ResolvedEntry"]:
-        """Build NormalisedEntry from feedparser entry"""
-        link: Optional[str] = None
-        size: int = 0
-        age: datetime.datetime = datetime.datetime.now()
-
-        # Try standard link and enclosures first
-        if "enclosures" in entry and entry["enclosures"]:
-            try:
-                for enclosure in entry["enclosures"]:
-                    if "type" in enclosure and enclosure["type"] != "application/x-nzb":
-                        continue
-
-                    link = enclosure["href"]
-                    size = int(enclosure["length"])
-                    break
-            except Exception:
-                pass
-        else:
-            link = entry.link
-            if not link:
-                link = entry.links[0].href
-
-        # GUID usually has URL to result on page
-        infourl = None
-        if entry.get("id") and entry.id != link and entry.id.lower().startswith("http"):
-            infourl = entry.id
-
-        if size == 0:
-            # Try to find size in Description
-            try:
-                desc = entry.description.replace("\n", " ").replace("&nbsp;", " ")
-                m = _RE_SIZE1.search(desc) or _RE_SIZE2.search(desc)
-                if m:
-                    size = int_conv(from_units(m.group(1)))
-            except Exception:
-                pass
-
-        # Try newznab attribute first, this is the correct one
-        try:
-            # Convert it to format that calc_age understands
-            age = datetime.datetime(*entry["newznab"]["usenetdate_parsed"][:6], tzinfo=datetime.timezone.utc)
-        except Exception:
-            # Date from feed (usually lags behind)
-            try:
-                # Convert it to format that calc_age understands
-                age = datetime.datetime(*entry.published_parsed[:6], tzinfo=datetime.timezone.utc)
-            except Exception:
-                pass
-        finally:
-            age = age.replace(tzinfo=datetime.timezone.utc)
-
-        # Maybe the newznab also provided SxxExx info
-        try:
-            season = re.findall(r"\d+", entry["newznab"]["season"])[0]
-            episode = re.findall(r"\d+", entry["newznab"]["episode"])[0]
-        except (KeyError, IndexError):
-            season = episode = 0
-
-        if not link or not link.lower().startswith("http"):
-            logging.info(T("Empty RSS entry found (%s)"), link)
-            return None
-
-        try:
-            category = entry.cattext
-        except AttributeError:
-            try:
-                category = entry.category
-            except AttributeError:
-                try:  # nzb.su
-                    category = entry.tags[0]["term"]
-                except (AttributeError, IndexError, KeyError):
-                    try:
-                        desc = entry.description
-                        # Split on any <br>, <br/>, <br /> (case-insensitive) to avoid some large descriptions
-                        first_part = _RE_BR.split(desc, maxsplit=1)[0]
-                        category = _RE_TAG.sub("", first_part).strip()
-                    except AttributeError:
-                        category = ""
-
-        # Make sure spaces are quoted in the URL
-        link = link.strip().replace(" ", "%20")
-
-        return cls(
-            feed=feed,
-            link=link,
-            title=entry.title,
-            infourl=infourl,
-            size=size,
-            age=age,
-            season=season,
-            episode=episode,
-            orgcat=category,
-        )
 
 
 @dataclass(frozen=True)
@@ -252,10 +87,10 @@ class FeedRule:
         if self.type not in {"<", ">", "F", "S"}:
             self.regex = convert_filter(self.regex)
         # Normalise "default-ish" values to None
-        self.category = _normalise_str_or_none(self.category)
-        self.priority = _normalise_priority(self.priority)
-        self.pp = _normalise_pp(self.pp)
-        self.script = _normalise_str_or_none(self.script)
+        self.category = normalise_str_or_none(self.category)
+        self.priority = normalise_priority(self.priority)
+        self.pp = normalise_pp(self.pp)
+        self.script = normalise_str_or_none(self.script)
 
     def matches(
         self, *, title: str, category: Optional[str], size: int, season: int, episode: int, rule_index: int
@@ -341,12 +176,12 @@ class FeedConfig:
     rules: list[FeedRule] = field(default_factory=list)
 
     def __post_init__(self):
-        self.default_category = _normalise_str_or_none(self.default_category)
+        self.default_category = normalise_str_or_none(self.default_category)
         if self.default_category not in sabnzbd.api.list_cats(default=False):
             self.default_category = None
-        self.default_priority = _normalise_priority(self.default_priority)
-        self.default_pp = _normalise_pp(self.default_pp)
-        self.default_script = _normalise_str_or_none(self.default_script)
+        self.default_priority = normalise_priority(self.default_priority)
+        self.default_pp = normalise_pp(self.default_pp)
+        self.default_script = normalise_str_or_none(self.default_script)
 
     def has_type(self, *types: str) -> bool:
         """Check if any rule matches the given types"""
@@ -472,9 +307,9 @@ class FeedConfig:
         """Resolve options for a feed rule."""
         if base_category:
             cat, cat_pp, cat_script, cat_prio = cat_to_opts(base_category)
-            cat_pp = _normalise_pp(cat_pp)
-            cat_script = _normalise_str_or_none(cat_script)
-            cat_prio = _normalise_priority(cat_prio)
+            cat_pp = normalise_pp(cat_pp)
+            cat_script = normalise_str_or_none(cat_script)
+            cat_prio = normalise_priority(cat_prio)
         else:
             cat = cat_pp = cat_script = cat_prio = None
 
@@ -495,416 +330,6 @@ class FeedConfig:
         )
 
         return cat, pp, script, priority
-
-
-class RSSStore:
-    """Class to access the RSS database
-    Each class-instance will create an access channel that can be used in one thread.
-    Each thread needs its own class-instance!
-    """
-
-    # These class attributes will be accessed directly because they need to be shared by all instances
-    db_path: Optional[str] = None  # Full path to rss database
-    startup_done: bool = False
-
-    @synchronized(RSS_LOCK)
-    def __init__(self):
-        """Determine database path and create connection"""
-        self.connection: Optional[Connection] = None
-        self.cursor: Optional[Cursor] = None
-        self.connect()
-
-    def connect(self):
-        """Create a connection to the database"""
-        if not RSSStore.db_path:
-            RSSStore.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_RSS_FILE_NAME)
-        create_table = not RSSStore.startup_done and not os.path.exists(RSSStore.db_path)
-
-        # check_same_thread=False because CherryPy calls stop_thread on its main thread
-        self.connection = sqlite3.connect(RSSStore.db_path, check_same_thread=False)
-        self.connection.isolation_level = None  # autocommit attribute only introduced in Python 3.12
-        self.connection.row_factory = sqlite3.Row
-        self.cursor = self.connection.cursor()
-
-        # Perform initialization only once
-        if not RSSStore.startup_done:
-            if create_table:
-                self.create_rss_db()
-                self.import_old_records()
-
-            self.execute("PRAGMA journal_mode=WAL")
-            self.execute("PRAGMA synchronous=NORMAL")
-
-            # When an object (table, index, or trigger) is dropped from the database, it leaves behind empty space
-            # http://www.sqlite.org/lang_vacuum.html
-            self.execute("VACUUM")
-
-            # See if we need to perform any updates
-            # self.execute("PRAGMA user_version;")
-            # try:
-            #     version = self.cursor.fetchone()["user_version"]
-            # except (IndexError, TypeError):
-            #     version = 0
-            #
-            # Add any new columns added since last DB version
-            # Use "and" to stop when database has been reset due to corruption
-            # if version < 1:
-            #     _ = (
-            #         self.execute("PRAGMA user_version = 1;")
-            #         and self.execute("ALTER TABLE rss ADD COLUMN ... TEXT;")
-            #     )
-
-            for feed in self.get_feeds():
-                self.remove_obsolete(feed)
-
-            RSSStore.startup_done = True
-
-    def execute(self, command: str, args: Sequence = ()) -> bool:
-        """Wrapper for executing SQL commands"""
-        for tries in (4, 3, 2, 1, 0):
-            try:
-                self.cursor.execute(command, args)
-                return True
-            except Exception:
-                error = str(sys.exc_info()[1])
-                if tries > 0 and "is locked" in error:
-                    logging.debug("Database locked, wait and retry")
-                    time.sleep(0.5)
-                    continue
-                elif "readonly" in error:
-                    logging.error(T("Cannot write to RSS database, check access rights!"))
-                    # Report back success, because there's no recovery possible
-                    return True
-                elif match_str(error, ("not a database", "malformed", "no such table", "duplicate column name")):
-                    logging.error(T("Damaged RSS database, created empty replacement"))
-                    logging.info("Traceback: ", exc_info=True)
-                    self.close()
-                    try:
-                        remove_file(RSSStore.db_path)
-                    except Exception:
-                        pass
-                    RSSStore.startup_done = False
-                    self.connect()
-                    # Return False in case of "duplicate column" error
-                    # because the column addition in connect() must be terminated
-                    return True
-                else:
-                    logging.error(T("SQL Command Failed, see log"))
-                    logging.info("SQL: %s", command)
-                    logging.info("Arguments: %s", repr(args))
-                    logging.info("Traceback: ", exc_info=True)
-                    try:
-                        self.connection.rollback()
-                    except Exception:
-                        # Can fail in case of automatic rollback
-                        logging.debug("Rollback Failed:", exc_info=True)
-            return False
-        return False
-
-    def create_rss_db(self):
-        """Create a new (empty) database file"""
-        self.execute(
-            """
-        CREATE TABLE rss (
-            "id" INTEGER PRIMARY KEY,
-            "feed" TEXT NOT NULL,
-            "status" TEXT NOT NULL
-                     CHECK (status IN (
-                     'G',  -- Good
-                     'B',  -- Bad
-                     'D',  -- Downloaded
-                     'X',  -- Expired
-                     'G*', -- Good Initial
-                     'D-', -- Downloaded Hidden
-                     'N'   -- New
-                     )),
-            "title" TEXT NOT NULL,
-            "url" TEXT NOT NULL,
-            "infourl" TEXT,
-            "category" TEXT,
-            "orgcat" TEXT,
-            "pp" TEXT,
-            "script" TEXT,
-            "priority" TEXT,
-            "season" INTEGER,
-            "episode" INTEGER,
-            "size" INTEGER,
-            "rule" INTEGER,
-            "age" INTEGER NOT NULL,
-            "downloaded_at" INTEGER,
-            "created_at" INTEGER NOT NULL,
-            UNIQUE (feed, url)
-        );
-        """
-        )
-        self.execute("CREATE INDEX idx_rss_feed ON rss(feed)")
-        self.execute("CREATE INDEX idx_rss_feed_status ON rss(feed, status)")
-        self.execute("CREATE INDEX idx_rss_feed_status_downloaded_at ON rss(feed, status, downloaded_at DESC)")
-        self.execute("CREATE INDEX idx_rss_feed_status_age ON rss(feed, status, age DESC)")
-
-    def import_old_records(self):
-        """Migrate old RSS database"""
-        try:
-            jobs = sabnzbd.filesystem.load_admin(RSS_FILE_NAME) or {}
-            local_tz = datetime.datetime.now().astimezone().tzinfo
-            for feed, jobs in jobs.items():
-                for link, job in jobs.items():
-                    category = job.get("orgcat") or None
-                    if category in ("", "*"):
-                        category = None
-                    entry = ResolvedEntry(
-                        feed=feed,
-                        link=link.strip().replace(" ", "%20"),
-                        title=job.get("title", ""),
-                        infourl=job.get("infourl"),
-                        size=job.get("size", 0),
-                        age=(
-                            # datetime.datetime: convert to local time then to UTC
-                            job.get("age").replace(tzinfo=local_tz).astimezone(datetime.timezone.utc)
-                            if job.get("age")
-                            else None
-                        ),
-                        season=job.get("season", 0),
-                        episode=job.get("episode", 0),
-                        orgcat=category,
-                        cat=job.get("cat", 0),
-                        pp=job.get("pp", 0),
-                        script=job.get("script", 0),
-                        priority=job.get("prio", 0),
-                        rule=job.get("rule", 0),
-                        status=job.get("status"),
-                        downloaded_at=(
-                            # time.struct_time: convert to local time then to UTC
-                            datetime.datetime.fromtimestamp(
-                                time.mktime(job.get("time_downloaded")), tz=datetime.timezone.utc
-                            )
-                            if job.get("time_downloaded")
-                            else None
-                        ),
-                    )
-                    self.upsert(entry)
-        except Exception as e:
-            logging.error(e)
-            logging.warning(T("Cannot read %s"), RSS_FILE_NAME)
-            logging.info("Traceback: ", exc_info=True)
-
-    @synchronized(RSS_LOCK)
-    def close(self):
-        """Close database connection"""
-        try:
-            self.cursor.close()
-            self.connection.close()
-        except Exception:
-            logging.error(T("Failed to close database, see log"))
-            logging.info("Traceback: ", exc_info=True)
-
-    def get_job(self, feed: str, url: str) -> Optional[ResolvedEntry]:
-        if not feed or not url:
-            return None
-        if self.execute("SELECT * FROM rss WHERE feed = ? AND url = ?", (feed, url)):
-            row = self.cursor.fetchone()
-            if row is None:
-                return None
-            return ResolvedEntry.from_sqlite(row)
-        return None
-
-    def get_jobs(
-        self,
-        feed: Optional[str] = None,
-        search: Optional[str] = None,
-        statuses: Optional[list[str]] = None,
-    ) -> Generator[ResolvedEntry, Any, None]:
-        """Return records for specified jobs"""
-        command_args = []
-        where_clauses = []
-
-        if search is not None:
-            where_clauses.append("title LIKE ?")
-            command_args.append(convert_search(search))
-
-        if feed:
-            where_clauses.append("feed = ?")
-            command_args.append(feed)
-
-        if statuses:
-            placeholders = " OR ".join(["status = ?"] * len(statuses))
-            where_clauses.append(f"({placeholders})")
-            command_args.extend(statuses)
-
-        # Combine all WHERE clauses
-        where_sql = " AND ".join(where_clauses)
-
-        # Final query
-        cmd = f"SELECT * FROM rss WHERE {where_sql} ORDER BY COALESCE(downloaded_at, age) DESC"
-
-        if self.execute(cmd, command_args):
-            for item in self.cursor:
-                yield ResolvedEntry.from_sqlite(item)
-
-    def get_feeds(self) -> list[str]:
-        self.execute("SELECT DISTINCT feed from rss")
-        return [row["feed"] for row in self.cursor]
-
-    def has_feed(self, feed: str) -> bool:
-        self.execute("SELECT EXISTS(SELECT 1 FROM rss WHERE feed = ?) AS found", (feed,))
-        return bool(self.cursor.fetchone()["found"])
-
-    def upsert(self, entry: ResolvedEntry):
-        """Add or update a job entry in the database"""
-        t = self.build_job_info(entry)
-
-        self.execute(
-            """
-            INSERT INTO rss (
-                feed, status, title, url, infourl, category, orgcat, pp, script, priority,
-                season, episode, size, rule, age, downloaded_at, created_at
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(feed, url) DO UPDATE SET
-                status        = excluded.status,
-                title         = excluded.title,
-                infourl       = excluded.infourl,
-                category      = excluded.category,
-                orgcat        = excluded.orgcat,
-                pp            = excluded.pp,
-                script        = excluded.script,
-                priority      = excluded.priority,
-                season        = excluded.season,
-                episode       = excluded.episode,
-                size          = excluded.size,
-                rule          = excluded.rule,
-                age           = excluded.age,
-                downloaded_at = COALESCE(excluded.downloaded_at, rss.downloaded_at);
-            """,
-            t,
-        )
-
-    @staticmethod
-    def build_job_info(entry: ResolvedEntry):
-        """Collects all the information needed for the database"""
-        return (
-            entry.feed,
-            entry.status,
-            entry.title,
-            entry.link,
-            entry.infourl,
-            entry.cat,
-            entry.orgcat,
-            entry.pp,
-            entry.script,
-            str(entry.priority) if entry.priority is not None else str(DEFAULT_PRIORITY),
-            entry.season,
-            entry.episode,
-            entry.size,
-            entry.rule,
-            int(entry.age.timestamp()),
-            int(entry.downloaded_at.timestamp()) if entry.downloaded_at else None,
-            int(time.time()),
-        )
-
-    def delete_feed(self, feed: str):
-        """Permanently remove job from the history"""
-        self.execute("""DELETE FROM rss WHERE feed = ?""", (feed,))
-
-    def rename_feed(self, old_feed: str, new_feed: str):
-        """Rename all rows for a given feed to a new feed name."""
-        self.execute("""UPDATE rss SET feed = ? WHERE feed = ?""", (new_feed, old_feed))
-
-    def show_result(self, feed: str) -> Generator[ResolvedEntry, Any, None]:
-        if self.execute(
-            """
-            SELECT * 
-            FROM rss 
-            WHERE feed = ? AND substr(status, 1, 1) IN ('G', 'B', 'D')
-            ORDER BY COALESCE(downloaded_at, age) DESC
-            """,
-            (feed,),
-        ):
-            for row in self.cursor:
-                yield ResolvedEntry.from_sqlite(row)
-
-    def flag_downloaded(self, feed: str, url: str):
-        if not feed or not url:
-            return
-        self.execute(
-            "UPDATE rss SET status = 'D', downloaded_at = ? WHERE feed = ? AND url = ?",
-            (
-                int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
-                feed,
-                url,
-            ),
-        )
-
-    def clear_feed(self, feed: str):
-        """Remove any previous references to this feed name, and start fresh."""
-        self.delete_feed(feed)
-
-    def clear_downloaded(self, feed: str):
-        """Mark downloaded jobs so that they won't be displayed any more."""
-        self.execute("UPDATE rss SET status = 'D-' WHERE feed = ? AND status = 'D'", (feed,))
-
-    def is_duplicate(self, entry: ResolvedEntry) -> bool:
-        """
-        Check if a job with the same title and size already exists in another feed
-
-        Allow 5% size deviation because indexers might have small differences for same release
-        """
-        self.execute(
-            "SELECT EXISTS(SELECT 1 FROM rss WHERE title = ? AND url <> ? AND size BETWEEN ? AND ?) AS found",
-            (entry.title, entry.link, entry.size * 0.95, entry.size * 1.05),
-        )
-        return bool(self.cursor.fetchone()["found"])
-
-    @synchronized(RSS_LOCK)
-    def remove_obsolete(self, feed: str, new_urls: Optional[Iterable[str]] = None):
-        """
-        Expire G/B links that are not in new_jobs (mark them 'X')
-
-        Expired links older than 3 days are removed
-        """
-        now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
-        limit = now - 3 * 24 * 3600  # 3 days in seconds
-
-        if new_urls:
-            # Create temporary table for all new URLs
-            self.execute("CREATE TEMP TABLE temp_urls(url TEXT PRIMARY KEY)")
-
-            # Insert all new URLs in batches; SQLite can "only" do 999 per query
-            for batch in more_itertools.batched(new_urls, 500):
-                placeholders = ",".join(["(?)"] * len(batch))
-                self.execute(f"INSERT INTO temp_urls(url) VALUES {placeholders}", batch)
-
-            # Update rss to mark G/B not in temp_urls as X
-            self.execute(
-                """
-                UPDATE rss
-                SET status = 'X'
-                WHERE feed = ?
-                  AND substr(status,1,1) IN ('G','B')
-                  AND url NOT IN (SELECT url FROM temp_urls)
-            """,
-                (feed,),
-            )
-
-            # Drop temp table
-            self.execute("DROP TABLE temp_urls")
-
-        # Purge
-        if not self.execute(
-            """
-            SELECT url FROM rss
-            WHERE feed = ?
-              AND status = 'X'
-              AND age < ?
-        """,
-            (feed, limit),
-        ):
-            return
-
-        expired_urls = [row["url"] for row in self.cursor]
-        for url in expired_urls:
-            logging.debug("Purging link %s", url)
-            self.execute("DELETE FROM rss WHERE feed = ? AND url = ?", (feed, url))
 
 
 class RSSReader:
@@ -928,16 +353,16 @@ class RSSReader:
         return any(self._active_stores)
 
     @property
-    def store(self) -> RSSStore:
+    def store(self) -> HistoryDB:
         """Get the store for the current thread"""
         if not hasattr(self._thread_local, "store"):
-            store = RSSStore()
+            store = HistoryDB()
             self._active_stores.add(store)
             self._thread_local.store = store
         return self._thread_local.store
 
     @store.setter
-    def store(self, db: Optional[RSSStore]) -> None:
+    def store(self, db: Optional[HistoryDB]) -> None:
         """Set the store for the current thread, setting to None closes the connection"""
         if current := getattr(self._thread_local, "store", None):
             current.close()
@@ -982,7 +407,7 @@ class RSSReader:
             if not entries:
                 return msg
         else:
-            entries, msg = (list(self.store.get_jobs(feed=feed)), "")
+            entries, msg = (list(self.store.rss_get_jobs(feed=feed)), "")
 
         # Evaluate rules and apply side effects
         for entry in entries:
@@ -990,7 +415,7 @@ class RSSReader:
                 return ""
 
             # Skip duplicates across multiple feeds
-            if entry.link in new_links or len(uris) > 1 and self.store.is_duplicate(entry):
+            if entry.link in new_links or len(uris) > 1 and self.store.rss_is_duplicate(entry):
                 logging.info("Ignoring job %s from other feed", entry.title)
                 continue
 
@@ -1022,7 +447,7 @@ class RSSReader:
         if new_downloads and cfg.email_rss() and not force:
             emailer.rss_mail(feed, new_downloads)
 
-        self.store.remove_obsolete(feed, new_links)
+        self.store.rss_remove_obsolete(feed, new_links)
 
         return msg
 
@@ -1046,7 +471,7 @@ class RSSReader:
         filters = FeedConfig.from_config(feeds)
 
         # Set first if this is the very first scan of this URI
-        first = (not self.store.has_feed(feed)) and ignore_first
+        first = (not self.store.rss_has_feed(feed)) and ignore_first
 
         return uris, filters, first, ""
 
@@ -1153,7 +578,7 @@ class RSSReader:
                 if not normalised:
                     continue
                 # Merge the existing state
-                existing = self.store.get_job(feed, normalised.link)
+                existing = self.store.rss_get_job(feed, normalised.link)
                 if existing:
                     normalised.merge(existing)
                 all_entries.append(normalised)
@@ -1197,7 +622,7 @@ class RSSReader:
         if not update.status == "D":
             return
         if not update.downloaded_at:
-            self.store.flag_downloaded(update)
+            self.store.rss_flag_downloaded(update)
 
         nzbname = None if special_rss_site(update.link) else update.title
 
@@ -1253,7 +678,7 @@ class RSSReader:
             downloaded_at=datetime.datetime.now() if status == "D" else None,
         )
 
-        self.store.upsert(update)
+        self.store.rss_upsert(update)
         self.enqueue_download(update)
 
         return bool(evaluation.matched and should_download)
@@ -1286,47 +711,6 @@ class RSSReader:
                 self.store = None
             if active:
                 logging.info("Finished scheduled RSS read-outs")
-
-
-def _normalise_str_or_none(value: Optional[str]) -> Optional[str]:
-    """Normalise default values to None"""
-    if not value:
-        return None
-    v = str(value).strip()
-    if v.lower() in ("", "*", "default"):
-        return None
-    return v
-
-
-def _normalise_priority(value) -> Optional[int]:
-    """Normalise default priority values to None"""
-    if value in (None, "", "*", "default", DEFAULT_PRIORITY):
-        return None
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _normalise_pp(value) -> Optional[int]:
-    """Normalise pp value to an int between 0 and 3, or None if invalid/empty."""
-    if value in (None, ""):
-        return None
-    try:
-        iv = int(value)
-        if 0 <= iv <= 3:
-            return iv
-    except (TypeError, ValueError):
-        pass
-    return None
-
-
-def first_not_none(*args):
-    """Return first value which is not None"""
-    for a in args:
-        if a is not None:
-            return a
-    return None
 
 
 def special_rss_site(url: str) -> bool:

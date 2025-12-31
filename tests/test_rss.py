@@ -29,6 +29,7 @@ from pytest_httpserver import HTTPServer
 
 import sabnzbd
 import sabnzbd.rss as rss
+import sabnzbd.database as db
 import sabnzbd.config
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
 from sabnzbd.rss import FeedEvaluation, FeedConfig
@@ -36,10 +37,10 @@ from tests.testhelper import httpserver_handler_data_dir
 
 
 @pytest.fixture
-def tmp_rssstore(tmp_path, monkeypatch):
-    db_path = tmp_path / "rssstore.db"
-    monkeypatch.setattr(rss.RSSStore, "db_path", str(db_path))
-    monkeypatch.setattr(rss.RSSStore, "startup_done", False)
+def tmp_db(tmp_path, monkeypatch):
+    db_path = tmp_path / "history.db"
+    monkeypatch.setattr(db.HistoryDB, "db_path", str(db_path))
+    monkeypatch.setattr(db.HistoryDB, "startup_done", False)
 
 
 def _build_random_store(
@@ -59,7 +60,7 @@ def _build_random_store(
     if rnd is None:
         rnd = random.Random(42)
 
-    store = rss.RSSStore()
+    store = db.HistoryDB()
     feeds: list[str] = []
     links_by_feed: dict[str, list[str]] = {}
 
@@ -90,7 +91,7 @@ def _build_random_store(
                 rule=0,
                 status="G",
             )
-            store.upsert(entry)
+            store.rss_upsert(entry)
 
         links_by_feed[feed_name] = links
 
@@ -133,7 +134,7 @@ class TestRSS:
         sabnzbd.config.ConfigCat("tv", {})
         sabnzbd.config.ConfigCat("movies", {})
 
-    def test_rss_newznab_parser(self, tmp_rssstore):
+    def test_rss_newznab_parser(self, tmp_db):
         """Test basic RSS-parsing of custom elements
         Harder to test in functional test
         """
@@ -145,8 +146,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.has_feed(feed_name)
-        job = rss_obj.store.get_job(feed_name, "https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey")
+        assert rss_obj.store.rss_has_feed(feed_name)
+        job = rss_obj.store.rss_get_job(feed_name, "https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey")
         assert job is not None
 
         # Check some job-data
@@ -163,7 +164,7 @@ class TestRSS:
         adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
-    def test_rss_nzedb_parser(self, tmp_rssstore):
+    def test_rss_nzedb_parser(self, tmp_db):
         feed_name = "TestFeednZEDb"
         self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_nzedb_test.xml")
 
@@ -172,8 +173,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.has_feed(feed_name)
-        job = rss_obj.store.get_job(feed_name, "https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
+        assert rss_obj.store.rss_has_feed(feed_name)
+        job = rss_obj.store.rss_get_job(feed_name, "https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
         assert job is not None
 
         # Check some job-data
@@ -191,7 +192,7 @@ class TestRSS:
         adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
-    def test_rss_link(self, httpserver: HTTPServer, tmp_rssstore):
+    def test_rss_link(self, httpserver: HTTPServer, tmp_db):
         httpserver.expect_request("/rss_link.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedLink"
@@ -202,8 +203,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.has_feed(feed_name)
-        job = rss_obj.store.get_job(feed_name, "http://LINK")
+        assert rss_obj.store.rss_has_feed(feed_name)
+        job = rss_obj.store.rss_get_job(feed_name, "http://LINK")
         assert job is not None
 
         # Check some job-data
@@ -216,7 +217,7 @@ class TestRSS:
         adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
-    def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer, tmp_rssstore):
+    def test_rss_enclosure_no_nzb(self, httpserver: HTTPServer, tmp_db):
         httpserver.expect_request("/rss_enclosure_no_nzb.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedEnclosureNoNZB"
@@ -227,9 +228,9 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert not rss_obj.store.has_feed(feed_name)
+        assert not rss_obj.store.rss_has_feed(feed_name)
 
-    def test_rss_enclosure_multiple(self, httpserver: HTTPServer, tmp_rssstore):
+    def test_rss_enclosure_multiple(self, httpserver: HTTPServer, tmp_db):
         httpserver.expect_request("/rss_enclosure_multiple.xml").respond_with_handler(httpserver_handler_data_dir)
 
         feed_name = "TestFeedEnclosureMultiple"
@@ -240,8 +241,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.has_feed(feed_name)
-        job = rss_obj.store.get_job(feed_name, "http://NZB_LINK")
+        assert rss_obj.store.rss_has_feed(feed_name)
+        job = rss_obj.store.rss_get_job(feed_name, "http://NZB_LINK")
         assert job is not None
 
         # Check some job-data
@@ -415,7 +416,7 @@ class TestRSS:
 
         assert result_match == expected_match
 
-    def test_rssstore_random_crud(self, tmp_rssstore):
+    def test_rssstore_random_crud(self, tmp_db):
         rnd = random.Random(123)
         store, feeds, links_by_feed = _build_random_store(
             rnd,
@@ -426,36 +427,36 @@ class TestRSS:
         )
 
         # Basic structure and accessors
-        db_feeds = set(store.get_feeds())
+        db_feeds = set(store.rss_get_feeds())
         for feed in feeds:
             assert feed in db_feeds
 
         for feed in feeds:
-            entries = list(store.show_result(feed))
+            entries = list(store.rss_show_result(feed))
             assert {e.link for e in entries} == set(links_by_feed[feed])
 
         # Pick one concrete feed/link to exercise per-job helpers
         feed = feeds[0]
         link = links_by_feed[feed][0]
 
-        job = store.get_job(feed, link)
+        job = store.rss_get_job(feed, link)
         assert job is not None
         assert job.link == link
 
         # flag_downloaded + clear_downloaded modify status as expected
-        store.flag_downloaded(feed, link)
-        job_after_flag = store.get_job(feed, link)
+        store.rss_flag_downloaded(feed, link)
+        job_after_flag = store.rss_get_job(feed, link)
         assert job_after_flag is not None
         assert job_after_flag.status == "D"
         assert job_after_flag.downloaded_at is not None
 
-        store.clear_downloaded(feed)
-        job_after_clear = store.get_job(feed, link)
+        store.rss_clear_downloaded(feed)
+        job_after_clear = store.rss_get_job(feed, link)
         assert job_after_clear is not None
         assert job_after_clear.status == "D-"
 
         # get_jobs should return all jobs for a feed
-        jobs_from_get_jobs = list(store.get_jobs(feed=feed))
+        jobs_from_get_jobs = list(store.rss_get_jobs(feed=feed))
         assert {j.link for j in jobs_from_get_jobs} == set(links_by_feed[feed])
 
         # is_duplicate should detect similar jobs in other feeds
@@ -470,27 +471,27 @@ class TestRSS:
             episode=job.episode,
             orgcat=job.orgcat,
         )
-        assert store.is_duplicate(duplicate_candidate)
+        assert store.rss_is_duplicate(duplicate_candidate)
 
         # rename_feed + clear_feed work on arbitrary feeds
         new_feed_name = feed + "-renamed"
-        store.rename_feed(feed, new_feed_name)
-        feeds_after_rename = set(store.get_feeds())
+        store.rss_rename_feed(feed, new_feed_name)
+        feeds_after_rename = set(store.rss_get_feeds())
         assert new_feed_name in feeds_after_rename
         assert feed not in feeds_after_rename
 
-        store.clear_feed(new_feed_name)
-        feeds_after_clear = set(store.get_feeds())
+        store.rss_clear_feed(new_feed_name)
+        feeds_after_clear = set(store.rss_get_feeds())
         assert new_feed_name not in feeds_after_clear
 
         # delete_feed removes remaining test feeds
         for remaining in list(feeds[1:]):
-            store.delete_feed(remaining)
-            assert remaining not in set(store.get_feeds())
+            store.rss_delete_feed(remaining)
+            assert remaining not in set(store.rss_get_feeds())
 
-    def test_rssstore_remove_obsolete_marks_and_purges(self, tmp_rssstore):
+    def test_rssstore_remove_obsolete_marks_and_purges(self, tmp_db):
         """remove_obsolete should mark old G/B items as X and purge expired X."""
-        store = rss.RSSStore()
+        store = db.HistoryDB()
         feed = "feed-remove"
 
         now = datetime.datetime.now(datetime.timezone.utc)
@@ -499,7 +500,7 @@ class TestRSS:
 
         # Old good item that should be kept because it is part of the new_urls set
         keep_url = "http://example.test/keep"
-        store.upsert(
+        store.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=keep_url,
@@ -516,7 +517,7 @@ class TestRSS:
 
         # Old good item that is not in new_urls: should be marked X and purged
         purge_old_g_url = "http://example.test/purge-old-g"
-        store.upsert(
+        store.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=purge_old_g_url,
@@ -533,7 +534,7 @@ class TestRSS:
 
         # Old X item should be purged directly
         purge_old_x_url = "http://example.test/purge-old-x"
-        store.upsert(
+        store.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=purge_old_x_url,
@@ -550,7 +551,7 @@ class TestRSS:
 
         # Recent X item should be kept
         keep_x_url = "http://example.test/keep-young-x"
-        store.upsert(
+        store.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=keep_x_url,
@@ -566,9 +567,9 @@ class TestRSS:
         )
 
         # Run remove_obsolete with only keep_url as the set of current URLs
-        store.remove_obsolete(feed, {keep_url})
+        store.rss_remove_obsolete(feed, {keep_url})
 
-        jobs = {e.link: e for e in store.get_jobs(feed=feed)}
+        jobs = {e.link: e for e in store.rss_get_jobs(feed=feed)}
 
         # keep_url should still exist and remain G
         assert keep_url in jobs
@@ -586,11 +587,11 @@ class TestRSS:
 
         store.close()
 
-    def test_rssreader_store_lifecycle(self, tmp_rssstore):
+    def test_rssreader_store_lifecycle(self, tmp_db):
         """RSSReader.store setter should register and close stores properly."""
 
         reader = rss.RSSReader()
-        store = rss.RSSStore()
+        store = db.HistoryDB()
 
         closed = {"value": False}
 
@@ -607,7 +608,7 @@ class TestRSS:
         reader.stop()
         assert closed["value"]
 
-    def test_rssreader_multi_uri_deduplicates_entries(self, httpserver: HTTPServer, tmp_rssstore):
+    def test_rssreader_multi_uri_deduplicates_entries(self, httpserver: HTTPServer, tmp_db):
         """A feed with multiple URIs should not create duplicate jobs for the same link."""
 
         shared_link = "http://example.test/shared"
@@ -659,7 +660,7 @@ class TestRSS:
         reader = rss.RSSReader()
         reader.run_feed(feed_name)
 
-        entries = list(reader.store.get_jobs(feed=feed_name))
+        entries = list(reader.store.rss_get_jobs(feed=feed_name))
         links = {e.link for e in entries}
 
         # Shared link must only appear once

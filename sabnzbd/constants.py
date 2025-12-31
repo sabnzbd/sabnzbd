@@ -43,7 +43,6 @@ QUEUE_FILE_TMPL = "queue%s.sab"
 QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME = "postproc%s.sab" % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME = "rss_data.sab"
-DB_RSS_FILE_NAME = "rss.db"
 SCAN_FILE_NAME = "watched_data2.sab"
 FUTURE_Q_FOLDER = "future"
 JOB_ADMIN = "__ADMIN__"
@@ -90,7 +89,6 @@ MAX_BAD_ARTICLES = 5
 
 CONFIG_BACKUP_FILES = [
     BYTES_FILE_NAME,
-    DB_RSS_FILE_NAME,
     DB_HISTORY_NAME,
 ]
 CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
