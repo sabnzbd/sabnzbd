@@ -688,6 +688,7 @@ class RSSStore:
             logging.warning(T("Cannot read %s"), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
 
+    @synchronized(RSS_LOCK)
     def close(self):
         """Close database connection"""
         try:
@@ -917,7 +918,8 @@ class RSSReader:
 
     def stop(self):
         self.shutdown = True
-        self.store = None
+        for store in list(self._active_stores):
+            store.close()
 
     @property
     def is_store_active(self):
