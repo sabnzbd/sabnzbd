@@ -20,7 +20,6 @@ tests.test_functional_sorting - Test downloads with season sorting and sequentia
 """
 import os
 from tests.testhelper import *
-from flaky import flaky
 import sabnzbd.config as config
 
 
@@ -29,7 +28,6 @@ import sabnzbd.config as config
 INI_FILE = "sabnzbd.sorting.ini"
 
 
-@flaky
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestDownloadSorting(DownloadFlowBasics):
     def test_sorter_settings_conversion(self):

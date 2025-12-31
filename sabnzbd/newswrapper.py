@@ -201,7 +201,8 @@ class NewsWrapper:
     def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzb.Article"]) -> None:
         """A response to a NNTP request is received"""
         self.concurrent_requests.release()
-        sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
+        if not self.blocking:
+            sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
         server = self.server
         article_done = response.status_code in (220, 222) and article
 
@@ -333,6 +334,36 @@ class NewsWrapper:
             return bytes_recv, pending
         return bytes_recv, None
 
+    def prepare_request(self) -> bool:
+        """Queue an article request if appropriate."""
+        server = self.server
+
+        # Do not pipeline requests until authentication is completed (connected)
+        if self.connected or not self._response_queue:
+            server_ready = (
+                server.active
+                and not server.restart
+                and not (
+                    sabnzbd.Downloader.no_active_jobs()
+                    or sabnzbd.Downloader.shutdown
+                    or sabnzbd.Downloader.paused_for_postproc
+                )
+            )
+
+            if server_ready:
+                # Queue the next article if none exists
+                if not self.next_request and (article := server.get_article()):
+                    self.next_request = self.body(article)
+                    return True
+            else:
+                # Server not ready, discard any queued next_request
+                if self.next_request and self.next_request[1]:
+                    self.discard(self.next_request[1], count_article_try=False, retry_article=True)
+                    self.next_request = None
+
+        # Return True if there is work queued or in flight
+        return bool(self.next_request or self._response_queue)
+
     def write(self):
         """Send data to server"""
         server = self.server
@@ -346,23 +377,7 @@ class NewsWrapper:
                     # Still unsent data, wait for next EVENT_WRITE
                     return
 
-            if self.connected:
-                if (
-                    server.active
-                    and not server.restart
-                    and not (
-                        sabnzbd.Downloader.no_active_jobs()
-                        or sabnzbd.Downloader.shutdown
-                        or sabnzbd.Downloader.paused_for_postproc
-                    )
-                ):
-                    # Prepare the next request
-                    if not self.next_request and (article := server.get_article()):
-                        self.next_request = self.body(article)
-                elif self.next_request and self.next_request[1]:
-                    # Discard the next request
-                    self.discard(self.next_request[1], count_article_try=False, retry_article=True)
-                    self.next_request = None
+            self.prepare_request()
 
             # If no pending buffer, try to send new command
             if not self.send_buffer and self.next_request:
@@ -398,8 +413,6 @@ class NewsWrapper:
                     and (not server.active or server.restart or not self.timeout or time.time() > self.timeout)
                 ):
                     # Make socket available again
-                    server.busy_threads.discard(self)
-                    server.idle_threads.add(self)
                     sabnzbd.Downloader.remove_socket(self)
 
         except (BlockingIOError, ssl.SSLWantWriteError):
@@ -427,11 +440,11 @@ class NewsWrapper:
                 if article := self._response_queue.popleft():
                     self.discard(article, count_article_try=False, retry_article=True)
 
-        if self.nntp:
-            self.nntp.close(send_quit=self.connected)
-            self.nntp = None
+            if self.nntp:
+                sabnzbd.Downloader.remove_socket(self)
+                self.nntp.close(send_quit=self.connected)
+                self.nntp = None
 
-        with self.lock:
             # Reset all variables (including the NNTP connection) and increment the generation counter
             self.__init__(self.server, self.thrdnum, generation=self.generation + 1)
 

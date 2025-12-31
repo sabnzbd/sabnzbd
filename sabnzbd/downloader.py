@@ -28,7 +28,7 @@ import sys
 import ssl
 import time
 from datetime import date
-from typing import Optional, Union, Deque
+from typing import Optional, Union, Deque, Callable
 
 import sabctools
 
@@ -173,7 +173,6 @@ class Server:
     def stop(self):
         """Remove all connections and cached articles from server"""
         for nw in self.idle_threads:
-            sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset()
         self.idle_threads = set()
         self.reset_article_queue()
@@ -375,6 +374,9 @@ class Downloader(Thread):
     def add_socket(self, nw: NewsWrapper):
         """Add a socket to be watched for read or write availability"""
         if nw.nntp:
+            server = nw.server
+            server.idle_threads.remove(nw)
+            server.busy_threads.add(nw)
             try:
                 self.selector.register(nw.nntp.fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
                 nw.selector_events = selectors.EVENT_READ | selectors.EVENT_WRITE
@@ -395,6 +397,10 @@ class Downloader(Thread):
     def remove_socket(self, nw: NewsWrapper):
         """Remove a socket to be watched"""
         if nw.nntp:
+            server = nw.server
+            server.busy_threads.discard(nw)
+            server.idle_threads.add(nw)
+            nw.timeout = None
             try:
                 self.selector.unregister(nw.nntp.fileno)
                 nw.selector_events = 0
@@ -649,11 +655,9 @@ class Downloader(Thread):
                         if not server.get_article(peek=True):
                             break
 
-                        server.idle_threads.remove(nw)
-                        server.busy_threads.add(nw)
-
-                        if nw.connected:
-                            self.add_socket(nw)
+                        if nw.connected or nw.nntp:
+                            if nw.prepare_request():
+                                self.add_socket(nw)
                         else:
                             try:
                                 logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
@@ -924,13 +928,6 @@ class Downloader(Thread):
             logging.info("Thread %s@%s: %s", nw.thrdnum, nw.server.host, reset_msg)
         elif reset_msg:
             logging.debug("Thread %s@%s: %s", nw.thrdnum, nw.server.host, reset_msg)
-
-        # Make sure this NewsWrapper is in the idle threads
-        nw.server.busy_threads.discard(nw)
-        nw.server.idle_threads.add(nw)
-
-        # Make sure it is not in the readable sockets
-        self.remove_socket(nw)
 
         # Discard the article request which failed
         nw.discard(article, count_article_try=count_article_try, retry_article=retry_article)
