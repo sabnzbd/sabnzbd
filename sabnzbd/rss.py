@@ -807,7 +807,8 @@ class RSSStore:
         self.execute("""DELETE FROM rss WHERE feed = ?""", (feed,))
 
     def rename_feed(self, old_feed: str, new_feed: str):
-        self.execute("""UPDATE rss SET feed = ? WHERE feed = ?""", (old_feed, new_feed))
+        """Rename all rows for a given feed to a new feed name."""
+        self.execute("""UPDATE rss SET feed = ? WHERE feed = ?""", (new_feed, old_feed))
 
     def show_result(self, feed: str) -> Generator[ResolvedEntry, Any, None]:
         if self.execute(
