@@ -1403,9 +1403,11 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
 
     try:
         nw.init_connect()
-        while not nw.connected:
+        while test_server.active:
             nw.write()
             nw.read(on_response=on_response)
+            if nw.connected:
+                break
 
     except socket.timeout:
         if port != 119 and not ssl:
