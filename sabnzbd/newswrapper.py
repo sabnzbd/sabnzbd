@@ -199,7 +199,7 @@ class NewsWrapper:
     def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzb.Article"]) -> None:
         """A response to a NNTP request is received"""
         self.concurrent_requests.release()
-        # After each response this socket needs be available for writing again
+        # After each response this socket needs to be available for writing again
         sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
         server = self.server
         article_done = response.status_code in (220, 222) and article
