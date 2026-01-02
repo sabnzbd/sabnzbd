@@ -68,6 +68,7 @@ NzbFileSaver = (
     "crc32",
     "assembled",
     "md5of16k",
+    "assembler_offset",
 )
 
 
@@ -110,6 +111,7 @@ class NzbFile(TryList):
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
         self.assembler_next_index: int = 0
+        self.assembler_offset: int = 0  # highest offset data has been written to
 
         # Add first article to decodetable, this way we can check
         # if this is maybe a duplicate nzf
@@ -266,6 +268,8 @@ class NzbFile(TryList):
         self.lock = threading.RLock()
         self.file_lock = threading.RLock()
         self.assembler_next_index = 0
+        if self.assembler_offset is None:
+            self.assembler_offset = 0
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}

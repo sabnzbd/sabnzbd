@@ -240,6 +240,7 @@ class Assembler(Thread):
 
         fd: Optional[int] = None
         skipped: bool = False  # have any articles been skipped
+        reverted_to_append: bool = False
 
         try:
             # Resume assembly from where we got to previously
@@ -294,14 +295,17 @@ class Assembler(Thread):
                         break
                 elif direct_write and not article.can_direct_write:
                     # Opened for direct write but encountered an invalid article; revert to append mode
-                    if force:
+                    if skipped and not file_done:
+                        # If we have already skipped an article then need to abort, unless this is the final assemble
                         break
-                    if file_done:
+                    if not reverted_to_append:
+                        reverted_to_append = True
+                        # Truncate to the highest point written to the file, so that appends go to the correct offset
                         with nzf.file_lock:
+                            os.ftruncate(fd, nzf.assembler_offset)
                             os.lseek(fd, 0, os.SEEK_END)
-                    direct_write = False
 
-                if direct_write:
+                if direct_write and article.can_direct_write:
                     Assembler.write_at_offset(fd, nzf, article, data)
                 else:
                     Assembler.write_append(fd, nzf, article, data)
@@ -394,6 +398,8 @@ class Assembler(Thread):
                     written += os.pwrite(fd, mv[written:], article.data_begin + written)
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
+        with nzf.lock:
+            nzf.assembler_offset = max(nzf.assembler_offset, article.data_begin + len(data))
 
     @staticmethod
     def write_append(fd: int, nzf: NzbFile, article: Article, data: bytearray):
@@ -410,29 +416,25 @@ class Assembler(Thread):
                 written += os.write(fd, mv[written:])
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
+        with nzf.lock:
+            nzf.assembler_offset += len(data)
 
     @staticmethod
     def open(nzf: NzbFile, direct_write: bool, file_size: int) -> tuple[int, bool]:
         """Open file for nzf"""
         with nzf.file_lock:
+            fd = os.open(nzf.filepath, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0), 0o644)
+            os.lseek(fd, 0, os.SEEK_END)
             if direct_write:
-                flags = os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0)
-            else:
-                flags = os.O_CREAT | os.O_WRONLY | os.O_APPEND | getattr(os, "O_BINARY", 0)
-            fd = os.open(nzf.filepath, flags, 0o644)
-            if direct_write:
-                if file_size:
-                    if os.fstat(fd).st_size == 0:
-                        try:
-                            sabctools.sparse(fd, file_size)
-                        except OSError:
-                            logging.debug("Sparse call failed for %s", nzf.filepath)
-                            cfg.direct_write.set(False)
-                            direct_write = False
-                            os.lseek(fd, 0, os.SEEK_END)
-                else:
+                if not file_size:
                     direct_write = False
-                    os.lseek(fd, 0, os.SEEK_END)
+                if os.fstat(fd).st_size == 0:
+                    try:
+                        sabctools.sparse(fd, file_size)
+                    except OSError:
+                        logging.debug("Sparse call failed for %s", nzf.filepath)
+                        cfg.direct_write.set(False)
+                        direct_write = False
             return fd, direct_write
 
 

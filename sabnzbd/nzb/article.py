@@ -191,7 +191,7 @@ class Article(TryList):
 
     @property
     def can_direct_write(self) -> bool:
-        return (
+        return bool(
             self.data_size  # decoder sets data_size to 0 when offsets or file_size are outside allowed range
             and self.nzf.type == "yenc"
             and self.nzf.prepare_filepath()
