@@ -374,9 +374,8 @@ class Downloader(Thread):
     def add_socket(self, nw: NewsWrapper):
         """Add a socket to be watched for read or write availability"""
         if nw.nntp:
-            server = nw.server
-            server.idle_threads.remove(nw)
-            server.busy_threads.add(nw)
+            nw.server.idle_threads.remove(nw)
+            nw.server.busy_threads.add(nw)
             try:
                 self.selector.register(nw.nntp.fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
                 nw.selector_events = selectors.EVENT_READ | selectors.EVENT_WRITE
@@ -386,7 +385,7 @@ class Downloader(Thread):
     @synchronized(DOWNLOADER_LOCK)
     def modify_socket(self, nw: NewsWrapper, events: int):
         """Modify the events socket are watched for"""
-        if nw.nntp and nw.selector_events != events:
+        if nw.nntp and nw.selector_events != events and not nw.blocking:
             try:
                 self.selector.modify(nw.nntp.fileno, events, nw)
                 nw.selector_events = events
@@ -397,9 +396,8 @@ class Downloader(Thread):
     def remove_socket(self, nw: NewsWrapper):
         """Remove a socket to be watched"""
         if nw.nntp:
-            server = nw.server
-            server.busy_threads.discard(nw)
-            server.idle_threads.add(nw)
+            nw.server.busy_threads.discard(nw)
+            nw.server.idle_threads.add(nw)
             nw.timeout = None
             try:
                 self.selector.unregister(nw.nntp.fileno)
