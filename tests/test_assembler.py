@@ -20,6 +20,7 @@ tests.test_assembler - Testing functions in assembler.py
 """
 
 from types import SimpleNamespace
+from zlib import crc32
 
 from sabnzbd.assembler import Assembler
 from sabnzbd.nzb import Article, NzbFile, NzbObject
@@ -60,8 +61,8 @@ class TestAssembler:
                 self.nzf = NzbFile(
                     date=self.nzo.avg_date,
                     subject="test-file",
-                    raw_article_db=[[None, 10]],
-                    file_bytes=10,
+                    raw_article_db=[[None, None]],
+                    file_bytes=0,
                     nzo=self.nzo,
                 )
                 self.nzo.files.append(self.nzf)
@@ -73,145 +74,170 @@ class TestAssembler:
                 # Ensure filepath is created
                 assert self.nzf.prepare_filepath() is not None
 
-                with mock.patch.object(
-                    Assembler, "write_at_offset", wraps=Assembler.write_at_offset
-                ) as mocked_write_at_offset:
-                    yield mocked_write_at_offset
+                # Clear the state for the test to manipulate
+                self.nzf.articles.clear()
+                self.nzf.decodetable.clear()
+
+                with mock.patch.object(Assembler, "write", wraps=Assembler.write) as mocked_assembler_write:
+                    yield mocked_assembler_write
+
+                # All articles should be marked on_disk
+                for article in self.nzf.decodetable:
+                    assert article.on_disk is True
+
+                # File should be marked assembled
+                assert self.nzf.assembled is True
         finally:
             # Reset values after test
             del sabnzbd.Downloader
             del sabnzbd.ArticleCache
 
     def _make_article(
-        self, nzf: NzbFile, offset: int, size: int, decoded: bool = True, can_direct_write: bool = True
-    ) -> Article:
-        art = Article("msgid", size, nzf)
-        art.decoded = decoded
-        art.data_begin = offset
-        art.data_size = size if can_direct_write else None
-        art.file_size = nzf.bytes
-        art.crc32 = 0x1234
-        return art
+        self, nzf: NzbFile, offset: int, data: bytearray, decoded: bool = True, can_direct_write: bool = True
+    ) -> tuple[Article, bytearray]:
+        article = Article("msgid", len(data), nzf)
+        article.decoded = decoded
+        article.data_begin = offset
+        article.data_size = len(data) if can_direct_write else None
+        article.file_size = nzf.bytes
+        article.decoded_size = len(data)
+        article.crc32 = crc32(data)
+        return article, data
 
-    def test_assemble_direct_write(self, assembler):
-        """All articles support direct_write; data should be written at offsets."""
-        self.nzf.decodetable = [
-            self._make_article(self.nzf, offset=0, size=5, can_direct_write=True),
-            self._make_article(self.nzf, offset=5, size=5, can_direct_write=True),
-        ]
-        data = [b"hello", b"world"]
+    def _make_request(
+        self,
+        nzf: NzbFile,
+        articles: list[tuple[Article, bytearray]],
+    ):
+        data = []
+        for article, raw in articles:
+            nzf.decodetable.append(article)
+            data.append(raw)
         expected = b"".join(data)
-        self.nzf.bytes = len(expected)
+        nzf.bytes = len(expected)
         sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=data)
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
 
-        # File contents should match the two pieces written at their offsets
-        with open(self.nzf.filepath, "rb") as f:
+        for article, _ in articles:
+            article.file_size = nzf.bytes
+
+        return data, expected
+
+    @staticmethod
+    def _assert_expected_content(nzf: NzbFile, expected: bytes):
+        with open(nzf.filepath, "rb") as f:
             content = f.read()
         assert content == expected
 
-        # Both articles should be marked on_disk
-        for article in self.nzf.decodetable:
-            assert article.on_disk is True
-
-        # File should be marked assembled
-        assert self.nzf.assembled is True
+    def test_assemble_direct_write(self, assembler):
+        """All articles support direct_write; data should be written at offsets."""
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), can_direct_write=True),
+            ],
+        )
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_direct_write_aborted_to_append(self, assembler):
         """
         Start in direct_write, but encounter an article that cannot be direct-written.
         Assembler should abort direct_write and switch to append mode.
         """
-        mocked_write_at_offset = assembler
-        # Only the first article supports direct_write
-        self.nzf.decodetable = [
-            self._make_article(self.nzf, offset=0, size=5, can_direct_write=True),
-            self._make_article(self.nzf, offset=5, size=5, can_direct_write=False),
-            self._make_article(self.nzf, offset=10, size=5, can_direct_write=True),
-        ]
-        data = [b"hello", b"world", b"12345"]
-        expected = b"".join(data)
-        self.nzf.bytes = len(expected)
-        sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=data)
-
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), can_direct_write=False),
+                self._make_article(self.nzf, offset=10, data=bytearray(b"12345"), can_direct_write=True),
+            ],
+        )
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        self._assert_expected_content(self.nzf, expected)
 
-        # First write should be via pwrite (direct_write)
-        # Second via append write
-        # Third by pwrite because it was originally opened for direct write
-        assert mocked_write_at_offset.call_count == 2
-
-        with open(self.nzf.filepath, "rb") as f:
-            content = f.read()
-        assert content == expected
+    def test_assemble_direct_append_direct_append(self, assembler):
+        """
+        Start in direct_write, but encounter an article that cannot be direct-written.
+        Assembler should abort direct_write and switch to append mode.
+        Then the cache writes the final piece.
+        Finally, the assembler writes the previously missing piece.
+        """
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), can_direct_write=False),
+                self._make_article(
+                    self.nzf, offset=10, data=bytearray(b"12345"), decoded=False, can_direct_write=False
+                ),
+                self._make_article(
+                    self.nzf, offset=15, data=bytearray(b"abcde"), decoded=False, can_direct_write=True
+                ),  # Cache direct
+            ],
+        )
+        # First two are written
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
+        assert assembler.call_count == 2
+        # Simulate the cache writing the 4th
+        article = self.nzf.decodetable[3]
+        article.decoded = True
+        Assembler.assemble_article(article, bytearray(data[3]))
+        assert assembler.call_count == 3
+        # Final by assembler writing the 3rd
+        article = self.nzf.decodetable[2]
+        article.decoded = True
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        assert assembler.call_count == 4
+        self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_direct_write_aborted_to_append_second_attempt(self, assembler):
         """
         Start in direct_write, but encounter an article that cannot be direct-written.
         Assembler should abort direct_write and switch to append mode.
         """
-        mocked_write_at_offset = assembler
-        # Only the first article supports direct_write
-        self.nzf.decodetable = [
-            self._make_article(self.nzf, offset=0, size=5, can_direct_write=True),
-            self._make_article(self.nzf, offset=5, size=5, can_direct_write=False),
-            self._make_article(self.nzf, offset=10, size=5, decoded=False, can_direct_write=False),
-        ]
-        data = [b"hello", b"world", b"12345"]
-        expected = b"".join(data)
-        self.nzf.bytes = len(expected)
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), can_direct_write=False),
+                self._make_article(
+                    self.nzf, offset=10, data=bytearray(b"12345"), decoded=False, can_direct_write=False
+                ),
+            ],
+        )
         sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=data)
         Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
-
         # Second attempt should be direct via pwrite
         assert self.nzf.decodetable[2].on_disk is False
         self.nzf.decodetable[2].decoded = True
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
-
-        # First write should be via pwrite (direct_write), second via append write
-        assert mocked_write_at_offset.call_count == 1
-
-        with open(self.nzf.filepath, "rb") as f:
-            content = f.read()
-        assert content == expected
+        self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_direct_write_second_attempt(self, assembler):
         """Verify that after an initial append-only assemble, a later assemble
         with direct_write enabled patches the remaining article via pwrite."""
-        mocked_write_at_offset = assembler
-        self.nzf.decodetable = [
-            self._make_article(self.nzf, offset=0, size=5, can_direct_write=False),
-            self._make_article(self.nzf, offset=5, size=5, decoded=False, can_direct_write=True),
-        ]
-        data = [b"hello", b"world"]
-        expected = b"".join(data)
-        self.nzf.bytes = len(expected)
-        sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=data)
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=False),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False, can_direct_write=True),
+            ],
+        )
         Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=False)
-
         # Second attempt should be direct via pwrite
         self.nzf.decodetable[1].decoded = True
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
-
-        # First write should be via write (append), second via pwrite (direct)
-        assert mocked_write_at_offset.call_count == 1
-
-        with open(self.nzf.filepath, "rb") as f:
-            content = f.read()
-        assert content == expected
+        self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_append_only(self, assembler):
         """direct_write=False should use pure append mode."""
-        self.nzf.decodetable = [
-            self._make_article(self.nzf, offset=0, size=4, can_direct_write=False),
-            self._make_article(self.nzf, offset=0, size=3, can_direct_write=False),
-        ]
-        data = [b"abcd", b"efg"]
-        expected = b"".join(data)
-        self.nzf.bytes = len(expected)
-        sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=data)
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), can_direct_write=False),
+            ],
+        )
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
-
-        with open(self.nzf.filepath, "rb") as f:
-            content = f.read()
-        assert content == expected
+        self._assert_expected_content(self.nzf, expected)

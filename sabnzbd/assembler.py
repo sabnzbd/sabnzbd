@@ -240,7 +240,7 @@ class Assembler(Thread):
 
         fd: Optional[int] = None
         skipped: bool = False  # have any articles been skipped
-        reverted_to_append: bool = False
+        offset: int = 0  # sequential offset for append writes
 
         try:
             # Resume assembly from where we got to previously
@@ -257,8 +257,9 @@ class Assembler(Thread):
 
                 # Skip already written articles
                 if article.on_disk:
-                    if not skipped:
-                        nzf.assembler_next_index += 1
+                    if fd is not None and article.decoded_size is not None:
+                        # Move the file descriptor forward past this article
+                        offset += article.decoded_size
                     continue
 
                 # stop if next piece not yet decoded
@@ -266,8 +267,6 @@ class Assembler(Thread):
                     # If the article was not decoded but the file
                     # is done, it is just a missing piece, so keep writing
                     if file_done:
-                        if not skipped:
-                            nzf.assembler_next_index += 1
                         continue
                     # We reach an article that was not decoded
                     if force:
@@ -287,31 +286,23 @@ class Assembler(Thread):
                         logging.info("No data found when trying to write %s", article)
                     break
 
+                # If required open the file
                 if fd is None:
-                    fd, direct_write = Assembler.open(nzf, direct_write and article.can_direct_write, article.file_size)
-                    if force and not direct_write:
-                        # Can only be force if we wanted direct_write
-                        # file_done will always be queued separately
+                    fd, offset, direct_write = Assembler.open(
+                        nzf, direct_write and article.can_direct_write, article.file_size
+                    )
+                    if not direct_write and force:
+                        # Can only be force if we wanted direct_write file_done will always be queued separately
                         break
-                elif direct_write and not article.can_direct_write:
-                    # Opened for direct write but encountered an invalid article; revert to append mode
-                    if skipped and not file_done:
-                        # If we have already skipped an article then need to abort, unless this is the final assemble
-                        break
-                    if not reverted_to_append:
-                        reverted_to_append = True
-                        # Truncate to the highest point written to the file, so that appends go to the correct offset
-                        with nzf.file_lock:
-                            os.ftruncate(fd, nzf.assembler_offset)
-                            os.lseek(fd, 0, os.SEEK_END)
 
                 if direct_write and article.can_direct_write:
-                    Assembler.write_at_offset(fd, nzf, article, data)
+                    offset += Assembler.write(fd, idx, nzf, article, data)
                 else:
-                    Assembler.write_append(fd, nzf, article, data)
+                    if direct_write and skipped and not file_done:
+                        # If we have already skipped an article then need to abort, unless this is the final assemble
+                        break
+                    offset += Assembler.write(fd, idx, nzf, article, data, offset)
 
-                if not skipped:
-                    nzf.assembler_next_index += 1
         finally:
             if fd is not None:
                 os.close(fd)
@@ -321,18 +312,20 @@ class Assembler(Thread):
             set_permissions(nzf.filepath)
             nzf.assembled = True
 
-    def assemble_article(self, article: Article, data: bytearray) -> bool:
+    @staticmethod
+    def assemble_article(article: Article, data: bytearray) -> bool:
         """Write a single article to disk"""
-        if not self.direct_write or not article.can_direct_write:
+        if not article.can_direct_write:
             return False
         nzf = article.nzf
         with nzf.file_lock:
-            fd, direct_write = self.open(nzf, True, article.file_size)
+            fd, _, direct_write = Assembler.open(nzf, True, article.file_size)
             try:
                 if not direct_write:
                     cfg.direct_write.set(False)
                     return False
-                self.write_at_offset(fd, nzf, article, data)
+                idx = nzf.assembler_next_index if article == nzf.decodetable[nzf.assembler_next_index] else -1
+                Assembler.write(fd, idx, nzf, article, data)
             finally:
                 os.close(fd)
         return True
@@ -375,16 +368,21 @@ class Assembler(Thread):
                 sabnzbd.NzbQueue.end_job(nzo)
 
     @staticmethod
-    def write_at_offset(fd: int, nzf: NzbFile, article: Article, data: bytearray):
+    def write(
+        fd: int, nzf_index: int, nzf: NzbFile, article: Article, data: bytearray, offset: Optional[int] = None
+    ) -> int:
         """Write data at position in a file"""
+        pos = article.data_begin if offset is None else offset
+
         if sabnzbd.WINDOWS:
-            # Not implemented on Windows so fallback to os.lseek and os.write
+            # pwrite is not implemented on Windows so fallback to os.lseek and os.write
             # Must lock since it is possible to write from multiple threads (assembler + downloader)
             with nzf.file_lock:
-                os.lseek(fd, article.data_begin, os.SEEK_SET)
+                os.lseek(fd, pos, os.SEEK_SET)
                 written = os.write(fd, data)
         else:
-            written = os.pwrite(fd, data, article.data_begin)
+            written = os.pwrite(fd, data, pos)
+
         # In raw/non-buffered mode os.write may not write everything requested:
         # https://docs.python.org/3/library/io.html?highlight=write#io.RawIOBase.write
         if written < len(data):
@@ -392,39 +390,29 @@ class Assembler(Thread):
             while written < len(data):
                 if sabnzbd.WINDOWS:
                     with nzf.file_lock:
-                        os.lseek(fd, article.data_begin + written, os.SEEK_SET)
+                        os.lseek(fd, pos + written, os.SEEK_SET)
                         written += os.write(fd, mv[written:])
                 else:
-                    written += os.pwrite(fd, mv[written:], article.data_begin + written)
+                    written += os.pwrite(fd, mv[written:], pos + written)
+
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
         with nzf.lock:
-            nzf.assembler_offset = max(nzf.assembler_offset, article.data_begin + len(data))
+            if nzf.assembler_next_index == nzf_index:
+                nzf.assembler_next_index += 1
+        return written
 
     @staticmethod
-    def write_append(fd: int, nzf: NzbFile, article: Article, data: bytearray):
-        """
-        Append data to the end of the file
-        Assumes position is already at the end of the file.
-        """
-        written = os.write(fd, data)
-        # In raw/non-buffered mode os.write may not write everything requested:
-        # https://docs.python.org/3/library/io.html?highlight=write#io.RawIOBase.write
-        if written < len(data):
-            mv = memoryview(data)
-            while written < len(data):
-                written += os.write(fd, mv[written:])
-        nzf.update_crc32(article.crc32, len(data))
-        article.on_disk = True
-        with nzf.lock:
-            nzf.assembler_offset += len(data)
+    def open(nzf: NzbFile, direct_write: bool, file_size: int) -> tuple[int, int, bool]:
+        """Open file for nzf
 
-    @staticmethod
-    def open(nzf: NzbFile, direct_write: bool, file_size: int) -> tuple[int, bool]:
-        """Open file for nzf"""
+         Use direct_write if requested, with a fallback to setting the current file position for append mode
+        :returns (file_descriptor, current_offset, can_direct_write)
+        """
         with nzf.file_lock:
             fd = os.open(nzf.filepath, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0), 0o644)
-            os.lseek(fd, 0, os.SEEK_END)
+            offset = nzf.bytes_written_sequentially()
+            os.lseek(fd, offset, os.SEEK_SET)
             if direct_write:
                 if not file_size:
                     direct_write = False
@@ -435,7 +423,7 @@ class Assembler(Thread):
                         logging.debug("Sparse call failed for %s", nzf.filepath)
                         cfg.direct_write.set(False)
                         direct_write = False
-            return fd, direct_write
+            return fd, offset, direct_write
 
 
 RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)

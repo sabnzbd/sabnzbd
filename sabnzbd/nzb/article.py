@@ -98,6 +98,7 @@ ArticleSaver = (
     "on_disk",
     "nzf",
     "crc32",
+    "decoded_size",
 )
 
 
@@ -120,6 +121,7 @@ class Article(TryList):
         self.file_size: Optional[int] = None
         self.data_begin: Optional[int] = None
         self.data_size: Optional[int] = None
+        self.decoded_size: Optional[int] = None  # Size of the decoded article
         self.on_disk: bool = False
         self.crc32: Optional[int] = None
         self.nzf = nzf  # NzbFile reference

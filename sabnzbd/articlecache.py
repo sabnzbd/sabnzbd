@@ -238,7 +238,7 @@ class ArticleCache(threading.Thread):
                 )
 
         # Direct write to destination if cache is being used
-        if self.__cache_limit and sabnzbd.Assembler.assemble_article(article, data):
+        if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
             with NZO_LOCK:
                 article.nzf.nzo.saved_articles.discard(article)
             return

@@ -68,7 +68,6 @@ NzbFileSaver = (
     "crc32",
     "assembled",
     "md5of16k",
-    "assembler_offset",
 )
 
 
@@ -111,7 +110,6 @@ class NzbFile(TryList):
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
         self.assembler_next_index: int = 0
-        self.assembler_offset: int = 0  # highest offset data has been written to
 
         # Add first article to decodetable, this way we can check
         # if this is maybe a duplicate nzf
@@ -242,6 +240,27 @@ class NzbFile(TryList):
         except Exception:
             pass
 
+    def bytes_written_sequentially(self, nzf_index: Optional[int] = None) -> int:
+        """Number of bytes written sequentially to the file.
+
+        Including the provided index, stops at first article not on_disk
+        """
+        with self.lock, self.file_lock:
+            if nzf_index is None:
+                nzf_index = self.assembler_next_index
+            offset = 0
+            for j in range(nzf_index):
+                article = self.decodetable[j]
+                if not article.on_disk:
+                    break
+                if article.data_size is not None:
+                    # yenc
+                    offset = article.data_begin + article.data_size
+                else:
+                    # bad yenc or uu
+                    offset += article.decoded_size
+        return offset
+
     def __enter__(self):
         self.lock.acquire()
 
@@ -268,8 +287,6 @@ class NzbFile(TryList):
         self.lock = threading.RLock()
         self.file_lock = threading.RLock()
         self.assembler_next_index = 0
-        if self.assembler_offset is None:
-            self.assembler_offset = 0
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}

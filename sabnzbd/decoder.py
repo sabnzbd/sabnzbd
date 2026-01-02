@@ -163,6 +163,7 @@ def decode_yenc(article: Article, response: sabctools.NNTPResponse) -> bytearray
     article.file_size = response.file_size
     article.data_begin = response.part_begin
     article.data_size = response.part_size
+    article.decoded_size = response.bytes_decoded
 
     nzf = article.nzf
     # Assume it is yenc
@@ -198,6 +199,7 @@ def decode_uu(article: Article, response: sabctools.NNTPResponse) -> bytearray:
         raise BadData(response.data)
 
     decoded_data = response.data
+    article.decoded_size = response.bytes_decoded
     nzf = article.nzf
     nzf.type = "uu"
 
