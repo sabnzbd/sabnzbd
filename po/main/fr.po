@@ -161,6 +161,8 @@ msgstr ""
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
+"La version Windows ARM de SABnzbd est disponible depuis notre page "
+"Téléchargements!"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -3859,7 +3861,7 @@ msgstr "Activer"
 
 #: sabnzbd/skintext.py
 msgid "Articles per request"
-msgstr ""
+msgstr "Articles par demande"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3867,6 +3869,9 @@ msgid ""
 "first.<br />This can improve download speeds, especially on connections with"
 " higher latency."
 msgstr ""
+" Demandez plusieurs articles par connexion sans attendre chaque réponse.<br "
+"/>Cela peut améliorer les vitesses de téléchargement, en particulier sur les"
+" connexions à latence élevée. "
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
