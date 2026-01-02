@@ -72,8 +72,11 @@ class TestBasicPages(SABnzbdBaseTest):
                 self.no_page_crash()
             else:
                 # For others if all is fine, button will be back to normal in 1 second
-                time.sleep(1.5)
-                assert submit_btn.text == "Save Changes"
+                wait_for(
+                    lambda: submit_btn.text == "Save Changes",
+                    timeout=1.5,
+                    err_msg=f"submit_btn.text was '{submit_btn.text}' but expected 'Save Changes'",
+                )
 
 
 class TestConfigLogin(SABnzbdBaseTest):
@@ -292,9 +295,12 @@ class TestConfigServers(SABnzbdBaseTest):
 
         # Add and show details
         port_inp.send_keys(Keys.RETURN)
-        time.sleep(1)
-        if not self.selenium_wrapper(self.driver.find_element, By.ID, "host0").is_displayed():
-            self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
+        wait_for(
+            lambda: not self.selenium_wrapper(self.driver.find_element, By.ID, "host0").is_displayed(),
+            timeout=2,
+            err_msg=f"The Add Server interface did not close",
+        )
+        self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
 
     def remove_server(self):
         # Remove the first server and accept the confirmation
@@ -302,8 +308,11 @@ class TestConfigServers(SABnzbdBaseTest):
         self.driver.switch_to.alert.accept()
 
         # Check that it's gone
-        time.sleep(2)
-        assert self.server_name not in self.driver.page_source
+        wait_for(
+            lambda: self.server_name not in self.driver.page_source,
+            timeout=2,
+            err_msg=f"Page still contains '{self.server_name}'",
+        )
 
     def test_add_and_remove_server(self):
         self.open_config_servers()

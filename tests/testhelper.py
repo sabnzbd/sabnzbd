@@ -24,7 +24,7 @@ import os
 import time
 import uuid
 from http.client import RemoteDisconnected
-from typing import BinaryIO, Optional
+from typing import BinaryIO, Optional, Callable
 
 import pytest
 from random import choice, randint
@@ -178,6 +178,19 @@ def random_name(length: int = 16) -> str:
     return "".join(choice(ascii_lowercase + digits) for _ in range(length))
 
 
+def wait_for(
+    condition: Callable[[], bool], timeout: float = 2, interval: float = 0.05, err_msg: str = "Condition not met"
+):
+    """Polls condition every interval until timeout."""
+    deadline = time.time() + timeout
+    while True:
+        if condition():
+            return
+        if time.time() > deadline:
+            pytest.fail(err_msg)
+        time.sleep(interval)
+
+
 class FakeHistoryDB(db.HistoryDB):
     """
     HistoryDB class with added control of the db_path via an argument and the
@@ -258,6 +271,7 @@ class SABnzbdBaseTest:
         # Open a page and test for crash
         self.driver.get(url)
         self.no_page_crash()
+        self.disable_delays()
 
     def scroll_to_top(self):
         self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
@@ -271,6 +285,10 @@ class SABnzbdBaseTest:
             wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")
         except (RemoteDisconnected, ProtocolError):
             pass
+
+    def disable_delays(self):
+        """Remove delayed UI changes"""
+        self.driver.execute_script("window.config = window.config || {}; window.config.disableDelays = true")
 
     @staticmethod
     def selenium_wrapper(func, *args):
