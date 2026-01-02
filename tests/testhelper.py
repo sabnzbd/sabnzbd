@@ -348,7 +348,7 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         if dir_name_as_job_name:
             test_job_name = os.path.basename(nzb_dir)
         else:
-            # replace "-" because guessit thinks AB01-9999 is episodes 1 to 9999 and take a long time
+            # replace "-" because guessit thinks AB01-9999 is episodes 1 to 9999 and takes a long time
             test_job_name = "TestDownload_%s" % str(uuid.uuid4()).replace("-", "")
         job = get_api_result("addlocalfile", extra_arguments={"name": nzb_path, "nzbname": test_job_name})
         assert job["nzo_ids"]
@@ -417,9 +417,9 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         # Verify if the garbage collection works (see #1628)
         # We need to give it a second to calm down and clear the variables
         for _ in range(100):
-            time.sleep(0.1)
             gc_results = get_api_result("gc_stats")["value"]
             if not gc_results:
                 break
+            time.sleep(0.1)
         else:
             pytest.fail(f"Objects were left in memory after the job finished! {gc_results}")
