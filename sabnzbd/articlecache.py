@@ -28,11 +28,11 @@ from typing import Collection, Optional
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
-    MEBI,
     GIGI,
     ANFO,
     ARTICLE_CACHE_UPPER_PERCENTAGE,
     ARTICLE_CACHE_LOWER_PERCENTAGE,
+    ARTICLE_CACHE_DIRECT_WRITE_LIMIT_WAIT,
 )
 from sabnzbd.nzb import Article, NzbFile, NZO_LOCK
 from sabnzbd.misc import to_units
@@ -229,7 +229,7 @@ class ArticleCache(threading.Thread):
     def __flush_article_to_disk(self, article: Article, data: bytearray):
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
-        if self.__cache_limit > 32 * MEBI:
+        if self.__cache_limit >= ARTICLE_CACHE_DIRECT_WRITE_LIMIT_WAIT:
             # Give the cache a chance to recover
             with self.__cache_size_cv:
                 self.__cache_size_cv.wait_for(
