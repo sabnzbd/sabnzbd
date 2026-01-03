@@ -399,6 +399,9 @@ class Assembler(Thread):
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
         with nzf.lock:
+            # assembler_next_index is the lowest index that has not yet been written sequentially from the start of the file.
+            # If this was the next required index to remain sequential, it can be incremented which allows the assmebler to
+            # resume without rechecking articles that are already known to be on disk.
             if nzf.assembler_next_index == nzf_index:
                 nzf.assembler_next_index += 1
         return written
