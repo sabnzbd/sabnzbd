@@ -72,7 +72,7 @@ class ArticleCache(threading.Thread):
         with self.__cache_size_cv:
             self.__cache_size_cv.notify_all()
 
-    def __should_flush(self) -> bool:
+    def should_flush(self) -> bool:
         """
         Should we flush the cache?
         Only if direct write is supported and cache usage is over the upper limit.
@@ -87,7 +87,7 @@ class ArticleCache(threading.Thread):
             and time.monotonic() > self.__next_flush
         )
 
-    def __flush_cache(self) -> None:
+    def flush_cache(self) -> None:
         """In direct_write mode flush cache contents to file"""
         nzfs: set[NzbFile] = set()
         self.__next_flush = time.monotonic() + _SECONDS_BETWEEN_FLUSHES
@@ -102,16 +102,16 @@ class ArticleCache(threading.Thread):
         while True:
             with self.__cache_size_cv:
                 self.__cache_size_cv.wait_for(
-                    lambda: self.shutdown or self.__should_flush(),
+                    lambda: self.shutdown or self.should_flush(),
                     timeout=5.0,
                 )
             if self.shutdown:
                 break
             # Could be reached by timeout when paused and no further articles arrive
             with self.__cache_size_cv:
-                if not self.__should_flush():
+                if not self.should_flush():
                     continue
-            self.__flush_cache()
+            self.flush_cache()
 
     def cache_info(self):
         return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit)
