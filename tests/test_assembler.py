@@ -127,7 +127,8 @@ class TestAssembler:
         with open(nzf.filepath, "rb") as f:
             content = f.read()
         assert content == expected
-        assert len(nzf.decodetable) == nzf.assembler_next_index
+        assert nzf.assembler_next_index == len(nzf.decodetable)
+        assert nzf.bytes_written_sequentially() == nzf.decodetable[0].file_size
 
     def test_assemble_direct_write(self, assembler):
         """All articles support direct_write; data should be written at offsets."""
@@ -180,11 +181,13 @@ class TestAssembler:
         # First two are written
         Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
         assert assembler.call_count == 2
+        assert self.nzf.bytes_written_sequentially() == 10
         # Simulate the cache writing the 4th
         article = self.nzf.decodetable[3]
         article.decoded = True
         Assembler.assemble_article(article, bytearray(data[3]))
         assert assembler.call_count == 3
+        assert self.nzf.bytes_written_sequentially() == 10  # was not a sequential write
         # Final by assembler writing the 3rd
         article = self.nzf.decodetable[2]
         article.decoded = True
