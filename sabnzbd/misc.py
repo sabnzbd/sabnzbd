@@ -62,6 +62,7 @@ from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_ex
 if sabnzbd.WINDOWS:
     try:
         import winreg
+        import win32api
         import win32process
         import win32con
 
@@ -749,29 +750,9 @@ def get_cache_limit() -> str:
 
 
 def get_windows_memory() -> int:
-    """Use ctypes to extract available memory"""
-
-    class MEMORYSTATUSEX(ctypes.Structure):
-        _fields_ = [
-            ("dwLength", ctypes.c_ulong),
-            ("dwMemoryLoad", ctypes.c_ulong),
-            ("ullTotalPhys", ctypes.c_ulonglong),
-            ("ullAvailPhys", ctypes.c_ulonglong),
-            ("ullTotalPageFile", ctypes.c_ulonglong),
-            ("ullAvailPageFile", ctypes.c_ulonglong),
-            ("ullTotalVirtual", ctypes.c_ulonglong),
-            ("ullAvailVirtual", ctypes.c_ulonglong),
-            ("sullAvailExtendedVirtual", ctypes.c_ulonglong),
-        ]
-
-        def __init__(self):
-            # have to initialize this to the size of MEMORYSTATUSEX
-            self.dwLength = ctypes.sizeof(self)
-            super(MEMORYSTATUSEX, self).__init__()
-
-    stat = MEMORYSTATUSEX()
-    ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
-    return stat.ullTotalPhys
+    """Use win32api to get total physical memory"""
+    mem_info = win32api.GlobalMemoryStatusEx()
+    return mem_info["TotalPhys"]
 
 
 def get_macos_memory() -> float:
