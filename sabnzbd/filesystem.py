@@ -1273,7 +1273,7 @@ def check_filesystem_capabilities(test_dir: str, is_download_dir: bool = False) 
 
 def check_sparse_and_disable(test_dir: str) -> bool:
     """Check if sparse files are supported, otherwise disable direct write mode"""
-    if sabnzbd.cfg.direct_write.get() and not is_sparse_supported(test_dir):
+    if sabnzbd.cfg.direct_write() and not is_sparse_supported(test_dir):
         sabnzbd.cfg.direct_write.set(False)
         return False
     return True

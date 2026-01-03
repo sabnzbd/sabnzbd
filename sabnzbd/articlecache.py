@@ -34,7 +34,7 @@ from sabnzbd.constants import (
     ARTICLE_CACHE_LOWER_PERCENTAGE,
     ARTICLE_CACHE_DIRECT_WRITE_LIMIT_WAIT,
 )
-from sabnzbd.nzb import Article, NzbFile, NZO_LOCK
+from sabnzbd.nzb import Article, NzbFile
 from sabnzbd.misc import to_units
 
 # Operations on the article table are handled via try/except.
@@ -48,7 +48,7 @@ class ArticleCache(threading.Thread):
     def __init__(self):
         super().__init__()
         self.shutdown = False
-        self.__direct_write = sabnzbd.cfg.direct_write.get()
+        self.__direct_write: bool = bool(sabnzbd.cfg.direct_write())
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0

@@ -63,7 +63,7 @@ class Assembler(Thread):
     def __init__(self):
         super().__init__()
         self.max_queue_size: int = cfg.assembler_max_queue_size()
-        self.direct_write: bool = cfg.direct_write.get()
+        self.direct_write: bool = cfg.direct_write()
         self.assembler_write_trigger: int = 1
         self.queue: queue.Queue[AssemblerTask] = queue.Queue()
         self.queued_lock = threading.Lock()

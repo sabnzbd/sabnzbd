@@ -750,13 +750,13 @@ def new_limit():
 
 def new_direct_write():
     """Callback for direct write changes"""
-    sabnzbd.Assembler.change_direct_write(direct_write.get())
-    sabnzbd.ArticleCache.change_direct_write(direct_write.get())
+    sabnzbd.Assembler.change_direct_write(bool(direct_write()))
+    sabnzbd.ArticleCache.change_direct_write(bool(direct_write()))
 
 
 def new_download_dir():
     """Callback for download dir changes"""
-    if direct_write.get():
+    if direct_write():
         threading.Thread(target=sabnzbd.filesystem.check_sparse_and_disable, args=(download_dir.get_path(),)).start()
 
 
