@@ -31,7 +31,7 @@ class TestNotifier(TestCase):
 
     @classmethod
     def setUpClass(self):
-        # hack since test_misc uses @set_config decorator eliminating all of the default configuration
+        # hack since test_misc uses @pytest.mark.config fixture eliminating all of the default configuration
         # We want to test with the default configuration in place; This safely resets all fields and
         # replaces them correctly in memory
         reload(cfg)

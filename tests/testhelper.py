@@ -40,6 +40,9 @@ import xmltodict
 import functools
 from werkzeug import Request
 from werkzeug.utils import send_from_directory
+from pyfakefs.fake_filesystem_unittest import Patcher
+from pyfakefs.fake_filesystem import OSType
+from pyfakefs.helpers import set_uid
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -75,61 +78,158 @@ SAB_NEWSSERVER_HOST = "127.0.0.1"
 SAB_NEWSSERVER_PORT = 8888
 
 
-def set_config(settings_dict):
+@pytest.fixture(autouse=True)
+def config_env(monkeypatch, request):
     """Change config-values on the fly, per test"""
+    marker = request.node.get_closest_marker("config")
+    if marker is None:
+        # No config changes for this test
+        yield
+        return
 
-    def set_config_decorator(func):
-        @functools.wraps(func)
-        def wrapper_func(*args, **kwargs):
-            # Setting up as requested
-            for item, val in settings_dict.items():
-                getattr(cfg, item).set(val)
+    if marker.args:
+        config = marker.args[0]
 
-            # Perform test
-            value = func(*args, **kwargs)
+        if callable(config):
+            if not hasattr(request.node, "callspec"):
+                raise RuntimeError("Dynamic config requires parameterized test")
+            config = config(request.node.callspec.params)
+    else:
+        if not hasattr(request.node, "callspec"):
+            raise RuntimeError("@pytest.mark.config requires parameterized 'config'")
+        config = request.node.callspec.params.get("config")
+        if config is None:
+            raise RuntimeError("Missing 'config' param for @pytest.mark.config")
 
-            # Reset values
-            for item in settings_dict:
-                getattr(cfg, item).set(getattr(cfg, item).default)
-            return value
+    # Setting up as requested
+    originals = {}
+    for item, val in config.items():
+        cfg_item = getattr(cfg, item)
+        originals[item] = cfg_item.get()
+        cfg_item.set(val)
 
-        return wrapper_func
+    yield
 
-    return set_config_decorator
+    # Restore values
+    for item, val in originals.items():
+        getattr(cfg, item).set(val)
 
 
-def set_platform(platform):
-    """Change config-values on the fly, per test"""
+@pytest.mark.parametrize("config", [{"web_host": "0.0.0.0"}, {"web_host": "::1"}])
+@pytest.mark.config()
+def test_config_parametrize(config):
+    for item, val in config.items():
+        assert getattr(cfg, item)() == val
 
-    def set_platform_decorator(func):
-        def wrapper_func(*args, **kwargs):
-            # Save original values
-            is_windows = sabnzbd.WINDOWS
-            is_macos = sabnzbd.MACOS
 
-            # Set current platform
-            if platform == "win32":
-                sabnzbd.WINDOWS = True
-                sabnzbd.MACOS = False
-            elif platform == "macos":
-                sabnzbd.WINDOWS = False
-                sabnzbd.MACOS = True
-            elif platform == "linux":
-                sabnzbd.WINDOWS = False
-                sabnzbd.MACOS = False
+@pytest.mark.parametrize("web_host", ["0.0.0.0", "::1"])
+@pytest.mark.config(lambda params: {"web_host": params["web_host"]})
+def test_config_parametrize_dynamic(web_host):
+    assert cfg.web_host() == web_host
 
-            # Perform test
-            value = func(*args, **kwargs)
 
-            # Reset values
-            sabnzbd.WINDOWS = is_windows
-            sabnzbd.MACOS = is_macos
+@pytest.mark.config({"web_host": "0.0.0.0"})
+def test_config_marker():
+    assert cfg.web_host() == "0.0.0.0"
 
-            return value
 
-        return wrapper_func
+@pytest.fixture(autouse=True)
+def platform_env(monkeypatch, request):
+    """Change platform-values on the fly, per test"""
+    marker = request.node.get_closest_marker("platform")
+    if marker is None:
+        # No platform changes for this test
+        yield
+        return
 
-    return set_platform_decorator
+    if marker.args:
+        platform_name = marker.args[0]
+
+        if callable(platform_name):
+            if not hasattr(request.node, "callspec"):
+                raise RuntimeError("Dynamic platform requires parameterized test")
+            platform_name = platform_name(request.node.callspec.params)
+    else:
+        if not hasattr(request.node, "callspec"):
+            raise RuntimeError("@pytest.mark.platform requires parameterized 'platform'")
+        platform_name = request.node.callspec.params.get("platform")
+        if platform_name is None:
+            raise RuntimeError("Missing 'platform' param for @pytest.mark.platform")
+
+    if platform_name == "win32":
+        monkeypatch.setattr(sabnzbd, "WINDOWS", True)
+        monkeypatch.setattr(sabnzbd, "MACOS", False)
+    elif platform_name == "macos":
+        monkeypatch.setattr(sabnzbd, "WINDOWS", False)
+        monkeypatch.setattr(sabnzbd, "MACOS", True)
+    elif platform_name == "linux":
+        monkeypatch.setattr(sabnzbd, "WINDOWS", False)
+        monkeypatch.setattr(sabnzbd, "MACOS", False)
+    else:
+        raise ValueError(f"Unknown platform: {platform_name}")
+
+    yield platform_name
+
+
+@pytest.mark.parametrize("platform", ["win32", "macos", "linux"])
+@pytest.mark.platform()
+def test_platform_parametrize(platform):
+    if platform == "win32":
+        assert sabnzbd.WINDOWS
+        assert not sabnzbd.MACOS
+    elif platform == "macos":
+        assert sabnzbd.MACOS
+        assert not sabnzbd.WINDOWS
+    elif platform == "linux":
+        assert not sabnzbd.WINDOWS
+        assert not sabnzbd.MACOS
+
+
+@pytest.mark.platform("win32")
+def test_platform_marker_win32():
+    assert sabnzbd.WINDOWS
+    assert not sabnzbd.MACOS
+
+
+@pytest.mark.platform("macos")
+def test_platform_marker_macos():
+    assert sabnzbd.MACOS
+    assert not sabnzbd.WINDOWS
+
+
+@pytest.mark.platform("linux")
+def test_platform_marker_linux():
+    assert not sabnzbd.WINDOWS
+    assert not sabnzbd.MACOS
+
+
+@pytest.fixture()
+def fake_fs(request):
+    """Create fake filesystem"""
+    fake_fs_marker = request.node.get_closest_marker("fake_fs")
+    platform_marker = request.node.get_closest_marker("platform")
+
+    with Patcher() as patcher:
+        if platform_marker:
+            os_map = {"win32": OSType.WINDOWS, "macos": OSType.MACOS, "linux": OSType.LINUX}
+            patcher.fs.os = os_map.get(platform_marker.args[0], patcher.fs.os)
+
+        if fake_fs_marker:
+            options = fake_fs_marker.args[0] if fake_fs_marker.args else {}
+
+            for key, val in options.items():
+                if key == "create_dirs":
+                    # Special case: create directories
+                    for dir_path in val:
+                        patcher.fs.makedirs(dir_path, mode=755, exist_ok=True)
+                        # Verify the fake filesystem does its thing
+                        assert os.path.exists(dir_path) is True
+                elif hasattr(patcher.fs, key):
+                    setattr(patcher.fs, key, val)
+                else:
+                    raise AttributeError(f"fake_fs has no attribute '{key}'")
+
+        yield patcher.fs
 
 
 def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
@@ -189,6 +289,12 @@ def wait_for(
         if time.time() > deadline:
             pytest.fail(err_msg)
         time.sleep(interval)
+
+
+@pytest.fixture
+def sleepless(monkeypatch):
+    monkeypatch.setattr(time, "sleep", lambda _: None)
+    yield
 
 
 class FakeHistoryDB(db.HistoryDB):

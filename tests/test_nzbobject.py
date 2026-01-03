@@ -29,7 +29,7 @@ from tests.testhelper import *
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestNZO:
-    @set_config({"download_dir": SAB_CACHE_DIR})
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_nzo_basic(self):
         # Need to create the Default category, as we would in normal instance
         # Otherwise it will try to save the config

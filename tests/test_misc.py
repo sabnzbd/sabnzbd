@@ -43,7 +43,7 @@ class TestMisc:
         assert "%H:%M:%S" == misc.time_format("%H:%M:%S")
         assert "%H:%M" == misc.time_format("%H:%M")
 
-    @set_config({"ampm": True})
+    @pytest.mark.config({"ampm": True})
     def test_timeformatampm(self):
         misc.HAVE_AMPM = True
         assert "%I:%M:%S %p" == misc.time_format("%H:%M:%S")
@@ -179,6 +179,28 @@ class TestMisc:
         assert 100 == misc.from_units(misc.to_units(-100))
 
     def test_caller_name(self):
+        def set_config(settings_dict):
+            """Change config-values on the fly, per test"""
+
+            def set_config_decorator(func):
+                @functools.wraps(func)
+                def wrapper_func(*args, **kwargs):
+                    # Setting up as requested
+                    for item, val in settings_dict.items():
+                        getattr(cfg, item).set(val)
+
+                    # Perform test
+                    value = func(*args, **kwargs)
+
+                    # Reset values
+                    for item in settings_dict:
+                        getattr(cfg, item).set(getattr(cfg, item).default)
+                    return value
+
+                return wrapper_func
+
+            return set_config_decorator
+
         @set_config({"log_level": 0})
         def test_wrapper(skip):
             return misc.caller_name(skip=skip)
@@ -205,7 +227,7 @@ class TestMisc:
         assert ("[::1]", 1234) == misc.split_host("[::1]:1234")
         assert ("[2001:db8::8080]", None) == misc.split_host("[2001:db8::8080]")
 
-    @set_config({"cleanup_list": [".exe", ".nzb"]})
+    @pytest.mark.config({"cleanup_list": [".exe", ".nzb"]})
     def test_on_cleanup_list(self):
         assert misc.on_cleanup_list("test.exe")
         assert misc.on_cleanup_list("TEST.EXE")
@@ -621,8 +643,12 @@ class TestMisc:
             ("1.2.3.4", "1.2.3.5/32, 9.8.7.6", False),
         ],
     )
+    @pytest.mark.config(
+        lambda params: {
+            "local_ranges": params["local_ranges"],
+        }
+    )
     def test_is_local_addr(self, value, local_ranges, result):
-        @set_config({"local_ranges": local_ranges})
         def _func():
             assert misc.is_local_addr(value) is result
 
@@ -739,6 +765,23 @@ class TestMisc:
     @pytest.mark.parametrize("movie_enabled", [True, False])
     @pytest.mark.parametrize("movie_str", ["", "foobar movie"])
     @pytest.mark.parametrize("movie_cats", [[], ["movie"], ["movie", "horror", "docu"]])
+    @pytest.mark.config(
+        lambda params: {
+            "movie_rename_limit": params["movie_limit"],
+            "episode_rename_limit": params["episode_limit"],
+            "movie_sort_extra": params["movie_sort_extra"],
+            "enable_tv_sorting": params["tv_enabled"],
+            "tv_sort_string": params["tv_str"],
+            "tv_categories": params["tv_cats"],
+            "enable_movie_sorting": params["movie_enabled"],
+            "movie_sort_string": params["movie_str"],
+            "movie_categories": params["movie_cats"],
+            "enable_date_sorting": params["date_enabled"],
+            "date_sort_string": params["date_str"],
+            "date_categories": params["date_cats"],
+            "language": "en",  # Avoid translated sorter names in the test
+        }
+    )
     def test_convert_sorter_settings(
         self,
         movie_limit,
@@ -754,23 +797,6 @@ class TestMisc:
         movie_str,
         movie_cats,
     ):
-        @set_config(
-            {
-                "movie_rename_limit": movie_limit,
-                "episode_rename_limit": episode_limit,
-                "movie_sort_extra": movie_sort_extra,
-                "enable_tv_sorting": tv_enabled,
-                "tv_sort_string": tv_str,
-                "tv_categories": tv_cats,
-                "enable_movie_sorting": movie_enabled,
-                "movie_sort_string": movie_str,
-                "movie_categories": movie_cats,
-                "enable_date_sorting": date_enabled,
-                "date_sort_string": date_str,
-                "date_categories": date_cats,
-                "language": "en",  # Avoid translated sorter names in the test
-            }
-        )
         def _func():
             # Delete any leftover/pre-defined new-style sorters
             if existing_sorters := get_sorters():
@@ -966,8 +992,8 @@ class TestBuildAndRunCommand:
         misc.build_and_run_command([self.script_path], stderr=subprocess.DEVNULL)
         assert mock_subproc_popen.call_args[1]["stderr"] == subprocess.DEVNULL
 
-    @set_platform("linux")
-    @set_config({"nice": "--adjustment=-7", "ionice": "-t -n9 -c7"})
+    @pytest.mark.platform("linux")
+    @pytest.mark.config({"nice": "--adjustment=-7", "ionice": "-t -n9 -c7"})
     @mock.patch("sabnzbd.misc.userxbit")
     @mock.patch("subprocess.Popen")
     def test_linux_features(self, mock_subproc_popen, userxbit):
