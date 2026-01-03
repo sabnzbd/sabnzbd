@@ -233,7 +233,6 @@ class Assembler(Thread):
         1) Partial write: write what we have
         2) Nothing written before: write all
         """
-        status_deleted = Status.DELETED
         load_article = sabnzbd.ArticleCache.load_article
         downloader = sabnzbd.Downloader
         decodetable = nzf.decodetable
@@ -248,7 +247,7 @@ class Assembler(Thread):
                 article = decodetable[idx]
 
                 # Break if deleted during writing
-                if nzo.status is status_deleted:
+                if nzo.status is Status.DELETED:
                     break
 
                 # When forced stop once reached an untried article unless paused
