@@ -47,13 +47,7 @@ class TestAssembler:
                 new_callable=mock.PropertyMock,
             ) as admin_path_mock:
                 admin_path_mock.return_value = admin_path
-
-                # Make sure the file can prepare a filepath
                 self.nzo.download_path = str(tmp_path / "download")
-                self.nzo.files = []
-                self.nzo.first_articles = []
-
-                # Ensure directories exist
                 os.mkdir(self.nzo.download_path)
                 os.mkdir(self.nzo.admin_path)
 
@@ -66,15 +60,9 @@ class TestAssembler:
                     nzo=self.nzo,
                 )
                 self.nzo.files.append(self.nzf)
-                # Setup so that prepare_filepath() will return a path
-                self.nzf.type = "yenc"
-                self.nzf.filename_checked = True
-                self.nzf.import_finished = True
-
-                # Ensure filepath is created
+                self.nzf.type = "yenc"  # for writes from article cache
                 assert self.nzf.prepare_filepath() is not None
-
-                # Clear the state for the test to manipulate
+                # Clear the state after prepare_filepath
                 self.nzf.articles.clear()
                 self.nzf.decodetable.clear()
 
@@ -109,18 +97,18 @@ class TestAssembler:
         nzf: NzbFile,
         articles: list[tuple[Article, bytearray]],
     ):
-        data = []
+        article_data = {}
         for article, raw in articles:
             nzf.decodetable.append(article)
-            data.append(raw)
-        expected = b"".join(data)
+            article_data[article] = raw
+        expected = b"".join(article_data.values())
         nzf.bytes = len(expected)
-        sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=data)
+        sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=lambda article: article_data.get(article))
 
         for article, _ in articles:
             article.file_size = nzf.bytes
 
-        return data, expected
+        return article_data.values(), expected
 
     @staticmethod
     def _assert_expected_content(nzf: NzbFile, expected: bytes):
@@ -131,7 +119,7 @@ class TestAssembler:
         assert nzf.bytes_written_sequentially() == nzf.decodetable[0].file_size
 
     def test_assemble_direct_write(self, assembler):
-        """All articles support direct_write; data should be written at offsets."""
+        """Pure direct write mode"""
         data, expected = self._make_request(
             self.nzf,
             [
@@ -155,16 +143,12 @@ class TestAssembler:
                 self._make_article(self.nzf, offset=10, data=bytearray(b"12345"), can_direct_write=True),
             ],
         )
+        # [0] direct_write, [1] append, [2] append
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_direct_append_direct_append(self, assembler):
-        """
-        Start in direct_write, but encounter an article that cannot be direct-written.
-        Assembler should abort direct_write and switch to append mode.
-        Then the cache writes the final piece.
-        Finally, the assembler writes the previously missing piece.
-        """
+        """Out-of-order direct write via cache, append fills the gap."""
         data, expected = self._make_request(
             self.nzf,
             [
@@ -178,17 +162,17 @@ class TestAssembler:
                 ),  # Cache direct
             ],
         )
-        # First two are written
+        # [0] direct_write, [1] append
         Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
         assert assembler.call_count == 2
         assert self.nzf.bytes_written_sequentially() == 10
-        # Simulate the cache writing the 4th
+        # [3] direct_write
         article = self.nzf.decodetable[3]
         article.decoded = True
-        Assembler.assemble_article(article, bytearray(data[3]))
+        Assembler.assemble_article(article, sabnzbd.ArticleCache.load_article(article))
         assert assembler.call_count == 3
         assert self.nzf.bytes_written_sequentially() == 10  # was not a sequential write
-        # Final by assembler writing the 3rd
+        # [3] append
         article = self.nzf.decodetable[2]
         article.decoded = True
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
@@ -196,10 +180,7 @@ class TestAssembler:
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_direct_write_aborted_to_append_second_attempt(self, assembler):
-        """
-        Start in direct_write, but encounter an article that cannot be direct-written.
-        Assembler should abort direct_write and switch to append mode.
-        """
+        """Second attempt after initial partial assemble, including revert to append mode."""
         data, expected = self._make_request(
             self.nzf,
             [
@@ -210,17 +191,16 @@ class TestAssembler:
                 ),
             ],
         )
-        sabnzbd.ArticleCache.load_article = mock.Mock(side_effect=data)
+        # [0] direct_write, [1] append
         Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
-        # Second attempt should be direct via pwrite
         assert self.nzf.decodetable[2].on_disk is False
         self.nzf.decodetable[2].decoded = True
+        # [2] append
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
-    def test_assemble_direct_write_second_attempt(self, assembler):
-        """Verify that after an initial append-only assemble, a later assemble
-        with direct_write enabled patches the remaining article via pwrite."""
+    def test_assemble_append_direct_second_attempt(self, assembler):
+        """Second attempt after initial partial assemble"""
         data, expected = self._make_request(
             self.nzf,
             [
@@ -228,14 +208,15 @@ class TestAssembler:
                 self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False, can_direct_write=True),
             ],
         )
+        # [0] append
         Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=False)
-        # Second attempt should be direct via pwrite
         self.nzf.decodetable[1].decoded = True
+        # [1] append
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_append_only(self, assembler):
-        """direct_write=False should use pure append mode."""
+        """Pure append mode"""
         data, expected = self._make_request(
             self.nzf,
             [
@@ -243,5 +224,38 @@ class TestAssembler:
                 self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), can_direct_write=False),
             ],
         )
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        self._assert_expected_content(self.nzf, expected)
+
+    def test_assemble_append_second_attempt(self, assembler):
+        """Pure append mode, second attempt"""
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), decoded=False, can_direct_write=False),
+            ],
+        )
+        # [0] append
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=False)
+        assert self.nzf.assembled is False
+        self.nzf.decodetable[1].decoded = True
+        # [1] append
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        self._assert_expected_content(self.nzf, expected)
+
+    def test_assemble_append_first_not_decoded(self, assembler):
+        """Pure append mode, second attempt"""
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), decoded=False, can_direct_write=False),
+                self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), can_direct_write=False),
+            ],
+        )
+        # Nothing written
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=False)
+        assert not os.path.exists(self.nzf.filepath)
+        self.nzf.decodetable[0].decoded = True
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
         self._assert_expected_content(self.nzf, expected)
