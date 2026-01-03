@@ -127,6 +127,7 @@ class TestAssembler:
         with open(nzf.filepath, "rb") as f:
             content = f.read()
         assert content == expected
+        assert len(nzf.decodetable) == nzf.assembler_next_index
 
     def test_assemble_direct_write(self, assembler):
         """All articles support direct_write; data should be written at offsets."""

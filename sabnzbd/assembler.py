@@ -260,6 +260,8 @@ class Assembler(Thread):
                     if fd is not None and article.decoded_size is not None:
                         # Move the file descriptor forward past this article
                         offset += article.decoded_size
+                    with nzf.lock:
+                        nzf.assembler_next_index = idx + 1
                     continue
 
                 # stop if next piece not yet decoded
