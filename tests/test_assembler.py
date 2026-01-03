@@ -90,6 +90,7 @@ class TestAssembler:
         article.file_size = nzf.bytes
         article.decoded_size = len(data)
         article.crc32 = crc32(data)
+        article.tries = 1  # force aborts if never tried
         return article, data
 
     def _make_request(
@@ -259,4 +260,27 @@ class TestAssembler:
         assert not os.path.exists(self.nzf.filepath)
         self.nzf.decodetable[0].decoded = True
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        self._assert_expected_content(self.nzf, expected)
+
+    def test_force_append(self, assembler):
+        """Force in direct_write mode, then fill in gaps in append mode"""
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False, can_direct_write=False),
+                self._make_article(self.nzf, offset=10, data=bytearray(b"12345")),
+                self._make_article(self.nzf, offset=15, data=bytearray(b"abcd"), decoded=False, can_direct_write=False),
+                self._make_article(self.nzf, offset=19, data=bytearray(b"efg")),
+            ],
+        )
+        # [0] direct, [2] direct, [4], direct
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=True, direct_write=True)
+        assert assembler.call_count == 3
+        assert self.nzf.assembled is False
+        # [1] append, [3], append
+        self.nzf.decodetable[1].decoded = True
+        self.nzf.decodetable[3].decoded = True
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        assert assembler.call_count == 5
         self._assert_expected_content(self.nzf, expected)
