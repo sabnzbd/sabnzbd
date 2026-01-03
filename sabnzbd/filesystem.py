@@ -1083,7 +1083,12 @@ def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bo
 
 
 def load_data(
-    data_id: str, path: str, remove: bool = True, do_pickle: bool = True, silent: bool = False, mutable: bool = False
+    data_id: str,
+    path: str,
+    remove: bool = True,
+    do_pickle: bool = True,
+    silent: bool = False,
+    mutable: bool = False,
 ) -> Any:
     """Read data from disk file"""
     path = os.path.join(path, data_id)
