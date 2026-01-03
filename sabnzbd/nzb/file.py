@@ -265,7 +265,7 @@ class NzbFile(TryList):
                     offset += article.decoded_size
                 elif os.path.exists(self.filepath):
                     # old queues were always files opened in append mode, so use the file size
-                    return os.stat(self.filepath).st_size
+                    return os.path.getsize(self.filepath)
         return offset
 
     def __enter__(self):
