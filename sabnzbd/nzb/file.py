@@ -247,9 +247,10 @@ class NzbFile(TryList):
         """
         with self.lock, self.file_lock:
             # If last written has valid yenc headers
-            article = self.decodetable[self.assembler_next_index - 1]
-            if article.on_disk and article.data_size:
-                return article.data_begin + article.data_size
+            if self.assembler_next_index:
+                article = self.decodetable[self.assembler_next_index - 1]
+                if article.on_disk and article.data_size:
+                    return article.data_begin + article.data_size
 
             # Fallback to decoded size
             offset = 0

@@ -127,6 +127,7 @@ class TestAssembler:
                 self._make_article(self.nzf, offset=5, data=bytearray(b"world"), can_direct_write=True),
             ],
         )
+        assert self.nzf.bytes_written_sequentially() == 0
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
