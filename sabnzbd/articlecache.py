@@ -72,7 +72,7 @@ class ArticleCache(threading.Thread):
         with self.__cache_size_cv:
             self.__cache_size_cv.notify_all()
 
-    def __needs_flush(self) -> bool:
+    def __should_flush(self) -> bool:
         """
         Should we flush the cache?
         Only if direct write is supported and cache usage is over the upper limit.
@@ -87,32 +87,31 @@ class ArticleCache(threading.Thread):
             and time.monotonic() > self.__next_flush
         )
 
-    def run(self):
-        assembler = sabnzbd.Assembler.process
+    def __flush_cache(self) -> None:
+        """In direct_write mode flush cache contents to file"""
         nzfs: set[NzbFile] = set()
+        self.__next_flush = time.monotonic() + _SECONDS_BETWEEN_FLUSHES
+        for article in self.__article_table.copy():
+            if article.can_direct_write:
+                nzfs.add(article.nzf)
+        for nzf in nzfs:
+            logging.debug("Forcing write of %s", nzf.filepath)
+            sabnzbd.Assembler.process(nzf.nzo, nzf, force=True)
 
+    def run(self):
         while True:
-            article = None
-            nzfs.clear()
             with self.__cache_size_cv:
                 self.__cache_size_cv.wait_for(
-                    lambda: self.shutdown or self.__needs_flush(),
+                    lambda: self.shutdown or self.__should_flush(),
                     timeout=5.0,
                 )
             if self.shutdown:
                 break
-
-            # Timeout so is reach when paused and no further articles arrive
-            if not self.__needs_flush():
-                continue
-
-            self.__next_flush = time.monotonic() + _SECONDS_BETWEEN_FLUSHES
-            for article in self.__article_table.copy():
-                if article.can_direct_write:
-                    nzfs.add(article.nzf)
-            for nzf in nzfs:
-                logging.debug("Forcing write of %s", nzf.filepath)
-                assembler(nzf.nzo, nzf, force=True)
+            # Could be reached by timeout when paused and no further articles arrive
+            with self.__cache_size_cv:
+                if not self.__should_flush():
+                    continue
+            self.__flush_cache()
 
     def cache_info(self):
         return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit)
