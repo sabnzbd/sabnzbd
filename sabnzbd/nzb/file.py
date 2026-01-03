@@ -268,12 +268,6 @@ class NzbFile(TryList):
                     return os.path.getsize(self.filepath)
         return offset
 
-    def __enter__(self):
-        self.lock.acquire()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.lock.release()
-
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
         dict_ = {}

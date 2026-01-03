@@ -161,7 +161,7 @@ class ArticleCache(threading.Thread):
             return
 
         # Register article for bookkeeping in case the job is deleted
-        with NZO_LOCK:
+        with nzo.lock:
             nzo.saved_articles.add(article)
 
         if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
@@ -197,7 +197,7 @@ class ArticleCache(threading.Thread):
             data = sabnzbd.filesystem.load_data(
                 article.art_id, nzo.admin_path, remove=True, do_pickle=False, silent=True, mutable=True
             )
-        with NZO_LOCK:
+        with nzo.lock:
             nzo.saved_articles.discard(article)
         return data
 
@@ -238,7 +238,7 @@ class ArticleCache(threading.Thread):
 
         # Direct write to destination if cache is being used
         if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
-            with NZO_LOCK:
+            with article.nzf.nzo.lock:
                 article.nzf.nzo.saved_articles.discard(article)
             return
 

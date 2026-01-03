@@ -886,7 +886,7 @@ class NzbQueue:
 
                     if nzf.all_servers_in_try_list(active_servers):
                         # Check for articles where all active servers have already been tried
-                        with nzf:
+                        with nzf.lock:
                             for article in nzf.articles:
                                 if article.all_servers_in_try_list(active_servers):
                                     logging.debug(
