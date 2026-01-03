@@ -26,7 +26,7 @@ import re
 import threading
 from threading import Thread
 import ctypes
-from typing import Optional, NamedTuple
+from typing import Optional, NamedTuple, Union
 import rarfile
 
 import sabctools
@@ -374,27 +374,12 @@ class Assembler(Thread):
     ) -> int:
         """Write data at position in a file"""
         pos = article.data_begin if offset is None else offset
-
-        if sabnzbd.WINDOWS:
-            # pwrite is not implemented on Windows so fallback to os.lseek and os.write
-            # Must lock since it is possible to write from multiple threads (assembler + downloader)
-            with nzf.file_lock:
-                os.lseek(fd, pos, os.SEEK_SET)
-                written = os.write(fd, data)
-        else:
-            written = os.pwrite(fd, data, pos)
-
+        written = Assembler._write(fd, nzf, data, pos)
         # In raw/non-buffered mode os.write may not write everything requested:
         # https://docs.python.org/3/library/io.html?highlight=write#io.RawIOBase.write
-        if written < len(data):
-            mv = memoryview(data)
+        if written < len(data) and (mv := memoryview(data)):
             while written < len(data):
-                if sabnzbd.WINDOWS:
-                    with nzf.file_lock:
-                        os.lseek(fd, pos + written, os.SEEK_SET)
-                        written += os.write(fd, mv[written:])
-                else:
-                    written += os.pwrite(fd, mv[written:], pos + written)
+                written += Assembler._write(fd, nzf, mv[written:], pos + written)
 
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
@@ -405,6 +390,17 @@ class Assembler(Thread):
             if nzf.assembler_next_index == nzf_index:
                 nzf.assembler_next_index += 1
         return written
+
+    @staticmethod
+    def _write(fd: int, nzf: NzbFile, data: Union[bytearray, memoryview], offset: int) -> int:
+        if sabnzbd.WINDOWS:
+            # pwrite is not implemented on Windows so fallback to os.lseek and os.write
+            # Must lock since it is possible to write from multiple threads (assembler + downloader)
+            with nzf.file_lock:
+                os.lseek(fd, offset, os.SEEK_SET)
+                return os.write(fd, data)
+        else:
+            return os.pwrite(fd, data, offset)
 
     @staticmethod
     def open(nzf: NzbFile, direct_write: bool, file_size: int) -> tuple[int, int, bool]:
