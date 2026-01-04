@@ -776,6 +776,7 @@ class NzbQueue:
         if not nzo.nzo_id:
             self.add(nzo, quiet=True)
         self.remove(nzo.nzo_id, cleanup=False)
+        sabnzbd.Assembler.clear_ready_bytes(*nzo.files)
         sabnzbd.PostProcessor.process(nzo)
 
     def actives(self, grabs: bool = True) -> int:

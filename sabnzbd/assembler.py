@@ -28,7 +28,6 @@ from threading import Thread
 import ctypes
 from typing import Optional, NamedTuple, Union
 import rarfile
-from weakref import WeakKeyDictionary, WeakSet
 
 import sabctools
 import sabnzbd
@@ -73,10 +72,10 @@ class Assembler(Thread):
         self.direct_write_trigger_bytes: int = 1
         self.queue: queue.Queue[AssemblerTask] = queue.Queue()
         self.queued_lock = threading.Lock()
-        self.queued_nzf: WeakSet[NzbFile] = WeakSet()
-        self.queued_nzf_forced: WeakSet[NzbFile] = WeakSet()
+        self.queued_nzf: set[NzbFile] = set()
+        self.queued_nzf_forced: set[NzbFile] = set()
         self.ready_bytes_lock = threading.Lock()
-        self.ready_bytes: WeakKeyDictionary[NzbFile, int] = WeakKeyDictionary()
+        self.ready_bytes: dict[NzbFile, int] = dict()
 
     def stop(self):
         self.queue.put(AssemblerTask())
@@ -109,9 +108,10 @@ class Assembler(Thread):
                 self.ready_bytes[nzf] = cur
             return cur
 
-    def clear_ready_bytes(self, nzf: NzbFile) -> None:
+    def clear_ready_bytes(self, *nzfs: NzbFile) -> None:
         with self.ready_bytes_lock:
-            self.ready_bytes.pop(nzf, None)
+            for nzf in nzfs:
+                self.ready_bytes.pop(nzf, None)
 
     def process(
         self,
@@ -229,8 +229,7 @@ class Assembler(Thread):
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
                 sabnzbd.PostProcessor.process(nzo)
-                for nzf in nzo.files:
-                    self.clear_ready_bytes(nzf)
+                sabnzbd.Assembler.clear_ready_bytes(nzf)
 
     @staticmethod
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
