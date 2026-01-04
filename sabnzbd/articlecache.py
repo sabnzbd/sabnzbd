@@ -32,7 +32,6 @@ from sabnzbd.constants import (
     ANFO,
     ARTICLE_CACHE_UPPER_PERCENTAGE,
     ARTICLE_CACHE_LOWER_PERCENTAGE,
-    ARTICLE_CACHE_DIRECT_WRITE_LIMIT_WAIT,
 )
 from sabnzbd.nzb import Article, NzbFile
 from sabnzbd.misc import to_units

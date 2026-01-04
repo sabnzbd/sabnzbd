@@ -106,8 +106,6 @@ NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
 DEF_PIPELINING_REQUESTS = 1
 ARTICLE_CACHE_UPPER_PERCENTAGE = 0.9  # Force flush to disk
 ARTICLE_CACHE_LOWER_PERCENTAGE = 0.5  # Stop throttling downloader
-# When direct writing articles only wait for the cache to recover if limit is least this amount
-ARTICLE_CACHE_DIRECT_WRITE_LIMIT_WAIT = int(50 * MEBI)
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2
