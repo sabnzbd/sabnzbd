@@ -229,17 +229,11 @@ class ArticleCache(threading.Thread):
     def __flush_article_to_disk(self, article: Article, data: bytearray):
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
-        if self.__cache_limit >= ARTICLE_CACHE_DIRECT_WRITE_LIMIT_WAIT:
-            # Give the cache a chance to recover
-            with self.__cache_size_cv:
-                self.__cache_size_cv.wait_for(
-                    lambda: self.shutdown or self.__cache_size <= self.__cache_size_lower, timeout=2.0
-                )
-
         # Direct write to destination if cache is being used
         if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
             with article.nzf.nzo.lock:
                 article.nzf.nzo.saved_articles.discard(article)
+            self.flush_cache()
             return
 
         # Fallback to disk cache
