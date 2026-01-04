@@ -233,7 +233,6 @@ class ArticleCache(threading.Thread):
         if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
             with article.nzf.nzo.lock:
                 article.nzf.nzo.saved_articles.discard(article)
-            self.flush_cache()
             return
 
         # Fallback to disk cache

@@ -75,7 +75,7 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("lock", "file_lock", "assembler_next_index")
+    __slots__ = NzbFileSaver + ("__weakref__", "lock", "file_lock", "assembler_next_index")
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
@@ -240,7 +240,7 @@ class NzbFile(TryList):
         except Exception:
             pass
 
-    def sequential_offset(self) -> int:
+    def contiguous_offset(self) -> int:
         """The next file offset to write to continue sequentially.
 
         Note: there could be non-sequential direct writes already beyond this point
@@ -266,6 +266,20 @@ class NzbFile(TryList):
                     # fallback for <= 4.5.5 because files were always opened in append mode, so use the file size
                     return os.path.getsize(self.filepath)
         return offset
+
+    def contiguous_ready_bytes(self) -> int:
+        """How many bytes from assembler_next_index onward are ready to write to file contiguously?"""
+        with self.lock:
+            bytes_ready: int = 0
+            for article in self.decodetable[self.assembler_next_index :]:
+                if not article.decoded:
+                    break
+                if article.on_disk:
+                    continue
+                if article.decoded_size is None:
+                    break
+                bytes_ready += article.decoded_size
+            return bytes_ready
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""

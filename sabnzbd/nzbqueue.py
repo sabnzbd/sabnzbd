@@ -733,7 +733,7 @@ class NzbQueue:
         if not nzo.precheck:
             # The type is only set if sabctools could decode the article
             if nzf.type:
-                sabnzbd.Assembler.process(nzo, nzf, file_done, article=article, articles_left=articles_left)
+                sabnzbd.Assembler.process(nzo, nzf, file_done, article=article)
             elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
                 # Broken par2 file, try to get another one
                 nzo.promote_par2(nzf)

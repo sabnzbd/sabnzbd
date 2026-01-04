@@ -28,10 +28,11 @@ from threading import Thread
 import ctypes
 from typing import Optional, NamedTuple, Union
 import rarfile
+from weakref import WeakKeyDictionary, WeakSet
 
 import sabctools
 import sabnzbd
-from sabnzbd.misc import get_all_passwords, match_str, SABRarFile
+from sabnzbd.misc import get_all_passwords, match_str, SABRarFile, to_units
 from sabnzbd.filesystem import (
     set_permissions,
     clip_path,
@@ -44,7 +45,9 @@ from sabnzbd.filesystem import (
 from sabnzbd.constants import (
     Status,
     GIGI,
-    ASSEMBLER_WRITE_THRESHOLD,
+    ASSEMBLER_WRITE_THRESHOLD_APPEND,
+    ASSEMBLER_WRITE_THRESHOLD_DIRECT_WRITE,
+    ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -64,24 +67,51 @@ class Assembler(Thread):
         super().__init__()
         self.max_queue_size: int = cfg.assembler_max_queue_size()
         self.direct_write: bool = cfg.direct_write()
-        self.assembler_write_trigger: int = 1
+        # Contiguous bytes required to trigger append writes
+        self.append_trigger_bytes: int = 1
+        # Total bytes required to trigger direct-write assembles
+        self.direct_write_trigger_bytes: int = 1
         self.queue: queue.Queue[AssemblerTask] = queue.Queue()
         self.queued_lock = threading.Lock()
-        self.queued_nzf: set[NzbFile] = set()
-        self.queued_nzf_forced: set[NzbFile] = set()
+        self.queued_nzf: WeakSet[NzbFile] = WeakSet()
+        self.queued_nzf_forced: WeakSet[NzbFile] = WeakSet()
+        self.ready_bytes_lock = threading.Lock()
+        self.ready_bytes: WeakKeyDictionary[NzbFile, int] = WeakKeyDictionary()
 
     def stop(self):
         self.queue.put(AssemblerTask())
 
     def new_limit(self, limit: int):
         """Called when cache limit changes"""
-        # Set assembler_write_trigger to be the equivalent of ASSEMBLER_WRITE_THRESHOLD %
-        # of the total cache, assuming an article size of 750 000 bytes
-        self.assembler_write_trigger = int(limit * ASSEMBLER_WRITE_THRESHOLD / 100 / 750_000) + 1
-        logging.debug("Assembler trigger = %d", self.assembler_write_trigger)
+        self.append_trigger_bytes = max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_APPEND))
+        self.direct_write_trigger_bytes = max(
+            1,
+            min(
+                max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_DIRECT_WRITE)),
+                ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
+            ),
+        )
+        logging.debug(
+            "Assembler trigger append=%s direct=%s",
+            to_units(self.append_trigger_bytes),
+            to_units(self.direct_write_trigger_bytes),
+        )
 
     def change_direct_write(self, direct_write: bool) -> None:
         self.direct_write = direct_write
+
+    def update_ready_bytes(self, nzf: NzbFile, delta: int) -> int:
+        with self.ready_bytes_lock:
+            cur = self.ready_bytes.get(nzf, 0) + delta
+            if cur <= 0:
+                self.ready_bytes.pop(nzf, None)
+            else:
+                self.ready_bytes[nzf] = cur
+            return cur
+
+    def clear_ready_bytes(self, nzf: NzbFile) -> None:
+        with self.ready_bytes_lock:
+            self.ready_bytes.pop(nzf, None)
 
     def process(
         self,
@@ -90,27 +120,35 @@ class Assembler(Thread):
         file_done: bool = False,
         force: bool = False,
         article: Optional[Article] = None,
-        articles_left: Optional[int] = None,
     ) -> None:
+        # In direct write mode, track how many bytes we have ready to write
+        ready_bytes: int = 0
+        if article is not None:
+            if article.decoded and not article.on_disk and article.decoded_size:
+                ready_bytes = self.update_ready_bytes(nzf, article.decoded_size)
         if nzf is None:
             # post-proc
             self.queue.put(AssemblerTask(nzo))
         else:
-            direct_write = self.direct_write and self.assembler_write_trigger > 1 and nzf.type == "yenc"
+            direct_write = self.direct_write and self.direct_write_trigger_bytes > 1 and nzf.type == "yenc"
             if (
                 # Always queue if done
                 file_done
-                # non-direct_write queue if not already queued and at trigger
+                # non-direct_write: queue if not already queued and at trigger
                 or (
                     not direct_write
                     and nzf not in self.queued_nzf
                     and (
                         (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
-                        or (articles_left and (articles_left % self.assembler_write_trigger) == 0)
+                        or nzf.contiguous_ready_bytes() >= self.append_trigger_bytes
                     )
                 )
-                # direct_write only if forced and not already force queued
-                or (direct_write and force and nzf not in self.queued_nzf_forced)
+                # direct_write: queue if not already queued, and forced by cache or past the direct write trigger
+                or (
+                    direct_write
+                    and (force or ready_bytes >= self.direct_write_trigger_bytes)
+                    and nzf not in self.queued_nzf
+                )
             ):
                 with self.queued_lock:
                     if force:
@@ -191,6 +229,8 @@ class Assembler(Thread):
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
                 sabnzbd.PostProcessor.process(nzo)
+                for nzf in nzo.files:
+                    self.clear_ready_bytes(nzf)
 
     @staticmethod
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
@@ -313,6 +353,7 @@ class Assembler(Thread):
 
         # Final steps
         if file_done:
+            sabnzbd.Assembler.clear_ready_bytes(nzf)
             set_permissions(nzf.filepath)
             nzf.assembled = True
 
@@ -335,7 +376,7 @@ class Assembler(Thread):
                         idx = None
                 Assembler.write(fd, idx, nzf, article, data)
             except FileNotFoundError:
-                # nzo has probably been deleted, articlecache tries the fallback and handles it
+                # nzo has probably been deleted, ArticleCache tries the fallback and handles it
                 return False
             finally:
                 os.close(fd)
@@ -393,6 +434,7 @@ class Assembler(Thread):
 
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
+        sabnzbd.Assembler.update_ready_bytes(nzf, -len(data))
         if nzf_index is not None:
             with nzf.lock:
                 # assembler_next_index is the lowest index that has not yet been written sequentially from the start of the file.
@@ -424,7 +466,7 @@ class Assembler(Thread):
             # Get the current umask without changing it, to create a file with the same permissions as `with open(...)`
             os.umask(os.umask(0))
             fd = os.open(nzf.filepath, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0), 0o666)
-            offset = nzf.sequential_offset()
+            offset = nzf.contiguous_offset()
             os.lseek(fd, offset, os.SEEK_SET)
             if direct_write:
                 if not file_size:
