@@ -327,6 +327,9 @@ class Assembler(Thread):
                     return False
                 idx = nzf.assembler_next_index if article == nzf.decodetable[nzf.assembler_next_index] else -1
                 Assembler.write(fd, idx, nzf, article, data)
+            except FileNotFoundError:
+                # nzo has probably been deleted, articlecache tries the fallback and handles it
+                return False
             finally:
                 os.close(fd)
         return True
