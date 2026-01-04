@@ -261,8 +261,9 @@ class Assembler(Thread):
                     if fd is not None and article.decoded_size is not None:
                         # Move the file descriptor forward past this article
                         offset += article.decoded_size
-                    with nzf.lock:
-                        nzf.assembler_next_index = idx + 1
+                    if not skipped:
+                        with nzf.lock:
+                            nzf.assembler_next_index = idx + 1
                     continue
 
                 # stop if next piece not yet decoded
@@ -331,7 +332,7 @@ class Assembler(Thread):
                     # Is this the next article to keep writing sequentially
                     idx = nzf.assembler_next_index
                     if idx >= len(nzf.decodetable) or article != nzf.decodetable[idx]:
-                        idx = -1
+                        idx = None
                 Assembler.write(fd, idx, nzf, article, data)
             except FileNotFoundError:
                 # nzo has probably been deleted, articlecache tries the fallback and handles it
@@ -379,7 +380,7 @@ class Assembler(Thread):
 
     @staticmethod
     def write(
-        fd: int, nzf_index: int, nzf: NzbFile, article: Article, data: bytearray, offset: Optional[int] = None
+        fd: int, nzf_index: Optional[int], nzf: NzbFile, article: Article, data: bytearray, offset: Optional[int] = None
     ) -> int:
         """Write data at position in a file"""
         pos = article.data_begin if offset is None else offset
@@ -392,12 +393,13 @@ class Assembler(Thread):
 
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
-        with nzf.lock:
-            # assembler_next_index is the lowest index that has not yet been written sequentially from the start of the file.
-            # If this was the next required index to remain sequential, it can be incremented which allows the assmebler to
-            # resume without rechecking articles that are already known to be on disk.
-            if nzf.assembler_next_index == nzf_index:
-                nzf.assembler_next_index += 1
+        if nzf_index is not None:
+            with nzf.lock:
+                # assembler_next_index is the lowest index that has not yet been written sequentially from the start of the file.
+                # If this was the next required index to remain sequential, it can be incremented which allows the assmebler to
+                # resume without rechecking articles that are already known to be on disk.
+                if nzf.assembler_next_index == nzf_index:
+                    nzf.assembler_next_index += 1
         return written
 
     @staticmethod

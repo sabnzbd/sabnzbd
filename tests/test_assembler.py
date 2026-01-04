@@ -284,3 +284,30 @@ class TestAssembler:
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
         assert assembler.call_count == 5
         self._assert_expected_content(self.nzf, expected)
+
+    def test_force_force_direct(self, assembler):
+        """Force the first, then force the last, then direct the gap"""
+        data, expected = self._make_request(
+            self.nzf,
+            [
+                self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
+                self._make_article(self.nzf, offset=5, data=bytearray(b"world"), decoded=False),
+                self._make_article(self.nzf, offset=10, data=bytearray(b"12345"), decoded=False),
+            ],
+        )
+        # [0] direct
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
+        assert assembler.call_count == 1
+        assert self.nzf.assembler_next_index == 1
+        # Client restart
+        self.nzf.assembler_next_index = 0
+        # force: [2] direct
+        self.nzf.decodetable[2].decoded = True
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=True, direct_write=True)
+        assert assembler.call_count == 2
+        assert self.nzf.assembler_next_index == 1
+        # [1] direct
+        self.nzf.decodetable[1].decoded = True
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        assert assembler.call_count == 3
+        self._assert_expected_content(self.nzf, expected)
