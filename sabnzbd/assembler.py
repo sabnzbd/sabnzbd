@@ -250,7 +250,9 @@ class Assembler(Thread):
                 if nzo.status is Status.DELETED:
                     break
 
-                # When forced stop once reached an untried article unless paused
+                # Force is when the cache forces the assembler to write all articles, even if it leaves gaps.
+                # In most cases we can stop at the first article that has not been tried, because they are requested in order.
+                # However, if we are paused then always consider the whole decodetable to ensure everything possible is written.
                 if force and not article.tries and not downloader.paused:
                     break
 
