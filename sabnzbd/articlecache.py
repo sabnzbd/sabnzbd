@@ -54,7 +54,7 @@ class ArticleCache(threading.Thread):
         self.__cache_size = 0
         self.__article_table: dict[Article, bytearray] = {}  # Dict of buffered articles
         self.__cache_size_cv: threading.Condition = threading.Condition(ARTICLE_COUNTER_LOCK)
-        self.__next_flush: float = 0
+        self.__last_flush: float = 0
         self.__cache_size_upper: int = 0  # Force flush trigger
         self.__cache_size_lower: int = 0  # Resume normal behaviour once cache recovers after force flush
 
@@ -84,19 +84,19 @@ class ArticleCache(threading.Thread):
             and (
                 self.__cache_size > self.__cache_size_upper or self.__cache_size and sabnzbd.Downloader.no_active_jobs()
             )
-            and time.monotonic() > self.__next_flush
         )
 
     def flush_cache(self) -> None:
         """In direct_write mode flush cache contents to file"""
-        nzfs: set[NzbFile] = set()
-        self.__next_flush = time.monotonic() + _SECONDS_BETWEEN_FLUSHES
+        forced: set[NzbFile] = set()
         for article in self.__article_table.copy():
-            if article.can_direct_write:
-                nzfs.add(article.nzf)
-        for nzf in nzfs:
-            logging.debug("Forcing write of %s", nzf.filepath)
-            sabnzbd.Assembler.process(nzf.nzo, nzf, force=True)
+            if not article.can_direct_write or article.nzf in forced:
+                continue
+            forced.add(article.nzf)
+            if time.monotonic() - self.__last_flush > 1:
+                logging.debug("Forcing write of %s", article.nzf.filepath)
+            sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, force=True)
+        self.__last_flush = time.monotonic()
 
     def run(self):
         while True:
@@ -112,6 +112,7 @@ class ArticleCache(threading.Thread):
                 if not self.should_flush():
                     continue
             self.flush_cache()
+            time.sleep(_SECONDS_BETWEEN_FLUSHES)
 
     def cache_info(self):
         return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit)
