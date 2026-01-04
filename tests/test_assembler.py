@@ -117,7 +117,7 @@ class TestAssembler:
             content = f.read()
         assert content == expected
         assert nzf.assembler_next_index == len(nzf.decodetable)
-        assert nzf.bytes_written_sequentially() == nzf.decodetable[0].file_size
+        assert nzf.sequential_offset() == nzf.decodetable[0].file_size
 
     def test_assemble_direct_write(self, assembler):
         """Pure direct write mode"""
@@ -128,7 +128,7 @@ class TestAssembler:
                 self._make_article(self.nzf, offset=5, data=bytearray(b"world"), can_direct_write=True),
             ],
         )
-        assert self.nzf.bytes_written_sequentially() == 0
+        assert self.nzf.sequential_offset() == 0
         Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
@@ -167,13 +167,13 @@ class TestAssembler:
         # [0] direct_write, [1] append
         Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
         assert assembler.call_count == 2
-        assert self.nzf.bytes_written_sequentially() == 10
+        assert self.nzf.sequential_offset() == 10
         # [3] direct_write
         article = self.nzf.decodetable[3]
         article.decoded = True
         Assembler.assemble_article(article, sabnzbd.ArticleCache.load_article(article))
         assert assembler.call_count == 3
-        assert self.nzf.bytes_written_sequentially() == 10  # was not a sequential write
+        assert self.nzf.sequential_offset() == 10  # was not a sequential write
         # [3] append
         article = self.nzf.decodetable[2]
         article.decoded = True

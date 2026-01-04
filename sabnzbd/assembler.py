@@ -424,7 +424,7 @@ class Assembler(Thread):
             # Get the current umask without changing it, to create a file with the same permissions as `with open(...)`
             os.umask(os.umask(0))
             fd = os.open(nzf.filepath, os.O_CREAT | os.O_WRONLY | getattr(os, "O_BINARY", 0), 0o666)
-            offset = nzf.bytes_written_sequentially()
+            offset = nzf.sequential_offset()
             os.lseek(fd, offset, os.SEEK_SET)
             if direct_write:
                 if not file_size:

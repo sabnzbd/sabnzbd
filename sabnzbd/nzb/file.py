@@ -240,31 +240,30 @@ class NzbFile(TryList):
         except Exception:
             pass
 
-    def bytes_written_sequentially(self) -> int:
-        """Number of bytes written sequentially to the file.
+    def sequential_offset(self) -> int:
+        """The next file offset to write to continue sequentially.
 
-        Note: there could be non-sequential writes beyond this point
+        Note: there could be non-sequential direct writes already beyond this point
         """
         with self.lock, self.file_lock:
-            # If last written has valid yenc headers
+            # If last written article has valid yenc headers
             if self.assembler_next_index:
                 article = self.decodetable[self.assembler_next_index - 1]
                 if article.on_disk and article.data_size:
                     return article.data_begin + article.data_size
 
-            # Fallback to decoded size
+            # Fallback to summing decoded size
             offset = 0
-            for j in range(self.assembler_next_index):
-                article = self.decodetable[j]
+            for article in self.decodetable[: self.assembler_next_index]:
                 if not article.on_disk:
                     break
                 if article.data_size:
-                    offset = article.data_begin + article.data_size
+                    offset = article.data_begin + article.decoded_size
                 elif article.decoded_size is not None:
-                    # old queues do not have this attribute
+                    # queues from <= 4.5.5 do not have this attribute
                     offset += article.decoded_size
                 elif os.path.exists(self.filepath):
-                    # old queues were always files opened in append mode, so use the file size
+                    # fallback for <= 4.5.5 because files were always opened in append mode, so use the file size
                     return os.path.getsize(self.filepath)
         return offset
 
