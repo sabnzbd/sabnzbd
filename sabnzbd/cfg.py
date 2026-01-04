@@ -754,12 +754,6 @@ def new_direct_write():
     sabnzbd.ArticleCache.change_direct_write(bool(direct_write()))
 
 
-def new_download_dir():
-    """Callback for download dir changes"""
-    if direct_write():
-        threading.Thread(target=sabnzbd.filesystem.check_sparse_and_disable, args=(download_dir.get_path(),)).start()
-
-
 def guard_restart():
     """Callback for config options requiring a restart"""
     sabnzbd.RESTART_REQ = True
