@@ -325,7 +325,11 @@ class Assembler(Thread):
                 if not direct_write:
                     cfg.direct_write.set(False)
                     return False
-                idx = nzf.assembler_next_index if article == nzf.decodetable[nzf.assembler_next_index] else -1
+                with nzf.lock:
+                    # Is this the next article to keep writing sequentially
+                    idx = nzf.assembler_next_index
+                    if idx >= len(nzf.decodetable) or article != nzf.decodetable[idx]:
+                        idx = -1
                 Assembler.write(fd, idx, nzf, article, data)
             except FileNotFoundError:
                 # nzo has probably been deleted, articlecache tries the fallback and handles it
