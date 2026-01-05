@@ -209,9 +209,10 @@ class OptionBool(Option):
         # Store the value as integer, easier to parse when reading the config.
         super().set(sabnzbd.misc.bool_conv(value))
 
-    def __call__(self) -> bool:
-        """get() replacement"""
-        return bool(self.get())
+    def __call__(self) -> int:
+        """Many places assume 0/1 is used for historical reasons.
+        Using pure bools breaks in random places"""
+        return int(self.get())
 
 
 class OptionDir(Option):
