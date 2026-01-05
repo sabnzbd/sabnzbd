@@ -49,6 +49,7 @@ from sabnzbd.constants import (
     ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
     SOFT_ASSEMBLER_QUEUE_LIMIT,
     ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE,
+    ARTICLE_CACHE_UPPER_PERCENTAGE,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -110,20 +111,19 @@ class Assembler(Thread):
 
     def calculate_delay_trigger(self):
         """Point at which downloader should start being delayed, recalculated when cache limit or direct write changes"""
-        self.delay_trigger = max(
-            (
-                750_000 * self.max_queue_size * ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE
-                if self.direct_write
-                else 750_000 * self.max_queue_size
-            ),
-            (
-                min(
-                    int(self.cache_limit * ASSEMBLER_WRITE_THRESHOLD_FACTOR_DIRECT_WRITE),
-                    ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE * 4,
-                )
-                if self.direct_write
-                else min(self.append_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
-            ),
+        self.delay_trigger = int(
+            max(
+                (
+                    750_000 * self.max_queue_size * ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE
+                    if self.direct_write
+                    else 750_000 * self.max_queue_size
+                ),
+                (
+                    self.cache_limit * ARTICLE_CACHE_UPPER_PERCENTAGE
+                    if self.direct_write
+                    else min(self.append_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
+                ),
+            )
         )
 
     def is_busy(self) -> bool:

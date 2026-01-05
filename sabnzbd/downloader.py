@@ -803,7 +803,7 @@ class Downloader(Thread):
 
     def check_assembler_levels(self):
         """Check the Assembler queue to see if we need to delay, depending on queue size"""
-        if (delay := sabnzbd.Assembler.delay()) <= 0:
+        if not sabnzbd.Assembler.is_busy() or (delay := sabnzbd.Assembler.delay()) <= 0:
             return
         time.sleep(delay)
         sabnzbd.BPSMeter.delayed_assembler += 1
