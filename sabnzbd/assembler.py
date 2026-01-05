@@ -44,8 +44,8 @@ from sabnzbd.filesystem import (
 from sabnzbd.constants import (
     Status,
     GIGI,
-    ASSEMBLER_WRITE_THRESHOLD_APPEND,
-    ASSEMBLER_WRITE_THRESHOLD_DIRECT_WRITE,
+    ASSEMBLER_WRITE_THRESHOLD_FACTOR_APPEND,
+    ASSEMBLER_WRITE_THRESHOLD_FACTOR_DIRECT_WRITE,
     ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
     SOFT_ASSEMBLER_QUEUE_LIMIT,
     ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE,
@@ -87,11 +87,11 @@ class Assembler(Thread):
     def new_limit(self, limit: int):
         """Called when cache limit changes"""
         self.cache_limit = limit
-        self.append_trigger = max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_APPEND))
+        self.append_trigger = max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_FACTOR_APPEND))
         self.direct_write_trigger = max(
             1,
             min(
-                max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_DIRECT_WRITE)),
+                max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_FACTOR_DIRECT_WRITE)),
                 ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
             ),
         )
@@ -117,7 +117,7 @@ class Assembler(Thread):
                 else 750_000 * self.max_queue_size
             ),
             (
-                min(self.direct_write_trigger * ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE, int(self.cache_limit * 0.75))
+                self.direct_write_trigger
                 if self.direct_write
                 else min(self.append_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
             ),
