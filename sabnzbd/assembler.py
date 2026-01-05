@@ -193,6 +193,9 @@ class Assembler(Thread):
                 )
             ):
                 with self.queued_lock:
+                    if nzf.nzf_id in self.queued_nzf:
+                        # Recheck not already in the normal queue under lock
+                        return
                     if allow_non_contiguous:
                         self.queued_nzf_non_contiguous.add(nzf.nzf_id)
                     else:
