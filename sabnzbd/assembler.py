@@ -152,9 +152,8 @@ class Assembler(Thread):
     ) -> None:
         # In direct write mode, track how many bytes we have ready to write
         ready_bytes: int = 0
-        if article is not None:
-            if article.decoded and not article.on_disk and article.decoded_size:
-                ready_bytes = self.update_ready_bytes(nzf, article.decoded_size)
+        if article and not allow_non_contiguous and article.decoded and not article.on_disk and article.decoded_size:
+            ready_bytes = self.update_ready_bytes(nzf, article.decoded_size)
         if nzf is None:
             # post-proc
             self.queue.put(AssemblerTask(nzo))
