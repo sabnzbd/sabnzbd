@@ -199,8 +199,6 @@ class NewsWrapper:
     def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzb.Article"]) -> None:
         """A response to a NNTP request is received"""
         self.concurrent_requests.release()
-        # After each response this socket needs to be available for writing again
-        sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
         server = self.server
         article_done = response.status_code in (220, 222) and article
 
@@ -295,7 +293,7 @@ class NewsWrapper:
             generation = self.generation
 
         # NewsWrapper is being reset
-        if not self.decoder:
+        if self.decoder is None:
             return 0, None
 
         # Receive data into the decoder pre-allocated buffer
@@ -313,17 +311,32 @@ class NewsWrapper:
         self.timeout = time.time() + self.server.timeout
 
         self.decoder.process(bytes_recv)
-        for response in self.decoder:
-            if self.generation != generation:
-                break
-            with self.lock:
-                # Re-check under lock to avoid racing with hard_reset
-                if self.generation != generation or not self._response_queue:
+        if self.decoder:
+            for response in self.decoder:
+                if self.generation != generation:
                     break
-                article = self._response_queue.popleft()
-            if on_response:
-                on_response(response.status_code, response.message)
-            self.on_response(response, article)
+                with self.lock:
+                    # Re-check under lock to avoid racing with hard_reset
+                    if self.generation != generation or not self._response_queue:
+                        break
+                    article = self._response_queue.popleft()
+                if on_response:
+                    on_response(response.status_code, response.message)
+                self.on_response(response, article)
+
+            # After each response this socket may need to be made available to write the next request, read
+            # an in-flight response, or removed from socket monitoring to prevent hot looping.
+            if self.prepare_request():
+                if self.next_request:
+                    # Check before modify_socket locks on hot path
+                    if self.selector_events != EVENT_READ | EVENT_WRITE:
+                        sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
+                else:
+                    # Nothing to send but prepare_request result means there are further responses expected
+                    sabnzbd.Downloader.modify_socket(self, EVENT_READ)
+            else:
+                # No further work for this socket
+                sabnzbd.Downloader.remove_socket(self)
 
         # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
         # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
@@ -367,10 +380,13 @@ class NewsWrapper:
         server = self.server
 
         try:
-            self.prepare_request()
-
             # If available, try to send new command
-            if self.next_request:
+            if self.prepare_request():
+                # Nothing to send but already requests in-flight
+                if not self.next_request:
+                    sabnzbd.Downloader.modify_socket(self, EVENT_READ)
+                    return
+
                 if self.concurrent_requests.acquire(blocking=False):
                     command, article = self.next_request
                     self.next_request = None
@@ -387,19 +403,9 @@ class NewsWrapper:
                     # If this fails, it will propagate and throw a Downloader-error
                     self.nntp.sock.sendall(command)
                     self._response_queue.append(article)
-                else:
-                    # Concurrency limit reached
-                    sabnzbd.Downloader.modify_socket(self, EVENT_READ)
             else:
-                # Is it safe to shut down this socket?
-                if (
-                    not self.next_request
-                    and not self._response_queue
-                    and (not server.active or server.restart or not self.timeout or time.time() > self.timeout)
-                ):
-                    # Make socket available again
-                    sabnzbd.Downloader.remove_socket(self)
-
+                # No further work for this socket
+                sabnzbd.Downloader.remove_socket(self)
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
             sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True)

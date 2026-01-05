@@ -762,7 +762,7 @@ class Downloader(Thread):
         bytes_received: int = 0
         bytes_pending: int = 0
 
-        while nw.decoder and nw.generation == generation:
+        while nw.decoder is not None and nw.generation == generation:
             try:
                 n, bytes_pending = nw.read(nbytes=bytes_pending, generation=generation)
                 bytes_received += n
