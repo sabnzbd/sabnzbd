@@ -127,6 +127,10 @@ class Assembler(Thread):
         """Returns True if the assembler thread has at least one NzbFile it is assembling"""
         return any(self.queued_nzf)
 
+    def total_ready_bytes(self) -> int:
+        with self.ready_bytes_lock:
+            return sum(self.ready_bytes.values())
+
     def update_ready_bytes(self, nzf: NzbFile, delta: int) -> int:
         with self.ready_bytes_lock:
             cur = self.ready_bytes.get(nzf, 0) + delta
@@ -184,7 +188,7 @@ class Assembler(Thread):
 
     def delay(self) -> float:
         """Calculate how long if at all the downloader thread should sleep to allow the assembler to catch up"""
-        ready_total = sum(self.ready_bytes.values())
+        ready_total = self.total_ready_bytes()
         # Below trigger: no delay possible
         if ready_total <= self.delay_trigger:
             return 0

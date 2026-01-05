@@ -826,7 +826,7 @@ class Downloader(Thread):
                 logging.debug(
                     "Delayed - %d seconds - Assembler queue: %s",
                     logged_counter,
-                    to_units(sum(sabnzbd.Assembler.ready_bytes.values())),
+                    to_units(sabnzbd.Assembler.total_ready_bytes()),
                 )
                 next_log += 1.0
 
