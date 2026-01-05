@@ -117,7 +117,10 @@ class Assembler(Thread):
                 else 750_000 * self.max_queue_size
             ),
             (
-                int(self.cache_limit * 0.75)
+                min(
+                    int(self.cache_limit * ASSEMBLER_WRITE_THRESHOLD_FACTOR_DIRECT_WRITE),
+                    ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE * 4,
+                )
                 if self.direct_write
                 else min(self.append_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
             ),
