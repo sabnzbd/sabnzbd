@@ -157,50 +157,70 @@ class Assembler(Thread):
         article: Optional[Article] = None,
         override_trigger: bool = False,
     ) -> None:
-        # In direct write mode, track how many bytes we have ready to write
-        ready_bytes: int = 0
-        if (
-            article
-            and not (allow_non_contiguous or override_trigger)
-            and article.decoded
-            and not article.on_disk
-            and article.decoded_size
-        ):
-            ready_bytes = self.update_ready_bytes(nzf, article.decoded_size)
         if nzf is None:
             # post-proc
             self.queue.put(AssemblerTask(nzo))
-        else:
-            can_direct_write = self.direct_write and nzf.type == "yenc"
-            should_write = (override_trigger or article.lowest_partnum) and (
-                nzf.filename_checked and not nzf.import_finished
-            )
-            if (
-                # Always queue if done
-                file_done
-                # non-direct_write: queue if not already queued and at trigger
-                or (
-                    not can_direct_write
-                    and nzf.nzf_id not in self.queued_nzf
-                    and (should_write or nzf.contiguous_ready_bytes() >= self.append_trigger)
-                )
-                # direct_write: queue if not already queued, is a first article with filenames check,
-                # and forced by cache, or past the direct write trigger
-                or (
-                    can_direct_write
-                    and (should_write or allow_non_contiguous or ready_bytes >= self.direct_write_trigger)
-                    and nzf.nzf_id not in self.queued_nzf
-                )
-            ):
-                with self.queued_lock:
-                    if nzf.nzf_id in self.queued_nzf:
-                        # Recheck not already in the normal queue under lock
-                        return
-                    if allow_non_contiguous:
-                        self.queued_nzf_non_contiguous.add(nzf.nzf_id)
-                    else:
-                        self.queued_nzf.add(nzf.nzf_id)
-                    self.queue.put(AssemblerTask(nzo, nzf, file_done, allow_non_contiguous, can_direct_write))
+            return
+
+        # Track bytes pending being written for this nzf
+        ready_bytes = 0
+        if self.should_track_ready_bytes(article, allow_non_contiguous, override_trigger):
+            ready_bytes = self.update_ready_bytes(nzf, article.decoded_size)
+
+        if not self.should_queue_nzf(
+            nzf,
+            article_has_first_part=bool(article and article.lowest_partnum),
+            filename_checked=nzf.filename_checked,
+            import_finished=nzf.import_finished,
+            file_done=file_done,
+            allow_non_contiguous=allow_non_contiguous,
+            override_trigger=override_trigger,
+            ready_bytes=ready_bytes,
+        ):
+            return
+
+        with self.queued_lock:
+            # Recheck not already in the normal queue under lock
+            if nzf.nzf_id in self.queued_nzf:
+                return
+            if allow_non_contiguous:
+                self.queued_nzf_non_contiguous.add(nzf.nzf_id)
+            else:
+                self.queued_nzf.add(nzf.nzf_id)
+        can_direct_write = self.direct_write and nzf.type == "yenc"
+        self.queue.put(AssemblerTask(nzo, nzf, file_done, allow_non_contiguous, can_direct_write))
+
+    def should_queue_nzf(
+        self,
+        nzf: NzbFile,
+        *,
+        article_has_first_part: bool,
+        filename_checked: bool,
+        import_finished: bool,
+        file_done: bool,
+        allow_non_contiguous: bool,
+        override_trigger: bool,
+        ready_bytes: int,
+    ) -> bool:
+        # Always queue if done
+        if file_done:
+            return True
+        if nzf.nzf_id in self.queued_nzf:
+            return False
+        should_always_write = (override_trigger or article_has_first_part) and filename_checked and not import_finished
+        can_direct_write = self.direct_write and nzf.type == "yenc"
+        # Append
+        if not can_direct_write:
+            return should_always_write or nzf.contiguous_ready_bytes() >= self.append_trigger
+        # Direct Write
+        return should_always_write or allow_non_contiguous or ready_bytes >= self.direct_write_trigger
+
+    @staticmethod
+    def should_track_ready_bytes(
+        article: Optional[Article], allow_non_contiguous: bool, override_trigger: bool
+    ) -> bool:
+        """"""
+        return article and not allow_non_contiguous and not override_trigger and article.decoded_size
 
     def delay(self) -> float:
         """Calculate how long if at all the downloader thread should sleep to allow the assembler to catch up"""
