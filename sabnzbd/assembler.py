@@ -76,10 +76,10 @@ class Assembler(Thread):
         self.delay_trigger: int = 1
         self.queue: queue.Queue[AssemblerTask] = queue.Queue()
         self.queued_lock = threading.Lock()
-        self.queued_nzf: set[NzbFile] = set()
-        self.queued_nzf_non_contiguous: set[NzbFile] = set()
+        self.queued_nzf: set[str] = set()
+        self.queued_nzf_non_contiguous: set[str] = set()
         self.ready_bytes_lock = threading.Lock()
-        self.ready_bytes: dict[NzbFile, int] = dict()
+        self.ready_bytes: dict[str, int] = dict()
 
     def stop(self):
         self.queue.put(AssemblerTask())
@@ -133,17 +133,17 @@ class Assembler(Thread):
 
     def update_ready_bytes(self, nzf: NzbFile, delta: int) -> int:
         with self.ready_bytes_lock:
-            cur = self.ready_bytes.get(nzf, 0) + delta
+            cur = self.ready_bytes.get(nzf.nzf_id, 0) + delta
             if cur <= 0:
-                self.ready_bytes.pop(nzf, None)
+                self.ready_bytes.pop(nzf.nzf_id, None)
             else:
-                self.ready_bytes[nzf] = cur
+                self.ready_bytes[nzf.nzf_id] = cur
             return cur
 
     def clear_ready_bytes(self, *nzfs: NzbFile) -> None:
         with self.ready_bytes_lock:
             for nzf in nzfs:
-                self.ready_bytes.pop(nzf, None)
+                self.ready_bytes.pop(nzf.nzf_id, None)
 
     def process(
         self,
@@ -169,7 +169,7 @@ class Assembler(Thread):
                 # non-direct_write: queue if not already queued and at trigger
                 or (
                     not can_direct_write
-                    and nzf not in self.queued_nzf
+                    and nzf.nzf_id not in self.queued_nzf
                     and (should_write or nzf.contiguous_ready_bytes() >= self.append_trigger)
                 )
                 # direct_write: queue if not already queued, is a first article with filenames check,
@@ -177,13 +177,13 @@ class Assembler(Thread):
                 or (
                     can_direct_write
                     and (should_write or allow_non_contiguous or ready_bytes >= self.direct_write_trigger)
-                    and nzf not in self.queued_nzf
+                    and nzf.nzf_id not in self.queued_nzf
                 )
             ):
                 with self.queued_lock:
                     if allow_non_contiguous:
-                        self.queued_nzf_non_contiguous.add(nzf)
-                    self.queued_nzf.add(nzf)
+                        self.queued_nzf_non_contiguous.add(nzf.nzf_id)
+                    self.queued_nzf.add(nzf.nzf_id)
                     self.queue.put(AssemblerTask(nzo, nzf, file_done, allow_non_contiguous, can_direct_write))
 
     def delay(self) -> float:
@@ -263,9 +263,9 @@ class Assembler(Thread):
                         break
                     finally:
                         with self.queued_lock:
-                            self.queued_nzf.discard(nzf)
+                            self.queued_nzf.discard(nzf.nzf_id)
                             if allow_non_contiguous:
-                                self.queued_nzf_non_contiguous.discard(nzf)
+                                self.queued_nzf_non_contiguous.discard(nzf.nzf_id)
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
                 sabnzbd.PostProcessor.process(nzo)
