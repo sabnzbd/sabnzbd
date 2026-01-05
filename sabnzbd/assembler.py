@@ -159,23 +159,21 @@ class Assembler(Thread):
             # post-proc
             self.queue.put(AssemblerTask(nzo))
         else:
-            direct_write = self.direct_write and self.direct_write_trigger > 1 and nzf.type == "yenc"
+            can_direct_write = self.direct_write and nzf.type == "yenc"
+            should_write = article.lowest_partnum and nzf.filename_checked and not nzf.import_finished
             if (
                 # Always queue if done
                 file_done
                 # non-direct_write: queue if not already queued and at trigger
                 or (
-                    not direct_write
+                    not can_direct_write
                     and nzf not in self.queued_nzf
-                    and (
-                        (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
-                        or nzf.contiguous_ready_bytes() >= self.append_trigger_bytes
-                    )
+                    and (should_write or nzf.contiguous_ready_bytes() >= self.append_trigger)
                 )
                 # direct_write: queue if not already queued, and forced by cache or past the direct write trigger
                 or (
-                    direct_write
-                    and (force or ready_bytes >= self.direct_write_trigger_bytes)
+                    can_direct_write
+                    and (should_write or force or ready_bytes >= self.direct_write_trigger)
                     and nzf not in self.queued_nzf
                 )
             ):
@@ -183,7 +181,7 @@ class Assembler(Thread):
                     if force:
                         self.queued_nzf_forced.add(nzf)
                     self.queued_nzf.add(nzf)
-                    self.queue.put(AssemblerTask(nzo, nzf, file_done, force, direct_write))
+                    self.queue.put(AssemblerTask(nzo, nzf, file_done, force, can_direct_write))
 
     def delay(self) -> float:
         """Calculate how long if at all the downloader thread should sleep to allow the assembler to catch up"""
