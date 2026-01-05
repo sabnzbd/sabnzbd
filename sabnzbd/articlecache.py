@@ -26,6 +26,7 @@ import time
 from typing import Collection, Optional
 
 import sabnzbd
+import sabnzbd.cfg as cfg
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
     GIGI,
@@ -46,7 +47,7 @@ class ArticleCache(threading.Thread):
     def __init__(self):
         super().__init__()
         self.shutdown = False
-        self.__direct_write: bool = bool(sabnzbd.cfg.direct_write())
+        self.__direct_write: bool = bool(cfg.direct_write())
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
@@ -62,7 +63,7 @@ class ArticleCache(threading.Thread):
             self.__cache_upper_limit = 4 * GIGI
 
     def change_direct_write(self, direct_write: bool) -> None:
-        self.__direct_write = direct_write
+        self.__direct_write = direct_write and self.__cache_limit > 1
 
     def stop(self):
         self.shutdown = True
@@ -127,6 +128,7 @@ class ArticleCache(threading.Thread):
         self.__non_contiguous_trigger = self.__cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE
         if self.__cache_limit:
             logging.debug("Article cache trigger:%s", to_units(self.__non_contiguous_trigger))
+        self.change_direct_write(cfg.direct_write())
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int) -> bool:
