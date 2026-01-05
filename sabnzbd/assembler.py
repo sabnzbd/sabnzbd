@@ -47,6 +47,8 @@ from sabnzbd.constants import (
     ASSEMBLER_WRITE_THRESHOLD_APPEND,
     ASSEMBLER_WRITE_THRESHOLD_DIRECT_WRITE,
     ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
+    SOFT_ASSEMBLER_QUEUE_LIMIT,
+    ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -66,10 +68,12 @@ class Assembler(Thread):
         super().__init__()
         self.max_queue_size: int = cfg.assembler_max_queue_size()
         self.direct_write: bool = cfg.direct_write()
+        self.cache_limit: int = 0
         # Contiguous bytes required to trigger append writes
-        self.append_trigger_bytes: int = 1
+        self.append_trigger: int = 1
         # Total bytes required to trigger direct-write assembles
-        self.direct_write_trigger_bytes: int = 1
+        self.direct_write_trigger: int = 1
+        self.delay_trigger: int = 1
         self.queue: queue.Queue[AssemblerTask] = queue.Queue()
         self.queued_lock = threading.Lock()
         self.queued_nzf: set[NzbFile] = set()
@@ -82,22 +86,47 @@ class Assembler(Thread):
 
     def new_limit(self, limit: int):
         """Called when cache limit changes"""
-        self.append_trigger_bytes = max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_APPEND))
-        self.direct_write_trigger_bytes = max(
+        self.cache_limit = limit
+        self.append_trigger = max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_APPEND))
+        self.direct_write_trigger = max(
             1,
             min(
                 max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_DIRECT_WRITE)),
                 ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
             ),
         )
+        self.calculate_delay_trigger()
+        self.change_direct_write(cfg.direct_write())
         logging.debug(
-            "Assembler trigger append=%s direct=%s",
-            to_units(self.append_trigger_bytes),
-            to_units(self.direct_write_trigger_bytes),
+            "Assembler trigger append=%s, direct=%s, delay=%s",
+            to_units(self.append_trigger),
+            to_units(self.direct_write_trigger),
+            to_units(self.delay_trigger),
         )
 
     def change_direct_write(self, direct_write: bool) -> None:
-        self.direct_write = direct_write
+        self.direct_write = direct_write and self.direct_write_trigger > 1
+        self.calculate_delay_trigger()
+
+    def calculate_delay_trigger(self):
+        """Point at which downloader should start being delayed, recalculated when cache limit or direct write changes"""
+        self.delay_trigger = max(
+            (
+                750_000 * self.max_queue_size * ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE
+                if self.direct_write
+                else 750_000 * self.max_queue_size
+            ),
+            (
+                self.direct_write_trigger * ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE
+                if self.direct_write
+                else self.append_trigger * self.max_queue_size
+            ),
+            self.cache_limit * 0.75,
+        )
+
+    def is_busy(self) -> bool:
+        """Returns True if the assembler thread has at least one NzbFile it is assembling"""
+        return any(self.queued_nzf)
 
     def update_ready_bytes(self, nzf: NzbFile, delta: int) -> int:
         with self.ready_bytes_lock:
@@ -130,7 +159,7 @@ class Assembler(Thread):
             # post-proc
             self.queue.put(AssemblerTask(nzo))
         else:
-            direct_write = self.direct_write and self.direct_write_trigger_bytes > 1 and nzf.type == "yenc"
+            direct_write = self.direct_write and self.direct_write_trigger > 1 and nzf.type == "yenc"
             if (
                 # Always queue if done
                 file_done
@@ -156,8 +185,24 @@ class Assembler(Thread):
                     self.queued_nzf.add(nzf)
                     self.queue.put(AssemblerTask(nzo, nzf, file_done, force, direct_write))
 
-    def queue_level(self) -> float:
-        return self.queue.qsize() / self.max_queue_size
+    def delay(self) -> float:
+        """Calculate how long if at all the downloader thread should sleep to allow the assembler to catch up"""
+        ready_total = sum(self.ready_bytes.values())
+        # Below trigger: no delay possible
+        if ready_total <= self.delay_trigger:
+            return 0
+        pressure = (ready_total - self.delay_trigger) / max(1.0, self.cache_limit - self.delay_trigger)
+        if pressure <= SOFT_ASSEMBLER_QUEUE_LIMIT:
+            return 0
+        # 50-100%: 0-0.25 seconds, capped at 0.15
+        sleep = min((pressure - SOFT_ASSEMBLER_QUEUE_LIMIT) / 2, 0.15)
+        logging.debug(
+            "trigger: %s, bytes: %s, raw_pressure: %f, sleep: %f",
+            to_units(self.delay_trigger),
+            to_units(ready_total),
+            sleep,
+        )
+        return max(0.001, sleep)
 
     def run(self):
         while 1:

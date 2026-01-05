@@ -37,9 +37,8 @@ from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWN
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue
+from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue, to_units
 from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
-from sabnzbd.constants import SOFT_ASSEMBLER_QUEUE_LIMIT
 
 
 # Timeout penalty in minutes for each cause
@@ -804,27 +803,32 @@ class Downloader(Thread):
 
     def check_assembler_levels(self):
         """Check the Assembler queue to see if we need to delay, depending on queue size"""
-        if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_ASSEMBLER_QUEUE_LIMIT:
-            time.sleep(min((assembler_level - SOFT_ASSEMBLER_QUEUE_LIMIT) / 4, 0.15))
-            sabnzbd.BPSMeter.delayed_assembler += 1
-            logged_counter = 0
+        if (delay := sabnzbd.Assembler.delay()) <= 0:
+            return
+        time.sleep(delay)
+        sabnzbd.BPSMeter.delayed_assembler += 1
+        start_time = time.monotonic()
+        deadline = start_time + 5
+        next_log = start_time + 1.0
+        logged_counter = 0
 
-            while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
-                # Only log/update once every second, to not waste any CPU-cycles
-                if not logged_counter % 10:
-                    # Make sure the BPS-meter is updated
-                    sabnzbd.BPSMeter.update()
-
-                    # Update who is delaying us
-                    logging.debug(
-                        "Delayed - %d seconds - Assembler queue: %d",
-                        logged_counter / 10,
-                        sabnzbd.Assembler.queue.qsize(),
-                    )
-
-                # Wait and update the queue sizes
-                time.sleep(0.1)
+        while not self.shutdown and sabnzbd.Assembler.is_busy() and time.monotonic() < deadline:
+            if (delay := sabnzbd.Assembler.delay()) <= 0:
+                break
+            # Sleep for the current delay (but cap to remaining time)
+            sleep_time = max(0.001, min(delay, deadline - time.monotonic()))
+            time.sleep(sleep_time)
+            # Make sure the BPS-meter is updated
+            sabnzbd.BPSMeter.update()
+            # Only log/update once every second
+            if time.monotonic() >= next_log:
                 logged_counter += 1
+                logging.debug(
+                    "Delayed - %d seconds - Assembler queue: %s",
+                    logged_counter,
+                    to_units(sum(sabnzbd.Assembler.ready_bytes.values())),
+                )
+                next_log += 1.0
 
     @synchronized(DOWNLOADER_LOCK)
     def finish_connect_nw(self, nw: NewsWrapper, response: sabctools.NNTPResponse) -> bool:
