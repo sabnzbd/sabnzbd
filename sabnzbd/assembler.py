@@ -49,7 +49,7 @@ from sabnzbd.constants import (
     ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
     SOFT_ASSEMBLER_QUEUE_LIMIT,
     ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE,
-    ARTICLE_CACHE_UPPER_PERCENTAGE,
+    ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -119,7 +119,7 @@ class Assembler(Thread):
                     else 750_000 * self.max_queue_size
                 ),
                 (
-                    self.cache_limit * ARTICLE_CACHE_UPPER_PERCENTAGE
+                    self.cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE
                     if self.direct_write
                     else min(self.append_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
                 ),

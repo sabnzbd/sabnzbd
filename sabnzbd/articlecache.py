@@ -30,8 +30,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
     GIGI,
     ANFO,
-    ARTICLE_CACHE_UPPER_PERCENTAGE,
-    ARTICLE_CACHE_LOWER_PERCENTAGE,
+    ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
 )
 from sabnzbd.nzb import Article, NzbFile
 from sabnzbd.misc import to_units
@@ -54,8 +53,7 @@ class ArticleCache(threading.Thread):
         self.__article_table: dict[Article, bytearray] = {}  # Dict of buffered articles
         self.__cache_size_cv: threading.Condition = threading.Condition(ARTICLE_COUNTER_LOCK)
         self.__last_flush: float = 0
-        self.__cache_size_upper: int = 0  # Force flush trigger
-        self.__cache_size_lower: int = 0  # Resume normal behaviour once cache recovers after force flush
+        self.__non_contiguous_trigger: int = 0  # Force flush trigger
 
         # On 32 bit we only allow the user to set 1GB
         # For 64 bit we allow up to 4GB, in case somebody wants that
@@ -81,7 +79,9 @@ class ArticleCache(threading.Thread):
             self.__direct_write
             and self.__cache_limit
             and (
-                self.__cache_size > self.__cache_size_upper or self.__cache_size and sabnzbd.Downloader.no_active_jobs()
+                self.__cache_size > self.__non_contiguous_trigger
+                or self.__cache_size
+                and sabnzbd.Downloader.no_active_jobs()
             )
         )
 
@@ -124,14 +124,9 @@ class ArticleCache(threading.Thread):
             self.__cache_limit = self.__cache_upper_limit
         else:
             self.__cache_limit = min(limit, self.__cache_upper_limit)
-        self.__cache_size_upper = self.__cache_limit * ARTICLE_CACHE_UPPER_PERCENTAGE
-        self.__cache_size_lower = self.__cache_limit * ARTICLE_CACHE_LOWER_PERCENTAGE
+        self.__non_contiguous_trigger = self.__cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE
         if self.__cache_limit:
-            logging.debug(
-                "Article cache trigger upper:%s lower:%s",
-                to_units(self.__cache_size_upper),
-                to_units(self.__cache_size_lower),
-            )
+            logging.debug("Article cache trigger:%s", to_units(self.__non_contiguous_trigger))
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int) -> bool:
