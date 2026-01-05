@@ -59,7 +59,7 @@ class AssemblerTask(NamedTuple):
     nzo: Optional[NzbObject] = None
     nzf: Optional[NzbFile] = None
     file_done: bool = False
-    force: bool = False
+    allow_non_contiguous: bool = False
     direct_write: bool = False
 
 
@@ -77,7 +77,7 @@ class Assembler(Thread):
         self.queue: queue.Queue[AssemblerTask] = queue.Queue()
         self.queued_lock = threading.Lock()
         self.queued_nzf: set[NzbFile] = set()
-        self.queued_nzf_forced: set[NzbFile] = set()
+        self.queued_nzf_non_contiguous: set[NzbFile] = set()
         self.ready_bytes_lock = threading.Lock()
         self.ready_bytes: dict[NzbFile, int] = dict()
 
@@ -147,7 +147,7 @@ class Assembler(Thread):
         nzo: NzbObject = None,
         nzf: Optional[NzbFile] = None,
         file_done: bool = False,
-        force: bool = False,
+        allow_non_contiguous: bool = False,
         article: Optional[Article] = None,
     ) -> None:
         # In direct write mode, track how many bytes we have ready to write
@@ -170,18 +170,19 @@ class Assembler(Thread):
                     and nzf not in self.queued_nzf
                     and (should_write or nzf.contiguous_ready_bytes() >= self.append_trigger)
                 )
-                # direct_write: queue if not already queued, and forced by cache or past the direct write trigger
+                # direct_write: queue if not already queued, is a first article with filenames check,
+                # and forced by cache, or past the direct write trigger
                 or (
                     can_direct_write
-                    and (should_write or force or ready_bytes >= self.direct_write_trigger)
+                    and (should_write or allow_non_contiguous or ready_bytes >= self.direct_write_trigger)
                     and nzf not in self.queued_nzf
                 )
             ):
                 with self.queued_lock:
-                    if force:
-                        self.queued_nzf_forced.add(nzf)
+                    if allow_non_contiguous:
+                        self.queued_nzf_non_contiguous.add(nzf)
                     self.queued_nzf.add(nzf)
-                    self.queue.put(AssemblerTask(nzo, nzf, file_done, force, can_direct_write))
+                    self.queue.put(AssemblerTask(nzo, nzf, file_done, allow_non_contiguous, can_direct_write))
 
     def delay(self) -> float:
         """Calculate how long if at all the downloader thread should sleep to allow the assembler to catch up"""
@@ -207,7 +208,7 @@ class Assembler(Thread):
             # Set NzbObject and NzbFile objects to None so references
             # from this thread do not keep the objects alive (see #1628)
             nzo = nzf = None
-            nzo, nzf, file_done, force, direct_write = self.queue.get()
+            nzo, nzf, file_done, allow_non_contiguous, direct_write = self.queue.get()
             if not nzo:
                 logging.debug("Shutting down assembler")
                 break
@@ -221,7 +222,7 @@ class Assembler(Thread):
                 if filepath := nzf.prepare_filepath():
                     try:
                         logging.debug("Decoding part of %s", filepath)
-                        self.assemble(nzo, nzf, file_done, force, direct_write)
+                        self.assemble(nzo, nzf, file_done, allow_non_contiguous, direct_write)
 
                         # Continue after partly written data
                         if not file_done:
@@ -267,8 +268,8 @@ class Assembler(Thread):
                     finally:
                         with self.queued_lock:
                             self.queued_nzf.discard(nzf)
-                            if force:
-                                self.queued_nzf_forced.discard(nzf)
+                            if allow_non_contiguous:
+                                self.queued_nzf_non_contiguous.discard(nzf)
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
                 sabnzbd.PostProcessor.process(nzo)
@@ -310,7 +311,7 @@ class Assembler(Thread):
             sabnzbd.emailer.diskfull_mail()
 
     @staticmethod
-    def assemble(nzo: NzbObject, nzf: NzbFile, file_done: bool, force: bool, direct_write: bool) -> None:
+    def assemble(nzo: NzbObject, nzf: NzbFile, file_done: bool, allow_non_contiguous: bool, direct_write: bool) -> None:
         """Assemble a NZF from its table of articles
         1) Partial write: write what we have
         2) Nothing written before: write all
@@ -332,10 +333,10 @@ class Assembler(Thread):
                 if nzo.status is Status.DELETED:
                     break
 
-                # Force is when the cache forces the assembler to write all articles, even if it leaves gaps.
+                # allow_non_contiguous is when the cache forces the assembler to write all articles, even if it leaves gaps.
                 # In most cases we can stop at the first article that has not been tried, because they are requested in order.
                 # However, if we are paused then always consider the whole decodetable to ensure everything possible is written.
-                if force and not article.tries and not downloader.paused:
+                if allow_non_contiguous and not article.tries and not downloader.paused:
                     break
 
                 # Skip already written articles
@@ -355,7 +356,7 @@ class Assembler(Thread):
                     if file_done:
                         continue
                     # We reach an article that was not decoded
-                    if force:
+                    if allow_non_contiguous:
                         skipped = True
                         continue
                     break
@@ -365,7 +366,7 @@ class Assembler(Thread):
                 if not data:
                     if file_done:
                         continue
-                    if force:
+                    if allow_non_contiguous:
                         skipped = True
                         continue
                     else:
@@ -377,8 +378,8 @@ class Assembler(Thread):
                     fd, offset, direct_write = Assembler.open(
                         nzf, direct_write and article.can_direct_write, article.file_size
                     )
-                    if not direct_write and force:
-                        # Can only be force if we wanted direct_write file_done will always be queued separately
+                    if not direct_write and allow_non_contiguous:
+                        # Can only be allow_non_contiguous if we wanted direct_write, file_done will always be queued separately
                         break
 
                 if direct_write and article.can_direct_write:

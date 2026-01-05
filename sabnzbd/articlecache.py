@@ -94,7 +94,7 @@ class ArticleCache(threading.Thread):
             forced.add(article.nzf)
             if time.monotonic() - self.__last_flush > 1:
                 logging.debug("Forcing write of %s", article.nzf.filepath)
-            sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, force=True)
+            sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, allow_non_contiguous=True)
         self.__last_flush = time.monotonic()
 
     def run(self):
@@ -233,7 +233,7 @@ class ArticleCache(threading.Thread):
         if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
             with article.nzf.nzo.lock:
                 article.nzf.nzo.saved_articles.discard(article)
-            sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, force=True)
+            sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, allow_non_contiguous=True)
             time.sleep(0.05)
             return
 

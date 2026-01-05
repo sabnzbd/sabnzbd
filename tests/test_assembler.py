@@ -131,7 +131,7 @@ class TestAssembler:
             ],
         )
         assert self.nzf.contiguous_offset() == 0
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_direct_write_aborted_to_append(self, assembler):
@@ -148,7 +148,7 @@ class TestAssembler:
             ],
         )
         # [0] direct_write, [1] append, [2] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_direct_append_direct_append(self, assembler):
@@ -167,7 +167,7 @@ class TestAssembler:
             ],
         )
         # [0] direct_write, [1] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=True)
         assert assembler.call_count == 2
         assert self.nzf.contiguous_offset() == 10
         # [3] direct_write
@@ -179,7 +179,7 @@ class TestAssembler:
         # [3] append
         article = self.nzf.decodetable[2]
         article.decoded = True
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         assert assembler.call_count == 4
         self._assert_expected_content(self.nzf, expected)
 
@@ -196,11 +196,11 @@ class TestAssembler:
             ],
         )
         # [0] direct_write, [1] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=True)
         assert self.nzf.decodetable[2].on_disk is False
         self.nzf.decodetable[2].decoded = True
         # [2] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_append_direct_second_attempt(self, assembler):
@@ -213,10 +213,10 @@ class TestAssembler:
             ],
         )
         # [0] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=False)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=False)
         self.nzf.decodetable[1].decoded = True
         # [1] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_append_only(self, assembler):
@@ -228,7 +228,7 @@ class TestAssembler:
                 self._make_article(self.nzf, offset=0, data=bytearray(b"efg"), can_direct_write=False),
             ],
         )
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_append_second_attempt(self, assembler):
@@ -241,11 +241,11 @@ class TestAssembler:
             ],
         )
         # [0] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=False)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=False)
         assert self.nzf.assembled is False
         self.nzf.decodetable[1].decoded = True
         # [1] append
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         self._assert_expected_content(self.nzf, expected)
 
     def test_assemble_append_first_not_decoded(self, assembler):
@@ -258,10 +258,10 @@ class TestAssembler:
             ],
         )
         # Nothing written
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=False)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=False)
         assert not os.path.exists(self.nzf.filepath)
         self.nzf.decodetable[0].decoded = True
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         self._assert_expected_content(self.nzf, expected)
 
     def test_force_append(self, assembler):
@@ -277,13 +277,13 @@ class TestAssembler:
             ],
         )
         # [0] direct, [2] direct, [4], direct
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=True, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=True, direct_write=True)
         assert assembler.call_count == 3
         assert self.nzf.assembled is False
         # [1] append, [3], append
         self.nzf.decodetable[1].decoded = True
         self.nzf.decodetable[3].decoded = True
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=False)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         assert assembler.call_count == 5
         self._assert_expected_content(self.nzf, expected)
 
@@ -298,18 +298,18 @@ class TestAssembler:
             ],
         )
         # [0] direct
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=True)
         assert assembler.call_count == 1
         assert self.nzf.assembler_next_index == 1
         # Client restart
         self.nzf.assembler_next_index = 0
         # force: [2] direct
         self.nzf.decodetable[2].decoded = True
-        Assembler.assemble(self.nzo, self.nzf, file_done=False, force=True, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=True, direct_write=True)
         assert assembler.call_count == 2
         assert self.nzf.assembler_next_index == 1
         # [1] direct
         self.nzf.decodetable[1].decoded = True
-        Assembler.assemble(self.nzo, self.nzf, file_done=True, force=False, direct_write=True)
+        Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         assert assembler.call_count == 3
         self._assert_expected_content(self.nzf, expected)
