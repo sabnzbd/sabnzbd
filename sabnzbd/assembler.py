@@ -117,11 +117,10 @@ class Assembler(Thread):
                 else 750_000 * self.max_queue_size
             ),
             (
-                self.direct_write_trigger * ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE
+                min(self.direct_write_trigger * ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE, int(self.cache_limit * 0.75))
                 if self.direct_write
-                else self.append_trigger * self.max_queue_size
+                else min(self.append_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
             ),
-            self.cache_limit * 0.75,
         )
 
     def is_busy(self) -> bool:
@@ -194,12 +193,6 @@ class Assembler(Thread):
             return 0
         # 50-100%: 0-0.25 seconds, capped at 0.15
         sleep = min((pressure - SOFT_ASSEMBLER_QUEUE_LIMIT) / 2, 0.15)
-        logging.debug(
-            "trigger: %s, bytes: %s, raw_pressure: %f, sleep: %f",
-            to_units(self.delay_trigger),
-            to_units(ready_total),
-            sleep,
-        )
         return max(0.001, sleep)
 
     def run(self):
