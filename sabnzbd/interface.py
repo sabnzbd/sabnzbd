@@ -1948,7 +1948,7 @@ def GetRssLog(feed):
             "url": entry.link,
             "rule": entry.rule,
             "title": entry.title,
-            "skip": "*" if entry.status.endswith("*") else "",
+            "skip": "*" if entry.is_starred else "",
             "cat": entry.cat,
             "size": entry.size,
             "infourl": entry.infourl,
@@ -1992,11 +1992,11 @@ def GetRssLog(feed):
 
     good, bad, done = ([], [], [])
     for job in sabnzbd.RSSReader.store.rss_show_result(feed):
-        if job.status[0] == "G":
+        if job.is_good:
             good.append(make_item(job))
-        elif job.status[0] == "B":
+        elif job.is_bad:
             bad.append(make_item(job))
-        elif job.status == "D":
+        elif job.is_downloaded:
             done.append(make_item(job))
 
     return done, good, bad

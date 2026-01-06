@@ -39,7 +39,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.misc import caller_name, opts_to_pp, to_units, bool_conv, match_str
 from sabnzbd.filesystem import remove_file, clip_path
-from sabnzbd.rssmodels import ResolvedEntry
+from sabnzbd.rssmodels import ResolvedEntry, RSSState
 
 DB_LOCK = threading.Lock()
 
@@ -221,15 +221,13 @@ class HistoryDB:
             CREATE TABLE rss (
                 "id" INTEGER PRIMARY KEY,
                 "feed" TEXT NOT NULL,
-                "status" TEXT NOT NULL
-                         CHECK (status IN (
+                "state" TEXT NOT NULL
+                         CHECK (state IN (
+                         'N',   -- New
                          'G',  -- Good
                          'B',  -- Bad
                          'D',  -- Downloaded
-                         'X',  -- Expired
-                         'G*', -- Good Initial
-                         'D-', -- Downloaded Hidden
-                         'N'   -- New
+                         'X'  -- Expired
                          )),
                 "title" TEXT NOT NULL,
                 "url" TEXT NOT NULL,
@@ -244,15 +242,17 @@ class HistoryDB:
                 "size" INTEGER,
                 "rule" INTEGER,
                 "age" INTEGER NOT NULL,
-                "downloaded_at" INTEGER,
                 "created_at" INTEGER NOT NULL,
+                "downloaded_at" INTEGER,
+                "archived_at" INTEGER,
                 UNIQUE (feed, url)
             );
             """)
             and self.execute("CREATE INDEX idx_rss_feed ON rss(feed)")
-            and self.execute("CREATE INDEX idx_rss_feed_status ON rss(feed, status)")
-            and self.execute("CREATE INDEX idx_rss_feed_status_downloaded_at ON rss(feed, status, downloaded_at DESC)")
-            and self.execute("CREATE INDEX idx_rss_feed_status_age ON rss(feed, status, age DESC)")
+            and self.execute("CREATE INDEX idx_rss_feed_state ON rss(feed, state)")
+            and self.execute(
+                "CREATE INDEX idx_rss_feed_state_downloaded_at_age ON rss(feed, state, downloaded_at DESC, age DESC)"
+            )
         )
 
     def import_rss_records(self):
@@ -285,7 +285,7 @@ class HistoryDB:
                         script=job.get("script", 0),
                         priority=job.get("prio", 0),
                         rule=job.get("rule", 0),
-                        status=job.get("status"),
+                        state=RSSState(job.get("status", "")[:1]),
                         downloaded_at=(
                             # time.struct_time: convert to local time then to UTC
                             datetime.datetime.fromtimestamp(
@@ -586,7 +586,7 @@ class HistoryDB:
         self,
         feed: Optional[str] = None,
         search: Optional[str] = None,
-        statuses: Optional[list[str]] = None,
+        states: Optional[list[RSSState]] = None,
     ) -> Generator[ResolvedEntry, Any, None]:
         """Return records for specified jobs"""
         command_args = []
@@ -600,16 +600,16 @@ class HistoryDB:
             where_clauses.append("feed = ?")
             command_args.append(feed)
 
-        if statuses:
-            placeholders = " OR ".join(["status = ?"] * len(statuses))
+        if states:
+            placeholders = " OR ".join(["state = ?"] * len(states))
             where_clauses.append(f"({placeholders})")
-            command_args.extend(statuses)
+            command_args.extend(states)
 
         # Combine all WHERE clauses
         where_sql = " AND ".join(where_clauses)
 
         # Final query
-        cmd = f"SELECT * FROM rss WHERE {where_sql} ORDER BY COALESCE(downloaded_at, age) DESC"
+        cmd = f"SELECT * FROM rss WHERE {where_sql} ORDER BY downloaded_at DESC, age DESC"
 
         if self.execute(cmd, command_args):
             for item in self.cursor:
@@ -630,12 +630,12 @@ class HistoryDB:
         self.execute(
             """
             INSERT INTO rss (
-                feed, status, title, url, infourl, category, orgcat, pp, script, priority,
-                season, episode, size, rule, age, downloaded_at, created_at
+                feed, state, title, url, infourl, category, orgcat, pp, script, priority,
+                season, episode, size, rule, age, created_at, downloaded_at, archived_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(feed, url) DO UPDATE SET
-                status        = excluded.status,
+                state         = excluded.state,
                 title         = excluded.title,
                 infourl       = excluded.infourl,
                 category      = excluded.category,
@@ -648,7 +648,8 @@ class HistoryDB:
                 size          = excluded.size,
                 rule          = excluded.rule,
                 age           = excluded.age,
-                downloaded_at = COALESCE(excluded.downloaded_at, rss.downloaded_at);
+                downloaded_at = COALESCE(excluded.downloaded_at, rss.downloaded_at),
+                archived_at = COALESCE(excluded.archived_at, rss.archived_at)
             """,
             t,
         )
@@ -658,7 +659,7 @@ class HistoryDB:
         """Collects all the information needed for the database"""
         return (
             entry.feed,
-            entry.status,
+            entry.state,
             entry.title,
             entry.link,
             entry.infourl,
@@ -672,8 +673,9 @@ class HistoryDB:
             entry.size,
             entry.rule,
             int(entry.age.timestamp()),
+            int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
             int(entry.downloaded_at.timestamp()) if entry.downloaded_at else None,
-            int(time.time()),
+            int(entry.archived_at.timestamp()) if entry.archived_at else None,
         )
 
     def rss_delete_feed(self, feed: str):
@@ -689,10 +691,12 @@ class HistoryDB:
             """
             SELECT * 
             FROM rss 
-            WHERE feed = ? AND substr(status, 1, 1) IN ('G', 'B', 'D')
-            ORDER BY COALESCE(downloaded_at, age) DESC
+            WHERE feed = ? 
+            AND state IN (?, ?, ?)
+            AND archived_at IS NULL
+            ORDER BY downloaded_at DESC, age DESC
             """,
-            (feed,),
+            (feed, RSSState.GOOD, RSSState.BAD, RSSState.DOWNLOADED),
         ):
             for row in self.cursor:
                 yield ResolvedEntry.from_sqlite(row)
@@ -701,8 +705,9 @@ class HistoryDB:
         if not feed or not url:
             return
         self.execute(
-            "UPDATE rss SET status = 'D', downloaded_at = ? WHERE feed = ? AND url = ?",
+            "UPDATE rss SET state = ?, downloaded_at = ? WHERE feed = ? AND url = ?",
             (
+                RSSState.DOWNLOADED,
                 int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
                 feed,
                 url,
@@ -715,7 +720,14 @@ class HistoryDB:
 
     def rss_clear_downloaded(self, feed: str):
         """Mark downloaded jobs so that they won't be displayed any more."""
-        self.execute("UPDATE rss SET status = 'D-' WHERE feed = ? AND status = 'D'", (feed,))
+        self.execute(
+            "UPDATE rss SET archived_at = ? WHERE feed = ? AND state = ?",
+            (
+                int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+                feed,
+                RSSState.DOWNLOADED,
+            ),
+        )
 
     def rss_is_duplicate(self, entry: ResolvedEntry) -> bool:
         """
@@ -751,12 +763,17 @@ class HistoryDB:
             self.execute(
                 """
                 UPDATE rss
-                SET status = 'X'
+                SET state = ?
                 WHERE feed = ?
-                  AND substr(status,1,1) IN ('G','B')
+                  AND state IN (?, ?)
                   AND url NOT IN (SELECT url FROM temp_urls)
             """,
-                (feed,),
+                (
+                    RSSState.EXPIRED,
+                    feed,
+                    RSSState.GOOD,
+                    RSSState.BAD,
+                ),
             )
 
             # Drop temp table
@@ -767,10 +784,14 @@ class HistoryDB:
             """
             SELECT url FROM rss
             WHERE feed = ?
-              AND status = 'X'
+              AND state = ?
               AND age < ?
         """,
-            (feed, limit),
+            (
+                feed,
+                RSSState.EXPIRED,
+                limit,
+            ),
         ):
             return
 

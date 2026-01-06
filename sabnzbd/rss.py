@@ -52,6 +52,7 @@ from sabnzbd.rssmodels import (
     normalise_str_or_none,
     normalise_priority,
     first_not_none,
+    RSSState,
 )
 
 import feedparser
@@ -599,7 +600,9 @@ class RSSReader:
 
         Returns a tuple (evaluation, should_download, star) or None if the entry should be skipped.
         """
-        if entry.status not in "NGB" and not (entry.status == "X" and readout):
+        if entry.state not in (RSSState.NEW, RSSState.GOOD, RSSState.BAD) and not (
+            entry.state == RSSState.EXPIRED and readout
+        ):
             return None, None, None
 
         # Match this title against all filters
@@ -612,17 +615,16 @@ class RSSReader:
             episode=entry.episode,
         )
 
-        is_starred = entry.status.endswith("*")
-        star = first or is_starred
-        should_download = (download and not first and not is_starred) or force
+        star = first or entry.is_starred
+        should_download = (download and not first and not entry.is_starred) or force
 
         return evaluation, should_download, star
 
     def enqueue_download(self, update: ResolvedEntry) -> None:
-        if not update.status == "D":
+        if not update.state == RSSState.DOWNLOADED:
             return
         if not update.downloaded_at:
-            self.store.rss_flag_downloaded(update)
+            self.store.rss_flag_downloaded(update.feed, update.link)
 
         nzbname = None if special_rss_site(update.link) else update.title
 
@@ -651,13 +653,11 @@ class RSSReader:
         Returns True if the entry was queued for download.
         """
         if should_download and evaluation.matched:
-            status = "D"
-        elif is_starred and evaluation.matched:
-            status = "G*"
+            state = RSSState.DOWNLOADED
         elif evaluation.matched:
-            status = "G"
+            state = RSSState.GOOD
         else:
-            status = "B"
+            state = RSSState.BAD
 
         update = ResolvedEntry(
             feed=feed,
@@ -674,8 +674,9 @@ class RSSReader:
             script=evaluation.script,
             priority=evaluation.priority,
             rule=evaluation.rule_index,
-            status=status,
-            downloaded_at=datetime.datetime.now() if status == "D" else None,
+            state=state,
+            downloaded_at=datetime.datetime.now() if state == RSSState.DOWNLOADED else None,
+            initial_scan=True if state is is_starred and state == RSSState.GOOD else False,
         )
 
         self.store.rss_upsert(update)

@@ -23,6 +23,7 @@ import re
 import logging
 import datetime
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
 import sqlite3
 
@@ -41,6 +42,16 @@ _RE_BR = re.compile(r"<br\s*/?>", re.I)  # Strip content after first <br/>
 _RE_TAG = re.compile(r"<[^>]+>")  # Strip HTML tags from descriptions
 
 
+class RSSState(str, Enum):
+    """Primary RSS entry state."""
+
+    NEW = "N"  # Seen but not evaluated yet
+    GOOD = "G"  # Matched by filter rules (should be grabbed)
+    BAD = "B"  # Rejected by filter rules
+    DOWNLOADED = "D"  # Successfully downloaded to queue
+    EXPIRED = "X"  # No longer in feed (marked for cleanup)
+
+
 @dataclass
 class NormalisedEntry:
     link: Optional[str]
@@ -56,13 +67,16 @@ class NormalisedEntry:
 @dataclass
 class ResolvedEntry(NormalisedEntry):
     feed: str
+    created_at: datetime.datetime = datetime.datetime.now()  # When first seen and evaluated / mabe this is age?
+    downloaded_at: Optional[datetime.datetime] = None  # What added to queue
+    archived_at: Optional[datetime.datetime] = None  # What added to queue
+    initial_scan: bool = True  # True if discovered during initial scan
+    state: RSSState = RSSState.NEW
     cat: Optional[str] = None
     pp: Optional[int] = None
     script: Optional[str] = None
     priority: Optional[int] = None
     rule: Optional[int] = None
-    status: str = "N"  # New
-    downloaded_at: Optional[datetime.datetime] = None
 
     def __post_init__(self):
         # Normalise "default-ish" values to None
@@ -71,6 +85,30 @@ class ResolvedEntry(NormalisedEntry):
         self.pp = normalise_pp(self.pp)
         self.script = normalise_str_or_none(self.script)
 
+    @property
+    def is_good(self) -> bool:
+        return self.state == RSSState.GOOD
+
+    @property
+    def is_bad(self) -> bool:
+        return self.state == RSSState.BAD
+
+    @property
+    def is_downloaded(self) -> bool:
+        return self.state == RSSState.DOWNLOADED
+
+    @property
+    def is_hidden(self) -> bool:
+        return self.archived_at is not None
+
+    @property
+    def is_starred(self) -> bool:
+        return self.initial_scan and self.is_good
+
+    @property
+    def is_expired(self) -> bool:
+        return self.state == RSSState.EXPIRED
+
     def merge(self, existing: "ResolvedEntry"):
         """Merge existing entry into self"""
         self.cat = existing.cat
@@ -78,7 +116,7 @@ class ResolvedEntry(NormalisedEntry):
         self.script = existing.script
         self.priority = existing.priority
         self.rule = existing.rule
-        self.status = existing.status
+        self.state = existing.state
         self.downloaded_at = existing.downloaded_at
 
     @classmethod
@@ -98,12 +136,18 @@ class ResolvedEntry(NormalisedEntry):
             script=item["script"],
             priority=item["priority"],
             rule=item["rule"],
-            status=item["status"],
+            state=RSSState(item["state"]),
             downloaded_at=(
                 datetime.datetime.fromtimestamp(item["downloaded_at"], tz=datetime.timezone.utc).astimezone()
                 if item["downloaded_at"]
                 else None
             ),
+            archived_at=(
+                datetime.datetime.fromtimestamp(item["archived_at"], tz=datetime.timezone.utc).astimezone()
+                if item["archived_at"]
+                else None
+            ),
+            created_at=(datetime.datetime.fromtimestamp(item["created_at"], tz=datetime.timezone.utc).astimezone()),
         )
 
     @classmethod

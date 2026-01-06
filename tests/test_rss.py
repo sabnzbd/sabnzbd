@@ -33,6 +33,7 @@ import sabnzbd.database as db
 import sabnzbd.config
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
 from sabnzbd.rss import FeedEvaluation, FeedConfig
+from sabnzbd.rssmodels import RSSState
 from tests.testhelper import httpserver_handler_data_dir
 
 
@@ -89,7 +90,7 @@ def _build_random_store(
                 script=None,
                 priority=0,
                 rule=0,
-                status="G",
+                state=RSSState.GOOD,
             )
             store.rss_upsert(entry)
 
@@ -447,13 +448,17 @@ class TestRSS:
         store.rss_flag_downloaded(feed, link)
         job_after_flag = store.rss_get_job(feed, link)
         assert job_after_flag is not None
-        assert job_after_flag.status == "D"
+        assert job_after_flag.state == RSSState.DOWNLOADED
         assert job_after_flag.downloaded_at is not None
+        assert job_after_flag.is_downloaded
 
         store.rss_clear_downloaded(feed)
         job_after_clear = store.rss_get_job(feed, link)
         assert job_after_clear is not None
-        assert job_after_clear.status == "D-"
+        assert job_after_clear.state == RSSState.DOWNLOADED
+        assert job_after_clear.downloaded_at is not None
+        assert job_after_clear.is_downloaded
+        assert job_after_clear.is_hidden
 
         # get_jobs should return all jobs for a feed
         jobs_from_get_jobs = list(store.rss_get_jobs(feed=feed))
@@ -511,7 +516,7 @@ class TestRSS:
                 season=1,
                 episode=1,
                 orgcat=None,
-                status="G",
+                state=RSSState.GOOD,
             )
         )
 
@@ -528,7 +533,7 @@ class TestRSS:
                 season=1,
                 episode=1,
                 orgcat=None,
-                status="G",
+                state=RSSState.GOOD,
             )
         )
 
@@ -545,7 +550,7 @@ class TestRSS:
                 season=1,
                 episode=1,
                 orgcat=None,
-                status="X",
+                state=RSSState.EXPIRED,
             )
         )
 
@@ -562,7 +567,7 @@ class TestRSS:
                 season=1,
                 episode=1,
                 orgcat=None,
-                status="X",
+                state=RSSState.EXPIRED,
             )
         )
 
@@ -573,7 +578,7 @@ class TestRSS:
 
         # keep_url should still exist and remain G
         assert keep_url in jobs
-        assert jobs[keep_url].status == "G"
+        assert jobs[keep_url].state == RSSState.GOOD
 
         # Old G not in new_urls should have been purged entirely
         assert purge_old_g_url not in jobs
@@ -583,7 +588,7 @@ class TestRSS:
 
         # Young X should still exist
         assert keep_x_url in jobs
-        assert jobs[keep_x_url].status == "X"
+        assert jobs[keep_x_url].state == RSSState.EXPIRED
 
         store.close()
 
