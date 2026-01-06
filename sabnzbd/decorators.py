@@ -20,7 +20,7 @@
 ##############################################################################
 import time
 import functools
-from typing import Union, Callable
+from typing import Union, Callable, Any
 from threading import Lock, RLock, Condition
 
 
@@ -35,15 +35,21 @@ DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 DOWNLOADER_LOCK = RLock()
 
 
-def synchronized(lock: Union[Lock, RLock]):
+def synchronized(lock: Union[Lock, RLock, Condition, None] = None):
     def wrap(func: Callable):
         def call_func(*args, **kw):
-            # Using the try/finally approach is 25% faster compared to using "with lock"
+            # Either use the supplied lock or the object-specific one
+            # Because it's a variable in the upper function, we cannot use it directly
+            lock_obj = lock
+            if not lock_obj:
+                lock_obj = getattr(args[0], "lock")
+
+            # Using try/finally is ~25% faster than "with lock"
             try:
-                lock.acquire()
+                lock_obj.acquire()
                 return func(*args, **kw)
             finally:
-                lock.release()
+                lock_obj.release()
 
         return call_func
 
