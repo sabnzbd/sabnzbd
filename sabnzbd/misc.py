@@ -741,38 +741,24 @@ def get_cache_limit() -> str:
     return ""
 
 
-def get_windows_memory() -> int:
-    """Use win32api to get total physical memory"""
-    mem_info = win32api.GlobalMemoryStatusEx()
-    return mem_info["TotalPhys"]
-
-
-def get_macos_memory() -> int:
-    """Use system-call to extract total memory on macOS"""
-    system_output = run_command(["sysctl", "-n", "hw.memsize"]).strip()
-    return int(system_output)
-
-
-def get_linux_memory() -> int:
-    """Find total memory on linux"""
-    try:
-        with open("/proc/meminfo") as f:
-            for line in f:
-                if line.startswith("MemTotal:"):
-                    return int(line.split()[1]) * 1024
-    except Exception:
-        pass
-    return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
-
-
 def get_memory() -> int:
     try:
         if sabnzbd.WINDOWS:
-            return get_windows_memory()
+            # Use win32api to get total physical memory
+            mem_info = win32api.GlobalMemoryStatusEx()
+            return mem_info["TotalPhys"]
         elif sabnzbd.MACOS:
-            return get_macos_memory()
+            # Use system-call to extract total memory on macOS
+            system_output = run_command(["sysctl", "-n", "hw.memsize"]).strip()
         else:
-            return get_linux_memory()
+            try:
+                with open("/proc/meminfo") as f:
+                    for line in f:
+                        if line.startswith("MemTotal:"):
+                            return int(line.split()[1]) * 1024
+            except Exception:
+                pass
+            return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
     except Exception:
         pass
     return 0
