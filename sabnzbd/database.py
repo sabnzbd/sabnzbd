@@ -676,7 +676,7 @@ class HistoryDB:
             entry.rule,
             int(entry.age.timestamp()),
             entry.initial_scan,
-            int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+            int(datetime.datetime.now(datetime.timezone.utc).timestamp()),  # created_at is ignored for updates
             int(entry.downloaded_at.timestamp()) if entry.downloaded_at else None,
             int(entry.archived_at.timestamp()) if entry.archived_at else None,
         )
