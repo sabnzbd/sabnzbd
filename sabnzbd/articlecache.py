@@ -174,7 +174,7 @@ class ArticleCache(threading.Thread):
             self.__article_table[article] = data
         else:
             # No data saved in memory, direct to disk
-            self.__flush_article_to_disk(article, data)
+            self.__flush_article_to_disk(article, data, delay=bool(self.__cache_limit))
 
     def load_article(self, article: Article) -> Optional[bytearray]:
         """Load the data of the article"""
@@ -198,10 +198,11 @@ class ArticleCache(threading.Thread):
             nzo.saved_articles.discard(article)
         return data
 
-    def flush_articles(self):
+    def flush_articles(self, timelimit: float = 3):
         logging.debug("Saving %s cached articles to disk", len(self.__article_table))
         self.__cache_size = 0
-        while self.__article_table:
+        deadline = time.monotonic() + timelimit
+        while self.__article_table and time.monotonic() < deadline:
             try:
                 article, data = self.__article_table.popitem()
                 self.__flush_article_to_disk(article, data)
@@ -223,15 +224,16 @@ class ArticleCache(threading.Thread):
             elif article.art_id:
                 sabnzbd.filesystem.remove_data(article.art_id, article.nzf.nzo.admin_path)
 
-    def __flush_article_to_disk(self, article: Article, data: bytearray):
+    def __flush_article_to_disk(self, article: Article, data: bytearray, delay: bool = False):
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
         # Direct write to destination if cache is being used
         if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
             with article.nzf.nzo.lock:
                 article.nzf.nzo.saved_articles.discard(article)
-            sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, article=article, override_trigger=True)
-            time.sleep(0.05)
+            if delay:
+                sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, article=article, override_trigger=True)
+                time.sleep(0.05)
             return
 
         # Fallback to disk cache

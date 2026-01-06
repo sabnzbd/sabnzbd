@@ -450,7 +450,7 @@ def trigger_restart(timeout=None):
 def save_state():
     """Save all internal bookkeeping to disk"""
     config.save_config()
-    sabnzbd.ArticleCache.flush_articles()
+    sabnzbd.ArticleCache.flush_articles(timelimit=3)
     sabnzbd.NzbQueue.save()
     sabnzbd.BPSMeter.save()
     sabnzbd.DirScanner.save()
