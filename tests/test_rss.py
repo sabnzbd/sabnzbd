@@ -43,8 +43,15 @@ def tmp_db(tmp_path, monkeypatch):
     monkeypatch.setattr(db.HistoryDB, "db_path", str(db_path))
     monkeypatch.setattr(db.HistoryDB, "startup_done", False)
 
+    store = db.HistoryDB()
+
+    yield store
+
+    store.close()
+
 
 def _build_random_store(
+    store: db.HistoryDB,
     rnd: Optional[random.Random] = None,
     min_feeds: int = 1,
     max_feeds: int = 3,
@@ -61,7 +68,6 @@ def _build_random_store(
     if rnd is None:
         rnd = random.Random(42)
 
-    store = db.HistoryDB()
     feeds: list[str] = []
     links_by_feed: dict[str, list[str]] = {}
 
@@ -420,6 +426,7 @@ class TestRSS:
     def test_rssstore_random_crud(self, tmp_db):
         rnd = random.Random(123)
         store, feeds, links_by_feed = _build_random_store(
+            tmp_db,
             rnd,
             min_feeds=2,
             max_feeds=3,
@@ -497,7 +504,6 @@ class TestRSS:
 
     def test_rssstore_remove_obsolete_marks_and_purges(self, tmp_db):
         """remove_obsolete should mark old G/B items as X and purge expired X."""
-        store = db.HistoryDB()
         feed = "feed-remove"
 
         now = datetime.datetime.now(datetime.timezone.utc)
@@ -506,7 +512,7 @@ class TestRSS:
 
         # Old good item that should be kept because it is part of the new_urls set
         keep_url = "http://example.test/keep"
-        store.rss_upsert(
+        tmp_db.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=keep_url,
@@ -523,7 +529,7 @@ class TestRSS:
 
         # Old good item that is not in new_urls: should be marked X and purged
         purge_old_g_url = "http://example.test/purge-old-g"
-        store.rss_upsert(
+        tmp_db.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=purge_old_g_url,
@@ -540,7 +546,7 @@ class TestRSS:
 
         # Old X item should be purged directly
         purge_old_x_url = "http://example.test/purge-old-x"
-        store.rss_upsert(
+        tmp_db.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=purge_old_x_url,
@@ -557,7 +563,7 @@ class TestRSS:
 
         # Recent X item should be kept
         keep_x_url = "http://example.test/keep-young-x"
-        store.rss_upsert(
+        tmp_db.rss_upsert(
             rss.ResolvedEntry(
                 feed=feed,
                 link=keep_x_url,
@@ -573,9 +579,9 @@ class TestRSS:
         )
 
         # Run remove_obsolete with only keep_url as the set of current URLs
-        store.rss_remove_obsolete(feed, {keep_url})
+        tmp_db.rss_remove_obsolete(feed, {keep_url})
 
-        jobs = {e.link: e for e in store.rss_get_jobs(feed=feed)}
+        jobs = {e.link: e for e in tmp_db.rss_get_jobs(feed=feed)}
 
         # keep_url should still exist and remain G
         assert keep_url in jobs
@@ -591,24 +597,21 @@ class TestRSS:
         assert keep_x_url in jobs
         assert jobs[keep_x_url].state is RSSState.EXPIRED
 
-        store.close()
-
     def test_rssreader_store_lifecycle(self, tmp_db):
         """RSSReader.store setter should register and close stores properly."""
 
         reader = rss.RSSReader()
-        store = db.HistoryDB()
 
         closed = {"value": False}
 
         def fake_close():
             closed["value"] = True
 
-        store.close = fake_close
+        tmp_db.close = fake_close
 
         # Inject our store and verify it's used
-        reader.store = store
-        assert reader.store is store
+        reader.store = tmp_db
+        assert reader.store is tmp_db
 
         # Stopping the reader should close all active stores
         reader.stop()
