@@ -895,6 +895,7 @@ SPECIAL_BOOL_LIST = (
     "allow_old_ssl_tls",
     "enable_season_sorting",
     "verify_xff_header",
+    "direct_write",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",

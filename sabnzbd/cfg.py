@@ -25,6 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
+import threading
 from typing import Union
 
 import sabnzbd
@@ -508,6 +509,7 @@ x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
 verify_xff_header = OptionBool("misc", "verify_xff_header", True)
+direct_write = OptionBool("misc", "direct_write", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
@@ -743,6 +745,13 @@ def new_limit():
     if sabnzbd.__INITIALIZED__:
         # Only update after full startup
         sabnzbd.ArticleCache.new_limit(cache_limit.get_int())
+        sabnzbd.Assembler.new_limit(sabnzbd.ArticleCache.cache_info().cache_limit)
+
+
+def new_direct_write():
+    """Callback for direct write changes"""
+    sabnzbd.Assembler.change_direct_write(bool(direct_write()))
+    sabnzbd.ArticleCache.change_direct_write(bool(direct_write()))
 
 
 def guard_restart():

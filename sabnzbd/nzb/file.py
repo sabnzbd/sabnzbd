@@ -75,12 +75,13 @@ class NzbFile(TryList):
     """Representation of one file consisting of multiple articles"""
 
     # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver + ("lock",)
+    __slots__ = NzbFileSaver + ("lock", "file_lock", "assembler_next_index")
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """Setup object"""
         super().__init__()
-        self.lock = threading.RLock()
+        self.lock: threading.RLock = threading.RLock()
+        self.file_lock: threading.RLock = threading.RLock()
 
         self.date: datetime.datetime = date
         self.type: Optional[str] = None
@@ -108,6 +109,7 @@ class NzbFile(TryList):
         self.crc32: Optional[int] = 0
         self.assembled: bool = False
         self.md5of16k: Optional[bytes] = None
+        self.assembler_next_index: int = 0
 
         # Add first article to decodetable, this way we can check
         # if this is maybe a duplicate nzf
@@ -171,10 +173,11 @@ class NzbFile(TryList):
         self.blocks = int_conv(blocks)
 
     def update_crc32(self, crc32: Optional[int], length: int) -> None:
-        if self.crc32 is None or crc32 is None:
-            self.crc32 = None
-        else:
-            self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
+        with self.lock:
+            if self.crc32 is None or crc32 is None:
+                self.crc32 = None
+            else:
+                self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
         """Get next articles to be downloaded"""
@@ -237,11 +240,46 @@ class NzbFile(TryList):
         except Exception:
             pass
 
-    def __enter__(self):
-        self.lock.acquire()
+    def contiguous_offset(self) -> int:
+        """The next file offset to write to continue sequentially.
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.lock.release()
+        Note: there could be non-sequential direct writes already beyond this point
+        """
+        with self.lock, self.file_lock:
+            # If last written article has valid yenc headers
+            if self.assembler_next_index:
+                article = self.decodetable[self.assembler_next_index - 1]
+                if article.on_disk and article.data_size:
+                    return article.data_begin + article.data_size
+
+            # Fallback to summing decoded size
+            offset = 0
+            for article in self.decodetable[: self.assembler_next_index]:
+                if not article.on_disk:
+                    break
+                if article.data_size:
+                    offset = article.data_begin + article.decoded_size
+                elif article.decoded_size is not None:
+                    # queues from <= 4.5.5 do not have this attribute
+                    offset += article.decoded_size
+                elif os.path.exists(self.filepath):
+                    # fallback for <= 4.5.5 because files were always opened in append mode, so use the file size
+                    return os.path.getsize(self.filepath)
+        return offset
+
+    def contiguous_ready_bytes(self) -> int:
+        """How many bytes from assembler_next_index onward are ready to write to file contiguously?"""
+        with self.lock:
+            bytes_ready: int = 0
+            for article in self.decodetable[self.assembler_next_index :]:
+                if not article.decoded:
+                    break
+                if article.on_disk:
+                    continue
+                if article.decoded_size is None:
+                    break
+                bytes_ready += article.decoded_size
+            return bytes_ready
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
@@ -261,6 +299,8 @@ class NzbFile(TryList):
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
         self.lock = threading.RLock()
+        self.file_lock = threading.RLock()
+        self.assembler_next_index = 0
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}

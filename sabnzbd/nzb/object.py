@@ -210,6 +210,7 @@ class NzbObject(TryList):
         dup_check: bool = True,
     ):
         super().__init__()
+        self.lock: threading.RLock = threading.RLock()
         # Use original filename as basis
         self.work_name = self.filename = filename
 
@@ -1428,6 +1429,7 @@ class NzbObject(TryList):
 
         # Remove all cached files
         sabnzbd.ArticleCache.purge_articles(self.saved_articles)
+        sabnzbd.Assembler.clear_ready_bytes(*self.files)
 
         # Delete all, or just basic files
         if self.futuretype:
@@ -1665,6 +1667,7 @@ class NzbObject(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
+        self.lock = threading.RLock()
 
         # Set non-transferable values
         self.pp_active = False
