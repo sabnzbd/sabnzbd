@@ -601,7 +601,7 @@ class RSSReader:
         Returns a tuple (evaluation, should_download, star) or None if the entry should be skipped.
         """
         if entry.state not in (RSSState.NEW, RSSState.GOOD, RSSState.BAD) and not (
-            entry.state == RSSState.EXPIRED and readout
+            entry.state is RSSState.EXPIRED and readout
         ):
             return None, None, None
 
@@ -621,7 +621,7 @@ class RSSReader:
         return evaluation, should_download, star
 
     def enqueue_download(self, update: ResolvedEntry) -> None:
-        if not update.state == RSSState.DOWNLOADED:
+        if not update.state is RSSState.DOWNLOADED:
             return
         if not update.downloaded_at:
             self.store.rss_flag_downloaded(update.feed, update.link)
@@ -675,8 +675,8 @@ class RSSReader:
             priority=evaluation.priority,
             rule=evaluation.rule_index,
             state=state,
-            downloaded_at=datetime.datetime.now() if state == RSSState.DOWNLOADED else None,
-            initial_scan=True if state is is_starred and state == RSSState.GOOD else False,
+            downloaded_at=datetime.datetime.now() if state is RSSState.DOWNLOADED else None,
+            initial_scan=True if state is is_starred and state is RSSState.GOOD else False,
         )
 
         self.store.rss_upsert(update)

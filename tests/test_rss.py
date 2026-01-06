@@ -448,15 +448,16 @@ class TestRSS:
         store.rss_flag_downloaded(feed, link)
         job_after_flag = store.rss_get_job(feed, link)
         assert job_after_flag is not None
-        assert job_after_flag.state == RSSState.DOWNLOADED
+        assert job_after_flag.state is RSSState.DOWNLOADED
         assert job_after_flag.downloaded_at is not None
         assert job_after_flag.is_downloaded
 
         store.rss_clear_downloaded(feed)
         job_after_clear = store.rss_get_job(feed, link)
         assert job_after_clear is not None
-        assert job_after_clear.state == RSSState.DOWNLOADED
+        assert job_after_clear.state is RSSState.DOWNLOADED
         assert job_after_clear.downloaded_at is not None
+        assert job_after_clear.archived_at is not None
         assert job_after_clear.is_downloaded
         assert job_after_clear.is_hidden
 
@@ -578,7 +579,7 @@ class TestRSS:
 
         # keep_url should still exist and remain G
         assert keep_url in jobs
-        assert jobs[keep_url].state == RSSState.GOOD
+        assert jobs[keep_url].state is RSSState.GOOD
 
         # Old G not in new_urls should have been purged entirely
         assert purge_old_g_url not in jobs
@@ -588,7 +589,7 @@ class TestRSS:
 
         # Young X should still exist
         assert keep_x_url in jobs
-        assert jobs[keep_x_url].state == RSSState.EXPIRED
+        assert jobs[keep_x_url].state is RSSState.EXPIRED
 
         store.close()
 
