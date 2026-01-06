@@ -180,10 +180,12 @@ class Assembler(Thread):
             return
 
         with self.queued_lock:
-            # Recheck not already in the normal queue under lock
-            if nzf.nzf_id in self.queued_nzf:
+            # Recheck not already in the normal queue under lock, but always enqueue when file_done
+            if not file_done and nzf.nzf_id in self.queued_nzf:
                 return
             if allow_non_contiguous:
+                if not file_done and nzf.nzf_id in self.queued_nzf_non_contiguous:
+                    return
                 self.queued_nzf_non_contiguous.add(nzf.nzf_id)
             else:
                 self.queued_nzf.add(nzf.nzf_id)
