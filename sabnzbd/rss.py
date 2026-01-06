@@ -659,6 +659,8 @@ class RSSReader:
         else:
             state = RSSState.BAD
 
+        initial_scan = bool(is_starred and state is RSSState.GOOD)
+
         update = ResolvedEntry(
             feed=feed,
             link=entry.link,
@@ -676,7 +678,7 @@ class RSSReader:
             rule=evaluation.rule_index,
             state=state,
             downloaded_at=datetime.datetime.now() if state is RSSState.DOWNLOADED else None,
-            initial_scan=True if state is is_starred and state is RSSState.GOOD else False,
+            initial_scan=initial_scan,
         )
 
         self.store.rss_upsert(update)

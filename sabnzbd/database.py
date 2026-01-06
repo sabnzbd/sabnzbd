@@ -242,6 +242,7 @@ class HistoryDB:
                 "size" INTEGER,
                 "rule" INTEGER,
                 "age" INTEGER NOT NULL,
+                "initial_scan" INTEGER,
                 "created_at" INTEGER NOT NULL,
                 "downloaded_at" INTEGER,
                 "archived_at" INTEGER,
@@ -631,9 +632,9 @@ class HistoryDB:
             """
             INSERT INTO rss (
                 feed, state, title, url, infourl, category, orgcat, pp, script, priority,
-                season, episode, size, rule, age, created_at, downloaded_at, archived_at
+                season, episode, size, rule, age, initial_scan, created_at, downloaded_at, archived_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(feed, url) DO UPDATE SET
                 state         = excluded.state,
                 title         = excluded.title,
@@ -648,6 +649,7 @@ class HistoryDB:
                 size          = excluded.size,
                 rule          = excluded.rule,
                 age           = excluded.age,
+                initial_scan  = excluded.initial_scan,
                 downloaded_at = COALESCE(excluded.downloaded_at, rss.downloaded_at),
                 archived_at = COALESCE(excluded.archived_at, rss.archived_at)
             """,
@@ -673,6 +675,7 @@ class HistoryDB:
             entry.size,
             entry.rule,
             int(entry.age.timestamp()),
+            entry.initial_scan,
             int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
             int(entry.downloaded_at.timestamp()) if entry.downloaded_at else None,
             int(entry.archived_at.timestamp()) if entry.archived_at else None,

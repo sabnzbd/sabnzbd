@@ -137,6 +137,7 @@ class ResolvedEntry(NormalisedEntry):
             priority=item["priority"],
             rule=item["rule"],
             state=RSSState(item["state"]),
+            initial_scan=bool(item["initial_scan"]),
             downloaded_at=(
                 datetime.datetime.fromtimestamp(item["downloaded_at"], tz=datetime.timezone.utc).astimezone()
                 if item["downloaded_at"]
