@@ -30,7 +30,7 @@ from typing import Any, Optional, Union, BinaryIO, Deque
 
 # SABnzbd modules
 import sabnzbd
-from sabnzbd.nzb.article import TryList, Article, TRYLIST_LOCK
+from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.nzb.file import NzbFile
 from sabnzbd.constants import (
     GIGI,
@@ -608,7 +608,7 @@ class NzbObject(TryList):
                 except Exception:
                     logging.debug("The lastrar swap did not go well")
 
-    @synchronized(TRYLIST_LOCK)
+    @synchronized()
     def reset_all_try_lists(self):
         """Reset all try lists. Locked so reset is performed
         for all items at the same time without chance of another

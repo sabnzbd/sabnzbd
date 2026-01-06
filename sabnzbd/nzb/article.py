@@ -19,7 +19,6 @@
 sabnzbd.article - Article and TryList classes for NZB downloading
 """
 import logging
-import threading
 from typing import Optional
 
 import sabnzbd
@@ -32,8 +31,6 @@ from sabnzbd.decorators import synchronized
 # Trylist
 ##############################################################################
 
-TRYLIST_LOCK = threading.RLock()
-
 
 class TryList:
     """TryList keeps track of which servers have been tried for a specific article"""
@@ -45,32 +42,32 @@ class TryList:
         # Sets are faster than lists
         self.try_list: set[Server] = set()
 
+    @synchronized()
     def server_in_try_list(self, server: Server) -> bool:
         """Return whether specified server has been tried"""
-        with TRYLIST_LOCK:
-            return server in self.try_list
+        return server in self.try_list
 
+    @synchronized()
     def all_servers_in_try_list(self, all_servers: set[Server]) -> bool:
         """Check if all servers have been tried"""
-        with TRYLIST_LOCK:
-            return all_servers.issubset(self.try_list)
+        return all_servers.issubset(self.try_list)
 
+    @synchronized()
     def add_to_try_list(self, server: Server):
         """Register server as having been tried already"""
-        with TRYLIST_LOCK:
-            # Sets cannot contain duplicate items
-            self.try_list.add(server)
+        # Sets cannot contain duplicate items
+        self.try_list.add(server)
 
+    @synchronized()
     def remove_from_try_list(self, server: Server):
         """Remove server from list of tried servers"""
-        with TRYLIST_LOCK:
-            # Discard does not require the item to be present
-            self.try_list.discard(server)
+        # Discard does not require the item to be present
+        self.try_list.discard(server)
 
+    @synchronized()
     def reset_try_list(self):
         """Clean the list"""
-        with TRYLIST_LOCK:
-            self.try_list = set()
+        self.try_list = set()
 
     def __getstate__(self):
         """Save the servers"""
@@ -106,7 +103,7 @@ class Article(TryList):
     """Representation of one article"""
 
     # Pre-define attributes to save memory
-    __slots__ = ArticleSaver + ("fetcher", "fetcher_priority", "tries")
+    __slots__ = ArticleSaver + ("fetcher", "fetcher_priority", "tries", "lock")
 
     def __init__(self, article, article_bytes, nzf):
         super().__init__()
@@ -125,8 +122,10 @@ class Article(TryList):
         self.on_disk: bool = False
         self.crc32: Optional[int] = None
         self.nzf = nzf  # NzbFile reference
+        # Share NzbObject lock for job-wide atomicity of try-list ops
+        self.lock = nzf.nzo.lock
 
-    @synchronized(TRYLIST_LOCK)
+    @synchronized()
     def reset_try_list(self):
         """In addition to resetting the try list, also reset fetcher so all servers
         are tried again. Locked so fetcher setting changes are also protected."""
@@ -134,7 +133,7 @@ class Article(TryList):
         self.fetcher_priority = 0
         super().reset_try_list()
 
-    @synchronized(TRYLIST_LOCK)
+    @synchronized()
     def allow_new_fetcher(self, remove_fetcher_from_try_list: bool = True):
         """Let article get new fetcher and reset try lists of file and job.
         Locked so all resets are performed at once"""
@@ -219,6 +218,7 @@ class Article(TryList):
         self.fetcher = None
         self.fetcher_priority = 0
         self.tries = 0
+        self.lock = self.nzf.nzo.lock
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % (self.article, self.bytes, self.art_id)

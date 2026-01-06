@@ -33,7 +33,8 @@ class Server:
 class TestArticle:
     def test_get_article(self):
         article_id = "test@host" + os.urandom(8).hex() + ".sab"
-        article = Article(article_id, randint(4321, 54321), None)
+        mock_nzf = mock.Mock()
+        article = Article(article_id, randint(4321, 54321), mock_nzf)
         servers = []
         servers.append(Server("testserver1", 10, True))
         servers.append(Server("testserver2", 20, True))

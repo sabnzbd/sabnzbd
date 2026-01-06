@@ -71,10 +71,10 @@ class TestUuDecoder:
         data, and the expected result of uu decoding for the generated message.
         """
         article_id = "test@host" + os.urandom(8).hex() + ".sab"
-        article = Article(article_id, randint(4321, 54321), None)
-        article.lowest_partnum = True if part in ("begin", "single") else False
         # Mock an nzf so results from hashing and filename handling can be stored
-        article.nzf = mock.Mock()
+        mock_nzf = mock.Mock()
+        article = Article(article_id, randint(4321, 54321), mock_nzf)
+        article.lowest_partnum = True if part in ("begin", "single") else False
 
         # Store the message data and the expected decoding result
         data = []
@@ -140,8 +140,10 @@ class TestUuDecoder:
         ],
     )
     def test_short_data(self, raw_data):
+        mock_nzf = mock.Mock()
+        article = Article("foo@bar", 4321, mock_nzf)
         with pytest.raises(decoder.BadUu):
-            assert decoder.decode_uu(Article("foo@bar", 4321, None), self._response(raw_data))
+            assert decoder.decode_uu(article, self._response(raw_data))
 
     @pytest.mark.parametrize(
         "raw_data",
@@ -158,7 +160,8 @@ class TestUuDecoder:
         ],
     )
     def test_missing_uu_begin(self, raw_data):
-        article = Article("foo@bar", 1234, None)
+        mock_nzf = mock.Mock()
+        article = Article("foo@bar", 1234, mock_nzf)
         article.lowest_partnum = True
         filler = b"\r\n" * 4
         with pytest.raises(decoder.BadUu):
@@ -226,7 +229,8 @@ class TestUuDecoder:
         ],
     )
     def test_broken_uu(self, bad_data):
-        article = Article("foo@bar", 4321, None)
+        mock_nzf = mock.Mock()
+        article = Article("foo@bar", 4321, mock_nzf)
         article.lowest_partnum = False
         filler = b"\r\n".join(VALID_UU_LINES[:4]) + b"\r\n"
         with pytest.raises(decoder.BadData):
