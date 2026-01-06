@@ -186,9 +186,6 @@ NzbObjectSaver = (
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
 
-# Lock to prevent errors when saving the NZO data
-NZO_LOCK = threading.RLock()
-
 
 class NzbObject(TryList):
     def __init__(
@@ -568,7 +565,7 @@ class NzbObject(TryList):
 
         logging.info("File %s added to queue", nzf.filename)
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def remove_nzf(self, nzf: NzbFile) -> bool:
         if nzf in self.files:
             self.files.remove(nzf)
@@ -620,7 +617,7 @@ class NzbObject(TryList):
             nzf.reset_all_try_lists()
         self.reset_try_list()
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def postpone_pars(self, parset: str):
         """Move all vol-par files matching 'parset' to the extrapars table"""
         # Create new extrapars if it didn't already exist
@@ -651,7 +648,7 @@ class NzbObject(TryList):
         # Also re-parse all filenames in case par2 came after first articles
         self.verify_all_filenames_and_resort()
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def handle_par2(self, nzf: NzbFile, filepath):
         """Check if file is a par2 and build up par2 collection"""
         # Need to remove it from the other set it might be in
@@ -703,7 +700,7 @@ class NzbObject(TryList):
             self.renamed_file(get_filename(new_fname), nzf.filename)
             nzf.filename = get_filename(new_fname)
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def promote_par2(self, nzf: NzbFile):
         """In case of a broken par2 or missing par2, move another
         of the same set to the top (if we can find it)
@@ -764,7 +761,7 @@ class NzbObject(TryList):
             # Not enough
             return 0
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def remove_article(self, article: Article, success: bool):
         """Remove article from the NzbFile and do check if it can succeed"""
         job_can_succeed = True
@@ -1055,7 +1052,7 @@ class NzbObject(TryList):
         if self.duplicate:
             self.duplicate = DuplicateStatus.DUPLICATE_IGNORED
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def add_parfile(self, parfile: NzbFile) -> bool:
         """Add parfile to the files to be downloaded
         Add it to the start so we try it first
@@ -1070,7 +1067,7 @@ class NzbObject(TryList):
             return True
         return False
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def remove_extrapar(self, parfile: NzbFile):
         """Remove par file from any/all sets"""
         for parset in list(self.extrapars):
@@ -1081,7 +1078,7 @@ class NzbObject(TryList):
             if not self.extrapars[parset]:
                 self.extrapars.pop(parset)
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def prospective_add(self, nzf: NzbFile):
         """Add par2 files to compensate for missing articles"""
         # Get some blocks!
@@ -1152,7 +1149,7 @@ class NzbObject(TryList):
                     return False
         return True
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def set_download_report(self):
         """Format the stats for the history information"""
         # Pretty-format the per-server stats
@@ -1207,7 +1204,7 @@ class NzbObject(TryList):
             self.set_unpack_info("RSS", rss_feed, unique=True)
         self.set_unpack_info("Source", self.url or self.filename, unique=True)
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def increase_bad_articles_counter(self, bad_article_type: str):
         """Record information about bad articles. Should be called before
         register_article, which triggers the availability check."""
@@ -1270,7 +1267,7 @@ class NzbObject(TryList):
             # No articles for this server, block for next time
             self.add_to_try_list(server)
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def move_top_bulk(self, nzf_ids: list[str]):
         self.cleanup_nzf_ids(nzf_ids)
         if nzf_ids:
@@ -1287,7 +1284,7 @@ class NzbObject(TryList):
                 if target == keys:
                     break
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def move_bottom_bulk(self, nzf_ids):
         self.cleanup_nzf_ids(nzf_ids)
         if nzf_ids:
@@ -1304,7 +1301,7 @@ class NzbObject(TryList):
                 if target == keys:
                     break
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def move_up_bulk(self, nzf_ids, cleanup=True):
         if cleanup:
             self.cleanup_nzf_ids(nzf_ids)
@@ -1321,7 +1318,7 @@ class NzbObject(TryList):
                         self.files[pos - 1] = nzf
                         self.files[pos] = tmp_nzf
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def move_down_bulk(self, nzf_ids, cleanup=True):
         if cleanup:
             self.cleanup_nzf_ids(nzf_ids)
@@ -1374,7 +1371,7 @@ class NzbObject(TryList):
             self.renamed_file(yenc_filename, nzf.filename)
             nzf.filename = yenc_filename
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def verify_all_filenames_and_resort(self):
         """Verify all filenames based on par2 info and then re-sort files.
         Locked so all files are verified at once without interruptions.
@@ -1389,7 +1386,7 @@ class NzbObject(TryList):
         if self.direct_unpacker:
             self.direct_unpacker.set_volumes_for_nzo()
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def renamed_file(self, name_set, old_name=None):
         """Save renames at various stages (Download/PP)
         to be used on Retry. Accepts strings and dicts.
@@ -1417,7 +1414,7 @@ class NzbObject(TryList):
         """Return remaining bytes"""
         return self.bytes - self.bytes_tried
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def purge_data(self, delete_all_data=True):
         """Remove (all) job data"""
         logging.info(
@@ -1449,7 +1446,7 @@ class NzbObject(TryList):
         if nzf_id in self.files_table:
             return self.files_table[nzf_id]
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def set_unpack_info(self, key: str, msg: str, setname: Optional[str] = None, unique: bool = False):
         """Builds a dictionary containing the stage name (key) and a message
         If unique is present, it will only have a single line message
@@ -1477,7 +1474,7 @@ class NzbObject(TryList):
         # Make sure it's updated in the interface
         sabnzbd.misc.history_updated()
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def save_to_disk(self):
         """Save job's admin to disk"""
         self.save_attribs()
@@ -1514,7 +1511,7 @@ class NzbObject(TryList):
         # Rest is to be used directly in the NZO-init flow
         return attribs["cat"], attribs["pp"], attribs["script"]
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def build_pos_nzf_table(self, nzf_ids: list[str]) -> dict[int, NzbFile]:
         pos_nzf_table = {}
         for nzf_id in nzf_ids:
@@ -1525,7 +1522,7 @@ class NzbObject(TryList):
 
         return pos_nzf_table
 
-    @synchronized(NZO_LOCK)
+    @synchronized()
     def cleanup_nzf_ids(self, nzf_ids: list[str]):
         for nzf_id in nzf_ids[:]:
             if nzf_id in self.files_table:

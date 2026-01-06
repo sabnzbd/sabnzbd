@@ -25,7 +25,7 @@ import threading
 from typing import Optional
 
 import sabctools
-from sabnzbd.nzb.article import TryList, Article, TRYLIST_LOCK
+from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import (
     sanitize_filename,
@@ -149,21 +149,21 @@ class NzbFile(TryList):
             # Mark safe to continue
             self.import_finished = True
 
+    @synchronized()
     def add_article(self, article_info):
         """Add article to object database and return article object"""
         article = Article(article_info[0], article_info[1], self)
-        with self.lock:
-            self.articles[article] = article
-            self.decodetable.append(article)
+        self.articles[article] = article
+        self.decodetable.append(article)
         return article
 
+    @synchronized()
     def remove_article(self, article: Article, success: bool) -> int:
         """Handle completed article, possibly end of file"""
-        with self.lock:
-            if self.articles.pop(article, None) is not None:
-                if success:
-                    self.bytes_left -= article.bytes
-            return len(self.articles)
+        if self.articles.pop(article, None) is not None:
+            if success:
+                self.bytes_left -= article.bytes
+        return len(self.articles)
 
     def set_par2(self, setname, vol, blocks):
         """Designate this file as a par2 file"""
@@ -172,32 +172,31 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int_conv(blocks)
 
+    @synchronized()
     def update_crc32(self, crc32: Optional[int], length: int) -> None:
-        with self.lock:
-            if self.crc32 is None or crc32 is None:
-                self.crc32 = None
-            else:
-                self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
+        if self.crc32 is None or crc32 is None:
+            self.crc32 = None
+        else:
+            self.crc32 = sabctools.crc32_combine(self.crc32, crc32, length)
 
+    @synchronized()
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
         """Get next articles to be downloaded"""
         articles = server.article_queue
-        with self.lock:
-            for article in self.articles:
-                if article := article.get_article(server, servers):
-                    articles.append(article)
-                    if len(articles) >= fetch_limit:
-                        return
+        for article in self.articles:
+            if article := article.get_article(server, servers):
+                articles.append(article)
+                if len(articles) >= fetch_limit:
+                    return
         self.add_to_try_list(server)
 
-    @synchronized(TRYLIST_LOCK)
+    @synchronized()
     def reset_all_try_lists(self):
         """Reset all try lists. Locked so reset is performed
         for all items at the same time without chance of another
         thread changing any of the items while we are resetting"""
-        with self.lock:
-            for art in self.articles:
-                art.reset_try_list()
+        for art in self.articles:
+            art.reset_try_list()
         self.reset_try_list()
 
     def first_article_processed(self) -> bool:
@@ -240,46 +239,46 @@ class NzbFile(TryList):
         except Exception:
             pass
 
+    @synchronized()
     def contiguous_offset(self) -> int:
         """The next file offset to write to continue sequentially.
 
         Note: there could be non-sequential direct writes already beyond this point
         """
-        with self.lock, self.file_lock:
-            # If last written article has valid yenc headers
-            if self.assembler_next_index:
-                article = self.decodetable[self.assembler_next_index - 1]
-                if article.on_disk and article.data_size:
-                    return article.data_begin + article.data_size
+        # If last written article has valid yenc headers
+        if self.assembler_next_index:
+            article = self.decodetable[self.assembler_next_index - 1]
+            if article.on_disk and article.data_size:
+                return article.data_begin + article.data_size
 
-            # Fallback to summing decoded size
-            offset = 0
-            for article in self.decodetable[: self.assembler_next_index]:
-                if not article.on_disk:
-                    break
-                if article.data_size:
-                    offset = article.data_begin + article.decoded_size
-                elif article.decoded_size is not None:
-                    # queues from <= 4.5.5 do not have this attribute
-                    offset += article.decoded_size
-                elif os.path.exists(self.filepath):
-                    # fallback for <= 4.5.5 because files were always opened in append mode, so use the file size
-                    return os.path.getsize(self.filepath)
+        # Fallback to summing decoded size
+        offset = 0
+        for article in self.decodetable[: self.assembler_next_index]:
+            if not article.on_disk:
+                break
+            if article.data_size:
+                offset = article.data_begin + article.decoded_size
+            elif article.decoded_size is not None:
+                # queues from <= 4.5.5 do not have this attribute
+                offset += article.decoded_size
+            elif os.path.exists(self.filepath):
+                # fallback for <= 4.5.5 because files were always opened in append mode, so use the file size
+                return os.path.getsize(self.filepath)
         return offset
 
+    @synchronized()
     def contiguous_ready_bytes(self) -> int:
         """How many bytes from assembler_next_index onward are ready to write to file contiguously?"""
-        with self.lock:
-            bytes_ready: int = 0
-            for article in self.decodetable[self.assembler_next_index :]:
-                if not article.decoded:
-                    break
-                if article.on_disk:
-                    continue
-                if article.decoded_size is None:
-                    break
-                bytes_ready += article.decoded_size
-            return bytes_ready
+        bytes_ready: int = 0
+        for article in self.decodetable[self.assembler_next_index :]:
+            if not article.decoded:
+                break
+            if article.on_disk:
+                continue
+            if article.decoded_size is None:
+                break
+            bytes_ready += article.decoded_size
+        return bytes_ready
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""

@@ -20,7 +20,7 @@ sabnzbd.nzb - NZB-related classes and functionality
 """
 
 # Article-related classes
-from sabnzbd.nzb.article import Article, ArticleSaver, TryList, TRYLIST_LOCK
+from sabnzbd.nzb.article import Article, ArticleSaver, TryList
 
 # File-related classes
 from sabnzbd.nzb.file import NzbFile, NzbFileSaver, SkippedNzbFile
@@ -30,7 +30,6 @@ from sabnzbd.nzb.object import (
     NzbObject,
     NzbObjectSaver,
     NzoAttributeSaver,
-    NZO_LOCK,
     NzbEmpty,
     NzbRejected,
     NzbPreQueueRejected,
@@ -42,7 +41,6 @@ __all__ = [
     "Article",
     "ArticleSaver",
     "TryList",
-    "TRYLIST_LOCK",
     # File
     "NzbFile",
     "NzbFileSaver",
@@ -51,7 +49,6 @@ __all__ = [
     "NzbObject",
     "NzbObjectSaver",
     "NzoAttributeSaver",
-    "NZO_LOCK",
     "NzbEmpty",
     "NzbRejected",
     "NzbPreQueueRejected",
