@@ -792,6 +792,11 @@ msgstr ""
 "%s no permite escribir nombres de archivo con caracteres especiales. Esto "
 "puede causar problemas."
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s does not support sparse files. Disabling direct write mode."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "Conexión rechazada de:"

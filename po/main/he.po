@@ -750,6 +750,11 @@ msgid ""
 "problems."
 msgstr "%s אינו בר־כתיבה עם שמות קבצים עם תו מיוחד. זה יכול לגרום לבעיות."
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s does not support sparse files. Disabling direct write mode."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "חיבור מסורב מאת:"

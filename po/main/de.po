@@ -808,6 +808,11 @@ msgstr ""
 "Dateinamen mit Umlaute können nicht in %s gespeichert werden. Dies kann zu "
 "Problemen führen."
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s does not support sparse files. Disabling direct write mode."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "Abgelehnte Verbindung von:"

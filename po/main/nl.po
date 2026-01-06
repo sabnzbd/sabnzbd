@@ -791,6 +791,11 @@ msgstr ""
 "Het is niet mogelijk bestanden met speciale tekens op te slaan in %s. Dit "
 "geeft mogelijk problemen bij het verwerken van downloads."
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid "%s does not support sparse files. Disabling direct write mode."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "Verbinding geweigerd van: "
