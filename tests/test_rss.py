@@ -34,7 +34,7 @@ import sabnzbd.config
 from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
 from sabnzbd.rss import FeedEvaluation, FeedConfig
 from sabnzbd.rssmodels import RSSState
-from tests.testhelper import httpserver_handler_data_dir
+from tests.testhelper import *
 
 
 @pytest.fixture
@@ -613,6 +613,79 @@ class TestRSS:
         # Stopping the reader should close all active stores
         reader.stop()
         assert closed["value"]
+
+    def test_rss_is_starred_persists_and_affects_later_runs(self, httpserver: HTTPServer, tmp_db, mocker):
+        """Initial scan should mark GOOD entries as starred and persist this across runs.
+
+        On the initial run with ignore_first=True, matching entries should be stored
+        as GOOD+initial_scan (is_starred=True) but not downloaded. On a subsequent
+        run, those same entries should still be present, still starred, and still
+        not auto-downloaded.
+        """
+
+        feed_name = "StarredFeed"
+        # Simple feed with one tv item that will match default accept rule
+        item_xml = """
+        <item>
+            <title>Show.S01E01.720p</title>
+            <link>http://example.test/starred-episode</link>
+            <guid>http://example.test/info/starred-episode</guid>
+            <category>tv</category>
+            <pubDate>Wed, 01 Jan 2025 00:00:00 GMT</pubDate>
+        </item>
+        """
+        feed_xml = f"""
+        <?xml version=\"1.0\" encoding=\"utf-8\"?>
+        <rss version=\"2.0\">
+          <channel>
+            <title>Starred</title>
+            {item_xml}
+          </channel>
+        </rss>
+        """
+
+        httpserver.expect_request("/rss_starred.xml").respond_with_data(feed_xml, content_type="application/rss+xml")
+
+        # Configure feed; no special filters needed because a default accept rule is added
+        self.setup_rss(feed_name, httpserver.url_for("/rss_starred.xml"))
+
+        reader = rss.RSSReader()
+
+        # First run: ignore_first=True, download=True (scheduled-like behaviour)
+        # This should mark the entry as GOOD+initial_scan, but not download it
+        msg_first = reader.run_feed(feed_name, download=True, ignore_first=True)
+        assert msg_first == ""
+
+        job_first = reader.store.rss_get_job(feed_name, "http://example.test/starred-episode")
+        assert job_first is not None
+        assert job_first.state is RSSState.GOOD
+        assert job_first.is_starred  # initial_scan True + GOOD
+        assert job_first.downloaded_at is None
+
+        # Simulate a later run: readout only, no download
+        msg_second = reader.run_feed(feed_name, download=True, ignore_first=False)
+        assert msg_second == ""
+
+        job_second = reader.store.rss_get_job(feed_name, "http://example.test/starred-episode")
+        assert job_second is not None
+        # Still GOOD and still from initial scan
+        assert job_second.state is RSSState.GOOD
+        assert job_second.is_starred
+        # And it should still not have been auto-downloaded
+        assert job_second.downloaded_at is None
+
+        # Third phase: force download; this should clear the starred status
+        add_url_mock = mocker.patch("sabnzbd.urlgrabber.add_url")
+        msg_third = reader.run_feed(feed_name, download=True, ignore_first=False, force=True)
+        assert msg_third == ""
+        assert add_url_mock.call_count == 1
+
+        job_third = reader.store.rss_get_job(feed_name, "http://example.test/starred-episode")
+        assert job_third is not None
+        assert job_third.state is RSSState.DOWNLOADED
+        assert job_third.downloaded_at is not None
+        # Starred status should no longer apply once downloaded
+        assert not job_third.is_starred
 
     def test_rssreader_multi_uri_deduplicates_entries(self, httpserver: HTTPServer, tmp_db):
         """A feed with multiple URIs should not create duplicate jobs for the same link."""
