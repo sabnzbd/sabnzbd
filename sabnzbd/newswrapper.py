@@ -335,8 +335,11 @@ class NewsWrapper:
                     # Nothing to send but prepare_request result means there are further responses expected
                     sabnzbd.Downloader.modify_socket(self, EVENT_READ)
             else:
-                # No further work for this socket
-                sabnzbd.Downloader.remove_socket(self)
+                # Only remove the socket if it's not SSL or has no pending data, otherwise the recursive call may
+                # call prepare_request again and find a request, but the socket would have already been removed.
+                if not self.server.ssl or not self.nntp or not self.nntp.sock.pending():
+                    # No further work for this socket
+                    sabnzbd.Downloader.remove_socket(self)
 
         # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
         # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
