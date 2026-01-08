@@ -755,6 +755,9 @@ class Downloader(Thread):
             # If read caused a reset, don't proceed to write
             if nw.generation != generation:
                 return
+            # The read may have removed the socket, so prevent calling prepare_request again
+            if not (nw.selector_events & selectors.EVENT_WRITE):
+                return
         if event & selectors.EVENT_WRITE:
             nw.write()
 
@@ -762,7 +765,7 @@ class Downloader(Thread):
         bytes_received: int = 0
         bytes_pending: int = 0
 
-        while nw.decoder and nw.generation == generation:
+        while nw.decoder is not None and nw.generation == generation:
             try:
                 n, bytes_pending = nw.read(nbytes=bytes_pending, generation=generation)
                 bytes_received += n
