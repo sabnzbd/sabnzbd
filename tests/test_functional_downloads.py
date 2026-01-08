@@ -36,7 +36,7 @@ class TestDownloadFlow(DownloadFlowBasics):
 
     @pytest.mark.xfail(reason="Probably #1633")
     def test_download_unicode_made_on_windows(self):
-        self.download_nzb("test_win_unicode", ["frènch_german_demö.bin"])
+        self.download_nzb("test_win_unicode", ["Frènch_German_Demö.bin"])
 
     def test_download_fully_obfuscated(self):
         # This is also covered by a unit test but added to test full flow
