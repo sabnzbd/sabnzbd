@@ -324,16 +324,14 @@ class NewsWrapper:
                     on_response(response.status_code, response.message)
                 self.on_response(response, article)
 
-            # After each response this socket may need to be made available to write the next request, read
-            # an in-flight response, or removed from socket monitoring to prevent hot looping.
+            # After each response this socket may need to be made available to write the next request,
+            # or removed from socket monitoring to prevent hot looping.
             if self.prepare_request():
-                if self.next_request:
-                    # Check before modify_socket locks on hot path
-                    if self.selector_events != EVENT_READ | EVENT_WRITE:
-                        sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
-                else:
-                    # Nothing to send but prepare_request result means there are further responses expected
-                    sabnzbd.Downloader.modify_socket(self, EVENT_READ)
+                # There is either a next_request or an inflight request
+                # If there is a next_request to send, ensure the socket is registered for write events
+                # Checks before calling modify_socket to prevent locks on the hot path
+                if self.next_request and self.selector_events != EVENT_READ | EVENT_WRITE:
+                    sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
             else:
                 # Only remove the socket if it's not SSL or has no pending data, otherwise the recursive call may
                 # call prepare_request again and find a request, but the socket would have already been removed.
