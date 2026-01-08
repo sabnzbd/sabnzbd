@@ -755,6 +755,9 @@ class Downloader(Thread):
             # If read caused a reset, don't proceed to write
             if nw.generation != generation:
                 return
+            # The read may have removed the socket, so prevent calling prepare_request again
+            if not (nw.selector_events & selectors.EVENT_WRITE):
+                return
         if event & selectors.EVENT_WRITE:
             nw.write()
 

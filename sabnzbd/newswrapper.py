@@ -403,6 +403,9 @@ class NewsWrapper:
                     # If this fails, it will propagate and throw a Downloader-error
                     self.nntp.sock.sendall(command)
                     self._response_queue.append(article)
+                else:
+                    # Concurrency limit reached; wait until a response is read to prevent hot looping on EVENT_WRITE
+                    sabnzbd.Downloader.modify_socket(self, EVENT_READ)
             else:
                 # No further work for this socket
                 sabnzbd.Downloader.remove_socket(self)
