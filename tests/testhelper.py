@@ -381,7 +381,11 @@ class SABnzbdBaseTest:
 
     def scroll_to_top(self):
         self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
-        time.sleep(2)
+        try:
+            wait = WebDriverWait(self.driver, 2)
+            wait.until(lambda driver_wait: self.driver.execute_script("return window.scrollY") == 0)
+        except RemoteDisconnected:
+            pass
 
     def wait_for_ajax(self):
         # We catch common nonsense errors from Selenium
