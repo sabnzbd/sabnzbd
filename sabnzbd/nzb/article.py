@@ -19,6 +19,7 @@
 sabnzbd.article - Article and TryList classes for NZB downloading
 """
 import logging
+import threading
 from typing import Optional
 
 import sabnzbd
@@ -214,6 +215,7 @@ class Article(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
+        self.lock = threading.RLock()
         super().__setstate__(dict_.get("try_list", []))
         self.fetcher = None
         self.fetcher_priority = 0
