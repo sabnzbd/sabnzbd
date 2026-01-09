@@ -122,8 +122,8 @@ class Article(TryList):
         self.on_disk: bool = False
         self.crc32: Optional[int] = None
         self.nzf = nzf  # NzbFile reference
-        # Share NzbObject lock for job-wide atomicity of try-list ops
-        self.lock = nzf.nzo.lock
+        # Share NzbFile lock for file-wide atomicity of try-list ops
+        self.lock = nzf.lock
 
     @synchronized()
     def reset_try_list(self):
