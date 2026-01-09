@@ -218,7 +218,6 @@ class Article(TryList):
         self.fetcher = None
         self.fetcher_priority = 0
         self.tries = 0
-        self.lock = self.nzf.nzo.lock
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % (self.article, self.bytes, self.art_id)
