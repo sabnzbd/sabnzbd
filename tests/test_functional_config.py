@@ -231,20 +231,12 @@ class TestConfigRSS(SABnzbdBaseTest):
         # Does the page think it's a success?
         assert "Added NZB" in download_btn.text
 
-        # Wait 2 seconds for the fetch
-        time.sleep(2)
-
-        # Let's check the queue
-        for _ in range(10):
-            queue_result_slots = get_api_result("queue")["queue"]["slots"]
-            # Check if the fetch-request was added to the queue
-            if queue_result_slots:
-                break
-            time.sleep(1)
-        else:
-            # The loop never stopped, so we fail
-            pytest.fail("Did not find the RSS job in the queue")
-            return
+        # Check if the fetch-request was added to the queue
+        wait_for(
+            lambda: len(get_api_result("queue")["queue"]["slots"]) > 0,
+            timeout=10,
+            err_msg="Did not find the RSS job in the queue",
+        )
 
         # Let's remove this thing
         get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
