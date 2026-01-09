@@ -205,12 +205,19 @@ class TestDaemonizing(SABnzbdBaseTest):
         assert not errs
 
         # It should be online after 3 seconds
-        time.sleep(3.0)
-        assert "version" in get_api_result("version", daemon_host, daemon_port)
+        wait_for(
+            lambda: "version" in get_api_result("version", daemon_host, daemon_port),
+            timeout=3,
+            err_msg="Did not start within 3 seconds",
+        )
 
         # Did it create the PID file
         pid_file = os.path.join(ini_location, "sabnzbd-%d.pid" % daemon_port)
-        assert os.path.exists(pid_file)
+        wait_for(
+            lambda: os.path.exists(pid_file),
+            timeout=3,
+            err_msg="Did not create the PID file",
+        )
 
         # Did it remove the bad log file?
         assert os.path.exists(error_log_path)
@@ -219,7 +226,11 @@ class TestDaemonizing(SABnzbdBaseTest):
         try:
             # Let's shut it down and give it some time to do so
             get_url_result("shutdown", daemon_host, daemon_port)
-            time.sleep(3.0)
+            wait_for(
+                lambda: not os.path.exists(pid_file),
+                timeout=3,
+                err_msg="Did not shutdown within 3 seconds",
+            )
         except requests.exceptions.RequestException:
             # Shutdown can be faster than the request
             pass
