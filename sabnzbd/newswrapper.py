@@ -103,7 +103,8 @@ class NewsWrapper:
         )
         self._response_queue: deque[Optional[sabnzbd.nzb.Article]] = deque()
         self.selector_events = 0
-        self.lock: threading.Lock = threading.Lock()
+        if getattr(self, "lock", None) is None:
+            self.lock: threading.Lock = threading.Lock()
 
     @property
     def article(self) -> Optional["sabnzbd.nzb.Article"]:
