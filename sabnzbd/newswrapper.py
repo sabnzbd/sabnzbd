@@ -23,6 +23,7 @@ import errno
 import socket
 import threading
 from collections import deque
+from contextlib import suppress
 from selectors import EVENT_READ, EVENT_WRITE
 from threading import Thread
 import time
@@ -659,8 +660,9 @@ class NNTP:
         self.closed = True
         try:
             if send_quit:
-                self.sock.sendall(b"QUIT\r\n")
-                time.sleep(0.01)
+                with suppress(socket.error):
+                    self.sock.sendall(b"QUIT\r\n")
+                    time.sleep(0.01)
             self.sock.close()
         except Exception as e:
             logging.info("%s@%s: Failed to close socket (error=%s)", self.nw.thrdnum, self.nw.server.host, str(e))
