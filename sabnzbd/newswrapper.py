@@ -390,12 +390,12 @@ class NewsWrapper:
 
                 if self.concurrent_requests.acquire(blocking=False):
                     command, article = self.next_request
-                    self.next_request = None
                     if article:
                         nzo = article.nzf.nzo
                         if nzo.removed_from_queue or nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY:
                             self.discard(article, count_article_try=False, retry_article=True)
                             self.concurrent_requests.release()
+                            self.next_request = None
                             return
 
                     if sabnzbd.LOG_ALL:
@@ -404,6 +404,7 @@ class NewsWrapper:
                     # If this fails, it will propagate and throw a Downloader-error
                     self.nntp.sock.sendall(command)
                     self._response_queue.append(article)
+                    self.next_request = None
                 else:
                     # Concurrency limit reached; wait until a response is read to prevent hot looping on EVENT_WRITE
                     sabnzbd.Downloader.modify_socket(self, EVENT_READ)
