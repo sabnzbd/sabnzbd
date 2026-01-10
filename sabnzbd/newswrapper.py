@@ -415,7 +415,7 @@ class NewsWrapper:
                 sabnzbd.Downloader.remove_socket(self)
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
-            sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True)
+            sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True, wait=False)
         except Exception:
             logging.error(T("Suspect error in downloader"))
             logging.info("Traceback: ", exc_info=True)
