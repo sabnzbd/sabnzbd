@@ -4,13 +4,13 @@
 # Translators:
 # Taylan Tatlı, 2025
 # Safihre <safihre@sabnzbd.org>, 2025
-# mauron, 2025
+# mauron, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: mauron, 2025\n"
+"Last-Translator: mauron, 2026\n"
 "Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -154,7 +154,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
-msgstr ""
+msgstr "SABnzbd'nin Windows ARM sürümü İndirmeler sayfamızda mevcuttur!"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -786,6 +786,8 @@ msgstr ""
 #: sabnzbd/filesystem.py
 msgid "%s does not support sparse files. Disabling direct write mode."
 msgstr ""
+"%s aralıklı dosyaları desteklememektedir. Doğrudan yazma kipi devre dışı "
+"bırakılıyor."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -3810,7 +3812,7 @@ msgstr "Etkinleştir"
 
 #: sabnzbd/skintext.py
 msgid "Articles per request"
-msgstr ""
+msgstr "Talep başı makale"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3818,6 +3820,9 @@ msgid ""
 "first.<br />This can improve download speeds, especially on connections with"
 " higher latency."
 msgstr ""
+"Her bir cevabı beklemeden bağlantı başına birden fazla makale talep et.<br "
+"/>Bu, indirme hızlarını bilhassa yüksek gecikmeli bağlantılarda "
+"arttırabilir."
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
