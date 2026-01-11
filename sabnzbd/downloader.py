@@ -800,7 +800,7 @@ class Downloader(Thread):
                 and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit
             ):
                 sabnzbd.BPSMeter.update()
-                while sabnzbd.BPSMeter.bps > self.bandwidth_limit:
+                while self.bandwidth_limit and sabnzbd.BPSMeter.bps > self.bandwidth_limit:
                     time.sleep(0.01)
                     sabnzbd.BPSMeter.update()
 
