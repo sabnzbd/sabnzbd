@@ -315,10 +315,8 @@ class NewsWrapper:
         self.decoder.process(bytes_recv)
         if self.decoder:
             for response in self.decoder:
-                if self.generation != generation:
-                    break
                 with self.lock:
-                    # Re-check under lock to avoid racing with hard_reset
+                    # Check generation under lock to avoid racing with hard_reset
                     if self.generation != generation or not self._response_queue:
                         break
                     article = self._response_queue.popleft()
