@@ -300,7 +300,7 @@ class Downloader(Thread):
         # macOS/BSD will default to KqueueSelector, it's very efficient but produces separate events for READ and WRITE.
         # Which causes problems when two receive threads are both trying to use the connection while it is resetting.
         if selectors.DefaultSelector is getattr(selectors, "KqueueSelector", None):
-            self.selector: selectors.BaseSelector = selectors.SelectSelector()
+            self.selector: selectors.BaseSelector = selectors.PollSelector()
         else:
             self.selector: selectors.BaseSelector = selectors.DefaultSelector()
 
