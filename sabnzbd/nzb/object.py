@@ -25,7 +25,6 @@ import re
 import logging
 import datetime
 import threading
-import functools
 import difflib
 from typing import Any, Optional, Union, BinaryIO, Deque
 
@@ -94,7 +93,6 @@ from sabnzbd.filesystem import (
     strip_extensions,
     get_ext,
     create_work_name,
-    nzf_cmp_name,
     RAR_RE,
 )
 from sabnzbd.par2file import FilePar2Info, has_par2_in_filename, analyse_par2, parse_par2_file, is_par2_file
@@ -580,7 +578,7 @@ class NzbObject(TryList):
         """Sort the files in the NZO based on name and type
         and then optimize for unwanted extensions search.
         """
-        self.files.sort(key=functools.cmp_to_key(nzf_cmp_name))
+        self.files.sort()
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
