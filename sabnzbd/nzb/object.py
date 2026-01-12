@@ -1663,8 +1663,8 @@ class NzbObject(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        super().__setstate__(dict_.get("try_list", []))
         self.lock = threading.RLock()
+        super().__setstate__(dict_.get("try_list", []))
 
         # Set non-transferable values
         self.pp_active = False

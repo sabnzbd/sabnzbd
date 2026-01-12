@@ -19,6 +19,7 @@
 sabnzbd.article - Article and TryList classes for NZB downloading
 """
 import logging
+import threading
 from typing import Optional
 
 import sabnzbd
@@ -122,8 +123,8 @@ class Article(TryList):
         self.on_disk: bool = False
         self.crc32: Optional[int] = None
         self.nzf = nzf  # NzbFile reference
-        # Share NzbObject lock for job-wide atomicity of try-list ops
-        self.lock = nzf.nzo.lock
+        # Share NzbFile lock for file-wide atomicity of try-list ops
+        self.lock = nzf.lock
 
     @synchronized()
     def reset_try_list(self):
@@ -214,11 +215,11 @@ class Article(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
+        self.lock = threading.RLock()
         super().__setstate__(dict_.get("try_list", []))
         self.fetcher = None
         self.fetcher_priority = 0
         self.tries = 0
-        self.lock = self.nzf.nzo.lock
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % (self.article, self.bytes, self.art_id)

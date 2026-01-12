@@ -297,13 +297,15 @@ class NzbFile(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        super().__setstate__(dict_.get("try_list", []))
         self.lock = threading.RLock()
         self.file_lock = threading.RLock()
         self.assembler_next_index = 0
         if isinstance(self.articles, list):
             # Converted from list to dict
             self.articles = {x: x for x in self.articles}
+        for article in self.articles:
+            article.lock = self.lock
+        super().__setstate__(dict_.get("try_list", []))
 
     def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the number bytes and first article
