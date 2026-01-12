@@ -23,6 +23,7 @@ import errno
 import socket
 import threading
 from collections import deque
+from contextlib import suppress
 from selectors import EVENT_READ, EVENT_WRITE
 from threading import Thread
 import time
@@ -103,7 +104,8 @@ class NewsWrapper:
         )
         self._response_queue: deque[Optional[sabnzbd.nzb.Article]] = deque()
         self.selector_events = 0
-        self.lock: threading.Lock = threading.Lock()
+        if getattr(self, "lock", None) is None:
+            self.lock: threading.Lock = threading.Lock()
 
     @property
     def article(self) -> Optional["sabnzbd.nzb.Article"]:
@@ -313,10 +315,8 @@ class NewsWrapper:
         self.decoder.process(bytes_recv)
         if self.decoder:
             for response in self.decoder:
-                if self.generation != generation:
-                    break
                 with self.lock:
-                    # Re-check under lock to avoid racing with hard_reset
+                    # Check generation under lock to avoid racing with hard_reset
                     if self.generation != generation or not self._response_queue:
                         break
                     article = self._response_queue.popleft()
@@ -390,12 +390,12 @@ class NewsWrapper:
 
                 if self.concurrent_requests.acquire(blocking=False):
                     command, article = self.next_request
-                    self.next_request = None
                     if article:
                         nzo = article.nzf.nzo
                         if nzo.removed_from_queue or nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY:
                             self.discard(article, count_article_try=False, retry_article=True)
                             self.concurrent_requests.release()
+                            self.next_request = None
                             return
 
                     if sabnzbd.LOG_ALL:
@@ -404,6 +404,7 @@ class NewsWrapper:
                     # If this fails, it will propagate and throw a Downloader-error
                     self.nntp.sock.sendall(command)
                     self._response_queue.append(article)
+                    self.next_request = None
                 else:
                     # Concurrency limit reached; wait until a response is read to prevent hot looping on EVENT_WRITE
                     sabnzbd.Downloader.modify_socket(self, EVENT_READ)
@@ -412,7 +413,7 @@ class NewsWrapper:
                 sabnzbd.Downloader.remove_socket(self)
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
-            sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True)
+            sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True, wait=False)
         except Exception:
             logging.error(T("Suspect error in downloader"))
             logging.info("Traceback: ", exc_info=True)
@@ -657,8 +658,9 @@ class NNTP:
         self.closed = True
         try:
             if send_quit:
-                self.sock.sendall(b"QUIT\r\n")
-                time.sleep(0.01)
+                with suppress(socket.error):
+                    self.sock.sendall(b"QUIT\r\n")
+                    time.sleep(0.01)
             self.sock.close()
         except Exception as e:
             logging.info("%s@%s: Failed to close socket (error=%s)", self.nw.thrdnum, self.nw.server.host, str(e))
