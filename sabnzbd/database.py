@@ -295,6 +295,13 @@ class HistoryDB:
                             if job.get("time_downloaded")
                             else None
                         ),
+                        created_at=(
+                            # float timestamp: guess it's local timezone but need to check
+                            datetime.datetime.fromtimestamp(job.get("time", 0))
+                            .replace(tzinfo=local_tz)
+                            .astimezone(datetime.timezone.utc)
+                        ),
+                        initial_scan=False,
                     )
                     self.rss_upsert(entry)
         except Exception:
@@ -675,7 +682,8 @@ class HistoryDB:
             entry.rule,
             int(entry.age.timestamp()),
             entry.initial_scan,
-            int(datetime.datetime.now(datetime.timezone.utc).timestamp()),  # created_at is ignored for updates
+            # created_at is ignored for updates
+            int(entry.created_at.timestamp()),
             int(entry.downloaded_at.timestamp()) if entry.downloaded_at else None,
             int(entry.archived_at.timestamp()) if entry.archived_at else None,
         )

@@ -67,7 +67,8 @@ class NormalisedEntry:
 @dataclass
 class ResolvedEntry(NormalisedEntry):
     feed: str
-    created_at: datetime.datetime = datetime.datetime.now()  # When first seen and evaluated / mabe this is age?
+    # When first seen and evaluated
+    created_at: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
     downloaded_at: Optional[datetime.datetime] = None  # What added to queue
     archived_at: Optional[datetime.datetime] = None  # What added to queue
     initial_scan: bool = True  # True if discovered during initial scan
@@ -156,7 +157,7 @@ class ResolvedEntry(NormalisedEntry):
         """Build NormalisedEntry from feedparser entry"""
         link: Optional[str] = None
         size: int = 0
-        age: datetime.datetime = datetime.datetime.now()
+        age: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
 
         # Try standard link and enclosures first
         if "enclosures" in entry and entry["enclosures"]:
