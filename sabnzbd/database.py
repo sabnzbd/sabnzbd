@@ -297,8 +297,7 @@ class HistoryDB:
                         ),
                     )
                     self.rss_upsert(entry)
-        except Exception as e:
-            logging.error(e)
+        except Exception:
             logging.warning(T("Cannot read %s"), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
 
