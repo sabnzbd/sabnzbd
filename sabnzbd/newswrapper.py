@@ -236,15 +236,9 @@ class NewsWrapper:
 
             elif response.status_code == 500:
                 if article.nzf.nzo.precheck:
-                    # Did we try "STAT" already?
-                    if not server.have_stat:
-                        # Hopless server, just discard
-                        logging.info("Server %s does not support STAT or HEAD, precheck not possible", server.host)
-                        article_done = True
-                    else:
-                        # Assume "STAT" command is not supported
-                        server.have_stat = False
-                        logging.debug("Server %s does not support STAT, trying HEAD", server.host)
+                    # Assume "STAT" command is not supported
+                    server.have_stat = False
+                    logging.debug("Server %s does not support STAT", server.host)
                 else:
                     # Assume "BODY" command is not supported
                     server.have_body = False
