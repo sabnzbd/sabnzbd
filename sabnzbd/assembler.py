@@ -28,6 +28,7 @@ from threading import Thread
 import ctypes
 from typing import Optional, NamedTuple, Union
 import rarfile
+import time
 
 import sabctools
 import sabnzbd
@@ -50,6 +51,7 @@ from sabnzbd.constants import (
     SOFT_ASSEMBLER_QUEUE_LIMIT,
     ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE,
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
+    ASSEMBLER_WRITE_INTERVAL,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -79,6 +81,7 @@ class Assembler(Thread):
         self.queued_lock = threading.Lock()
         self.queued_nzf: set[str] = set()
         self.queued_nzf_non_contiguous: set[str] = set()
+        self.queued_next_time: dict[str, float] = dict()
         self.ready_bytes_lock = threading.Lock()
         self.ready_bytes: dict[str, int] = dict()
 
@@ -147,6 +150,7 @@ class Assembler(Thread):
         with self.ready_bytes_lock:
             for nzf in nzfs:
                 self.ready_bytes.pop(nzf.nzf_id, None)
+                self.queued_next_time.pop(nzf.nzf_id, None)
 
     def process(
         self,
@@ -167,9 +171,13 @@ class Assembler(Thread):
         if self.should_track_ready_bytes(article, allow_non_contiguous, override_trigger):
             ready_bytes = self.update_ready_bytes(nzf, article.decoded_size)
 
+        article_has_first_part = bool(article and article.lowest_partnum)
+        if article_has_first_part:
+            self.queued_next_time[nzf.nzf_id] = time.monotonic() + ASSEMBLER_WRITE_INTERVAL
+
         if not self.should_queue_nzf(
             nzf,
-            article_has_first_part=bool(article and article.lowest_partnum),
+            article_has_first_part=article_has_first_part,
             filename_checked=nzf.filename_checked,
             import_finished=nzf.import_finished,
             file_done=file_done,
@@ -189,6 +197,7 @@ class Assembler(Thread):
                 self.queued_nzf_non_contiguous.add(nzf.nzf_id)
             else:
                 self.queued_nzf.add(nzf.nzf_id)
+            self.queued_next_time[nzf.nzf_id] = time.monotonic() + ASSEMBLER_WRITE_INTERVAL
         can_direct_write = self.direct_write and nzf.type == "yenc"
         self.queue.put(AssemblerTask(nzo, nzf, file_done, allow_non_contiguous, can_direct_write))
 
@@ -209,13 +218,28 @@ class Assembler(Thread):
             return True
         if nzf.nzf_id in self.queued_nzf:
             return False
-        should_always_write = (override_trigger or article_has_first_part) and filename_checked and not import_finished
-        can_direct_write = self.direct_write and nzf.type == "yenc"
+        # Always write
+        if (override_trigger or article_has_first_part) and filename_checked and not import_finished:
+            return True
+        next_ready = (
+            (next_index := nzf.assembler_next_index) >= 0
+            and next_index < len(nzf.decodetable)
+            and (next_article := nzf.decodetable[next_index])
+            and (next_article.decoded or next_article.on_disk)
+        )
+        # Trigger every 5 seconds if next article is decoded or on_disk
+        if next_ready and time.monotonic() > self.queued_next_time.get(nzf.nzf_id, 0):
+            return True
         # Append
-        if not can_direct_write:
-            return should_always_write or nzf.contiguous_ready_bytes() >= self.append_trigger
+        if not self.direct_write or nzf.type != "yenc":
+            return nzf.contiguous_ready_bytes() >= self.append_trigger
         # Direct Write
-        return should_always_write or allow_non_contiguous or ready_bytes >= self.direct_write_trigger
+        if allow_non_contiguous:
+            return True
+        # Direct Write ready bytes trigger if next is also ready
+        if next_ready and ready_bytes >= self.direct_write_trigger:
+            return True
+        return False
 
     @staticmethod
     def should_track_ready_bytes(
@@ -252,8 +276,11 @@ class Assembler(Thread):
                 if file_done and not sabnzbd.Downloader.paused:
                     self.diskspace_check(nzo, nzf)
 
-                # Prepare filepath
-                if filepath := nzf.prepare_filepath():
+                try:
+                    # Prepare filepath
+                    if not (filepath := nzf.prepare_filepath()):
+                        continue
+
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done, allow_non_contiguous, direct_write)
@@ -299,12 +326,12 @@ class Assembler(Thread):
                     except Exception:
                         logging.error(T("Fatal error in Assembler"), exc_info=True)
                         break
-                    finally:
-                        with self.queued_lock:
-                            if allow_non_contiguous:
-                                self.queued_nzf_non_contiguous.discard(nzf.nzf_id)
-                            else:
-                                self.queued_nzf.discard(nzf.nzf_id)
+                finally:
+                    with self.queued_lock:
+                        if allow_non_contiguous:
+                            self.queued_nzf_non_contiguous.discard(nzf.nzf_id)
+                        else:
+                            self.queued_nzf.discard(nzf.nzf_id)
             else:
                 sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
                 sabnzbd.PostProcessor.process(nzo)
