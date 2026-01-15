@@ -20,6 +20,7 @@ sabnzbd.api - api
 """
 
 import os
+import sys
 import logging
 import re
 import gc
@@ -80,6 +81,7 @@ from sabnzbd.misc import (
     clean_comma_separated_list,
     match_str,
     bool_conv,
+    get_platform_description,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
 from sabnzbd.encoding import xml_name, utob
@@ -690,9 +692,16 @@ LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 
 def _api_showlog(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
     """Fetch the INI and the log-data and add a message at the top"""
-    log_data = b"--------------------------------\n\n"
-    log_data += b"The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
-    log_data += b"\n\n--------------------------------\n"
+    # Build header with version and environment info
+    header = "--------------------------------\n"
+    header += f"SABnzbd version: {sabnzbd.__version__}\n"
+    header += f"Commit: {sabnzbd.__baseline__}\n"
+    header += f"Python-version: {sys.version}\n"
+    header += f"Platform: {get_platform_description()}\n"
+    header += "--------------------------------\n\n"
+    header += "The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
+    header += "\n\n--------------------------------\n"
+    log_data = header.encode("utf-8")
 
     if sabnzbd.LOGFILE and os.path.exists(sabnzbd.LOGFILE):
         with open(sabnzbd.LOGFILE, "rb") as f:
