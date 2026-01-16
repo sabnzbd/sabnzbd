@@ -406,7 +406,7 @@ class NewsWrapper:
                 # No further work for this socket
                 sabnzbd.Downloader.remove_socket(self)
         except socket.error as err:
-            logging.info("Looks like server closed connection: %s", err)
+            logging.info("Looks like server closed connection: %s, type: %s", err, type(err))
             sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True, wait=False)
         except Exception:
             logging.error(T("Suspect error in downloader"))
