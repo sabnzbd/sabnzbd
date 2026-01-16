@@ -774,7 +774,7 @@ class Downloader(Thread):
             try:
                 n, bytes_pending = nw.read(nbytes=bytes_pending, generation=generation)
                 bytes_received += n
-            except ssl.SSLWantReadError:
+            except (ssl.SSLWantReadError, ssl.SSLWantWriteError):
                 return
             except (ConnectionError, ConnectionAbortedError):
                 # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
