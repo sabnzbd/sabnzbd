@@ -114,6 +114,22 @@ class HistoryDB:
                 _ = self.execute("PRAGMA user_version = 5;") and self.execute(
                     "ALTER TABLE history ADD COLUMN time_added INTEGER;"
                 )
+            if version < 6:
+                _ = (
+                    self.execute("PRAGMA user_version = 6;")
+                    and self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
+                    and self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
+                    and self.execute("CREATE INDEX idx_history_completed_bytes ON history(completed, bytes);")
+                    and self.execute(
+                        "CREATE INDEX idx_history_duplicate_key_active ON history(duplicate_key) WHERE status != 'Failed';"
+                    )
+                    and self.execute(
+                        "CREATE INDEX idx_history_name_nocase_active ON history(name COLLATE NOCASE) WHERE status != 'Failed';"
+                    )
+                    and self.execute(
+                        "CREATE INDEX idx_history_md5sum_active ON history(md5sum) WHERE status != 'Failed';"
+                    )
+                )
 
             HistoryDB.startup_done = True
 
@@ -194,7 +210,19 @@ class HistoryDB:
             "time_added" INTEGER
         )
         """)
-        self.execute("PRAGMA user_version = 5;")
+        self.execute("PRAGMA user_version = 6;")
+        self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
+        # Completed
+        self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
+        self.execute("CREATE INDEX idx_history_completed_bytes ON history(completed, bytes);")
+        # Duplicates
+        self.execute(
+            "CREATE INDEX idx_history_duplicate_key_active ON history(duplicate_key) WHERE status != 'Failed';"
+        )
+        self.execute(
+            "CREATE INDEX idx_history_name_nocase_active ON history(name COLLATE NOCASE) WHERE status != 'Failed';"
+        )
+        self.execute("CREATE INDEX idx_history_md5sum_active ON history(md5sum) WHERE status != 'Failed';")
 
     def close(self):
         """Close database connection"""
@@ -367,33 +395,39 @@ class HistoryDB:
 
     def have_duplicate_key(self, duplicate_key: str) -> bool:
         """Check whether History contains this duplicate key"""
-        total = 0
         if self.execute(
             """
-            SELECT COUNT(*) 
-            FROM History 
-            WHERE 
-                duplicate_key = ? AND 
-                STATUS != ?""",
+            SELECT EXISTS(
+                SELECT 1
+                FROM history
+                WHERE duplicate_key = ? AND status != ?
+            ) as found
+            """,
             (duplicate_key, Status.FAILED),
         ):
-            total = self.cursor.fetchone()["COUNT(*)"]
-        return total > 0
+            return bool(self.cursor.fetchone()["found"])
+        return False
 
     def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
         """Check whether this name or md5sum is already in History"""
-        total = 0
         if self.execute(
             """
-            SELECT COUNT(*) 
-            FROM History 
-            WHERE 
-                ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND 
-                STATUS != ?""",
-            (name, md5sum, Status.FAILED),
+            SELECT EXISTS(
+                SELECT 1
+                FROM history
+                WHERE md5sum = ? AND status != ?
+            
+                UNION ALL
+            
+                SELECT 1
+                FROM history
+                WHERE name = ? COLLATE NOCASE AND status != ?
+            ) as found
+            """,
+            (md5sum, Status.FAILED, name, Status.FAILED),
         ):
-            total = self.cursor.fetchone()["COUNT(*)"]
-        return total > 0
+            return bool(self.cursor.fetchone()["found"])
+        return False
 
     def get_history_size(self) -> tuple[int, int, int]:
         """Returns the total size of the history and
