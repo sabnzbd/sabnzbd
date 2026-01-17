@@ -33,13 +33,13 @@ from more_itertools import batched
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status, PP_LOOKUP, DEFAULT_PRIORITY, RSS_FILE_NAME
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status, PP_LOOKUP, RSS_FILE_NAME
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
-from sabnzbd.misc import caller_name, opts_to_pp, to_units, bool_conv, match_str
+from sabnzbd.misc import caller_name, opts_to_pp, to_units, bool_conv, match_str, int_conv
 from sabnzbd.filesystem import remove_file, clip_path
-from sabnzbd.rssmodels import ResolvedEntry, RSSState
+from sabnzbd.rssmodels import ResolvedEntry, RSSState, normalise_priority, normalise_pp, normalise_str_or_none
 
 DB_LOCK = threading.Lock()
 
@@ -262,40 +262,43 @@ class HistoryDB:
             local_tz = datetime.datetime.now().astimezone().tzinfo
             for feed, jobs in jobs.items():
                 for link, job in jobs.items():
-                    category = job.get("orgcat") or None
-                    if category in ("", "*"):
-                        category = None
+                    orgcat = job.get("orgcat", None) or None
+                    if orgcat in ("", "*"):
+                        orgcat = None
                     entry = ResolvedEntry(
                         feed=feed,
                         link=link.strip().replace(" ", "%20"),
                         title=job.get("title", ""),
-                        infourl=job.get("infourl"),
+                        infourl=job.get("infourl", None),
                         size=job.get("size", 0),
                         age=(
-                            # datetime.datetime: convert to local time then to UTC
+                            # datetime.datetime: with no tzinfo
                             job.get("age").replace(tzinfo=local_tz).astimezone(datetime.timezone.utc)
-                            if job.get("age")
+                            if job.get("age", None)
                             else None
                         ),
                         season=job.get("season", 0),
                         episode=job.get("episode", 0),
-                        orgcat=category,
-                        cat=job.get("cat", 0),
-                        pp=job.get("pp", 0),
-                        script=job.get("script", 0),
-                        priority=job.get("prio", 0),
-                        rule=job.get("rule", 0),
+                        orgcat=orgcat,
+                        cat=normalise_str_or_none(job.get("cat", None)),
+                        pp=normalise_pp(job.get("pp", None)),
+                        script=normalise_str_or_none(job.get("script", None)),
+                        priority=normalise_priority(job.get("prio", None)),
+                        rule=int_conv(job.get("rule", None)),
                         state=RSSState(job.get("status", "")[:1]),
                         downloaded_at=(
-                            # time.struct_time: convert to local time then to UTC
-                            datetime.datetime.fromtimestamp(
-                                time.mktime(job.get("time_downloaded")), tz=datetime.timezone.utc
-                            )
-                            if job.get("time_downloaded")
+                            # time.struct_time
+                            datetime.datetime(
+                                *job.get("time_downloaded")[:6],
+                                tzinfo=datetime.timezone(
+                                    datetime.timedelta(seconds=job.get("time_downloaded").tm_gmtoff)
+                                ),
+                            ).astimezone(datetime.timezone.utc)
+                            if job.get("time_downloaded", None)
                             else None
                         ),
                         created_at=(
-                            # float timestamp: guess it's local timezone but need to check
+                            # float timestamp
                             datetime.datetime.fromtimestamp(job.get("time", 0))
                             .replace(tzinfo=local_tz)
                             .astimezone(datetime.timezone.utc)
@@ -674,7 +677,7 @@ class HistoryDB:
             entry.orgcat,
             entry.pp,
             entry.script,
-            str(entry.priority) if entry.priority is not None else str(DEFAULT_PRIORITY),
+            entry.priority,
             entry.season,
             entry.episode,
             entry.size,
