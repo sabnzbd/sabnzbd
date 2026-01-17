@@ -276,6 +276,15 @@ class HistoryDB:
                     if orgcat is not None and len(orgcat) > 128:
                         # Probably HTML content
                         orgcat = _RE_TAG.sub("", _RE_BR.split(orgcat, maxsplit=1)[0]).strip()
+                    time_downloaded = (
+                        # time.struct_time
+                        datetime.datetime(
+                            *job.get("time_downloaded")[:6],
+                            tzinfo=datetime.timezone(datetime.timedelta(seconds=job.get("time_downloaded").tm_gmtoff)),
+                        ).astimezone(datetime.timezone.utc)
+                        if job.get("time_downloaded", None)
+                        else None
+                    )
                     entry = ResolvedEntry(
                         feed=feed,
                         link=link.strip().replace(" ", "%20"),
@@ -297,22 +306,18 @@ class HistoryDB:
                         priority=normalise_priority(job.get("prio", None)),
                         rule=int_conv(job.get("rule", None)),
                         state=RSSState(job.get("status", "")[:1]),
-                        downloaded_at=(
-                            # time.struct_time
-                            datetime.datetime(
-                                *job.get("time_downloaded")[:6],
-                                tzinfo=datetime.timezone(
-                                    datetime.timedelta(seconds=job.get("time_downloaded").tm_gmtoff)
-                                ),
-                            ).astimezone(datetime.timezone.utc)
-                            if job.get("time_downloaded", None)
-                            else None
-                        ),
+                        downloaded_at=time_downloaded,
                         created_at=(
                             # float timestamp
                             datetime.datetime.fromtimestamp(job.get("time", 0))
                             .replace(tzinfo=local_tz)
                             .astimezone(datetime.timezone.utc)
+                        ),
+                        archived_at=(
+                            # Time of archiving/hiding is not stored
+                            time_downloaded
+                            if job.get("status", "")[-1] == "-"
+                            else None
                         ),
                         initial_scan=False,
                     )
