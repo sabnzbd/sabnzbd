@@ -39,7 +39,15 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.misc import caller_name, opts_to_pp, to_units, bool_conv, match_str, int_conv
 from sabnzbd.filesystem import remove_file, clip_path
-from sabnzbd.rssmodels import ResolvedEntry, RSSState, normalise_priority, normalise_pp, normalise_str_or_none
+from sabnzbd.rssmodels import (
+    ResolvedEntry,
+    RSSState,
+    normalise_priority,
+    normalise_pp,
+    normalise_str_or_none,
+    _RE_BR,
+    _RE_TAG,
+)
 
 DB_LOCK = threading.Lock()
 
@@ -265,6 +273,9 @@ class HistoryDB:
                     orgcat = job.get("orgcat", None) or None
                     if orgcat in ("", "*"):
                         orgcat = None
+                    if orgcat is not None and len(orgcat) > 128:
+                        # Probably HTML content
+                        orgcat = _RE_TAG.sub("", _RE_BR.split(orgcat, maxsplit=1)[0]).strip()
                     entry = ResolvedEntry(
                         feed=feed,
                         link=link.strip().replace(" ", "%20"),
