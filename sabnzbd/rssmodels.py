@@ -45,7 +45,6 @@ _RE_TAG = re.compile(r"<[^>]+>")  # Strip HTML tags from descriptions
 class RSSState(str, Enum):
     """Primary RSS entry state."""
 
-    NEW = "N"  # Seen but not evaluated yet
     GOOD = "G"  # Matched by filter rules (should be grabbed)
     BAD = "B"  # Rejected by filter rules
     DOWNLOADED = "D"  # Successfully downloaded to queue
@@ -72,7 +71,7 @@ class ResolvedEntry(NormalisedEntry):
     downloaded_at: Optional[datetime.datetime] = None  # What added to queue
     archived_at: Optional[datetime.datetime] = None  # What added to queue
     initial_scan: bool = True  # True if discovered during initial scan
-    state: RSSState = RSSState.NEW
+    state: Optional[RSSState] = None
     cat: Optional[str] = None
     pp: Optional[int] = None
     script: Optional[str] = None

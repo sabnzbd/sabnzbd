@@ -600,9 +600,7 @@ class RSSReader:
 
         Returns a tuple (evaluation, should_download, star) or None if the entry should be skipped.
         """
-        if entry.state not in (RSSState.NEW, RSSState.GOOD, RSSState.BAD) and not (
-            entry.state is RSSState.EXPIRED and readout
-        ):
+        if entry.state not in (None, RSSState.GOOD, RSSState.BAD) and not (entry.state is RSSState.EXPIRED and readout):
             return None, None, None
 
         # Match this title against all filters

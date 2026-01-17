@@ -223,7 +223,6 @@ class HistoryDB:
                 "feed" TEXT NOT NULL,
                 "state" TEXT NOT NULL
                          CHECK (state IN (
-                         'N',   -- New
                          'G',  -- Good
                          'B',  -- Bad
                          'D',  -- Downloaded
