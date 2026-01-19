@@ -22,7 +22,7 @@ for item in os.environ:
 
 # More intelligent parsing:
 try:
-    (scriptname, directory, orgnzbname, jobname, reportnumber, category, group, postprocstatus, url) = sys.argv
+    scriptname, directory, orgnzbname, jobname, reportnumber, category, group, postprocstatus, url = sys.argv
 except Exception:
     print("No SAB compliant number of commandline parameters found (should be 8):", len(sys.argv) - 1)
     sys.exit(1)  # non-zero return code

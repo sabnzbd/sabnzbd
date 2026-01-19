@@ -18,6 +18,7 @@
 """
 tests.test_api - Tests for API functions
 """
+
 import cherrypy
 import pytest
 

@@ -18,6 +18,7 @@
 """
 sabnzbd.nzb.object - NzbObject class for representing NZB download jobs
 """
+
 import os
 import time
 import re

@@ -18,10 +18,10 @@
 """
 tests.test_functional_sorting - Test downloads with season sorting and sequential files
 """
+
 import os
 from tests.testhelper import *
 import sabnzbd.config as config
-
 
 # Use an ini file with a valid, old style series and movie sorting configuration
 # that also serves to verify conversion to the new sorter settings is performed

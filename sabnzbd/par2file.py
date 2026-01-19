@@ -18,6 +18,7 @@
 """
 sabnzbd.par2file - All par2-related functionality
 """
+
 import hashlib
 import logging
 import os

@@ -18,6 +18,7 @@
 """
 tests.test_get_addrinfo - Testing SABnzbd concurrent IP address testing implementation
 """
+
 import os
 import sys
 import socket

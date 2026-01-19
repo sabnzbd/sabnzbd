@@ -18,6 +18,7 @@
 """
 tests.test_notifier - Testing notification functionality
 """
+
 import re
 from sabnzbd.notifier import send_notification, send_apprise, NOTIFICATION_TYPES
 from unittest import mock, TestCase

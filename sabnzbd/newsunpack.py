@@ -70,7 +70,6 @@ from sabnzbd.nzb import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
 
-
 # Regex globals
 RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
 RAR_EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")

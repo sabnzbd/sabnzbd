@@ -18,6 +18,7 @@
 """
 sabnzbd.article - Article and TryList classes for NZB downloading
 """
+
 import logging
 import threading
 from typing import Optional
@@ -26,7 +27,6 @@ import sabnzbd
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import get_new_id
 from sabnzbd.decorators import synchronized
-
 
 ##############################################################################
 # Trylist

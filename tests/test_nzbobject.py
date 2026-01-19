@@ -18,6 +18,7 @@
 """
 tests.test_nzbobject - Testing functions in nzbobject.py
 """
+
 from sabnzbd.nzb import NzbObject
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY

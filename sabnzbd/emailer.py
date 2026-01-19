@@ -255,8 +255,7 @@ def diskfull_mail():
     """Send email about disk full, no templates"""
     if cfg.email_full():
         return send_email(
-            T(
-                """To: %s
+            T("""To: %s
 From: %s
 Date: %s
 Subject: SABnzbd reports Disk Full
@@ -266,9 +265,7 @@ Hi,
 SABnzbd has stopped downloading, because the disk is almost full.
 Please make room and resume SABnzbd manually.
 
-"""
-            )
-            % (cfg.email_to.get_string(), cfg.email_from(), get_email_date()),
+""") % (cfg.email_to.get_string(), cfg.email_from(), get_email_date()),
             cfg.email_to(),
         )
     else:

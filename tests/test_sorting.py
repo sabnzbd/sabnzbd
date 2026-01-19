@@ -18,6 +18,7 @@
 """
 tests.test_sorting - Testing functions in sorting.py
 """
+
 import os
 import pyfakefs
 import re

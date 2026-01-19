@@ -18,6 +18,7 @@
 """
 sabnzbd.nzb.file - NzbFile class for representing files in NZB downloads
 """
+
 import datetime
 import logging
 import os

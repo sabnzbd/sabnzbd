@@ -40,7 +40,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue, to_units
 from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
 
-
 # Timeout penalty in minutes for each cause
 _PENALTY_UNKNOWN = 3  # Unknown cause
 _PENALTY_502 = 5  # Unknown 502

@@ -18,6 +18,7 @@
 """
 tests.test_decoder- Testing functions in decoder.py
 """
+
 import binascii
 import os
 import pytest

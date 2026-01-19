@@ -933,11 +933,9 @@ SKIN_TEXT = {
     "wizard-test-server-required": TT("Click on Test Server before continuing"),  #: Tooltip for disabled Next button
     "restore-backup": TT("Restore backup"),
     # Special
-    "yourRights": TT(
-        """
+    "yourRights": TT("""
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
-"""
-    ),
+"""),
 }

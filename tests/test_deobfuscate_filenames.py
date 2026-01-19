@@ -18,6 +18,7 @@
 """
 Testing SABnzbd deobfuscate module
 """
+
 import os.path
 import random
 import shutil

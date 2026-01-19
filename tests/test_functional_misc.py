@@ -18,6 +18,7 @@
 """
 tests.test_functional_misc - Functional tests of various functions
 """
+
 import shutil
 import subprocess
 import sys

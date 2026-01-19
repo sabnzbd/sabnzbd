@@ -18,6 +18,7 @@
 """
 tests.test_interface - Testing functions in interface.py
 """
+
 import cherrypy
 
 from sabnzbd import interface

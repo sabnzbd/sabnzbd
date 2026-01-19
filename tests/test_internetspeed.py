@@ -18,6 +18,7 @@
 """
 tests.test_internetspeed - Testing SABnzbd internetspeed
 """
+
 import pytest
 
 from sabnzbd.internetspeed import internetspeed

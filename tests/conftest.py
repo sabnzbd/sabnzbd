@@ -19,6 +19,7 @@
 tests.conftest - Setup pytest fixtures
 These have to be separate otherwise SABnzbd is started multiple times!
 """
+
 import shutil
 import subprocess
 import sys

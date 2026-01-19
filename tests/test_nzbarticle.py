@@ -18,6 +18,7 @@
 """
 tests.test_nzbarticle - Testing functions in nzbarticle.py
 """
+
 from sabnzbd.nzb import Article
 
 from tests.testhelper import *

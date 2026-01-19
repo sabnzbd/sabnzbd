@@ -20,7 +20,6 @@
 sabnzbd.notifier - Send notifications to any notification services
 """
 
-
 import sys
 import os.path
 import logging

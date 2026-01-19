@@ -18,6 +18,7 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
+
 from tests.testhelper import *
 
 

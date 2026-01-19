@@ -18,7 +18,6 @@
 import os
 from constants import RELEASE_VERSION
 
-
 # We need to call dmgbuild from command-line, so here we can setup how
 if __name__ == "__main__":
     # Check for DMGBuild

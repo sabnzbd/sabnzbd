@@ -18,6 +18,7 @@
 """
 sabnzbd.postproc - threaded post-processing of jobs
 """
+
 import os
 import logging
 import functools
@@ -94,7 +95,6 @@ import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
 import sabnzbd.deobfuscate_filenames as deobfuscate
-
 
 MAX_FAST_JOB_COUNT = 3
 

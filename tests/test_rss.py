@@ -18,6 +18,7 @@
 """
 tests.test_misc - Testing functions in misc.py
 """
+
 import datetime
 import time
 from typing import Optional

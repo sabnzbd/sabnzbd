@@ -20,10 +20,8 @@
 sabnzbd.utils.sleepless - Keep macOS awake by setting power assertions
 """
 
-
 import objc
 from Foundation import NSBundle
-
 
 # https://developer.apple.com/documentation/iokit/iopowersources.h?language=objc
 IOKit = NSBundle.bundleWithIdentifier_("com.apple.framework.IOKit")

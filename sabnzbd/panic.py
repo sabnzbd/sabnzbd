@@ -66,14 +66,12 @@ def MSG_BAD_NEWS():
 
 def MSG_BAD_PORT():
     return (
-        T(
-            r"""
+        T(r"""
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but it is not available.<br>
     Some other software uses the port or SABnzbd is already running.<br>
     <br>
-    Please restart SABnzbd with a different port number."""
-        )
+    Please restart SABnzbd with a different port number.""")
         + """<br>
     <br>
     %s<br>
@@ -85,14 +83,12 @@ def MSG_BAD_PORT():
 
 def MSG_BAD_HOST():
     return (
-        T(
-            r"""
+        T(r"""
     SABnzbd needs a valid host address for its internal web server.<br>
     You have specified an invalid address.<br>
     Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
     <br>
-    Please restart SABnzbd with a proper host address."""
-        )
+    Please restart SABnzbd with a proper host address.""")
         + """<br>
     <br>
     %s<br>
@@ -104,15 +100,13 @@ def MSG_BAD_HOST():
 
 def MSG_BAD_QUEUE():
     return (
-        T(
-            r"""
+        T(r"""
     SABnzbd detected saved data from an other SABnzbd version<br>
     but cannot re-use the data of the other program.<br><br>
     You may want to finish your queue first with the other program.<br><br>
     After that, start this program with the "--clean" option.<br>
     This will erase the current queue and history!<br>
-    SABnzbd read the file "%s"."""
-        )
+    SABnzbd read the file "%s".""")
         + """<br>
     <br>
     %s<br>
@@ -123,13 +117,11 @@ def MSG_BAD_QUEUE():
 
 
 def MSG_BAD_TEMPL():
-    return T(
-        r"""
+    return T(r"""
     SABnzbd cannot find its web interface files in %s.<br>
     Please install the program again.<br>
     <br>
-"""
-    )
+""")
 
 
 def MSG_OTHER():
@@ -137,14 +129,12 @@ def MSG_OTHER():
 
 
 def MSG_SQLITE():
-    return T(
-        r"""
+    return T(r"""
     SABnzbd detected that the file sqlite3.dll is missing.<br><br>
     Some poorly designed virus-scanners remove this file.<br>
     Please check your virus-scanner, try to re-install SABnzbd and complain to your virus-scanner vendor.<br>
     <br>
-"""
-    )
+""")
 
 
 def panic_message(panic_code, a=None, b=None):
@@ -280,8 +270,7 @@ def error_page_401(status, message, traceback, version):
 
 def error_page_404(status, message, traceback, version):
     """Custom handler for 404 error, redirect to main page"""
-    return (
-        r"""
+    return r"""
 <html>
     <head>
       <script type="text/javascript">
@@ -292,6 +281,4 @@ def error_page_404(status, message, traceback, version):
     </head>
     <body><br/></body>
 </html>
-"""
-        % cfg.url_base()
-    )
+""" % cfg.url_base()

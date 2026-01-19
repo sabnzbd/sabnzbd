@@ -47,7 +47,6 @@ import sabnzbd.emailer as emailer
 
 import feedparser
 
-
 RSS_LOCK = threading.RLock()
 _RE_SP = re.compile(r"s*(\d+)[ex](\d+)", re.I)
 _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)

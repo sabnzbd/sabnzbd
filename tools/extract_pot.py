@@ -32,8 +32,7 @@ with open("builder/constants.py") as version_file:
     exec(version_file.read())
 
 # Fixed information for the POT header
-HEADER = (
-    r"""#
+HEADER = r"""#
 # SABnzbd Translation Template file __TYPE__
 # Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
 #
@@ -46,9 +45,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"""
-    % RELEASE_VERSION_BASE
-)
+""" % RELEASE_VERSION_BASE
 
 PO_DIR = "po/main"
 POE_DIR = "po/email"

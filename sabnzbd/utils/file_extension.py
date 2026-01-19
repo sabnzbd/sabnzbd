@@ -4,7 +4,6 @@
 Note: extension always contains a leading dot
 """
 
-
 import puremagic
 import os
 import sys

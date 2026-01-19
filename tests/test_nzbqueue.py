@@ -18,6 +18,7 @@
 """
 tests.test_nzbqueue - Testing functions in nzbqueue.py
 """
+
 from types import SimpleNamespace
 
 from sabnzbd.downloader import Server

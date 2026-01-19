@@ -11,11 +11,11 @@ jobs:
       - name: Black Code Formatter
         uses: lgeiger/black-action@master
         with:
+          # Tools folder excluded for now due to https://github.com/psf/black/issues/4963
           args: >
             SABnzbd.py
             sabnzbd
             scripts
-            tools
             builder
             builder/SABnzbd.spec
             tests

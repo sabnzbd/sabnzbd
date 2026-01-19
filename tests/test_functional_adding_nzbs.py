@@ -37,7 +37,6 @@ from sabnzbd.constants import (
 
 from tests.testhelper import *
 
-
 # Repair priority is out of scope for the purpose of these tests: it cannot be
 # set as a default, upon adding a job, or from a pre-queue script.
 # "None" is used to *not* set any particular priority at a given stage.

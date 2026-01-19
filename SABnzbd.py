@@ -236,9 +236,7 @@ def print_help():
 
 
 def print_version():
-    print(
-        (
-            """
+    print(("""
 %s-%s
 
 (C) Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
@@ -247,10 +245,7 @@ This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
 GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
-"""
-            % (sabnzbd.MY_NAME, sabnzbd.__version__)
-        )
-    )
+""" % (sabnzbd.MY_NAME, sabnzbd.__version__)))
 
 
 def daemonize():
@@ -870,7 +865,7 @@ def main():
         elif opt in ("-t", "--templates"):
             web_dir = arg
         elif opt in ("-s", "--server"):
-            (web_host, web_port) = split_host(arg)
+            web_host, web_port = split_host(arg)
         elif opt in ("-n", "--nobrowser"):
             autobrowser = False
         elif opt in ("-b", "--browser"):

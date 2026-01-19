@@ -23,7 +23,6 @@ import functools
 from typing import Union, Callable, Any
 from threading import Lock, RLock, Condition
 
-
 # All operations that modify the queue need to happen in a lock
 # Also used when importing NZBs to prevent IO-race conditions
 # Names of wrapper-functions should be the same in misc.caller_name

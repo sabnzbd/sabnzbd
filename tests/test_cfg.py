@@ -18,6 +18,7 @@
 """
 tests.test_cfg - Testing functions in cfg.py
 """
+
 import sys
 import pytest
 

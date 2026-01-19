@@ -18,6 +18,7 @@
 """
 tests.test_misc - Testing functions in encoding.py
 """
+
 import pytest
 
 import sabnzbd.encoding as enc

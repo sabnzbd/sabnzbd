@@ -160,8 +160,7 @@ class HistoryDB:
 
     def create_history_db(self):
         """Create a new (empty) database file"""
-        self.execute(
-            """
+        self.execute("""
         CREATE TABLE history (
             "id" INTEGER PRIMARY KEY,
             "completed" INTEGER NOT NULL,
@@ -194,8 +193,7 @@ class HistoryDB:
             "archive" INTEGER,
             "time_added" INTEGER
         )
-        """
-        )
+        """)
         self.execute("PRAGMA user_version = 5;")
 
     def close(self):

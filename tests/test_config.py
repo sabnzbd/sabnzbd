@@ -18,6 +18,7 @@
 """
 tests.test_config - Tests of config methods
 """
+
 from sabnzbd.filesystem import long_path
 from tests.testhelper import *
 import shutil
@@ -34,7 +35,6 @@ from sabnzbd.constants import (
 )
 from sabnzbd import config
 from sabnzbd import filesystem
-
 
 DEF_CHAIN_FILE = "server.chain"
 

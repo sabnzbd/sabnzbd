@@ -18,6 +18,7 @@
 """
 sabnzbd.misc - filesystem operations
 """
+
 import gzip
 import os
 import pickle
@@ -56,7 +57,6 @@ from sabnzbd.constants import (
 )
 from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
 import rarfile
-
 
 # For Windows: determine executable extensions
 if os.name == "nt":

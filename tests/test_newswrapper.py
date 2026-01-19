@@ -18,6 +18,7 @@
 """
 tests.test_newswrapper - Tests of various functions in newswrapper
 """
+
 import errno
 import ipaddress
 import logging
