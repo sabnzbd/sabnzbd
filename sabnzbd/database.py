@@ -413,13 +413,13 @@ class HistoryDB:
             SELECT EXISTS(
                 SELECT 1
                 FROM history
-                WHERE md5sum = ? AND status != ?
-            
-                UNION ALL
-            
+                WHERE md5sum = ?
+                  AND status != ?
+            ) OR EXISTS(
                 SELECT 1
                 FROM history
-                WHERE name = ? COLLATE NOCASE AND status != ?
+                WHERE name = ? COLLATE NOCASE
+                  AND status != ?
             ) as found
             """,
             (md5sum, Status.FAILED, name, Status.FAILED),
