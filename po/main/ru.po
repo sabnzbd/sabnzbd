@@ -3,12 +3,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2023
+# ST02, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-4.6.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: ST02, 2026\n"
 "Language-Team: Russian (https://app.transifex.com/sabnzbd/teams/111101/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +25,7 @@ msgstr "Предупреждение"
 #. Notification
 #: SABnzbd.py, sabnzbd/notifier.py
 msgid "Error"
-msgstr ""
+msgstr "Ошибка"
 
 #. Error message
 #: SABnzbd.py
@@ -88,7 +89,7 @@ msgstr ""
 #. Error message
 #: SABnzbd.py
 msgid "HTTP and HTTPS ports cannot be the same"
-msgstr ""
+msgstr "HTTP и HTTPS порты не могут быть одинаковыми"
 
 #. Warning message
 #: SABnzbd.py
@@ -103,12 +104,12 @@ msgstr "HTTPS отключён, поскольку отсутствуют фай
 #. Warning message
 #: SABnzbd.py
 msgid "Disabled HTTPS because of invalid CERT and KEY files"
-msgstr ""
+msgstr "HTTPS отключён, поскольку файлы CERT и KEY недействительны"
 
 #. Error message
 #: SABnzbd.py
 msgid "Failed to start web-interface: "
-msgstr ""
+msgstr "Не удалось запустить веб-интерфейс:"
 
 #: SABnzbd.py
 msgid "SABnzbd %s started"
@@ -306,7 +307,7 @@ msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
-msgstr ""
+msgstr "Прервано, обнаружено шифрование"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -319,7 +320,7 @@ msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Aborted, unwanted extension detected"
-msgstr ""
+msgstr "Прервано, обнаружено нежелательное расширение"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -348,7 +349,7 @@ msgstr ""
 
 #: sabnzbd/bpsmeter.py
 msgid "Downloading resumed after quota reset"
-msgstr ""
+msgstr "Загрузка возобновилась после сброса квоты"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Incorrect parameter"
@@ -516,7 +517,7 @@ msgstr "Не удаётся прочитать наблюдаемую папку
 
 #: sabnzbd/downloader.py
 msgid "Resuming"
-msgstr ""
+msgstr "Возобновление"
 
 #. PP status - Priority pick list
 #: sabnzbd/downloader.py, sabnzbd/macosmenu.py, sabnzbd/sabtray.py,
