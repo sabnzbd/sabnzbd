@@ -119,7 +119,6 @@ class HistoryDB:
                     self.execute("PRAGMA user_version = 6;")
                     and self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
                     and self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
-                    and self.execute("CREATE INDEX idx_history_completed_bytes ON history(completed, bytes);")
                     and self.execute(
                         "CREATE INDEX idx_history_duplicate_key_active ON history(duplicate_key) WHERE status != 'Failed';"
                     )
@@ -214,7 +213,6 @@ class HistoryDB:
         self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
         # Completed
         self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
-        self.execute("CREATE INDEX idx_history_completed_bytes ON history(completed, bytes);")
         # Duplicates
         self.execute(
             "CREATE INDEX idx_history_duplicate_key_active ON history(duplicate_key) WHERE status != 'Failed';"
