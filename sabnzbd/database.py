@@ -119,15 +119,6 @@ class HistoryDB:
                     self.execute("PRAGMA user_version = 6;")
                     and self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
                     and self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
-                    and self.execute(
-                        "CREATE INDEX idx_history_duplicate_key_active ON history(duplicate_key) WHERE status != 'Failed';"
-                    )
-                    and self.execute(
-                        "CREATE INDEX idx_history_name_nocase_active ON history(name COLLATE NOCASE) WHERE status != 'Failed';"
-                    )
-                    and self.execute(
-                        "CREATE INDEX idx_history_md5sum_active ON history(md5sum) WHERE status != 'Failed';"
-                    )
                 )
 
             HistoryDB.startup_done = True
@@ -211,16 +202,7 @@ class HistoryDB:
         """)
         self.execute("PRAGMA user_version = 6;")
         self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
-        # Completed
         self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
-        # Duplicates
-        self.execute(
-            "CREATE INDEX idx_history_duplicate_key_active ON history(duplicate_key) WHERE status != 'Failed';"
-        )
-        self.execute(
-            "CREATE INDEX idx_history_name_nocase_active ON history(name COLLATE NOCASE) WHERE status != 'Failed';"
-        )
-        self.execute("CREATE INDEX idx_history_md5sum_active ON history(md5sum) WHERE status != 'Failed';")
 
     def close(self):
         """Close database connection"""
