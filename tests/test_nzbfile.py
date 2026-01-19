@@ -18,6 +18,7 @@
 """
 tests.test_nzbfile - Testing functions in nzb/file.py
 """
+
 from datetime import datetime
 
 from sabnzbd.nzb import NzbObject, NzbFile
