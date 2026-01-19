@@ -395,16 +395,11 @@ class HistoryDB:
             SELECT EXISTS(
                 SELECT 1
                 FROM history
-                WHERE md5sum = ?
-                  AND status != ?
-            ) OR EXISTS(
-                SELECT 1
-                FROM history
-                WHERE name = ? COLLATE NOCASE
+                WHERE (name = ? COLLATE NOCASE OR md5sum = ?)
                   AND status != ?
             ) as found
             """,
-            (md5sum, Status.FAILED, name, Status.FAILED),
+            (name, md5sum, Status.FAILED),
         ):
             return bool(self.cursor.fetchone()["found"])
         return False
