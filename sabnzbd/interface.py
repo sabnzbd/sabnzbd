@@ -92,7 +92,7 @@ from sabnzbd.api import (
     build_header,
     Ttemplate,
 )
-from sabnzbd.rss import ResolvedEntry
+from sabnzbd.rssmodels import ResolvedEntry
 
 ##############################################################################
 # Security functions

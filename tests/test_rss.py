@@ -26,9 +26,8 @@ import configobj
 from pytest_httpserver import HTTPServer
 
 import sabnzbd.config
-import sabnzbd.rss as rss
-from sabnzbd.rss import FeedEvaluation, FeedConfig
-from sabnzbd.rssmodels import RSSState
+from sabnzbd.rss import FeedEvaluation, FeedConfig, RSSReader
+from sabnzbd.rssmodels import RSSState, ResolvedEntry
 from tests.testhelper import *
 
 
@@ -76,7 +75,7 @@ def _build_random_store(
         for ji in range(num_jobs):
             link = f"http://example.test/{feed_name}/{ji}"
             links.append(link)
-            entry = rss.ResolvedEntry(
+            entry = ResolvedEntry(
                 feed=feed_name,
                 link=link,
                 title=f"Title {fi}-{ji}",
@@ -146,7 +145,7 @@ class TestRSS:
         self.setup_rss(feed_name, httpserver.url_for("/rss_newznab_test.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
+        rss_obj = RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
@@ -173,7 +172,7 @@ class TestRSS:
         self.setup_rss(feed_name, httpserver.url_for("/rss_nzedb_test.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
+        rss_obj = RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
@@ -201,7 +200,7 @@ class TestRSS:
         self.setup_rss(feed_name, httpserver.url_for("/rss_link.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
+        rss_obj = RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
@@ -224,7 +223,7 @@ class TestRSS:
         self.setup_rss(feed_name, httpserver.url_for("/rss_enclosure_no_nzb.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
+        rss_obj = RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
@@ -237,7 +236,7 @@ class TestRSS:
         self.setup_rss(feed_name, httpserver.url_for("/rss_enclosure_multiple.xml"))
 
         # Start the RSS reader
-        rss_obj = rss.RSSReader()
+        rss_obj = RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
@@ -464,7 +463,7 @@ class TestRSS:
         assert {j.link for j in jobs_from_get_jobs} == set(links_by_feed[feed])
 
         # is_duplicate should detect similar jobs in other feeds
-        duplicate_candidate = rss.ResolvedEntry(
+        duplicate_candidate = ResolvedEntry(
             feed="other-feed",
             link="http://example.test/other-feed/dup",
             title=job.title,
@@ -504,7 +503,7 @@ class TestRSS:
         # Old good item that should be kept because it is part of the new_urls set
         keep_url = "http://example.test/keep"
         tmp_db.rss_upsert(
-            rss.ResolvedEntry(
+            ResolvedEntry(
                 feed=feed,
                 link=keep_url,
                 title="keep",
@@ -521,7 +520,7 @@ class TestRSS:
         # Old good item that is not in new_urls: should be marked X and purged
         purge_old_g_url = "http://example.test/purge-old-g"
         tmp_db.rss_upsert(
-            rss.ResolvedEntry(
+            ResolvedEntry(
                 feed=feed,
                 link=purge_old_g_url,
                 title="old-g",
@@ -538,7 +537,7 @@ class TestRSS:
         # Old X item should be purged directly
         purge_old_x_url = "http://example.test/purge-old-x"
         tmp_db.rss_upsert(
-            rss.ResolvedEntry(
+            ResolvedEntry(
                 feed=feed,
                 link=purge_old_x_url,
                 title="old-x",
@@ -555,7 +554,7 @@ class TestRSS:
         # Recent X item should be kept
         keep_x_url = "http://example.test/keep-young-x"
         tmp_db.rss_upsert(
-            rss.ResolvedEntry(
+            ResolvedEntry(
                 feed=feed,
                 link=keep_x_url,
                 title="young-x",
@@ -591,7 +590,7 @@ class TestRSS:
     def test_rssreader_store_lifecycle(self, tmp_db):
         """RSSReader.store setter should register and close stores properly."""
 
-        reader = rss.RSSReader()
+        reader = RSSReader()
 
         closed = {"value": False}
 
@@ -643,7 +642,7 @@ class TestRSS:
         # Configure feed; no special filters needed because a default accept rule is added
         self.setup_rss(feed_name, httpserver.url_for("/rss_starred.xml"))
 
-        reader = rss.RSSReader()
+        reader = RSSReader()
 
         # First run: ignore_first=True, download=True (scheduled-like behaviour)
         # This should mark the entry as GOOD+initial_scan, but not download it
@@ -730,7 +729,7 @@ class TestRSS:
 
         self.setup_rss(feed_name, multi_uri)
 
-        reader = rss.RSSReader()
+        reader = RSSReader()
         reader.run_feed(feed_name)
 
         entries = list(reader.store.rss_get_jobs(feed=feed_name))
