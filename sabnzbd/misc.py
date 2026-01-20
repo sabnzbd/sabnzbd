@@ -161,9 +161,9 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
         m = "m"
 
     try:
-        # Ensure timezone-aware in UTC
+        # Assume no tzinfo means it is localtime
         if date.tzinfo is None:
-            date = date.replace(tzinfo=datetime.timezone.utc)
+            date = date.replace(tzinfo=datetime.datetime.now().astimezone().tzinfo)
 
         now = datetime.datetime.now(datetime.timezone.utc)
         # Return time difference in human-readable format
