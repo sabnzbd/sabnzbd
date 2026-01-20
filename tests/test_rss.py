@@ -151,12 +151,12 @@ class TestRSS:
 
         # Is the feed processed?
         assert rss_obj.store.rss_has_feed(feed_name)
-        job = rss_obj.store.rss_get_job(feed_name, "https://cdn.nzbgeek.info/cdn?t=get&id=FakeKey&apikey=FakeKey")
+        job = rss_obj.store.rss_get_job(feed_name, "https://cdn.example.com/cdn?t=get&id=FakeKey&apikey=FakeKey")
         assert job is not None
 
         # Check some job-data
         assert job.title == "FakeShow.S04E03.720p.WEB.H264-Obfuscated"
-        assert job.infourl == "https://nzbgeek.info/geekseek.php?guid=FakeKey"
+        assert job.infourl == "https://example.com/download.php?guid=FakeKey"
         assert job.orgcat == "TV > HD"
         assert job.cat == "tv"
         assert job.episode == 3
@@ -178,13 +178,13 @@ class TestRSS:
 
         # Is the feed processed?
         assert rss_obj.store.rss_has_feed(feed_name)
-        job = rss_obj.store.rss_get_job(feed_name, "https://nzbfinder.ws/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
+        job = rss_obj.store.rss_get_job(feed_name, "https://example.com/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
         assert job is not None
 
         # Check some job-data
         # Added fake season and episode to test file
         assert job.title == "Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER"
-        assert job.infourl == "https://nzbfinder.ws/details/FakeKey"
+        assert job.infourl == "https://example.com/details/FakeKey"
         assert job.orgcat == "Movies > HD"
         assert job.cat == "movies"
         assert job.episode == 720
