@@ -21,17 +21,12 @@ tests.test_misc - Testing functions in misc.py
 
 import datetime
 import random
-from typing import Optional
 
 import configobj
-import pytest
 from pytest_httpserver import HTTPServer
 
-import sabnzbd
-import sabnzbd.rss as rss
-import sabnzbd.database as db
 import sabnzbd.config
-from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
+import sabnzbd.rss as rss
 from sabnzbd.rss import FeedEvaluation, FeedConfig
 from sabnzbd.rssmodels import RSSState
 from tests.testhelper import *
@@ -166,8 +161,6 @@ class TestRSS:
         assert job.season == 4
         assert job.size == 1209464000
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
         adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
@@ -194,8 +187,6 @@ class TestRSS:
         assert job.season == 2018
         assert job.size == 5164539914
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
         adjusted_date = datetime.datetime(2019, 3, 2, 17, 18, 7, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
@@ -219,8 +210,6 @@ class TestRSS:
         assert job.infourl == "https://sabnzbd.org/rss_link"
         assert job.size == 200
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
         adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
@@ -257,8 +246,6 @@ class TestRSS:
         assert job.infourl == "https://sabnzbd.org/rss_enclosure_multiple"
         assert job.size == 200
 
-        # feedparser returns UTC so SABnzbd converts to locale
-        # of the system, so now we have to return to UTC
         adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
