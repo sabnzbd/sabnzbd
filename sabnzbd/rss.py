@@ -27,7 +27,7 @@ import threading
 import urllib.parse
 import weakref
 from dataclasses import dataclass, field
-from typing import Union, Optional
+from typing import Union, Optional, Any, Generator
 
 import sabnzbd
 from sabnzbd.database import HistoryDB
@@ -59,6 +59,10 @@ import feedparser
 
 RSS_LOCK = threading.RLock()
 _RE_SP = re.compile(r"s*(\d+)[ex](\d+)", re.I)
+
+
+class RSSFetchError(Exception):
+    pass
 
 
 @dataclass(frozen=True)
@@ -397,52 +401,46 @@ class RSSReader:
 
         # Fetch & parse RSS
         if readout:
-            try:
-                entries, msg = self.fetch_rss(feed, uris)
-            except (AttributeError, IndexError):
-                last_uri = uris[-1] if uris else ""
-                logging.info(T("Incompatible feed") + " " + last_uri)
-                logging.info("Traceback: ", exc_info=True)
-                return T("Incompatible feed")
-            # Error in readout or no new readout
-            if not entries:
-                return msg
+            gen = self.fetch_rss(feed, uris)
         else:
-            entries, msg = (list(self.store.rss_get_jobs(feed=feed)), "")
+            gen = self.store.rss_get_jobs(feed=feed)
 
         # Evaluate rules and apply side effects
-        for entry in entries:
-            if self.shutdown:
-                return ""
+        try:
+            for entry in gen:
+                if self.shutdown:
+                    return ""
 
-            # Skip duplicates across multiple feeds
-            if entry.link in new_links or len(uris) > 1 and self.store.rss_is_duplicate(entry):
-                logging.info("Ignoring job %s from other feed", entry.title)
-                continue
+                # Skip duplicates across multiple feeds
+                if entry.link in new_links or len(uris) > 1 and self.store.rss_is_duplicate(entry):
+                    logging.info("Ignoring job %s from other feed", entry.title)
+                    continue
 
-            # Track all valid links so obsolete ones can be cleaned up later
-            new_links.add(entry.link)
+                # Track all valid links so obsolete ones can be cleaned up later
+                new_links.add(entry.link)
 
-            evaluation, should_download, is_starred = self._evaluate_entry(
-                entry=entry,
-                filters=filters,
-                first=first,
-                download=download,
-                force=force,
-                readout=readout,
-            )
-            if evaluation is None:
-                continue
+                evaluation, should_download, is_starred = self._evaluate_entry(
+                    entry=entry,
+                    filters=filters,
+                    first=first,
+                    download=download,
+                    force=force,
+                    readout=readout,
+                )
+                if evaluation is None:
+                    continue
 
-            downloaded = self._process_entry(
-                feed=feed,
-                entry=entry,
-                evaluation=evaluation,
-                should_download=should_download,
-                is_starred=is_starred,
-            )
-            if downloaded:
-                new_downloads.append(entry.title)
+                downloaded = self._process_entry(
+                    feed=feed,
+                    entry=entry,
+                    evaluation=evaluation,
+                    should_download=should_download,
+                    is_starred=is_starred,
+                )
+                if downloaded:
+                    new_downloads.append(entry.title)
+        except RSSFetchError as e:
+            return str(e)
 
         # Send email if wanted and not "forced"
         if new_downloads and cfg.email_rss() and not force:
@@ -450,7 +448,7 @@ class RSSReader:
 
         self.store.rss_remove_obsolete(feed, new_links)
 
-        return msg
+        return ""
 
     def configure_rss(
         self, feed: str, ignore_first: bool
@@ -524,67 +522,68 @@ class RSSReader:
         feedparser_mixin._start_nzedb_attr = _start_newznab_attr
         feedparser_mixin._start_nntmux_attr = _start_newznab_attr
 
-    def fetch_rss(self, feed: str, uris: list[str]) -> tuple[list[ResolvedEntry], str]:
-        """Fetch and parse RSS feeds for the given URIs.
-
-        Returns (entries, message).
-        """
-        all_entries = []
-        msg = ""
-
+    def fetch_rss(self, feed: str, uris: list[str]) -> Generator[ResolvedEntry, Any, None]:
+        """Fetch and parse RSS feeds for the given URIs."""
         for uri in uris:
-            # Reset parsing message for each feed
-            msg = ""
-            feed_parsed = {}
-            uri = uri.replace(" ", "%20").replace("feed://", "http://")
-            logging.debug("Running feedparser on %s", uri)
             try:
-                feed_parsed = feedparser.parse(uri)
-            except Exception as feedparser_exc:
-                # Feedparser 5 would catch all errors, while 6 just throws them back at us
-                feed_parsed["bozo_exception"] = feedparser_exc
-            logging.debug("Finished parsing %s", uri)
+                # Reset parsing message for each feed
+                msg = ""
+                feed_parsed = {}
+                uri = uri.replace(" ", "%20").replace("feed://", "http://")
+                logging.debug("Running feedparser on %s", uri)
+                try:
+                    feed_parsed = feedparser.parse(uri)
+                except Exception as feedparser_exc:
+                    # Feedparser 5 would catch all errors, while 6 just throws them back at us
+                    feed_parsed["bozo_exception"] = feedparser_exc
+                logging.debug("Finished parsing %s", uri)
 
-            status = feed_parsed.get("status", 999)
-            if status in (401, 402, 403):
-                msg = T("Do not have valid authentication for feed %s") % uri
-            elif 500 <= status <= 599:
-                msg = T("Server side error (server code %s); could not get %s on %s") % (status, feed, uri)
+                status = feed_parsed.get("status", 999)
+                if status in (401, 402, 403):
+                    raise RSSFetchError(T("Do not have valid authentication for feed %s") % uri)
+                elif 500 <= status <= 599:
+                    raise RSSFetchError(
+                        T("Server side error (server code %s); could not get %s on %s") % (status, feed, uri)
+                    )
 
-            entries = feed_parsed.get("entries", [])
-            if not entries and "feed" in feed_parsed and "error" in feed_parsed["feed"]:
-                msg = T("Failed to retrieve RSS from %s: %s") % (uri, feed_parsed["feed"]["error"])
+                entries = feed_parsed.get("entries", [])
+                if not entries and "feed" in feed_parsed and "error" in feed_parsed["feed"]:
+                    raise RSSFetchError(T("Failed to retrieve RSS from %s: %s") % (uri, feed_parsed["feed"]["error"]))
 
-            # Exception was thrown
-            if "bozo_exception" in feed_parsed and not entries:
-                msg = str(feed_parsed["bozo_exception"])
-                if "CERTIFICATE_VERIFY_FAILED" in msg:
-                    msg = T("Server %s uses an untrusted HTTPS certificate") % get_base_url(uri)
-                    msg += " - https://sabnzbd.org/certificate-errors"
-                elif "href" in feed_parsed and feed_parsed["href"] != uri and "login" in feed_parsed["href"]:
-                    # Redirect to login page!
-                    msg = T("Do not have valid authentication for feed %s") % uri
-                else:
-                    msg = T("Failed to retrieve RSS from %s: %s") % (uri, msg)
+                # Exception was thrown
+                if "bozo_exception" in feed_parsed and not entries:
+                    msg = str(feed_parsed["bozo_exception"])
+                    if "CERTIFICATE_VERIFY_FAILED" in msg:
+                        msg = T("Server %s uses an untrusted HTTPS certificate") % get_base_url(uri)
+                        msg += " - https://sabnzbd.org/certificate-errors"
+                    elif "href" in feed_parsed and feed_parsed["href"] != uri and "login" in feed_parsed["href"]:
+                        # Redirect to login page!
+                        msg = T("Do not have valid authentication for feed %s") % uri
+                    else:
+                        msg = T("Failed to retrieve RSS from %s: %s") % (uri, msg)
 
-            if msg:
-                # We need to escape any "%20" that could be in the warning due to the URL's
-                helpful_warning(urllib.parse.unquote(msg))
-            elif not entries:
-                msg = T("RSS Feed %s was empty") % uri
-                logging.info(msg)
+                if msg:
+                    # We need to escape any "%20" that could be in the warning due to the URL's
+                    helpful_warning(urllib.parse.unquote(msg))
+                    raise RSSFetchError(msg)
+                elif not entries:
+                    msg = T("RSS Feed %s was empty") % uri
+                    logging.info(msg)
+                    raise RSSFetchError(msg)
 
-            for entry in entries:
-                normalised = ResolvedEntry.from_feed(feed, entry)
-                if not normalised:
-                    continue
-                # Merge the existing state
-                existing = self.store.rss_get_job(feed, normalised.link)
-                if existing:
-                    normalised.merge(existing)
-                all_entries.append(normalised)
-
-        return all_entries, msg
+                for entry in entries:
+                    normalised = ResolvedEntry.from_feed(feed, entry)
+                    if not normalised:
+                        continue
+                    # Merge the existing state
+                    existing = self.store.rss_get_job(feed, normalised.link)
+                    if existing:
+                        normalised.merge(existing)
+                    yield normalised
+            except (AttributeError, IndexError):
+                logging.info(T("Incompatible feed") + " " + uri)
+                logging.info("Traceback: ", exc_info=True)
+                raise RSSFetchError(T("Incompatible feed"))
 
     @staticmethod
     def _evaluate_entry(
