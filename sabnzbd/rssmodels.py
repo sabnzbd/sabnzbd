@@ -35,7 +35,6 @@ from sabnzbd.misc import (
 
 import feedparser
 
-
 _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_BR = re.compile(r"<br\s*/?>", re.I)  # Strip content after first <br/>
