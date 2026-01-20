@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:nZEDb="https://nzbfinder.ws/rss-info/" encoding="utf-8">
+ <channel>
+  <atom:link href="https://nzbfinder.ws/rss" rel="self" type="application/rss+xml"/>
+  <title>NZB Finder - THANK YOU!</title>
+  <description>NZB Finder RSS Details</description>
+  <link>https://nzbfinder.ws/</link>
+  <language>en-gb</language>
+  <webMaster>hello@nzbfinder.ws NZB Finder</webMaster>
+  <category>usenet,nzbs,newznab,indexer,indexing,index,couchpotato,sickbeard,alt.binaries,alt.binaries.hdtv,bluray,blu-ray</category>
+  <generator>nZEDb</generator>
+  <ttl>10</ttl>
+  <docs>https://nzbfinder.ws/rss-info/</docs>
+  <image url="https://nzbfinder.ws/themes/shared/img/logo.png" title="NZB Finder" link="https://nzbfinder.ws/" description="Visit NZB Finder - Fast, Easy, Reliable"/>
+  <nZEDb:response offset="0" total="0"/>
+  <item>
+   <title>Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER</title>
+   <guid isPermaLink="true">https://nzbfinder.ws/details/FakeKey</guid>
+   <link>https://nzbfinder.ws/getnzb/FakeKey.nzb&amp;i=46181&amp;r=FakeKey</link>
+   <comments>https://nzbfinder.ws/details/FakeKey#comments</comments>
+   <pubDate>Sat, 02 Mar 2019 18:30:08 +0100</pubDate>
+   <category>Movies &gt; HD</category>
+   <description><![CDATA[
+    <div>
+    <img style="margin-left:10px;margin-bottom:10px;float:right;" src="https://nzbfinder.ws/covers/movies/5104604-cover.jpg" width="120" alt="Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER" />
+    <li>ID: <a href="https://nzbfinder.ws/details/FakeKey">FakeKey</a></li>
+    <li>Name: Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER</li>
+    <li>Size: 5GB</li>
+    <li>Category: <a href="https://nzbfinder.ws/browse?t=2040">Movies > HD</a></li>
+    <li>Group: <a href="https://nzbfinder.ws/browse?g=alt.binaries.xylo">alt.binaries.xylo</a></li>
+    <li>Poster: UknDVdFYOaTatStrR@YZOFsilg.JZr</li>
+    <li>Posted: 2019-03-02 18:18:07</li>
+    <li>Password: None</li>
+    <li>Imdb Info:
+                    <ul>
+                        <li>IMDB Link: <a href="http://www.imdb.com/title/tt5104604/">Movie.With.a.Dog.2018.720p.BluRay.x264-SPRiNTER</a></li>
+
+                        <li>Rating: 7.9</li>
+<li>Plot: In the future, an outbreak of canine flu leads the mayor of a Japanese city to banish all dogs to an island that's a garbage dump. The outcasts must soon embark on an epic journey when a 12-year-old boy arrives on the island to find his beloved pet.</li>
+<li>Year: 2018</li>
+<li>Genre: Adventure, Comedy, Animation</li>
+<li>Director: Wes Anderson</li>
+<li>Actors: Bryan Cranston, Koyu Rankin, Edward Norton, Liev Schreiber, Greta Gerwig, Bill Murray, Jeff Goldblum, Bob Balaban, Scarlett Johansson, Courtney B. Vance, Kunichi Nomura, Tilda Swinton, F. Murray Abraham, Kara Hayward, Akira Ito</li>
+
+                    </ul>
+                </li>
+
+    </div>]]></description>
+   <enclosure url="https://nzbfinder.ws/getnzb/FakeKey.nzb&amp;i=46181&amp;r=FakeKey" length="5164539914" type="application/x-nzb"/>
+   <nZEDb:attr name="category" value="2040"/>
+   <nZEDb:attr name="size" value="5164539914"/>
+   <nZEDb:attr name="files" value="56"/>
+   <nZEDb:attr name="poster" value="UknDVdFYOaTatStrR@YZOFsilg.JZr"/>
+   <nZEDb:attr name="imdb" value="5104604"/>
+   <nZEDb:attr name="prematch" value="1"/>
+   <nZEDb:attr name="grabs" value="0"/>
+   <nZEDb:attr name="comments" value="0"/>
+   <nZEDb:attr name="password" value="0"/>
+   <nZEDb:attr name="season" value="2018"/>
+   <nZEDb:attr name="episode" value="720"/>
+   <nZEDb:attr name="usenetdate" value="Sat, 02 Mar 2019 18:18:07 +0100"/>
+   <nZEDb:attr name="group" value="alt.binaries.xylo"/>
+  </item>
+ </channel>
+</rss>

@@ -136,12 +136,14 @@ class TestRSS:
         sabnzbd.config.ConfigCat("tv", {})
         sabnzbd.config.ConfigCat("movies", {})
 
-    def test_rss_newznab_parser(self, tmp_db):
+    def test_rss_newznab_parser(self, httpserver: HTTPServer, tmp_db):
         """Test basic RSS-parsing of custom elements
         Harder to test in functional test
         """
+        httpserver.expect_request("/rss_newznab_test.xml").respond_with_handler(httpserver_handler_data_dir)
+
         feed_name = "TestFeedNewznab"
-        self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_newznab_test.xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_newznab_test.xml"))
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
@@ -164,9 +166,11 @@ class TestRSS:
         adjusted_date = datetime.datetime(2018, 4, 13, 5, 46, 25, tzinfo=datetime.timezone.utc)
         assert job.age == adjusted_date
 
-    def test_rss_nzedb_parser(self, tmp_db):
+    def test_rss_nzedb_parser(self, httpserver: HTTPServer, tmp_db):
+        httpserver.expect_request("/rss_nzedb_test.xml").respond_with_handler(httpserver_handler_data_dir)
+
         feed_name = "TestFeednZEDb"
-        self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_nzedb_test.xml")
+        self.setup_rss(feed_name, httpserver.url_for("/rss_nzedb_test.xml"))
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
