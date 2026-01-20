@@ -23,7 +23,7 @@ import datetime
 import logging
 import os
 import threading
-from typing import Optional
+from typing import Optional, Any
 
 import sabctools
 from sabnzbd.nzb.article import TryList, Article
@@ -36,6 +36,7 @@ from sabnzbd.filesystem import (
     get_new_id,
     save_data,
     load_data,
+    RAR_RE,
 )
 from sabnzbd.misc import int_conv, subject_name_extractor
 from sabnzbd.decorators import synchronized
@@ -282,6 +283,50 @@ class NzbFile(TryList):
             bytes_ready += article.decoded_size
         return bytes_ready
 
+    def sort_key(self) -> tuple[Any, ...]:
+        """Comparison function for sorting NZB files.
+
+        The comparison will sort .par2 files to the top of the queue followed by .rar files,
+        they will then be sorted by name.
+        """
+        name = self.filename.lower()
+        base, ext = os.path.splitext(name)
+
+        is_par2 = ext == ".par2"
+        is_vol_par2 = is_par2 and ".vol" in base
+        is_mini_par2 = is_par2 and not is_vol_par2
+
+        m = RAR_RE.search(name)
+        is_rar = bool(m)
+        is_main_rar = is_rar and m.group(1) == "rar"
+
+        # Initially group by mini-par2, other files, vol-par2
+        if is_mini_par2:
+            tier = 0
+        elif is_vol_par2:
+            tier = 2
+        else:
+            tier = 1
+
+        if tier == 1:
+            if is_rar and m:
+                # strip matched RAR suffix including leading dot (.part01.rar, .rar, .r00, ...)
+                group_base = name[: m.start()]
+                local_group = 0
+                type_rank = 0 if is_main_rar else 1
+            else:
+                # nfo, sfv, sample.mkv, etc.
+                group_base = base
+                local_group = 1
+                type_rank = 0
+        else:
+            # mini/vol par2 ignore the group base
+            group_base = ""
+            local_group = 0
+            type_rank = 0
+
+        return tier, group_base, local_group, type_rank, name
+
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
         dict_ = {}
@@ -307,6 +352,9 @@ class NzbFile(TryList):
         for article in self.articles:
             article.lock = self.lock
         super().__setstate__(dict_.get("try_list", []))
+
+    def __lt__(self, other: "NzbFile"):
+        return self.sort_key() < other.sort_key()
 
     def __eq__(self, other: "NzbFile"):
         """Assume it's the same file if the number bytes and first article
