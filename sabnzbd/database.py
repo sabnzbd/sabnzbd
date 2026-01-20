@@ -132,7 +132,7 @@ class HistoryDB:
                     and self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
                 )
             if version < 7:
-                _ = self.execute("PRAGMA user_version = 6;") and self.create_rss_table() and self.import_rss_records()
+                _ = self.execute("PRAGMA user_version = 7;") and self.create_rss_table() and self.import_rss_records()
 
             for feed in self.rss_get_feeds():
                 self.rss_remove_obsolete(feed)
