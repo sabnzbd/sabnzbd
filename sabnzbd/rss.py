@@ -353,11 +353,6 @@ class RSSReader:
             store.close()
 
     @property
-    def is_store_active(self):
-        """Are there any stores still running?"""
-        return any(self._active_db_connections)
-
-    @property
     def db(self) -> HistoryDB:
         """Get the store for the current thread"""
         if not hasattr(self._thread_local, "db"):
