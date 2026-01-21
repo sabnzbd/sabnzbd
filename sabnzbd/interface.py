@@ -1983,7 +1983,7 @@ def GetRssLog(feed):
 
         if entry.downloaded_at:
             job["time_downloaded_ms"] = int(entry.downloaded_at.timestamp())
-            job["time_downloaded"] = entry.downloaded_at.astimezone().strftime(time_format("%H:%M %a %d %b"))
+            job["time_downloaded"] = entry.downloaded_at.strftime(time_format("%H:%M %a %d %b"))
         else:
             job["time_downloaded_ms"] = ""
             job["time_downloaded"] = ""
