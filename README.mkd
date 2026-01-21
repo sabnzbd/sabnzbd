@@ -1,14 +1,18 @@
-Release Notes - SABnzbd 4.6.0 Beta 2
+Release Notes - SABnzbd 5.0.0 Beta 1
 =========================================================
 
-This is the second beta release of version 4.6.
+This is the first beta release of version 5.0.
 
-## New features in 4.6.0
+Due to several fundamental changes we decided to
+not just call this 4.6 but promote it to 5.0!
+
+## New features in 5.0.0
 
 * Added support for NNTP Pipelining which eliminates idle waiting between
   requests, significantly improving speeds on high-latency connections.
   Read more here: https://sabnzbd.org/wiki/advanced/nntp-pipelining
-* Dynamically increase Assembler limits on faster connections.
+* Implemented Direct Write.
+* Complete redesign of article cache.
 * Improved disk speed measurement in Status window.
 * Enable `verify_xff_header` by default.
 * Reduce delays between jobs during post-processing.
