@@ -229,21 +229,15 @@ class HistoryDB:
             CREATE TABLE rss (
                 "id" INTEGER PRIMARY KEY,
                 "feed" TEXT NOT NULL,
-                "state" TEXT NOT NULL
-                         CHECK (state IN (
-                         'G',  -- Good
-                         'B',  -- Bad
-                         'D',  -- Downloaded
-                         'X'  -- Expired
-                         )),
+                "state" TEXT NOT NULL,
                 "title" TEXT NOT NULL,
                 "url" TEXT NOT NULL,
                 "infourl" TEXT,
                 "category" TEXT,
                 "orgcat" TEXT,
-                "pp" TEXT,
+                "pp" INTEGER,
                 "script" TEXT,
-                "priority" TEXT,
+                "priority" INTEGER,
                 "season" INTEGER,
                 "episode" INTEGER,
                 "size" INTEGER,
