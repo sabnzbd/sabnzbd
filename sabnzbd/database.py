@@ -179,7 +179,6 @@ class HistoryDB:
                         # Can fail in case of automatic rollback
                         logging.debug("Rollback Failed:", exc_info=True)
             return False
-        return False
 
     def create_history_db(self):
         """Create a new (empty) database file"""
