@@ -149,8 +149,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.rss_has_feed(feed_name)
-        job = rss_obj.store.rss_get_job(feed_name, "https://cdn.example.com/cdn?t=get&id=FakeKey&apikey=FakeKey")
+        assert rss_obj.db.rss_has_feed(feed_name)
+        job = rss_obj.db.rss_get_job(feed_name, "https://cdn.example.com/cdn?t=get&id=FakeKey&apikey=FakeKey")
         assert job is not None
 
         # Check some job-data
@@ -176,8 +176,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.rss_has_feed(feed_name)
-        job = rss_obj.store.rss_get_job(feed_name, "https://example.com/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
+        assert rss_obj.db.rss_has_feed(feed_name)
+        job = rss_obj.db.rss_get_job(feed_name, "https://example.com/getnzb/FakeKey.nzb&i=46181&r=FakeKey")
         assert job is not None
 
         # Check some job-data
@@ -204,8 +204,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.rss_has_feed(feed_name)
-        job = rss_obj.store.rss_get_job(feed_name, "http://LINK")
+        assert rss_obj.db.rss_has_feed(feed_name)
+        job = rss_obj.db.rss_get_job(feed_name, "http://LINK")
         assert job is not None
 
         # Check some job-data
@@ -227,7 +227,7 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert not rss_obj.store.rss_has_feed(feed_name)
+        assert not rss_obj.db.rss_has_feed(feed_name)
 
     def test_rss_enclosure_multiple(self, httpserver: HTTPServer, tmp_db):
         httpserver.expect_request("/rss_enclosure_multiple.xml").respond_with_handler(httpserver_handler_data_dir)
@@ -240,8 +240,8 @@ class TestRSS:
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
-        assert rss_obj.store.rss_has_feed(feed_name)
-        job = rss_obj.store.rss_get_job(feed_name, "http://NZB_LINK")
+        assert rss_obj.db.rss_has_feed(feed_name)
+        job = rss_obj.db.rss_get_job(feed_name, "http://NZB_LINK")
         assert job is not None
 
         # Check some job-data
@@ -600,8 +600,8 @@ class TestRSS:
         tmp_db.close = fake_close
 
         # Inject our store and verify it's used
-        reader.store = tmp_db
-        assert reader.store is tmp_db
+        reader.db = tmp_db
+        assert reader.db is tmp_db
 
         # Stopping the reader should close all active stores
         reader.stop()
@@ -649,7 +649,7 @@ class TestRSS:
         msg_first = reader.run_feed(feed_name, download=True, ignore_first=True)
         assert msg_first == ""
 
-        job_first = reader.store.rss_get_job(feed_name, "http://example.test/starred-episode")
+        job_first = reader.db.rss_get_job(feed_name, "http://example.test/starred-episode")
         assert job_first is not None
         assert job_first.state is RSSState.GOOD
         assert job_first.is_starred  # initial_scan True + GOOD
@@ -659,7 +659,7 @@ class TestRSS:
         msg_second = reader.run_feed(feed_name, download=True, ignore_first=False)
         assert msg_second == ""
 
-        job_second = reader.store.rss_get_job(feed_name, "http://example.test/starred-episode")
+        job_second = reader.db.rss_get_job(feed_name, "http://example.test/starred-episode")
         assert job_second is not None
         # Still GOOD and still from initial scan
         assert job_second.state is RSSState.GOOD
@@ -673,7 +673,7 @@ class TestRSS:
         assert msg_third == ""
         assert add_url_mock.call_count == 1
 
-        job_third = reader.store.rss_get_job(feed_name, "http://example.test/starred-episode")
+        job_third = reader.db.rss_get_job(feed_name, "http://example.test/starred-episode")
         assert job_third is not None
         assert job_third.state is RSSState.DOWNLOADED
         assert job_third.downloaded_at is not None
@@ -732,7 +732,7 @@ class TestRSS:
         reader = RSSReader()
         reader.run_feed(feed_name)
 
-        entries = list(reader.store.rss_get_jobs(feed=feed_name))
+        entries = list(reader.db.rss_get_jobs(feed=feed_name))
         links = {e.link for e in entries}
 
         # Shared link must only appear once

@@ -341,7 +341,7 @@ class RSSReader:
     def __init__(self):
         self.next_run = time.time()
         self.shutdown = False
-        self._active_stores = weakref.WeakSet()
+        self._active_db_connections = weakref.WeakSet()
         self._thread_local = threading.local()
 
         # Patch feedparser
@@ -349,32 +349,32 @@ class RSSReader:
 
     def stop(self):
         self.shutdown = True
-        for store in list(self._active_stores):
+        for store in list(self._active_db_connections):
             store.close()
 
     @property
     def is_store_active(self):
         """Are there any stores still running?"""
-        return any(self._active_stores)
+        return any(self._active_db_connections)
 
     @property
-    def store(self) -> HistoryDB:
+    def db(self) -> HistoryDB:
         """Get the store for the current thread"""
-        if not hasattr(self._thread_local, "store"):
-            store = HistoryDB()
-            self._active_stores.add(store)
-            self._thread_local.store = store
-        return self._thread_local.store
+        if not hasattr(self._thread_local, "db"):
+            db = HistoryDB()
+            self._active_db_connections.add(db)
+            self._thread_local.db = db
+        return self._thread_local.db
 
-    @store.setter
-    def store(self, db: Optional[HistoryDB]) -> None:
+    @db.setter
+    def db(self, db: Optional[HistoryDB]) -> None:
         """Set the store for the current thread, setting to None closes the connection"""
-        if current := getattr(self._thread_local, "store", None):
+        if current := getattr(self._thread_local, "db", None):
             current.close()
-            del self._thread_local.store
+            del self._thread_local.db
         if db:
-            self._active_stores.add(db)
-            self._thread_local.store = db
+            self._active_db_connections.add(db)
+            self._thread_local.db = db
 
     @synchronized(RSS_LOCK)
     def run_feed(
@@ -403,7 +403,7 @@ class RSSReader:
         if readout:
             gen = self.fetch_rss(feed, uris)
         else:
-            gen = self.store.rss_get_jobs(feed=feed)
+            gen = self.db.rss_get_jobs(feed=feed)
 
         # Evaluate rules and apply side effects
         try:
@@ -412,7 +412,7 @@ class RSSReader:
                     return ""
 
                 # Skip duplicates across multiple feeds
-                if entry.link in new_links or len(uris) > 1 and self.store.rss_is_duplicate(entry):
+                if entry.link in new_links or len(uris) > 1 and self.db.rss_is_duplicate(entry):
                     logging.info("Ignoring job %s from other feed", entry.title)
                     continue
 
@@ -446,7 +446,7 @@ class RSSReader:
         if new_downloads and cfg.email_rss() and not force:
             emailer.rss_mail(feed, new_downloads)
 
-        self.store.rss_remove_obsolete(feed, new_links)
+        self.db.rss_remove_obsolete(feed, new_links)
 
         return ""
 
@@ -470,7 +470,7 @@ class RSSReader:
         filters = FeedConfig.from_config(feeds)
 
         # Set first if this is the very first scan of this URI
-        first = (not self.store.rss_has_feed(feed)) and ignore_first
+        first = (not self.db.rss_has_feed(feed)) and ignore_first
 
         return uris, filters, first, ""
 
@@ -576,7 +576,7 @@ class RSSReader:
                     if not normalised:
                         continue
                     # Merge the existing state
-                    existing = self.store.rss_get_job(feed, normalised.link)
+                    existing = self.db.rss_get_job(feed, normalised.link)
                     if existing:
                         normalised.merge(existing)
                     yield normalised
@@ -621,7 +621,7 @@ class RSSReader:
         if not update.state is RSSState.DOWNLOADED:
             return
         if not update.downloaded_at:
-            self.store.rss_flag_downloaded(update.feed, update.link)
+            self.db.rss_flag_downloaded(update.feed, update.link)
 
         nzbname = None if special_rss_site(update.link) else update.title
 
@@ -678,7 +678,7 @@ class RSSReader:
             initial_scan=initial_scan,
         )
 
-        self.store.rss_upsert(update)
+        self.db.rss_upsert(update)
         self.enqueue_download(update)
 
         return bool(evaluation.matched and should_download)
@@ -708,7 +708,7 @@ class RSSReader:
                 logging.debug("Traceback: ", exc_info=True)
                 pass
             finally:
-                self.store = None
+                self.db = None
             if active:
                 logging.info("Finished scheduled RSS read-outs")
 
