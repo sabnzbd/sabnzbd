@@ -731,6 +731,9 @@ class NzbQueue:
         articles_left, file_done, post_done = nzo.remove_article(article, success)
 
         if not nzo.precheck:
+            # Mark as on_disk so assembler knows it can skip this article
+            if not success:
+                article.on_disk = True
             # The type is only set if sabctools could decode the article
             if nzf.type:
                 sabnzbd.Assembler.process(nzo, nzf, file_done, article=article)
