@@ -75,6 +75,7 @@ class NewsWrapper:
         "selector_events",
         "lock",
         "generation",
+        "tls_wants_write",
     )
 
     def __init__(self, server: "sabnzbd.downloader.Server", thrdnum: int, block: bool = False, generation: int = 0):
@@ -82,6 +83,8 @@ class NewsWrapper:
         self.thrdnum: int = thrdnum
         self.blocking: bool = block
         self.generation: int = generation
+        if getattr(self, "lock", None) is None:
+            self.lock: threading.Lock = threading.Lock()
 
         self.timeout: Optional[float] = None
 
@@ -104,8 +107,7 @@ class NewsWrapper:
         )
         self._response_queue: deque[Optional[sabnzbd.nzb.Article]] = deque()
         self.selector_events = 0
-        if getattr(self, "lock", None) is None:
-            self.lock: threading.Lock = threading.Lock()
+        self.tls_wants_write: bool = False
 
     @property
     def article(self) -> Optional["sabnzbd.nzb.Article"]:
