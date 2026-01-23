@@ -660,8 +660,6 @@ class Downloader(Thread):
                             if nw.prepare_request():
                                 self.add_socket(nw)
                         else:
-                            nw.server.idle_threads.remove(nw)
-                            nw.server.busy_threads.add(nw)
                             try:
                                 logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
                                 nw.init_connect()
