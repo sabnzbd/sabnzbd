@@ -754,7 +754,9 @@ class Downloader(Thread):
         # Drop stale items
         if nw.generation != generation:
             return
-        if event & selectors.EVENT_READ:
+
+        # Read on EVENT_READ, or on EVENT_WRITE if TLS needs a write to complete a read
+        if (event & selectors.EVENT_READ) or (event & selectors.EVENT_WRITE and nw.tls_wants_write):
             self.process_nw_read(nw, generation)
             # If read caused a reset, don't proceed to write
             if nw.generation != generation:
@@ -762,7 +764,9 @@ class Downloader(Thread):
             # The read may have removed the socket, so prevent calling prepare_request again
             if not (nw.selector_events & selectors.EVENT_WRITE):
                 return
-        if event & selectors.EVENT_WRITE:
+
+        # Only attempt app-level writes if TLS is not blocked
+        if (event & selectors.EVENT_WRITE) and not nw.tls_wants_write:
             nw.write()
 
     def process_nw_read(self, nw: NewsWrapper, generation: int) -> None:
@@ -773,7 +777,13 @@ class Downloader(Thread):
             try:
                 n, bytes_pending = nw.read(nbytes=bytes_pending, generation=generation)
                 bytes_received += n
-            except (ssl.SSLWantReadError, ssl.SSLWantWriteError):
+                nw.tls_wants_write = False
+            except ssl.SSLWantReadError:
+                return
+            except ssl.SSLWantWriteError:
+                # TLS needs to write handshake/key-update data before we can continue reading
+                nw.tls_wants_write = True
+                self.modify_socket(nw, selectors.EVENT_READ | selectors.EVENT_WRITE)
                 return
             except (ConnectionError, ConnectionAbortedError):
                 # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems

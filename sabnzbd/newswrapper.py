@@ -75,6 +75,7 @@ class NewsWrapper:
         "selector_events",
         "lock",
         "generation",
+        "tls_wants_write",
     )
 
     def __init__(self, server: "sabnzbd.downloader.Server", thrdnum: int, block: bool = False, generation: int = 0):
@@ -82,6 +83,8 @@ class NewsWrapper:
         self.thrdnum: int = thrdnum
         self.blocking: bool = block
         self.generation: int = generation
+        if getattr(self, "lock", None) is None:
+            self.lock: threading.Lock = threading.Lock()
 
         self.timeout: Optional[float] = None
 
@@ -104,8 +107,7 @@ class NewsWrapper:
         )
         self._response_queue: deque[Optional[sabnzbd.nzb.Article]] = deque()
         self.selector_events = 0
-        if getattr(self, "lock", None) is None:
-            self.lock: threading.Lock = threading.Lock()
+        self.tls_wants_write: bool = False
 
     @property
     def article(self) -> Optional["sabnzbd.nzb.Article"]:
@@ -375,6 +377,14 @@ class NewsWrapper:
         server = self.server
 
         try:
+            # Flush any buffered data
+            if self.nntp.write_buffer:
+                sent = self.nntp.sock.send(self.nntp.write_buffer)
+                self.nntp.write_buffer = self.nntp.write_buffer[sent:]
+                # If buffer still has data, wait for next write opportunity
+                if self.nntp.write_buffer:
+                    return
+
             # If available, try to send new command
             if self.prepare_request():
                 # Nothing to send but already requests in-flight
@@ -395,8 +405,20 @@ class NewsWrapper:
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s", self.thrdnum, server.host, command)
 
-                    # If this fails, it will propagate and throw a Downloader-error
-                    self.nntp.sock.sendall(command)
+                    # Non-blocking send - buffer any unsent data
+                    sent = self.nntp.sock.send(command)
+                    if sent < len(command):
+                        logging.debug(
+                            "%s@%s: Partial send",
+                            server.host,
+                            self.thrdnum,
+                            self.server.host,
+                            command,
+                            sent,
+                            len(command),
+                        )
+                        self.nntp.write_buffer = command[sent:]
+
                     self._response_queue.append(article)
                     self.next_request = None
                 else:
@@ -405,6 +427,15 @@ class NewsWrapper:
             else:
                 # No further work for this socket
                 sabnzbd.Downloader.remove_socket(self)
+        except ssl.SSLWantWriteError:
+            # Socket not ready for writing, keep buffer and wait for next write event
+            pass
+        except ssl.SSLWantReadError:
+            # SSL renegotiation needs read first
+            sabnzbd.Downloader.modify_socket(self, EVENT_READ)
+        except BlockingIOError:
+            # Socket not ready for writing, keep buffer and wait for next write event
+            pass
         except socket.error as err:
             logging.info("Looks like server closed connection: %s, type: %s", err, type(err))
             sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True, wait=False)
@@ -476,7 +507,7 @@ class NewsWrapper:
 
 class NNTP:
     # Pre-define attributes to save memory
-    __slots__ = ("nw", "addrinfo", "error_msg", "sock", "fileno", "closed")
+    __slots__ = ("nw", "addrinfo", "error_msg", "sock", "fileno", "closed", "write_buffer")
 
     def __init__(self, nw: NewsWrapper, addrinfo: AddrInfo):
         self.nw: NewsWrapper = nw
@@ -486,6 +517,9 @@ class NNTP:
 
         # Prevent closing this socket until it's done connecting
         self.closed = False
+
+        # Buffer for non-blocking writes
+        self.write_buffer: bytes = b""
 
         # Create SSL-context if it is needed and not created yet
         if self.nw.server.ssl and not self.nw.server.ssl_context:
@@ -650,6 +684,7 @@ class NNTP:
         Locked to match connect(), even though most likely the caller already holds the same lock."""
         # Set status first, so any calls in connect/error are handled correctly
         self.closed = True
+        self.write_buffer = b""
         try:
             if send_quit:
                 with suppress(socket.error):
