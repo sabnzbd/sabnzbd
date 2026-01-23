@@ -643,6 +643,7 @@ class NNTP:
             else:
                 logging.warning(msg)
             self.nw.server.warning = msg
+            self.nw.hard_reset()
 
     @synchronized(DOWNLOADER_LOCK)
     def close(self, send_quit: bool):

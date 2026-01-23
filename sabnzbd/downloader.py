@@ -659,7 +659,7 @@ class Downloader(Thread):
                         if nw.connected:
                             if nw.prepare_request():
                                 self.add_socket(nw)
-                        else:
+                        elif not nw.nntp:
                             try:
                                 logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
                                 nw.init_connect()
