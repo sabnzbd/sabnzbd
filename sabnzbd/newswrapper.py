@@ -643,7 +643,8 @@ class NNTP:
             else:
                 logging.warning(msg)
             self.nw.server.warning = msg
-            self.nw.hard_reset()
+            # No reset-warning needed, above logging is sufficient
+            sabnzbd.Downloader.reset_nw(self.nw)
 
     @synchronized(DOWNLOADER_LOCK)
     def close(self, send_quit: bool):
