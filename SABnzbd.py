@@ -1275,7 +1275,6 @@ def main():
             "tools.encode.on": True,
             "tools.gzip.on": True,
             "tools.gzip.mime_types": mime_gzip,
-            "request.show_tracebacks": True,
             "error_page.401": sabnzbd.panic.error_page_401,
             "error_page.404": sabnzbd.panic.error_page_404,
         }
