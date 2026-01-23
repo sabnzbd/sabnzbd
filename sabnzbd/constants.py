@@ -91,6 +91,9 @@ CONFIG_BACKUP_FILES = [
     BYTES_FILE_NAME,
     DB_HISTORY_NAME,
 ]
+CONFIG_RESTORE_FILES = [
+    RSS_FILE_NAME,
+]
 CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
     DEF_HTTPS_CERT_FILE: "https_cert",
     DEF_HTTPS_KEY_FILE: "https_key",

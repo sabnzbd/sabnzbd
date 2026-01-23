@@ -43,6 +43,7 @@ from sabnzbd.constants import (
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
     DEF_PIPELINING_REQUESTS,
+    CONFIG_RESTORE_FILES,
 )
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
@@ -1086,7 +1087,7 @@ def restore_config_backup(config_backup_data: bytes):
 
                 # Write the rest of the admin files that we want to recover
                 adminpath = sabnzbd.cfg.admin_dir.get_path()
-                for filename in CONFIG_BACKUP_FILES + list(CONFIG_BACKUP_HTTPS.keys()):
+                for filename in CONFIG_BACKUP_FILES + CONFIG_RESTORE_FILES + list(CONFIG_BACKUP_HTTPS.keys()):
                     try:
                         zip_ref.getinfo(filename)
                         destination_file = os.path.join(adminpath, filename)
