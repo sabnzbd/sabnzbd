@@ -62,6 +62,7 @@ class NewsWrapper:
         "timeout",
         "decoder",
         "nntp",
+        "socket_connected",
         "connected",
         "user_sent",
         "pass_sent",
@@ -89,6 +90,7 @@ class NewsWrapper:
 
         self.nntp: Optional[NNTP] = None
 
+        self.socket_connected: bool = False
         self.connected: bool = False
         self.user_sent: bool = False
         self.pass_sent: bool = False
@@ -586,6 +588,7 @@ class NNTP:
                 # Locked, so it can't interleave with any of the Downloader "__nw" actions
                 with DOWNLOADER_LOCK:
                     if not self.closed:
+                        self.nw.socket_connected = True
                         sabnzbd.Downloader.add_socket(self.nw)
         except OSError as e:
             self.error(e)
