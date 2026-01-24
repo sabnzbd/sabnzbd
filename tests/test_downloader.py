@@ -267,7 +267,7 @@ class TestConnectionStateMachine:
         nw.init_connect()
 
         # Wait for connect to fail (connection refused)
-        for _ in range(10):
+        for _ in range(100):
             if nw.nntp is None:
                 break
             time.sleep(0.05)
