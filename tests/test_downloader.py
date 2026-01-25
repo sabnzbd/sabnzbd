@@ -182,12 +182,12 @@ class TestConnectionStateMachine:
 
         # Wait for async connect to complete
         for _ in range(50):
-            if nw.socket_connected:
+            if nw.connected:
                 break
             time.sleep(0.1)
 
-        assert nw.socket_connected is True
-        assert nw.connected is False
+        assert nw.connected is True
+        assert nw.ready is False
         assert nw.nntp is not None
 
         # Read the 200 Welcome
@@ -200,8 +200,8 @@ class TestConnectionStateMachine:
             pass
 
         # Server has no user/pass so finish_connect_nw goes directly to connected state
-        assert nw.socket_connected is True
         assert nw.connected is True
+        assert nw.ready is True
         assert nw.nntp is not None
 
     def test_socket_connected_enables_auth_flow(self, test_server, mock_downloader):
@@ -215,12 +215,12 @@ class TestConnectionStateMachine:
 
         # Wait for socket_connected
         for _ in range(50):
-            if nw.socket_connected:
+            if nw.connected:
                 break
             time.sleep(0.1)
 
-        assert nw.socket_connected is True
-        assert nw.connected is False
+        assert nw.connected is True
+        assert nw.ready is False
         assert nw.user_sent is False
 
         # Read the 200 Welcome
@@ -245,18 +245,18 @@ class TestConnectionStateMachine:
 
         # Wait for connection
         for _ in range(50):
-            if nw.socket_connected:
+            if nw.connected:
                 break
             time.sleep(0.1)
 
         assert nw.nntp is not None
-        assert nw.socket_connected is True
+        assert nw.connected is True
 
         nw.hard_reset(wait=False)
 
         assert nw.nntp is None
-        assert nw.socket_connected is False
         assert nw.connected is False
+        assert nw.ready is False
 
     @pytest.mark.parametrize("fake_nntp_server", [{"fail_connect": True}], indirect=True)
     def test_failed_connect_allows_retry(self, fake_nntp_server, test_server, mock_downloader):
@@ -273,6 +273,6 @@ class TestConnectionStateMachine:
             time.sleep(0.05)
 
         # Connection should have failed and been reset
+        assert nw.ready is False
         assert nw.connected is False
-        assert nw.socket_connected is False
         assert nw.nntp is None

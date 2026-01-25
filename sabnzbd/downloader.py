@@ -656,7 +656,7 @@ class Downloader(Thread):
                         if not server.get_article(peek=True):
                             break
 
-                        if nw.connected or nw.socket_connected:
+                        if nw.connected:
                             self.add_socket(nw)
                         elif not nw.nntp:
                             try:
