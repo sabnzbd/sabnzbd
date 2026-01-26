@@ -1,10 +1,10 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.9.6
+apprise==1.9.7
 sabctools==9.3.1
 CT3==3.4.0.post5
 cffi==2.0.0
-pycparser==2.23
+pycparser==3.0
 feedparser==6.0.12
 configobj==5.0.9
 cheroot==11.1.2
@@ -61,7 +61,7 @@ requests==2.32.5
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
 markdown # Version-less for Python 3.9 and below
-markdown==3.10; python_version > '3.9'
+markdown==3.10.1; python_version > '3.9'
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
