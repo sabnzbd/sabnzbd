@@ -63,6 +63,7 @@ class NewsWrapper:
         "decoder",
         "nntp",
         "connected",
+        "ready",
         "user_sent",
         "pass_sent",
         "group",
@@ -92,7 +93,8 @@ class NewsWrapper:
 
         self.nntp: Optional[NNTP] = None
 
-        self.connected: bool = False
+        self.connected: bool = False  # TCP/TLS handshake complete
+        self.ready: bool = False  # Auth complete, can serve requests
         self.user_sent: bool = False
         self.pass_sent: bool = False
         self.user_ok: bool = False
@@ -135,7 +137,7 @@ class NewsWrapper:
     def finish_connect(self, code: int, message: str) -> None:
         """Perform login options"""
         if not (self.server.username or self.server.password or self.force_login):
-            self.connected = True
+            self.ready = True
             self.user_sent = True
             self.user_ok = True
             self.pass_sent = True
@@ -143,7 +145,7 @@ class NewsWrapper:
 
         if code == 480:
             self.force_login = True
-            self.connected = False
+            self.ready = False
             self.user_sent = False
             self.user_ok = False
             self.pass_sent = False
@@ -163,7 +165,7 @@ class NewsWrapper:
                 self.user_ok = True
                 self.pass_sent = True
                 self.pass_ok = True
-                self.connected = True
+                self.ready = True
 
         if self.user_ok and not self.pass_sent:
             command = utob("authinfo pass %s\r\n" % self.server.password)
@@ -174,7 +176,7 @@ class NewsWrapper:
                 # Assume that login failed (code 481 or other)
                 raise NNTPPermanentError(message, code)
             else:
-                self.connected = True
+                self.ready = True
 
         self.timeout = time.time() + self.server.timeout
 
@@ -215,11 +217,11 @@ class NewsWrapper:
         # Response code depends on request command:
         # 220 = ARTICLE, 222 = BODY
         if not article_done:
-            if not self.connected or not article or response.status_code in (281, 381, 480, 481, 482):
+            if not self.ready or not article or response.status_code in (281, 381, 480, 481, 482):
                 self.discard(article, count_article_try=False)
                 if not sabnzbd.Downloader.finish_connect_nw(self, response):
                     return
-                if self.connected:
+                if self.ready:
                     logging.info("Connecting %s@%s finished", self.thrdnum, server.host)
 
             elif response.status_code == 223:
@@ -347,7 +349,7 @@ class NewsWrapper:
         server = self.server
 
         # Do not pipeline requests until authentication is completed (connected)
-        if self.connected or not self._response_queue:
+        if self.ready or not self._response_queue:
             server_ready = (
                 server.active
                 and not server.restart
@@ -460,7 +462,7 @@ class NewsWrapper:
 
             if self.nntp:
                 sabnzbd.Downloader.remove_socket(self)
-                self.nntp.close(send_quit=self.connected)
+                self.nntp.close(send_quit=self.ready)
                 self.nntp = None
 
             # Reset all variables (including the NNTP connection) and increment the generation counter
@@ -501,7 +503,7 @@ class NewsWrapper:
             self.server.host,
             self.server.port,
             self.thrdnum,
-            self.connected,
+            self.ready,
         )
 
 
@@ -620,6 +622,7 @@ class NNTP:
                 # Locked, so it can't interleave with any of the Downloader "__nw" actions
                 with DOWNLOADER_LOCK:
                     if not self.closed:
+                        self.nw.connected = True
                         sabnzbd.Downloader.add_socket(self.nw)
         except OSError as e:
             self.error(e)
@@ -677,6 +680,8 @@ class NNTP:
             else:
                 logging.warning(msg)
             self.nw.server.warning = msg
+            # No reset-warning needed, above logging is sufficient
+            sabnzbd.Downloader.reset_nw(self.nw)
 
     @synchronized(DOWNLOADER_LOCK)
     def close(self, send_quit: bool):

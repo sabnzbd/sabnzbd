@@ -1415,7 +1415,7 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
         while test_server.active:
             nw.write()
             nw.read(on_response=on_response)
-            if nw.connected:
+            if nw.ready:
                 break
 
     except socket.timeout:
@@ -1521,10 +1521,10 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
     info["servers"] = []
     # Servers-list could be modified during iteration, so we need a copy
     for server in sabnzbd.Downloader.servers[:]:
-        activeconn = sum(nw.connected for nw in server.idle_threads.copy())
+        activeconn = sum(nw.ready for nw in server.idle_threads.copy())
         serverconnections = []
         for nw in server.busy_threads.copy():
-            if nw.connected:
+            if nw.ready:
                 activeconn += 1
             if article := nw.article:
                 serverconnections.append(

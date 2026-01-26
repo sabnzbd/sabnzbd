@@ -377,7 +377,7 @@ class Downloader(Thread):
     def add_socket(self, nw: NewsWrapper):
         """Add a socket to be watched for read or write availability"""
         if nw.nntp:
-            nw.server.idle_threads.remove(nw)
+            nw.server.idle_threads.discard(nw)
             nw.server.busy_threads.add(nw)
             try:
                 self.selector.register(nw.nntp.fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
@@ -656,10 +656,9 @@ class Downloader(Thread):
                         if not server.get_article(peek=True):
                             break
 
-                        if nw.connected or nw.nntp:
-                            if nw.prepare_request():
-                                self.add_socket(nw)
-                        else:
+                        if nw.connected:
+                            self.add_socket(nw)
+                        elif not nw.nntp:
                             try:
                                 logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
                                 nw.init_connect()
