@@ -4,7 +4,8 @@ apprise==1.9.7
 sabctools==9.3.1
 CT3==3.4.0.post5
 cffi==2.0.0
-pycparser==3.0
+pycparser # Version-less for Python 3.9 and below
+pycparser==3.0; python_version > '3.9'
 feedparser==6.0.12
 configobj==5.0.9
 cheroot==11.1.2
