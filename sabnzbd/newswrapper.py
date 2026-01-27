@@ -410,15 +410,7 @@ class NewsWrapper:
                     # Non-blocking send - buffer any unsent data
                     sent = self.nntp.sock.send(command)
                     if sent < len(command):
-                        logging.debug(
-                            "%s@%s: Partial send",
-                            server.host,
-                            self.thrdnum,
-                            self.server.host,
-                            command,
-                            sent,
-                            len(command),
-                        )
+                        logging.debug("%s@%s: Partial send", self.thrdnum, server.host)
                         self.nntp.write_buffer = command[sent:]
 
                     self._response_queue.append(article)
