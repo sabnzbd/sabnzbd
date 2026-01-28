@@ -903,13 +903,11 @@ class NzbQueue:
                         nzf.reset_try_list()
                         if not nzf.assembled and not nzf.articles:
                             logging.debug("No remaining articles for file %s", nzf.filename)
-                        if next_article := nzf.assembler_next_article:
+                        if not nzf.assembled and (next_article := nzf.assembler_next_article):
                             logging.debug(
-                                "Next article to assemble for file %s in job %s is %s, assembled: %s, decoded: %s, on_disk: %s, decoded_size: %d",
+                                "Next article to assemble for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %d",
                                 nzf.filename,
-                                nzo.final_name,
                                 next_article,
-                                nzf.assembled,
                                 next_article.decoded,
                                 next_article.on_disk,
                                 next_article.decoded_size,
