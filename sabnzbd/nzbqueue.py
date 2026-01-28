@@ -898,13 +898,6 @@ class NzbQueue:
                                     )
                                     nzo.increase_bad_articles_counter("missing_articles")
                                     sabnzbd.NzbQueue.register_article(article, success=False)
-                                if not article.decoded and not article.on_disk:
-                                    logging.debug(
-                                        "Article %s is not decoded or on disk in file %s, has_fetcher: %s",
-                                        article,
-                                        nzf.filename,
-                                        article.fetcher is not None,
-                                    )
 
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
