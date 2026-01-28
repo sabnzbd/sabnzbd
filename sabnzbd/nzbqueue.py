@@ -898,9 +898,29 @@ class NzbQueue:
                                     )
                                     nzo.increase_bad_articles_counter("missing_articles")
                                     sabnzbd.NzbQueue.register_article(article, success=False)
+                                if not article.decoded and not article.on_disk:
+                                    logging.debug(
+                                        "Article %s is not decoded or on disk in file %s, has_fetcher: %s",
+                                        article,
+                                        nzf.filename,
+                                        article.fetcher is not None,
+                                    )
 
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
+                        if not nzf.assembled and not nzf.articles:
+                            logging.debug("No remaining articles for file %s", nzf.filename)
+                        if next_article := nzf.assembler_next_article:
+                            logging.debug(
+                                "Next article to assemble for file %s in job %s is %s, assembled: %s, decoded: %s, on_disk: %s, decoded_size: %d",
+                                nzf.filename,
+                                nzo.final_name,
+                                next_article,
+                                nzf.assembled,
+                                next_article.decoded,
+                                next_article.on_disk,
+                                next_article.decoded_size,
+                            )
 
                 # Reset main try list, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)

@@ -122,9 +122,9 @@ class Article(TryList):
         self.decoded_size: Optional[int] = None  # Size of the decoded article
         self.on_disk: bool = False
         self.crc32: Optional[int] = None
-        self.nzf = nzf  # NzbFile reference
+        self.nzf: "sabnzbd.nzb.NzbFile" = nzf  # NzbFile reference
         # Share NzbFile lock for file-wide atomicity of try-list ops
-        self.lock = nzf.lock
+        self.lock: threading.RLock = nzf.lock
 
     @synchronized()
     def reset_try_list(self):
