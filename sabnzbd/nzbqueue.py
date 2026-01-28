@@ -905,13 +905,25 @@ class NzbQueue:
                             logging.debug("Not assembled but no remaining articles for file %s", nzf.filename)
                         if not nzf.assembled and (next_article := nzf.assembler_next_article):
                             logging.debug(
-                                "Next article to assemble for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %d",
+                                "Next article to assemble for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %s",
                                 nzf.filename,
                                 next_article,
                                 next_article.decoded,
                                 next_article.on_disk,
                                 next_article.decoded_size,
                             )
+
+                for article in nzo.first_articles.copy():
+                    logging.debug(
+                        "First article for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %s, has_fetcher: %s, tries: %s",
+                        article.nzf.filename,
+                        article,
+                        article.decoded,
+                        article.on_disk,
+                        article.decoded_size,
+                        article.fetcher is not None,
+                        article.tries,
+                    )
 
                 # Reset main try list, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)
