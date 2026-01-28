@@ -902,7 +902,7 @@ class NzbQueue:
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
                         if not nzf.assembled and not nzf.articles:
-                            logging.debug("No assembled but no remaining articles for file %s", nzf.filename)
+                            logging.debug("Not assembled but no remaining articles for file %s", nzf.filename)
                         if not nzf.assembled and (next_article := nzf.assembler_next_article):
                             logging.debug(
                                 "Next article to assemble for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %d",
