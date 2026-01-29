@@ -109,11 +109,11 @@ def fake_nntp_server(request):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
-        sock.close()  # Port is now closed, connections will be refused
 
         server = FakeNNTPServer(port=port)
         server.port = port  # Don't start, just hold the port number
         yield server
+        sock.close()
         return
 
     server = FakeNNTPServer()
@@ -147,18 +147,20 @@ def mock_downloader(mocker):
 
 
 @pytest.fixture
-def test_server(fake_nntp_server, mocker):
+def test_server(request, fake_nntp_server, mocker):
     """Create a Server pointing to the fake NNTP server"""
     addrinfo = AddrInfo(
         *socket.getaddrinfo(fake_nntp_server.host, fake_nntp_server.port, socket.AF_INET, socket.SOCK_STREAM)[0]
     )
+
+    params = getattr(request, "param", {})
 
     server = Server(
         server_id="test_server",
         displayname="Test Server",
         host=fake_nntp_server.host,
         port=fake_nntp_server.port,
-        timeout=10,
+        timeout=params.get("timeout", 5),
         threads=0,  # Don't auto-create connections
         priority=0,
         use_ssl=False,
@@ -259,6 +261,7 @@ class TestConnectionStateMachine:
         assert nw.ready is False
 
     @pytest.mark.parametrize("fake_nntp_server", [{"fail_connect": True}], indirect=True)
+    @pytest.mark.parametrize("test_server", [{"timeout": 0.1}], indirect=True)
     def test_failed_connect_allows_retry(self, fake_nntp_server, test_server, mock_downloader):
         """Failed connect should set error_msg (and optionally clear nntp)"""
         nw = NewsWrapper(test_server, thrdnum=1)
