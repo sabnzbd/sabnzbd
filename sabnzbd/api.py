@@ -29,7 +29,7 @@ import time
 import getpass
 import cherrypy
 from threading import Thread
-from typing import Optional, Any, Union
+from typing import Optional, Any, Union, Generator
 
 import sabctools
 
@@ -690,8 +690,11 @@ LOG_INI_HIDE_RE = re.compile(
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 
 
-def _api_showlog(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
+def _api_showlog(name: str, kwargs: dict[str, Union[str, list[str]]]) -> Generator[bytes, Any, None]:
     """Fetch the INI and the log-data and add a message at the top"""
+    # Set headers
+    cherrypy.response.headers["Content-Type"] = "application/x-download;charset=utf-8"
+    cherrypy.response.headers["Content-Disposition"] = 'attachment;filename="sabnzbd.log"'
     # Build header with version and environment info
     header = "--------------------------------\n"
     header += f"SABnzbd version: {sabnzbd.__version__}\n"
@@ -701,33 +704,37 @@ def _api_showlog(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
     header += "--------------------------------\n\n"
     header += "The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
     header += "\n\n--------------------------------\n"
-    log_data = header.encode("utf-8")
-
-    if sabnzbd.LOGFILE and os.path.exists(sabnzbd.LOGFILE):
-        with open(sabnzbd.LOGFILE, "rb") as f:
-            log_data += f.read()
-    else:
-        log_data += b"\nFile log disabled or not found.\n\n"
-
-    with open(config.get_filename(), "rb") as f:
-        log_data += f.read()
-
-    # We need to remove all passwords/usernames/api-keys
-    log_data = LOG_JSON_RE.sub(b"'REMOVED': '<REMOVED>'", log_data)
-    log_data = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", log_data)
-    log_data = LOG_HASH_RE.sub(b"<HASH>", log_data)
+    yield header.encode("utf-8")
 
     # Try to replace the username
     try:
+        cur_user_bytes = None
         if cur_user := getpass.getuser():
-            log_data = log_data.replace(utob(cur_user), b"<USERNAME>")
+            cur_user_bytes = utob(cur_user)
     except Exception:
         pass
 
-    # Set headers
-    cherrypy.response.headers["Content-Type"] = "application/x-download;charset=utf-8"
-    cherrypy.response.headers["Content-Disposition"] = 'attachment;filename="sabnzbd.log"'
-    return log_data
+    def sanitize_line(line: bytes) -> bytes:
+        """Apply regex substitutions to a single line to remove sensitive data"""
+        line = LOG_JSON_RE.sub(b"'REMOVED': '<REMOVED>'", line)
+        line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
+        line = LOG_HASH_RE.sub(b"<HASH>", line)
+        if cur_user_bytes:
+            line = line.replace(cur_user_bytes, b"<USERNAME>")
+        return line
+
+    # Stream log file line by line
+    if sabnzbd.LOGFILE and os.path.exists(sabnzbd.LOGFILE):
+        with open(sabnzbd.LOGFILE, "rb") as f:
+            for line in f:
+                yield sanitize_line(line)
+    else:
+        yield b"\nFile log disabled or not found.\n\n"
+
+    # Stream config file line by line
+    with open(config.get_filename(), "rb") as f:
+        for line in f:
+            yield sanitize_line(line)
 
 
 def _api_get_cats(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
