@@ -438,6 +438,7 @@ class NewsWrapper:
             logging.info("Traceback: ", exc_info=True)
             sabnzbd.Downloader.reset_nw(self, "Server broke off connection", warn=True)
 
+    @synchronized(DOWNLOADER_LOCK)
     def hard_reset(self, wait: bool = True):
         """Destroy and restart"""
         with self.lock:
