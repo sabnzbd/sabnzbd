@@ -247,26 +247,25 @@ class NzbFile(TryList):
 
         Note: there could be non-sequential direct writes already beyond this point
         """
-        with self.file_lock:
-            # If last written article has valid yenc headers
-            if self.assembler_next_index:
-                article = self.decodetable[self.assembler_next_index - 1]
-                if article.on_disk and article.data_size:
-                    return article.data_begin + article.data_size
+        # If last written article has valid yenc headers
+        if self.assembler_next_index:
+            article = self.decodetable[self.assembler_next_index - 1]
+            if article.on_disk and article.data_size:
+                return article.data_begin + article.data_size
 
-            # Fallback to summing decoded size
-            offset = 0
-            for article in self.decodetable[: self.assembler_next_index]:
-                if not article.on_disk:
-                    break
-                if article.data_size:
-                    offset = article.data_begin + article.decoded_size
-                elif article.decoded_size is not None:
-                    # queues from <= 4.5.5 do not have this attribute
-                    offset += article.decoded_size
-                elif os.path.exists(self.filepath):
-                    # fallback for <= 4.5.5 because files were always opened in append mode, so use the file size
-                    return os.path.getsize(self.filepath)
+        # Fallback to summing decoded size
+        offset = 0
+        for article in self.decodetable[: self.assembler_next_index]:
+            if not article.on_disk:
+                break
+            if article.data_size:
+                offset = article.data_begin + article.decoded_size
+            elif article.decoded_size is not None:
+                # queues from <= 4.5.5 do not have this attribute
+                offset += article.decoded_size
+            elif os.path.exists(self.filepath):
+                # fallback for <= 4.5.5 because files were always opened in append mode, so use the file size
+                return os.path.getsize(self.filepath)
         return offset
 
     @synchronized()
