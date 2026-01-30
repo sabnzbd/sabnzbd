@@ -470,12 +470,7 @@ class Assembler(Thread):
                 if not direct_write:
                     cfg.direct_write.set(False)
                     return False
-                with nzf.lock:
-                    # Is this the next article to keep writing sequentially
-                    idx = nzf.assembler_next_index
-                    if idx >= len(nzf.decodetable) or article != nzf.decodetable[idx]:
-                        idx = None
-                Assembler.write(fd, idx, nzf, article, data)
+                Assembler.write(fd, None, nzf, article, data)
             except FileNotFoundError:
                 # nzo has probably been deleted, ArticleCache tries the fallback and handles it
                 return False
@@ -536,13 +531,17 @@ class Assembler(Thread):
         nzf.update_crc32(article.crc32, len(data))
         article.on_disk = True
         sabnzbd.Assembler.update_ready_bytes(nzf, -len(data))
-        if nzf_index is not None:
-            with nzf.lock:
-                # assembler_next_index is the lowest index that has not yet been written sequentially from the start of the file.
-                # If this was the next required index to remain sequential, it can be incremented which allows the assmebler to
-                # resume without rechecking articles that are already known to be on disk.
-                if nzf.assembler_next_index == nzf_index:
-                    nzf.assembler_next_index += 1
+        with nzf.lock:
+            # assembler_next_index is the lowest index that has not yet been written sequentially from the start of the file.
+            # If this was the next required index to remain sequential, it can be incremented which allows the assembler to
+            # resume without rechecking articles that are already known to be on disk.
+            # If nzf_index is None, determine it now.
+            if nzf_index is None:
+                idx = nzf.assembler_next_index
+                if idx < len(nzf.decodetable) and article == nzf.decodetable[idx]:
+                    nzf_index = idx
+            if nzf_index is not None and nzf.assembler_next_index == nzf_index:
+                nzf.assembler_next_index += 1
         return written
 
     @staticmethod

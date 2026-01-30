@@ -134,16 +134,17 @@ class Article(TryList):
         self.fetcher_priority = 0
         super().reset_try_list()
 
-    @synchronized()
     def allow_new_fetcher(self, remove_fetcher_from_try_list: bool = True):
         """Let article get new fetcher and reset try lists of file and job.
-        Locked so all resets are performed at once"""
-        if remove_fetcher_from_try_list:
-            self.remove_from_try_list(self.fetcher)
-        self.fetcher = None
-        self.tries = 0
-        self.nzf.reset_try_list()
-        self.nzf.nzo.reset_try_list()
+        Locked so all resets are performed at once.
+        Must acquire nzo lock first, then nzf lock (which is self.lock) to prevent deadlock."""
+        with self.nzf.nzo.lock, self.lock:
+            if remove_fetcher_from_try_list:
+                self.remove_from_try_list(self.fetcher)
+            self.fetcher = None
+            self.tries = 0
+            self.nzf.reset_try_list()
+            self.nzf.nzo.reset_try_list()
 
     def get_article(self, server: Server, servers: list[Server]):
         """Return article when appropriate for specified server"""
