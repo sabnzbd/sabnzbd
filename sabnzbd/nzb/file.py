@@ -137,6 +137,13 @@ class NzbFile(TryList):
             # All imported
             self.import_finished = True
 
+    @property
+    @synchronized()
+    def assembler_next_article(self) -> Optional[Article]:
+        if (next_index := self.assembler_next_index) < len(self.decodetable):
+            return self.decodetable[next_index]
+        return None
+
     def finish_import(self):
         """Load the article objects from disk"""
         logging.debug("Finishing import on %s", self.filename)
