@@ -657,6 +657,9 @@ class Downloader(Thread):
                             break
 
                         if nw.connected:
+                            # Assign a request immediately if NewsWrapper is ready, if we wait until the socket is
+                            # selected all idle connections will be activated when there may only be one request
+                            nw.prepare_request()
                             self.add_socket(nw)
                         elif not nw.nntp:
                             try:
