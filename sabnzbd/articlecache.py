@@ -230,9 +230,6 @@ class ArticleCache(threading.Thread):
         if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
             with article.nzf.nzo.lock:
                 article.nzf.nzo.saved_articles.discard(article)
-            if not self.shutdown:
-                sabnzbd.Assembler.process(article.nzf.nzo, article.nzf, article=article, override_trigger=True)
-                time.sleep(0.05)
             return
 
         # Fallback to disk cache
