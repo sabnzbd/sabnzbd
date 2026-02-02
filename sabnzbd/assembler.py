@@ -159,7 +159,6 @@ class Assembler(Thread):
         file_done: bool = False,
         allow_non_contiguous: bool = False,
         article: Optional[Article] = None,
-        override_trigger: bool = False,
     ) -> None:
         if nzf is None:
             # post-proc
@@ -167,9 +166,10 @@ class Assembler(Thread):
             return
 
         # Track bytes pending being written for this nzf
-        ready_bytes = 0
-        if self.should_track_ready_bytes(article, allow_non_contiguous, override_trigger):
+        if self.should_track_ready_bytes(article, allow_non_contiguous):
             ready_bytes = self.update_ready_bytes(nzf, article.decoded_size)
+        else:
+            ready_bytes = 0
 
         article_has_first_part = bool(article and article.lowest_partnum)
         if article_has_first_part:
@@ -182,7 +182,6 @@ class Assembler(Thread):
             import_finished=nzf.import_finished,
             file_done=file_done,
             allow_non_contiguous=allow_non_contiguous,
-            override_trigger=override_trigger,
             ready_bytes=ready_bytes,
         ):
             return
@@ -210,7 +209,6 @@ class Assembler(Thread):
         import_finished: bool,
         file_done: bool,
         allow_non_contiguous: bool,
-        override_trigger: bool,
         ready_bytes: int,
     ) -> bool:
         # Always queue if done
@@ -219,7 +217,7 @@ class Assembler(Thread):
         if nzf.nzf_id in self.queued_nzf:
             return False
         # Always write
-        if (override_trigger or article_has_first_part) and filename_checked and not import_finished:
+        if article_has_first_part and filename_checked and not import_finished:
             return True
         next_ready = (next_article := nzf.assembler_next_article) and (next_article.decoded or next_article.on_disk)
         # Trigger every 5 seconds if next article is decoded or on_disk
@@ -237,11 +235,9 @@ class Assembler(Thread):
         return False
 
     @staticmethod
-    def should_track_ready_bytes(
-        article: Optional[Article], allow_non_contiguous: bool, override_trigger: bool
-    ) -> bool:
+    def should_track_ready_bytes(article: Optional[Article], allow_non_contiguous: bool) -> bool:
         """"""
-        return article and not allow_non_contiguous and not override_trigger and article.decoded_size
+        return article and not allow_non_contiguous and article.decoded_size
 
     def delay(self) -> float:
         """Calculate how long if at all the downloader thread should sleep to allow the assembler to catch up"""
