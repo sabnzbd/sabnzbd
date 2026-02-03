@@ -188,8 +188,9 @@ class Server:
             if self.article_queue:
                 article = self.article_queue[0] if peek else self.article_queue.popleft()
                 # Mark expired articles as tried on this server
-                if not peek and self.retention and article.nzf.nzo.avg_stamp < time.time() - self.retention:
-                    sabnzbd.Downloader.decode(article)
+                if self.retention and article.nzf.nzo.avg_stamp < time.time() - self.retention:
+                    if not peek:
+                        sabnzbd.Downloader.decode(article)
                     while self.article_queue:
                         sabnzbd.Downloader.decode(self.article_queue.pop())
                 else:
