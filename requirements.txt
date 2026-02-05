@@ -33,12 +33,12 @@ rebulk==3.2.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==46.0.3
+cryptography==46.0.4
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
 ujson==5.11.0
-orjson==3.11.5
+orjson==3.11.7
 
 # Windows system integration
 pywin32==311; sys_platform == 'win32'
@@ -71,7 +71,7 @@ idna==3.11
 urllib3==2.6.3
 certifi==2026.1.4
 oauthlib==3.3.1
-PyJWT==2.10.1
+PyJWT==2.11.0
 blinker==1.9.0
 
 # Optional support for *nix tray icon.
