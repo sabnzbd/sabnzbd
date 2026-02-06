@@ -32,10 +32,11 @@ jobs:
         cache-dependency-path: "**/requirements.txt"
     - name: Install Python dependencies
       # Without dependencies to make sure everything is covered in the requirements.txt
+      # Special cryptography is due to https://github.com/pyca/cryptography/pull/14216
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt --no-dependencies
+        pip install --upgrade -r requirements.txt --no-dependencies --only-binary=cryptography
         pip install --upgrade -r builder/requirements.txt --no-dependencies
     - name: Build Windows standalone binary
       id: windows_binary
