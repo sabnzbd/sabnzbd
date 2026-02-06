@@ -57,8 +57,8 @@ class FakeNNTPServer:
                 conn, addr = self.server_socket.accept()
                 self.connections.append(conn)
                 threading.Thread(target=self._handle_client, args=(conn,), daemon=True).start()
-            except socket.timeout:
-                continue
+            except OSError:
+                pass
 
     def _handle_client(self, conn):
         try:
