@@ -899,31 +899,23 @@ class NzbQueue:
                                     nzo.increase_bad_articles_counter("missing_articles")
                                     sabnzbd.NzbQueue.register_article(article, success=False)
 
-                        logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
-                        nzf.reset_try_list()
                         if not nzf.assembled and not nzf.articles:
                             logging.debug("Not assembled but no remaining articles for file %s", nzf.filename)
                         if not nzf.assembled and (next_article := nzf.assembler_next_article):
                             logging.debug(
-                                "Next article to assemble for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %s",
+                                "Next article to assemble for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %s, has_fetcher: %s, tries: %s",
                                 nzf.filename,
                                 next_article,
                                 next_article.decoded,
                                 next_article.on_disk,
                                 next_article.decoded_size,
+                                next_article.fetcher is not None,
+                                next_article.tries,
                             )
-
-                for article in nzo.first_articles.copy():
-                    logging.debug(
-                        "First article for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %s, has_fetcher: %s, tries: %s",
-                        article.nzf.filename,
-                        article,
-                        article.decoded,
-                        article.on_disk,
-                        article.decoded_size,
-                        article.fetcher is not None,
-                        article.tries,
-                    )
+                            if not next_article.decoded and not next_article.on_disk:
+                                next_article.allow_new_fetcher()
+                        logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
+                        nzf.reset_try_list()
 
                 # Reset main try list, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)
