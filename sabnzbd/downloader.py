@@ -191,6 +191,9 @@ class Server:
                 if self.retention and article.nzf.nzo.avg_stamp < time.time() - self.retention:
                     if not peek:
                         sabnzbd.Downloader.decode(article)
+                    # sabnzbd.NzbQueue.get_articles stops after each nzo with articles.
+                    # As a result, if one article is out of retention, all remaining
+                    # entries in article_queue will also be out of retention.
                     while self.article_queue:
                         sabnzbd.Downloader.decode(self.article_queue.pop())
                 else:
