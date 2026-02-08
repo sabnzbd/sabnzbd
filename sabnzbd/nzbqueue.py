@@ -912,8 +912,6 @@ class NzbQueue:
                                 next_article.fetcher is not None,
                                 next_article.tries,
                             )
-                            if not next_article.decoded and not next_article.on_disk:
-                                next_article.allow_new_fetcher()
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
 
