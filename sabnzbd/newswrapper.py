@@ -328,7 +328,9 @@ class NewsWrapper:
                 # There is either a next_request or an inflight request
                 # If there is a next_request to send, ensure the socket is registered for write events
                 # Checks before calling modify_socket to prevent locks on the hot path
-                if self.next_request and self.selector_events != EVENT_READ | EVENT_WRITE:
+                if (
+                    self.next_request or (self.nntp and self.nntp.write_buffer)
+                ) and self.selector_events != EVENT_READ | EVENT_WRITE:
                     sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
             else:
                 # Only remove the socket if it's not SSL or has no pending data, otherwise the recursive call may
