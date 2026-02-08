@@ -400,7 +400,8 @@ class Assembler(Thread):
                         offset += article.decoded_size
                     if not skipped:
                         with nzf.lock:
-                            nzf.assembler_next_index = idx + 1
+                            if nzf.assembler_next_index == idx:
+                                nzf.assembler_next_index = idx + 1
                     continue
 
                 # stop if next piece not yet decoded
