@@ -86,6 +86,9 @@ def conditional_cache(cache_time: int):
         def wrapper(*args, **kwargs):
             current_time = time.time()
 
+            # Exclude force from the cache key
+            force = kwargs.pop("force", False)
+
             # Create cache key using functools._make_key
             try:
                 key = functools._make_key(args, kwargs, typed=False)
@@ -95,15 +98,16 @@ def conditional_cache(cache_time: int):
                 # If args/kwargs aren't hashable, skip caching entirely
                 return func(*args, **kwargs)
 
-            # Allow force kward to skip cache
-            if not kwargs.get("force"):
+            # Allow force kwarg to skip cache
+            if not force:
                 # Check if we have a valid cached result
-                if key in cache:
-                    cached_result, timestamp = cache[key]
-                    if current_time - timestamp < cache_time:
+                entry = cache.get(key)
+                if entry is not None:
+                    cached_result, expires_at = entry
+                    if current_time < expires_at:
                         return cached_result
                     # Cache entry expired, remove it
-                    del cache[key]
+                    cache.pop(key, None)
 
             # Call the original function
             result = func(*args, **kwargs)
@@ -111,7 +115,7 @@ def conditional_cache(cache_time: int):
             # Only cache non-empty results
             # This excludes None, [], {}, "", 0, False, etc.
             if result:
-                cache[key] = (result, current_time)
+                cache[key] = (result, current_time + cache_time)
 
             return result
 
