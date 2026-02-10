@@ -8,21 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Black Code Formatter
-        uses: lgeiger/black-action@master
-        with:
-          # Tools folder excluded for now due to https://github.com/psf/black/issues/4963
-          args: >
-            SABnzbd.py
-            sabnzbd
-            scripts
-            builder
-            builder/SABnzbd.spec
-            tests
-            --line-length=120
-            --target-version=py39
-            --check
-            --diff
+      - run: pip install black
+      # Tools folder excluded for now due to https://github.com/psf/black/issues/4963
+      - run: >
+          black
+          SABnzbd.py
+          sabnzbd
+          scripts
+          builder
+          builder/SABnzbd.spec
+          tests
+          --line-length=120
+          --target-version=py39
+          --check
+          --diff
 
   test:
     name: Test ${{ matrix.name }} - Python ${{ matrix.python-version }}
