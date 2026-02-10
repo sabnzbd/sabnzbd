@@ -325,17 +325,17 @@ class NewsWrapper:
             # After each response this socket may need to be made available to write the next request,
             # or removed from socket monitoring to prevent hot looping.
             if self.prepare_request():
-                # There is either a next_request or an inflight request
-                # If there is a next_request to send, ensure the socket is registered for write events
-                # Checks before calling modify_socket to prevent locks on the hot path
-                if self.next_request and self.selector_events != EVENT_READ | EVENT_WRITE:
-                    sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
+                # There is either a next_request, partial send, or an inflight request.
+                self.modify_for_write()
             else:
                 # Only remove the socket if it's not SSL or has no pending data, otherwise the recursive call may
                 # call prepare_request again and find a request, but the socket would have already been removed.
                 if not self.server.ssl or not self.nntp or not self.nntp.sock.pending():
                     # No further work for this socket
                     sabnzbd.Downloader.remove_socket(self)
+        elif self.nntp and self.nntp.write_buffer:
+            # No complete responses, but may be able to send partial writes.
+            self.modify_for_write()
 
         # The SSL-layer might still contain data even though the socket does not. Another Downloader-loop would
         # not identify this socket anymore as it is not returned by select(). So, we have to forcefully trigger
@@ -343,6 +343,20 @@ class NewsWrapper:
         if self.server.ssl and self.nntp and (pending := self.nntp.sock.pending()):
             return bytes_recv, pending
         return bytes_recv, None
+
+    def modify_for_write(self):
+        """
+        Monitor for read/write events if there is a queued or partially sent request.
+
+        If there is a next_request or partial write to send, ensure the socket is registered for write events.
+        Sockets may be modified to monitor only read events when the concurrency limit is reached or an
+        SSLWantReadError occurs.
+        Checks before calling modify_socket to prevent locks on the hot path
+        """
+        if (
+            self.next_request or (self.nntp and self.nntp.write_buffer)
+        ) and self.selector_events != EVENT_READ | EVENT_WRITE:
+            sabnzbd.Downloader.modify_socket(self, EVENT_READ | EVENT_WRITE)
 
     def prepare_request(self) -> bool:
         """Queue an article request if appropriate."""
