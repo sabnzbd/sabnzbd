@@ -371,6 +371,7 @@ class NewsWrapper:
                     sabnzbd.Downloader.no_active_jobs()
                     or sabnzbd.Downloader.shutdown
                     or sabnzbd.Downloader.paused_for_postproc
+                    or sabnzbd.Downloader.force_disconnect
                 )
             )
 
