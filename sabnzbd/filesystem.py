@@ -54,6 +54,7 @@ from sabnzbd.constants import (
     IGNORED_FILES_AND_FOLDERS,
     DEF_LOG_FILE,
     DEX_FILE_EXTENSION_MAX,
+    MEBI,
 )
 from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
 import rarfile
@@ -1429,7 +1430,7 @@ def is_sparse_supported(check_dir: str) -> bool:
     """Check if a directory supports sparse files"""
     sparse_file = tempfile.NamedTemporaryFile(dir=check_dir, delete=False)
     try:
-        sabctools.sparse(sparse_file.fileno(), 64)
+        sabctools.sparse(sparse_file.fileno(), int(MEBI))
         sparse_file.close()
         return is_sparse(sparse_file.name)
     finally:
