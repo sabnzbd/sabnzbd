@@ -63,7 +63,7 @@ requests==2.32.5
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
 markdown # Version-less for Python 3.9 and below
-markdown==3.10.1; python_version > '3.9'
+markdown==3.10.2; python_version > '3.9'
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements

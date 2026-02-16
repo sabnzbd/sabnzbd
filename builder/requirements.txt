@@ -1,6 +1,6 @@
 # Basic build requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-pyinstaller==6.18.0
+pyinstaller==6.19.0
 packaging==26.0
 pyinstaller-hooks-contrib==2026.0
 altgraph==0.17.5
