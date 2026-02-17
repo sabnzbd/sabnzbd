@@ -87,7 +87,7 @@ class Assembler(Thread):
     def new_limit(self, limit: int):
         """Called when cache limit changes"""
         self.cache_limit = limit
-        self.calculate_assembler_trigger()
+        self.assembler_trigger = max(1, int(self.cache_limit * ASSEMBLER_TRIGGER_PERCENTAGE))
         self.calculate_delay_trigger()
         self.change_direct_write(cfg.direct_write())
         logging.debug(
@@ -99,13 +99,6 @@ class Assembler(Thread):
     def change_direct_write(self, direct_write: bool) -> None:
         self.direct_write = direct_write and self.assembler_trigger > 0
         self.calculate_delay_trigger()
-
-    def calculate_assembler_trigger(self):
-        # Calculate contiguous articles to trigger an assemble
-        self.assembler_trigger = max(
-            1,
-            int(self.cache_limit * ASSEMBLER_TRIGGER_PERCENTAGE),
-        )
 
     def calculate_delay_trigger(self):
         """Point at which downloader should start being delayed, recalculated when cache limit or direct write changes"""
