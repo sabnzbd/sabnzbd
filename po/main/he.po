@@ -2,14 +2,14 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# ION, 2025
 # Safihre <safihre@sabnzbd.org>, 2025
+# ION, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: ION, 2026\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -146,7 +146,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
-msgstr ""
+msgstr "גרסת Windows ARM של SABnzbd זמינה מדף ההורדות שלנו!"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -3304,7 +3304,7 @@ msgstr "אפשר בדיקות מבוססות SFV"
 #: sabnzbd/skintext.py
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
-msgstr ""
+msgstr "אם קבצי par2 אינם זמינים, השתמש בקבצי SFV (אם קיימים) כדי לוודא קבצים"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3708,7 +3708,7 @@ msgstr "אפשר"
 
 #: sabnzbd/skintext.py
 msgid "Articles per request"
-msgstr ""
+msgstr "מאמרים לבקשה"
 
 #: sabnzbd/skintext.py
 msgid ""
