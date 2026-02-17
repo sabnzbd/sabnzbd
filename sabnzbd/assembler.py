@@ -45,13 +45,11 @@ from sabnzbd.filesystem import (
 from sabnzbd.constants import (
     Status,
     GIGI,
-    ASSEMBLER_WRITE_THRESHOLD_FACTOR_APPEND,
-    ASSEMBLER_WRITE_THRESHOLD_FACTOR_DIRECT_WRITE,
-    ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
     SOFT_ASSEMBLER_QUEUE_LIMIT,
     ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE,
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
     ASSEMBLER_WRITE_INTERVAL,
+    ASSEMBLER_TRIGGER_PERCENTAGE,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -72,10 +70,8 @@ class Assembler(Thread):
         self.max_queue_size: int = cfg.assembler_max_queue_size()
         self.direct_write: bool = cfg.direct_write()
         self.cache_limit: int = 0
-        # Contiguous bytes required to trigger append writes
-        self.append_trigger: int = 1
-        # Total bytes required to trigger direct-write assembles
-        self.direct_write_trigger: int = 1
+        # Total bytes required per file to trigger the assembler
+        self.assembler_trigger: int = 0
         self.delay_trigger: int = 1
         self.queue: queue.Queue[AssemblerTask] = queue.Queue()
         self.queued_lock = threading.Lock()
@@ -91,25 +87,17 @@ class Assembler(Thread):
     def new_limit(self, limit: int):
         """Called when cache limit changes"""
         self.cache_limit = limit
-        self.append_trigger = max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_FACTOR_APPEND))
-        self.direct_write_trigger = max(
-            1,
-            min(
-                max(1, int(limit * ASSEMBLER_WRITE_THRESHOLD_FACTOR_DIRECT_WRITE)),
-                ASSEMBLER_MAX_WRITE_THRESHOLD_DIRECT_WRITE,
-            ),
-        )
+        self.assembler_trigger = max(1, int(self.cache_limit * ASSEMBLER_TRIGGER_PERCENTAGE))
         self.calculate_delay_trigger()
         self.change_direct_write(cfg.direct_write())
         logging.debug(
-            "Assembler trigger append=%s, direct=%s, delay=%s",
-            to_units(self.append_trigger),
-            to_units(self.direct_write_trigger),
+            "Assembler trigger=%s, delay=%s",
+            to_units(self.assembler_trigger),
             to_units(self.delay_trigger),
         )
 
     def change_direct_write(self, direct_write: bool) -> None:
-        self.direct_write = direct_write and self.direct_write_trigger > 1
+        self.direct_write = direct_write and self.assembler_trigger > 0
         self.calculate_delay_trigger()
 
     def calculate_delay_trigger(self):
@@ -124,7 +112,7 @@ class Assembler(Thread):
                 (
                     self.cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE
                     if self.direct_write
-                    else min(self.append_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
+                    else min(self.assembler_trigger * self.max_queue_size, int(self.cache_limit * 0.5))
                 ),
             )
         )
@@ -225,12 +213,16 @@ class Assembler(Thread):
             return True
         # Append
         if not self.direct_write or nzf.type != "yenc":
-            return nzf.contiguous_ready_bytes() >= self.append_trigger
+            return (
+                next_ready
+                and ready_bytes >= self.assembler_trigger
+                and nzf.contiguous_ready_bytes() >= self.assembler_trigger
+            )
         # Direct Write
         if allow_non_contiguous:
             return True
         # Direct Write ready bytes trigger if next is also ready
-        if next_ready and ready_bytes >= self.direct_write_trigger:
+        if next_ready and ready_bytes >= self.assembler_trigger:
             return True
         return False
 
