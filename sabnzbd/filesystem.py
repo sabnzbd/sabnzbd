@@ -1427,7 +1427,14 @@ def is_sparse(path: str) -> bool:
 
 
 def is_sparse_supported(check_dir: str) -> bool:
-    """Check if a directory supports sparse files"""
+    """
+    Check if a directory supports sparse files.
+
+    A 1 MiB sparse file is created because some filesystems allocate at
+    least one physical block even for sparse files. Using a size that spans
+    many 512-byte blocks ensures we can reliably detect whether fewer
+    blocks than the logical size were actually allocated.
+    """
     sparse_file = tempfile.NamedTemporaryFile(dir=check_dir, delete=False)
     try:
         sabctools.sparse(sparse_file.fileno(), int(MEBI))
