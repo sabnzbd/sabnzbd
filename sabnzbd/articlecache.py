@@ -153,12 +153,12 @@ class ArticleCache(threading.Thread):
     def save_article(self, article: Article, data: bytearray):
         """Save article in cache, either memory or disk"""
         nzo = article.nzf.nzo
-        # Skip if already post-processing or fully finished
-        if nzo.pp_or_finished:
-            return
 
         # Register article for bookkeeping in case the job is deleted
         with nzo.lock:
+            # Skip if already post-processing or fully finished, check inside lock to synchronize with purge_data
+            if nzo.pp_or_finished:
+                return
             nzo.saved_articles.add(article)
 
         if article.lowest_partnum and not (article.nzf.import_finished or article.nzf.filename_checked):
