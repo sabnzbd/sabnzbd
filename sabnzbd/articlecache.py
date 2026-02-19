@@ -63,7 +63,7 @@ class ArticleCache(threading.Thread):
             self.__cache_upper_limit = 4 * GIGI
 
     def change_direct_write(self, direct_write: bool) -> None:
-        self.__direct_write = direct_write and self.__cache_limit > 1
+        self.__direct_write = direct_write
 
     def stop(self):
         self.shutdown = True
@@ -128,7 +128,6 @@ class ArticleCache(threading.Thread):
         self.__non_contiguous_trigger = self.__cache_limit * ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE
         if self.__cache_limit:
             logging.debug("Article cache trigger:%s", to_units(self.__non_contiguous_trigger))
-        self.change_direct_write(cfg.direct_write())
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int) -> bool:
@@ -227,7 +226,7 @@ class ArticleCache(threading.Thread):
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
         # Direct write to destination if cache is being used
-        if self.__cache_limit and self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
+        if self.__direct_write and sabnzbd.Assembler.assemble_article(article, data):
             with article.nzf.nzo.lock:
                 article.nzf.nzo.saved_articles.discard(article)
             return
