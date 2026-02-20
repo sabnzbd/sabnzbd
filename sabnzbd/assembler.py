@@ -88,7 +88,6 @@ class Assembler(Thread):
         """Called when cache limit changes"""
         self.cache_limit = limit
         self.assembler_trigger = max(1, int(self.cache_limit * ASSEMBLER_TRIGGER_PERCENTAGE))
-        self.calculate_delay_trigger()
         self.change_direct_write(cfg.direct_write())
         logging.debug(
             "Assembler trigger=%s, delay=%s",
@@ -97,7 +96,7 @@ class Assembler(Thread):
         )
 
     def change_direct_write(self, direct_write: bool) -> None:
-        self.direct_write = direct_write and self.assembler_trigger > 0
+        self.direct_write = direct_write
         self.calculate_delay_trigger()
 
     def calculate_delay_trigger(self):
