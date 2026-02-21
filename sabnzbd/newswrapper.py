@@ -316,11 +316,15 @@ class NewsWrapper:
                 with self.lock:
                     # Check generation under lock to avoid racing with hard_reset
                     if self.generation != generation or not self._response_queue:
-                        break
+                        return bytes_recv, None
                     article = self._response_queue.popleft()
                 if on_response:
                     on_response(response.status_code, response.message)
                 self.on_response(response, article)
+
+            # on_response may have reset the connection
+            if self.generation != generation:
+                return bytes_recv, None
 
             # After each response this socket may need to be made available to write the next request,
             # or removed from socket monitoring to prevent hot looping.
