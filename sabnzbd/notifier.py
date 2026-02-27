@@ -39,6 +39,10 @@ from sabnzbd.filesystem import make_script_path
 from sabnzbd.misc import build_and_run_command, int_conv
 from sabnzbd.newsunpack import create_env
 
+# Prevent logging sensitive information in the URLs called by Apprise
+logging.getLogger("apprise").setLevel(logging.INFO)
+logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
+
 if sabnzbd.WINDOWS:
     windows_major_version = int_conv(platform.version().split(".")[0])
 
