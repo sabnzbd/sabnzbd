@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 5.0.0 Beta 1
+Release Notes - SABnzbd 5.0.0 Beta 2
 =========================================================
 
-This is the first beta release of version 5.0.
+This is the second beta release of version 5.0.
 
 Due to several fundamental changes we decided to
 not just call this 4.6 but promote it to 5.0!
@@ -22,6 +22,8 @@ not just call this 4.6 but promote it to 5.0!
 * No longer show tracebacks in the browser, only in the logs.
 * Dropped support for Python 3.8.
 * Windows: Added Windows ARM (portable) release.
+* Windows and macOS: Update Python to 3.14.3, Unrar to 7.20,
+  par2cmdline-turbo to 1.4 and 7zip to 26.00.
 
 ## Bug fixes since 4.5.0
 
