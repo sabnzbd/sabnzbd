@@ -23,9 +23,11 @@ tempora==5.8.1
 pytz==2025.2
 sgmllib3k==1.0.0
 portend==3.2.1
-chardet==6.0.0.post1
+chardet # Version-less for Python 3.9 and below
+chardet==6.0.0.post1; python_version > '3.9'
 PySocks==1.7.1
-puremagic==2.0.0
+puremagic # Version-less for Python 3.11 and below
+puremagic==2.0.0; python_version > '3.11'
 rarfile==4.2
 guessit==3.8.0
 babelfish==0.6.1
