@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file EMAIL
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
 # Fred L <88com88@gmail.com>, 2025
