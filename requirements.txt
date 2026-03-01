@@ -23,9 +23,11 @@ tempora==5.8.1
 pytz==2025.2
 sgmllib3k==1.0.0
 portend==3.2.1
-chardet==5.2.0
+chardet # Version-less for Python 3.9 and below
+chardet==6.0.0.post1; python_version > '3.9'
 PySocks==1.7.1
-puremagic==1.30
+puremagic # Version-less for Python 3.11 and below
+puremagic==2.0.0; python_version > '3.11'
 rarfile==4.2
 guessit==3.8.0
 babelfish==0.6.1
@@ -70,7 +72,7 @@ paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 charset_normalizer==3.4.4
 idna==3.11
 urllib3==2.6.3
-certifi==2026.1.4
+certifi==2026.2.25
 oauthlib==3.3.1
 PyJWT==2.11.0
 blinker==1.9.0
