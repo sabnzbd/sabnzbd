@@ -3,13 +3,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2025
-# Fred L <88com88@gmail.com>, 2026
+# Fred L <88com88@gmail.com>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Fred L <88com88@gmail.com>, 2026\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2025\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -801,10 +801,11 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s does not support sparse files. Disabling direct write mode."
+msgid ""
+"Direct Write mode has been disabled because %s does not support sparse "
+"files. For details and possible solutions, see: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
-"%s ne prend pas en charge les fichiers fragmentés. Désactivation du mode "
-"d'écriture directe."
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"

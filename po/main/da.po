@@ -771,7 +771,10 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/filesystem.py
-msgid "%s does not support sparse files. Disabling direct write mode."
+msgid ""
+"Direct Write mode has been disabled because %s does not support sparse "
+"files. For details and possible solutions, see: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
 
 #: sabnzbd/interface.py
