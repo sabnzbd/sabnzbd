@@ -1266,7 +1266,13 @@ def check_filesystem_capabilities(test_dir: str, is_download_dir: bool = False) 
     if is_download_dir and not check_sparse_and_disable(test_dir):
         # Writing to correct file offsets will be disabled, and it won't be possible to flush the article cache
         # directly to the destination file
-        sabnzbd.misc.helpful_warning(T("%s does not support sparse files. Disabling direct write mode."), test_dir)
+        sabnzbd.misc.helpful_warning(
+            T(
+                "Direct Write mode has been disabled because %s does not support sparse files. "
+                "For details and possible solutions, see: https://sabnzbd.org/wiki/advanced/direct-write"
+            ),
+            test_dir,
+        )
         allgood = False
 
     return allgood
