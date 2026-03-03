@@ -687,6 +687,7 @@ LOG_INI_HIDE_RE = re.compile(
     rb"|apprise_(target_[a-z_]+|urls)|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address|Public address IPv[4|6]-only|Local IPv6 address)\s?=.*",
     re.I,
 )
+LOG_NNTP_AUTH_RE = re.compile(rb"(authinfo (?:user|pass)) [^\\'\'\r\n]+", re.I)
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 
 
@@ -718,6 +719,7 @@ def _api_showlog(name: str, kwargs: dict[str, Union[str, list[str]]]) -> Generat
         """Apply regex substitutions to a single line to remove sensitive data"""
         line = LOG_JSON_RE.sub(b"'REMOVED': '<REMOVED>'", line)
         line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
+        line = LOG_NNTP_AUTH_RE.sub(b"\\1 <REMOVED>", line)
         line = LOG_HASH_RE.sub(b"<HASH>", line)
         if cur_user_bytes:
             line = line.replace(cur_user_bytes, b"<USERNAME>")
