@@ -569,8 +569,8 @@ def process_job(nzo: NzbObject) -> bool:
                         nzo.fail_msg = T("Failed to move files")
                         all_ok = False
 
-            # Run further post-processing
-            if (all_ok or not cfg.safe_postproc()) and not nzb_list:
+            # Run deobfuscation only on verified jobs
+            if all_ok:
                 # Use par2 files to deobfuscate unpacked file names
                 # Only if we also run cleanup, so not to process the "regular" par2 files
                 if nzo.delete and cfg.process_unpacked_par2():
@@ -583,32 +583,31 @@ def process_job(nzo: NzbObject) -> bool:
                     # Deobfuscate the subtitles
                     deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
-                # Run the user script
-                if script_path := make_script_path(nzo.script):
-                    # Set the current nzo status to "Ext Script...". Used in History
-                    nzo.status = Status.RUNNING
-                    nzo.set_action_line(T("Running script"), nzo.script)
-                    nzo.set_unpack_info("Script", T("Running user script %s") % nzo.script, unique=True)
-                    script_log, script_ret = external_processing(
-                        script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
-                    )
+            # Always run the user script, even for failed jobs (see #3336)
+            # The script receives job_result indicating success/failure
+            if script_path := make_script_path(nzo.script):
+                # Set the current nzo status to "Ext Script...". Used in History
+                nzo.status = Status.RUNNING
+                nzo.set_action_line(T("Running script"), nzo.script)
+                nzo.set_unpack_info("Script", T("Running user script %s") % nzo.script, unique=True)
+                script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete), job_result)
 
-                    # Format output depending on return status
-                    script_line = get_last_line(script_log)
-                    if script_ret:
-                        if script_line:
-                            script_line = "Exit(%s): %s " % (script_ret, script_line)
-                        else:
-                            script_line = T("Script exit code is %s") % script_ret
-                    elif not script_line:
-                        script_line = T("Ran %s") % nzo.script
-                    nzo.set_unpack_info("Script", script_line, unique=True)
+                # Format output depending on return status
+                script_line = get_last_line(script_log)
+                if script_ret:
+                    if script_line:
+                        script_line = "Exit(%s): %s " % (script_ret, script_line)
+                    else:
+                        script_line = T("Script exit code is %s") % script_ret
+                elif not script_line:
+                    script_line = T("Ran %s") % nzo.script
+                nzo.set_unpack_info("Script", script_line, unique=True)
 
-                    # Maybe bad script result should fail job
-                    if script_ret and cfg.script_can_fail():
-                        script_error = True
-                        all_ok = False
-                        nzo.fail_msg = script_line
+                # Maybe bad script result should fail job
+                if script_ret and cfg.script_can_fail():
+                    script_error = True
+                    all_ok = False
+                    nzo.fail_msg = script_line
 
             # Email the results
             if cfg.email_endjob():

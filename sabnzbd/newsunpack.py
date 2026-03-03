@@ -205,9 +205,7 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(
-    extern_proc: str, nzo: NzbObject, complete_dir: str, nicename: str, status: int
-) -> tuple[str, int]:
+def external_processing(extern_proc: str, nzo: NzbObject, complete_dir: str, status: int) -> tuple[str, int]:
     """Run a user postproc script, return console output and exit value"""
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
@@ -215,7 +213,7 @@ def external_processing(
         str(extern_proc),
         str(complete_dir),
         str(nzo.filename),
-        str(nicename),
+        str(nzo.final_name),
         "",
         str(nzo.cat),
         str(nzo.group),
