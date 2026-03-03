@@ -789,6 +789,9 @@ msgid ""
 "files. For details and possible solutions, see: "
 "https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
+"%s, aralıklı dosyaları desteklemediğinden dolayı Doğrudan Yazma kipi devre "
+"dışı bırakılmıştır. Ayrıntılar ve muhtemel çözümler için şu sayfaya bakın: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
