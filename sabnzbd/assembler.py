@@ -50,6 +50,7 @@ from sabnzbd.constants import (
     ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE,
     ASSEMBLER_WRITE_INTERVAL,
     ASSEMBLER_TRIGGER_PERCENTAGE,
+    RAR_MAX_PASSWORD,
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
@@ -643,6 +644,8 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
 
                         for password in passwords:
                             if password:
+                                # RAR supports passwords up to 127 characters, can be removed once rarfile>4.2
+                                password = password[:RAR_MAX_PASSWORD]
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
