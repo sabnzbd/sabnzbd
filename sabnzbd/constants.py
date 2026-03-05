@@ -24,6 +24,7 @@ QUEUE_VERSION = 10
 POSTPROC_QUEUE_VERSION = 2
 
 REC_RAR_VERSION = 550
+RAR_MAX_PASSWORD = 127  #: Max number of utf-16 chars in passwords.
 
 ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 
