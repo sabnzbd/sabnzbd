@@ -410,7 +410,8 @@ class Assembler(Thread):
 
                 # Could be empty in case nzo was deleted or a previous write attempt encountered errno.ENOSPC and data
                 # was removed from the cache but could not be written to disk.
-                if not (data := load_article(article)):
+                data = load_article(article)
+                if not data:
                     logging.info("No data found when trying to write %s", article)
                     continue
 
