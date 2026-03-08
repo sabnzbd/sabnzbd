@@ -408,17 +408,11 @@ class Assembler(Thread):
                         continue
                     break
 
-                # Could be empty in case nzo was deleted
-                data = load_article(article)
-                if not data:
-                    if file_done:
-                        continue
-                    if allow_non_contiguous:
-                        skipped = True
-                        continue
-                    else:
-                        logging.info("No data found when trying to write %s", article)
-                    break
+                # Could be empty in case nzo was deleted or a previous write attempt encountered errno.ENOSPC and data
+                # was removed from the cache but could not be written to disk.
+                if not (data := load_article(article)):
+                    logging.info("No data found when trying to write %s", article)
+                    continue
 
                 # If required open the file
                 if fd is None:
@@ -462,6 +456,9 @@ class Assembler(Thread):
                 Assembler.write(fd, None, nzf, article, data)
             except FileNotFoundError:
                 # nzo has probably been deleted, ArticleCache tries the fallback and handles it
+                return False
+            except IOError:
+                # Probably not enough disk space
                 return False
             finally:
                 os.close(fd)
