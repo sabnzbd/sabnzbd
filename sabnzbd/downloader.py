@@ -745,15 +745,16 @@ class Downloader(Thread):
         """Worker for the daemon thread to process results.
         Wrapped in try/except because in case of an exception, logging
         might get lost and the queue.join() would block forever."""
-        try:
-            logging.debug("Starting Downloader receive thread: %s", current_thread().name)
-            while True:
+        logging.debug("Starting Downloader receive thread: %s", current_thread().name)
+        while True:
+            try:
                 self.process_nw(*nw_queue.get())
+            except Exception:
+                # We cannot break out of the Downloader from here, so just pause
+                logging.error(T("Fatal error in Downloader"), exc_info=True)
+                self.pause()
+            finally:
                 nw_queue.task_done()
-        except Exception:
-            # We cannot break out of the Downloader from here, so just pause
-            logging.error(T("Fatal error in Downloader"), exc_info=True)
-            self.pause()
 
     def process_nw(self, nw: NewsWrapper, event: int, generation: int):
         """Receive data from a NewsWrapper and handle the response"""
