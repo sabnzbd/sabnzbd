@@ -51,7 +51,7 @@ try:
     import cheroot.errors
     import portend
     import cryptography
-    import chardet
+    import charset_normalizer
     import guessit
     import puremagic
     import socks

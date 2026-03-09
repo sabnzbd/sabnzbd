@@ -20,7 +20,7 @@ sabnzbd.encoding - Unicode/byte translation functions
 """
 
 import locale
-import chardet
+import charset_normalizer
 from xml.sax.saxutils import escape
 from typing import AnyStr
 
@@ -59,7 +59,7 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
     """Files created on Windows but unpacked/repaired on
     linux can result in invalid filenames. Try to fix this
     encoding by going to bytes and then back to unicode again.
-    Last resort we use chardet package
+    Last resort we use charset_normalizer package
     """
     # If already string, back to bytes
     if not isinstance(str_or_bytes_in, bytes):
@@ -73,8 +73,8 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
             # Try using 8-bit ASCII, if came from Windows
             return str_or_bytes_in.decode("ISO-8859-1")
         except ValueError:
-            # Last resort we use the slow chardet package
-            return str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)["encoding"])
+            # Last resort we use charset_normalizer
+            return str(charset_normalizer.from_bytes(str_or_bytes_in).best())
 
 
 def correct_cherrypy_encoding(inputstring: str) -> str:

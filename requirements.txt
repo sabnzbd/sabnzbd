@@ -23,8 +23,6 @@ tempora==5.8.1
 pytz==2026.1.post1
 sgmllib3k==1.0.0
 portend==3.2.1
-chardet # Version-less for Python 3.9 and below
-chardet==7.0.1; python_version > '3.9'
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.0.0; python_version > '3.11'
