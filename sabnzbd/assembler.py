@@ -455,11 +455,8 @@ class Assembler(Thread):
                     cfg.direct_write.set(False)
                     return False
                 Assembler.write(fd, None, nzf, article, data)
-            except FileNotFoundError:
-                # nzo has probably been deleted, ArticleCache tries the fallback and handles it
-                return False
-            except IOError:
-                # Probably not enough disk space
+            except OSError:
+                # nzo has probably been deleted or not enough disk space, ArticleCache tries the fallback and handles it
                 return False
             finally:
                 os.close(fd)
