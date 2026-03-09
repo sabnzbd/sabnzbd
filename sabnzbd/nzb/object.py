@@ -267,10 +267,10 @@ class NzbObject(TryList):
         self.servercount: dict[str, int] = {}  # Dict to keep bytes per server
         self.direct_unpacker: Optional[sabnzbd.directunpacker.DirectUnpacker] = None  # The DirectUnpacker instance
         self.bytes: int = 0  # Original bytesize
-        self.bytes_par2: int = 0  # Bytes available for repair
+        self.bytes_par2: int = 0  # Bytes in par2 files
         self.bytes_downloaded: int = 0  # Downloaded byte
         self.bytes_tried: int = 0  # Which bytes did we try
-        self.bytes_missing: int = 0  # Bytes missing
+        self.bytes_missing: int = 0  # Bytes missing from non-par2 files
         self.bad_articles: int = 0  # How many bad (non-recoverable) articles
 
         self.extrapars: dict[str, list[NzbFile]] = {}  # Holds the extra parfile names for all sets
@@ -771,13 +771,10 @@ class NzbObject(TryList):
         if nzf in self.files:
             self.bytes_tried += article.bytes
         if not success:
-            # Increase missing bytes counter
-            self.bytes_missing += article.bytes
-
-            # Reduce available par2 data if it's a par2 file
-            # This will be unreliable in case of obfuscated par2 files!
-            if nzf.is_par2:
-                self.bytes_par2 -= article.bytes
+            # Only track missing bytes of non-par2 files; par2 absence does not
+            # mean the job cannot succeed
+            if not nzf.is_par2:
+                self.bytes_missing += article.bytes
 
             # Add extra parfiles when there was a damaged article and not pre-checking
             if self.extrapars and not self.precheck:
@@ -1115,7 +1112,9 @@ class NzbObject(TryList):
 
         # Rare case where the NZB only consists of par2 files
         if self.bytes > self.bytes_par2:
-            # Calculate ratio based on byte-statistics
+            # Calculate ratio based on byte-statistics, only counting missing non-par2 bytes
+            # since par2 is repair data and its absence does not mean the job cannot succeed
+            # nzo.bytes contains both regular files and par2 files
             availability_ratio = 100 * (self.bytes - self.bytes_missing) / (self.bytes - self.bytes_par2)
 
         logging.debug(
