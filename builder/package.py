@@ -363,6 +363,7 @@ if __name__ == "__main__":
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
         # Make sure we created a fully universal2 release when releasing or during CI
+        # PyInstaller also includes a builtin check for this, but we double-check every executable
         if RELEASE_THIS or ON_GITHUB_ACTIONS:
             for bin_to_check in glob.glob("dist/SABnzbd.app/**/*.so", recursive=True):
                 print("Checking if binary is universal2: %s" % bin_to_check)
