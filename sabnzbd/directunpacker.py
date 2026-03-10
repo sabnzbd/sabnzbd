@@ -258,10 +258,11 @@ class DirectUnpacker(threading.Thread):
                     extracted = []
 
                     # Are there more files left?
-                    while not self.nzo.removed_from_queue and not self.next_sets:
+                    with self.next_file_lock:
                         logging.debug("Direct Unpack for %s waiting for more sets", self.nzo.final_name)
-                        with self.next_file_lock:
-                            self.next_file_lock.wait()
+                        self.next_file_lock.wait_for(
+                            lambda: self.nzo.removed_from_queue or self.next_sets or self.killed
+                        )
 
                     # Is there another set to do?
                     logging.debug(
@@ -377,9 +378,8 @@ class DirectUnpacker(threading.Thread):
         """Wait for the correct volume to appear but stop if it was killed
         or the NZB is in post-processing and no new files will be downloaded.
         """
-        while not self.have_next_volume() and not self.killed and not self.nzo.pp_active:
-            with self.next_file_lock:
-                self.next_file_lock.wait()
+        with self.next_file_lock:
+            self.next_file_lock.wait_for(lambda: self.have_next_volume() or self.killed or self.nzo.pp_active)
 
     @synchronized(START_STOP_LOCK)
     def create_unrar_instance(self):
