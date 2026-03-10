@@ -408,17 +408,12 @@ class Assembler(Thread):
                         continue
                     break
 
-                # Could be empty in case nzo was deleted
+                # Could be empty in case nzo was deleted or a previous write attempt failed and the data was removed
+                # from the cache but could not be written to disk.
                 data = load_article(article)
                 if not data:
-                    if file_done:
-                        continue
-                    if allow_non_contiguous:
-                        skipped = True
-                        continue
-                    else:
-                        logging.info("No data found when trying to write %s", article)
-                    break
+                    logging.info("No data found when trying to write %s", article)
+                    continue
 
                 # If required open the file
                 if fd is None:
@@ -460,8 +455,8 @@ class Assembler(Thread):
                     cfg.direct_write.set(False)
                     return False
                 Assembler.write(fd, None, nzf, article, data)
-            except FileNotFoundError:
-                # nzo has probably been deleted, ArticleCache tries the fallback and handles it
+            except OSError:
+                # nzo has probably been deleted or not enough disk space, ArticleCache tries the fallback and handles it
                 return False
             finally:
                 os.close(fd)
