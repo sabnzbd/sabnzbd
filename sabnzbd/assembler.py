@@ -268,25 +268,6 @@ class Assembler(Thread):
                     try:
                         logging.debug("Decoding part of %s", filepath)
                         self.assemble(nzo, nzf, file_done, allow_non_contiguous, direct_write)
-
-                        # Continue after partly written data
-                        if not file_done:
-                            continue
-
-                        # Clean-up admin data
-                        logging.info("Decoding finished %s", filepath)
-                        nzf.remove_admin()
-
-                        # Do rar-related processing
-                        if rarfile.is_rarfile(filepath):
-                            # Check for encrypted files, unwanted extensions and add to direct unpack
-                            self.check_encrypted_and_unwanted(nzo, nzf)
-                            nzo.add_to_direct_unpacker(nzf)
-
-                        elif par2file.is_par2_file(filepath):
-                            # Parse par2 files, cloaked or not
-                            nzo.handle_par2(nzf, filepath)
-
                     except IOError as err:
                         # If job was deleted/finished or in active post-processing, ignore error
                         if not nzo.pp_or_finished:
@@ -307,9 +288,28 @@ class Assembler(Thread):
                             sabnzbd.Downloader.pause()
                         else:
                             logging.debug("Ignoring error %s for %s, already finished or in post-proc", err, filepath)
-                    except Exception:
-                        logging.error(T("Fatal error in Assembler"), exc_info=True)
-                        break
+
+                    # Final steps
+                    if file_done:
+                        sabnzbd.Assembler.clear_ready_bytes(nzf)
+                        nzf.assembled = True
+
+                        # Clean-up admin data
+                        logging.info("Decoding finished %s", filepath)
+                        nzf.remove_admin()
+
+                        # Do rar-related processing
+                        if rarfile.is_rarfile(filepath):
+                            # Check for encrypted files, unwanted extensions and add to direct unpack
+                            self.check_encrypted_and_unwanted(nzo, nzf)
+                            nzo.add_to_direct_unpacker(nzf)
+
+                        elif par2file.is_par2_file(filepath):
+                            # Parse par2 files, cloaked or not
+                            nzo.handle_par2(nzf, filepath)
+                except Exception:
+                    logging.error(T("Fatal error in Assembler"), exc_info=True)
+                    break
                 finally:
                     with self.queued_lock:
                         if allow_non_contiguous:
@@ -436,12 +436,6 @@ class Assembler(Thread):
             if fd is not None:
                 os.close(fd)
 
-        # Final steps
-        if file_done:
-            sabnzbd.Assembler.clear_ready_bytes(nzf)
-            set_permissions(nzf.filepath)
-            nzf.assembled = True
-
     @staticmethod
     def assemble_article(article: Article, data: bytearray) -> bool:
         """Write a single article to disk"""
@@ -556,6 +550,7 @@ class Assembler(Thread):
                 if not file_size:
                     direct_write = False
                 if os.fstat(fd).st_size == 0:
+                    set_permissions(nzf.filepath)
                     try:
                         sabctools.sparse(fd, file_size)
                     except OSError:
