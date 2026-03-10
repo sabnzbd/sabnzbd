@@ -291,8 +291,7 @@ class Assembler(Thread):
 
                     # Final steps
                     if file_done:
-                        sabnzbd.Assembler.clear_ready_bytes(nzf)
-                        nzf.assembled = True
+                        self.clear_ready_bytes(nzf)
 
                         # Clean-up admin data
                         logging.info("Decoding finished %s", filepath)
@@ -435,6 +434,10 @@ class Assembler(Thread):
         finally:
             if fd is not None:
                 os.close(fd)
+
+            # Final steps
+            if file_done:
+                nzf.assembled = True
 
     @staticmethod
     def assemble_article(article: Article, data: bytearray) -> bool:
