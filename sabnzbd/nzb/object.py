@@ -21,7 +21,6 @@ sabnzbd.nzb.object - NzbObject class for representing NZB download jobs
 
 import os
 import time
-import re
 import logging
 import datetime
 import threading
@@ -56,27 +55,23 @@ from sabnzbd.misc import (
     int_conv,
     format_time_string,
     calc_age,
-    cmp,
     caller_name,
     opts_to_pp,
     pp_to_opts,
     duplicate_warning,
     scan_password,
-    subject_name_extractor,
 )
 from sabnzbd.filesystem import (
     sanitize_foldername,
     get_unique_dir,
     get_admin_path,
     remove_all,
-    sanitize_filename,
     set_permissions,
     long_path,
     fix_unix_encoding,
     get_filename,
     get_unique_filename,
     renamer,
-    remove_file,
     make_script_path,
     globber,
     is_valid_script,
@@ -84,13 +79,11 @@ from sabnzbd.filesystem import (
     create_all_dirs,
     get_basename,
     backup_exists,
-    get_new_id,
     save_data,
     load_data,
     save_compressed,
     backup_nzb,
     remove_data,
-    strip_extensions,
     get_ext,
     create_work_name,
     RAR_RE,
@@ -1440,7 +1433,7 @@ class NzbObject(TryList):
             remove_all(self.download_path, "SABnzbd_article_*", keep_folder=True)
             save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
 
-    def get_nzf_by_id(self, nzf_id: str) -> NzbFile:
+    def get_nzf_by_id(self, nzf_id: str) -> Optional[NzbFile]:
         if nzf_id in self.files_table:
             return self.files_table[nzf_id]
 

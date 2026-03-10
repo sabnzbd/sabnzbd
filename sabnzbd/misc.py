@@ -33,7 +33,6 @@ import time
 import datetime
 import inspect
 import queue
-import ctypes
 import html
 import ipaddress
 import socks

@@ -31,8 +31,6 @@ import cherrypy
 from threading import Thread
 from typing import Optional, Any, Union, Generator
 
-import sabctools
-
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
 try:

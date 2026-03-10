@@ -25,7 +25,6 @@ import re
 import argparse
 import socket
 import ipaddress
-import threading
 from typing import Union
 
 import sabnzbd
@@ -54,7 +53,6 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
     DEF_MAX_ASSEMBLER_QUEUE,
-    DEF_PIPELINING_REQUESTS,
 )
 from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
 

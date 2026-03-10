@@ -20,7 +20,7 @@
 ##############################################################################
 import time
 import functools
-from typing import Union, Callable, Any
+from typing import Union, Callable
 from threading import Lock, RLock, Condition
 
 # All operations that modify the queue need to happen in a lock

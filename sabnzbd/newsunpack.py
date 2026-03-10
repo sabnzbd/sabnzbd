@@ -1798,7 +1798,7 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def pre_queue(nzo: NzbObject, pp: str, cat: str) -> list[Any]:
+def pre_queue(nzo: NzbObject, pp: Optional[int], cat: str) -> list[Any]:
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied separate since they can change.
     """
