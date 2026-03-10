@@ -1024,12 +1024,14 @@ def diskspace_base(dir_to_check: str) -> tuple[float, float]:
 
 
 @conditional_cache(cache_time=10)
-def diskspace(force: bool = False) -> dict[str, tuple[float, float]]:
+def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> dict[str, tuple[float, float]]:
     """Wrapper to keep results cached by conditional_cache
     If called with force=True, the wrapper will clear the results"""
+    if complete_dir is None:
+        complete_dir = sabnzbd.cfg.complete_dir.get_path()
     return {
         "download_dir": diskspace_base(sabnzbd.cfg.download_dir.get_path()),
-        "complete_dir": diskspace_base(sabnzbd.cfg.complete_dir.get_path()),
+        "complete_dir": diskspace_base(complete_dir),
     }
 
 
