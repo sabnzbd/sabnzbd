@@ -186,10 +186,14 @@ class NewsWrapper:
         article: Optional["sabnzbd.nzb.Article"] = None,
     ) -> None:
         """Add a command to the command queue"""
+        if self.next_request:
+            # This should never happen, but guard in case it does
+            _, article = self.next_request
+            self.discard(article, count_article_try=False)
         self.next_request = command, article
 
-    def body(self, article: "sabnzbd.nzb.Article") -> tuple[bytes, "sabnzbd.nzb.Article"]:
-        """Request the body of the article"""
+    def queue_article(self, article: "sabnzbd.nzb.Article"):
+        """Add an article request to the command queue"""
         self.timeout = time.time() + self.server.timeout
         if article.nzf.nzo.precheck:
             if self.server.have_stat:
@@ -200,7 +204,7 @@ class NewsWrapper:
             command = utob("BODY <%s>\r\n" % article.article)
         else:
             command = utob("ARTICLE <%s>\r\n" % article.article)
-        return command, article
+        self.queue_command(command, article)
 
     def on_response(self, response: sabctools.NNTPResponse, article: Optional["sabnzbd.nzb.Article"]) -> None:
         """A response to a NNTP request is received"""
@@ -382,7 +386,7 @@ class NewsWrapper:
             if server_ready:
                 # Queue the next article if none exists
                 if not self.next_request and (article := server.get_article()):
-                    self.next_request = self.body(article)
+                    self.queue_article(article)
                     return True
             else:
                 # Server not ready, discard any queued next_request
