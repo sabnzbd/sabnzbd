@@ -389,10 +389,12 @@ class NewsWrapper:
                     self.queue_article(article)
                     return True
             else:
-                # Server not ready, discard any queued next_request
-                if self.next_request and self.next_request[1]:
-                    self.discard(self.next_request[1], count_article_try=False, retry_article=True)
-                    self.next_request = None
+                # Server not ready, discard next_request if it is for an article
+                if self.next_request:
+                    _, article = self.next_request
+                    if article:
+                        self.discard(article, count_article_try=False, retry_article=True)
+                        self.next_request = None
 
         # Return True if there is work queued or in flight
         return bool(self.next_request or self._response_queue)
@@ -468,8 +470,7 @@ class NewsWrapper:
             # Drain unsent requests
             if self.next_request:
                 _, article = self.next_request
-                if article:
-                    self.discard(article, count_article_try=False, retry_article=True)
+                self.discard(article, count_article_try=False, retry_article=True)
                 self.next_request = None
             # Drain responses
             while self._response_queue:
