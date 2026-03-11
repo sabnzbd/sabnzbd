@@ -288,9 +288,11 @@ class Assembler(Thread):
                             sabnzbd.Downloader.pause()
                         else:
                             logging.debug("Ignoring error %s for %s, already finished or in post-proc", err, filepath)
+                    finally:
+                        # Continue after partly written data
+                        if not file_done:
+                            continue
 
-                    # Final steps
-                    if file_done:
                         self.clear_ready_bytes(nzf)
 
                         # Clean-up admin data
