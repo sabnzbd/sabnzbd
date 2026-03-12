@@ -289,25 +289,22 @@ class Assembler(Thread):
                         else:
                             logging.debug("Ignoring error %s for %s, already finished or in post-proc", err, filepath)
                     finally:
-                        # Continue after partly written data
-                        if not file_done:
-                            continue
+                        if file_done:
+                            self.clear_ready_bytes(nzf)
 
-                        self.clear_ready_bytes(nzf)
+                            # Clean-up admin data
+                            logging.info("Decoding finished %s", filepath)
+                            nzf.remove_admin()
 
-                        # Clean-up admin data
-                        logging.info("Decoding finished %s", filepath)
-                        nzf.remove_admin()
+                            # Do rar-related processing
+                            if rarfile.is_rarfile(filepath):
+                                # Check for encrypted files, unwanted extensions and add to direct unpack
+                                self.check_encrypted_and_unwanted(nzo, nzf)
+                                nzo.add_to_direct_unpacker(nzf)
 
-                        # Do rar-related processing
-                        if rarfile.is_rarfile(filepath):
-                            # Check for encrypted files, unwanted extensions and add to direct unpack
-                            self.check_encrypted_and_unwanted(nzo, nzf)
-                            nzo.add_to_direct_unpacker(nzf)
-
-                        elif par2file.is_par2_file(filepath):
-                            # Parse par2 files, cloaked or not
-                            nzo.handle_par2(nzf, filepath)
+                            elif par2file.is_par2_file(filepath):
+                                # Parse par2 files, cloaked or not
+                                nzo.handle_par2(nzf, filepath)
                 except Exception:
                     logging.error(T("Fatal error in Assembler"), exc_info=True)
                     break
