@@ -351,14 +351,14 @@ class DirectUnpacker(threading.Thread):
         if unrar_log:
             logging.debug("DirectUnpack Unrar output: \n%s", "\n".join(unrar_log))
 
-        # Make more space
-        self.reset_active()
-        if self in ACTIVE_UNPACKERS:
-            ACTIVE_UNPACKERS.remove(self)
-        logging.debug("Closing DirectUnpack for %s", self.nzo.final_name)
-
-        # Set the thread to killed so it never gets restarted by accident
-        self.killed = True
+        with START_STOP_LOCK:
+            # Set the thread to killed so it never gets restarted by accident
+            self.killed = True
+            # Make more space
+            self.reset_active()
+            if self in ACTIVE_UNPACKERS:
+                ACTIVE_UNPACKERS.remove(self)
+            logging.debug("Closing DirectUnpack for %s", self.nzo.final_name)
 
     def have_next_volume(self):
         """Check if next volume of set is available, start
