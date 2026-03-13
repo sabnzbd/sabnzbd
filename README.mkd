@@ -1,10 +1,16 @@
-Release Notes - SABnzbd 5.0.0 Beta 2
+Release Notes - SABnzbd 5.0.0 Beta 3
 =========================================================
 
-This is the second beta release of version 5.0.
+This is the third beta release of version 5.0.
 
-Due to several fundamental changes we decided to
-not just call this 4.6 but promote it to 5.0!
+## Changes and bugfixes since 5.0.0 Beta 2
+
+* Post-processing scripts will always be executed, even for failed jobs.
+  Make sure to check the status of the job in your scripts!
+* Removed Special setting `empty_postproc` as it is no longer needed.
+* Handle passwords that exceed Unrar's password limit.
+* Improve handling of disks getting full.
+* Stability increased for the download process.
 
 ## New features in 5.0.0
 
