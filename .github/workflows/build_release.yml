@@ -221,9 +221,9 @@ jobs:
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           if [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "channel=stable,candidate" >> "$GITHUB_OUTPUT"
+            echo "channel=stable,beta" >> "$GITHUB_OUTPUT"
           else
-            echo "channel=candidate" >> "$GITHUB_OUTPUT"
+            echo "channel=beta" >> "$GITHUB_OUTPUT"
           fi
       - name: Publish snap
         uses: snapcore/action-publish@v1
