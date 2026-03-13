@@ -558,10 +558,6 @@ class Downloader(Thread):
     @staticmethod
     def decode(article: "sabnzbd.nzb.Article", response: Optional[sabctools.NNTPResponse] = None):
         """Decode article"""
-        # Need a better way of draining requests
-        if article.nzf.nzo.removed_from_queue:
-            return
-
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
