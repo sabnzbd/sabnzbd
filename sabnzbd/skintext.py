@@ -415,7 +415,8 @@ SKIN_TEXT = {
     "explain-top_only": TT("Enable for less memory usage. Disable to prevent slow jobs from blocking the queue."),
     "opt-safe_postproc": TT("Post-Process Only Verified Jobs"),
     "explain-safe_postproc": TT(
-        "Only unpack and run scripts on jobs that passed the verification stage. If turned off, all jobs will be marked as Completed even if they are incomplete."
+        "Only try to unpack jobs that passed the verification stage. "
+        "If turned off, all jobs will be marked as Completed and moved to the Complete folder even if they are incomplete."
     ),
     "opt-pause_on_pwrar": TT("Action when encrypted RAR is downloaded"),
     "explain-pause_on_pwrar": TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
@@ -933,9 +934,11 @@ SKIN_TEXT = {
     "wizard-test-server-required": TT("Click on Test Server before continuing"),  #: Tooltip for disabled Next button
     "restore-backup": TT("Restore backup"),
     # Special
-    "yourRights": TT("""
+    "yourRights": TT(
+        """
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
-"""),
+"""
+    ),
 }

@@ -369,7 +369,7 @@ def process_job(nzo: NzbObject) -> bool:
     par_error = False
     # keep track of any unpacking errors
     unpack_error = False
-    # Signal empty download, for when 'empty_postproc' is enabled
+    # Signal empty download
     empty = False
     nzb_list = []
     one_folder = False
@@ -414,10 +414,9 @@ def process_job(nzo: NzbObject) -> bool:
             nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
-            all_ok = cfg.empty_postproc() and empty
-            if not all_ok:
-                par_error = True
-                unpack_error = 1
+            all_ok = False
+            par_error = True
+            unpack_error = 1
 
         logging.info(
             "Starting Post-Processing on %s => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s",

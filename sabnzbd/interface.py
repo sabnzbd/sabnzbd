@@ -882,7 +882,6 @@ SPECIAL_BOOL_LIST = (
     "rss_filenames",
     "ipv6_hosting",
     "keep_awake",
-    "empty_postproc",
     "new_nzb_on_failure",
     "html_login",
     "disable_archive",
