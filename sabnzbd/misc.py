@@ -38,7 +38,7 @@ import ipaddress
 import socks
 import math
 import rarfile
-from threading import Thread
+from threading import Thread, RLock
 from collections.abc import Iterable
 from typing import Union, Any, AnyStr, Optional, Collection
 
@@ -54,7 +54,7 @@ from sabnzbd.constants import (
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.decorators import conditional_cache
+from sabnzbd.decorators import conditional_cache, synchronized
 from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions
 
@@ -91,6 +91,9 @@ RE_SUBJECT_BASIC_FILENAME = re.compile(r"\b([\w\-+()' .,]+(?:\[[\w\-/+()' .,]*][
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime("%p"))
+
+# The history counter need to be made atomic to ensure consistency.
+HISTORY_COUNTER_LOCK = RLock()
 
 
 def helpful_warning(msg, *args, **kwargs):
@@ -1470,6 +1473,7 @@ def keep_awake():
                     sleepless.allow_sleep()
 
 
+@synchronized(HISTORY_COUNTER_LOCK)
 def history_updated():
     """To make sure we always have a fresh history"""
     sabnzbd.LAST_HISTORY_UPDATE += 1

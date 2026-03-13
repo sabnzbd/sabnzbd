@@ -564,8 +564,14 @@ def _api_history_default(value: str, kwargs: dict[str, Union[str, list[str]]]) -
     failed_only = bool_conv(kwargs.get("failed_only"))
     nzo_ids = clean_comma_separated_list(kwargs.get("nzo_ids"))
 
+    # Snapshot the counter once to avoid racing with history_updated() calls
+    # between the staleness check and the response — if the counter changes
+    # mid-request the client would record the newer value but receive stale
+    # data, causing it to skip the real update on the next poll.
+    current_history_update = sabnzbd.LAST_HISTORY_UPDATE
+
     # Do we need to send anything?
-    if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
+    if last_history_update == current_history_update:
         return report(keyword="history", data=False)
 
     if failed_only:
@@ -593,7 +599,7 @@ def _api_history_default(value: str, kwargs: dict[str, Union[str, list[str]]]) -
         statuses=statuses,
         nzo_ids=nzo_ids,
     )
-    history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
+    history["last_history_update"] = current_history_update
     history["version"] = sabnzbd.__version__
     return report(keyword="history", data=history)
 
