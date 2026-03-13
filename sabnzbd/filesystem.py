@@ -712,12 +712,16 @@ def long_path(path: str) -> str:
 
 
 ##############################################################################
-# Locked directory operations to avoid problems with simultaneous add/remove
+# Lock for check-then-create operations (get_unique_dir, get_unique_filename)
+# to prevent race conditions when multiple threads attempt to create unique
+# paths in the same parent directory simultaneously.
+# Other directory operations (create, rename, move, remove, list) don't need
+# this lock: they either operate on per-job paths that don't overlap between
+# threads, are inherently idempotent, or have their own retry logic.
 ##############################################################################
-DIR_LOCK = threading.RLock()
+UNIQUE_PATH_LOCK = threading.RLock()
 
 
-@synchronized(DIR_LOCK)
 def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bool]:
     """Create all required path elements and set permissions on all
     The apply_permissions argument is ignored on Windows
@@ -750,7 +754,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
         return False
 
 
-@synchronized(DIR_LOCK)
+@synchronized(UNIQUE_PATH_LOCK)
 def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
     """Determine a unique folder or filename"""
     if not mount_is_available(path):
@@ -769,7 +773,7 @@ def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str,
         return get_unique_dir(path, n=n + 1, create_dir=create_dir)
 
 
-@synchronized(DIR_LOCK)
+@synchronized(UNIQUE_PATH_LOCK)
 def get_unique_filename(path: str) -> str:
     """Check if path is unique.
     If not, add number like: "/path/name.NUM.ext".
@@ -784,7 +788,6 @@ def get_unique_filename(path: str) -> str:
     return path
 
 
-@synchronized(DIR_LOCK)
 def listdir_full(input_dir: str, recursive: bool = True) -> list[str]:
     """List all files in dirs and sub-dirs"""
     filelist = []
@@ -798,7 +801,6 @@ def listdir_full(input_dir: str, recursive: bool = True) -> list[str]:
     return filelist
 
 
-@synchronized(DIR_LOCK)
 def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
     """Move a file to a new path, optionally give unique filename
     Return (ok, new_path)
@@ -840,7 +842,6 @@ def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
     return ok, new_path
 
 
-@synchronized(DIR_LOCK)
 def cleanup_empty_directories(path: str):
     """Remove all empty folders inside (and including) 'path'"""
     path = os.path.normpath(path)
@@ -864,7 +865,6 @@ def cleanup_empty_directories(path: str):
             pass
 
 
-@synchronized(DIR_LOCK)
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
     Optionally allows the creation of local directories if they don't exist yet
@@ -934,7 +934,6 @@ def remove_file(path: str):
     os.remove(path)
 
 
-@synchronized(DIR_LOCK)
 def remove_dir(path: str):
     """Remove directory with retries for Win32"""
     logging.debug("[%s] Removing dir %s", sabnzbd.misc.caller_name(), path)
@@ -957,7 +956,6 @@ def remove_dir(path: str):
         os.rmdir(path)
 
 
-@synchronized(DIR_LOCK)
 def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursive: bool = False):
     """Remove folder and all its content (optionally recursive)"""
     if path and os.path.exists(path):
