@@ -3301,13 +3301,10 @@ msgstr "Post-elabora solo i processi verificati"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
-"Estrai ed esegui script solo sui processi che hanno superato la fase di "
-"verifica. Se disattivato, tutti i processi verranno contrassegnati come "
-"completati anche se incompleti."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"

@@ -3141,10 +3141,10 @@ msgstr "仅对经验证的任务进行后期处理"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
-msgstr "仅在通过验证阶段的作业上解压和运行脚本。如果关闭，即使作业不完整，所有作业也将标记为已完成。"
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"

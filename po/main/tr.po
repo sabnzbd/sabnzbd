@@ -3291,13 +3291,10 @@ msgstr "Post-processing Sadece Doğrulanmış İşler için Yapılsın"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
-"Sadece doğrulama aşamasını geçen işler için açma ve betik çalıştırma yap. "
-"Şayet devre dışıysa, kısmi olsalar dahi tüm işler Tamamlanmış olarak "
-"işaretlenecektir."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"

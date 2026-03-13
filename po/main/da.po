@@ -3260,12 +3260,10 @@ msgstr "Efterbehandling kun verificerede jobs"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
-"Udpak kun og kør scripts på jobs, der bestod verifikationsstadiet. Hvis "
-"slået fra, markeres alle jobs som fuldført, selvom de er ufuldstændige."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
