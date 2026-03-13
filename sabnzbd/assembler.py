@@ -26,7 +26,7 @@ import re
 import threading
 from threading import Thread
 import ctypes
-from typing import Optional, NamedTuple, Union
+from typing import Optional, NamedTuple, Union, Literal
 import rarfile
 import time
 
@@ -324,26 +324,26 @@ class Assembler(Thread):
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
         """Check diskspace requirements.
         If not enough space left, pause downloader and send email"""
-        freespace = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
-        full_dir = None
+        diskspace_info = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
+        full_dir: Optional[Literal["download_dir", "complete_dir"]] = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
-        if freespace["download_dir"][1] < required_space:
+        if diskspace_info.download_dir.free < required_space:
             full_dir = "download_dir"
 
         # Enough space in download_dir, check complete_dir
-        complete_free = cfg.complete_free.get_float()
-        if complete_free > 0 and not full_dir:
+        if not full_dir:
+            complete_free = cfg.complete_free.get_float()
             required_space = 0
             if cfg.direct_unpack():
                 # We unpack while we download, so we should check every time
                 # if the unpack maybe already filled up the drive
-                required_space = complete_free / GIGI
+                required_space = (complete_free + nzf.bytes) / GIGI
             elif nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
                 # Since only at 100% unpack is started, continue
                 # downloading until 95% complete before checking
                 required_space = (complete_free + nzo.bytes) / GIGI
 
-            if required_space and freespace["complete_dir"][1] < required_space:
+            if required_space and diskspace_info.complete_dir.free < required_space:
                 full_dir = "complete_dir"
 
         if full_dir:
