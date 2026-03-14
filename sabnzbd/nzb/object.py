@@ -707,7 +707,8 @@ class NzbObject(TryList):
             for new_nzf in self.extrapars[setname]:
                 # Add it to the top
                 if self.add_parfile(new_nzf):
-                    break
+                    return True
+        return False
 
     def get_extra_blocks(self, setname: str, needed_blocks: int) -> int:
         """We want par2-files of all sets that are similar to this one
@@ -1051,6 +1052,8 @@ class NzbObject(TryList):
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_try_list()
+            # Reset NZO TryList
+            self.reset_try_list()
             self.files.insert(0, parfile)
             self.bytes_tried -= parfile.bytes_left
             return True
