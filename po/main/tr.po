@@ -3295,6 +3295,9 @@ msgid ""
 "all jobs will be marked as Completed and moved to the Complete folder even "
 "if they are incomplete."
 msgstr ""
+"Sadece denetleme aşamasını geçen işleri açmayı dene. Eğer devre dışı "
+"bırakılırsa, bütün işler Tamamlanmış olarak işaretlenip kısmi olsalar bile "
+"Tamamlanış dizinine taşınacaklardır."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
