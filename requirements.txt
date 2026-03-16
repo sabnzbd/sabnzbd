@@ -38,7 +38,7 @@ cryptography>=3.0
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.12.0
+ujson
 orjson==3.11.7; python_version > '3.9'
 
 # Windows system integration
