@@ -739,7 +739,8 @@ class NzbQueue:
                 sabnzbd.Assembler.process(nzo, nzf, file_done, article=article)
             elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
                 # Broken par2 file, try to get another one
-                nzo.promote_par2(nzf)
+                if nzo.promote_par2(nzf):
+                    post_done = False
 
         # Save bookkeeping in case of crash
         if file_done and (nzo.next_save is None or time.time() > nzo.next_save):
