@@ -40,6 +40,7 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.misc import int_conv, subject_name_extractor
 from sabnzbd.decorators import synchronized
+from sabnzbd.par2file import has_par2_in_filename
 
 
 ##############################################################################
@@ -213,17 +214,22 @@ class NzbFile(TryList):
         This ensures we have attempted to extract md5of16k and filename information
         before creating the filepath.
         """
-        # The first article of decodetable is always the lowest
-        first_article = self.decodetable[0]
-        # If it's still in nzo.first_articles, it hasn't been processed yet
-        return first_article not in self.nzo.first_articles
+        # par2 files don't need par2 rename info, just wait for own first article
+        if self.is_par2 or has_par2_in_filename(self.filename):
+            # The first article of decodetable is always the lowest
+            first_article = self.decodetable[0]
+            # If it's still in nzo.first_articles, it hasn't been processed yet
+            return first_article not in self.nzo.first_articles
+        # Non-par2 files wait for ALL first articles to be done,
+        # making it likely handle_par2 has populated md5of16k
+        return not self.nzo.first_articles
 
-    def prepare_filepath(self):
+    def prepare_filepath(self, force: bool = False):
         """Do all checks before making the final path"""
         if not self.filepath:
             # Wait for the first article to be processed so we can get md5of16k
             # and proper filename before creating the filepath
-            if not self.first_article_processed():
+            if not force and not self.first_article_processed():
                 return None
 
             self.nzo.verify_nzf_filename(self)

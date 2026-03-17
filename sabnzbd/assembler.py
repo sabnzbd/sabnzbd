@@ -206,7 +206,7 @@ class Assembler(Thread):
             return False
         # Always write
         if article_has_first_part and filename_checked and not import_finished:
-            return True
+            return nzf.prepare_filepath() is not None
         next_ready = (next_article := nzf.assembler_next_article) and (next_article.decoded or next_article.on_disk)
         # Trigger every 5 seconds if next article is decoded or on_disk
         if next_ready and time.monotonic() > self.queued_next_time.get(nzf.nzf_id, 0):
@@ -261,7 +261,7 @@ class Assembler(Thread):
 
                 try:
                     # Prepare filepath
-                    if not (filepath := nzf.prepare_filepath()):
+                    if not (filepath := nzf.prepare_filepath(force=file_done)):
                         logging.debug("Prepare filepath failed for file %s in job %s", nzf.filename, nzo.final_name)
                         continue
 
