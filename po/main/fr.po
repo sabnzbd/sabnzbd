@@ -3340,6 +3340,9 @@ msgid ""
 "all jobs will be marked as Completed and moved to the Complete folder even "
 "if they are incomplete."
 msgstr ""
+"N'essaye de décompresser que les tâches ayant passé l'étape de vérification."
+" Si désactivé, toutes les tâches seront marquées comme Terminées et "
+"déplacées vers le dossier Terminées, même si elles sont incomplètes."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
