@@ -410,7 +410,12 @@ class Scheduler:
             self.cancel_resume_task()
 
     def plan_diskspace_resume(self, full_dir: str, required_space: float):
-        """Create regular check for free disk space"""
+        """
+        Create regular check for free disk space
+
+        :param str full_dir: "download_dir", "complete_dir", or directory path
+        :param float required_space: Disk space required to resume
+        """
         self.cancel_resume_task()
         logging.info("Will resume when %s has more than %d GB free space", full_dir, required_space)
         self.resume_task = self.scheduler.add_interval_task(
