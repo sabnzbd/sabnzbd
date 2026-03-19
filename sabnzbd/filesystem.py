@@ -991,13 +991,13 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-@dataclass(slots=True, frozen=True)
+@dataclass(frozen=True)
 class DiskspaceItem:
     size: float = 0.0
     free: float = 0.0
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(frozen=True)
 class Diskspace:
     download_dir: DiskspaceItem
     complete_dir: DiskspaceItem
