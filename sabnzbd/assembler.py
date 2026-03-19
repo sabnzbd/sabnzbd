@@ -26,7 +26,7 @@ import re
 import threading
 from threading import Thread
 import ctypes
-from typing import Optional, NamedTuple, Union, Literal
+from typing import Optional, NamedTuple, Union
 import rarfile
 import time
 
@@ -325,7 +325,7 @@ class Assembler(Thread):
         """Check diskspace requirements.
         If not enough space left, pause downloader and send email"""
         diskspace_info = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
-        full_dir: Optional[Literal["download_dir", "complete_dir"]] = None
+        full_dir: Optional[str] = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
         if diskspace_info.download_dir.free < required_space:
             full_dir = "download_dir"
@@ -344,7 +344,10 @@ class Assembler(Thread):
                 required_space = (complete_free + nzo.bytes) / GIGI
 
             if required_space and diskspace_info.complete_dir.free < required_space:
-                full_dir = "complete_dir"
+                if diskspace_info.complete_dir.path == sabnzbd.cfg.complete_dir.get_path():
+                    full_dir = "complete_dir"
+                else:
+                    full_dir = diskspace_info.complete_dir.path
 
         if full_dir:
             logging.warning(T("Too little diskspace forcing PAUSE"))

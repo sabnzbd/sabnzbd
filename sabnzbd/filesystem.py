@@ -993,6 +993,7 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 @dataclass(frozen=True)
 class DiskspaceItem:
+    path: str
     size: float = 0.0
     free: float = 0.0
 
@@ -1017,9 +1018,9 @@ def diskspace_base(dir_to_check: str) -> DiskspaceItem:
         # windows diskfree
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
-            return DiskspaceItem(size=disk_size / GIGI, free=available / GIGI)
+            return DiskspaceItem(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
-            return DiskspaceItem()
+            return DiskspaceItem(path=dir_to_check)
     elif hasattr(os, "statvfs"):
         # posix diskfree
         try:
@@ -1032,11 +1033,11 @@ def diskspace_base(dir_to_check: str) -> DiskspaceItem:
                 available = float(sys.maxsize) * float(s.f_frsize)
             else:
                 available = float(s.f_bavail) * float(s.f_frsize)
-            return DiskspaceItem(size=disk_size / GIGI, free=available / GIGI)
+            return DiskspaceItem(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
-            return DiskspaceItem()
+            return DiskspaceItem(path=dir_to_check)
     else:
-        return DiskspaceItem(size=20.0, free=10.0)
+        return DiskspaceItem(path=dir_to_check, size=20.0, free=10.0)
 
 
 @conditional_cache(cache_time=10)
