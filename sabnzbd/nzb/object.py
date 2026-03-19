@@ -1341,17 +1341,18 @@ class NzbObject(TryList):
 
         # If we have the md5, use it to rename
         if nzf.md5of16k and self.md5of16k:
-            # Don't check again, even if no match
-            nzf.filename_checked = True
             # Find the match and rename
-            if nzf.md5of16k in self.md5of16k:
-                new_filename = self.md5of16k[nzf.md5of16k]
+            if new_filename := self.md5of16k.get(nzf.md5of16k, None):
                 # Was it even new?
                 if new_filename != nzf.filename:
                     logging.info("Detected filename based on par2: %s -> %s", nzf.filename, new_filename)
                     self.renamed_file(new_filename, nzf.filename)
                     nzf.filename = new_filename
+                nzf.filename_checked = True
                 return
+            else:
+                # Don't check again, even if no match
+                nzf.filename_checked = True
 
         # Fallback to yenc/nzb name (also when there is no partnum=1)
         # We also keep the NZB name in case it ends with ".par2" (usually correct)
