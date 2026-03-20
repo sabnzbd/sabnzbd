@@ -997,9 +997,6 @@ class Diskspace:
     size: float = 0.0
     free: float = 0.0
 
-    def __getitem__(self, key: str) -> Diskspace:
-        return getattr(self, key)
-
 
 def diskspace_base(dir_to_check: str) -> Diskspace:
     """Return amount of free and used diskspace in GBytes"""
