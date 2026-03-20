@@ -23,6 +23,8 @@ from types import SimpleNamespace
 from zlib import crc32
 
 from sabnzbd.assembler import Assembler
+from sabnzbd.constants import GIGI
+from sabnzbd.filesystem import Diskspace
 from sabnzbd.nzb import Article, NzbFile, NzbObject
 from tests.testhelper import *
 
@@ -313,3 +315,139 @@ class TestAssembler:
         Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=True)
         assert assembler.call_count == 3
         self._assert_expected_content(self.nzf, expected)
+
+
+class TestDiskspaceCheck:
+    """Tests for Assembler.diskspace_check"""
+
+    @pytest.fixture(autouse=True)
+    def setup_mocks(self):
+        self.nzo = mock.Mock()
+        self.nzo.bytes = int(2 * GIGI)
+        self.nzo.bytes_tried = 0
+        self.nzo.bytes_par2 = 0
+
+        self.nzf = mock.Mock()
+        self.nzf.bytes = int(0.5 * GIGI)
+
+        self.mock_downloader = mock.Mock()
+        self.mock_scheduler = mock.Mock()
+        self.mock_notifier = mock.Mock()
+        self.mock_emailer = mock.Mock()
+
+        try:
+            sabnzbd.Downloader = self.mock_downloader
+            sabnzbd.Scheduler = self.mock_scheduler
+            sabnzbd.notifier = self.mock_notifier
+            sabnzbd.emailer = self.mock_emailer
+
+            with (
+                mock.patch("sabnzbd.assembler.diskspace") as self.mock_diskspace,
+                mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
+                mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,
+                mock.patch("sabnzbd.cfg.complete_dir") as self.mock_complete_dir_cfg,
+            ):
+                # Defaults: plenty of space, no direct_unpack, autoresume on
+                self.mock_get_complete_dir.return_value = ("/complete", None, True)
+                self.mock_cfg.download_free.get_float.return_value = 1 * GIGI
+                self.mock_cfg.complete_free.get_float.return_value = 2 * GIGI
+                self.mock_cfg.direct_unpack.return_value = False
+                self.mock_cfg.fulldisk_autoresume.return_value = True
+                self.mock_complete_dir_cfg.get_path.return_value = "/complete"
+                yield
+        finally:
+            del sabnzbd.Downloader
+            del sabnzbd.Scheduler
+            del sabnzbd.notifier
+            del sabnzbd.emailer
+
+    def _set_diskspace(self, download_free_gb: float, complete_free_gb: float, complete_path: str = "/complete"):
+        self.mock_diskspace.return_value = (
+            Diskspace(path="/download", free=download_free_gb),
+            Diskspace(path=complete_path, free=complete_free_gb),
+        )
+
+    def test_download_dir_full(self):
+        """Pause when download_dir has insufficient space"""
+        # download_free=1GiB, nzf.bytes=0.5GiB => required = 1.5 GiB, free = 1.0 GiB
+        self._set_diskspace(download_free_gb=1.0, complete_free_gb=50.0)
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        expected_required = (1 * GIGI + self.nzf.bytes) / GIGI
+        self.mock_downloader.pause.assert_called_once()
+        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("download_dir", expected_required)
+
+    def test_complete_dir_full_direct_unpack(self):
+        """Pause when complete_dir is full during direct_unpack"""
+        self._set_diskspace(download_free_gb=50.0, complete_free_gb=1.0)
+        self.mock_cfg.direct_unpack.return_value = True
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        expected_required = (2 * GIGI) / GIGI
+        self.mock_downloader.pause.assert_called_once()
+        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("complete_dir", expected_required)
+
+    def test_complete_dir_full_near_completion(self):
+        """Pause when complete_dir is full and download is >95% done"""
+        self.nzo.bytes_tried = int(self.nzo.bytes * 0.96)
+        self.nzo.bytes_par2 = 0
+        self._set_diskspace(download_free_gb=50.0, complete_free_gb=1.0)
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        expected_required = (2 * GIGI + self.nzo.bytes) / GIGI  # (complete_free + nzo.bytes)
+        self.mock_downloader.pause.assert_called_once()
+        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("complete_dir", expected_required)
+
+    def test_complete_dir_no_check_below_95_percent(self):
+        """No complete_dir check when download is below 95% and not direct_unpack"""
+        self.nzo.bytes_tried = int(self.nzo.bytes * 0.50)
+        self._set_diskspace(download_free_gb=50.0, complete_free_gb=0.1)
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        self.mock_downloader.pause.assert_not_called()
+        self.mock_scheduler.plan_diskspace_resume.assert_not_called()
+
+    def test_complete_dir_custom_path(self):
+        """full_dir is the actual path when complete_dir differs from default"""
+        custom_path = "/custom/complete"
+        self.mock_get_complete_dir.return_value = (custom_path, None, True)
+        self._set_diskspace(download_free_gb=50.0, complete_free_gb=1.0, complete_path=custom_path)
+        self.mock_cfg.direct_unpack.return_value = True
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        self.mock_downloader.pause.assert_called_once()
+        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with(custom_path, mock.ANY)
+
+    def test_enough_space(self):
+        """No action when both dirs have sufficient space"""
+        self._set_diskspace(download_free_gb=50.0, complete_free_gb=50.0)
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        self.mock_downloader.pause.assert_not_called()
+        self.mock_scheduler.plan_diskspace_resume.assert_not_called()
+        self.mock_notifier.send_notification.assert_not_called()
+        self.mock_emailer.diskfull_mail.assert_not_called()
+
+    def test_autoresume_disabled(self):
+        """plan_diskspace_resume not called when fulldisk_autoresume is off"""
+        self._set_diskspace(download_free_gb=1.0, complete_free_gb=50.0)
+        self.mock_cfg.fulldisk_autoresume.return_value = False
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        self.mock_downloader.pause.assert_called_once()
+        self.mock_scheduler.plan_diskspace_resume.assert_not_called()
+
+    def test_download_dir_full_notifications(self):
+        """Verify notifications and email are sent on disk full"""
+        self._set_diskspace(download_free_gb=1.0, complete_free_gb=50.0)
+
+        Assembler.diskspace_check(self.nzo, self.nzf)
+
+        self.mock_notifier.send_notification.assert_called_once()
+        self.mock_emailer.diskfull_mail.assert_called_once()
