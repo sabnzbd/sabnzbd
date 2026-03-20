@@ -1,7 +1,12 @@
-Release Notes - SABnzbd 5.0.0 Beta 3
+Release Notes - SABnzbd 5.0.0 Beta 4
 =========================================================
 
-This is the third beta release of version 5.0.
+This is the fourth beta release of version 5.0.
+
+## Changes and bugfixes since 5.0.0 Beta 3
+
+* Stability fixes for downloading and file assembly.
+* No longer exclusively lock all directory operations.
 
 ## Changes and bugfixes since 5.0.0 Beta 2
 
