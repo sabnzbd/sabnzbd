@@ -1860,13 +1860,13 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
-    diskspace_info = diskspace()
-    header["diskspace1"] = "%.2f" % diskspace_info.download_dir.free
-    header["diskspace2"] = "%.2f" % diskspace_info.complete_dir.free
-    header["diskspace1_norm"] = to_units(diskspace_info.download_dir.free * GIGI)
-    header["diskspace2_norm"] = to_units(diskspace_info.complete_dir.free * GIGI)
-    header["diskspacetotal1"] = "%.2f" % diskspace_info.download_dir.size
-    header["diskspacetotal2"] = "%.2f" % diskspace_info.complete_dir.size
+    download_dir, complete_dir = diskspace()
+    header["diskspace1"] = "%.2f" % download_dir.free
+    header["diskspace2"] = "%.2f" % complete_dir.free
+    header["diskspace1_norm"] = to_units(download_dir.free * GIGI)
+    header["diskspace2_norm"] = to_units(complete_dir.free * GIGI)
+    header["diskspacetotal1"] = "%.2f" % download_dir.size
+    header["diskspacetotal2"] = "%.2f" % complete_dir.size
     header["speedlimit"] = str(sabnzbd.Downloader.bandwidth_perc)
     header["speedlimit_abs"] = str(sabnzbd.Downloader.bandwidth_limit)
 

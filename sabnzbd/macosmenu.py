@@ -441,12 +441,12 @@ class SABnzbdDelegate(NSObject):
 
     def diskspaceUpdate(self):
         try:
-            diskspace_info = diskspace()
+            download_dir, complete_dir = diskspace()
             self.completefolder_menu_item.setTitle_(
-                "%s (%.2f GB)" % (T("Complete Folder"), diskspace_info.complete_dir.free)
+                "%s (%.2f GB)" % (T("Complete Folder"), complete_dir.free)
             )
             self.incompletefolder_menu_item.setTitle_(
-                "%s (%.2f GB)" % (T("Incomplete Folder"), diskspace_info.download_dir.free)
+                "%s (%.2f GB)" % (T("Incomplete Folder"), download_dir.free)
             )
         except Exception:
             logging.info("[macos] diskspaceUpdate Exception", exc_info=True)

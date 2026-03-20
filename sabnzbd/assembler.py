@@ -324,10 +324,10 @@ class Assembler(Thread):
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
         """Check diskspace requirements.
         If not enough space left, pause downloader and send email"""
-        diskspace_info = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
+        download_dir, complete_dir = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
         full_dir: Optional[str] = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
-        if diskspace_info.download_dir.free < required_space:
+        if download_dir.free < required_space:
             full_dir = "download_dir"
 
         # Enough space in download_dir, check complete_dir
@@ -343,11 +343,11 @@ class Assembler(Thread):
                 # downloading until 95% complete before checking
                 required_space = (complete_free + nzo.bytes) / GIGI
 
-            if required_space and diskspace_info.complete_dir.free < required_space:
-                if diskspace_info.complete_dir.path == sabnzbd.cfg.complete_dir.get_path():
+            if required_space and complete_dir.free < required_space:
+                if complete_dir.path == sabnzbd.cfg.complete_dir.get_path():
                     full_dir = "complete_dir"
                 else:
-                    full_dir = diskspace_info.complete_dir.path
+                    full_dir = complete_dir.path
 
         if full_dir:
             logging.warning(T("Too little diskspace forcing PAUSE"))
