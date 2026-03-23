@@ -55,6 +55,7 @@ from sabnzbd.constants import (
 import sabnzbd.cfg as cfg
 from sabnzbd.nzb import NzbFile, NzbObject, Article
 import sabnzbd.par2file as par2file
+from sabnzbd.postproc import get_complete_directory
 
 
 class AssemblerTask(NamedTuple):
@@ -323,15 +324,15 @@ class Assembler(Thread):
     def diskspace_check(nzo: NzbObject, nzf: NzbFile):
         """Check diskspace requirements.
         If not enough space left, pause downloader and send email"""
-        freespace = diskspace(force=True)
-        full_dir = None
+        download_dir, complete_dir = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
+        full_dir: Optional[str] = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
-        if freespace["download_dir"][1] < required_space:
+        if download_dir.free < required_space:
             full_dir = "download_dir"
 
         # Enough space in download_dir, check complete_dir
-        complete_free = cfg.complete_free.get_float()
-        if complete_free > 0 and not full_dir:
+        if not full_dir:
+            complete_free = cfg.complete_free.get_float()
             required_space = 0
             if cfg.direct_unpack():
                 # We unpack while we download, so we should check every time
@@ -342,8 +343,11 @@ class Assembler(Thread):
                 # downloading until 95% complete before checking
                 required_space = (complete_free + nzo.bytes) / GIGI
 
-            if required_space and freespace["complete_dir"][1] < required_space:
-                full_dir = "complete_dir"
+            if required_space and complete_dir.free < required_space:
+                if complete_dir.path == sabnzbd.cfg.complete_dir.get_path():
+                    full_dir = "complete_dir"
+                else:
+                    full_dir = complete_dir.path
 
         if full_dir:
             logging.warning(T("Too little diskspace forcing PAUSE"))

@@ -718,13 +718,10 @@ def process_job(nzo: NzbObject) -> bool:
     return True
 
 
-def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Optional[str]]:
-    """Based on the information that we have, generate
-    the extraction path and create the directory.
-    Separated so it can be called from DirectUnpacker
-    """
+def get_complete_directory(nzo: NzbObject) -> tuple[str, Sorter, bool]:
+    """Get the complete directory for a nzo.
+    Seperated so the Assembler can check for a category override."""
     create_job_dir = True
-    marker_file = None
 
     # Determine category directory
     catdir = config.get_category(nzo.cat).dir()
@@ -752,6 +749,17 @@ def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Opt
         create_job_dir = True
 
     complete_dir = sanitize_and_trim_path(complete_dir)
+
+    return complete_dir, file_sorter, create_job_dir
+
+
+def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Optional[str]]:
+    """Based on the information that we have, generate
+    the extraction path and create the directory.
+    Separated so it can be called from DirectUnpacker
+    """
+    complete_dir, file_sorter, create_job_dir = get_complete_directory(nzo)
+    marker_file = None
 
     if not create_job_dir:
         workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)

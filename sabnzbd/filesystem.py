@@ -34,6 +34,7 @@ import fnmatch
 import stat
 import ctypes
 import random
+from dataclasses import dataclass
 from typing import Union, Any, Optional, BinaryIO
 
 try:
@@ -990,7 +991,14 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-def diskspace_base(dir_to_check: str) -> tuple[float, float]:
+@dataclass(frozen=True)
+class Diskspace:
+    path: str
+    size: float = 0.0
+    free: float = 0.0
+
+
+def diskspace_base(dir_to_check: str) -> Diskspace:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
     x = "x"
@@ -1001,9 +1009,9 @@ def diskspace_base(dir_to_check: str) -> tuple[float, float]:
         # windows diskfree
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
-            return disk_size / GIGI, available / GIGI
+            return Diskspace(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
-            return 0.0, 0.0
+            return Diskspace(path=dir_to_check)
     elif hasattr(os, "statvfs"):
         # posix diskfree
         try:
@@ -1016,21 +1024,20 @@ def diskspace_base(dir_to_check: str) -> tuple[float, float]:
                 available = float(sys.maxsize) * float(s.f_frsize)
             else:
                 available = float(s.f_bavail) * float(s.f_frsize)
-            return disk_size / GIGI, available / GIGI
+            return Diskspace(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
-            return 0.0, 0.0
+            return Diskspace(path=dir_to_check)
     else:
-        return 20.0, 10.0
+        return Diskspace(path=dir_to_check, size=20.0, free=10.0)
 
 
 @conditional_cache(cache_time=10)
-def diskspace(force: bool = False) -> dict[str, tuple[float, float]]:
+def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> tuple[Diskspace, Diskspace]:
     """Wrapper to keep results cached by conditional_cache
     If called with force=True, the wrapper will clear the results"""
-    return {
-        "download_dir": diskspace_base(sabnzbd.cfg.download_dir.get_path()),
-        "complete_dir": diskspace_base(sabnzbd.cfg.complete_dir.get_path()),
-    }
+    if not complete_dir:
+        complete_dir = sabnzbd.cfg.complete_dir.get_path()
+    return diskspace_base(sabnzbd.cfg.download_dir.get_path()), diskspace_base(complete_dir)
 
 
 def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> str:

@@ -29,7 +29,7 @@ import sabnzbd.downloader
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.filesystem import diskspace
+from sabnzbd.filesystem import diskspace_base
 from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 DAILY_RANGE = list(range(1, 8))
@@ -395,7 +395,12 @@ class Scheduler:
             self.cancel_resume_task()
             return
 
-        disk_free = diskspace(force=True)[full_dir][1]
+        if full_dir == "download_dir":
+            disk_free = diskspace_base(sabnzbd.cfg.download_dir.get_path()).free
+        elif full_dir == "complete_dir":
+            disk_free = diskspace_base(sabnzbd.cfg.complete_dir.get_path()).free
+        else:
+            disk_free = diskspace_base(full_dir).free
         if disk_free > required_space:
             logging.info("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
             sabnzbd.Downloader.resume()
@@ -407,7 +412,12 @@ class Scheduler:
             self.cancel_resume_task()
 
     def plan_diskspace_resume(self, full_dir: str, required_space: float):
-        """Create regular check for free disk space"""
+        """
+        Create regular check for free disk space
+
+        :param str full_dir: "download_dir", "complete_dir", or directory path
+        :param float required_space: Disk space required to resume
+        """
         self.cancel_resume_task()
         logging.info("Will resume when %s has more than %d GB free space", full_dir, required_space)
         self.resume_task = self.scheduler.add_interval_task(
