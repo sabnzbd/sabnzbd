@@ -81,6 +81,7 @@ from sabnzbd.constants import (
     VALID_NZB_FILES,
     VALID_ARCHIVES,
     DEF_NETWORKING_TEST_TIMEOUT,
+    DEF_PIPELINING_REQUESTS,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -559,6 +560,7 @@ class Wizard:
             info["connections"] = ""
             info["ssl"] = 1
             info["ssl_verify"] = 3
+            info["pipelining_requests"] = DEF_PIPELINING_REQUESTS
         else:
             # Sort servers to get the first enabled one
             server_names = sorted(
@@ -577,6 +579,7 @@ class Wizard:
                 info["connections"] = s.connections()
                 info["ssl"] = s.ssl()
                 info["ssl_verify"] = s.ssl_verify()
+                info["pipelining_requests"] = s.pipelining_requests()
                 if s.enable():
                     break
         return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)

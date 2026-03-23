@@ -863,5 +863,16 @@ def config_conversions():
         # Done
         config_conversion_version.set(4)
 
+    # Set pipelining_requests to 1 for existing servers (default is 2 for new servers)
+    if config_conversion_version() < 5:
+        logging.info("Config conversion set 5")
+
+        all_servers = get_servers()
+        for server in all_servers:
+            all_servers[server].pipelining_requests.set(1)
+
+        # Done
+        config_conversion_version.set(5)
+
     # Make sure we store the new values
     save_config()
