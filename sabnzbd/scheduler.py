@@ -395,12 +395,7 @@ class Scheduler:
             self.cancel_resume_task()
             return
 
-        if full_dir == "download_dir":
-            disk_free = diskspace_base(sabnzbd.cfg.download_dir.get_path()).free
-        elif full_dir == "complete_dir":
-            disk_free = diskspace_base(sabnzbd.cfg.complete_dir.get_path()).free
-        else:
-            disk_free = diskspace_base(full_dir).free
+        disk_free = diskspace_base(full_dir).free
         if disk_free > required_space:
             logging.info("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
             sabnzbd.Downloader.resume()
@@ -415,7 +410,7 @@ class Scheduler:
         """
         Create regular check for free disk space
 
-        :param str full_dir: "download_dir", "complete_dir", or directory path
+        :param str full_dir: directory path to monitor for free space
         :param float required_space: Disk space required to resume
         """
         self.cancel_resume_task()

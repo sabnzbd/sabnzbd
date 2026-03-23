@@ -345,7 +345,6 @@ class TestDiskspaceCheck:
                 mock.patch("sabnzbd.assembler.diskspace") as self.mock_diskspace,
                 mock.patch("sabnzbd.assembler.get_complete_directory") as self.mock_get_complete_dir,
                 mock.patch("sabnzbd.assembler.cfg") as self.mock_cfg,
-                mock.patch("sabnzbd.cfg.complete_dir") as self.mock_complete_dir_cfg,
             ):
                 # Defaults: plenty of space, no direct_unpack, autoresume on
                 self.mock_get_complete_dir.return_value = ("/complete", None, True)
@@ -353,7 +352,7 @@ class TestDiskspaceCheck:
                 self.mock_cfg.complete_free.get_float.return_value = 2 * GIGI
                 self.mock_cfg.direct_unpack.return_value = False
                 self.mock_cfg.fulldisk_autoresume.return_value = True
-                self.mock_complete_dir_cfg.get_path.return_value = "/complete"
+                self.mock_cfg.download_dir.get_path.return_value = "/download"
                 yield
         finally:
             del sabnzbd.Downloader
@@ -375,7 +374,7 @@ class TestDiskspaceCheck:
 
         expected_required = (1 * GIGI + self.nzf.bytes) / GIGI
         self.mock_downloader.pause.assert_called_once()
-        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("download_dir", expected_required)
+        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("/download", expected_required)
 
     def test_complete_dir_full_direct_unpack(self):
         """Pause when complete_dir is full during direct_unpack"""
@@ -386,7 +385,7 @@ class TestDiskspaceCheck:
 
         expected_required = (2 * GIGI) / GIGI
         self.mock_downloader.pause.assert_called_once()
-        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("complete_dir", expected_required)
+        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("/complete", expected_required)
 
     def test_complete_dir_full_near_completion(self):
         """Pause when complete_dir is full and download is >95% done"""
@@ -398,7 +397,7 @@ class TestDiskspaceCheck:
 
         expected_required = (2 * GIGI + self.nzo.bytes) / GIGI  # (complete_free + nzo.bytes)
         self.mock_downloader.pause.assert_called_once()
-        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("complete_dir", expected_required)
+        self.mock_scheduler.plan_diskspace_resume.assert_called_once_with("/complete", expected_required)
 
     def test_complete_dir_no_check_below_95_percent(self):
         """No complete_dir check when download is below 95% and not direct_unpack"""

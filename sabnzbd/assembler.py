@@ -328,7 +328,7 @@ class Assembler(Thread):
         full_dir: Optional[str] = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
         if download_dir.free < required_space:
-            full_dir = "download_dir"
+            full_dir = download_dir.path
 
         # Enough space in download_dir, check complete_dir
         if not full_dir:
@@ -344,10 +344,7 @@ class Assembler(Thread):
                 required_space = (complete_free + nzo.bytes) / GIGI
 
             if required_space and complete_dir.free < required_space:
-                if complete_dir.path == sabnzbd.cfg.complete_dir.get_path():
-                    full_dir = "complete_dir"
-                else:
-                    full_dir = complete_dir.path
+                full_dir = complete_dir.path
 
         if full_dir:
             logging.warning(T("Too little diskspace forcing PAUSE"))
