@@ -53,6 +53,7 @@ from sabnzbd.constants import (
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
     DEF_MAX_ASSEMBLER_QUEUE,
+    DEF_DOWNLOAD_FREE,
 )
 from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
 
@@ -377,7 +378,7 @@ download_dir = OptionDir(
     apply_permissions=True,
     validation=validate_download_vs_complete_dir,
 )
-download_free = OptionStr("misc", "download_free")
+download_free = OptionStr("misc", "download_free", DEF_DOWNLOAD_FREE)
 complete_dir = OptionDir(
     "misc",
     "complete_dir",
