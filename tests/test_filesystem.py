@@ -24,6 +24,7 @@ import sys
 import os
 import random
 import shutil
+import unicodedata
 from pathlib import Path
 import tempfile
 
@@ -152,6 +153,42 @@ class TestFileFolderNameSanitizer:
             if char_ill.strip():
                 assert filesystem.sanitize_filename("test" + char_ill * 2) == "test__"
                 assert filesystem.sanitize_filename(char_ill * 2 + "test") == "__test"
+
+    def test_nfc_normalization_filename(self):
+        """sanitize_filename must normalize Unicode to NFC (fixes issues #1633 and #2858).
+
+        macOS decomposes Unicode to NFD when returning filenames from the filesystem.
+        par2 files, yEnc headers, and NZBs typically carry NFC. Without normalization,
+        visually identical filenames compare unequal, causing double-unpacking and
+        inconsistent sort paths when %fn (disk) and %title (parsed) are combined.
+        """
+        # NFD: 'e' + U+0300 (combining grave), 'o' + U+0308 (combining diaeresis)
+        nfd_name = "fre\u0300nch_german_demo\u0308.mkv"
+        # NFC: precomposed è (U+00E8) and ö (U+00F6)
+        nfc_name = "frènch_german_demö.mkv"
+
+        assert nfd_name != nfc_name, "pre-condition: NFD and NFC byte representations differ"
+        result = filesystem.sanitize_filename(nfd_name)
+        assert result == nfc_name
+        assert unicodedata.is_normalized("NFC", result)
+
+        # NFC input must pass through unchanged (idempotent)
+        assert filesystem.sanitize_filename(nfc_name) == nfc_name
+
+    def test_nfc_normalization_foldername(self):
+        """sanitize_foldername must normalize Unicode to NFC (fixes issues #1633 and #2858)."""
+        nfd_folder = "Mo\u0308vie"  # NFD: 'o' + U+0308 (combining diaeresis)
+        nfc_folder = "Möwie"  # NFC: precomposed ö (U+00F6)
+        # Correct expected NFC for "Mo" + combining-diaeresis + "vie"
+        nfc_folder = "M\u00f6vie"
+
+        assert nfd_folder != nfc_folder, "pre-condition: NFD and NFC differ"
+        result = filesystem.sanitize_foldername(nfd_folder)
+        assert result == nfc_folder
+        assert unicodedata.is_normalized("NFC", result)
+
+        # NFC input must pass through unchanged (idempotent)
+        assert filesystem.sanitize_foldername(nfc_folder) == nfc_folder
 
     def test_filename_dot(self):
         # All dots should survive in filenames

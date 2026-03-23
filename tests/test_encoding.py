@@ -19,6 +19,8 @@
 tests.test_misc - Testing functions in encoding.py
 """
 
+import unicodedata
+
 import pytest
 
 import sabnzbd.encoding as enc
@@ -30,6 +32,31 @@ class TestEncoding:
         assert "frènch_german_demö" == enc.correct_unknown_encoding(b"fr\xe8nch_german_dem\xf6")
         # Windows encoding in string that's already UTF8
         assert "demotöwers" == enc.correct_unknown_encoding("demot\udcf6wers")
+
+    def test_correct_unknown_encoding_nfc_normalization(self):
+        """Verify that correct_unknown_encoding always returns NFC-normalized strings.
+
+        This is the fix for GitHub issues #1633 and #2858: par2 file metadata may
+        carry NFC filenames while macOS / some archivers produce NFD.
+        Both must end up identical after passing through this function so that
+        filename comparisons (e.g. quick_check_set) do not cause double-unpacking.
+        """
+        # NFD form: 'e' + combining-grave (U+0300), 'o' + combining-diaeresis (U+0308)
+        nfd_bytes = "fre\u0300nch_german_demo\u0308".encode("utf-8")
+        # NFC form: precomposed è (U+00E8) and ö (U+00F6)
+        nfc_string = "frènch_german_demö"  # U+00E8 / U+00F6
+
+        result_from_nfd = enc.correct_unknown_encoding(nfd_bytes)
+        result_from_nfc = enc.correct_unknown_encoding(nfc_string.encode("utf-8"))
+
+        # Both should produce the same NFC result
+        assert result_from_nfd == nfc_string
+        assert result_from_nfc == nfc_string
+        # Confirm the output is actually NFC, not NFD
+        assert unicodedata.is_normalized("NFC", result_from_nfd)
+        assert unicodedata.is_normalized("NFC", result_from_nfc)
+        # Confirm NFD input was different at the byte level before normalization
+        assert nfd_bytes != nfc_string.encode("utf-8")
 
     def test_correct_cherrypy_encoding(self):
         raw_input = "aaazzz"  # correct UTF8

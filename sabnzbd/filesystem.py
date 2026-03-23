@@ -57,7 +57,7 @@ from sabnzbd.constants import (
     DEX_FILE_EXTENSION_MAX,
     MEBI,
 )
-from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
+from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize, utob, limit_encoded_length
 import rarfile
 
 # For Windows: determine executable extensions
@@ -216,6 +216,8 @@ def sanitize_filename(filename: str) -> str:
     if not filename:
         return filename
 
+    filename = unicode_nfc_normalize(filename)
+
     illegal = CH_ILLEGAL
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
@@ -257,10 +259,12 @@ def sanitize_filename(filename: str) -> str:
 
 def sanitize_foldername(foldername: str) -> str:
     """Return foldername with dodgy chars converted to safe ones
-    Remove any leading and trailing dot and space characters
+    and remove any leading and trailing dot and space characters
     """
     if not foldername:
         return foldername
+
+    foldername = unicode_nfc_normalize(foldername)
 
     illegal = CH_ILLEGAL + ':"'
 
