@@ -679,6 +679,13 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
 
                 # Check for unwanted extensions
                 if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions():
+                    # RARs using header encryption require the password to decrypt the file list
+                    if nzo.correct_password and not zf.namelist():
+                        try:
+                            zf.setpassword(nzo.correct_password)
+                            zf.trigger_parse()
+                        except Exception:
+                            pass
                     for somefile in zf.namelist():
                         logging.debug("File contains: %s", somefile)
                         if has_unwanted_extension(somefile):
