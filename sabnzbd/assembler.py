@@ -338,7 +338,7 @@ class Assembler(Thread):
                 # We unpack while we download, so we should check every time
                 # if the unpack maybe already filled up the drive
                 required_space = complete_free / GIGI
-            elif nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
+            elif nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.90:
                 # Since only at 100% unpack is started, continue
                 # downloading until 95% complete before checking
                 required_space = (complete_free + nzo.bytes) / GIGI
