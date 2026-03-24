@@ -471,7 +471,10 @@ if __name__ == "__main__":
             shutil.copyfile(source_file, os.path.join(src_folder, source_file))
 
         # Make sure all line-endings are correct
+        # Skip test data directories which contain binary files with misleading extensions
         for input_filename in glob.glob("%s/**/*.*" % src_folder, recursive=True):
+            if os.path.join("tests", "data", "") in input_filename:
+                continue
             base, ext = os.path.splitext(input_filename)
             if ext.lower() not in (".py", ".txt", ".css", ".js", ".tmpl", ".sh", ".cmd"):
                 continue
