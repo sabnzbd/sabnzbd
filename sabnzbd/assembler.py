@@ -306,6 +306,10 @@ class Assembler(Thread):
                             elif par2file.is_par2_file(filepath):
                                 # Parse par2 files, cloaked or not
                                 nzo.handle_par2(nzf, filepath)
+
+                            else:
+                                # May be RAR files which could not be identified due to missing first part
+                                nzo.unchecked_files.add(filepath)
                 except Exception:
                     logging.error(T("Fatal error in Assembler"), exc_info=True)
                     break
@@ -686,6 +690,8 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
                             zf.trigger_parse()
                         except Exception:
                             pass
+                    if not zf.namelist():
+                        nzo.unchecked_files.add(filepath)
                     for somefile in zf.namelist():
                         logging.debug("File contains: %s", somefile)
                         if has_unwanted_extension(somefile):
@@ -695,5 +701,6 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
                 del zf
         except rarfile.Error as e:
             logging.info("Error during inspection of RAR-file %s: %s", filepath, e)
+            nzo.unchecked_files.add(filepath)
 
     return encrypted, unwanted

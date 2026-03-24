@@ -73,6 +73,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     get_filename,
+    has_unwanted_extension,
 )
 from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
@@ -436,10 +437,22 @@ def process_job(nzo: NzbObject) -> bool:
 
         # Par processing, if enabled
         if all_ok and flag_repair:
+            # Snapshot files before repair for comparison afterwards
+            files_before_repair = set(listdir_full(nzo.download_path))
+
             par_error, re_add = parring(nzo)
             if re_add:
                 # Try to get more par files
                 return False
+
+            # After repair, re-check files that failed during assembly and any new files created by repair
+            if not par_error:
+                files_after_repair = set(listdir_full(nzo.download_path))
+                new_repair_files = files_after_repair - files_before_repair
+                files_to_check = [f for f in nzo.unchecked_files if os.path.exists(f)]
+                files_to_check.extend(new_repair_files)
+                if files_to_check and check_encrypted_and_unwanted_postproc(nzo, files_to_check):
+                    all_ok = False
 
         # If we don't need extra par2, we can disconnect
         if not sabnzbd.NzbQueue.actives(grabs=False) and cfg.autodisconnect():
@@ -479,6 +492,12 @@ def process_job(nzo: NzbObject) -> bool:
                 logging.info("Running unpacker on %s", filename)
                 unpack_error, newfiles = unpacker(nzo, tmp_workdir_complete, one_folder)
                 logging.info("Unpacked files %s", newfiles)
+
+                # Check newly unpacked files for encrypted/unwanted content
+                if newfiles and not unpack_error:
+                    if check_encrypted_and_unwanted_postproc(nzo, newfiles):
+                        all_ok = False
+                        unpack_error = True
 
                 # Sanitize the resulting files
                 newfiles = sanitize_files(filelist=newfiles)
@@ -875,6 +894,50 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
 
     logging.info("Verification and repair finished for %s", nzo.final_name)
     return par_error, re_add
+
+
+def check_encrypted_and_unwanted_postproc(nzo: NzbObject, files_to_check: list[str]) -> bool:
+    """Check files for encryption and unwanted extensions during post-processing.
+    Used to re-check files that could not be inspected during assembly (e.g. corrupt RARs
+    that needed par2 repair) and to check new files created by repair or unpacking.
+    Returns True if the job should be aborted.
+    """
+    # Local import to avoid circular dependency with assembler
+    from sabnzbd.assembler import check_encrypted_and_unwanted_files
+
+    for filepath in files_to_check:
+        if not os.path.exists(filepath):
+            continue
+
+        if rarfile.is_rarfile(filepath):
+            rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
+            if rar_encrypted:
+                logging.warning(
+                    T('Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'),
+                    nzo.final_name,
+                )
+                nzo.fail_msg = T("Aborted, encryption detected")
+                return True
+
+            if unwanted_file:
+                logging.warning(
+                    T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
+                    nzo.final_name,
+                    unwanted_file,
+                )
+                nzo.fail_msg = T("Aborted, unwanted extension detected")
+                return True
+        else:
+            # Non-RAR files: check for unwanted extension
+            if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions() and has_unwanted_extension(filepath):
+                logging.warning(
+                    T('In "%s" unwanted extension found: %s'),
+                    nzo.final_name,
+                    os.path.basename(filepath),
+                )
+                nzo.fail_msg = T("Aborted, unwanted extension detected")
+                return True
+    return False
 
 
 def try_sfv_check(nzo: NzbObject) -> Optional[bool]:

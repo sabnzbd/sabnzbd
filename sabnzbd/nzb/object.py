@@ -316,6 +316,7 @@ class NzbObject(TryList):
         self.next_save = None
         self.save_timeout = None
         self.encrypted = 0
+        self.unchecked_files: set[str] = set()  # Files where encrypted/unwanted check failed (e.g. corrupt RAR)
         self.url_wait: Optional[float] = None
         self.url_tries = 0
         self.pp_active = False
@@ -1663,6 +1664,7 @@ class NzbObject(TryList):
 
         # Set non-transferable values
         self.pp_active = False
+        self.unchecked_files: set[str] = set()
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.url_wait = None
         self.url_tries = 0
