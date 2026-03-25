@@ -923,22 +923,28 @@ def check_encrypted_and_unwanted_postproc(nzo: NzbObject, files_to_check: list[s
                 return True
 
             if unwanted_file and not skip_unwanted:
-                logging.warning(
-                    T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
-                    nzo.final_name,
-                    unwanted_file,
-                )
+                # Don't repeat the warning
+                if nzo.unwanted_ext == 0:
+                    logging.warning(
+                        T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
+                        nzo.final_name,
+                        unwanted_file,
+                    )
                 nzo.fail_msg = T("Aborted, unwanted extension detected")
+                nzo.unwanted_ext = 1
                 return True
         elif not skip_unwanted:
             # Non-RAR files: check for unwanted extension
             if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions() and has_unwanted_extension(filepath):
-                logging.warning(
-                    T('In "%s" unwanted extension found: %s'),
-                    nzo.final_name,
-                    os.path.basename(filepath),
-                )
+                # Don't repeat the warning
+                if nzo.unwanted_ext == 0:
+                    logging.warning(
+                        T('In "%s" unwanted extension found: %s'),
+                        nzo.final_name,
+                        os.path.basename(filepath),
+                    )
                 nzo.fail_msg = T("Aborted, unwanted extension detected")
+                nzo.unwanted_ext = 1
                 return True
     return False
 
