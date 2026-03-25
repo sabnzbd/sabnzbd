@@ -905,6 +905,9 @@ def check_encrypted_and_unwanted_postproc(nzo: NzbObject, files_to_check: list[s
     # Local import to avoid circular dependency with assembler
     from sabnzbd.assembler import check_encrypted_and_unwanted_files
 
+    # The user may have explicitly resumed/retried and want to skip the unwanted checks
+    skip_unwanted = nzo.unwanted_ext == 2
+
     for filepath in files_to_check:
         if not os.path.exists(filepath):
             continue
@@ -919,7 +922,7 @@ def check_encrypted_and_unwanted_postproc(nzo: NzbObject, files_to_check: list[s
                 nzo.fail_msg = T("Aborted, encryption detected")
                 return True
 
-            if unwanted_file:
+            if unwanted_file and not skip_unwanted:
                 logging.warning(
                     T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
                     nzo.final_name,
@@ -927,7 +930,7 @@ def check_encrypted_and_unwanted_postproc(nzo: NzbObject, files_to_check: list[s
                 )
                 nzo.fail_msg = T("Aborted, unwanted extension detected")
                 return True
-        else:
+        elif not skip_unwanted:
             # Non-RAR files: check for unwanted extension
             if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions() and has_unwanted_extension(filepath):
                 logging.warning(
