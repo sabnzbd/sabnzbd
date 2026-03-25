@@ -354,6 +354,8 @@ class NzbObject(TryList):
         # Reuse the existing directory
         if reuse and os.path.exists(reuse):
             self.download_path = long_path(reuse)
+            # Skip unwanted extensions check
+            self.unwanted_ext = 2
         else:
             # Determine "incomplete" folder
             self.download_path = os.path.join(cfg.download_dir.get_path(), self.work_name)
