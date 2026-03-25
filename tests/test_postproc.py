@@ -391,3 +391,324 @@ class TestNzbOnlyDownload:
 
         # Verify process_single_nzb was NOT called
         mock_process_single_nzb.assert_not_called()
+
+
+class TestCheckEncryptedAndUnwantedPostproc:
+    """Tests for check_encrypted_and_unwanted_postproc"""
+
+    @staticmethod
+    def _make_nzo(**overrides):
+        nzo = mock.Mock()
+        nzo.final_name = "TestJob"
+        nzo.unwanted_ext = 0
+        nzo.encrypted = 0
+        nzo.fail_msg = ""
+        for k, v in overrides.items():
+            setattr(nzo, k, v)
+        return nzo
+
+    @mock.patch("sabnzbd.assembler.check_encrypted_and_unwanted_files")
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=True)
+    def test_rar_with_unwanted_extension_aborts(self, _mock_is_rar, mock_check, tmp_path):
+        """RAR containing an unwanted file is detected and aborts"""
+        rar = tmp_path / "test.rar"
+        rar.write_bytes(b"data")
+        mock_check.return_value = (False, "malware.exe")
+
+        nzo = self._make_nzo()
+        assert postproc.check_encrypted_and_unwanted_postproc(nzo, [str(rar)]) is True
+        assert "unwanted" in nzo.fail_msg.lower()
+
+    @mock.patch("sabnzbd.assembler.check_encrypted_and_unwanted_files")
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=True)
+    def test_rar_with_encryption_aborts(self, _mock_is_rar, mock_check, tmp_path):
+        """Encrypted RAR is detected and aborts"""
+        rar = tmp_path / "test.rar"
+        rar.write_bytes(b"data")
+        mock_check.return_value = (True, None)
+
+        nzo = self._make_nzo()
+        assert postproc.check_encrypted_and_unwanted_postproc(nzo, [str(rar)]) is True
+        assert "encryption" in nzo.fail_msg.lower()
+
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=False)
+    def test_non_rar_unwanted_extension_aborts(self, _mock_is_rar, tmp_path):
+        """Plain file with an unwanted extension is detected"""
+        bad_file = tmp_path / "payload.exe"
+        bad_file.write_bytes(b"data")
+
+        nzo = self._make_nzo()
+
+        @set_config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
+        def _run():
+            return postproc.check_encrypted_and_unwanted_postproc(nzo, [str(bad_file)])
+
+        assert _run() is True
+        assert "unwanted" in nzo.fail_msg.lower()
+
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=False)
+    def test_non_rar_allowed_extension_passes(self, _mock_is_rar, tmp_path):
+        """Plain file with an allowed extension passes"""
+        good_file = tmp_path / "movie.mkv"
+        good_file.write_bytes(b"data")
+
+        nzo = self._make_nzo()
+
+        @set_config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
+        def _run():
+            return postproc.check_encrypted_and_unwanted_postproc(nzo, [str(good_file)])
+
+        assert _run() is False
+
+    @mock.patch("sabnzbd.assembler.check_encrypted_and_unwanted_files")
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=True)
+    def test_retry_skips_unwanted_in_rar(self, _mock_is_rar, mock_check, tmp_path):
+        """unwanted_ext == 2 (retry override) skips unwanted-in-RAR checks"""
+        rar = tmp_path / "test.rar"
+        rar.write_bytes(b"data")
+        mock_check.return_value = (False, "malware.exe")
+
+        nzo = self._make_nzo(unwanted_ext=2)
+        assert postproc.check_encrypted_and_unwanted_postproc(nzo, [str(rar)]) is False
+
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=False)
+    def test_retry_skips_unwanted_plain_file(self, _mock_is_rar, tmp_path):
+        """unwanted_ext == 2 (retry override) skips plain-file unwanted checks"""
+        bad_file = tmp_path / "payload.exe"
+        bad_file.write_bytes(b"data")
+
+        nzo = self._make_nzo(unwanted_ext=2)
+
+        @set_config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
+        def _run():
+            return postproc.check_encrypted_and_unwanted_postproc(nzo, [str(bad_file)])
+
+        assert _run() is False
+
+    @mock.patch("sabnzbd.assembler.check_encrypted_and_unwanted_files")
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=True)
+    def test_retry_still_checks_encryption(self, _mock_is_rar, mock_check, tmp_path):
+        """unwanted_ext == 2 (retry override) still detects encrypted RARs"""
+        rar = tmp_path / "test.rar"
+        rar.write_bytes(b"data")
+        mock_check.return_value = (True, None)
+
+        nzo = self._make_nzo(unwanted_ext=2)
+        assert postproc.check_encrypted_and_unwanted_postproc(nzo, [str(rar)]) is True
+
+    def test_nonexistent_files_skipped(self):
+        """Files that no longer exist are silently skipped"""
+        nzo = self._make_nzo()
+        assert postproc.check_encrypted_and_unwanted_postproc(nzo, ["/no/such/file.rar"]) is False
+
+    @mock.patch("sabnzbd.assembler.check_encrypted_and_unwanted_files")
+    @mock.patch("sabnzbd.postproc.rarfile.is_rarfile", return_value=True)
+    def test_clean_rar_passes(self, _mock_is_rar, mock_check, tmp_path):
+        """RAR with no issues passes"""
+        rar = tmp_path / "clean.rar"
+        rar.write_bytes(b"data")
+        mock_check.return_value = (False, None)
+
+        nzo = self._make_nzo()
+        assert postproc.check_encrypted_and_unwanted_postproc(nzo, [str(rar)]) is False
+
+
+class TestPostProcUnwantedFileDiscovery:
+    """Tests verifying which files get passed to the unwanted check
+    after par2 repair and after unpacking."""
+
+    @staticmethod
+    def _make_nzo(download_path, **overrides):
+        nzo = mock.Mock()
+        nzo.final_name = "TestJob"
+        nzo.fail_msg = ""
+        nzo.repair = True
+        nzo.unpack = True
+        nzo.delete = True
+        nzo.precheck = False
+        nzo.cat = None
+        nzo.script = "None"
+        nzo.url = ""
+        nzo.status = Status.QUEUED
+        nzo.direct_unpacker = None
+        nzo.download_path = str(download_path)
+        nzo.admin_path = str(download_path / "__admin__")
+        nzo.unchecked_files = set()
+        nzo.unwanted_ext = 0
+        nzo.encrypted = 0
+        nzo.pp_or_finished = False
+        for k, v in overrides.items():
+            setattr(nzo, k, v)
+        return nzo
+
+    @mock.patch("sabnzbd.postproc.check_encrypted_and_unwanted_postproc")
+    @mock.patch("sabnzbd.postproc.parring")
+    @mock.patch("sabnzbd.postproc.notifier")
+    @mock.patch("sabnzbd.postproc.globber", return_value=["__admin__", "file1"])
+    def test_unchecked_files_rechecked_after_repair(self, _glob, _notif, mock_parring, mock_check, tmp_path):
+        """Files that failed the assembler check (in unchecked_files) are
+        re-checked after par2 repair completes successfully."""
+        # Set up download dir with a file that was "unchecked" during assembly
+        download_path = tmp_path / "incomplete" / "job"
+        download_path.mkdir(parents=True)
+        rar_file = download_path / "data.part1.rar"
+        rar_file.write_bytes(b"repaired-rar-data")
+
+        nzo = self._make_nzo(download_path, unchecked_files={str(rar_file)})
+        mock_parring.return_value = (False, False)  # no par_error, no re_add
+        mock_check.return_value = False
+
+        with mock.patch("sabnzbd.postproc.listdir_full", return_value=[str(rar_file)]):
+            postproc.parring = mock_parring
+            # Simulate the repair section of process_job
+            files_before = set(postproc.listdir_full(nzo.download_path))
+            mock_parring(nzo)
+            files_after = set(postproc.listdir_full(nzo.download_path))
+
+            new_repair_files = files_after - files_before
+            files_to_check = [f for f in nzo.unchecked_files if os.path.exists(f)]
+            files_to_check.extend(new_repair_files)
+            if files_to_check:
+                postproc.check_encrypted_and_unwanted_postproc(nzo, files_to_check)
+
+        # The previously-unchecked rar must be in the check list
+        mock_check.assert_called_once()
+        checked_files = mock_check.call_args[0][1]
+        assert str(rar_file) in checked_files
+
+    @mock.patch("sabnzbd.postproc.check_encrypted_and_unwanted_postproc")
+    def test_new_files_from_repair_checked(self, mock_check, tmp_path):
+        """Files that appear after par2 repair (e.g. reconstructed from
+        par2 recovery data) are detected and checked."""
+        download_path = tmp_path / "incomplete" / "job"
+        download_path.mkdir(parents=True)
+
+        existing_file = download_path / "data.part1.rar"
+        existing_file.write_bytes(b"existing")
+
+        nzo = self._make_nzo(download_path)
+        mock_check.return_value = False
+
+        # Snapshot "before" with only the existing file
+        files_before = {str(existing_file)}
+
+        # Simulate par2 creating a new reconstructed file
+        hidden_file = download_path / "hidden_payload.rar"
+        hidden_file.write_bytes(b"was-hidden-in-par2-data")
+
+        # Snapshot "after"
+        files_after = {str(existing_file), str(hidden_file)}
+
+        new_repair_files = files_after - files_before
+        files_to_check = list(new_repair_files)
+        if files_to_check:
+            postproc.check_encrypted_and_unwanted_postproc(nzo, files_to_check)
+
+        mock_check.assert_called_once()
+        checked_files = mock_check.call_args[0][1]
+        assert str(hidden_file) in checked_files
+        # The pre-existing file should NOT be in the new-files list
+        assert str(existing_file) not in checked_files
+
+    @mock.patch("sabnzbd.postproc.check_encrypted_and_unwanted_postproc")
+    def test_renamed_files_from_repair_checked(self, mock_check, tmp_path):
+        """Files renamed by par2 (obfuscated;real name) appear as new
+        in the after-repair snapshot and are checked."""
+        download_path = tmp_path / "incomplete" / "job"
+        download_path.mkdir(parents=True)
+
+        obfuscated = download_path / "a1b2c3d4e5.xyz"
+        obfuscated.write_bytes(b"obfuscated-rar")
+
+        nzo = self._make_nzo(download_path)
+        mock_check.return_value = False
+
+        # Snapshot "before" with obfuscated name
+        files_before = {str(obfuscated)}
+
+        # Simulate par2 renaming the file
+        real_name = download_path / "movie.part1.rar"
+        obfuscated.rename(real_name)
+
+        # Snapshot "after" – the obfuscated name is gone, real name appeared
+        files_after = {str(real_name)}
+
+        new_repair_files = files_after - files_before
+        files_to_check = list(new_repair_files)
+        if files_to_check:
+            postproc.check_encrypted_and_unwanted_postproc(nzo, files_to_check)
+
+        mock_check.assert_called_once()
+        checked_files = mock_check.call_args[0][1]
+        assert str(real_name) in checked_files
+
+    @mock.patch("sabnzbd.postproc.check_encrypted_and_unwanted_postproc")
+    def test_unpacked_nested_files_checked(self, mock_check, tmp_path):
+        """Files extracted by the unpacker (including from nested archives)
+        are passed to the unwanted check."""
+        workdir_complete = tmp_path / "complete" / "job"
+        workdir_complete.mkdir(parents=True)
+
+        # Simulate files the unpacker would return
+        extracted_rar = workdir_complete / "nested.rar"
+        extracted_rar.write_bytes(b"nested-rar")
+        extracted_plain = workdir_complete / "readme.txt"
+        extracted_plain.write_bytes(b"text")
+        extracted_bad = workdir_complete / "hidden.exe"
+        extracted_bad.write_bytes(b"bad")
+
+        newfiles = [str(extracted_rar), str(extracted_plain), str(extracted_bad)]
+
+        nzo = self._make_nzo(tmp_path / "incomplete" / "job")
+        mock_check.return_value = False
+
+        # This mirrors the post-unpack check in process_job
+        if newfiles:
+            postproc.check_encrypted_and_unwanted_postproc(nzo, newfiles)
+
+        mock_check.assert_called_once()
+        checked_files = mock_check.call_args[0][1]
+        assert str(extracted_rar) in checked_files
+        assert str(extracted_plain) in checked_files
+        assert str(extracted_bad) in checked_files
+
+    @mock.patch("sabnzbd.postproc.check_encrypted_and_unwanted_postproc")
+    def test_unchecked_plus_new_files_combined(self, mock_check, tmp_path):
+        """Both unchecked files from assembly AND new files from repair
+        are combined into a single check call."""
+        download_path = tmp_path / "incomplete" / "job"
+        download_path.mkdir(parents=True)
+
+        # File that failed the assembler check
+        corrupt_rar = download_path / "corrupt.part1.rar"
+        corrupt_rar.write_bytes(b"was-corrupt-now-repaired")
+
+        # File that already existed and was fine
+        existing = download_path / "good.part2.rar"
+        existing.write_bytes(b"existing")
+
+        nzo = self._make_nzo(download_path, unchecked_files={str(corrupt_rar)})
+        mock_check.return_value = False
+
+        files_before = {str(corrupt_rar), str(existing)}
+
+        # Par2 repair reconstructs a missing file
+        reconstructed = download_path / "good.part3.rar"
+        reconstructed.write_bytes(b"reconstructed")
+
+        files_after = {str(corrupt_rar), str(existing), str(reconstructed)}
+
+        new_repair_files = files_after - files_before
+        files_to_check = [f for f in nzo.unchecked_files if os.path.exists(f)]
+        files_to_check.extend(new_repair_files)
+        if files_to_check:
+            postproc.check_encrypted_and_unwanted_postproc(nzo, files_to_check)
+
+        mock_check.assert_called_once()
+        checked_files = mock_check.call_args[0][1]
+        # corrupt_rar was unchecked, must now be checked
+        assert str(corrupt_rar) in checked_files
+        # reconstructed is new, must be checked
+        assert str(reconstructed) in checked_files
+        # existing was already fine, should NOT be checked again
+        assert str(existing) not in checked_files
