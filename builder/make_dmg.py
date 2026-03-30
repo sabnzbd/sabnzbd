@@ -16,7 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os
-from constants import RELEASE_VERSION
+import sys
+from constants import RELEASE_NAME, RELEASE_MACOS
 
 # We need to call dmgbuild from command-line, so here we can setup how
 if __name__ == "__main__":
@@ -25,7 +26,7 @@ if __name__ == "__main__":
         import dmgbuild
     except Exception:
         print("Requires dmgbuild-module, use pip install dmgbuild")
-        exit()
+        sys.exit()
 
     # Make sure we are in the src folder
     if not os.path.exists("builder"):
@@ -33,12 +34,6 @@ if __name__ == "__main__":
 
     # Check if signing is possible
     authority = os.environ.get("SIGNING_AUTH")
-
-    # Extract version info and set DMG path
-    # Create sub-folder to upload later
-    release = RELEASE_VERSION
-    prod = "SABnzbd-" + release
-    fileDmg = prod + "-macos.dmg"
 
     # Path to app file
     apppath = "dist/SABnzbd.app"
@@ -53,20 +48,20 @@ if __name__ == "__main__":
     # Make DMG
     print("Building DMG")
     dmgbuild.build_dmg(
-        filename=fileDmg,
-        volume_name=prod,
+        filename=RELEASE_MACOS,
+        volume_name=RELEASE_NAME,
         settings_file="builder/make_dmg.py",
         defines={"app": apppath, "readme": readmepath, "background": backgroundpath, "iconpath": iconpath},
     )
 
-    # Resign APP
+    # Sign DMG
     if authority:
-        print("Siging DMG")
-        os.system('codesign --deep -f -i "org.sabnzbd.SABnzbd" -s "%s" "%s"' % (authority, fileDmg))
+        print("Signing DMG")
+        os.system('codesign -f -i "org.sabnzbd.sabnzbd" -s "%s" "%s"' % (authority, RELEASE_MACOS))
         print("Signed!")
     else:
         print("Signing skipped, missing SIGNING_AUTH.")
-    exit()
+    sys.exit()
 
 
 ### START OF DMGBUILD SETTINGS
