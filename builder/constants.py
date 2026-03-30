@@ -74,6 +74,5 @@ EXTRA_FOLDERS = [
     "interfaces/Glitter/",
     "interfaces/wizard/",
     "interfaces/Config/",
-    "scripts/",
     "icons/",
 ]
