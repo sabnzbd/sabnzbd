@@ -59,7 +59,8 @@ pyobjc-framework-Cocoa==12.1; sys_platform == 'darwin'
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 
 # Apprise Requirements
-requests==2.33.0
+requests # Version-less for Python 3.9 and below
+requests==2.33.0; python_version > '3.9'
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
 markdown # Version-less for Python 3.9 and below
