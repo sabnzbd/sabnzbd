@@ -1,33 +1,25 @@
-Release Notes - SABnzbd 5.0.0 Beta 4
+Release Notes - SABnzbd 5.0.0 Release Candidate 1
 =========================================================
 
-This is the fourth beta release of version 5.0.
-
-## Changes and bugfixes since 5.0.0 Beta 3
-
-* Stability fixes for downloading and file assembly.
-* No longer exclusively lock all directory operations.
-
-## Changes and bugfixes since 5.0.0 Beta 2
-
-* Post-processing scripts will always be executed, even for failed jobs.
-  Make sure to check the status of the job in your scripts!
-* Removed Special setting `empty_postproc` as it is no longer needed.
-* Handle passwords that exceed Unrar's password limit.
-* Improve handling of disks getting full.
-* Stability increased for the download process.
+This is the first release candidate of version 5.0.
+Please note the breaking changes described below!
 
 ## New features in 5.0.0
 
 * Added support for NNTP Pipelining which eliminates idle waiting between
   requests, significantly improving speeds on high-latency connections.
   Read more here: https://sabnzbd.org/wiki/advanced/nntp-pipelining
+  New servers will have `Articles per request` set to `2` by default.
 * Implemented Direct Write to optimize assembly of downloaded files.
   Read more here: https://sabnzbd.org/wiki/advanced/direct-write
+* Post-processing scripts will always be executed, even for failed jobs.
+  Make sure to check the status of the job in your scripts!
+* Removed Special setting `empty_postproc` as it is no longer needed.
 * Complete redesign of article cache.
 * Improved disk speed measurement in Status window.
-* Enable `verify_xff_header` by default.
 * Reduce delays between jobs during post-processing.
+* Improve handling of disks getting full.
+* Diskspace check will now included Category-specific folders.
 * If a download only has `.nzb` files inside, the new downloads
   will include the name of the original download.
 * No longer show tracebacks in the browser, only in the logs.
@@ -36,15 +28,27 @@ This is the fourth beta release of version 5.0.
 * Windows and macOS: Update Python to 3.14.3, Unrar to 7.20,
   par2cmdline-turbo to 1.4 and 7zip to 26.00.
 
-## Bug fixes since 4.5.0
+## Bug fixes in 5.0.0
 
 * `Check before download` could get stuck or fail to reject.
+* Several stability changes for the core download process.
+* If only par2 files were missing, jobs could get incorrectly aborted.
 * No error was shown in case NZB upload failed.
 * Correct mobile layout if `Full Width` is enabled.
+* Handle passwords that exceed Unrar's password limit.
 * Aborted Direct Unpack could result in no files being unpacked.
+* Unwanted Extension check was unreliable on passworded downloads.
+* No longer exclusively lock all directory operations.
+* Improved handling of non-NFC unicode filenames.
 * Sorting of files inside jobs was inconsistent.
+* Linux: No longer break test-data in release package.
 * Windows: Tray icon disappears after Explorer restart.
 * macOS: Slow to start on some network setups.
+
+## Changes to default settings for new installations in 5.0.0
+
+* Default `Minimum Free Space for Temporary Download Folder` set to `500M`.
+* Enabled `verify_xff_header` setting by default.
 
 
 ## Upgrade notices
