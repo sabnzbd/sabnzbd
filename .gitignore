@@ -49,5 +49,8 @@ tests/cache
 \#*
 .\#*
 
+# AI tools
+.claude/
+
 # Apple
 .DS_Store
