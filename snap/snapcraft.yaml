@@ -1,6 +1,10 @@
 name: sabnzbd
-summary: SABnzbd
+title: SABnzbd
+summary: SABnzbd - The automated Usenet download tool
 description: The automated Usenet download tool
+license: GPL-2.0-or-later
+website: https://sabnzbd.org
+contact: https://github.com/sabnzbd/sabnzbd/issues
 confinement: strict
 base: core24
 grade: stable
@@ -18,10 +22,15 @@ apps:
       SNAPCRAFT_PRELOAD_REDIRECT_ONLY_SHM: 1
     command: usr/bin/snapcraft-preload python3 $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
     daemon: simple
+    stop-mode: sigterm-all
+    stop-timeout: 20s
+    restart-condition: on-failure
+    restart-delay: 20s
     plugs: [network, home, network-bind, removable-media]
 
 parts:
   sabnzbd:
+    after: [snapcraft-preload]
     plugin: python
     source: .
     python-requirements:
