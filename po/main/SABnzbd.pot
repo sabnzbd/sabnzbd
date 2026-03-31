@@ -284,7 +284,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr ""
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr ""
 
@@ -769,6 +769,11 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Back"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus %f MB/s"
 msgstr ""
 
 #. Footer: indicator of warnings
@@ -1276,6 +1281,103 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr ""
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr ""
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr ""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1308,18 +1410,6 @@ msgstr ""
 
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
-msgstr ""
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr ""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
 msgstr ""
 
 #: sabnzbd/panic.py
@@ -4122,11 +4212,6 @@ msgstr ""
 msgid "Filename"
 msgstr ""
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr ""
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr ""
@@ -4534,10 +4619,6 @@ msgstr ""
 
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
-msgstr ""
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
 msgstr ""
 
 #. Error message

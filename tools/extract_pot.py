@@ -58,7 +58,7 @@ DOMAIN = "SABnzbd"
 DOMAIN_EMAIL = "SABemail"
 DOMAIN_NSIS = "SABnsis"
 PARMS = "-d %s -p %s -w500 -k T -k TT -o %s.pot.tmp" % (DOMAIN, PO_DIR, DOMAIN)
-FILES = "SABnzbd.py sabnzbd/*.py sabnzbd/utils/*.py"
+FILES = "SABnzbd.py sabnzbd/*.py sabnzbd/*/*.py"
 
 FILE_CACHE = {}
 
@@ -185,7 +185,7 @@ if os.path.exists(NSIS):
     print("Creating NSIS POT file")
     if not os.path.exists(PON_DIR):
         os.makedirs(PON_DIR)
-    src = open(NSIS, "r", encoding="utf-8")
+    src = open(NSIS, "r", encoding="utf-8-sig")
     dst = open(os.path.join(PON_DIR, DOMAIN_NSIS + ".pot"), "w", encoding="utf-8")
     dst.write(HEADER.replace("__TYPE__", "NSIS"))
     dst.write("\n")

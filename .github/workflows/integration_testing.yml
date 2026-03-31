@@ -19,7 +19,6 @@ jobs:
           builder/SABnzbd.spec
           tests
           --line-length=120
-          --target-version=py39
           --check
           --diff
 
