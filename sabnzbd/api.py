@@ -1425,7 +1425,7 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
 
     try:
         nw.init_connect()
-        while test_server.active:
+        while test_server.active and nw.nntp:
             nw.write()
             nw.read(on_response=on_response)
             if nw.ready:
