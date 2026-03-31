@@ -2,13 +2,13 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2023
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Swedish (https://app.transifex.com/sabnzbd/teams/111101/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -314,7 +314,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Oönskad filändelse i RAR-fil %s"
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Avbruten, oönskad filändelse detekterad"
 
@@ -838,6 +838,13 @@ msgstr "FEL:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Bakåt"
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -1363,6 +1370,103 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "NZB filen %s är tom"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Avbrutet, kan inte slutföras"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Det gick inte att importera %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "DUBLETT"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "KRYPTERAT"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "FÖR STOR"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "INKOMPLETT"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "OÖNSKAD"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "VÄNTA %s SEKUNDER"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Hämtade i %s vid ett genomsnitt på %sB/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Ålder"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s artiklar var felaktiga"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s artiklar saknades"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s artiklar hade icke-matchande dubletter"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorerar dubblett för NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pausar dubblett för NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1396,18 +1500,6 @@ msgstr "Laddningsfel %s, felaktig fil detekterad"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB tillagd i kön"
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorerar dubblett för NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
-msgstr ""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4430,11 +4522,6 @@ msgstr "Ta bort"
 msgid "Filename"
 msgstr "Filnamn"
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr "Ålder"
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Ledigt diskutrymme"
@@ -4861,10 +4948,6 @@ msgstr ""
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr ""
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "NZB filen %s är tom"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

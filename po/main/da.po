@@ -2,13 +2,13 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2025
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Danish (https://app.transifex.com/sabnzbd/teams/111101/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -336,7 +336,7 @@ msgstr "I \"%s\" uønsket extension i RAR fil. Uønsket fil er \"%s\" "
 msgid "Unwanted extension is in rar file %s"
 msgstr "Uønsket extension i rar fil %s"
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Afbrudt, uønsket extension fundet"
 
@@ -878,6 +878,13 @@ msgstr "FEJL:"
 msgid "Back"
 msgstr "Tilbage"
 
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
+
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
@@ -1411,6 +1418,103 @@ msgstr "Notification scriptet \"%s\" findes ikke"
 msgid "Failed to send Windows notification"
 msgstr "Det lykkedes ikke at sende Windows notification"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "Ødelagt NZB fil %s, springer over (årsag=%s)"
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Tom NZB fil %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr "Før-kø script job markeret som mislykkedet"
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "Uønsket filtype i fil %s (%s)"
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Afbrudt, kan ikke afsluttes"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Det lykkedes ikke at importere %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "DUPLIKERE"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr "ALTERNATIV"
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "KRYPTEREDE"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "FOR STOR"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "UFULDSTÆNDIG"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "UØNSKET"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "VENT %s sekunder"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "PROPAGATING %s min"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Hentede i %s med et gennemsnit på %sB/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Alder"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s artikler misdannede"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s artikler manglede"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s artikler havde ikke-matchende dubletter"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorerer identiske NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Fejler dublet NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr "Dublet NZB"
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pause duplikeret NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1444,18 +1548,6 @@ msgstr "Downloadnings fejl %s, ødelagt fil fundet"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB tilføjet i køen"
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorerer identiske NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Fejler dublet NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
-msgstr "Dublet NZB"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4557,11 +4649,6 @@ msgstr "Slet"
 msgid "Filename"
 msgstr "Filnavn"
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr "Alder"
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Ledig diskplads"
@@ -4994,10 +5081,6 @@ msgstr "Fil ikke på server"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "Serveren kunne ikke fuldføre anmodningen"
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Tom NZB fil %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

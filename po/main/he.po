@@ -2,14 +2,14 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2025
 # ION, 2026
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: ION, 2026\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Hebrew (https://app.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -325,7 +325,7 @@ msgstr "בעבודה \"%s\" יש סיומת בלתי רצויה בתוך קוב�
 msgid "Unwanted extension is in rar file %s"
 msgstr "סיומת בלתי רצויה בקובץ rar %s"
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "בוטל, סיומת בלתי רצויה התגלתה"
 
@@ -856,6 +856,13 @@ msgstr "שגיאה:"
 msgid "Back"
 msgstr "הקודם"
 
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
+
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
@@ -1383,6 +1390,103 @@ msgstr "תסריט ההתראה \"%s\" אינו קיים"
 msgid "Failed to send Windows notification"
 msgstr "כישלון בשליחת התראת Windows"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "קובץ NZB בלתי תקף %s, מדלג (שגיאה: %s)"
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "קובץ NZB ריק %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr "תסריט קדם־תור סומן כנכשל"
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "סיומת בלתי רצויה בקובץ %s (%s)"
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "בוטל, לא יכול להיות שלם"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "שגיאה ביבוא %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "כפול"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr "חלופה"
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "מוצפן"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "גדול מדי"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "בלתי שלם"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "בלתי רצוי"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "המתן %s שניות"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "מפיץ %s דקות"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "ירד תוך %s בממוצע של %s ב/ש"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "גיל"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s מאמרים עוותו"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s מאמרים היו חסרים"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "אל %s מאמרים יש כפילויות בלתי תואמות"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "מתעלם מן NZB כפול \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "מכשיל NZB כפול \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr "NZB כפול"
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "משהה NZB כפול \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1416,18 +1520,6 @@ msgstr "שגיאה בטעינת %s, קובץ פגום התגלה"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB התווסף לתור"
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "מתעלם מן NZB כפול \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "מכשיל NZB כפול \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
-msgstr "NZB כפול"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4483,11 +4575,6 @@ msgstr "מחק"
 msgid "Filename"
 msgstr "שם קובץ"
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr "גיל"
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "שטח פנוי"
@@ -4920,10 +5007,6 @@ msgstr "קובץ לא על השרת"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "השרת לא היה יכול להשלים בקשה"
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "קובץ NZB ריק %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

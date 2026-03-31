@@ -2,13 +2,13 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2023
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Serbian (https://app.transifex.com/sabnzbd/teams/111101/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -314,7 +314,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Neželjena ekstenzija je u rar datoteci %s"
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Prekinuto, detektovana neželjena ekstenzija"
 
@@ -836,6 +836,13 @@ msgstr "ГРЕШКА:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Назад"
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -1359,6 +1366,103 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Празан NZB %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Поништено, не може да се заврши"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Грешка увоза %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "ДУПЛИКАТ"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "ШИФРИРАНО"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "ПРЕВЕЛИКО"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "НЕПОТПУНО"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "NEŽELJENI"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "Чекање %s сек"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Преузето за %s на просек од %sБ/с"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Старост"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s артикла нису добро формирани"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s артикла недостају"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s артикла нису дупликате"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Игнорисање дуплог NZB-а \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Паузирам због дуплог NZB-а \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1392,18 +1496,6 @@ msgstr "Грешка учитавање %s, покварена датотека 
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB додат у ред"
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Игнорисање дуплог NZB-а \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
-msgstr ""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4417,11 +4509,6 @@ msgstr "Обриши"
 msgid "Filename"
 msgstr "Име датотеке"
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr "Старост"
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Слободан простор"
@@ -4847,10 +4934,6 @@ msgstr ""
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr ""
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Празан NZB %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

@@ -4,13 +4,13 @@
 # Translators:
 # Kangwei Li <lkw20010211@gmail.com>, 2023
 # aw aw, 2025
-# Safihre <safihre@sabnzbd.org>, 2025
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -315,7 +315,7 @@ msgstr "RAR 文件“%s”中出现不需要的扩展名。不需要的文件名
 msgid "Unwanted extension is in rar file %s"
 msgstr "rar 文件中出现不需要的扩展名 %s"
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "已中止，侦测到不需要的扩展名"
 
@@ -834,6 +834,13 @@ msgstr "错误:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "返回"
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -1355,6 +1362,103 @@ msgstr "通知脚本 \"%s\" 不存在"
 msgid "Failed to send Windows notification"
 msgstr "无法发送 Windows 通知"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "无效的 NZB 文件 %s，跳过（错误：%s）"
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "空 NZB 文件 %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr "预队列脚本将任务标记为失败的"
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "文件 %s 中有不需要的扩展名 (%s)"
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "已中止，无法完成"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "导入 %s 出错"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "*重复*"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr "备选"
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "*加密*"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "*太大*"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "*不完整*"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "不需要"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "*等待* %s 秒"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "传播延迟生效，等待 %s 分钟"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "已下载，耗时 %s，平均速度 %sB/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "发布时间"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s 篇文章损坏"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s 篇文章缺失"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s 篇文章存在未匹配的重复"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "正在忽略重复 NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "失败于重复的 NZB 文件 \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr "重复的 NZB 文件"
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "正在暂停重复 NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1388,18 +1492,6 @@ msgstr "无法加载 %s，侦测到损坏文件"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB 已添加到队列"
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "正在忽略重复 NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "失败于重复的 NZB 文件 \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
-msgstr "重复的 NZB 文件"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4381,11 +4473,6 @@ msgstr "删除"
 msgid "Filename"
 msgstr "文件名"
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr "发布时间"
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "剩余空间"
@@ -4808,10 +4895,6 @@ msgstr "服务器上无此文件"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "服务器无法完成请求"
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "空 NZB 文件 %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

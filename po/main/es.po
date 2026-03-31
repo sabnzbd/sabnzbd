@@ -2,16 +2,16 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Ester Molla Aragones <moarages@gmail.com>, 2020
 # Angel, 2023
 # Carmen Gonzalez, 2024
-# Safihre <safihre@sabnzbd.org>, 2025
+# Ester Molla Aragones <moarages@gmail.com>, 2026
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -347,7 +347,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Se ha encontrado una extensión desconocida en el fichero rar %s"
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Se interrumpió la acción porque se detectó una extensión no deseada"
 
@@ -902,6 +902,13 @@ msgstr "ERROR:"
 msgid "Back"
 msgstr "Atrás"
 
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
+
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
@@ -1449,6 +1456,105 @@ msgstr "El script de notificación \"%s\" no existe"
 msgid "Failed to send Windows notification"
 msgstr "Fallo al mandar la notificación de Windows"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "Fichero NBZ inválido: %s, omitiendo (razón=%s)"
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Fichero NZB vacío: %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+"La secuencia de comandos de la cola preestablecida ha marcado la tarea como "
+"fallida"
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "Extensión no deseada en el archivo %s (%s)"
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Abortado, No puede ser completado"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Error importando %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "DUPLICADO"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr "ALTERNATIVO"
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "ENCRIPTADO"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "DEMASIADO GRANDE"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "INCOMPLETO"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "NO DESEADO"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "ESPERAR %s seg"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "PROPAGANDO %s min"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Descargado en %s a una media de %sB/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Edad"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s artículos estaban mal formados."
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s artículos no encontrados"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s artículos contenían duplicados inconexos"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorando NZB Duplicado \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Fallo al duplicar NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr "Duplicar NZB"
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pausando NZB duplicados \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1483,18 +1589,6 @@ msgstr "Error al cargar %s, archivo corrupto"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB añadido a la cola"
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorando NZB Duplicado \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Fallo al duplicar NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
-msgstr "Duplicar NZB"
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4640,11 +4734,6 @@ msgstr "Eliminar"
 msgid "Filename"
 msgstr "Nombre de archivo"
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr "Edad"
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Espacio libre"
@@ -5080,10 +5169,6 @@ msgstr "El fichero no se encuentra en el servidor"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr "El servidor no ha podido completar la solicitud"
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Fichero NZB vacío: %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py

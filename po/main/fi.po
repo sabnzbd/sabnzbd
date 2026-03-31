@@ -2,13 +2,13 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2023
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Finnish (https://app.transifex.com/sabnzbd/teams/111101/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -320,7 +320,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Ei toivottu tiedostopääte on rar arkistossa %s"
 
-#: sabnzbd/assembler.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Peruutettu, ei toivottu tiedostopääte havaittu"
 
@@ -845,6 +845,13 @@ msgstr "VIRHE:"
 msgid "Back"
 msgstr "Takaisin"
 
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
+
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
@@ -1366,6 +1373,103 @@ msgstr "Ilmoitusskriptiä \"%s\" ei ole olemassa"
 msgid "Failed to send Windows notification"
 msgstr "Windows-ilmoituksen lähetys epäonnistui"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Tyhjä NZB tiedosto %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Peruutettu, ei voi valmistua"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Virhe tuotaessa %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "KAKSOISKAPPALE"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "SALATTU"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "LIIAN SUURI"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "KESKENERÄINEN"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "EI TOIVOTTU"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "ODOTA %s sekuntia"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "LEVITETÄÄN %s min"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Ladattiin ajassa %s keskilatausnopeudella %sB/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Ikä"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s artikkelia oli väärin muotoiltuja"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s artikkelia puuttui"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s artikkelissa oli ei-vastaavia kaksoiskappaleita"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Keskeytetään kaksoiskappale NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1399,18 +1503,6 @@ msgstr "Virhe ladattaessa %s, korruptoitunut tiedosto havaittu"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB lisätty jonoon"
-
-#: sabnzbd/nzbqueue.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ohitetaan kaksoiskappale NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#: sabnzbd/nzbqueue.py
-msgid "Duplicate NZB"
-msgstr ""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -4458,11 +4550,6 @@ msgstr "Poista"
 msgid "Filename"
 msgstr "Tiedostonimi"
 
-#. Job details page, file age column header
-#: sabnzbd/skintext.py
-msgid "Age"
-msgstr "Ikä"
-
 #: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Vapaa tila"
@@ -4892,10 +4979,6 @@ msgstr "Tiedostoa ei ole palvelimella"
 #: sabnzbd/urlgrabber.py
 msgid "Server could not complete request"
 msgstr ""
-
-#: sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Tyhjä NZB tiedosto %s"
 
 #. Error message
 #: sabnzbd/urlgrabber.py
