@@ -127,6 +127,7 @@ class TestSamplePostProc:
 
 
 class TestExtractPot:
+    @pytest.mark.skipif(sys.version_info < (3, 10), reason="pygettext.py requires Python 3.10+ (match/case syntax)")
     def test_extract_pot(self):
         """Simple test if translation extraction still works"""
         script_call = [sys.executable, "tools/extract_pot.py"]
