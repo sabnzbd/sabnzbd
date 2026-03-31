@@ -899,6 +899,8 @@ msgid ""
 "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
 " %f MB/s"
 msgstr ""
+"IPv4 İnternet bant genişliği, IPv6'ya nazaran hatırı sayılır biçimde "
+"farklıdır: %f MB/s ile %f MB/s"
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
