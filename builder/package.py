@@ -297,21 +297,16 @@ if __name__ == "__main__":
         else:
             print("Using unsigned version of SABnzbd binaries")
 
-        # Compile NSIS translations
-        safe_remove("NSIS_Installer.nsi")
-        safe_remove("NSIS_Installer.nsi.tmp")
-        shutil.copyfile("builder/win/NSIS_Installer.nsi", "NSIS_Installer.nsi")
-        run_external_command([sys.executable, "tools/make_mo.py", "nsis"])
-
         # Run NSIS to build installer
         run_external_command(
             [
                 "makensis.exe",
                 "/V3",
+                "/NOCD",  # No not change working directory
                 "/DSAB_VERSION=%s" % RELEASE_VERSION,
                 "/DSAB_VERSIONKEY=%s" % ".".join(map(str, RELEASE_VERSION_TUPLE)),
                 "/DSAB_FILE=%s" % RELEASE_WIN_INSTALLER,
-                "NSIS_Installer.nsi.tmp",
+                "builder/win/NSIS_Installer.nsi",
             ]
         )
 
