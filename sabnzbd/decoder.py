@@ -39,8 +39,8 @@ try:
     SABCTOOLS_VERSION = sabctools.__version__
     SABCTOOLS_SIMD = sabctools.simd
     SABCTOOLS_OPENSSL_LINKED = sabctools.openssl_linked
-    # Verify version to at least match minor version
-    if SABCTOOLS_VERSION[:3] != SABCTOOLS_VERSION_REQUIRED[:3]:
+    # Verify version to at least match minor version by splitting on "."
+    if SABCTOOLS_VERSION.split(".")[:2] != SABCTOOLS_VERSION_REQUIRED.split(".")[:2]:
         raise ImportError
 except Exception:
     SABCTOOLS_ENABLED = False
