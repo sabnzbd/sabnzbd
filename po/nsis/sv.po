@@ -30,22 +30,19 @@ msgid "Support the project, Donate!"
 msgstr "Donera och stöd detta projekt!"
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
-"reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
-"services or `Cancel` to cancel this upgrade."
-msgstr ""
-"SABnzbd Windows tjänsten ändrades i SABnzbd 3.0.0.\\nSABnzbd tjänsten "
-"behöver installeras om.\\n\\nVälj OK` för att ta bort den befintliga "
-"tjänsten, eller välj `Cancel`för att avbryta uppdateringen."
-
-#: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
 msgstr "SABnzbd stöder endast 64-bitars Windows."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports Windows 8.1 and above."
 msgstr "SABnzbd stöder endast Windows 8.1 och senare."
+
+#: builder/win/NSIS_Installer.nsi
+msgid ""
+"An ARM version of SABnzbd is available on our Downloads page. This installer"
+" only contains the regular version.\\nPress OK to continue or Cancel to "
+"exit."
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
