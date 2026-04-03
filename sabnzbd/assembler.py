@@ -647,7 +647,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
                                     break
                                 except rarfile.RarWrongPassword:
                                     # This one really didn't work
-                                    pass
+                                    continue
                                 except rarfile.RarCRCError as e:
                                     # CRC errors can be thrown for wrong password or
                                     # missing the next volume (with correct password)
@@ -656,12 +656,18 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
                                         password_hit = password
                                         break
                                     # This one didn't work
-                                    pass
-                                except Exception:
+                                    continue
+                                except Exception as e:
+                                    # Catch other suspicious errors
+                                    if "wrong password" in str(e):
+                                        # This one didn't work
+                                        continue
+
                                     # All the other errors we skip, they might be fixable in post-proc.
                                     # For example starting from the wrong volume, or damaged files
                                     # This will cause the check to be performed again for the next rar, might
                                     # be disk-intensive! Could be removed later and just accept the password.
+                                    logging.info('Could not try password "%s" on job "%s"', password, nzo.final_name)
                                     return encrypted, unwanted
 
                         # Did any work?
