@@ -638,6 +638,10 @@ td.name .row-wrap-text {
     max-width: calc(100% - 75px);
 }
 
+.queue-table td.name .label {
+    cursor: pointer;
+}
+
 .queue-table td.name:hover .row-wrap-text {
     max-width: calc(100% - 125px);
     /* Change for each size! */

@@ -161,6 +161,7 @@ NzbObjectSaver = (
     "bad_articles",
     "duplicate",
     "duplicate_key",
+    "duplicate_of",
     "oversized",
     "precheck",
     "incomplete",
@@ -290,6 +291,7 @@ class NzbObject(TryList):
 
         self.duplicate: Optional[str] = None
         self.duplicate_key: Optional[str] = None
+        self.duplicate_of: Optional[str] = None
 
         self.futuretype = futuretype
         self.removed_from_queue = False
@@ -993,6 +995,17 @@ class NzbObject(TryList):
         return labels
 
     @property
+    def duplicate_info(self) -> str:
+        """Return tooltip info about the duplicate source"""
+        if not self.duplicate or not self.duplicate_of:
+            return ""
+        if self.duplicate in (DuplicateStatus.DUPLICATE_ALTERNATIVE, DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE):
+            return T("Alternative for:") + " " + self.duplicate_of
+        if self.duplicate in (DuplicateStatus.DUPLICATE, DuplicateStatus.SMART_DUPLICATE):
+            return T("Duplicate of:") + " " + self.duplicate_of
+        return ""
+
+    @property
     def final_name_with_password(self):
         if self.password:
             return "%s / %s" % (self.final_name, self.password)
@@ -1562,6 +1575,7 @@ class NzbObject(TryList):
         if repeat:
             self.duplicate = None
             self.duplicate_key = None
+            self.duplicate_of = None
 
         duplicate_in_history = smart_duplicate_in_history = False
         duplicate_in_queue = smart_duplicate_in_queue = False
@@ -1595,15 +1609,21 @@ class NzbObject(TryList):
                 else:
                     logging.debug("Unknown type, skipping smart duplicate check")
 
-        # Set the correct status
+        # Set the correct status and store the name of the matched item
         if smart_duplicate_in_queue:
             self.duplicate = DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE
+            self.duplicate_of = smart_duplicate_in_queue
         elif duplicate_in_queue:
             self.duplicate = DuplicateStatus.DUPLICATE_ALTERNATIVE
+            self.duplicate_of = duplicate_in_queue
         elif smart_duplicate_in_history:
             self.duplicate = DuplicateStatus.SMART_DUPLICATE
+            self.duplicate_of = smart_duplicate_in_history
         elif duplicate_in_history:
             self.duplicate = DuplicateStatus.DUPLICATE
+            # backup_exists returns bool, so duplicate_of may be a name string or True
+            if isinstance(duplicate_in_history, str):
+                self.duplicate_of = duplicate_in_history
 
     def handle_duplicate_action(self):
         """Handle duplicate detection action"""

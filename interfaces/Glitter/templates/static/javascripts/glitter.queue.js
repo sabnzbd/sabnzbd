@@ -549,6 +549,7 @@ function QueueModel(parent, data) {
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
     self.labels = ko.observableArray(data.labels);
+    self.duplicate_info = ko.observable(data.duplicate_info);
     self.isGrabbing = ko.observable(data.status === 'Grabbing' || data.avg_age === '-')
     self.isFetchingBlocks = data.status === 'Fetching' || data.priority === 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
@@ -690,6 +691,7 @@ function QueueModel(parent, data) {
             self.labels(data.labels);
             self.rawLabels = data.labels.toString();
         }
+        self.duplicate_info(data.duplicate_info);
     };
 
     // Pause individual download

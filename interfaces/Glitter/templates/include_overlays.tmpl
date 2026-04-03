@@ -585,6 +585,12 @@
                 <h4 class="modal-title row-wrap-text" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
             </div>
             <div class="modal-body">
+                <!-- ko if: filelist.filelist_duplicate_info() -->
+                <div class="alert alert-warning">
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                    <span data-bind="text: filelist.filelist_duplicate_info"></span>
+                </div>
+                <!-- /ko -->
                 <div id="modal-item-filelist">
                     <form data-bind="submit: filelist.setNzbPassword" class="form-inline">
                         <div class="form-group">

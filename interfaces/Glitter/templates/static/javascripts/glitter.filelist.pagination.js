@@ -10,6 +10,7 @@ function Fileslisting(parent) {
     // Need to reserve these names to be overwritten
     self.filelist_name = ko.observable();
     self.filelist_password = ko.observable();
+    self.filelist_duplicate_info = ko.observable();
 
     // Load the function and reset everything
     self.loadFiles = function(queue_item) {
@@ -18,9 +19,10 @@ function Fileslisting(parent) {
         self.fileItems.removeAll()
         self.triggerUpdate()
 
-        // Update name/password
+        // Update name/password/duplicate info
         self.filelist_name(self.currentItem.name())
         self.filelist_password(self.currentItem.password())
+        self.filelist_duplicate_info(self.currentItem.duplicate_info())
 
         // Hide ok button and reset
         $('#modal-item-filelist .glyphicon-floppy-saved').hide()
