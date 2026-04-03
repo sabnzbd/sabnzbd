@@ -313,6 +313,13 @@ Function .onInit
       Abort
   ${EndIf}
 
+  ; Inform ARM64 users that a native ARM64 build is available
+  ${If} ${IsNativeARM64}
+      MessageBox MB_OKCANCEL|MB_ICONINFORMATION $(MsgARM64Notice) IDOK continueARM64
+      Abort
+      continueARM64:
+  ${EndIf}
+
   ;------------------------------------------------------------------
   ; Change settings based on if SAB was already installed
   ReadRegStr $PREV_INST_DIR HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" ""
@@ -528,6 +535,26 @@ SectionEnd
   LangString MsgNoWin7      ${LANG_SWEDISH} "SABnzbd stöder endast Windows 8.1 och senare."
   LangString MsgNoWin7      ${LANG_TURKISH} "SABnzbd sadece Windows 8.1 ve üzerini destekler."
   LangString MsgNoWin7      ${LANG_SIMPCHINESE} "SABnzbd 仅支持 Windows 8.1 及更高版本。"
+
+  LangString MsgARM64Notice ${LANG_ENGLISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_CZECH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_DANISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_GERMAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_SPANISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_FINNISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_FRENCH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_HEBREW} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_ITALIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_NORWEGIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_DUTCH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_POLISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_PORTUGUESEBR} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_ROMANIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_RUSSIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_SERBIAN} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_SWEDISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_TURKISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_SIMPCHINESE} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
 
   LangString MsgShutting    ${LANG_ENGLISH} "Shutting down SABnzbd"
   LangString MsgShutting    ${LANG_CZECH} "Vypínání SABnzbd"
