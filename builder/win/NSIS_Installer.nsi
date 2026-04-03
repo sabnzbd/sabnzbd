@@ -361,20 +361,6 @@ Function .onInit
   ; Display language chooser
   !insertmacro MUI_LANGDLL_DISPLAY
 
-  ;------------------------------------------------------------------
-  ; Tell users about the service change
-  ;
-  !insertmacro SERVICE "installed" "SABHelper" ""
-  Pop $0 ;response
-  ${If} $0 == true
-    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgServChange) IDOK removeservices IDCANCEL exitinstall
-    exitinstall:
-      Abort
-    removeservices:
-        !insertmacro SERVICE "delete" "SABHelper" ""
-        !insertmacro SERVICE "delete" "SABnzbd" ""
-  ${EndIf}
-
 FunctionEnd
 
 ;--------------------------------
@@ -475,26 +461,6 @@ SectionEnd
   LangString MsgSupportUs   ${LANG_SWEDISH} "Donera och stöd detta projekt!"
   LangString MsgSupportUs   ${LANG_TURKISH} "Projeye destek olun, Bağış Yapın!"
   LangString MsgSupportUs   ${LANG_SIMPCHINESE} "支持该项目，捐助!"
-
-  LangString MsgServChange  ${LANG_ENGLISH} "The SABnzbd Windows Service changed in SABnzbd 3.0.0. $\nYou will need to reinstall the SABnzbd service. $\n$\nClick `OK` to remove the existing services or `Cancel` to cancel this upgrade."
-  LangString MsgServChange  ${LANG_CZECH} "Služba SABnzbd pro Windows byla ve verzi SABnzbd 3.0.0 změněna.$\nBudete muset znovu nainstalovat službu SABnzbd.$\n$\nKlikněte na `OK` pro odstranění stávajících služeb nebo na `Zrušit` pro zrušení této aktualizace."
-  LangString MsgServChange  ${LANG_DANISH} "SABnzbd Windows-tjenesten blev ændret i SABnzbd 3.0.0.$\nDu skal geninstallere SABnzbd-tjenesten.$\n$\nKlik på `OK` for at fjerne de eksisterende tjenester eller `Annuller` for at afbryde denne opgradering."
-  LangString MsgServChange  ${LANG_GERMAN} "Aufgrund von Änderungen am SABnzbd Windows Service ab Version 3.0.0 ist es nötig,$\nden Windows Service neu zu installieren.$\n$\n$\r$\nDrücke `OK` um den existierenden Service zu löschen oder `Abbrechen` um dieses Upgrade abzubrechen."
-  LangString MsgServChange  ${LANG_SPANISH} "El servicio de Windows para SABnzbd ha cambiado en la versión SABnzbd 3.0.0.$\nNecesitará volver a instalar el servicio SABnzbd. $\n$\nHaga clic en $\"OK$\" para eliminar los servicios existentes o $\"Cancelar$\" para cancelar la actualización."
-  LangString MsgServChange  ${LANG_FINNISH} "SABnzbdin Windows-palvelu muuttui versiossa SABnzbd 3.0.0.$\nSinun täytyy asentaa SABnzbd-palvelu uudelleen.$\n$\nNapsauta `OK` poistaaksesi olemassa olevat palvelut tai `Peruuta` peruuttaaksesi tämän päivityksen."
-  LangString MsgServChange  ${LANG_FRENCH} "Le service Windows SABnzbd a changé dans SABnzbd 3.0.0. $\nVous allez devoir réinstaller le service SABnzbd. $\n$\nCliquez sur 'OK' pour supprimer les services existants ou sur 'Annuler' pour annuler cette mise à niveau."
-  LangString MsgServChange  ${LANG_HEBREW} "שירות Windows של SABnzbd השתנה ב־SABnzbd 3.0.0. $\nתצטרך להתקין מחדש את השירות של SABnzbd. $\n$\nלחץ על `אישור` כדי להסיר את השירותים הקיימים או על `ביטול` כדי לבטל שדרוג זה."
-  LangString MsgServChange  ${LANG_ITALIAN} "Il servizio Windows di SABnzbd è cambiato in SABnzbd 3.0.0. $\nSarà necessario reinstallare il servizio SABnzbd. $\n$\nFai clic su `OK` per rimuovere i servizi esistenti o su `Annulla` per annullare questo aggiornamento."
-  LangString MsgServChange  ${LANG_NORWEGIAN} "SABnzbd Windows-tjenesten ble endret i SABnzbd 3.0.0.$\nDu må installere SABnzbd-tjenesten på nytt.$\n$\nKlikk `OK` for å fjerne eksisterende tjenester eller `Avbryt` for å avbryte denne oppgraderingen."
-  LangString MsgServChange  ${LANG_DUTCH} "De SABnzbd Windows Service is aangepast in SABnzbd 3.0.0. Hierdoor zal je de service opnieuw moeten installeren.$\n$\n$\r$\nKlik `Ok` om de bestaande services te verwijderen of `Annuleren` om te stoppen."
-  LangString MsgServChange  ${LANG_POLISH} "Usługa SABnzbd dla Windows została zmieniona w wersji SABnzbd 3.0.0.$\nMusisz ponownie zainstalować usługę SABnzbd.$\n$\nKliknij `OK`, aby usunąć istniejące usługi, lub `Anuluj`, aby przerwać tę aktualizację."
-  LangString MsgServChange  ${LANG_PORTUGUESEBR} "O Serviço do Windows do SABnzbd mudou no SABnzbd 3.0.0.$\nVocê precisará reinstalar o serviço do SABnzbd.$\n$\nClique em `OK` para remover os serviços existentes ou em `Cancelar` para cancelar esta atualização."
-  LangString MsgServChange  ${LANG_ROMANIAN} "Serviciul SABnzbd pentru Windows s-a schimbat în SABnzbd 3.0.0.$\nVa trebui să reinstalați serviciul SABnzbd.$\n$\nFaceți clic pe `OK` pentru a elimina serviciile existente sau pe `Anulare` pentru a anula această actualizare."
-  LangString MsgServChange  ${LANG_RUSSIAN} "Служба SABnzbd для Windows была изменена в SABnzbd 3.0.0.$\nВам необходимо переустановить службу SABnzbd.$\n$\nНажмите «ОК», чтобы удалить существующие службы, или «Отмена», чтобы прервать это обновление."
-  LangString MsgServChange  ${LANG_SERBIAN} "Windows услуга за SABnzbd је измењена у верзији SABnzbd 3.0.0.$\nМораћете поново да инсталирате SABnzbd услугу.$\n$\nКликните „У реду“ да уклоните постојеће услуге или „Откажи“ да откажете ово ажурирање."
-  LangString MsgServChange  ${LANG_SWEDISH} "SABnzbd Windows tjänsten ändrades i SABnzbd 3.0.0.$\nSABnzbd tjänsten behöver installeras om.$\n$\nVälj OK` för att ta bort den befintliga tjänsten, eller välj `Cancel`för att avbryta uppdateringen."
-  LangString MsgServChange  ${LANG_TURKISH} "SABnzbd Windows Servisi SABnzbd 3.0.0.0 ile değişmiştir.$\nSABnzbd servisini yeniden kurmanız gerekecektir.$\n$\nMevcut servisleri kaldırmak için `Tamam` üzerine veya bu güncellemeyi iptal etmek için `İptal` üzerine tıklayın."
-  LangString MsgServChange  ${LANG_SIMPCHINESE} "SABnzbd 的 Windows 服务在 SABnzbd 3.0.0 中发生了变化。$\n您需要重新安装 SABnzbd 服务。$\n$\n点击“确定”以移除现有服务，或点击“取消”以取消此次升级。"
 
   LangString MsgOnly64bit   ${LANG_ENGLISH} "SABnzbd only supports 64-bit Windows."
   LangString MsgOnly64bit   ${LANG_CZECH} "SABnzbd podporuje pouze 64bitové Windows."
