@@ -27,6 +27,7 @@ import tarfile
 import urllib.request
 import urllib.error
 import configobj
+import markdown
 import packaging.version
 
 from constants import (
@@ -296,6 +297,18 @@ if __name__ == "__main__":
             raise FileNotFoundError("Signed SABnzbd executable not found, required for release!")
         else:
             print("Using unsigned version of SABnzbd binaries")
+
+        # Convert release notes to HTML for the installer finish page
+        with open(RELEASE_README, "r", encoding="utf-8") as f:
+            readme_html = markdown.markdown(f.read(), extensions=["nl2br", "mdx_linkify"])
+        with open("dist/SABnzbd/README.html", "w", encoding="utf-8") as f:
+            f.write(
+                f'<!DOCTYPE html><html><head><meta charset="utf-8">'
+                f"<title>SABnzbd {RELEASE_VERSION} Release Notes</title>"
+                f'<link rel="icon" href="icons/logo-arrow.svg">'
+                f"<style>body{{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}}</style>"
+                f"</head><body>{readme_html}</body></html>"
+            )
 
         # Run NSIS to build installer
         run_external_command(

@@ -143,7 +143,7 @@ Unicode true
   !define MUI_FINISHPAGE_RUN
   !define MUI_FINISHPAGE_RUN_FUNCTION PageFinishRun
   !define MUI_FINISHPAGE_RUN_TEXT $(MsgRunSAB)
-  !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
+  !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.html"
   !define MUI_FINISHPAGE_SHOWREADME_TEXT $(MsgShowRelNote)
   !define MUI_FINISHPAGE_LINK $(MsgSupportUs)
   !define MUI_FINISHPAGE_LINK_LOCATION "https://sabnzbd.org/donate"
