@@ -2,14 +2,14 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2026
 # Safihre <safihre@sabnzbd.org>, 2026
+# Fred L <88com88@gmail.com>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2026\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -918,6 +918,8 @@ msgid ""
 "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
 " %f MB/s"
 msgstr ""
+"La bande passante Internet de l'IPv4 diffère considérablement de celle de "
+"l'IPv6 : %f Mo/s contre %f Mo/s"
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -982,7 +984,7 @@ msgstr "Lire tous les flux RSS"
 
 #: sabnzbd/macosmenu.py
 msgid "Complete Folder"
-msgstr "Dossier complet"
+msgstr "Dossier des téléchargements terminés"
 
 #: sabnzbd/macosmenu.py
 msgid "Incomplete Folder"
@@ -1478,7 +1480,7 @@ msgstr "Extension non souhaitée dans le fichier %s (%s)"
 
 #: sabnzbd/nzb/object.py
 msgid "Aborted, cannot be completed"
-msgstr "Interrompu, ne peut être achevé"
+msgstr "Interrompu, ne peut être terminé"
 
 #. Error message
 #: sabnzbd/nzb/object.py
@@ -1495,7 +1497,7 @@ msgstr "ALTERNATIVE"
 
 #: sabnzbd/nzb/object.py
 msgid "ENCRYPTED"
-msgstr "CHIFFRÉ"
+msgstr "CRYPTÉ"
 
 #: sabnzbd/nzb/object.py
 msgid "TOO LARGE"
@@ -1519,7 +1521,7 @@ msgstr "PROPAGATION %s min"
 
 #: sabnzbd/nzb/object.py
 msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Téléchargé en %s à %sB/s de moyenne"
+msgstr "Téléchargé en %s à %sO/s de moyenne"
 
 #. Job details page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
