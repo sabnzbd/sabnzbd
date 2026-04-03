@@ -18,6 +18,9 @@
   },
   "ignorePaths": [],
   "ignoreDeps": [
+    "jaraco.text",
+    "jaraco.context",
+    "jaraco.collections",
     "sabctools",
     "paho-mqtt"
   ],
