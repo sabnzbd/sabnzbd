@@ -58,7 +58,7 @@ if platform.machine() == "ARM64":
 # Used in package.py and SABnzbd.spec
 EXTRA_FILES = [
     RELEASE_README,
-    "README.txt",
+    "README.html",
     "INSTALL.txt",
     "LICENSE.txt",
     "GPL2.txt",

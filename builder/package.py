@@ -109,6 +109,28 @@ def patch_version_file(release_name):
         ver.write(version_file)
 
 
+def build_readme_html(output_path: str):
+    """Convert the release notes Markdown to a styled HTML file."""
+    with open(RELEASE_README, "r", encoding="utf-8") as f:
+        readme_html = markdown.markdown(f.read(), extensions=["nl2br"])
+
+    # Linkify bare URLs not already inside an HTML attribute
+    readme_html = re.sub(
+        r'(?<![="\'(])https?://[^\s<>"\']+',
+        lambda m: f'<a href="{m.group()}" target="_blank">{m.group()}</a>',
+        readme_html,
+    )
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(
+            f'<!DOCTYPE html><html><head><meta charset="utf-8">'
+            f"<title>SABnzbd {RELEASE_VERSION} Release Notes</title>"
+            f'<link rel="icon" href="icons/logo-arrow.svg">'
+            f"<style>body{{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}}</style>"
+            f"</head><body>{readme_html}</body></html>"
+        )
+
+
 def test_macos_min_version(binary_path: str):
     # Skip check if nothing was set
     if macos_min_version := os.environ.get("MACOSX_DEPLOYMENT_TARGET"):
@@ -235,9 +257,9 @@ if __name__ == "__main__":
     # Patch release file
     patch_version_file(RELEASE_VERSION)
 
-    # Rename release notes file
-    safe_remove("README.txt")
-    shutil.copyfile(RELEASE_README, "README.txt")
+    # Convert release notes to HTML for the installer finish page
+    safe_remove("README.html")
+    build_readme_html("README.html")
 
     # Compile translations
     if not os.path.exists("locale"):
@@ -297,18 +319,6 @@ if __name__ == "__main__":
             raise FileNotFoundError("Signed SABnzbd executable not found, required for release!")
         else:
             print("Using unsigned version of SABnzbd binaries")
-
-        # Convert release notes to HTML for the installer finish page
-        with open(RELEASE_README, "r", encoding="utf-8") as f:
-            readme_html = markdown.markdown(f.read(), extensions=["nl2br", "mdx_linkify"])
-        with open("dist/SABnzbd/README.html", "w", encoding="utf-8") as f:
-            f.write(
-                f'<!DOCTYPE html><html><head><meta charset="utf-8">'
-                f"<title>SABnzbd {RELEASE_VERSION} Release Notes</title>"
-                f'<link rel="icon" href="icons/logo-arrow.svg">'
-                f"<style>body{{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}}</style>"
-                f"</head><body>{readme_html}</body></html>"
-            )
 
         # Run NSIS to build installer
         run_external_command(
