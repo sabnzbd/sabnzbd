@@ -31,7 +31,7 @@ from threading import Thread
 from typing import Optional, Any, Union, Generator
 
 from starlette.datastructures import QueryParams
-from starlette.responses import Response
+from starlette.responses import Response, StreamingResponse
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
@@ -701,46 +701,57 @@ LOG_NNTP_AUTH_RE = re.compile(rb"(authinfo (?:user|pass)) [^\\'\'\r\n]+", re.I)
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 
 
-def _api_showlog(name: str, kwargs: QueryParams) -> Response:
+def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
     """Fetch the INI and the log-data and add a message at the top"""
-    # Set headers
-    cherrypy.response.headers["Content-Type"] = "application/x-download;charset=utf-8"
-    cherrypy.response.headers["Content-Disposition"] = 'attachment;filename="sabnzbd.log"'
-    # Build header with version and environment info
-    header = "--------------------------------\n"
-    header += f"SABnzbd version: {sabnzbd.__version__}\n"
-    header += f"Commit: {sabnzbd.__baseline__}\n"
-    header += f"Python-version: {sys.version}\n"
-    header += f"Platform: {get_platform_description()}\n"
-    header += "--------------------------------\n\n"
-    header += "The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
-    header += "\n\n--------------------------------\n"
-    yield header.encode("utf-8")
 
-    # Try to replace the username
-    try:
-        cur_user_bytes = None
-        if cur_user := getpass.getuser():
-            cur_user_bytes = utob(cur_user)
-    except Exception:
-        pass
+    def _generate_log():
+        # Build header with version and environment info
+        header = "--------------------------------\n"
+        header += f"SABnzbd version: {sabnzbd.__version__}\n"
+        header += f"Commit: {sabnzbd.__baseline__}\n"
+        header += f"Python-version: {sys.version}\n"
+        header += f"Platform: {get_platform_description()}\n"
+        header += "--------------------------------\n\n"
+        header += "The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
+        header += "\n\n--------------------------------\n"
+        yield header.encode("utf-8")
 
-    # Set correct headers
-    return Response(
-        log_data,
-        headers={
-            "Content-Type": "application/x-download;charset=utf-8",
-            "Content-Disposition": 'attachment;filename="sabnzbd.log"',
-        },
-    )
+        # Try to replace the username
+        try:
+            cur_user_bytes = None
+            if cur_user := getpass.getuser():
+                cur_user_bytes = utob(cur_user)
+        except Exception:
+            cur_user_bytes = None
 
-    # Stream log file line by line
-    if sabnzbd.LOGFILE and os.path.exists(sabnzbd.LOGFILE):
-        with open(sabnzbd.LOGFILE, "rb") as f:
+        def sanitize_line(line: bytes) -> bytes:
+            """Apply regex substitutions to a single line to remove sensitive data"""
+            line = LOG_JSON_RE.sub(b"'REMOVED': '<REMOVED>'", line)
+            line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
+            line = LOG_NNTP_AUTH_RE.sub(b"\\1 <REMOVED>", line)
+            line = LOG_HASH_RE.sub(b"<HASH>", line)
+            if cur_user_bytes:
+                line = line.replace(cur_user_bytes, b"<USERNAME>")
+            return line
+
+        # Stream log file line by line
+        if sabnzbd.LOGFILE and os.path.exists(sabnzbd.LOGFILE):
+            with open(sabnzbd.LOGFILE, "rb") as f:
+                for line in f:
+                    yield sanitize_line(line)
+        else:
+            yield b"\nFile log disabled or not found.\n\n"
+
+        # Stream config file line by line
+        with open(config.get_filename(), "rb") as f:
             for line in f:
                 yield sanitize_line(line)
-    else:
-        yield b"\nFile log disabled or not found.\n\n"
+
+    return StreamingResponse(
+        _generate_log(),
+        media_type="application/x-download;charset=utf-8",
+        headers={"Content-Disposition": 'attachment;filename="sabnzbd.log"'},
+    )
 
 
 def _api_get_cats(name: str, kwargs: QueryParams) -> Response:
@@ -1290,20 +1301,14 @@ def handle_rss_api(kwargs: QueryParams) -> Optional[str]:
 
     action = kwargs.get("filter_action")
     if action in ("add", "update"):
-        # Use the general function, but catch the redirect-raise
-        try:
-            kwargs["feed"] = name
-            sabnzbd.interface.ConfigRss("/").internal_upd_rss_filter(**kwargs)
-        except cherrypy.HTTPRedirect:
-            pass
+        filter_kwargs = dict(kwargs)
+        filter_kwargs["feed"] = name
+        sabnzbd.interface.do_upd_rss_filter(filter_kwargs)
 
     elif action == "delete":
-        # Use the general function, but catch the redirect-raise
-        try:
-            kwargs["feed"] = name
-            sabnzbd.interface.ConfigRss("/").internal_del_rss_filter(**kwargs)
-        except cherrypy.HTTPRedirect:
-            pass
+        filter_kwargs = dict(kwargs)
+        filter_kwargs["feed"] = name
+        sabnzbd.interface.do_del_rss_filter(filter_kwargs)
 
     return name
 

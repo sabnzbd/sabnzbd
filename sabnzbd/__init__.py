@@ -26,6 +26,7 @@ from typing import Optional
 import platform
 import concurrent.futures
 import sys
+import threading
 from threading import Lock, Condition
 
 ##############################################################################
@@ -211,11 +212,14 @@ def sig_handler(signum=None, frame=None):
 INIT_LOCK = Lock()
 
 
+_thread_local = threading.local()
+
+
 def get_db_connection(thread_index=0):
     # Create a connection and store it in the current thread
-    if not (hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_db):
-        cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
-    return cherrypy.thread_data.history_db
+    if not getattr(_thread_local, "history_db", None):
+        _thread_local.history_db = sabnzbd.database.HistoryDB()
+    return _thread_local.history_db
 
 
 @synchronized(INIT_LOCK)
