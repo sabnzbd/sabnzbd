@@ -36,6 +36,7 @@ from constants import (
     VERSION_FILE,
     RELEASE_README,
     RELEASE_NAME,
+    RELEASE_MACOS,
     RELEASE_WIN_BIN,
     RELEASE_WIN_INSTALLER,
     ON_GITHUB_ACTIONS,
@@ -464,6 +465,47 @@ if __name__ == "__main__":
 
         # Test the release, as the very last step to not mess with any release code
         test_sab_binary("dist/SABnzbd.app/Contents/MacOS/SABnzbd")
+
+    if "dmg" in sys.argv:
+        # Must be run on macOS
+        if sys.platform != "darwin":
+            raise RuntimeError("DMG should be created on macOS")
+
+        # Only available for macOS
+        import dmgbuild
+
+        apppath = "dist/SABnzbd.app"
+        readmepath = os.path.join(apppath, "Contents/Resources/README.html")
+
+        print("Building DMG")
+        dmgbuild.build_dmg(
+            filename=RELEASE_MACOS,
+            volume_name=RELEASE_NAME,
+            settings={
+                "files": [apppath, readmepath],
+                "symlinks": {"Applications": "/Applications"},
+                "icon": "builder/macos/image/sabnzbdplus.icns",
+                "background": "builder/macos/image/sabnzbd_new_bg.png",
+                "icon_locations": {
+                    os.path.basename(readmepath): (70, 160),
+                    os.path.basename(apppath): (295, 220),
+                    "Applications": (510, 220),
+                },
+                "format": "ULFO",
+                "window_rect": ((100, 100), (660, 360)),
+                "sidebar_width": 0,
+                "grid_spacing": 50,
+                "icon_size": 64,
+            },
+            callback=lambda info: print("dmgbuild", info),
+        )
+
+        if authority := os.environ.get("SIGNING_AUTH"):
+            print("Signing DMG")
+            run_external_command(["codesign", "-f", "-i", "org.sabnzbd.sabnzbd", "-s", authority, RELEASE_MACOS])
+            print("Signed!")
+        else:
+            print("Signing skipped, missing SIGNING_AUTH.")
 
     if "source" in sys.argv:
         # Prepare Source distribution package.
