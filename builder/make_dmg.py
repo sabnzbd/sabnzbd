@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     # Path to background and the icon
     backgroundpath = "builder/macos/image/sabnzbd_new_bg.png"
-    iconpath = "builder/macos/image/sabnzbdplus.icns"
+    iconpath = "icons/logo-arrow.svg"
 
     # Make DMG
     print("Building DMG")
