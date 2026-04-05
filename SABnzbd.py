@@ -1394,8 +1394,14 @@ def main():
                     # Just a simple restart of the exe
                     os.execv(sys.executable, ['"%s"' % arg for arg in sys.argv])
             else:
-                # CherryPy has special logic to include interpreter options such as "-OO"
-                cherrypy.engine._do_execv()
+                # Re-exec with interpreter flags (replaces cherrypy.engine._do_execv)
+                args = [sys.executable]
+                if sys.flags.optimize == 1:
+                    args.append("-O")
+                elif sys.flags.optimize >= 2:
+                    args.append("-OO")
+                args.extend(sys.argv)
+                os.execv(sys.executable, args)
 
     # Send our final goodbyes!
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")
