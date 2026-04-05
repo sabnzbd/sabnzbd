@@ -373,36 +373,34 @@ class HistoryDB:
 
         return items, total_items
 
-    def have_duplicate_key(self, duplicate_key: str) -> bool:
-        """Check whether History contains this duplicate key"""
+    def have_duplicate_key(self, duplicate_key: str) -> list[dict]:
+        """Check whether History contains this duplicate key.
+        Returns list of dicts with nzo_id and archive flag, empty list if none found."""
         if self.execute(
             """
-            SELECT EXISTS(
-                SELECT 1
-                FROM history
-                WHERE duplicate_key = ? AND status != ?
-            ) as found
+            SELECT nzo_id, archive
+            FROM history
+            WHERE duplicate_key = ? AND status != ?
             """,
             (duplicate_key, Status.FAILED),
         ):
-            return bool(self.cursor.fetchone()["found"])
-        return False
+            return [{"nzo_id": row["nzo_id"], "archive": bool(row["archive"])} for row in self.cursor.fetchall() if row["nzo_id"]]
+        return []
 
-    def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
-        """Check whether this name or md5sum is already in History"""
+    def have_name_or_md5sum(self, name: str, md5sum: str) -> list[dict]:
+        """Check whether this name or md5sum is already in History.
+        Returns list of dicts with nzo_id and archive flag, empty list if none found."""
         if self.execute(
             """
-            SELECT EXISTS(
-                SELECT 1
-                FROM history
-                WHERE (name = ? COLLATE NOCASE OR md5sum = ?)
-                  AND status != ?
-            ) as found
+            SELECT nzo_id, archive
+            FROM history
+            WHERE (name = ? COLLATE NOCASE OR md5sum = ?)
+              AND status != ?
             """,
             (name, md5sum, Status.FAILED),
         ):
-            return bool(self.cursor.fetchone()["found"])
-        return False
+            return [{"nzo_id": row["nzo_id"], "archive": bool(row["archive"])} for row in self.cursor.fetchall() if row["nzo_id"]]
+        return []
 
     def get_history_size(self) -> tuple[int, int, int]:
         """Returns the total size of the history and

@@ -161,6 +161,7 @@ NzbObjectSaver = (
     "bad_articles",
     "duplicate",
     "duplicate_key",
+    "duplicate_of",
     "oversized",
     "precheck",
     "incomplete",
@@ -290,6 +291,7 @@ class NzbObject(TryList):
 
         self.duplicate: Optional[str] = None
         self.duplicate_key: Optional[str] = None
+        self.duplicate_of: Optional[dict] = None
 
         self.futuretype = futuretype
         self.removed_from_queue = False
@@ -993,6 +995,13 @@ class NzbObject(TryList):
         return labels
 
     @property
+    def duplicate_info(self) -> dict:
+        """Return info about the duplicate source for the API"""
+        if not self.duplicate or not self.duplicate_of:
+            return {}
+        return self.duplicate_of
+
+    @property
     def final_name_with_password(self):
         if self.password:
             return "%s / %s" % (self.final_name, self.password)
@@ -1553,6 +1562,12 @@ class NzbObject(TryList):
 
             self.duplicate_key = "/".join(duplicate_key_items).lower()
 
+    def _set_duplicate_of_from_history(self, history_results: list[dict]):
+        """Build duplicate_of dict from history query results (list of {nzo_id, archive})"""
+        nzo_ids = [item["nzo_id"] for item in history_results]
+        has_archive = any(item["archive"] for item in history_results)
+        self.duplicate_of = {"nzo_ids": nzo_ids, "source": "history", "archive": has_archive}
+
     def duplicate_check(self, repeat: bool = False):
         """Set the correct duplicate status"""
         if not cfg.no_dupes() and not cfg.no_smart_dupes():
@@ -1562,9 +1577,10 @@ class NzbObject(TryList):
         if repeat:
             self.duplicate = None
             self.duplicate_key = None
+            self.duplicate_of = None
 
-        duplicate_in_history = smart_duplicate_in_history = False
-        duplicate_in_queue = smart_duplicate_in_queue = False
+        duplicate_in_history = smart_duplicate_in_history = None
+        duplicate_in_queue = smart_duplicate_in_queue = None
 
         with HistoryDB() as history_db:
             # Dupe check off just name or nzb contents
@@ -1595,15 +1611,23 @@ class NzbObject(TryList):
                 else:
                     logging.debug("Unknown type, skipping smart duplicate check")
 
-        # Set the correct status
+        # Set the correct status and store the nzo_ids of the matched items
         if smart_duplicate_in_queue:
             self.duplicate = DuplicateStatus.SMART_DUPLICATE_ALTERNATIVE
+            self.duplicate_of = {"nzo_ids": smart_duplicate_in_queue, "source": "queue"}
         elif duplicate_in_queue:
             self.duplicate = DuplicateStatus.DUPLICATE_ALTERNATIVE
+            self.duplicate_of = {"nzo_ids": duplicate_in_queue, "source": "queue"}
         elif smart_duplicate_in_history:
             self.duplicate = DuplicateStatus.SMART_DUPLICATE
+            self._set_duplicate_of_from_history(smart_duplicate_in_history)
         elif duplicate_in_history:
             self.duplicate = DuplicateStatus.DUPLICATE
+            # backup_exists returns bool, not a list of dicts
+            if isinstance(duplicate_in_history, list):
+                self._set_duplicate_of_from_history(duplicate_in_history)
+            else:
+                self.duplicate_of = None
 
     def handle_duplicate_action(self):
         """Handle duplicate detection action"""

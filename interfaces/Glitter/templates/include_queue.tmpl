@@ -91,7 +91,12 @@
                 <td class="name">
                     <div class="row-wrap-text" data-bind="visible: !editingName(), css: { 'direct-unpack-text': direct_unpack }">
                          <!-- ko foreach: labels -->
-                            <span class="label label-warning" data-bind="text: \$data" ></span>
+                            <!-- ko if: \$parent.duplicate_info().nzo_ids -->
+                                <span class="label label-warning" style="cursor: pointer" data-bind="text: \$data, click: \$parent.showDuplicates"></span>
+                            <!-- /ko -->
+                            <!-- ko ifnot: \$parent.duplicate_info().nzo_ids -->
+                                <span class="label label-warning" data-bind="text: \$data"></span>
+                            <!-- /ko -->
                         <!-- /ko -->
                         <span data-bind="text: name, attr: { 'title': name_title }"></span>
                         <!-- ko if: password()  -->

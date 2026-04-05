@@ -549,6 +549,7 @@ function QueueModel(parent, data) {
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
     self.labels = ko.observableArray(data.labels);
+    self.duplicate_info = ko.observable(data.duplicate_info || {});
     self.isGrabbing = ko.observable(data.status === 'Grabbing' || data.avg_age === '-')
     self.isFetchingBlocks = data.status === 'Fetching' || data.priority === 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
@@ -690,6 +691,7 @@ function QueueModel(parent, data) {
             self.labels(data.labels);
             self.rawLabels = data.labels.toString();
         }
+        self.duplicate_info(data.duplicate_info || {});
     };
 
     // Pause individual download
@@ -770,6 +772,25 @@ function QueueModel(parent, data) {
         if(self.isGrabbing()) return false;
         // Trigger update
         parent.parent.filelist.loadFiles(self)
+    }
+
+    // Filter queue or history by the duplicate's nzo_ids
+    self.showDuplicates = function() {
+        var info = self.duplicate_info();
+        if (!info || !info.nzo_ids || !info.nzo_ids.length) return;
+        var filter = 'nzo_ids:' + info.nzo_ids.join(',');
+        if (info.source === 'history') {
+            // Enable archive view if any matched item is archived
+            if (info.archive && !parent.parent.history.showArchive()) {
+                parent.parent.history.showArchive(true);
+            }
+            // Switch to history tab and set the search filter
+            parent.parent.history.searchTerm(filter);
+            $('.history-queue-swicher .nav-tabs a[href="#history-tab"]').tab('show');
+        } else {
+            // Filter within the queue
+            parent.parent.queue.searchTerm(filter);
+        }
     }
 
     // Toggle calculation of dropdown

@@ -959,28 +959,32 @@ class NzbQueue:
         return lst
 
     @NzbQueueLocker
-    def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
+    def have_name_or_md5sum(self, name: str, md5sum: str) -> list[str]:
         """Check whether this name or md5sum is already
-        in the queue or the post-processing queue"""
+        in the queue or the post-processing queue.
+        Returns list of matching nzo_ids, empty list if none found."""
         lname = name.lower()
+        nzo_ids = []
         for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             # URL's do not have an MD5!
             if not nzo.duplicate and (
                 nzo.final_name.lower() == lname or (nzo.md5sum and md5sum and nzo.md5sum == md5sum)
             ):
-                return True
-        return False
+                nzo_ids.append(nzo.nzo_id)
+        return nzo_ids
 
     @NzbQueueLocker
-    def have_duplicate_key(self, duplicate_key: str) -> bool:
+    def have_duplicate_key(self, duplicate_key: str) -> list[str]:
         """Check whether this duplicate key is already
-        in the queue or the post-processing queue"""
+        in the queue or the post-processing queue.
+        Returns list of matching nzo_ids, empty list if none found."""
+        nzo_ids = []
         for nzo in self.__nzo_list + sabnzbd.PostProcessor.get_queue():
             # Skip any jobs already marked as duplicate, to prevent double-triggers
             if not nzo.duplicate and nzo.duplicate_key == duplicate_key:
-                return True
-        return False
+                nzo_ids.append(nzo.nzo_id)
+        return nzo_ids
 
     @NzbQueueLocker
     def handle_duplicate_alternatives(self, finished_nzo: NzbObject, success: bool):
@@ -1008,6 +1012,7 @@ class NzbQueue:
                         logging.info("Resuming duplicate alternative %s for ", nzo.final_name, finished_nzo.final_name)
                         nzo.resume()
                     nzo.duplicate = None
+                    nzo.duplicate_of = None
                     return
 
                 # Take action on the alternatives to the duplicate

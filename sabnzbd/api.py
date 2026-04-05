@@ -1642,6 +1642,7 @@ def build_queue(
         slot["script"] = nzo.script if nzo.script else "None"
         slot["filename"] = nzo.final_name
         slot["labels"] = nzo.labels
+        slot["duplicate_info"] = nzo.duplicate_info
         slot["password"] = nzo.password if nzo.password else ""
         slot["cat"] = nzo.cat if nzo.cat else "None"
         slot["mbleft"] = "%.2f" % mbleft

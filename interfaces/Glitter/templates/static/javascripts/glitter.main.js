@@ -337,7 +337,7 @@ function ViewModel() {
             limit: parseInt(self.queue.paginationLimit())
         }
         if (self.queue.searchTerm()) {
-            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority", "status"])
+            parseSearchQuery(api_call, self.queue.searchTerm(), ["cat", "category", "priority", "status", "nzo_ids"])
         }
         var queueApi = callAPI(api_call)
             .done(self.updateQueue)
@@ -367,7 +367,7 @@ function ViewModel() {
             last_history_update: self.history.lastUpdate
         }
         if (self.history.searchTerm()) {
-            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category", "status"])
+            parseSearchQuery(history_call, self.history.searchTerm(), ["cat", "category", "status", "nzo_ids"])
         }
 
         // History
