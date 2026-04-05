@@ -90,10 +90,10 @@ symlinks = {"Applications": "/Applications"}
 # image, *or* you can define badge_icon, in which case the icon file you specify
 # will be used to badge the system's Removable Disk icon
 #
-badge_icon = defines.get("iconpath", "")
+icon = defines.get("iconpath", "")
 
 # Where to put the icons
-icon_locations = {readme: (70, 160), appname: (295, 220), "Applications": (510, 220)}
+icon_locations = {readme: (70, 200), appname: (295, 220), "Applications": (510, 220)}
 
 # .. Window configuration ......................................................
 
