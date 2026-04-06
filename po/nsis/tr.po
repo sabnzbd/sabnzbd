@@ -2,14 +2,14 @@
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# mauron, 2025
 # Safihre <safihre@sabnzbd.org>, 2025
+# mauron, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
+"Last-Translator: mauron, 2026\n"
 "Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -43,6 +43,9 @@ msgid ""
 " only contains the regular version.\\nPress OK to continue or Cancel to "
 "exit."
 msgstr ""
+"SABnzbd'nin ARM sürümü İndirmeler sayfamızda mevcuttur. Bu kurulum programı "
+"sadece normal sürümü içermektedir.\\nDevam etmek için Tamam'a veya çıkmak "
+"için İptal'e tıklayın."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"
