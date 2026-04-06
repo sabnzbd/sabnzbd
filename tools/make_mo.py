@@ -138,6 +138,7 @@ def remove_mo_files():
 def patch_nsis():
     """Patch translations into the NSIS installer script"""
     languages = [e.name for e in os.scandir(MO_DIR) if e.is_dir()]
+    languages.sort()
 
     # Pre-load all NSIS translations once
     nsis_translations = {
