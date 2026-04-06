@@ -491,7 +491,6 @@ if __name__ == "__main__":
                     os.path.basename(apppath): (295, 220),
                     "Applications": (510, 220),
                 },
-                "format": "ULFO",
                 "window_rect": ((100, 100), (660, 360)),
                 "sidebar_width": 0,
                 "grid_spacing": 50,
