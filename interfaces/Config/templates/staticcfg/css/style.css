@@ -418,7 +418,7 @@ tr.separator {
     height: 16px;
     margin-top: 0px;
 }
-.RSS form[action="add_rss_feed"] tr:nth-child(even) {
+.RSS form[action="rss/add_rss_feed"] tr:nth-child(even) {
     border: 1px solid #E5E5E5;
 }
 .RSS .tab-pane table th:not(.no-sort) {
@@ -938,12 +938,12 @@ input[type="checkbox"] {
     max-width: 150px !important;
 }
 
-.Scheduling form[action="addSchedule"] input[type="checkbox"] {
+.Scheduling form[action="scheduling/add_schedule"] input[type="checkbox"] {
     margin-top: 0px;
     margin-left: -20px;
 }
 
-.Scheduling form[action="delSchedule"] input[type="checkbox"] {
+.Scheduling form[action="scheduling/del_schedule"] input[type="checkbox"] {
     position: initial;
     float: left;
     margin: 9px 10px 0px 5px;
@@ -1283,7 +1283,7 @@ html[dir="rtl"] .checkbox-days {
     float: none;
 }
 
-html[dir="rtl"] .Scheduling form[action="addSchedule"] input[type="checkbox"] {
+html[dir="rtl"] .Scheduling form[action="scheduling/add_schedule"] input[type="checkbox"] {
     right: 5px;
 }
 

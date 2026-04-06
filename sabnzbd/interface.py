@@ -1735,7 +1735,7 @@ async def config_scheduling_index(request: Request):
     )
 
 
-@secured_expose(route="/config/scheduling/addSchedule", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/scheduling/add_schedule", check_api_key=True, check_configlock=True)
 async def config_scheduling_add(request: Request):
     params = request.query_params
     servers = config.get_servers()
@@ -1784,7 +1784,7 @@ async def config_scheduling_add(request: Request):
     return BaseRedirectResponse(_SCHED_ROOT)
 
 
-@secured_expose(route="/config/scheduling/delSchedule", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/scheduling/del_schedule", check_api_key=True, check_configlock=True)
 async def config_scheduling_del(request: Request):
     schedules = cfg.schedules()
     line = request.query_params.get("line")
@@ -1796,7 +1796,7 @@ async def config_scheduling_del(request: Request):
     return BaseRedirectResponse(_SCHED_ROOT)
 
 
-@secured_expose(route="/config/scheduling/toggleSchedule", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/scheduling/toggle_schedule", check_api_key=True, check_configlock=True)
 async def config_scheduling_toggle(request: Request):
     schedules = cfg.schedules()
     line = request.query_params.get("line")
@@ -1855,8 +1855,7 @@ async def config_categories_delete(request: Request):
         "keyword": request.query_params.get("name"),
     }
     del_from_section(kw)
-    # Keep API response pattern consistent
-    return report(request.query_params)
+    return BaseRedirectResponse("/config/categories")
 
 
 @secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True)
@@ -1867,7 +1866,6 @@ async def config_categories_save(request: Request):
         newname = name
 
     if newname:
-        # Build params dict for category configuration
         cat_params = dict(request.query_params)
         # Validate directory not under incomplete
         if same_directory(
@@ -1885,7 +1883,7 @@ async def config_categories_save(request: Request):
         config.ConfigCat(newname.lower(), cat_params)
 
     config.save_config()
-    return report(request.query_params)
+    return BaseRedirectResponse("/config/categories")
 
 
 ##############################################################################
