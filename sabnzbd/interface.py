@@ -138,8 +138,8 @@ def secured_expose(
 
     @functools.wraps(wrap_func)
     async def internal_wrap(request: Request, *args, **kwargs):
-        # Merge post and get requests so we can use them easily
-        request._query_params = await merged_post_get_params(request)
+        # Populate request._query_params from the correct source for this method
+        request._query_params = await get_request_params(request)
 
         # Check if config is locked
         if check_configlock and cfg.configlock():
@@ -382,29 +382,25 @@ def log_warning_and_ip(request: Request, txt: str):
         logging.warning("%s %s", txt, remote_info)
 
 
-async def merged_post_get_params(request: Request) -> Dict[str, Any]:
-    # Start with query parameters
-    unified_data = dict(request.query_params)
-
-    # If it's a POST request with form data, merge it in
+async def get_request_params(request: Request) -> Dict[str, Any]:
+    """Return params from the appropriate source for the HTTP method — no mixing.
+    POST: reads form body only (application/x-www-form-urlencoded or multipart/form-data).
+    GET (and anything else): reads URL query string only."""
     if request.method == "POST":
         content_type = request.headers.get("content-type", "")
         if content_type.startswith(("application/x-www-form-urlencoded", "multipart/form-data")):
             try:
                 form_data = await request.form()
-                # Form data takes precedence over query params for duplicate keys
+                params: Dict[str, Any] = {}
                 for key, value in form_data.items():
                     if hasattr(value, "file") and hasattr(value, "filename"):
-                        # Keep file uploads as-is
-                        unified_data[key] = value
+                        params[key] = value  # Keep file uploads as-is
                     else:
-                        # Convert to string for consistency
-                        unified_data[key] = str(value)
+                        params[key] = str(value)
+                return params
             except Exception:
-                # If form parsing fails, just use query params
                 pass
-
-    return unified_data
+    return dict(request.query_params)
 
 
 # Disable over-active logging for the form parser
@@ -775,7 +771,7 @@ async def index_config_folders(request: Request):
     )
 
 
-@secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_folder_save(request: Request):
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
@@ -853,7 +849,7 @@ async def index_config_switches(request: Request):
     )
 
 
-@secured_expose(route="/config/switches/save", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/switches/save", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_switches_save(request: Request):
     for kw in SWITCH_LIST:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
@@ -953,7 +949,7 @@ async def index_config_special(request: Request):
     )
 
 
-@secured_expose(route="/config/special/save", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/special/save", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_special_save(request: Request):
     for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
         if msg := config.get_config("misc", kw).set(request.query_params.get(kw)):
@@ -1020,7 +1016,7 @@ async def index_config_general(request: Request):
     )
 
 
-@secured_expose(route="/config/general/save", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/general/save", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_general_save(request: Request):
     # Handle general options
     for kw in GENERAL_LIST:
@@ -1037,7 +1033,7 @@ async def config_general_save(request: Request):
     return report(request.query_params, data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
 
 
-@secured_expose(route="/config/general/uploadConfig", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/general/uploadConfig", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_upload_backup(request: Request):
     """Restore a config backup"""
     form_data = await request.form()
@@ -1106,24 +1102,24 @@ async def index_config_server(request: Request):
     )
 
 
-@secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_add(request: Request):
     return handle_server(request, request.query_params, "/config/server", True)
 
 
-@secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_save(request: Request):
     return handle_server(request, request.query_params, "/config/server")
 
 
-@secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_del(request: Request):
     kw = {"section": "servers", "keyword": request.query_params.get("server")}
     del_from_section(kw)
     return BaseRedirectResponse("/config/server")
 
 
-@secured_expose(route="/config/server/clear_server", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/clear_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_clr(request: Request):
     server = request.query_params.get("server")
     if server:
@@ -1131,7 +1127,7 @@ async def config_server_clr(request: Request):
     return BaseRedirectResponse("/config/server")
 
 
-@secured_expose(route="/config/server/toggle_server", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/server/toggle_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_toggle(request: Request):
     server = request.query_params.get("server")
     if server:
@@ -1364,7 +1360,7 @@ async def config_rss_index(request: Request):
     )
 
 
-@secured_expose(route="/config/rss/save_rss_rate", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/save_rss_rate", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_save_rss_rate(request: Request):
     """Save changed RSS automatic readout rate"""
     cfg.rss_rate.set(request.query_params.get("rss_rate"))
@@ -1373,7 +1369,7 @@ async def config_rss_save_rss_rate(request: Request):
     return BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/upd_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/upd_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_upd_rss_feed(request: Request):
     """Update Feed level attributes,
     legacy version: ignores 'enable' parameter
@@ -1399,7 +1395,7 @@ async def config_rss_upd_rss_feed(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/save_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/save_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_save_rss_feed(request: Request):
     """Update Feed level attributes"""
     params = request.query_params
@@ -1426,7 +1422,7 @@ async def config_rss_save_rss_feed(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed_name) if feed_name else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/toggle_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/toggle_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_toggle_rss_feed(request: Request):
     """Toggle automatic read-out flag of Feed"""
     params = request.query_params
@@ -1444,7 +1440,7 @@ async def config_rss_toggle_rss_feed(request: Request):
         return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/add_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/add_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_add_rss_feed(request: Request):
     """Add one new RSS feed definition"""
     global _rss_refresh_readout, _rss_refresh_download, _rss_refresh_force
@@ -1476,7 +1472,7 @@ async def config_rss_add_rss_feed(request: Request):
         return BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/upd_rss_filter", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/upd_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_upd_rss_filter(request: Request):
     """Save updated filter definition"""
     do_upd_rss_filter(dict(request.query_params))
@@ -1484,7 +1480,7 @@ async def config_rss_upd_rss_filter(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/del_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/del_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_del_rss_feed(request: Request):
     """Remove complete RSS feed"""
     feed = request.query_params.get("feed")
@@ -1494,7 +1490,7 @@ async def config_rss_del_rss_feed(request: Request):
     return BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/del_rss_filter", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/del_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_del_rss_filter(request: Request):
     """Remove one RSS filter"""
     do_del_rss_filter(dict(request.query_params))
@@ -1502,7 +1498,7 @@ async def config_rss_del_rss_filter(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/download_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/download_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_download_rss_feed(request: Request):
     """Force download of all matching jobs in a feed"""
     global _rss_refresh_readout, _rss_refresh_download, _rss_refresh_force
@@ -1517,7 +1513,7 @@ async def config_rss_download_rss_feed(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/clean_rss_jobs", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/clean_rss_jobs", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_clean_rss_jobs(request: Request):
     """Remove processed RSS jobs from UI"""
     global _rss_evaluate
@@ -1528,7 +1524,7 @@ async def config_rss_clean_rss_jobs(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/test_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/test_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_test_rss_feed(request: Request):
     """Read the feed content again and show results"""
     global _rss_refresh_readout, _rss_refresh_download, _rss_refresh_force
@@ -1544,7 +1540,7 @@ async def config_rss_test_rss_feed(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/eval_rss_feed", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/eval_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_eval_rss_feed(request: Request):
     """Re-apply the filters to the feed"""
     global _rss_refresh_download, _rss_refresh_force, _rss_refresh_ignore
@@ -1560,7 +1556,7 @@ async def config_rss_eval_rss_feed(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True, methods=["GET"])
 async def config_rss_download(request: Request):
     """Download NZB from provider (Download button)"""
     params = request.query_params
@@ -1588,7 +1584,7 @@ async def config_rss_download(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/rss_now", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/rss/rss_now", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_rss_now(request: Request):
     """Run an automatic RSS run now"""
     sabnzbd.Scheduler.force_rss()
@@ -1735,7 +1731,7 @@ async def config_scheduling_index(request: Request):
     )
 
 
-@secured_expose(route="/config/scheduling/add_schedule", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/scheduling/add_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_scheduling_add(request: Request):
     params = request.query_params
     servers = config.get_servers()
@@ -1784,7 +1780,7 @@ async def config_scheduling_add(request: Request):
     return BaseRedirectResponse(_SCHED_ROOT)
 
 
-@secured_expose(route="/config/scheduling/del_schedule", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/scheduling/del_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_scheduling_del(request: Request):
     schedules = cfg.schedules()
     line = request.query_params.get("line")
@@ -1796,7 +1792,7 @@ async def config_scheduling_del(request: Request):
     return BaseRedirectResponse(_SCHED_ROOT)
 
 
-@secured_expose(route="/config/scheduling/toggle_schedule", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/scheduling/toggle_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_scheduling_toggle(request: Request):
     schedules = cfg.schedules()
     line = request.query_params.get("line")
@@ -1848,7 +1844,7 @@ async def index_config_categories(request: Request):
     )
 
 
-@secured_expose(route="/config/categories/delete", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/categories/delete", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_categories_delete(request: Request):
     kw = {
         "section": "categories",
@@ -1858,7 +1854,7 @@ async def config_categories_delete(request: Request):
     return BaseRedirectResponse("/config/categories")
 
 
-@secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_categories_save(request: Request):
     name = request.query_params.get("name", "*")
     newname = request.query_params.get("newname", "")
@@ -1923,14 +1919,14 @@ async def config_sorting_index(request: Request):
     )
 
 
-@secured_expose(route="/config/sorting/delete", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/sorting/delete", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_sorting_delete(request: Request):
     kw = {"section": "sorters", "keyword": request.query_params.get("name")}
     del_from_section(kw)
     return BaseRedirectResponse(_SORTING_ROOT)
 
 
-@secured_expose(route="/config/sorting/save_sorter", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/sorting/save_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_sorting_save_sorter(request: Request):
     params = request.query_params
     kwargs = dict(params)
@@ -1950,7 +1946,7 @@ async def config_sorting_save_sorter(request: Request):
     return BaseRedirectResponse(_SORTING_ROOT)
 
 
-@secured_expose(route="/config/sorting/toggle_sorter", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/sorting/toggle_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_sorting_toggle_sorter(request: Request):
     """Toggle is_active flag of a sorter"""
     try:
@@ -2284,7 +2280,7 @@ async def index_config_notify(request: Request):
     )
 
 
-@secured_expose(route="/config/notify/save", check_api_key=True, check_configlock=True)
+@secured_expose(route="/config/notify/save", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_notify_save(request: Request):
     for section in NOTIFY_OPTIONS:
         for option in NOTIFY_OPTIONS[section]:
@@ -2333,6 +2329,6 @@ routes = [
 ]
 
 
-middleware = [Middleware(GZipMiddleware)]
+middleware = [Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2)]
 
 app = Starlette(middleware=middleware, routes=routes)

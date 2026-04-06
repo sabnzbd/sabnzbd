@@ -8,21 +8,6 @@ pycparser # Version-less for Python 3.9 and below
 pycparser==3.0; python_version > '3.9'
 feedparser==6.0.12
 configobj==5.0.9
-cheroot==11.1.2
-six==1.17.0
-cherrypy==18.10.0
-jaraco.functools==4.4.0
-jaraco.collections==5.0.0
-jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
-jaraco.classes==3.4.0
-jaraco.context==4.3.0
-more-itertools # Version-less for Python 3.9 and below
-more-itertools==11.0.2; python_version > '3.9'
-zc.lockfile==4.0
-python-dateutil==2.9.0.post0
-tempora==5.8.1
-pytz==2026.1.post1
-sgmllib3k==1.0.0
 portend==3.2.1
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below

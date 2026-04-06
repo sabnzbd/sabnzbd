@@ -48,7 +48,6 @@ try:
     import Cheetah
     import feedparser
     import configobj
-    import cheroot.errors
     import portend
     import cryptography
     import charset_normalizer
@@ -80,7 +79,6 @@ from sabnzbd.constants import (
     RSS_FILE_NAME,
     DEF_LOG_FILE,
     DEF_STD_CONFIG,
-    DEF_LOG_CHERRY,
     CONFIG_BACKUP_HTTPS,
 )
 import sabnzbd.newsunpack
@@ -204,7 +202,7 @@ def print_help():
     print("  -t  --templates <templ>     Template directory [*]")
     print()
     print("  -l  --logging <-1..2>       Set logging level (-1=off, 0=least,2= most) [*]")
-    print("  -w  --weblogging            Enable cherrypy access logging")
+    print("  -w  --weblogging            Enable uvicorn access logging")
     print()
     print("  -b  --browser <0..1>        Auto browser launch (0= off, 1= on) [*]")
     if sabnzbd.WINDOWS:
@@ -644,18 +642,6 @@ def get_webhost(web_host, web_port, https_port):
     return web_host, web_port, browserhost, https_port
 
 
-def attach_server(host, port, cert=None, key=None, chain=None):
-    """Define and attach server, optionally HTTPS"""
-    if sabnzbd.cfg.ipv6_hosting() or "::1" not in host:
-        http_server = cherrypy._cpserver.Server()
-        http_server.bind_addr = (host, port)
-        if cert and key:
-            http_server.ssl_module = "builtin"
-            http_server.ssl_certificate = cert
-            http_server.ssl_private_key = key
-            http_server.ssl_certificate_chain = chain
-        http_server.subscribe()
-
 
 def is_sabnzbd_running(url):
     """Return True when there's already a SABnzbd instance running."""
@@ -829,7 +815,7 @@ def main():
     web_host = None
     web_port = None
     https_port = None
-    cherrypylogging = None
+    weblogging = None
     clean_up = False
     logging_level = None
     console_logging = False
@@ -875,7 +861,7 @@ def main():
         elif opt in ("-c", "--clean"):
             clean_up = True
         elif opt in ("-w", "--weblogging"):
-            cherrypylogging = True
+            weblogging = True
         elif opt in ("-l", "--logging"):
             try:
                 logging_level = int(arg)
@@ -1213,39 +1199,13 @@ def main():
     hosts = all_localhosts()
     multilocal = len(hosts) > 1 and web_host in ("localhost", "0.0.0.0")
 
-    # For 0.0.0.0 CherryPy will always pick IPv4, so make sure the secondary localhost is IPv6
-    if multilocal and web_host == "0.0.0.0" and hosts[1] == "127.0.0.1":
-        hosts[1] = "::1"
-
     # The Windows binary requires numeric localhost as primary address
     if web_host == "localhost":
         web_host = hosts[0]
 
-    if enable_https:
-        if https_port:
-            # Extra HTTP port for primary localhost
-            attach_server(web_host, web_port)
-            if multilocal:
-                # Extra HTTP port for secondary localhost
-                attach_server(hosts[1], web_port)
-                # Extra HTTPS port for secondary localhost
-                attach_server(hosts[1], https_port, https_cert, https_key, https_chain)
-            web_port = https_port
-        elif multilocal:
-            # Extra HTTPS port for secondary localhost
-            attach_server(hosts[1], web_port, https_cert, https_key, https_chain)
-
-        cherrypy.config.update(
-            {
-                "server.ssl_module": "builtin",
-                "server.ssl_certificate": https_cert,
-                "server.ssl_private_key": https_key,
-                "server.ssl_certificate_chain": https_chain,
-            }
-        )
-    elif multilocal:
-        # Extra HTTP port for secondary localhost
-        attach_server(hosts[1], web_port)
+    if enable_https and https_port:
+        # Separate HTTPS port: switch the main server to the HTTPS port
+        web_port = https_port
 
     if no_login:
         sabnzbd.cfg.username.set("")
@@ -1272,12 +1232,18 @@ def main():
         "loggers": {
             "uvicorn": {"propagate": True},
             "uvicorn.error": {"propagate": True},
-            "uvicorn.access": {"propagate": False},
+            "uvicorn.access": {"propagate": bool(weblogging)},
         },
     }
 
     server_config = uvicorn.Config(
-        sabnzbd.interface.app, host=web_host, port=web_port, log_config=uvicorn_logging_config
+        sabnzbd.interface.app,
+        host=web_host,
+        port=web_port,
+        log_config=uvicorn_logging_config,
+        ssl_keyfile=https_key if enable_https else None,
+        ssl_certfile=https_cert if enable_https else None,
+        ssl_ca_certs=https_chain if enable_https else None,
     )
     sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config)
     sabnzbd.WEB_SERVER.run_in_thread()

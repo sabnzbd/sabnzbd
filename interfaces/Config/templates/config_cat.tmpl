@@ -10,7 +10,7 @@
             <h5 class="darkred"><strong>$T('explain-relFolder'):</strong> <span class="path">$defdir</span></h5>
             <!--#for $cur, $slot in enumerate($slotinfo)#-->
                 <!--#set $cansort = $slot.name != '*' and $slot.name != ''#-->
-                <form action="categories/save" method="get" class="fullform <!--#if $cansort then 'sorting-row' else ''#-->">
+                <form action="categories/save" method="post" class="fullform <!--#if $cansort then 'sorting-row' else ''#-->">
                     <table class="catTable">
                         <!--#if $cur == 0#-->
                         <tr>
