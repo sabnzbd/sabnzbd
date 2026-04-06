@@ -185,7 +185,7 @@ hr {
 ul.tabs a,
 .colmask,
 #subscriptions,
-.RSS form[action="add_rss_feed"] tr:nth-child(even),
+.RSS form[action="rss/add_rss_feed"] tr:nth-child(even),
 .Config .table {
     border: 1px solid #555555;
 }

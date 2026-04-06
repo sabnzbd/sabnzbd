@@ -17,7 +17,7 @@ else:
         <div class="col2">
             <h3>$T('addSchedule') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div><!-- /col2 -->
-        <form action="addSchedule" method="post" autocomplete="off">
+        <form action="scheduling/add_schedule" method="post" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <div class="col1">
             <fieldset>
@@ -90,7 +90,7 @@ else:
                         <!--#set $odd = True#-->
                         <!--#for $schednum, $line in enumerate($schedlines)#-->
                             <!--#set $odd = not $odd#-->
-                            <form action="delSchedule" method="post">
+                            <form action="scheduling/del_schedule" method="post">
                                 <input type="hidden" name="apikey" value="$apikey"/>
                                 <input type="hidden" name="line" id="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
@@ -136,7 +136,7 @@ else:
     jQuery('[name="schedenabled"]').click(function() {
         jQuery.ajax({
             type: "POST",
-            url: "toggleSchedule",
+            url: "scheduling/toggle_schedule",
             data: {line: jQuery(this).val(), apikey: "$apikey" }
         }).done(function() {
             // Let us leave!
