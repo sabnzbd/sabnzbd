@@ -73,7 +73,6 @@ DEF_PORT = 8080
 DEF_WORKDIR = "sabnzbd"
 DEF_LOG_FILE = "sabnzbd.log"
 DEF_LOG_ERRFILE = "sabnzbd.error.log"
-DEF_LOG_CHERRY = "cherrypy.log"
 DEF_ARTICLE_CACHE_DEFAULT = "500M"
 DEF_ARTICLE_CACHE_MAX = "1G"
 DEF_DOWNLOAD_FREE = DEF_ARTICLE_CACHE_DEFAULT  # So we have at least space for the cache
