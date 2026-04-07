@@ -18,6 +18,7 @@
 """
 tests.test_api - Tests for API functions
 """
+
 import pytest
 from unittest.mock import Mock, AsyncMock, patch
 from starlette.requests import Request

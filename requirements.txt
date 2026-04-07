@@ -9,6 +9,8 @@ pycparser==3.0; python_version > '3.9'
 feedparser==6.0.12
 configobj==5.0.9
 sgmllib3k==1.0.0
+more-itertools # Version-less for Python 3.9 and below
+more-itertools==11.0.1; python_version > '3.9'
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.2.0; python_version > '3.11'

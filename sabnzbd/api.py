@@ -28,7 +28,7 @@ import socket
 import time
 import getpass
 from threading import Thread
-from typing import Optional, Any, Union, Generator
+from typing import Optional, Any, Union, Tuple, List, Dict
 
 from starlette.datastructures import QueryParams
 from starlette.responses import Response, StreamingResponse
@@ -91,7 +91,7 @@ from sabnzbd.encoding import xml_name, utob
 from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
-from sabnzbd.nzb import TryList, NzbObject
+from sabnzbd.nzb import NzbObject
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.emailer
 import sabnzbd.sorting
@@ -676,7 +676,7 @@ def _api_resume(name: str, kwargs: QueryParams) -> Response:
 
 def _api_shutdown(name: str, kwargs: QueryParams) -> Response:
     # In separate thread, because the server thread cannot shut down itself
-    threading.Thread(target=sabnzbd.shutdown_program).start()
+    Thread(target=sabnzbd.shutdown_program).start()
     return report(kwargs)
 
 
