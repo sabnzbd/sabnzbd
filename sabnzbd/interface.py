@@ -513,7 +513,7 @@ async def description_xml(request: Request):
 ##############################################################################
 
 
-@secured_expose(route="/wizard", check_configlock=True, methods=["GET"])
+@secured_expose(route="/wizard/", check_configlock=True, methods=["GET"])
 async def wizard_index(request: Request):
     """Show the language selection page"""
     if sabnzbd.WINDOWS:
@@ -528,11 +528,12 @@ async def wizard_index(request: Request):
     return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "index.html"), search_list=info)
 
 
-@secured_expose(route="/wizard/one", check_configlock=True, methods=["GET"])
+@secured_expose(route="/wizard/one", check_configlock=True, methods=["GET", "POST"])
 async def wizard_page_one(request: Request):
     """Accept language and show server page"""
-    if request.query_params.get("lang"):
-        cfg.language.set(request.query_params.get("lang"))
+    params = await get_request_params(request)
+    if params.get("lang"):
+        cfg.language.set(params.get("lang"))
 
     info = build_header(sabnzbd.WIZARD_DIR)
 
@@ -547,6 +548,7 @@ async def wizard_page_one(request: Request):
         info["connections"] = ""
         info["ssl"] = 1
         info["ssl_verify"] = 2
+        info["pipelining_requests"] = sabnzbd.constants.DEF_PIPELINING_REQUESTS
     else:
         # Sort servers to get the first enabled one
         server_names = sorted(
@@ -565,19 +567,21 @@ async def wizard_page_one(request: Request):
             info["connections"] = s.connections()
             info["ssl"] = s.ssl()
             info["ssl_verify"] = s.ssl_verify()
+            info["pipelining_requests"] = s.pipelining_requests()
             if s.enable():
                 break
     return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)
 
 
-@secured_expose(route="/wizard/two", check_configlock=True, methods=["GET"])
+@secured_expose(route="/wizard/two", check_configlock=True, methods=["GET", "POST"])
 async def wizard_page_two(request: Request):
     """Accept server and show the final page for restart"""
     # Save server details
-    if request.query_params:
-        server_info = dict(request.query_params)
+    params = await get_request_params(request)
+    if params:
+        server_info = dict(params)
         server_info["enable"] = 1
-        handle_server(server_info)
+        handle_server(request, server_info)
 
     config.save_config()
 
@@ -2320,6 +2324,7 @@ INTERFACE_ROUTES.extend(
         Route("/sabnzbd", endpoint=main_index, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory="interfaces/Glitter/templates/static"), name="static"),
         Mount("/staticcfg", app=StaticFiles(directory="interfaces/Config/templates/staticcfg"), name="staticcfg"),
+        Mount("/wizard/static", app=StaticFiles(directory="interfaces/wizard/static"), name="wizard_static"),
     ]
 )
 
