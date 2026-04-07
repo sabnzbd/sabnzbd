@@ -16,7 +16,8 @@ jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
-more-itertools==10.8.0
+more-itertools # Version-less for Python 3.9 and below
+more-itertools==11.0.1; python_version > '3.9'
 zc.lockfile==4.0
 python-dateutil==2.9.0.post0
 tempora==5.8.1
@@ -39,7 +40,7 @@ cryptography>=3.0
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
 ujson
-orjson==3.11.7; python_version > '3.9'
+orjson==3.11.8; python_version > '3.9'
 
 # Windows system integration
 pywin32==311; sys_platform == 'win32'
@@ -60,7 +61,7 @@ notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 
 # Apprise Requirements
 requests # Version-less for Python 3.9 and below
-requests==2.33.0; python_version > '3.9'
+requests==2.33.1; python_version > '3.9'
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
 markdown # Version-less for Python 3.9 and below
@@ -68,7 +69,7 @@ markdown==3.10.2; python_version > '3.9'
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
-charset_normalizer==3.4.6
+charset_normalizer==3.4.7
 idna==3.11
 urllib3==2.6.3
 certifi==2026.2.25
