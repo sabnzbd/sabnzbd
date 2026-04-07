@@ -282,18 +282,19 @@ def set_login_cookie(request: Request, response: Response, remove=False, remembe
     cookie_str = utob(str(salt) + remote_ip + COOKIE_SECRET)
     cookie_value = hashlib.sha1(cookie_str).hexdigest()
 
+    secure = cfg.enable_https()
     if remove:
         # Remove cookies
-        response.set_cookie("login_cookie", "", path="/", httponly=True, expires="Thu, 01 Jan 1970 00:00:00 GMT")
-        response.set_cookie("login_salt", "", path="/", httponly=True, expires="Thu, 01 Jan 1970 00:00:00 GMT")
+        response.set_cookie("login_cookie", "", path="/", httponly=True, secure=secure, samesite="strict", expires="Thu, 01 Jan 1970 00:00:00 GMT")
+        response.set_cookie("login_salt", "", path="/", httponly=True, secure=secure, samesite="strict", expires="Thu, 01 Jan 1970 00:00:00 GMT")
     else:
         # Set cookies
         max_age = None
         if remember_me:
             max_age = 3600 * 24 * 14  # 14 days
 
-        response.set_cookie("login_cookie", cookie_value, path="/", httponly=True, max_age=max_age)
-        response.set_cookie("login_salt", str(salt), path="/", httponly=True, max_age=max_age)
+        response.set_cookie("login_cookie", cookie_value, path="/", httponly=True, secure=secure, samesite="strict", max_age=max_age)
+        response.set_cookie("login_salt", str(salt), path="/", httponly=True, secure=secure, samesite="strict", max_age=max_age)
 
 
 def check_login(request: Request) -> bool:
@@ -383,12 +384,29 @@ def log_warning_and_ip(request: Request, txt: str):
 
 
 async def get_request_params(request: Request) -> Dict[str, Any]:
-    """Return params from the appropriate source for the HTTP method — no mixing.
-    POST: reads form body only (application/x-www-form-urlencoded or multipart/form-data).
-    GET (and anything else): reads URL query string only."""
+    """Return params from the appropriate source for the HTTP method.
+
+    application/x-www-form-urlencoded (config form saves):
+        Form body only — no mixing with URL query string.
+
+    multipart/form-data (API file uploads via POST /api):
+        Form body merged with URL query params, URL params taking precedence.
+        The SABnzbd API contract puts auth (apikey) and routing (mode, name,
+        output) in the URL query string and the payload (nzbfile) in the body.
+        These two sets are non-overlapping, so merging is safe here.
+
+    Everything else (GET, non-form POST):
+        URL query string only.
+    """
     if request.method == "POST":
         content_type = request.headers.get("content-type", "")
-        if content_type.startswith(("application/x-www-form-urlencoded", "multipart/form-data")):
+        if content_type.startswith("application/x-www-form-urlencoded"):
+            try:
+                form_data = await request.form()
+                return {key: str(value) for key, value in form_data.items()}
+            except Exception:
+                pass
+        elif content_type.startswith("multipart/form-data"):
             try:
                 form_data = await request.form()
                 params: Dict[str, Any] = {}
@@ -397,6 +415,8 @@ async def get_request_params(request: Request) -> Dict[str, Any]:
                         params[key] = value  # Keep file uploads as-is
                     else:
                         params[key] = str(value)
+                # URL query params take precedence: auth/routing keys live there
+                params.update(dict(request.query_params))
                 return params
             except Exception:
                 pass
@@ -449,7 +469,7 @@ async def main_index(request: Request):
             and cfg.password()
             and (
                 cfg.html_login()
-                and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(access_type=6)))
+                and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6)))
             )
         )
 
