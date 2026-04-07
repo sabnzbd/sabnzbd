@@ -39,16 +39,14 @@ import time
 import re
 import gc
 import threading
-import http.cookies
 import uvicorn
-from typing import List, Dict, Any
+from typing import Any
 
 try:
     import sabctools
     import Cheetah
     import feedparser
     import configobj
-    import portend
     import cryptography
     import charset_normalizer
     import guessit
@@ -85,6 +83,8 @@ import sabnzbd.newsunpack
 from sabnzbd.misc import (
     exit_sab,
     split_host,
+    port_is_free,
+    find_free_port,
     create_https_certificates,
     ip_extract,
     set_serv_parms,
@@ -656,18 +656,6 @@ def is_sabnzbd_running(url):
         return False
 
 
-def find_free_port(host, currentport):
-    """Return a free port, 0 when nothing is free"""
-    n = 0
-    while n < 10 and currentport <= 49151:
-        try:
-            portend.free(host, currentport, timeout=0.025)
-            return currentport
-        except Exception:
-            currentport += 5
-            n += 1
-    return 0
-
 
 def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
     """Check for a running instance of sabnzbd on this port
@@ -980,18 +968,10 @@ def main():
     # When this is a daemon, just check and bail out if port in use
     if sabnzbd.DAEMON:
         if enable_https and https_port:
-            try:
-                portend.free(web_host, https_port, timeout=0.05)
-            except IOError:
+            if not port_is_free(web_host, https_port):
                 abort_and_show_error(browserhost, web_port)
-            except Exception:
-                abort_and_show_error(browserhost, web_port, "49")
-        try:
-            portend.free(web_host, web_port, timeout=0.05)
-        except IOError:
+        if not port_is_free(web_host, web_port):
             abort_and_show_error(browserhost, web_port)
-        except Exception:
-            abort_and_show_error(browserhost, web_port, "49")
 
     # Windows instance is reachable through registry
     url = None
@@ -1003,55 +983,39 @@ def main():
     # SSL
     if enable_https:
         port = https_port or web_port
-        try:
-            portend.free(browserhost, port, timeout=0.05)
-        except IOError as error:
-            if str(error) == "Port not bound.":
-                pass
-            else:
-                if not url:
-                    url = "https://%s:%s%s/api?" % (browserhost, port, sabnzbd.cfg.url_base())
-                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                    # Bail out if we have fixed our ports after first start-up
-                    if sabnzbd.cfg.fixed_ports():
-                        abort_and_show_error(browserhost, web_port)
-                    # Find free port to bind
-                    newport = find_free_port(browserhost, port)
-                    if newport > 0:
-                        # Save the new port
-                        if https_port:
-                            https_port = newport
-                            sabnzbd.cfg.https_port.set(newport)
-                        else:
-                            # In case HTTPS == HTTP port
-                            web_port = newport
-                            sabnzbd.cfg.web_port.set(newport)
-        except Exception:
-            # Something else wrong, probably badly specified host
-            abort_and_show_error(browserhost, web_port, "49")
+        if not port_is_free(browserhost, port):
+            if not url:
+                url = "https://%s:%s%s/api?" % (browserhost, port, sabnzbd.cfg.url_base())
+            if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                # Bail out if we have fixed our ports after first start-up
+                if sabnzbd.cfg.fixed_ports():
+                    abort_and_show_error(browserhost, web_port)
+                # Find free port to bind
+                newport = find_free_port(browserhost, port)
+                if newport > 0:
+                    # Save the new port
+                    if https_port:
+                        https_port = newport
+                        sabnzbd.cfg.https_port.set(newport)
+                    else:
+                        # In case HTTPS == HTTP port
+                        web_port = newport
+                        sabnzbd.cfg.web_port.set(newport)
 
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
-        try:
-            portend.free(browserhost, web_port, timeout=0.05)
-        except IOError as error:
-            if str(error) == "Port not bound.":
-                pass
-            else:
-                if not url:
-                    url = "http://%s:%s%s/api?" % (browserhost, web_port, sabnzbd.cfg.url_base())
-                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                    # Bail out if we have fixed our ports after first start-up
-                    if sabnzbd.cfg.fixed_ports():
-                        abort_and_show_error(browserhost, web_port)
-                    # Find free port to bind
-                    port = find_free_port(browserhost, web_port)
-                    if port > 0:
-                        sabnzbd.cfg.web_port.set(port)
-                        web_port = port
-        except Exception:
-            # Something else wrong, probably badly specified host
-            abort_and_show_error(browserhost, web_port, "49")
+        if not port_is_free(browserhost, web_port):
+            if not url:
+                url = "http://%s:%s%s/api?" % (browserhost, web_port, sabnzbd.cfg.url_base())
+            if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                # Bail out if we have fixed our ports after first start-up
+                if sabnzbd.cfg.fixed_ports():
+                    abort_and_show_error(browserhost, web_port)
+                # Find free port to bind
+                port = find_free_port(browserhost, web_port)
+                if port > 0:
+                    sabnzbd.cfg.web_port.set(port)
+                    web_port = port
 
     # We found a port, now we never check again
     sabnzbd.cfg.fixed_ports.set(True)

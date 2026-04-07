@@ -713,6 +713,34 @@ def split_host(srv: Optional[str]) -> tuple[Optional[str], Optional[int]]:
     return out[0], port
 
 
+def port_is_free(host: str, port: int, timeout: float = 0.1) -> bool:
+    """Return True if nothing is listening on host:port.
+
+    Probes by attempting a TCP connection.  A refused or timed-out connection
+    means the port is free; a successful connection means it is occupied.
+    Bind-all addresses (0.0.0.0 / ::) are remapped to localhost so the probe
+    has a concrete target.
+    """
+    if host in ("0.0.0.0", "::", ""):
+        host = "127.0.0.1"
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return False  # connection succeeded → port is occupied
+    except OSError:
+        return True  # connection refused / timed-out → port is free
+
+
+def find_free_port(host: str, currentport: int) -> int:
+    """Return the first free port at or above currentport, 0 if none found."""
+    n = 0
+    while n < 10 and currentport <= 49151:
+        if port_is_free(host, currentport, timeout=0.025):
+            return currentport
+        currentport += 5
+        n += 1
+    return 0
+
+
 def get_cache_limit() -> str:
     """Depending on OS, calculate cache limits.
     In ArticleCache it will make sure we stay

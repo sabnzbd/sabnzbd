@@ -8,7 +8,7 @@ pycparser # Version-less for Python 3.9 and below
 pycparser==3.0; python_version > '3.9'
 feedparser==6.0.12
 configobj==5.0.9
-portend==3.2.1
+sgmllib3k==1.0.0
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.2.0; python_version > '3.11'
