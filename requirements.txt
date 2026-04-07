@@ -16,7 +16,8 @@ jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
-more-itertools==11.0.1
+more-itertools # Version-less for Python 3.9 and below
+more-itertools==11.0.1; python_version > '3.9'
 zc.lockfile==4.0
 python-dateutil==2.9.0.post0
 tempora==5.8.1
