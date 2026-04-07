@@ -1193,7 +1193,14 @@ def report(
 
         response = utob(json.dumps(info))
 
-    return Response(response, media_type=content)
+    return Response(
+        response,
+        media_type=content,
+        headers={
+            "Pragma": "no-cache",
+            "Access-Control-Allow-Origin": "*",
+        },
+    )
 
 
 class XmlOutputFactory:
