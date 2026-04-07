@@ -642,7 +642,6 @@ def get_webhost(web_host, web_port, https_port):
     return web_host, web_port, browserhost, https_port
 
 
-
 def is_sabnzbd_running(url):
     """Return True when there's already a SABnzbd instance running."""
     try:
@@ -654,7 +653,6 @@ def is_sabnzbd_running(url):
         return ver and (re.search(r"\d+\.\d+\.", ver) or ver.strip() == sabnzbd.__version__)
     except Exception:
         return False
-
 
 
 def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
