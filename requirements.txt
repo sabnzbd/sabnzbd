@@ -4,13 +4,11 @@ apprise==1.9.9
 sabctools==9.4.0
 CT3==3.4.0.post5
 cffi==2.0.0
-pycparser # Version-less for Python 3.9 and below
-pycparser==3.0; python_version > '3.9'
+pycparser==3.0
 feedparser==6.0.12
 configobj==5.0.9
 sgmllib3k==1.0.0
-more-itertools # Version-less for Python 3.9 and below
-more-itertools==11.0.1; python_version > '3.9'
+more-itertools==11.0.1
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.2.0; python_version > '3.11'
@@ -37,7 +35,7 @@ cryptography>=3.0
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
 ujson
-orjson==3.11.8; python_version > '3.9'
+orjson==3.11.8
 
 # Windows system integration
 pywin32==311; sys_platform == 'win32'
@@ -57,12 +55,10 @@ pyobjc-framework-Cocoa==12.1; sys_platform == 'darwin'
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 
 # Apprise Requirements
-requests # Version-less for Python 3.9 and below
-requests==2.33.1; python_version > '3.9'
+requests==2.33.1
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
-markdown # Version-less for Python 3.9 and below
-markdown==3.10.2; python_version > '3.9'
+markdown==3.10.2
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements

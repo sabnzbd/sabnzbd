@@ -285,16 +285,48 @@ def set_login_cookie(request: Request, response: Response, remove=False, remembe
     secure = cfg.enable_https()
     if remove:
         # Remove cookies
-        response.set_cookie("login_cookie", "", path="/", httponly=True, secure=secure, samesite="strict", expires="Thu, 01 Jan 1970 00:00:00 GMT")
-        response.set_cookie("login_salt", "", path="/", httponly=True, secure=secure, samesite="strict", expires="Thu, 01 Jan 1970 00:00:00 GMT")
+        response.set_cookie(
+            "login_cookie",
+            "",
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            expires="Thu, 01 Jan 1970 00:00:00 GMT",
+        )
+        response.set_cookie(
+            "login_salt",
+            "",
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            expires="Thu, 01 Jan 1970 00:00:00 GMT",
+        )
     else:
         # Set cookies
         max_age = None
         if remember_me:
             max_age = 3600 * 24 * 14  # 14 days
 
-        response.set_cookie("login_cookie", cookie_value, path="/", httponly=True, secure=secure, samesite="strict", max_age=max_age)
-        response.set_cookie("login_salt", str(salt), path="/", httponly=True, secure=secure, samesite="strict", max_age=max_age)
+        response.set_cookie(
+            "login_cookie",
+            cookie_value,
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            max_age=max_age,
+        )
+        response.set_cookie(
+            "login_salt",
+            str(salt),
+            path="/",
+            httponly=True,
+            secure=secure,
+            samesite="strict",
+            max_age=max_age,
+        )
 
 
 def check_login(request: Request) -> bool:
