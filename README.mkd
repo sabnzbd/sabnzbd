@@ -1,7 +1,7 @@
-Release Notes - SABnzbd 5.0.0 Release Candidate 1
+Release Notes - SABnzbd 5.0.0 Release Candidate 2
 =========================================================
 
-This is the first release candidate of version 5.0.
+This is the second release candidate of version 5.0.
 Please note the breaking changes described below!
 
 ## New features in 5.0.0
@@ -25,6 +25,7 @@ Please note the breaking changes described below!
 * No longer show tracebacks in the browser, only in the logs.
 * Dropped support for Python 3.8.
 * Windows: Added Windows ARM (portable) release.
+* Windows and macOS: Added HTML version of the Release Notes.
 * Windows and macOS: Update Python to 3.14.3, Unrar to 7.20,
   par2cmdline-turbo to 1.4 and 7zip to 26.00.
 
@@ -37,6 +38,7 @@ Please note the breaking changes described below!
 * Correct mobile layout if `Full Width` is enabled.
 * Handle passwords that exceed Unrar's password limit.
 * Aborted Direct Unpack could result in no files being unpacked.
+* Encrypted RAR detection could sometimes fail.
 * Unwanted Extension check was unreliable on passworded downloads.
 * No longer exclusively lock all directory operations.
 * Improved handling of non-NFC unicode filenames.
