@@ -35,8 +35,6 @@ from starlette.responses import Response, StreamingResponse
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.
-
-
 try:
     import orjson as json
 except ImportError:
@@ -44,7 +42,6 @@ except ImportError:
         import ujson as json
     except ImportError:
         import json
-
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -91,7 +88,7 @@ from sabnzbd.encoding import xml_name, utob
 from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
-from sabnzbd.nzb import NzbObject
+from sabnzbd.nzb import NzbObject, TryList
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.emailer
 import sabnzbd.sorting
@@ -1042,7 +1039,7 @@ def _api_gc_stats(name: str, kwargs: QueryParams) -> Response:
     # Collect before we check
     gc.collect()
     # We cannot create any lists/dicts, as they would create a reference
-    return report(kwargs, data=[str(obj) for obj in gc.get_objects() if isinstance(obj, sabnzbd.nzbstuff.TryList)])
+    return report(kwargs, data=[str(obj) for obj in gc.get_objects() if isinstance(obj, TryList)])
 
 
 ##############################################################################

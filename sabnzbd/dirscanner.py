@@ -119,8 +119,8 @@ class DirScanner(threading.Thread):
     def start_scanner(self):
         """Start the scanner if it is not already running"""
         with DIR_SCANNER_LOCK:
-            if not self.loop:
-                logging.debug("Can not start scanner because loop not found")
+            if not self.loop or self.loop.is_closed():
+                logging.debug("Can not start scanner because loop not found or closed")
                 return
 
             if not self.scanner_task or self.scanner_task.done():
