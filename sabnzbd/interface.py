@@ -36,7 +36,7 @@ from xml.sax.saxutils import escape
 
 import uvicorn
 from starlette.applications import Starlette
-from starlette.datastructures import MultiDict
+from starlette.datastructures import MultiDict, QueryParams
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response
 from starlette.middleware import Middleware
@@ -44,7 +44,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 from Cheetah.Template import Template
-from typing import Optional, Callable, Union, Any, Dict, List, Collection
+from typing import Optional, Callable, Union, Any, List, Collection
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -416,14 +416,11 @@ def log_warning_and_ip(request: Request, txt: str):
         logging.warning("%s %s", txt, remote_info)
 
 
-async def get_request_params(request: Request) -> MultiDict:
+async def get_request_params(request: Request) -> MultiDict | QueryParams:
     """Return request parameters as a mutable MultiDict.
 
-    For POST requests the form body is read (both urlencoded and multipart),
-    then merged with URL query params — URL params take precedence so that
-    auth/routing keys (apikey, mode, output) sent in the query string always
-    win over same-named body fields. File uploads in multipart bodies are
-    kept as UploadFile objects rather than being stringified.
+    For POST requests the form body is read (both urlencoded and multipart).
+    File uploads in multipart bodies are kept as UploadFile objects.
 
     For GET (and any non-form POST) only the URL query string is used.
 
@@ -431,25 +428,12 @@ async def get_request_params(request: Request) -> MultiDict:
     request.query_params returns it in every handler without an extra await.
     """
     if request.method == "POST":
-        content_type = request.headers.get("content-type", "")
-        if content_type.startswith(("application/x-www-form-urlencoded", "multipart/form-data")):
-            try:
-                form_data = await request.form()
-                items = []
-                for key, value in form_data.multi_items():
-                    # Keep file uploads as UploadFile; stringify everything else
-                    if hasattr(value, "file") and hasattr(value, "filename"):
-                        items.append((key, value))
-                    else:
-                        items.append((key, str(value)))
-                result = MultiDict(items)
-                # URL query params take precedence: auth/routing keys live there
-                for key, value in request.query_params.multi_items():
-                    result[key] = value
-                return result
-            except Exception:
-                pass
-    return MultiDict(request.query_params.multi_items())
+        if request.headers.get("content-type", "").startswith(
+            ("application/x-www-form-urlencoded", "multipart/form-data")
+        ):
+            return MultiDict(await request.form())
+
+    return request.query_params
 
 
 # Disable over-active logging for the form parser
@@ -582,9 +566,8 @@ async def wizard_index(request: Request):
 @secured_expose(route="/wizard/one", check_configlock=True, methods=["GET", "POST"])
 async def wizard_page_one(request: Request):
     """Accept language and show server page"""
-    params = await get_request_params(request)
-    if params.get("lang"):
-        cfg.language.set(params.get("lang"))
+    if request.query_params.get("lang"):
+        cfg.language.set(request.query_params.get("lang"))
 
     info = build_header(sabnzbd.WIZARD_DIR)
 
@@ -628,13 +611,7 @@ async def wizard_page_one(request: Request):
 async def wizard_page_two(request: Request):
     """Accept server and show the final page for restart"""
     # Save server details
-    params = await get_request_params(request)
-    if params:
-        server_info = dict(params)
-        server_info["enable"] = 1
-        handle_server(request, server_info)
-
-    config.save_config()
+    handle_server(request.query_params)
 
     # Show Restart screen
     info = build_header(sabnzbd.WIZARD_DIR)
@@ -1159,12 +1136,12 @@ async def index_config_server(request: Request):
 
 @secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_add(request: Request):
-    return handle_server(request, request.query_params, "/config/server", True)
+    return handle_server(request.query_params, "/config/server", True)
 
 
 @secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_save(request: Request):
-    return handle_server(request, request.query_params, "/config/server")
+    return handle_server(request.query_params, "/config/server")
 
 
 @secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1209,7 +1186,7 @@ def unique_svr_name(server):
     return new_name
 
 
-def handle_server(request: Request, params, root=None, new_svr=False):
+def handle_server(params, root=None, new_svr=False):
     """Internal server handler"""
     ajax = params.get("ajax")
     host = params.get("host", "").strip()
@@ -1261,7 +1238,7 @@ def handle_server(request: Request, params, root=None, new_svr=False):
     sabnzbd.Downloader.update_server(old_server, server)
     if root:
         if ajax:
-            return report(request.query_params)
+            return report(params)
         else:
             return BaseRedirectResponse(root)
 
