@@ -197,10 +197,11 @@ def main():
     print("Main program MO files")
     process_po_folder(DOMAIN, PO_DIR)
 
-    print("NSIS MO files")
-    process_po_folder(DOMAIN_NSIS, PO_NSIS_DIR)
-    print("Patch NSIS script")
-    patch_nsis()
+    if os.path.exists(NSIS):
+        print("NSIS MO files")
+        process_po_folder(DOMAIN_NSIS, PO_NSIS_DIR)
+        print("Patch NSIS script")
+        patch_nsis()
 
     print("Remove temporary MO files")
     remove_mo_files()
