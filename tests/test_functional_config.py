@@ -102,8 +102,8 @@ class TestConfigLogin(SABnzbdBaseTest):
                 pass
 
         # Open any page and check if we get redirected
-        self.open_page("http://%s:%s/general" % (SAB_HOST, SAB_PORT))
-        assert "/login/" in self.driver.current_url
+        self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
+        assert "/login" in self.driver.current_url
 
         # Fill nonsense and submit
         username_login = self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "input[name='username']")
@@ -131,7 +131,7 @@ class TestConfigLogin(SABnzbdBaseTest):
 
         # Can we now go to the page and empty the settings again?
         self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
-        assert "/login/" not in self.driver.current_url
+        assert "/login" not in self.driver.current_url
 
         # Set the username and password
         username_imp = self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "input[data-hide='username']")
@@ -151,9 +151,9 @@ class TestConfigLogin(SABnzbdBaseTest):
             except NoAlertPresentException:
                 pass
 
-        # Open any page and check if we get redirected
-        self.open_page("http://%s:%s/general" % (SAB_HOST, SAB_PORT))
-        assert "/login/" not in self.driver.current_url
+        # Open any page and check we are NOT redirected to login (no credentials set)
+        self.open_page("http://%s:%s/config/general" % (SAB_HOST, SAB_PORT))
+        assert "/login" not in self.driver.current_url
 
 
 class TestConfigCategories(SABnzbdBaseTest):
@@ -193,17 +193,17 @@ class TestConfigRSS(SABnzbdBaseTest):
 
         # Uncheck enabled-checkbox for new feeds
         self.selenium_wrapper(
-            self.driver.find_element, By.XPATH, '//form[@action="add_rss_feed"]//input[@name="enable"]'
+            self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//input[@name="enable"]'
         ).click()
         input_name = self.selenium_wrapper(
-            self.driver.find_element, By.XPATH, '//form[@action="add_rss_feed"]//input[@name="feed"]'
+            self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//input[@name="feed"]'
         )
         input_name.clear()
         input_name.send_keys(self.rss_name)
         self.selenium_wrapper(
-            self.driver.find_element, By.XPATH, '//form[@action="add_rss_feed"]//input[@name="uri"]'
+            self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//input[@name="uri"]'
         ).send_keys(rss_url)
-        self.selenium_wrapper(self.driver.find_element, By.XPATH, '//form[@action="add_rss_feed"]//button').click()
+        self.selenium_wrapper(self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//button').click()
 
         # Check if we have results
         tab_results = int(

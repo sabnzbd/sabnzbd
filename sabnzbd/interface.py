@@ -156,7 +156,7 @@ def secured_expose(
 
         # Verify login status, only for non-key pages
         if check_for_login and not check_api_key and not check_login(request):
-            return RedirectResponse(url=f"{cfg.url_base()}/login/")
+            return RedirectResponse(url=f"{cfg.url_base()}/login")
 
         # Verify host used for the visit
         if not check_hostname(request):
