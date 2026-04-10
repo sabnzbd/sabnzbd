@@ -610,8 +610,9 @@ async def wizard_page_one(request: Request):
 @secured_expose(route="/wizard/two", check_configlock=True, methods=["GET", "POST"])
 async def wizard_page_two(request: Request):
     """Accept server and show the final page for restart"""
-    # Save server details
-    handle_server(request.query_params)
+    # Save server details if submitted — no host means the user skipped server setup
+    if request.query_params.get("host"):
+        handle_server(request.query_params)
 
     # Show Restart screen
     info = build_header(sabnzbd.WIZARD_DIR)
@@ -1136,12 +1137,12 @@ async def index_config_server(request: Request):
 
 @secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_add(request: Request):
-    return handle_server(request.query_params, "/config/server", True)
+    return handle_server(request.query_params, new_svr=True)
 
 
 @secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_server_save(request: Request):
-    return handle_server(request.query_params, "/config/server")
+    return handle_server(request.query_params)
 
 
 @secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1186,12 +1187,11 @@ def unique_svr_name(server):
     return new_name
 
 
-def handle_server(params, root=None, new_svr=False):
-    """Internal server handler"""
-    ajax = params.get("ajax")
+def handle_server(params, new_svr=False):
+    """Internal server handler, always returns a JSON response"""
     host = params.get("host", "").strip()
     if not host:
-        return badParameterResponse(T("Server address required"), ajax)
+        return report(params, error=T("Server address required"))
 
     port = params.get("port", "").strip()
     if not port:
@@ -1208,7 +1208,7 @@ def handle_server(params, root=None, new_svr=False):
         if not get_fastest_addrinfo(
             host, int_conv(port), int_conv(params.get("timeout"), default=DEF_NETWORKING_TEST_TIMEOUT)
         ):
-            return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
+            return report(params, error=T('Server address "%s:%s" is not valid.') % (host, port))
 
     # Default server name is just the host name
     server = host
@@ -1236,11 +1236,7 @@ def handle_server(params, root=None, new_svr=False):
 
     config.save_config()
     sabnzbd.Downloader.update_server(old_server, server)
-    if root:
-        if ajax:
-            return report(params)
-        else:
-            return BaseRedirectResponse(root)
+    return report(params)
 
 
 ##############################################################################

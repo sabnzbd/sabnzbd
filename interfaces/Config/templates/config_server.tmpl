@@ -40,9 +40,10 @@
             <h3>$T('addServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div>
         <div class="col1">
-            <form action="server/add_server" method="post" autocomplete="off" onsubmit="removeObfuscation();">
+            <form action="server/add_server" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="output" value="json" />
+                <input type="hidden" name="ajax" value="1" />
                 <fieldset>
                     <div class="field-pair">
                         <label class="config" for="enable">$T('srv-enable')</label>
@@ -594,6 +595,31 @@
                 }
             });
         });
+
+        jQuery('.addNewServer').click(function(event){
+            event.preventDefault()
+            removeObfuscation()
+            var theButton = jQuery(this)
+            var resultBox = theButton.parents('.col1').find('.result-box .alert')
+            theButton.attr("disabled", "disabled")
+            jQuery.ajax({
+                type: "POST",
+                url: "server/add_server",
+                data: theButton.parents('form:first').serialize()
+            }).then(function(data) {
+                if(data.status) {
+                    // Success — reload to show the new server
+                    formWasSubmitted = true
+                    formHasChanged = false
+                    location.reload()
+                } else {
+                    // Show error in the result box
+                    resultBox.removeClass('alert-success').addClass('alert-danger').show()
+                    resultBox.html('<span class="glyphicon glyphicon-exclamation-sign"></span> ' + data.error)
+                    theButton.removeAttr("disabled")
+                }
+            })
+        })
 
         jQuery('.delServer').click(function(){
             if( confirm("$T('confirm')") ) {
