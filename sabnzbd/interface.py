@@ -36,6 +36,7 @@ from xml.sax.saxutils import escape
 
 import uvicorn
 from starlette.applications import Starlette
+from starlette.datastructures import MultiDict
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response
 from starlette.middleware import Middleware
@@ -415,44 +416,40 @@ def log_warning_and_ip(request: Request, txt: str):
         logging.warning("%s %s", txt, remote_info)
 
 
-async def get_request_params(request: Request) -> Dict[str, Any]:
-    """Return params from the appropriate source for the HTTP method.
+async def get_request_params(request: Request) -> MultiDict:
+    """Return request parameters as a mutable MultiDict.
 
-    application/x-www-form-urlencoded (config form saves):
-        Form body only — no mixing with URL query string.
+    For POST requests the form body is read (both urlencoded and multipart),
+    then merged with URL query params — URL params take precedence so that
+    auth/routing keys (apikey, mode, output) sent in the query string always
+    win over same-named body fields. File uploads in multipart bodies are
+    kept as UploadFile objects rather than being stringified.
 
-    multipart/form-data (API file uploads via POST /api):
-        Form body merged with URL query params, URL params taking precedence.
-        The SABnzbd API contract puts auth (apikey) and routing (mode, name,
-        output) in the URL query string and the payload (nzbfile) in the body.
-        These two sets are non-overlapping, so merging is safe here.
+    For GET (and any non-form POST) only the URL query string is used.
 
-    Everything else (GET, non-form POST):
-        URL query string only.
+    secured_expose stores the result on request._query_params so that
+    request.query_params returns it in every handler without an extra await.
     """
     if request.method == "POST":
         content_type = request.headers.get("content-type", "")
-        if content_type.startswith("application/x-www-form-urlencoded"):
+        if content_type.startswith(("application/x-www-form-urlencoded", "multipart/form-data")):
             try:
                 form_data = await request.form()
-                return {key: str(value) for key, value in form_data.items()}
-            except Exception:
-                pass
-        elif content_type.startswith("multipart/form-data"):
-            try:
-                form_data = await request.form()
-                params: Dict[str, Any] = {}
-                for key, value in form_data.items():
+                items = []
+                for key, value in form_data.multi_items():
+                    # Keep file uploads as UploadFile; stringify everything else
                     if hasattr(value, "file") and hasattr(value, "filename"):
-                        params[key] = value  # Keep file uploads as-is
+                        items.append((key, value))
                     else:
-                        params[key] = str(value)
+                        items.append((key, str(value)))
+                result = MultiDict(items)
                 # URL query params take precedence: auth/routing keys live there
-                params.update(dict(request.query_params))
-                return params
+                for key, value in request.query_params.multi_items():
+                    result[key] = value
+                return result
             except Exception:
                 pass
-    return dict(request.query_params)
+    return MultiDict(request.query_params.multi_items())
 
 
 # Disable over-active logging for the form parser
@@ -529,7 +526,9 @@ async def shutdown(request: Request):
 @secured_expose(route="/api", check_api_key=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
-    return api_handler(request.query_params)
+    # Pass a fresh mutable copy so api_handler can assign kwargs["keyword"] etc.
+    # without mutating the request-cached _query_params.
+    return api_handler(MultiDict(request.query_params.multi_items()))
 
 
 @secured_expose(route="/scriptlog", methods=["GET"])
@@ -1089,21 +1088,21 @@ async def config_general_save(request: Request):
     return report(request.query_params, data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
 
 
-@secured_expose(route="/config/general/uploadConfig", check_api_key=True, check_configlock=True, methods=["POST"])
+@secured_expose(route="/config/general/upload_config", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_upload_backup(request: Request):
     """Restore a config backup"""
-    form_data = await request.form()
-    config_backup_file = form_data.get("config_backup_file")
+    # secured_expose already parsed the multipart body into request.query_params
+    config_backup_file = request.query_params.get("config_backup_file")
 
     # Only accept the backup file if it can be opened as a zip archive and only contains a config file
     try:
         config_backup_data = await config_backup_file.read()
         if config.validate_config_backup(config_backup_data):
             sabnzbd.RESTORE_DATA = config_backup_data
-            return report(data={"success": True, "restart_req": True})
+            return report(request.query_params, data={"success": True, "restart_req": True})
     except Exception:
         pass
-    return report(error=T("Invalid backup archive"))
+    return report(request.query_params, error=T("Invalid backup archive"))
 
 
 def change_web_dir(web_dir):
