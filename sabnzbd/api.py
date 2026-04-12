@@ -1800,19 +1800,17 @@ _SKIN_CACHE = {}  # Stores pre-translated acronyms
 
 
 def Ttemplate(txt: str) -> str:
-    """Translation function for Skin texts
-    This special is to be used in interface.py for template processing
-    to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
-    """
+    """Translation function for skin template texts, passed as $T in Cheetah templates."""
     global _SKIN_CACHE
     if txt in _SKIN_CACHE:
         return _SKIN_CACHE[txt]
-    else:
-        # We need to remove the " and ' to be JS/JSON-string-safe
-        # Saving it in dictionary is 20x faster on next look-up
-        tra = T(SKIN_TEXT.get(txt, txt)).replace('"', "&quot;").replace("'", "&apos;")
-        _SKIN_CACHE[txt] = tra
-        return tra
+
+    # Translate text, strip newlines to prevent breaking HTML/JS rendering, and escape quotes for safety
+    # Cache provides 20x speedup on repeated accesses
+    translated = T(SKIN_TEXT.get(txt, txt))
+    result = translated.replace("\n", "").replace("\r", "").replace('"', "&quot;").replace("'", "&apos;")
+    _SKIN_CACHE[txt] = result
+    return result
 
 
 def clear_trans_cache():
