@@ -401,7 +401,7 @@
                 <!--#for $job in $matched#-->
                     <tr class="infoTableSeperator">
                         <td>
-                            <form action="rss/download" method="get">
+                            <form action="rss/download" method="post">
                                 <input type="hidden" value="$active_feed" name="feed" />
                                 <input type="hidden" name="apikey" value="$apikey" />
                                 <input type="hidden" name="url" value="$job['url']" />
@@ -445,7 +445,7 @@
                 <!--#for $job in $unmatched#-->
                     <tr class="infoTableSeperator">
                         <td>
-                            <form action="rss/download" method="get">
+                            <form action="rss/download" method="post">
                                 <input type="hidden" value="$active_feed" name="feed" />
                                 <input type="hidden" name="apikey" value="$apikey" />
                                 <input type="hidden" name="url" value="$job['url']" />
