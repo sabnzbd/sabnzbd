@@ -17,7 +17,7 @@ jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
 more-itertools # Version-less for Python 3.9 and below
-more-itertools==11.0.1; python_version > '3.9'
+more-itertools==11.0.2; python_version > '3.9'
 zc.lockfile==4.0
 python-dateutil==2.9.0.post0
 tempora==5.8.1
@@ -26,7 +26,7 @@ sgmllib3k==1.0.0
 portend==3.2.1
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
-puremagic==2.1.1; python_version > '3.11'
+puremagic==2.2.0; python_version > '3.11'
 rarfile==4.2
 guessit==3.8.0
 babelfish==0.6.1
