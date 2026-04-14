@@ -238,6 +238,8 @@ jobs:
     name: Prepare Release
     runs-on: ubuntu-latest
     needs: [build_windows, build_macos]
+    if: contains(github.ref, 'refs/tags/')
+    environment: release
     steps:
       - uses: actions/checkout@v6
       - name: Set up Python

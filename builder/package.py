@@ -29,6 +29,7 @@ import urllib.error
 import configobj
 import markdown
 import packaging.version
+import xml.etree.ElementTree as ET
 
 from constants import (
     RELEASE_VERSION,
@@ -44,6 +45,8 @@ from constants import (
     RELEASE_SRC,
     EXTRA_FILES,
     EXTRA_FOLDERS,
+    APPDATA_FILE,
+    RELEASE_VERSION_BASE,
 )
 
 
@@ -108,6 +111,21 @@ def patch_version_file(release_name):
 
     with open(VERSION_FILE, "w") as ver:
         ver.write(version_file)
+
+
+def verify_appdata():
+    """Verify that appdata file is updated"""
+    if not isinstance(
+        ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION_BASE}']"),
+        ET.Element,
+    ):
+        release_missing = f"Could not find {RELEASE_VERSION_BASE} in {APPDATA_FILE}"
+        if RELEASE_THIS:
+            raise RuntimeError(release_missing)
+        elif ON_GITHUB_ACTIONS:
+            print(f"::warning file={APPDATA_FILE},title=Missing release::{release_missing}")
+        else:
+            print(release_missing)
 
 
 def build_readme_html(output_path: str):
@@ -254,6 +272,9 @@ if __name__ == "__main__":
         import certifi
     except ImportError:
         raise FileNotFoundError("Need certifi module")
+
+    # Check if we have correct appdata file
+    verify_appdata()
 
     # Patch release file
     patch_version_file(RELEASE_VERSION)
