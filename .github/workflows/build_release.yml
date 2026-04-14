@@ -172,68 +172,6 @@ jobs:
         path: "*-macos.dmg"
         name: macOS binary
 
-  build-snap:
-    name: Build Snap Packages (${{ matrix.linux_arch }})
-    timeout-minutes: 30
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            linux_arch: x64
-          - os: ubuntu-24.04-arm
-            linux_arch: arm64
-
-    steps:
-      - uses: actions/checkout@v6
-      - name: Cache par2cmdline-turbo tarball
-        uses: actions/cache@v5
-        id: cache-par2cmdline
-        # Clearing the cache in case of new version requires manual clearing in GitHub!
-        with:
-          path: snap/par2cmdline.tar.gz
-          key: cache-par2cmdline
-      - name: Download par2cmdline-turbo tarball
-        if: steps.cache-par2cmdline.outputs.cache-hit != 'true'
-        run: |
-          PAR2_TARBALL=$(curl -sL https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | jq -r '.tarball_url')
-          curl -o snap/par2cmdline.tar.gz -L "$PAR2_TARBALL"
-      - uses: snapcore/action-build@v1
-        name: Build snap
-        id: snapcraft
-      - name: Test snap installation
-        run: |
-          sudo snap install --dangerous *.snap
-          sudo snap connect sabnzbd:removable-media
-          # Basic smoke test - check that the binary exists and can show help
-          timeout 10s snap run sabnzbd --help || true
-          sudo snap remove sabnzbd
-      - name: Upload snap
-        uses: actions/upload-artifact@v7
-        with:
-          name: Snap package (${{ matrix.linux_arch }})
-          path: ${{ steps.snapcraft.outputs.snap }}
-      - name: Determine snap channel
-        if: contains(github.ref, 'refs/tags/')
-        id: snap-channel
-        run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          if [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "channel=stable,beta" >> "$GITHUB_OUTPUT"
-          else
-            echo "channel=beta" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Publish snap
-        uses: snapcore/action-publish@v1
-        if: contains(github.ref, 'refs/tags/')
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_TOKEN }}
-        with:
-          store_login: ${{ secrets.SNAP_TOKEN }}
-          snap: ${{ steps.snapcraft.outputs.snap }}
-          release: ${{ steps.snap-channel.outputs.channel }}
-
   release:
     name: Prepare Release
     runs-on: ubuntu-latest
