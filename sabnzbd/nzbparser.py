@@ -30,7 +30,8 @@ import datetime
 import zipfile
 import tempfile
 
-from typing import Optional, Dict, Any, Union, List, Tuple
+from typing import Optional, Dict, Any, Union
+from starlette.datastructures import UploadFile
 
 import sabnzbd
 from sabnzbd.nzb import (
@@ -56,14 +57,14 @@ import rarfile
 
 
 def add_nzbfile(
-    nzbfile,
+    nzbfile: Union[str, UploadFile],
     pp: Optional[Union[int, str]] = None,
     script: Optional[str] = None,
     cat: Optional[str] = None,
     catdir: Optional[str] = None,
     priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
     nzbname: Optional[str] = None,
-    nzo_info=None,
+    nzo_info: Optional[Dict[str, Any]] = None,
     url: Optional[str] = None,
     keep: Optional[bool] = None,
     reuse: Optional[str] = None,

@@ -510,9 +510,9 @@ async def shutdown(request: Request):
 @secured_expose(route="/api", check_api_key=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
-    # Pass a fresh mutable copy so api_handler can assign kwargs["keyword"] etc.
-    # without mutating the request-cached _query_params.
-    return api_handler(MultiDict(request.query_params.multi_items()))
+    # We should pass a fresh mutable copy so api_handler can cleanly assign kwargs["keyword"] etc.
+    # without mutating the request-cached _query_params. But we don't for performance.
+    return api_handler(request.query_params)
 
 
 @secured_expose(route="/scriptlog", methods=["GET"])
@@ -705,13 +705,6 @@ async def login_index(request: Request):
     username = request.query_params.get("username")
     password = request.query_params.get("password")
     remember_me = request.query_params.get("remember_me", False)
-    logout = request.query_params.get("logout")
-
-    # Logout?
-    if logout:
-        response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
-        set_login_cookie(request, response, remove=True)
-        return response
 
     # Check if there's even a username/password set
     if check_login(request):
@@ -742,6 +735,13 @@ async def login_index(request: Request):
         file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "login", "main.tmpl"),
         search_list=info,
     )
+
+
+@secured_expose(route="/logout", check_for_login=False, methods=["GET"])
+async def logout_index(request: Request):
+    response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
+    set_login_cookie(request, response, remove=True)
+    return response
 
 
 ##############################################################################
@@ -1584,7 +1584,7 @@ async def config_rss_eval_rss_feed(request: Request):
     return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
 
 
-@secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True, methods=["GET"])
+@secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_download(request: Request):
     """Download NZB from provider (Download button)"""
     params = request.query_params

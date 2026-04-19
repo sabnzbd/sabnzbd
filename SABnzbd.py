@@ -19,7 +19,7 @@ import sys
 
 # Trick to show a better message on older Python
 # releases that don't support walrus operator
-if Python_39_is_required_to_run_SABnzbd := sys.hexversion < 0x030A00F0:
+if Python_310_is_required_to_run_SABnzbd := sys.hexversion < 0x030A00F0:
     print("Sorry, requires Python 3.10 or above")
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
