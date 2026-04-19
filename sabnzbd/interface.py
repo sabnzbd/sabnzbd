@@ -32,7 +32,6 @@ import ssl
 import functools
 import copy
 from random import randint
-from xml.sax.saxutils import escape
 
 import uvicorn
 from starlette.applications import Starlette
@@ -73,7 +72,7 @@ from sabnzbd.filesystem import (
     same_directory,
     setname_from_path,
 )
-from sabnzbd.encoding import xml_name, utob
+from sabnzbd.encoding import utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack
@@ -516,13 +515,11 @@ async def api(request: Request):
 @secured_expose(route="/scriptlog", methods=["GET"])
 async def scriptlog(request: Request):
     """Needed for all skins, URL is fixed due to postproc"""
-    # No session key check, due to fixed URLs
-    name = request.query_params.get("name")
-    if name:
+    # No session key check, due to fixed URLs in history database
+    if name := request.query_params.get("name"):
         history_db = sabnzbd.get_db_connection()
-        return ShowString(history_db.get_name(name), history_db.get_script_log(name))
-    else:
-        return BaseRedirectResponse("/")
+        return PlainTextResponse(history_db.get_script_log(name))
+    return PlainTextResponse("")
 
 
 @secured_expose(methods=["GET"])
@@ -1984,28 +1981,6 @@ async def config_sorting_toggle_sorter(request: Request):
         pass
 
     return BaseRedirectResponse(_SORTING_ROOT)
-
-
-def ShowString(name, msg):
-    """Return a html page listing a file and a 'back' button"""
-    return """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-           <title>%s</title>
-</head>
-<body>
-           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
-           <h3>%s</h3>
-           <code><pre>%s</pre></code>
-</body>
-</html>
-""" % (
-        xml_name(name),
-        T("Back"),
-        xml_name(name),
-        escape(msg),
-    )
 
 
 def GetRssLog(feed):
