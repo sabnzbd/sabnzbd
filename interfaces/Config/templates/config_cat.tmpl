@@ -128,8 +128,8 @@
                         var data = {}
                         jQuery(elm).extractFormDataTo(data);
                         jQuery.ajax({
-                            type: "GET",
-                            url: window.location.pathname + '/save',
+                            type: "POST",
+                            url: window.location.pathname + 'save',
                             data: data,
                             async: false // To prevent race-conditions when updating categories
                         })

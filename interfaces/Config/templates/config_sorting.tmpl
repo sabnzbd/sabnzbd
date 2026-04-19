@@ -498,8 +498,8 @@
                         var data = {}
                         jQuery(elm).extractFormDataTo(data);
                         jQuery.ajax({
-                            type: "GET",
-                            url: window.location.pathname + '/save_sorter',
+                            type: "POST",
+                            url: window.location.pathname + 'save_sorter',
                             data: data,
                             async: false // To prevent race-conditions when updating sorters
                         })
