@@ -510,8 +510,6 @@ async def shutdown(request: Request):
 @secured_expose(route="/api", check_api_key=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
-    # We should pass a fresh mutable copy so api_handler can cleanly assign kwargs["keyword"] etc.
-    # without mutating the request-cached _query_params. But we don't for performance.
     return api_handler(request.query_params)
 
 
@@ -1060,7 +1058,8 @@ async def config_general_save(request: Request):
     cfg.password.set(request.query_params.get("password"))
 
     if web_dir := request.query_params.get("web_dir"):
-        change_web_dir(web_dir)
+        if msg := change_web_dir(web_dir):
+            return report(request.query_params, error=msg)
 
     config.save_config()
     return report(request.query_params, data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
@@ -1088,7 +1087,7 @@ def change_web_dir(web_dir):
     web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
     if not os.path.exists(web_dir_path):
-        return badParameterResponse("Cannot find web template: %s" % web_dir_path)
+        logging.info("Cannot find web template: %s", web_dir_path)
     else:
         cfg.web_dir.set(web_dir)
         cfg.web_color.set(web_color)
@@ -1987,33 +1986,6 @@ async def config_sorting_toggle_sorter(request: Request):
     return BaseRedirectResponse(_SORTING_ROOT)
 
 
-def badParameterResponse(msg, ajax=None):
-    """Return a html page with error message and a 'back' button"""
-    if ajax:
-        return report(error=msg)
-    else:
-        return """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-           <title>SABnzbd %s - %s</title>
-</head>
-<body>
-<h3>%s</h3>
-%s
-<br><br>
-<FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
-</body>
-</html>
-""" % (
-            sabnzbd.__version__,
-            T("ERROR:"),
-            T("Incorrect parameter"),
-            msg,
-            T("Back"),
-        )
-
-
 def ShowString(name, msg):
     """Return a html page listing a file and a 'back' button"""
     return """
@@ -2313,7 +2285,7 @@ async def config_notify_save(request: Request):
     for section in NOTIFY_OPTIONS:
         for option in NOTIFY_OPTIONS[section]:
             if msg := config.get_config(section, option).set(request.query_params.get(option)):
-                return badParameterResponse(msg, request.query_params.get("ajax"))
+                return report(request.query_params, error=msg)
     config.save_config()
     return report(request.query_params)
 

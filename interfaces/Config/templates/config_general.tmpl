@@ -10,7 +10,6 @@
     </div>
     <form action="general/save" method="post" class="fullform" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
-        <input type="hidden" id="ajax" name="ajax" value="1" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
             <div class="col2">
@@ -224,7 +223,6 @@
 
     <form action="general/upload_config" method="post" class="fullform" autocomplete="off" enctype="multipart/form-data">
         <input type="hidden" name="apikey" value="$apikey" />
-        <input type="hidden" name="ajax" value="1" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
             <div class="col2">
@@ -279,8 +277,6 @@ jQuery(document).ready(function(){
             // Skip the fancy stuff, just submit
             this.submit()
         })
-        // No JSON response
-        jQuery('#ajax').val('')
     })
     hideOrShowTranslate()
 
