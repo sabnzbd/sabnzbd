@@ -123,20 +123,21 @@ def _api_set_config(name: str, kwargs: QueryParams) -> Response:
     """API: accepts keyword, section"""
     if cfg.configlock():
         return report(kwargs, _MSG_CONFIG_LOCKED)
+    keyword = kwargs.get("keyword")
     if kwargs.get("section") == "servers":
-        kwargs["keyword"] = handle_server_api(kwargs)
+        keyword = handle_server_api(kwargs)
     elif kwargs.get("section") == "rss":
-        kwargs["keyword"] = handle_rss_api(kwargs)
+        keyword = handle_rss_api(kwargs)
     elif kwargs.get("section") == "categories":
-        kwargs["keyword"] = handle_cat_api(kwargs)
+        keyword = handle_cat_api(kwargs)
     elif kwargs.get("section") == "sorters":
-        kwargs["keyword"] = handle_sorter_api(kwargs)
+        keyword = handle_sorter_api(kwargs)
     else:
         res = config.set_config(kwargs)
         if not res:
             return report(kwargs, _MSG_NO_SUCH_CONFIG)
     config.save_config()
-    res, data = config.get_dconfig(kwargs.get("section"), kwargs.get("keyword"))
+    res, data = config.get_dconfig(kwargs.get("section"), keyword)
     return report(kwargs, keyword="config", data=data)
 
 

@@ -43,7 +43,6 @@
             <form action="server/add_server" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="output" value="json" />
-                <input type="hidden" name="ajax" value="1" />
                 <fieldset>
                     <div class="field-pair">
                         <label class="config" for="enable">$T('srv-enable')</label>
@@ -158,7 +157,6 @@
             <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="output" value="json" />
             <input type="hidden" name="server" value="$server['name']" />
-            <input type="hidden" name="ajax" value=1 />
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
@@ -484,7 +482,6 @@
         jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function(event) {
             var parentForm = jQuery(event.target).parents("form")
             parentForm.unbind("submit")
-            parentForm.find('input[name="ajax"]').val('')
         })
 
         /**
