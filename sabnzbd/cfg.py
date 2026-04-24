@@ -217,6 +217,10 @@ def validate_host(value: str) -> ValidateResult:
         logging.debug("No valid host name")
         pass
 
+    # Allow empty value
+    if not value:
+        return None, value
+
     # if we get here, it is not valid host, so return None
     return T("Invalid server address."), None
 

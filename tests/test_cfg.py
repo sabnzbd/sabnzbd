@@ -231,3 +231,6 @@ class TestValidators:
         assert not cfg.validate_host("0.0.0.0.")[1]  # Trailing dot
         assert not cfg.validate_host("kajkdjflkjasd")[1]  # does not resolve
         assert not cfg.validate_host("100")[1]  # just a number
+
+        # empty value should be allowed
+        assert cfg.validate_host("") == (None, "")
