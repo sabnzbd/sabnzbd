@@ -826,7 +826,7 @@ def get_platform_description() -> str:
             platform_tags.append("Flatpak")
         elif "APPIMAGE" in os.environ:
             platform_tags.append("AppImage")
-        elif os.environ.get('SNAP_NAME') == 'sabnzbd':
+        elif os.environ.get("SNAP_NAME") == "sabnzbd":
             platform_tags.append("Snap")
         else:
             # Check for other forms of virtualization
