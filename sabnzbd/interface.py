@@ -753,7 +753,7 @@ async def config_general_index(request: Request):
 
     conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVENZIP_COMMAND)
     conf["have_sabctools"] = sabnzbd.decoder.SABCTOOLS_ENABLED
-
+    conf["have_par2_turbo"] = sabnzbd.newsunpack.PAR2_TURBO
     conf["ssl_version"] = ssl.OPENSSL_VERSION
 
     return template_filtered_response(
