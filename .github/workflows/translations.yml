@@ -20,10 +20,14 @@ jobs:
           python3 tools/extract_pot.py
       - name: Push/pull Transifex translations
         if: env.TX_TOKEN
+        # We use fixed version and manual download (instead of their sh script) to prevent potential supply-chain attack.
+        # Changes are commited directly to the repo, so this is quite sensative and worth the extra hassle!
         # Add --translation to the push command in order to update Transifex using local translation edits
         # However, this prevents modifying existing translations in Transifex as they will be overwritten by the push!
         run: |
-          curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
+          TX_VERSION="v1.6.17"
+          curl -fsSL "https://github.com/transifex/cli/releases/download/${TX_VERSION}/tx-linux-amd64.tar.gz" -o tx-linux-amd64.tar.gz
+          tar -xzf tx-linux-amd64.tar.gz
           ./tx push --source 
           ./tx pull --all --force
       - name: Compile translations to validate them
