@@ -4,6 +4,7 @@ description: >
   If you are not 100% certain this is a bug please go to our forums, Reddit or Discord server first.
 labels:
   - Support
+type: bug
 body:
   - type: input
     attributes:
