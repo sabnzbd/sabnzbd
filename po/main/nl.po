@@ -156,6 +156,7 @@ msgstr ""
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
+"Windows ARM versie van SABnzbd is beschikbaar op onze Downloads pagina!"
 
 #. Warning message
 #: sabnzbd/__init__.py
