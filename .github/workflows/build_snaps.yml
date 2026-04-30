@@ -12,6 +12,9 @@ on:
       - 'requirements.txt'
       - '.github/workflows/build_snaps.yml'
 
+permissions:
+  contents: read
+
 jobs:
   build-snap:
     name: Build Snap Packages (${{ matrix.linux_arch }})
