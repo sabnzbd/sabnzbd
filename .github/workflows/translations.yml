@@ -6,7 +6,7 @@ on:
     - develop
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   translations:
@@ -16,8 +16,6 @@ jobs:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       - name: Generate translatable texts
         run: |
           python3 tools/extract_pot.py
