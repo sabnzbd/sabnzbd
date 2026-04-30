@@ -3914,7 +3914,7 @@ msgstr "Inschakelen"
 
 #: sabnzbd/skintext.py
 msgid "Articles per request"
-msgstr ""
+msgstr "Artikelen per verbinding"
 
 #: sabnzbd/skintext.py
 msgid ""
