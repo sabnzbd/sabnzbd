@@ -19,8 +19,8 @@ import sys
 
 # Trick to show a better message on older Python
 # releases that don't support walrus operator
-if Python_39_is_required_to_run_SABnzbd := sys.hexversion < 0x03090000:
-    print("Sorry, requires Python 3.9 or above")
+if Python_310_is_required_to_run_SABnzbd := sys.hexversion < 0x030A00F0:
+    print("Sorry, requires Python 3.10 or above")
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
@@ -39,7 +39,7 @@ import time
 import re
 import gc
 import threading
-import http.cookies
+import uvicorn
 from typing import Any
 
 try:
@@ -47,9 +47,6 @@ try:
     import Cheetah
     import feedparser
     import configobj
-    import cherrypy
-    import cheroot.errors
-    import portend
     import cryptography
     import charset_normalizer
     import guessit
@@ -80,13 +77,14 @@ from sabnzbd.constants import (
     RSS_FILE_NAME,
     DEF_LOG_FILE,
     DEF_STD_CONFIG,
-    DEF_LOG_CHERRY,
     CONFIG_BACKUP_HTTPS,
 )
 import sabnzbd.newsunpack
 from sabnzbd.misc import (
     exit_sab,
     split_host,
+    port_is_free,
+    find_free_port,
     create_https_certificates,
     ip_extract,
     set_serv_parms,
@@ -204,7 +202,7 @@ def print_help():
     print("  -t  --templates <templ>     Template directory [*]")
     print()
     print("  -l  --logging <-1..2>       Set logging level (-1=off, 0=least,2= most) [*]")
-    print("  -w  --weblogging            Enable cherrypy access logging")
+    print("  -w  --weblogging            Enable uvicorn access logging")
     print()
     print("  -b  --browser <0..1>        Auto browser launch (0= off, 1= on) [*]")
     if sabnzbd.WINDOWS:
@@ -644,19 +642,6 @@ def get_webhost(web_host, web_port, https_port):
     return web_host, web_port, browserhost, https_port
 
 
-def attach_server(host, port, cert=None, key=None, chain=None):
-    """Define and attach server, optionally HTTPS"""
-    if sabnzbd.cfg.ipv6_hosting() or "::1" not in host:
-        http_server = cherrypy._cpserver.Server()
-        http_server.bind_addr = (host, port)
-        if cert and key:
-            http_server.ssl_module = "builtin"
-            http_server.ssl_certificate = cert
-            http_server.ssl_private_key = key
-            http_server.ssl_certificate_chain = chain
-        http_server.subscribe()
-
-
 def is_sabnzbd_running(url):
     """Return True when there's already a SABnzbd instance running."""
     try:
@@ -668,19 +653,6 @@ def is_sabnzbd_running(url):
         return ver and (re.search(r"\d+\.\d+\.", ver) or ver.strip() == sabnzbd.__version__)
     except Exception:
         return False
-
-
-def find_free_port(host, currentport):
-    """Return a free port, 0 when nothing is free"""
-    n = 0
-    while n < 10 and currentport <= 49151:
-        try:
-            portend.free(host, currentport, timeout=0.025)
-            return currentport
-        except Exception:
-            currentport += 5
-            n += 1
-    return 0
 
 
 def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
@@ -829,7 +801,7 @@ def main():
     web_host = None
     web_port = None
     https_port = None
-    cherrypylogging = None
+    weblogging = None
     clean_up = False
     logging_level = None
     console_logging = False
@@ -875,7 +847,7 @@ def main():
         elif opt in ("-c", "--clean"):
             clean_up = True
         elif opt in ("-w", "--weblogging"):
-            cherrypylogging = True
+            weblogging = True
         elif opt in ("-l", "--logging"):
             try:
                 logging_level = int(arg)
@@ -994,18 +966,10 @@ def main():
     # When this is a daemon, just check and bail out if port in use
     if sabnzbd.DAEMON:
         if enable_https and https_port:
-            try:
-                portend.free(web_host, https_port, timeout=0.05)
-            except IOError:
+            if not port_is_free(web_host, https_port):
                 abort_and_show_error(browserhost, web_port)
-            except Exception:
-                abort_and_show_error(browserhost, web_port, "49")
-        try:
-            portend.free(web_host, web_port, timeout=0.05)
-        except IOError:
+        if not port_is_free(web_host, web_port):
             abort_and_show_error(browserhost, web_port)
-        except Exception:
-            abort_and_show_error(browserhost, web_port, "49")
 
     # Windows instance is reachable through registry
     url = None
@@ -1017,55 +981,39 @@ def main():
     # SSL
     if enable_https:
         port = https_port or web_port
-        try:
-            portend.free(browserhost, port, timeout=0.05)
-        except IOError as error:
-            if str(error) == "Port not bound.":
-                pass
-            else:
-                if not url:
-                    url = "https://%s:%s%s/api?" % (browserhost, port, sabnzbd.cfg.url_base())
-                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                    # Bail out if we have fixed our ports after first start-up
-                    if sabnzbd.cfg.fixed_ports():
-                        abort_and_show_error(browserhost, web_port)
-                    # Find free port to bind
-                    newport = find_free_port(browserhost, port)
-                    if newport > 0:
-                        # Save the new port
-                        if https_port:
-                            https_port = newport
-                            sabnzbd.cfg.https_port.set(newport)
-                        else:
-                            # In case HTTPS == HTTP port
-                            web_port = newport
-                            sabnzbd.cfg.web_port.set(newport)
-        except Exception:
-            # Something else wrong, probably badly specified host
-            abort_and_show_error(browserhost, web_port, "49")
+        if not port_is_free(browserhost, port):
+            if not url:
+                url = "https://%s:%s%s/api?" % (browserhost, port, sabnzbd.cfg.url_base())
+            if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                # Bail out if we have fixed our ports after first start-up
+                if sabnzbd.cfg.fixed_ports():
+                    abort_and_show_error(browserhost, web_port)
+                # Find free port to bind
+                newport = find_free_port(browserhost, port)
+                if newport > 0:
+                    # Save the new port
+                    if https_port:
+                        https_port = newport
+                        sabnzbd.cfg.https_port.set(newport)
+                    else:
+                        # In case HTTPS == HTTP port
+                        web_port = newport
+                        sabnzbd.cfg.web_port.set(newport)
 
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
-        try:
-            portend.free(browserhost, web_port, timeout=0.05)
-        except IOError as error:
-            if str(error) == "Port not bound.":
-                pass
-            else:
-                if not url:
-                    url = "http://%s:%s%s/api?" % (browserhost, web_port, sabnzbd.cfg.url_base())
-                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                    # Bail out if we have fixed our ports after first start-up
-                    if sabnzbd.cfg.fixed_ports():
-                        abort_and_show_error(browserhost, web_port)
-                    # Find free port to bind
-                    port = find_free_port(browserhost, web_port)
-                    if port > 0:
-                        sabnzbd.cfg.web_port.set(port)
-                        web_port = port
-        except Exception:
-            # Something else wrong, probably badly specified host
-            abort_and_show_error(browserhost, web_port, "49")
+        if not port_is_free(browserhost, web_port):
+            if not url:
+                url = "http://%s:%s%s/api?" % (browserhost, web_port, sabnzbd.cfg.url_base())
+            if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                # Bail out if we have fixed our ports after first start-up
+                if sabnzbd.cfg.fixed_ports():
+                    abort_and_show_error(browserhost, web_port)
+                # Find free port to bind
+                port = find_free_port(browserhost, web_port)
+                if port > 0:
+                    sabnzbd.cfg.web_port.set(port)
+                    web_port = port
 
     # We found a port, now we never check again
     sabnzbd.cfg.fixed_ports.set(True)
@@ -1213,39 +1161,13 @@ def main():
     hosts = all_localhosts()
     multilocal = len(hosts) > 1 and web_host in ("localhost", "0.0.0.0")
 
-    # For 0.0.0.0 CherryPy will always pick IPv4, so make sure the secondary localhost is IPv6
-    if multilocal and web_host == "0.0.0.0" and hosts[1] == "127.0.0.1":
-        hosts[1] = "::1"
-
     # The Windows binary requires numeric localhost as primary address
     if web_host == "localhost":
         web_host = hosts[0]
 
-    if enable_https:
-        if https_port:
-            # Extra HTTP port for primary localhost
-            attach_server(web_host, web_port)
-            if multilocal:
-                # Extra HTTP port for secondary localhost
-                attach_server(hosts[1], web_port)
-                # Extra HTTPS port for secondary localhost
-                attach_server(hosts[1], https_port, https_cert, https_key, https_chain)
-            web_port = https_port
-        elif multilocal:
-            # Extra HTTPS port for secondary localhost
-            attach_server(hosts[1], web_port, https_cert, https_key, https_chain)
-
-        cherrypy.config.update(
-            {
-                "server.ssl_module": "builtin",
-                "server.ssl_certificate": https_cert,
-                "server.ssl_private_key": https_key,
-                "server.ssl_certificate_chain": https_chain,
-            }
-        )
-    elif multilocal:
-        # Extra HTTP port for secondary localhost
-        attach_server(hosts[1], web_port)
+    if enable_https and https_port:
+        # Separate HTTPS port: switch the main server to the HTTPS port
+        web_port = https_port
 
     if no_login:
         sabnzbd.cfg.username.set("")
@@ -1255,107 +1177,38 @@ def main():
     if inet_exposure:
         sabnzbd.cfg.inet_exposure.set(inet_exposure)
 
-    mime_gzip = (
-        "text/*",
-        "application/javascript",
-        "application/x-javascript",
-        "application/json",
-        "application/xml",
-        "application/vnd.ms-fontobject",
-        "application/font*",
-        "image/svg+xml",
-    )
-    cherrypy.config.update(
-        {
-            "server.environment": "production",
-            "server.socket_host": web_host,
-            "server.socket_port": web_port,
-            "server.shutdown_timeout": 0,
-            "engine.autoreload.on": False,
-            "tools.encode.on": True,
-            "tools.gzip.on": True,
-            "tools.gzip.mime_types": mime_gzip,
-            "error_page.401": sabnzbd.panic.error_page_401,
-            "error_page.404": sabnzbd.panic.error_page_404,
-        }
-    )
-
-    # Monkey-patch key validation to prevent cherrypy from stumbling over invalid cookies
-    http.cookies._is_legal_key = lambda _: True
-
-    # Catch shutdown errors that can break cherrypy/cheroot
-    # See https://github.com/cherrypy/cheroot/issues/710
-    try:
-        cheroot.errors.acceptable_sock_shutdown_exceptions += (OSError,)
-    except AttributeError:
-        pass
-
-    # Do we want CherryPy Logging? Cannot be done via the config
-    cherrypy.log.screen = False
-    cherrypy.log.access_log.propagate = False
-    if cherrypylogging:
-        sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-        cherrypy.log.access_file = str(sabnzbd.WEBLOGFILE)
-
-    # Force mimetypes (OS might overwrite them)
-    forced_mime_types = {"css": "text/css", "js": "application/javascript"}
-
-    static = {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": os.path.join(sabnzbd.WEB_DIR, "static"),
-        "tools.staticdir.content_types": forced_mime_types,
-    }
-    staticcfg = {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg"),
-        "tools.staticdir.content_types": forced_mime_types,
-    }
-    wizard_static = {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": os.path.join(sabnzbd.WIZARD_DIR, "static"),
-        "tools.staticdir.content_types": forced_mime_types,
-    }
-
-    appconfig = {
-        "/api": {
-            "tools.auth_basic.on": False,
-            "tools.response_headers.on": True,
-            "tools.response_headers.headers": [("Access-Control-Allow-Origin", "*")],
-        },
-        "/static": static,
-        "/wizard/static": wizard_static,
-        "/favicon.ico": {
-            "tools.staticfile.on": True,
-            "tools.staticfile.filename": os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg", "ico", "favicon.ico"),
-        },
-        "/staticcfg": staticcfg,
-    }
-
-    # Make available from both URLs
-    main_page = sabnzbd.interface.MainPage()
-    cherrypy.Application.relative_urls = "server"
-    cherrypy.tree.mount(main_page, "/", config=appconfig)
-    cherrypy.tree.mount(main_page, sabnzbd.cfg.url_base(), config=appconfig)
-
-    # Set authentication for CherryPy
-    sabnzbd.interface.set_auth(cherrypy.config)
     logging.info("Starting web-interface on %s:%s", web_host, web_port)
 
     sabnzbd.cfg.log_level.callback(guard_loglevel)
-
-    try:
-        cherrypy.engine.start()
-    except Exception:
-        # Since the webserver is started by cherrypy in a separate thread, we can't really catch any
-        # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
-        logging.error(T("Failed to start web-interface: "), exc_info=True)
-        abort_and_show_error(browserhost, web_port)
 
     # Create a record of the active cert/key/chain files, for use with config.create_config_backup()
     if enable_https:
         for setting in CONFIG_BACKUP_HTTPS.values():
             if full_path := getattr(sabnzbd.cfg, setting).get_path():
                 sabnzbd.CONFIG_BACKUP_HTTPS_OK.append(full_path)
+
+    # Catch logging using SABnzbd handlers
+    # Format: https://github.com/encode/uvicorn/blob/d43afed1cfa018a85c83094da8a2dd29f656d676/uvicorn/config.py#L82-L114
+    uvicorn_logging_config = {
+        "version": 1,
+        "loggers": {
+            "uvicorn": {"propagate": True},
+            "uvicorn.error": {"propagate": True},
+            "uvicorn.access": {"propagate": bool(weblogging)},
+        },
+    }
+
+    server_config = uvicorn.Config(
+        sabnzbd.interface.app,
+        host=web_host,
+        port=web_port,
+        log_config=uvicorn_logging_config,
+        ssl_keyfile=https_key if enable_https else None,
+        ssl_certfile=https_cert if enable_https else None,
+        ssl_ca_certs=https_chain if enable_https else None,
+    )
+    sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config)
+    sabnzbd.WEB_SERVER.run_in_thread()
 
     # Set URL for browser
     if enable_https:
@@ -1469,13 +1322,20 @@ def main():
                     # Just a simple restart of the exe
                     os.execv(sys.executable, ['"%s"' % arg for arg in sys.argv])
             else:
-                # CherryPy has special logic to include interpreter options such as "-OO"
-                cherrypy.engine._do_execv()
+                # Re-exec with interpreter flags (replaces cherrypy.engine._do_execv)
+                args = [sys.executable]
+                if sys.flags.optimize == 1:
+                    args.append("-O")
+                elif sys.flags.optimize >= 2:
+                    args.append("-OO")
+                args.extend(sys.argv)
+                os.execv(sys.executable, args)
 
     # Send our final goodbyes!
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")
     logging.info("Leaving SABnzbd")
     sabnzbd.pid_file()
+    sabnzbd.WEB_SERVER.stop()
 
     try:
         sys.stderr.flush()

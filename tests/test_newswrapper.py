@@ -32,7 +32,6 @@ import time
 import warnings
 from enum import Enum
 from typing import Optional, Tuple
-import portend
 from flaky import flaky
 
 from tests.testhelper import *
@@ -42,7 +41,7 @@ from sabnzbd.get_addrinfo import AddrInfo
 
 TEST_HOST = "127.0.0.1"
 TEST_HOST_IPV6 = "::1"
-TEST_PORT = portend.find_available_local_port()
+TEST_PORT = misc.find_free_port(TEST_HOST, 10000)
 TEST_DATA = b"connection_test"
 
 

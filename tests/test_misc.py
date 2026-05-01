@@ -20,6 +20,7 @@ tests.test_misc - Testing functions in misc.py
 """
 
 import datetime
+import socket
 import subprocess
 import sys
 import tempfile
@@ -924,6 +925,88 @@ class TestMisc:
     )
     def test_name_extractor(self, subject, filename):
         assert misc.subject_name_extractor(subject) == filename
+
+
+class TestPortIsFree:
+    """Tests for misc.port_is_free() and misc.find_free_local_port()"""
+
+    @staticmethod
+    def _listening_socket() -> tuple[socket.socket, int]:
+        """Return a listening socket bound to an OS-assigned port."""
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(("127.0.0.1", 0))
+        s.listen(1)
+        return s, s.getsockname()[1]
+
+    def test_free_port_returns_true(self):
+        """A port with no listener is reported as free."""
+        port = misc.find_free_port("127.0.0.1", 10000)
+        assert misc.port_is_free("127.0.0.1", port) is True
+
+    def test_occupied_port_returns_false(self):
+        """A port with an active listener is reported as occupied."""
+        s, port = self._listening_socket()
+        try:
+            assert misc.port_is_free("127.0.0.1", port) is False
+        finally:
+            s.close()
+
+    def test_bind_all_ipv4_remapped(self):
+        """0.0.0.0 is remapped to 127.0.0.1 so the probe has a concrete target."""
+        s, port = self._listening_socket()
+        try:
+            assert misc.port_is_free("0.0.0.0", port) is False
+        finally:
+            s.close()
+
+    def test_bind_all_ipv6_remapped(self):
+        """:: is remapped to 127.0.0.1 for the probe."""
+        s, port = self._listening_socket()
+        try:
+            assert misc.port_is_free("::", port) is False
+        finally:
+            s.close()
+
+    def test_empty_host_remapped(self):
+        """Empty string host is remapped to 127.0.0.1."""
+        s, port = self._listening_socket()
+        try:
+            assert misc.port_is_free("", port) is False
+        finally:
+            s.close()
+
+    def test_custom_timeout_respected(self):
+        """A very short timeout still works for a local free port."""
+        port = misc.find_free_port("127.0.0.1", 10000)
+        assert misc.port_is_free("127.0.0.1", port, timeout=0.01) is True
+
+    def test_find_free_port_returns_valid_port(self):
+        """find_free_port() returns a port in the valid range."""
+        port = misc.find_free_port("127.0.0.1", 10000)
+        assert 1 <= port <= 65535
+
+    def test_find_free_port_is_actually_free(self):
+        """The port returned by find_free_port() is not occupied."""
+        port = misc.find_free_port("127.0.0.1", 10000)
+        assert misc.port_is_free("127.0.0.1", port) is True
+
+    def test_find_free_port_skips_occupied(self):
+        """find_free_port() moves past an occupied port."""
+        # Find a port in the scan range, then occupy it
+        start = misc.find_free_port("127.0.0.1", 10000)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(("127.0.0.1", start))
+        s.listen(1)
+        try:
+            free = misc.find_free_port("127.0.0.1", start)
+            assert free != start
+            assert free > start
+        finally:
+            s.close()
+
+    def test_find_free_port_returns_zero_when_exhausted(self):
+        """find_free_port() returns 0 when starting above the scan ceiling."""
+        assert misc.find_free_port("127.0.0.1", 49200) == 0
 
 
 class TestBuildAndRunCommand:

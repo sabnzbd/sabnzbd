@@ -40,7 +40,7 @@
             <h3>$T('addServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div>
         <div class="col1">
-            <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
+            <form action="server/add_server" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="output" value="json" />
                 <fieldset>
@@ -153,11 +153,10 @@
     <!--#set $cur_prio_color = -1 #-->
     <!--#set $last_prio = -1 #-->
     <!--#for $cur, $server in enumerate($servers) #-->
-        <form action="saveServer" method="post" class="fullform" autocomplete="off">
+        <form action="server/save_server" method="post" class="fullform" autocomplete="off">
             <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="output" value="json" />
             <input type="hidden" name="server" value="$server['name']" />
-            <input type="hidden" name="ajax" value=1 />
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
@@ -483,7 +482,6 @@
         jQuery('input[name="priority"], input[name="displayname"], textarea[name="notes"]').on('change', function(event) {
             var parentForm = jQuery(event.target).parents("form")
             parentForm.unbind("submit")
-            parentForm.find('input[name="ajax"]').val('')
         })
 
         /**
@@ -573,7 +571,7 @@
                     resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
 
                     // Allow adding the new server if we are in the new-server section
-                    if(theButton.parents("form[action='addServer']").length) {
+                    if(theButton.parents("form[action='server/add_server']").length) {
                         jQuery(".addNewServer").removeAttr("disabled")
                         jQuery(".addNewServer").removeAttr("data-toggle")
                         jQuery(".addNewServer").removeAttr("title")
@@ -584,7 +582,7 @@
                     resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
 
                     // Disable the adding of new server, just to be sure
-                    if(theButton.parents("form[action='addServer']").length) {
+                    if(theButton.parents("form[action='server/add_server']").length) {
                         jQuery(".addNewServer").attr("disabled", "disabled")
                         jQuery(".addNewServer").attr("data-toggle", "tooltip")
                         jQuery(".addNewServer").attr("data-placement", "top")
@@ -595,9 +593,34 @@
             });
         });
 
+        jQuery('.addNewServer').click(function(event){
+            event.preventDefault()
+            removeObfuscation()
+            var theButton = jQuery(this)
+            var resultBox = theButton.parents('.col1').find('.result-box .alert')
+            theButton.attr("disabled", "disabled")
+            jQuery.ajax({
+                type: "POST",
+                url: "server/add_server",
+                data: theButton.parents('form:first').serialize()
+            }).then(function(data) {
+                if(data.status) {
+                    // Success — reload to show the new server
+                    formWasSubmitted = true
+                    formHasChanged = false
+                    location.reload()
+                } else {
+                    // Show error in the result box
+                    resultBox.removeClass('alert-success').addClass('alert-danger').show()
+                    resultBox.html('<span class="glyphicon glyphicon-exclamation-sign"></span> ' + data.error)
+                    theButton.removeAttr("disabled")
+                }
+            })
+        })
+
         jQuery('.delServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                jQuery(this).parents('form:first').attr('action','delServer').submit();
+                jQuery(this).parents('form:first').attr('action','server/delete_server').submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -608,7 +631,7 @@
 
         jQuery('.clrServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                jQuery(this).parents('form:first').attr('action','clrServer').submit();
+                jQuery(this).parents('form:first').attr('action','server/clear_server').submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -621,7 +644,7 @@
             var whichServer = jQuery(this).attr("name");
             jQuery.ajax({
                 type: "POST",
-                url: "toggleServer",
+                url: "server/toggle_server",
                 data: {server: whichServer, apikey: "$apikey" }
             }).done(function() {
                 // Let us leave!

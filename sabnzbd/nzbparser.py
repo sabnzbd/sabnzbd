@@ -30,8 +30,8 @@ import datetime
 import zipfile
 import tempfile
 
-import cherrypy._cpreqbody
-from typing import Optional, Any, Union
+from typing import Optional, Dict, Any, Union
+from starlette.datastructures import UploadFile
 
 import sabnzbd
 from sabnzbd.nzb import (
@@ -43,7 +43,7 @@ from sabnzbd.nzb import (
     NzbFile,
     SkippedNzbFile,
 )
-from sabnzbd.encoding import utob, correct_cherrypy_encoding
+from sabnzbd.encoding import utob
 from sabnzbd.filesystem import (
     get_filename,
     get_ext,
@@ -57,14 +57,14 @@ import rarfile
 
 
 def add_nzbfile(
-    nzbfile: Union[str, cherrypy._cpreqbody.Part],
+    nzbfile: Union[str, UploadFile],
     pp: Optional[Union[int, str]] = None,
     script: Optional[str] = None,
     cat: Optional[str] = None,
     catdir: Optional[str] = None,
     priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
     nzbname: Optional[str] = None,
-    nzo_info=None,
+    nzo_info: Optional[Dict[str, Any]] = None,
     url: Optional[str] = None,
     keep: Optional[bool] = None,
     reuse: Optional[str] = None,
@@ -90,13 +90,11 @@ def add_nzbfile(
         logging.info("Attempting to add %s [%s]", filename, path)
     else:
         # File from file-upload object
-        # CherryPy mangles unicode-filenames: https://github.com/cherrypy/cherrypy/issues/1766
-        filename = correct_cherrypy_encoding(nzbfile.filename)
+        filename = nzbfile.filename
         logging.info("Attempting to add %s", filename)
         keep_default = False
         try:
-            # We have to create a copy, because we can't re-use the CherryPy temp-file
-            # Just to be sure we add the extension to detect file type later on
+            # We have to create a temp file copy; just to be sure we add the extension to detect file type later on
             nzb_temp_file, path = tempfile.mkstemp(suffix=get_ext(filename))
             os.write(nzb_temp_file, nzbfile.file.read())
             os.close(nzb_temp_file)

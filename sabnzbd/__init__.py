@@ -21,11 +21,12 @@ import datetime
 import ctypes.util
 import time
 import ssl
+from typing import Optional
 
-import cherrypy
 import platform
 import concurrent.futures
 import sys
+import threading
 from threading import Lock, Condition
 
 ##############################################################################
@@ -151,6 +152,7 @@ LOGFILE = None
 WEBLOGFILE = None
 GUIHANDLER = None
 LOG_ALL = False
+WEB_SERVER: Optional[sabnzbd.interface.ThreadedServer] = None
 WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 
@@ -210,11 +212,14 @@ def sig_handler(signum=None, frame=None):
 INIT_LOCK = Lock()
 
 
+_thread_local = threading.local()
+
+
 def get_db_connection(thread_index=0):
     # Create a connection and store it in the current thread
-    if not (hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_db):
-        cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
-    return cherrypy.thread_data.history_db
+    if not getattr(_thread_local, "history_db", None):
+        _thread_local.history_db = sabnzbd.database.HistoryDB()
+    return _thread_local.history_db
 
 
 @synchronized(INIT_LOCK)
@@ -225,9 +230,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.__SHUTTING_DOWN__ = False
 
     sys.setswitchinterval(cfg.switchinterval())
-
-    # Set global database connection for Web-UI threads
-    cherrypy.engine.subscribe("start_thread", get_db_connection)
 
     # Paused?
     pause_downloader = pause_downloader or cfg.start_paused()
@@ -431,7 +433,7 @@ def shutdown_program():
     if not sabnzbd.SABSTOP:
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
-        cherrypy.engine.exit()
+        sabnzbd.WEB_SERVER.stop()
         sabnzbd.SABSTOP = True
         notify_shutdown_loop()
 
