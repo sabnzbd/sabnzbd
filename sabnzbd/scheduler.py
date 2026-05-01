@@ -190,7 +190,9 @@ class Scheduler:
             delay = random.randint(0, interval - 1)
             logging.info("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
             sabnzbd.RSSReader.next_run = time.time() + delay * 60
-            self.rss_task = self.scheduler.add_interval_task(sabnzbd.RSSReader.run, "RSS", delay * 60, interval * 60)
+            self.rss_task = self.scheduler.add_interval_task(
+                sabnzbd.RSSReader.run, "RSS", delay * 60, interval * 60, sabnzbd.utils.kronos.method.threaded
+            )
 
         if cfg.version_check():
             # Check for new release daily at a random time
@@ -466,7 +468,9 @@ class Scheduler:
         # Schedule a new interval task and start one now
         interval = cfg.rss_rate() * 60  # Convert minutes to seconds
         sabnzbd.RSSReader.next_run = time.time() + interval
-        self.rss_task = self.scheduler.add_interval_task(sabnzbd.RSSReader.run, "RSS", 0, interval)
+        self.rss_task = self.scheduler.add_interval_task(
+            sabnzbd.RSSReader.run, "RSS", 0, interval, sabnzbd.utils.kronos.method.threaded
+        )
 
 
 def sort_schedules(all_events, now=None):

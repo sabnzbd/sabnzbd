@@ -161,11 +161,16 @@ def calc_age(date: datetime.datetime, trans: bool = False) -> str:
         m = "m"
 
     try:
+        # Assume no tzinfo means it is localtime
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=datetime.datetime.now().astimezone().tzinfo)
+
+        now = datetime.datetime.now(datetime.timezone.utc)
         # Return time difference in human-readable format
-        date_diff = datetime.datetime.now() - date
+        date_diff = now - date
         if date_diff.days:
             return "%d%s" % (date_diff.days, d)
-        elif int(date_diff.seconds / 3600):
+        elif date_diff.seconds >= 3600:
             return "%d%s" % (date_diff.seconds / 3600, h)
         else:
             return "%d%s" % (date_diff.seconds / 60, m)

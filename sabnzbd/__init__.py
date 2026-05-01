@@ -455,7 +455,6 @@ def save_state():
     sabnzbd.BPSMeter.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
-    sabnzbd.RSSReader.save()
 
 
 def delayed_startup_actions():

@@ -89,8 +89,10 @@ MAX_BAD_ARTICLES = 5
 
 CONFIG_BACKUP_FILES = [
     BYTES_FILE_NAME,
-    RSS_FILE_NAME,
     DB_HISTORY_NAME,
+]
+CONFIG_RESTORE_FILES = [
+    RSS_FILE_NAME,
 ]
 CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
     DEF_HTTPS_CERT_FILE: "https_cert",
