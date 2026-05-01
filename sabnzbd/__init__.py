@@ -226,6 +226,9 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
 
     sys.setswitchinterval(cfg.switchinterval())
 
+    # For backwards compatibility with pre-5.0 queue files
+    sys.modules["sabnzbd.nzbstuff"] = sabnzbd.nzb
+
     # Set global database connection for Web-UI threads
     cherrypy.engine.subscribe("start_thread", get_db_connection)
 
