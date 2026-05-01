@@ -1,7 +1,11 @@
-Release Notes - SABnzbd 5.0.0 Release Candidate 3
+Release Notes - SABnzbd 5.0.0
 =========================================================
 
-This is the third (and hopefully final) release candidate of version 5.0.
+In this fifth major release of SABnzbd, we included:
+* Smarter (and potentially faster) downloads with NNTP Pipelining and Direct Write.
+* Reliability gains from a reworked cache and safer processing.
+* A significant number of bug fixes and platform updates.
+
 Please note the breaking changes described below!
 
 ## New features in 5.0.0
@@ -10,6 +14,7 @@ Please note the breaking changes described below!
   requests, significantly improving speeds on high-latency connections.
   Read more here: https://sabnzbd.org/wiki/advanced/nntp-pipelining
   New servers will have `Articles per request` set to `2` by default.
+  Existing servers need to be manually changed to use NNTP Pipelining.
 * Implemented Direct Write to optimize assembly of downloaded files.
   Read more here: https://sabnzbd.org/wiki/advanced/direct-write
 * Post-processing scripts will always be executed, even for failed jobs.
@@ -17,16 +22,16 @@ Please note the breaking changes described below!
 * Removed Special setting `empty_postproc` as it is no longer needed.
 * Complete redesign of article cache.
 * Improved disk speed measurement in Status window.
-* Reduce delays between jobs during post-processing.
-* Improve handling of disks getting full.
-* Diskspace check will now included Category-specific folders.
-* If a download only has `.nzb` files inside, the new downloads
+* Reduced delays between jobs during post-processing.
+* Improved handling of disks getting full.
+* Diskspace check will now include Category-specific folders.
+* If a download only contains `.nzb` files, the new downloads
   will include the name of the original download.
 * No longer show tracebacks in the browser, only in the logs.
 * Dropped support for Python 3.8.
 * Windows: Added Windows ARM (portable) release.
 * Windows and macOS: Added HTML version of the Release Notes.
-* Windows and macOS: Update Python to 3.14.4, Unrar to 7.20,
+* Windows and macOS: Updated Python to 3.14.4, Unrar to 7.20,
   par2cmdline-turbo to 1.4 and 7zip to 26.00.
 
 ## Bug fixes in 5.0.0
@@ -39,11 +44,11 @@ Please note the breaking changes described below!
 * Handle passwords that exceed Unrar's password limit.
 * Aborted Direct Unpack could result in no files being unpacked.
 * Encrypted RAR detection could sometimes fail.
-* Unwanted Extension check was unreliable on passworded downloads.
+* Unwanted extension check was unreliable on passworded downloads.
 * No longer exclusively lock all directory operations.
 * Improved handling of non-NFC unicode filenames.
 * Sorting of files inside jobs was inconsistent.
-* Linux: No longer break test-data in release package.
+* Linux: No longer break test-data in the release package.
 * Windows: Tray icon disappears after Explorer restart.
 * macOS: Slow to start on some network setups.
 
@@ -51,7 +56,6 @@ Please note the breaking changes described below!
 
 * Default `Minimum Free Space for Temporary Download Folder` set to `500M`.
 * Enabled `verify_xff_header` setting by default.
-
 
 ## Upgrade notices
 
