@@ -726,6 +726,9 @@ function ViewModel() {
                 $('#nzbname').val('')
                 $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
             }
+        }).fail(function(xhr, status, error) {
+            // Update the uploading notification text to show error
+            showNotification('.main-notification-box-uploading-failed', 0, error)
         });
     }
 

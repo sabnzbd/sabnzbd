@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,7 +25,6 @@ import sys
 
 from math import ceil
 from random import sample
-from typing import List
 
 from tavern.core import run
 from warnings import warn
@@ -172,7 +171,7 @@ class ApiTestFunctions:
         self._get_api_json("queue", extra_args={"name": "purge", "del_files": del_files})
         assert len(self._get_api_json("queue")["queue"]["slots"]) == 0
 
-    def _get_files(self, nzo_id: str) -> List[str]:
+    def _get_files(self, nzo_id: str) -> list[str]:
         files_json = self._get_api_json("get_files", extra_args={"value": nzo_id})
         assert "files" in files_json
         return [file["nzf_id"] for file in files_json["files"]]

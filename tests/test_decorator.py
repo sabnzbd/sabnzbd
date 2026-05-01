@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -315,3 +315,33 @@ class TestConditionalCache:
         assert all(result == "result_test" for result in results)
         # call_count should be small (ideally 1, but could be more due to race conditions)
         assert call_count <= 5
+
+    def test_conditional_cache_force(self):
+        """Test that conditional_cache forces entries after specified time"""
+        call_count = 0
+
+        @conditional_cache(cache_time=5)
+        def test_func(value):
+            nonlocal call_count
+            call_count += 1
+            return f"result_{value}"
+
+        # First call
+        result1 = test_func("test")
+        assert result1 == "result_test"
+        assert call_count == 1
+
+        # Second call immediately - should use cache
+        result2 = test_func("test")
+        assert result2 == "result_test"
+        assert call_count == 1
+
+        # Third call - force so should execute function again
+        result3 = test_func("test", force=True)
+        assert result3 == "result_test"
+        assert call_count == 2
+
+        # Fourth call - should use cache
+        result4 = test_func("test")
+        assert result4 == "result_test"
+        assert call_count == 2

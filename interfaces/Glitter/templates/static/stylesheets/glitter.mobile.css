@@ -7,6 +7,10 @@
     padding-right: 8px;
 }
 
+.container-full-width .container {
+    width: 100%;
+}
+
 .main-navbar {
     margin-top: 0;
     padding: 0;

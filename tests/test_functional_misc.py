@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
 """
 tests.test_functional_misc - Functional tests of various functions
 """
+
 import shutil
 import subprocess
 import sys
@@ -126,6 +127,7 @@ class TestSamplePostProc:
 
 
 class TestExtractPot:
+    @pytest.mark.skipif(sys.version_info < (3, 10), reason="pygettext.py requires Python 3.10+ (match/case syntax)")
     def test_extract_pot(self):
         """Simple test if translation extraction still works"""
         script_call = [sys.executable, "tools/extract_pot.py"]

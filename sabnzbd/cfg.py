@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import List, Tuple, Union
+from typing import Union
 
 import sabnzbd
 from sabnzbd.config import (
@@ -52,12 +52,14 @@ from sabnzbd.constants import (
     DEF_STD_WEB_COLOR,
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
+    DEF_MAX_ASSEMBLER_QUEUE,
+    DEF_DOWNLOAD_FREE,
 )
 from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_network_path
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
-ValidateResult = Union[Tuple[None, str], Tuple[None, List[str]], Tuple[str, None]]
+ValidateResult = Union[tuple[None, str], tuple[None, list[str]], tuple[str, None]]
 
 
 ##############################################################################
@@ -122,21 +124,21 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
     return None, value
 
 
-def all_lowercase(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
+def all_lowercase(value: Union[str, list]) -> tuple[None, Union[str, list]]:
     """Lowercase and strip everything!"""
     if isinstance(value, list):
         return None, [item.lower().strip() for item in value]
     return None, value.lower().strip()
 
 
-def lower_case_ext(value: Union[str, List]) -> Tuple[None, Union[str, List]]:
+def lower_case_ext(value: Union[str, list]) -> tuple[None, Union[str, list]]:
     """Generate lower case extension(s), without dot"""
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
 
 
-def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
+def validate_single_tag(value: list[str]) -> tuple[None, list[str]]:
     """Don't split single indexer tags like "TV > HD"
     into ['TV', '>', 'HD']
     """
@@ -146,7 +148,7 @@ def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
     return None, value
 
 
-def validate_url_base(value: str) -> Tuple[None, str]:
+def validate_url_base(value: str) -> tuple[None, str]:
     """Strips the right slash and adds starting slash, if not present"""
     if value and isinstance(value, str):
         if not value.startswith("/"):
@@ -158,7 +160,7 @@ def validate_url_base(value: str) -> Tuple[None, str]:
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_email(value: Union[List, str]) -> ValidateResult:
+def validate_email(value: Union[list, str]) -> ValidateResult:
     if email_endjob() or email_full() or email_rss():
         if isinstance(value, list):
             values = value
@@ -285,7 +287,7 @@ def validate_download_vs_complete_dir(root: str, value: str, default: str):
         return validate_safedir(root, value, default)
 
 
-def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[None, str]:
+def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> tuple[None, str]:
     """Warn users to not use the Program Files folder for their scripts"""
     # Need to add separator so /mnt/sabnzbd and /mnt/sabnzbd-data are not detected as equal
     if value and same_directory(sabnzbd.DIR_PROG, os.path.join(root, value)):
@@ -298,7 +300,7 @@ def validate_scriptdir_not_appdir(root: str, value: str, default: str) -> Tuple[
     return None, value
 
 
-def validate_default_if_empty(root: str, value: str, default: str) -> Tuple[None, str]:
+def validate_default_if_empty(root: str, value: str, default: str) -> tuple[None, str]:
     """If value is empty, return default"""
     if value:
         return None, value
@@ -376,7 +378,7 @@ download_dir = OptionDir(
     apply_permissions=True,
     validation=validate_download_vs_complete_dir,
 )
-download_free = OptionStr("misc", "download_free")
+download_free = OptionStr("misc", "download_free", DEF_DOWNLOAD_FREE)
 complete_dir = OptionDir(
     "misc",
     "complete_dir",
@@ -486,7 +488,6 @@ enable_tsjoin = OptionBool("misc", "enable_tsjoin", True)
 overwrite_files = OptionBool("misc", "overwrite_files", False)
 ignore_unrar_dates = OptionBool("misc", "ignore_unrar_dates", False)
 backup_for_duplicates = OptionBool("misc", "backup_for_duplicates", False)
-empty_postproc = OptionBool("misc", "empty_postproc", False)
 wait_for_dfolder = OptionBool("misc", "wait_for_dfolder", False)
 rss_filenames = OptionBool("misc", "rss_filenames", False)
 api_logging = OptionBool("misc", "api_logging", True)
@@ -505,7 +506,8 @@ no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 enable_season_sorting = OptionBool("misc", "enable_season_sorting", True)
-verify_xff_header = OptionBool("misc", "verify_xff_header", False)
+verify_xff_header = OptionBool("misc", "verify_xff_header", True)
+direct_write = OptionBool("misc", "direct_write", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
@@ -527,6 +529,7 @@ local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, minval=1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, minval=0)
 receive_threads = OptionNumber("misc", "receive_threads", 2, minval=1)
+assembler_max_queue_size = OptionNumber("misc", "assembler_max_queue_size", DEF_MAX_ASSEMBLER_QUEUE, minval=1)
 switchinterval = OptionNumber("misc", "switchinterval", 0.005, minval=0.001)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, minval=1, maxval=600)
 ext_rename_ignore = OptionList("misc", "ext_rename_ignore", validation=lower_case_ext)
@@ -740,6 +743,13 @@ def new_limit():
     if sabnzbd.__INITIALIZED__:
         # Only update after full startup
         sabnzbd.ArticleCache.new_limit(cache_limit.get_int())
+        sabnzbd.Assembler.new_limit(sabnzbd.ArticleCache.cache_info().cache_limit)
+
+
+def new_direct_write():
+    """Callback for direct write changes"""
+    sabnzbd.Assembler.change_direct_write(bool(direct_write()))
+    sabnzbd.ArticleCache.change_direct_write(bool(direct_write()))
 
 
 def guard_restart():
@@ -852,6 +862,17 @@ def config_conversions():
 
         # Done
         config_conversion_version.set(4)
+
+    # Set pipelining_requests to 1 for existing servers (default is 2 for new servers)
+    if config_conversion_version() < 5:
+        logging.info("Config conversion set 5")
+
+        all_servers = get_servers()
+        for server in all_servers:
+            all_servers[server].pipelining_requests.set(1)
+
+        # Done
+        config_conversion_version.set(5)
 
     # Make sure we store the new values
     save_config()

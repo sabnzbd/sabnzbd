@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ with open("builder/constants.py") as version_file:
 HEADER = (
     r"""#
 # SABnzbd Translation Template file __TYPE__
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 msgid ""
 msgstr ""
@@ -58,7 +58,7 @@ DOMAIN = "SABnzbd"
 DOMAIN_EMAIL = "SABemail"
 DOMAIN_NSIS = "SABnsis"
 PARMS = "-d %s -p %s -w500 -k T -k TT -o %s.pot.tmp" % (DOMAIN, PO_DIR, DOMAIN)
-FILES = "SABnzbd.py sabnzbd/*.py sabnzbd/utils/*.py"
+FILES = "SABnzbd.py sabnzbd/*.py sabnzbd/*/*.py"
 
 FILE_CACHE = {}
 
@@ -185,8 +185,8 @@ if os.path.exists(NSIS):
     print("Creating NSIS POT file")
     if not os.path.exists(PON_DIR):
         os.makedirs(PON_DIR)
-    src = open(NSIS, "r")
-    dst = open(os.path.join(PON_DIR, DOMAIN_NSIS + ".pot"), "w")
+    src = open(NSIS, "r", encoding="utf-8-sig")
+    dst = open(os.path.join(PON_DIR, DOMAIN_NSIS + ".pot"), "w", encoding="utf-8")
     dst.write(HEADER.replace("__TYPE__", "NSIS"))
     dst.write("\n")
     for line in src:

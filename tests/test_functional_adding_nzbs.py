@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,7 +36,6 @@ from sabnzbd.constants import (
 )
 
 from tests.testhelper import *
-
 
 # Repair priority is out of scope for the purpose of these tests: it cannot be
 # set as a default, upon adding a job, or from a pre-queue script.

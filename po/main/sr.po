@@ -1,14 +1,14 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2023
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.6.0\n"
+"Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Serbian (https://app.transifex.com/sabnzbd/teams/111101/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -138,6 +138,11 @@ msgstr ""
 msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
 
 #. Warning message
@@ -309,7 +314,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Neželjena ekstenzija je u rar datoteci %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Prekinuto, detektovana neželjena ekstenzija"
 
@@ -550,11 +555,6 @@ msgstr "Neuspešna inicijalizacija %s@%s iz razloga: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Previše konekcija ka serveru %s [%s]"
@@ -573,11 +573,6 @@ msgstr "Неуспешно пријављивање на сервер %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Povezivanje na %s@%s neuspešno, poruka=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Sumnja u grešku u programu za download"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -736,6 +731,14 @@ msgid ""
 "problems."
 msgstr ""
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"Direct Write mode has been disabled because %s does not support sparse "
+"files. For details and possible solutions, see: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr ""
@@ -833,6 +836,13 @@ msgstr "ГРЕШКА:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Назад"
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -963,7 +973,7 @@ msgid "Update Available!"
 msgstr "Нова верзија доступна!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr ""
 
@@ -1201,6 +1211,16 @@ msgstr "Pokušaj SFV provere"
 msgid "left"
 msgstr "остало"
 
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Sumnja u grešku u programu za download"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Ovaj server ne dozvoljava SSL na ovom portu"
@@ -1346,6 +1366,103 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Празан NZB %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Поништено, не може да се заврши"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Грешка увоза %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "ДУПЛИКАТ"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "ШИФРИРАНО"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "ПРЕВЕЛИКО"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "НЕПОТПУНО"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "NEŽELJENI"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "Чекање %s сек"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Преузето за %s на просек од %sБ/с"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Старост"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s артикла нису добро формирани"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s артикла недостају"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s артикла нису дупликате"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Игнорисање дуплог NZB-а \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Паузирам због дуплог NZB-а \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1379,103 +1496,6 @@ msgstr "Грешка учитавање %s, покварена датотека 
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB додат у ред"
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Игнорисање дуплог NZB-а \"%s\""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Празан NZB %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Поништено, не може да се заврши"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Грешка увоза %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "ДУПЛИКАТ"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "ШИФРИРАНО"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "ПРЕВЕЛИКО"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "НЕПОТПУНО"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "NEŽELJENI"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "Чекање %s сек"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Преузето за %s на просек од %sБ/с"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Старост"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s артикла нису добро формирани"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s артикла недостају"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s артикла нису дупликате"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Паузирам због дуплог NZB-а \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1749,6 +1769,14 @@ msgstr "Greška pri gašenju sistema"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Nađen prazan RSS unos (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Некомпатибилан Фид"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1774,14 +1802,6 @@ msgstr "Server %s koristi nepouzdan HTTPS sertifikat"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS фид %s је празан"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Некомпатибилан Фид"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Nađen prazan RSS unos (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
@@ -3246,9 +3266,9 @@ msgstr "Пост-процесирај само проверени послови
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3335,8 +3355,9 @@ msgid "Enable SFV-based checks"
 msgstr "Упали SFV провере"
 
 #: sabnzbd/skintext.py
-msgid "Do an extra verification based on SFV files."
-msgstr "Уради још једну проверу базирану на SFV датотеке."
+msgid ""
+"If no par2 files are available, use sfv files (if present) to verify files"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3727,6 +3748,17 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Enable"
 msgstr "Омогући"
+
+#: sabnzbd/skintext.py
+msgid "Articles per request"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Request multiple articles per connection without waiting for each response "
+"first.<br />This can improve download speeds, especially on connections with"
+" higher latency."
+msgstr ""
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
@@ -4140,17 +4172,22 @@ msgid "Enable Apprise notifications"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Send notifications using Apprise to almost any notification service"
+msgid ""
+"Send notifications directly to any notification service you use.<br>For "
+"example: Slack, Discord, Telegram, or any service from over 100 supported "
+"services!"
 msgstr ""
 
 #. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Default Apprise URLs"
+msgid "Use default Apprise URLs"
 msgstr ""
 
-#. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Use a comma and/or space to identify more than one URL."
+msgid ""
+"Apprise defines service connection information using URLs.<br>Read the "
+"Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
+"space to identify more than one URL."
 msgstr ""
 
 #: sabnzbd/skintext.py

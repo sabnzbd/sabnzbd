@@ -1,13 +1,12 @@
 # SABnzbd Translation Template file NSIS
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Ester Molla Aragones <moarages@gmail.com>, 2020
 # Safihre <safihre@sabnzbd.org>, 2025
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.6.0\n"
+"Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2025\n"
 "Language-Team: Spanish (https://app.transifex.com/sabnzbd/teams/111101/es/)\n"
@@ -30,23 +29,19 @@ msgid "Support the project, Donate!"
 msgstr "¡Apoye el proyecto, haga una  donación!"
 
 #: builder/win/NSIS_Installer.nsi
-msgid ""
-"The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
-"reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
-"services or `Cancel` to cancel this upgrade."
-msgstr ""
-"El servicio de Windows para SABnzbd ha cambiado en la versión SABnzbd "
-"3.0.0.\\nNecesitará volver a instalar el servicio SABnzbd. \\n\\nHaga clic "
-"en \"OK\" para eliminar los servicios existentes o \"Cancelar\" para "
-"cancelar la actualización."
-
-#: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports 64-bit Windows."
 msgstr "SABnzbd solo es compatible con Windows de 64 bits."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "SABnzbd only supports Windows 8.1 and above."
 msgstr "SABnzbd solo es compatible con Windows 8.1 y superiores."
+
+#: builder/win/NSIS_Installer.nsi
+msgid ""
+"An ARM version of SABnzbd is available on our Downloads page. This installer"
+" only contains the regular version.\\nPress OK to continue or Cancel to "
+"exit."
+msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Shutting down SABnzbd"

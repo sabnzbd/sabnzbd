@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ import time
 import uuid
 import io
 import zipfile
-from typing import List, Dict, Any, Callable, Optional, Union, Tuple
+from typing import Any, Callable, Optional, Union
 from urllib.parse import urlparse
 
 import configobj
@@ -42,6 +42,7 @@ from sabnzbd.constants import (
     CONFIG_BACKUP_HTTPS,
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
+    DEF_PIPELINING_REQUESTS,
 )
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
@@ -101,14 +102,14 @@ class Option:
     def get_string(self) -> str:
         return str(self.get())
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return value as a dictionary.
         Will not show non-public options if needed for the API"""
         if not self.__public and for_public_api:
             return {}
         return {self.__keyword: self.get()}
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set value based on dictionary"""
         if not self.__protect:
             try:
@@ -209,7 +210,8 @@ class OptionBool(Option):
         super().set(sabnzbd.misc.bool_conv(value))
 
     def __call__(self) -> int:
-        """get() replacement"""
+        """Many places assume 0/1 is used for historical reasons.
+        Using pure bools breaks in random places"""
         return int(self.get())
 
 
@@ -307,7 +309,7 @@ class OptionList(Option):
         self,
         section: str,
         keyword: str,
-        default_val: Union[str, List, None] = None,
+        default_val: Union[str, list, None] = None,
         validation: Optional[Callable] = None,
         add: bool = True,
         public: bool = True,
@@ -318,7 +320,7 @@ class OptionList(Option):
             default_val = []
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
-    def set(self, value: Union[str, List]) -> Optional[str]:
+    def set(self, value: Union[str, list]) -> Optional[str]:
         """Set the list given a comma-separated string or a list"""
         error = None
         if value is not None:
@@ -341,7 +343,7 @@ class OptionList(Option):
         """Return the default list as a comma-separated string"""
         return ", ".join(self.default)
 
-    def __call__(self) -> List[str]:
+    def __call__(self) -> list[str]:
         """get() replacement"""
         return self.get()
 
@@ -406,7 +408,7 @@ class OptionPassword(Option):
             return "*" * 10
         return ""
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, str]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, str]:
         """Return value a dictionary"""
         if for_public_api:
             return {self.keyword: self.get_stars()}
@@ -444,6 +446,7 @@ class ConfigServer:
         self.enable = OptionBool(name, "enable", True, add=False)
         self.required = OptionBool(name, "required", False, add=False)
         self.optional = OptionBool(name, "optional", False, add=False)
+        self.pipelining_requests = OptionNumber(name, "pipelining_requests", DEF_PIPELINING_REQUESTS, 1, 20, add=False)
         self.retention = OptionNumber(name, "retention", 0, add=False)
         self.expire_date = OptionStr(name, "expire_date", add=False)
         self.quota = OptionStr(name, "quota", add=False)
@@ -454,7 +457,7 @@ class ConfigServer:
         self.set_dict(values)
         add_to_database("servers", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         # Replace usage_at_start value with most recent statistics if the user changes the quota value
         # Only when we are updating it from the Config
@@ -476,6 +479,7 @@ class ConfigServer:
             "enable",
             "required",
             "optional",
+            "pipelining_requests",
             "retention",
             "expire_date",
             "quota",
@@ -491,7 +495,7 @@ class ConfigServer:
         if not self.displayname():
             self.displayname.set(self.__name)
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -511,6 +515,7 @@ class ConfigServer:
         output_dict["enable"] = self.enable()
         output_dict["required"] = self.required()
         output_dict["optional"] = self.optional()
+        output_dict["pipelining_requests"] = self.pipelining_requests()
         output_dict["retention"] = self.retention()
         output_dict["expire_date"] = self.expire_date()
         output_dict["quota"] = self.quota()
@@ -531,7 +536,7 @@ class ConfigServer:
 class ConfigCat:
     """Class defining a single category"""
 
-    def __init__(self, name: str, values: Dict[str, Any]):
+    def __init__(self, name: str, values: dict[str, Any]):
         self.__name = clean_section_name(name)
         name = "categories," + self.__name
 
@@ -545,7 +550,7 @@ class ConfigCat:
         self.set_dict(values)
         add_to_database("categories", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
             try:
@@ -554,7 +559,7 @@ class ConfigCat:
             except KeyError:
                 continue
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -589,7 +594,7 @@ class ConfigSorter:
         self.set_dict(values)
         add_to_database("sorters", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
             try:
@@ -598,7 +603,7 @@ class ConfigSorter:
             except KeyError:
                 continue
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -639,7 +644,7 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def update(self, pos: int, value: Tuple):
+    def update(self, pos: int, value: tuple):
         """Update filter 'pos' definition, value is a list
         Append if 'pos' outside list
         """
@@ -659,14 +664,14 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, str]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, str]:
         """Return filter list as a dictionary with keys 'filter[0-9]+'"""
         output_dict = {}
         for n, rss_filter in enumerate(self.get()):
             output_dict[f"filter{n}"] = rss_filter
         return output_dict
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Create filter list from dictionary with keys 'filter[0-9]+'"""
         filters = []
         # We don't know how many filters there are, so just assume all values are filters
@@ -677,7 +682,7 @@ class OptionFilters(Option):
         if filters:
             self.set(filters)
 
-    def __call__(self) -> List[List[str]]:
+    def __call__(self) -> list[list[str]]:
         """get() replacement"""
         return self.get()
 
@@ -701,7 +706,7 @@ class ConfigRSS:
         self.set_dict(values)
         add_to_database("rss", self.__name, self)
 
-    def set_dict(self, values: Dict[str, Any]):
+    def set_dict(self, values: dict[str, Any]):
         """Set one or more fields, passed as dictionary"""
         for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
             try:
@@ -711,7 +716,7 @@ class ConfigRSS:
                 continue
         self.filters.set_dict(values)
 
-    def get_dict(self, for_public_api: bool = False) -> Dict[str, Any]:
+    def get_dict(self, for_public_api: bool = False) -> dict[str, Any]:
         """Return a dictionary with all attributes"""
         output_dict = {}
         output_dict["name"] = self.__name
@@ -755,7 +760,7 @@ AllConfigTypes = Union[
     ConfigRSS,
     ConfigServer,
 ]
-CFG_DATABASE: Dict[str, Dict[str, AllConfigTypes]] = {}
+CFG_DATABASE: dict[str, dict[str, AllConfigTypes]] = {}
 
 
 @synchronized(CONFIG_LOCK)
@@ -1103,7 +1108,7 @@ def restore_config_backup(config_backup_data: bytes):
 
 
 @synchronized(CONFIG_LOCK)
-def get_servers() -> Dict[str, ConfigServer]:
+def get_servers() -> dict[str, ConfigServer]:
     global CFG_DATABASE
     try:
         return CFG_DATABASE["servers"]
@@ -1112,7 +1117,7 @@ def get_servers() -> Dict[str, ConfigServer]:
 
 
 @synchronized(CONFIG_LOCK)
-def get_sorters() -> Dict[str, ConfigSorter]:
+def get_sorters() -> dict[str, ConfigSorter]:
     global CFG_DATABASE
     try:
         return CFG_DATABASE["sorters"]
@@ -1120,7 +1125,7 @@ def get_sorters() -> Dict[str, ConfigSorter]:
         return {}
 
 
-def get_ordered_sorters() -> List[Dict]:
+def get_ordered_sorters() -> list[dict]:
     """Return sorters as an ordered list"""
     database_sorters = get_sorters()
 
@@ -1131,7 +1136,7 @@ def get_ordered_sorters() -> List[Dict]:
 
 
 @synchronized(CONFIG_LOCK)
-def get_categories() -> Dict[str, ConfigCat]:
+def get_categories() -> dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
     """
@@ -1163,7 +1168,7 @@ def get_category(cat: str = "*") -> ConfigCat:
         return cats["*"]
 
 
-def get_ordered_categories() -> List[Dict]:
+def get_ordered_categories() -> list[dict]:
     """Return list-copy of categories section that's ordered
     by user's ordering including Default-category
     """
@@ -1183,7 +1188,7 @@ def get_ordered_categories() -> List[Dict]:
 
 
 @synchronized(CONFIG_LOCK)
-def get_rss() -> Dict[str, ConfigRSS]:
+def get_rss() -> dict[str, ConfigRSS]:
     global CFG_DATABASE
     try:
         # We have to remove non-separator commas by detecting if they are valid URL's

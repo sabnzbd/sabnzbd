@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -441,12 +441,9 @@ class SABnzbdDelegate(NSObject):
 
     def diskspaceUpdate(self):
         try:
-            self.completefolder_menu_item.setTitle_(
-                "%s (%.2f GB)" % (T("Complete Folder"), diskspace()["complete_dir"][1])
-            )
-            self.incompletefolder_menu_item.setTitle_(
-                "%s (%.2f GB)" % (T("Incomplete Folder"), diskspace()["download_dir"][1])
-            )
+            download_dir, complete_dir = diskspace()
+            self.completefolder_menu_item.setTitle_("%s (%.2f GB)" % (T("Complete Folder"), complete_dir.free))
+            self.incompletefolder_menu_item.setTitle_("%s (%.2f GB)" % (T("Incomplete Folder"), download_dir.free))
         except Exception:
             logging.info("[macos] diskspaceUpdate Exception", exc_info=True)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
 """
 tests.test_functional_adding_nzbs_clean - Tests for settings interaction when adding NZBs (clean SABnzbd instance)
 """
+
 import time
 from zipfile import ZipFile
 import tests.test_functional_adding_nzbs as test_functional_adding_nzbs
@@ -70,14 +71,16 @@ class TestAddingNZBsClean:
             )
 
             # Wait for the job to be removed and appear in the history
-            for _ in range(10):
+            for _ in range(100):
                 try:
                     history = get_api_result(mode="history", extra_arguments={"nzo_ids": job1["nzo_ids"][0]})["history"]
                     assert history["slots"][0]["nzo_id"] == job1["nzo_ids"][0]
                     assert history["slots"][0]["status"] == "Failed"
                     break
                 except (IndexError, AssertionError):
-                    time.sleep(1)
+                    time.sleep(0.1)
+            else:
+                pytest.fail("Job did not appear in history")
 
             # Now the second job should no longer be paused and labelled
             queue = get_api_result(mode="queue", extra_arguments={"nzo_ids": job2["nzo_ids"][0]})
@@ -96,14 +99,18 @@ class TestAddingNZBsClean:
             assert job["nzo_ids"]
 
             # Wait for the job to be removed and appear in the history
-            for _ in range(10):
+            for _ in range(100):
                 try:
-                    assert not get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]
+                    queue = get_api_result(mode="queue", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["queue"]
+                    assert not queue["slots"]
                     history = get_api_result(mode="history", extra_arguments={"nzo_ids": job["nzo_ids"][0]})["history"]
                     assert history["slots"][0]["nzo_id"] == job["nzo_ids"][0]
                     assert history["slots"][0]["status"] == "Failed"
+                    break
                 except (IndexError, AssertionError):
-                    time.sleep(1)
+                    time.sleep(0.1)
+            else:
+                pytest.fail("Job did not appear in history")
 
             # Reset and clean up
             get_api_result(

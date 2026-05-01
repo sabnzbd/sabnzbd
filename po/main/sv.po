@@ -1,14 +1,14 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2023
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.6.0\n"
+"Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Swedish (https://app.transifex.com/sabnzbd/teams/111101/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -138,6 +138,11 @@ msgstr ""
 msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
 
 #. Warning message
@@ -309,7 +314,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Oönskad filändelse i RAR-fil %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Avbruten, oönskad filändelse detekterad"
 
@@ -550,11 +555,6 @@ msgstr "Misslyckades att initiera %s@%s med orsak %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "För många anslutningar till servern %s [%s]"
@@ -573,11 +573,6 @@ msgstr "Det gick inte att logga in på server %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Anslutning %s@%s misslyckades, meddelande=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Misstänker fel i nedladdare"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -736,6 +731,14 @@ msgid ""
 "problems."
 msgstr ""
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"Direct Write mode has been disabled because %s does not support sparse "
+"files. For details and possible solutions, see: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr ""
@@ -835,6 +838,13 @@ msgstr "FEL:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Bakåt"
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -965,7 +975,7 @@ msgid "Update Available!"
 msgstr "Uppdatering tillgänglig"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr ""
 
@@ -1205,6 +1215,16 @@ msgstr "Försöker verifiera SFV"
 msgid "left"
 msgstr "kvar"
 
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Misstänker fel i nedladdare"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Den här servern tillåter in SSL på denna port"
@@ -1350,6 +1370,103 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "NZB filen %s är tom"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Avbrutet, kan inte slutföras"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Det gick inte att importera %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "DUBLETT"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "KRYPTERAT"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "FÖR STOR"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "INKOMPLETT"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "OÖNSKAD"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "VÄNTA %s SEKUNDER"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Hämtade i %s vid ett genomsnitt på %sB/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Ålder"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s artiklar var felaktiga"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s artiklar saknades"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s artiklar hade icke-matchande dubletter"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorerar dubblett för NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pausar dubblett för NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1383,103 +1500,6 @@ msgstr "Laddningsfel %s, felaktig fil detekterad"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB tillagd i kön"
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorerar dubblett för NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr ""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "NZB filen %s är tom"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Avbrutet, kan inte slutföras"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Det gick inte att importera %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUBLETT"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "KRYPTERAT"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "FÖR STOR"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "INKOMPLETT"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "OÖNSKAD"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "VÄNTA %s SEKUNDER"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Hämtade i %s vid ett genomsnitt på %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Ålder"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s artiklar var felaktiga"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s artiklar saknades"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s artiklar hade icke-matchande dubletter"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Pausar dubblett för NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1755,6 +1775,14 @@ msgstr "Fel uppstod då systemet skulle stängas"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Tom RSS post hittades (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Inkompatibel feed"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1780,14 +1808,6 @@ msgstr "Server %s använder ett otillförlitlig HTTPS-certifikat"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-flödet %s var tomt"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Inkompatibel feed"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Tom RSS post hittades (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
@@ -3256,9 +3276,9 @@ msgstr "Efterbehandla endast verifierade jobb"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3345,8 +3365,9 @@ msgid "Enable SFV-based checks"
 msgstr "Använd SFV-baserade kontroller"
 
 #: sabnzbd/skintext.py
-msgid "Do an extra verification based on SFV files."
-msgstr "Gör en extra kontroll med SFV filer"
+msgid ""
+"If no par2 files are available, use sfv files (if present) to verify files"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3739,6 +3760,17 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Enable"
 msgstr "Aktivera"
+
+#: sabnzbd/skintext.py
+msgid "Articles per request"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Request multiple articles per connection without waiting for each response "
+"first.<br />This can improve download speeds, especially on connections with"
+" higher latency."
+msgstr ""
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
@@ -4153,17 +4185,22 @@ msgid "Enable Apprise notifications"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Send notifications using Apprise to almost any notification service"
+msgid ""
+"Send notifications directly to any notification service you use.<br>For "
+"example: Slack, Discord, Telegram, or any service from over 100 supported "
+"services!"
 msgstr ""
 
 #. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Default Apprise URLs"
+msgid "Use default Apprise URLs"
 msgstr ""
 
-#. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Use a comma and/or space to identify more than one URL."
+msgid ""
+"Apprise defines service connection information using URLs.<br>Read the "
+"Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
+"space to identify more than one URL."
 msgstr ""
 
 #: sabnzbd/skintext.py

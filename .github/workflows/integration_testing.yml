@@ -7,22 +7,20 @@ jobs:
     name: Black Code Formatter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - name: Black Code Formatter
-        uses: lgeiger/black-action@master
-        with:
-          args: >
-            SABnzbd.py
-            sabnzbd
-            scripts
-            tools
-            builder
-            builder/SABnzbd.spec
-            tests
-            --line-length=120
-            --target-version=py38
-            --check
-            --diff
+      - uses: actions/checkout@v6
+      - run: pip install black
+      # Tools folder excluded for now due to https://github.com/psf/black/issues/4963
+      - run: >
+          black
+          SABnzbd.py
+          sabnzbd
+          scripts
+          builder
+          builder/SABnzbd.spec
+          tests
+          --line-length=120
+          --check
+          --diff
 
   test:
     name: Test ${{ matrix.name }} - Python ${{ matrix.python-version }}
@@ -31,19 +29,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13", "3.14" ]
         name: ["Linux"]
         os: [ubuntu-latest]
         include:
           - name: macOS
-            os: macos-13
+            os: macos-latest
             python-version: "3.14"
           - name: Windows
             os: windows-2022
             python-version: "3.14"
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:

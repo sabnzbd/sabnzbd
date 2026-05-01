@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,11 +18,13 @@
 """
 tests.test_filesystem - Testing functions in filesystem.py
 """
+
 import stat
 import sys
 import os
 import random
 import shutil
+import unicodedata
 from pathlib import Path
 import tempfile
 
@@ -151,6 +153,42 @@ class TestFileFolderNameSanitizer:
             if char_ill.strip():
                 assert filesystem.sanitize_filename("test" + char_ill * 2) == "test__"
                 assert filesystem.sanitize_filename(char_ill * 2 + "test") == "__test"
+
+    def test_nfc_normalization_filename(self):
+        """sanitize_filename must normalize Unicode to NFC (fixes issues #1633 and #2858).
+
+        macOS decomposes Unicode to NFD when returning filenames from the filesystem.
+        par2 files, yEnc headers, and NZBs typically carry NFC. Without normalization,
+        visually identical filenames compare unequal, causing double-unpacking and
+        inconsistent sort paths when %fn (disk) and %title (parsed) are combined.
+        """
+        # NFD: 'e' + U+0300 (combining grave), 'o' + U+0308 (combining diaeresis)
+        nfd_name = "fre\u0300nch_german_demo\u0308.mkv"
+        # NFC: precomposed è (U+00E8) and ö (U+00F6)
+        nfc_name = "frènch_german_demö.mkv"
+
+        assert nfd_name != nfc_name, "pre-condition: NFD and NFC byte representations differ"
+        result = filesystem.sanitize_filename(nfd_name)
+        assert result == nfc_name
+        assert unicodedata.is_normalized("NFC", result)
+
+        # NFC input must pass through unchanged (idempotent)
+        assert filesystem.sanitize_filename(nfc_name) == nfc_name
+
+    def test_nfc_normalization_foldername(self):
+        """sanitize_foldername must normalize Unicode to NFC (fixes issues #1633 and #2858)."""
+        nfd_folder = "Mo\u0308vie"  # NFD: 'o' + U+0308 (combining diaeresis)
+        nfc_folder = "Möwie"  # NFC: precomposed ö (U+00F6)
+        # Correct expected NFC for "Mo" + combining-diaeresis + "vie"
+        nfc_folder = "M\u00f6vie"
+
+        assert nfd_folder != nfc_folder, "pre-condition: NFD and NFC differ"
+        result = filesystem.sanitize_foldername(nfd_folder)
+        assert result == nfc_folder
+        assert unicodedata.is_normalized("NFC", result)
+
+        # NFC input must pass through unchanged (idempotent)
+        assert filesystem.sanitize_foldername(nfc_folder) == nfc_folder
 
     def test_filename_dot(self):
         # All dots should survive in filenames
@@ -663,7 +701,7 @@ class TestListdirFull(ffs.TestCase):
         ):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
-        assert filesystem.listdir_full("/rsc") == ["/rsc/base_file", "/rsc/not._base_file"]
+        assert sorted(filesystem.listdir_full("/rsc")) == ["/rsc/base_file", "/rsc/not._base_file"]
 
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
@@ -750,7 +788,7 @@ class TestListdirFullWin(ffs.TestCase):
         ):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
-        assert filesystem.listdir_full(r"f:\rsc") == [r"f:\rsc\base_file", r"f:\rsc\not._base_file"]
+        assert sorted(filesystem.listdir_full(r"f:\rsc")) == [r"f:\rsc\base_file", r"f:\rsc\not._base_file"]
 
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
@@ -1256,3 +1294,21 @@ class TestOtherFileSystemFunctions:
     )
     def test_strip_extensions(self, name, ext_to_remove, output):
         assert filesystem.strip_extensions(name, ext_to_remove) == output
+
+    @pytest.mark.parametrize(
+        "file_name, clean_file_name",
+        [
+            ("my_awesome_nzb_file.pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file.....pAr2.nZb", "my_awesome_nzb_file"),
+            ("my_awesome_nzb_file....par2..", "my_awesome_nzb_file"),
+            (" my_awesome_nzb_file  .pAr.nZb", "my_awesome_nzb_file"),
+            ("with.extension.and.period.par2.", "with.extension.and.period"),
+            ("nothing.in.here", "nothing.in.here"),
+            ("  just.space  ", "just.space"),
+            ("http://test.par2  ", "http://test.par2"),
+        ],
+    )
+    def test_create_work_name(self, file_name, clean_file_name):
+        # Only test stuff specific for create_work_name
+        # The sanitizing is already tested in tests for sanitize_foldername
+        assert filesystem.create_work_name(file_name) == clean_file_name

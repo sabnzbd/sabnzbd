@@ -161,6 +161,7 @@ class SysTrayIconThread(Thread):
             pass
 
     def restart(self, hwnd, msg, wparam, lparam):
+        self.notify_id = None
         self.refresh_icon()
         return True
 

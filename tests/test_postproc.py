@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -257,3 +257,137 @@ class TestPostProc:
                 assert tmp_workdir_complete == workdir_complete
 
         _func()
+
+
+class TestNzbOnlyDownload:
+    @mock.patch("sabnzbd.postproc.process_single_nzb")
+    @mock.patch("sabnzbd.postproc.listdir_full")
+    def test_process_nzb_only_download_single_nzb(self, mock_listdir, mock_process_single_nzb):
+        """Test process_nzb_only_download with a single NZB file"""
+        # Setup mock NZO
+        fake_nzo = mock.Mock()
+        fake_nzo.final_name = "TestDownload"
+        fake_nzo.pp = 3
+        fake_nzo.script = "test_script.py"
+        fake_nzo.cat = "movies"
+        fake_nzo.url = "http://example.com/test.nzb"
+        fake_nzo.priority = 0
+
+        # Mock single NZB file
+        workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
+        nzb_file = os.path.join(workdir, "test.nzb")
+        mock_listdir.return_value = [nzb_file]
+
+        # Call the function
+        result = postproc.process_nzb_only_download(workdir, fake_nzo)
+
+        # Verify result
+        assert result == [nzb_file]
+
+        # Verify process_single_nzb was called with correct arguments
+        mock_process_single_nzb.assert_called_once_with(
+            "test.nzb",
+            nzb_file,
+            pp=3,
+            script="test_script.py",
+            cat="movies",
+            url="http://example.com/test.nzb",
+            priority=0,
+            nzbname="TestDownload",
+            dup_check=False,
+        )
+
+    @mock.patch("sabnzbd.postproc.process_single_nzb")
+    @mock.patch("sabnzbd.postproc.listdir_full")
+    def test_process_nzb_only_download_multiple_nzbs(self, mock_listdir, mock_process_single_nzb):
+        """Test process_nzb_only_download with multiple NZB files"""
+        # Setup mock NZO
+        fake_nzo = mock.Mock()
+        fake_nzo.final_name = "TestDownload"
+        fake_nzo.pp = 2
+        fake_nzo.script = None
+        fake_nzo.cat = "tv"
+        fake_nzo.url = "http://example.com/test.nzb"
+        fake_nzo.priority = 1
+
+        # Mock multiple NZB files
+        workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
+        first_nzb = os.path.join(workdir, "first.nzb")
+        second_nzb = os.path.join(workdir, "second.nzb")
+        mock_listdir.return_value = [first_nzb, second_nzb]
+
+        # Call the function
+        result = postproc.process_nzb_only_download(workdir, fake_nzo)
+
+        # Verify result
+        assert result == [first_nzb, second_nzb]
+
+        # Verify process_single_nzb was called twice with correct arguments
+        assert mock_process_single_nzb.call_count == 2
+        mock_process_single_nzb.assert_any_call(
+            "first.nzb",
+            first_nzb,
+            pp=2,
+            script=None,
+            cat="tv",
+            url="http://example.com/test.nzb",
+            priority=1,
+            nzbname="TestDownload - first.nzb",
+            dup_check=False,
+        )
+        mock_process_single_nzb.assert_any_call(
+            "second.nzb",
+            second_nzb,
+            pp=2,
+            script=None,
+            cat="tv",
+            url="http://example.com/test.nzb",
+            priority=1,
+            nzbname="TestDownload - second.nzb",
+            dup_check=False,
+        )
+
+    @mock.patch("sabnzbd.postproc.process_single_nzb")
+    @mock.patch("sabnzbd.postproc.listdir_full")
+    def test_process_nzb_only_download_mixed_files(self, mock_listdir, mock_process_single_nzb):
+        """Test process_nzb_only_download with mixed file types returns None"""
+        # Setup mock NZO
+        fake_nzo = mock.Mock()
+        fake_nzo.final_name = "TestDownload"
+
+        # Mock mixed files (NZB and non-NZB)
+        workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
+        mock_listdir.return_value = [
+            os.path.join(workdir, "test.nzb"),
+            os.path.join(workdir, "readme.txt"),
+        ]
+
+        # Call the function
+        result = postproc.process_nzb_only_download(workdir, fake_nzo)
+
+        # Verify result is None (not NZB-only)
+        assert result is None
+
+        # Verify process_single_nzb was NOT called
+        mock_process_single_nzb.assert_not_called()
+
+    @mock.patch("sabnzbd.postproc.process_single_nzb")
+    @mock.patch("sabnzbd.postproc.listdir_full")
+    def test_process_nzb_only_download_empty_directory(self, mock_listdir, mock_process_single_nzb):
+        """Test process_nzb_only_download with empty directory returns None"""
+        # Setup mock NZO
+        fake_nzo = mock.Mock()
+        fake_nzo.final_name = "TestDownload"
+
+        # Mock empty directory
+        workdir = os.path.join(SAB_CACHE_DIR, "test_workdir")
+        mock_listdir.return_value = []
+
+        # Call the function
+        result = postproc.process_nzb_only_download(workdir, fake_nzo)
+
+        # Verify result is None (no files)
+        assert result is None
+
+        # Verify process_single_nzb was NOT called
+        mock_process_single_nzb.assert_not_called()

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@ QUEUE_VERSION = 10
 POSTPROC_QUEUE_VERSION = 2
 
 REC_RAR_VERSION = 550
+RAR_MAX_PASSWORD = 127  #: Max number of utf-16 chars in passwords.
 
 ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 
@@ -50,7 +51,7 @@ RENAMES_FILE = "__renames__"
 ATTRIB_FILE = "SABnzbd_attrib"
 REPAIR_REQUEST = "repair-all.sab"
 
-SABCTOOLS_VERSION_REQUIRED = "8.2.6"
+SABCTOOLS_VERSION_REQUIRED = "9.4.0"
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = "history%s.db" % DB_HISTORY_VERSION
@@ -75,6 +76,7 @@ DEF_LOG_ERRFILE = "sabnzbd.error.log"
 DEF_LOG_CHERRY = "cherrypy.log"
 DEF_ARTICLE_CACHE_DEFAULT = "500M"
 DEF_ARTICLE_CACHE_MAX = "1G"
+DEF_DOWNLOAD_FREE = DEF_ARTICLE_CACHE_DEFAULT  # So we have at least space for the cache
 DEF_NETWORKING_TIMEOUT = 60
 DEF_NETWORKING_TEST_TIMEOUT = 5
 DEF_NETWORKING_SHORT_TIMEOUT = 3
@@ -97,12 +99,17 @@ CONFIG_BACKUP_HTTPS = {  # "basename": "associated setting"
 }
 
 # Constants affecting download performance
-MAX_ASSEMBLER_QUEUE = 12
-SOFT_QUEUE_LIMIT = 0.5
+DEF_MAX_ASSEMBLER_QUEUE = 12
+SOFT_ASSEMBLER_QUEUE_LIMIT = 0.5
 # Percentage of cache to use before adding file to assembler
-ASSEMBLER_WRITE_THRESHOLD = 5
-NNTP_BUFFER_SIZE = int(800 * KIBI)
+ASSEMBLER_TRIGGER_PERCENTAGE = 0.05
+ASSEMBLER_DELAY_FACTOR_DIRECT_WRITE = 1.5
+ASSEMBLER_WRITE_INTERVAL = 5.0
+NNTP_BUFFER_SIZE = int(256 * KIBI)
 NTTP_MAX_BUFFER_SIZE = int(10 * MEBI)
+DEF_PIPELINING_REQUESTS = 2
+# Article cache capacity factor to force a non-contiguous flush to disk
+ARTICLE_CACHE_NON_CONTIGUOUS_FLUSH_PERCENTAGE = 0.9
 
 REPAIR_PRIORITY = 3
 FORCE_PRIORITY = 2

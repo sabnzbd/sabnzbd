@@ -1,15 +1,15 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Pavel C <quoing_transifex@mess.cz>, 2023
 # Safihre <safihre@sabnzbd.org>, 2023
+# Pavel C <quoing_transifex@mess.cz>, 2026
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.6.0\n"
+"Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2026\n"
 "Language-Team: Czech (https://app.transifex.com/sabnzbd/teams/111101/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -142,6 +142,11 @@ msgstr ""
 msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
 
 #. Warning message
@@ -316,7 +321,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "Neočekávaná přípona v rar souboru %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Přerušeno, nalezena neočekávaná připona"
 
@@ -560,11 +565,6 @@ msgstr ""
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Příliš mnoho spojení k serveru %s [%s]"
@@ -583,11 +583,6 @@ msgstr "Přihlášení k serveru %s se nezdařilo [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr ""
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Nejspíše chyba downloaderu"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -736,6 +731,14 @@ msgid ""
 "problems."
 msgstr ""
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"Direct Write mode has been disabled because %s does not support sparse "
+"files. For details and possible solutions, see: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "Odmítnuto spojení z:"
@@ -835,6 +838,13 @@ msgstr "CHYBA:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Zpět"
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -965,7 +975,7 @@ msgid "Update Available!"
 msgstr "Dostupná aktualizace!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "Nezdařilo se nahrát soubor: %s"
 
@@ -1207,6 +1217,16 @@ msgstr "Zkouším SFV ověření"
 msgid "left"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Nejspíše chyba downloaderu"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Tento server nepovoluje SSL na tomto portu"
@@ -1354,6 +1374,103 @@ msgstr "Notifikační skript \"%s\" neexistuje"
 msgid "Failed to send Windows notification"
 msgstr "Nepodařilo se odeslat Windows oznámení"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Prázdný NZB soubor %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "Nechtěná přípona v souboru %s (%s)"
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Zrušeno, nelze dokončit"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Chyba při importu %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "DUPLIKÁT"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "ŠIFROVANÉ"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "PŘÍLIŠ VELKÝ"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "NEKOMPLETNÍ"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "NECHTĚNÝ"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "ČEKÁNÍ %s s"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "PROPAGUJI %s min"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Staženo do %s s průměrnou rychlostí %s B/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Stáří"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr ""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignoruji duplikátní NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Nezdařilo se duplikovat NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr "Duplikátní NZB"
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Pozastavuji duplikátní NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1387,103 +1504,6 @@ msgstr "Nelze nahrát %s, detekován porušený soubor"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB přidáno do fronty"
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignoruji duplikátní NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Nezdařilo se duplikovat NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Duplikátní NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Prázdný NZB soubor %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Nechtěná přípona v souboru %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Zrušeno, nelze dokončit"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Chyba při importu %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUPLIKÁT"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "ŠIFROVANÉ"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "PŘÍLIŠ VELKÝ"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "NEKOMPLETNÍ"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "NECHTĚNÝ"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "ČEKÁNÍ %s s"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "PROPAGUJI %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Staženo do %s s průměrnou rychlostí %s B/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Stáří"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Pozastavuji duplikátní NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1729,6 +1749,14 @@ msgstr ""
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Prázdný RSS záznam nalezen (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Nekompatibilní kanál"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1754,14 +1782,6 @@ msgstr ""
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS kanál %s byl prázdný"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Nekompatibilní kanál"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Prázdný RSS záznam nalezen (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
@@ -3198,9 +3218,9 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3287,7 +3307,8 @@ msgid "Enable SFV-based checks"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Do an extra verification based on SFV files."
+msgid ""
+"If no par2 files are available, use sfv files (if present) to verify files"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3669,6 +3690,17 @@ msgstr ""
 #. Enable server tickbox
 #: sabnzbd/skintext.py
 msgid "Enable"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Articles per request"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Request multiple articles per connection without waiting for each response "
+"first.<br />This can improve download speeds, especially on connections with"
+" higher latency."
 msgstr ""
 
 #. Button: Remove server
@@ -4080,17 +4112,22 @@ msgid "Enable Apprise notifications"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Send notifications using Apprise to almost any notification service"
+msgid ""
+"Send notifications directly to any notification service you use.<br>For "
+"example: Slack, Discord, Telegram, or any service from over 100 supported "
+"services!"
 msgstr ""
 
 #. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Default Apprise URLs"
+msgid "Use default Apprise URLs"
 msgstr ""
 
-#. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Use a comma and/or space to identify more than one URL."
+msgid ""
+"Apprise defines service connection information using URLs.<br>Read the "
+"Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
+"space to identify more than one URL."
 msgstr ""
 
 #: sabnzbd/skintext.py

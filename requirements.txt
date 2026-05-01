@@ -1,30 +1,32 @@
 # Main requirements
 # Note that not all sub-dependencies are listed, but only ones we know could cause trouble
-apprise==1.9.5
-sabctools==8.2.6
-CT3==3.4.0
+apprise==1.9.9
+sabctools==9.4.0
+CT3==3.4.0.post5
 cffi==2.0.0
-pycparser==2.23
+pycparser # Version-less for Python 3.9 and below
+pycparser==3.0; python_version > '3.9'
 feedparser==6.0.12
 configobj==5.0.9
-cheroot==11.0.0
+cheroot==11.1.2
 six==1.17.0
 cherrypy==18.10.0
-jaraco.functools==4.3.0
+jaraco.functools==4.4.0
 jaraco.collections==5.0.0
 jaraco.text==3.8.1 # Newer version introduces irrelevant extra dependencies
 jaraco.classes==3.4.0
 jaraco.context==4.3.0
-more-itertools==10.8.0
+more-itertools # Version-less for Python 3.9 and below
+more-itertools==11.0.2; python_version > '3.9'
 zc.lockfile==4.0
 python-dateutil==2.9.0.post0
 tempora==5.8.1
-pytz==2025.2
+pytz==2026.1.post1
 sgmllib3k==1.0.0
 portend==3.2.1
-chardet==5.2.0
 PySocks==1.7.1
-puremagic==1.30
+puremagic # Version-less for Python 3.11 and below
+puremagic==2.2.0; python_version > '3.11'
 rarfile==4.2
 guessit==3.8.0
 babelfish==0.6.1
@@ -32,12 +34,13 @@ rebulk==3.2.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
 # SABnzbd will also work with older pre-Rust versions such as cryptography==3.3.2
-cryptography==46.0.3
+# Using older versions can have security implications!
+cryptography>=3.0
 
 # We recommend using "orjson" as it is 2x as fast as "ujson". However, it requires
 # Rust so SABnzbd works just as well with "ujson" or the Python built in "json" module
-ujson==5.11.0
-orjson==3.11.3
+ujson
+orjson==3.11.8; python_version > '3.9'
 
 # Windows system integration
 pywin32==311; sys_platform == 'win32'
@@ -50,26 +53,28 @@ winrt-Windows.UI.Notifications==3.2.1; sys_platform == 'win32'
 typing_extensions==4.15.0; sys_platform == 'win32'
 
 # macOS system calls
-pyobjc-core==12.0; sys_platform == 'darwin'
-pyobjc-framework-Cocoa==12.0; sys_platform == 'darwin'
+pyobjc-core==12.1; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==12.1; sys_platform == 'darwin'
 
 # Linux notifications
 notify2==0.3.1; sys_platform != 'win32' and sys_platform != 'darwin'
 
 # Apprise Requirements
-requests==2.32.5
+requests # Version-less for Python 3.9 and below
+requests==2.33.1; python_version > '3.9'
 requests-oauthlib==2.0.0
 PyYAML==6.0.3
-markdown==3.9
+markdown # Version-less for Python 3.9 and below
+markdown==3.10.2; python_version > '3.9'
 paho-mqtt==1.6.1 # Pinned, newer versions don't work with AppRise yet
 
 # Requests Requirements
-charset_normalizer==3.4.4
+charset_normalizer==3.4.7
 idna==3.11
-urllib3==2.5.0
-certifi==2025.10.5
+urllib3==2.6.3
+certifi==2026.2.25
 oauthlib==3.3.1
-PyJWT==2.10.1
+PyJWT==2.12.1
 blinker==1.9.0
 
 # Optional support for *nix tray icon.

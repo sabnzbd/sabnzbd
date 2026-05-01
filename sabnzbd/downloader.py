@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,25 +19,26 @@
 sabnzbd.downloader - download engine
 """
 
-import select
 import logging
+import selectors
+from collections import deque
 from threading import Thread, RLock, current_thread
 import socket
 import sys
 import ssl
 import time
 from datetime import date
-from typing import List, Dict, Optional, Union, Set
+from typing import Optional, Union, Deque, Callable
+
+import sabctools
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV, DOWNLOADER_LOCK
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue
+from sabnzbd.misc import from_units, helpful_warning, int_conv, MultiAddQueue, to_units
 from sabnzbd.get_addrinfo import get_fastest_addrinfo, AddrInfo
-from sabnzbd.constants import SOFT_QUEUE_LIMIT
-
 
 # Timeout penalty in minutes for each cause
 _PENALTY_UNKNOWN = 3  # Unknown cause
@@ -82,6 +83,7 @@ class Server:
         "retention",
         "username",
         "password",
+        "pipelining_requests",
         "busy_threads",
         "next_busy_threads_check",
         "idle_threads",
@@ -110,6 +112,7 @@ class Server:
         use_ssl,
         ssl_verify,
         ssl_ciphers,
+        pipelining_requests,
         username=None,
         password=None,
         required=False,
@@ -134,10 +137,11 @@ class Server:
         self.retention: int = retention
         self.username: Optional[str] = username
         self.password: Optional[str] = password
+        self.pipelining_requests: Callable[[], int] = pipelining_requests
 
-        self.busy_threads: Set[NewsWrapper] = set()
+        self.busy_threads: set[NewsWrapper] = set()
         self.next_busy_threads_check: float = 0
-        self.idle_threads: Set[NewsWrapper] = set()
+        self.idle_threads: set[NewsWrapper] = set()
         self.next_article_search: float = 0
         self.active: bool = True
         self.bad_cons: int = 0
@@ -148,7 +152,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        self.article_queue: List[sabnzbd.nzbstuff.Article] = []
+        self.article_queue: Deque[sabnzbd.nzb.Article] = deque()
 
         # Skip during server testing
         if threads:
@@ -167,26 +171,29 @@ class Server:
     def stop(self):
         """Remove all connections and cached articles from server"""
         for nw in self.idle_threads:
-            sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset()
         self.idle_threads = set()
         self.reset_article_queue()
 
     @synchronized(DOWNLOADER_LOCK)
-    def get_article(self):
+    def get_article(self, peek: bool = False):
         """Get article from pre-fetched and pre-fetch new ones if necessary.
         Articles that are too old for this server are immediately marked as tried"""
         if self.article_queue:
-            return self.article_queue.pop(0)
+            return self.article_queue[0] if peek else self.article_queue.popleft()
 
         if self.next_article_search < time.time():
             # Pre-fetch new articles
-            self.article_queue = sabnzbd.NzbQueue.get_articles(self, sabnzbd.Downloader.servers, _ARTICLE_PREFETCH)
+            sabnzbd.NzbQueue.get_articles(self, sabnzbd.Downloader.servers, _ARTICLE_PREFETCH)
             if self.article_queue:
-                article = self.article_queue.pop(0)
+                article = self.article_queue[0] if peek else self.article_queue.popleft()
                 # Mark expired articles as tried on this server
                 if self.retention and article.nzf.nzo.avg_stamp < time.time() - self.retention:
-                    sabnzbd.Downloader.decode(article)
+                    if not peek:
+                        sabnzbd.Downloader.decode(article)
+                    # sabnzbd.NzbQueue.get_articles stops after each nzo with articles.
+                    # As a result, if one article is out of retention, all remaining
+                    # entries in article_queue will also be out of retention.
                     while self.article_queue:
                         sabnzbd.Downloader.decode(self.article_queue.pop())
                 else:
@@ -201,9 +208,12 @@ class Server:
         """Reset articles queued for the Server. Locked to prevent
         articles getting stuck in the Server when enabled/disabled"""
         logging.debug("Resetting article queue for %s (%s)", self, self.article_queue)
-        for article in self.article_queue:
-            article.allow_new_fetcher()
-        self.article_queue = []
+        while self.article_queue:
+            try:
+                article = self.article_queue.popleft()
+                article.allow_new_fetcher()
+            except IndexError:
+                pass
 
     def request_addrinfo(self):
         """Launch async request to resolve server address and select the fastest.
@@ -250,7 +260,7 @@ class Downloader(Thread):
         "shutdown",
         "server_restarts",
         "force_disconnect",
-        "read_fds",
+        "selector",
         "servers",
         "timers",
         "last_max_chunk_size",
@@ -290,10 +300,15 @@ class Downloader(Thread):
 
         self.force_disconnect: bool = False
 
-        self.read_fds: Dict[int, NewsWrapper] = {}
+        # macOS/BSD will default to KqueueSelector, it's very efficient but produces separate events for READ and WRITE.
+        # Which causes problems when two receive threads are both trying to use the connection while it is resetting.
+        if selectors.DefaultSelector is getattr(selectors, "KqueueSelector", None):
+            self.selector: selectors.BaseSelector = selectors.PollSelector()
+        else:
+            self.selector: selectors.BaseSelector = selectors.DefaultSelector()
 
-        self.servers: List[Server] = []
-        self.timers: Dict[str, List[float]] = {}
+        self.servers: list[Server] = []
+        self.timers: dict[str, list[float]] = {}
 
         for server in config.get_servers():
             self.init_server(None, server)
@@ -319,6 +334,7 @@ class Downloader(Thread):
             ssl = srv.ssl()
             ssl_verify = srv.ssl_verify()
             ssl_ciphers = srv.ssl_ciphers()
+            pipelining_requests = srv.pipelining_requests
             username = srv.username()
             password = srv.password()
             required = srv.required()
@@ -349,6 +365,7 @@ class Downloader(Thread):
                     ssl,
                     ssl_verify,
                     ssl_ciphers,
+                    pipelining_requests,
                     username,
                     password,
                     required,
@@ -361,15 +378,39 @@ class Downloader(Thread):
             self.servers.sort(key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
 
     @synchronized(DOWNLOADER_LOCK)
-    def add_socket(self, fileno: int, nw: NewsWrapper):
-        """Add a socket ready to be used to the list to be watched"""
-        self.read_fds[fileno] = nw
+    def add_socket(self, nw: NewsWrapper):
+        """Add a socket to be watched for read or write availability"""
+        if nw.nntp:
+            nw.server.idle_threads.discard(nw)
+            nw.server.busy_threads.add(nw)
+            try:
+                self.selector.register(nw.nntp.fileno, selectors.EVENT_READ | selectors.EVENT_WRITE, nw)
+                nw.selector_events = selectors.EVENT_READ | selectors.EVENT_WRITE
+            except KeyError:
+                pass
+
+    @synchronized(DOWNLOADER_LOCK)
+    def modify_socket(self, nw: NewsWrapper, events: int):
+        """Modify the events socket are watched for"""
+        if nw.nntp and nw.selector_events != events and not nw.blocking:
+            try:
+                self.selector.modify(nw.nntp.fileno, events, nw)
+                nw.selector_events = events
+            except KeyError:
+                pass
 
     @synchronized(DOWNLOADER_LOCK)
     def remove_socket(self, nw: NewsWrapper):
         """Remove a socket to be watched"""
         if nw.nntp:
-            self.read_fds.pop(nw.nntp.fileno, None)
+            nw.server.busy_threads.discard(nw)
+            nw.server.idle_threads.add(nw)
+            nw.timeout = None
+            try:
+                self.selector.unregister(nw.nntp.fileno)
+                nw.selector_events = 0
+            except KeyError:
+                pass
 
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
@@ -409,8 +450,9 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def resume_from_postproc(self):
-        logging.info("Post-processing finished, resuming download")
-        self.paused_for_postproc = False
+        if self.paused_for_postproc:
+            logging.info("Post-processing finished, resuming download")
+            self.paused_for_postproc = False
 
     @NzbQueueLocker
     def disconnect(self):
@@ -450,6 +492,15 @@ class Downloader(Thread):
         else:
             self.bandwidth_perc = 0
             self.bandwidth_limit = 0
+
+        # Increase limits for faster connections
+        if limit > from_units("150M"):
+            if cfg.receive_threads() == cfg.receive_threads.default:
+                cfg.receive_threads.set(4)
+                logging.info("Receive threads set to 4")
+            if cfg.assembler_max_queue_size() == cfg.assembler_max_queue_size.default:
+                cfg.assembler_max_queue_size.set(30)
+                logging.info("Assembler max_queue_size set to 30")
 
     def sleep_time_set(self):
         self.sleep_time = cfg.downloader_sleep_time() * 0.0001
@@ -499,26 +550,26 @@ class Downloader(Thread):
 
             # Remove all connections to server
             for nw in server.idle_threads | server.busy_threads:
-                self.__reset_nw(nw, "Forcing disconnect", warn=False, wait=False, retry_article=False)
+                self.reset_nw(nw, "Forcing disconnect", warn=False, wait=False, retry_article=False)
 
             # Make sure server address resolution is refreshed
             server.addrinfo = None
 
     @staticmethod
-    def decode(article, data_view: Optional[memoryview] = None):
+    def decode(article: "sabnzbd.nzb.Article", response: Optional[sabctools.NNTPResponse] = None):
         """Decode article"""
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
         # Handle broken articles directly
-        if not data_view:
+        if not response or not response.bytes_decoded and not article.nzf.nzo.precheck:
             if not article.search_new_server():
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
                 sabnzbd.NzbQueue.register_article(article, success=False)
             return
 
         # Decode and send to article cache
-        sabnzbd.decoder.decode(article, data_view)
+        sabnzbd.decoder.decode(article, response)
 
     def run(self):
         # Warn if there are servers defined, but none are valid
@@ -538,7 +589,7 @@ class Downloader(Thread):
         for _ in range(cfg.receive_threads()):
             # Started as daemon, so we don't need any shutdown logic in the worker
             # The Downloader code will make sure shutdown is handled gracefully
-            Thread(target=self.process_nw_worker, args=(self.read_fds, process_nw_queue), daemon=True).start()
+            Thread(target=self.process_nw_worker, args=(process_nw_queue,), daemon=True).start()
 
         # Catch all errors, just in case
         try:
@@ -560,9 +611,9 @@ class Downloader(Thread):
                             if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                                 if nw.nntp and nw.nntp.error_msg:
                                     # Already showed error
-                                    self.__reset_nw(nw)
+                                    self.reset_nw(nw)
                                 else:
-                                    self.__reset_nw(nw, "Timed out", warn=True)
+                                    self.reset_nw(nw, "Timed out", warn=True)
                                 server.bad_cons += 1
                                 self.maybe_block_server(server)
 
@@ -602,16 +653,15 @@ class Downloader(Thread):
                                 server.request_addrinfo()
                             break
 
-                        nw.article = server.get_article()
-                        if not nw.article:
+                        if not server.get_article(peek=True):
                             break
 
-                        server.idle_threads.remove(nw)
-                        server.busy_threads.add(nw)
-
                         if nw.connected:
-                            self.__request_article(nw)
-                        else:
+                            # Assign a request immediately if NewsWrapper is ready, if we wait until the socket is
+                            # selected all idle connections will be activated when there may only be one request
+                            nw.prepare_request()
+                            self.add_socket(nw)
+                        elif not nw.nntp:
                             try:
                                 logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
                                 nw.init_connect()
@@ -622,14 +672,14 @@ class Downloader(Thread):
                                     server.host,
                                     sys.exc_info()[1],
                                 )
-                                self.__reset_nw(nw, "Failed to initialize", warn=True)
+                                self.reset_nw(nw, "Failed to initialize", warn=True)
 
                 if self.force_disconnect or self.shutdown:
                     for server in self.servers:
                         for nw in server.idle_threads | server.busy_threads:
                             # Send goodbye if we have open socket
                             if nw.nntp:
-                                self.__reset_nw(nw, "Forcing disconnect", wait=False, count_article_try=False)
+                                self.reset_nw(nw, "Forcing disconnect", wait=False, count_article_try=False)
                         # Make sure server address resolution is refreshed
                         server.addrinfo = None
                         server.reset_article_queue()
@@ -653,10 +703,13 @@ class Downloader(Thread):
                     self.last_max_chunk_size = 0
 
                 # Use select to find sockets ready for reading/writing
-                if readkeys := self.read_fds.keys():
-                    read, _, _ = select.select(readkeys, (), (), 1.0)
+                if self.selector.get_map():
+                    if events := self.selector.select(timeout=1.0):
+                        for key, ev in events:
+                            nw = key.data
+                            process_nw_queue.put((nw, ev, nw.generation))
                 else:
-                    read = []
+                    events = []
                     BPSMeter.reset()
                     time.sleep(0.1)
                     self.max_chunk_size = _DEFAULT_CHUNK_SIZE
@@ -675,187 +728,141 @@ class Downloader(Thread):
                     next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
                     self.check_assembler_levels()
 
-                if not read:
+                if not events:
                     continue
 
-                # Submit all readable sockets to be processed and wait for completion
-                process_nw_queue.put_multiple(read)
+                # Wait for socket operation completion
                 process_nw_queue.join()
 
         except Exception:
             logging.error(T("Fatal error in Downloader"), exc_info=True)
 
-    def process_nw_worker(self, read_fds: Dict[int, NewsWrapper], nw_queue: MultiAddQueue):
+    def process_nw_worker(self, nw_queue: MultiAddQueue):
         """Worker for the daemon thread to process results.
         Wrapped in try/except because in case of an exception, logging
         might get lost and the queue.join() would block forever."""
-        try:
-            logging.debug("Starting Downloader receive thread: %s", current_thread().name)
-            while True:
-                # The read_fds is passed by reference, so we can access its items!
-                self.process_nw(read_fds[nw_queue.get()])
+        logging.debug("Starting Downloader receive thread: %s", current_thread().name)
+        while True:
+            try:
+                self.process_nw(*nw_queue.get())
+            except Exception:
+                # We cannot break out of the Downloader from here, so just pause
+                logging.error(T("Fatal error in Downloader"), exc_info=True)
+                self.pause()
+            finally:
                 nw_queue.task_done()
-        except Exception:
-            # We cannot break out of the Downloader from here, so just pause
-            logging.error(T("Fatal error in Downloader"), exc_info=True)
-            self.pause()
 
-    def process_nw(self, nw: NewsWrapper):
+    def process_nw(self, nw: NewsWrapper, event: int, generation: int):
         """Receive data from a NewsWrapper and handle the response"""
-        try:
-            bytes_received, end_of_line, article_done = nw.recv_chunk()
-        except ssl.SSLWantReadError:
-            return
-        except (ConnectionError, ConnectionAbortedError):
-            # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
-            self.__reset_nw(nw, "Server closed connection", wait=False)
-            return
-        except BufferError:
-            # The BufferError is thrown when exceeding maximum buffer size
-            # Make sure to discard the article
-            self.__reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
+        # Drop stale items
+        if nw.generation != generation:
             return
 
-        article = nw.article
+        # Read on EVENT_READ, or on EVENT_WRITE if TLS needs a write to complete a read
+        if (event & selectors.EVENT_READ) or (event & selectors.EVENT_WRITE and nw.tls_wants_write):
+            self.process_nw_read(nw, generation)
+            # If read caused a reset, don't proceed to write
+            if nw.generation != generation:
+                return
+            # The read may have removed the socket, so prevent calling prepare_request again
+            if not (nw.selector_events & selectors.EVENT_WRITE):
+                return
+
+        # Only attempt app-level writes if TLS is not blocked
+        if (event & selectors.EVENT_WRITE) and not nw.tls_wants_write:
+            nw.write()
+
+    def process_nw_read(self, nw: NewsWrapper, generation: int) -> None:
+        bytes_received: int = 0
+        bytes_pending: int = 0
+
+        while (
+            nw.connected
+            and nw.generation == generation
+            and not self.force_disconnect
+            and not self.shutdown
+            and not (nw.timeout and time.time() > nw.timeout)
+        ):
+            try:
+                n, bytes_pending = nw.read(nbytes=bytes_pending, generation=generation)
+                bytes_received += n
+                nw.tls_wants_write = False
+            except ssl.SSLWantReadError:
+                return
+            except ssl.SSLWantWriteError:
+                # TLS needs to write handshake/key-update data before we can continue reading
+                nw.tls_wants_write = True
+                self.modify_socket(nw, selectors.EVENT_READ | selectors.EVENT_WRITE)
+                return
+            except (ConnectionError, ConnectionAbortedError):
+                # The ConnectionAbortedError is also thrown by sabctools in case of fatal SSL-layer problems
+                self.reset_nw(nw, "Server closed connection", wait=False)
+                return
+            except BufferError:
+                # The BufferError is thrown when exceeding maximum buffer size
+                # Make sure to discard the article
+                self.reset_nw(nw, "Maximum data buffer size exceeded", wait=False, retry_article=False)
+                return
+
+            if not bytes_pending:
+                break
+
+        # Ignore metrics for reset connections
+        if nw.generation != generation:
+            return
+
         server = nw.server
 
         with DOWNLOADER_LOCK:
             sabnzbd.BPSMeter.update(server.id, bytes_received)
             if bytes_received > self.last_max_chunk_size:
                 self.last_max_chunk_size = bytes_received
-            # Update statistics only when we fetched a whole article
-            # The side effect is that we don't count things like article-not-available messages
-            if article_done:
-                article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, nw.data_position)
             # Check speedlimit
             if (
                 self.bandwidth_limit
                 and sabnzbd.BPSMeter.bps + sabnzbd.BPSMeter.sum_cached_amount > self.bandwidth_limit
             ):
                 sabnzbd.BPSMeter.update()
-                while sabnzbd.BPSMeter.bps > self.bandwidth_limit:
+                while self.bandwidth_limit and sabnzbd.BPSMeter.bps > self.bandwidth_limit:
                     time.sleep(0.01)
                     sabnzbd.BPSMeter.update()
 
-        # If we are not at the end of a line, more data will follow
-        if not end_of_line:
-            return
-
-        # Response code depends on request command:
-        # 220 = ARTICLE, 222 = BODY
-        if nw.status_code not in (220, 222) and not article_done:
-            if not nw.connected or nw.status_code == 480:
-                if not self.__finish_connect_nw(nw):
-                    return
-                if nw.connected:
-                    logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
-                    self.__request_article(nw)
-
-            elif nw.status_code == 223:
-                article_done = True
-                logging.debug("Article <%s> is present", article.article)
-
-            elif nw.status_code in (411, 423, 430, 451):
-                article_done = True
-                logging.debug(
-                    "Thread %s@%s: Article %s missing (error=%s)",
-                    nw.thrdnum,
-                    nw.server.host,
-                    article.article,
-                    nw.status_code,
-                )
-                nw.reset_data_buffer()
-
-            elif nw.status_code == 500:
-                if article.nzf.nzo.precheck:
-                    # Assume "STAT" command is not supported
-                    server.have_stat = False
-                    logging.debug("Server %s does not support STAT", server.host)
-                else:
-                    # Assume "BODY" command is not supported
-                    server.have_body = False
-                    logging.debug("Server %s does not support BODY", server.host)
-                nw.reset_data_buffer()
-                self.__request_article(nw)
-
-            else:
-                # Don't warn for (internal) server errors during downloading
-                if nw.status_code not in (400, 502, 503):
-                    logging.warning(
-                        T("%s@%s: Received unknown status code %s for article %s"),
-                        nw.thrdnum,
-                        nw.server.host,
-                        nw.status_code,
-                        article.article,
-                    )
-
-                # Ditch this thread, we don't know what data we got now so the buffer can be bad
-                self.__reset_nw(nw, f"Server error or unknown status code: {nw.status_code}", wait=False)
-                return
-
-        if article_done:
-            # Successful data, clear "bad" counter
-            server.bad_cons = 0
-            server.errormsg = server.warning = ""
-
-            # Decode
-            self.decode(article, nw.data_view[: nw.data_position])
-
-            if sabnzbd.LOG_ALL:
-                logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
-
-            # Reset connection for new activity
-            nw.soft_reset()
-
-            # Request a new article immediately if possible
-            if (
-                nw.connected
-                and server.active
-                and not server.restart
-                and not (self.paused or self.shutdown or self.paused_for_postproc)
-            ):
-                nw.article = server.get_article()
-                if nw.article:
-                    self.__request_article(nw)
-                    return
-
-            # Make socket available again
-            server.busy_threads.discard(nw)
-            server.idle_threads.add(nw)
-            self.remove_socket(nw)
-
     def check_assembler_levels(self):
         """Check the Assembler queue to see if we need to delay, depending on queue size"""
-        if (assembler_level := sabnzbd.Assembler.queue_level()) > SOFT_QUEUE_LIMIT:
-            time.sleep(min((assembler_level - SOFT_QUEUE_LIMIT) / 4, 0.15))
-            sabnzbd.BPSMeter.delayed_assembler += 1
-            logged_counter = 0
+        if not sabnzbd.Assembler.is_busy() or (delay := sabnzbd.Assembler.delay()) <= 0:
+            return
+        time.sleep(delay)
+        sabnzbd.BPSMeter.delayed_assembler += 1
+        start_time = time.monotonic()
+        deadline = start_time + 5
+        next_log = start_time + 1.0
+        logged_counter = 0
 
-            while not self.shutdown and sabnzbd.Assembler.queue_level() >= 1:
-                # Only log/update once every second, to not waste any CPU-cycles
-                if not logged_counter % 10:
-                    # Make sure the BPS-meter is updated
-                    sabnzbd.BPSMeter.update()
-
-                    # Update who is delaying us
-                    logging.debug(
-                        "Delayed - %d seconds - Assembler queue: %d",
-                        logged_counter / 10,
-                        sabnzbd.Assembler.queue.qsize(),
-                    )
-
-                # Wait and update the queue sizes
-                time.sleep(0.1)
+        while not self.shutdown and sabnzbd.Assembler.is_busy() and time.monotonic() < deadline:
+            if (delay := sabnzbd.Assembler.delay()) <= 0:
+                break
+            # Sleep for the current delay (but cap to remaining time)
+            sleep_time = max(0.001, min(delay, deadline - time.monotonic()))
+            time.sleep(sleep_time)
+            # Make sure the BPS-meter is updated
+            sabnzbd.BPSMeter.update()
+            # Only log/update once every second
+            if time.monotonic() >= next_log:
                 logged_counter += 1
+                logging.debug(
+                    "Delayed - %d seconds - Assembler queue: %s",
+                    logged_counter,
+                    to_units(sabnzbd.Assembler.total_ready_bytes()),
+                )
+                next_log += 1.0
 
     @synchronized(DOWNLOADER_LOCK)
-    def __finish_connect_nw(self, nw: NewsWrapper) -> bool:
+    def finish_connect_nw(self, nw: NewsWrapper, response: sabctools.NNTPResponse) -> bool:
         server = nw.server
         try:
-            nw.finish_connect(nw.status_code)
+            nw.finish_connect(response.status_code, response.message)
             if sabnzbd.LOG_ALL:
-                logging.debug("%s@%s last message -> %s", nw.thrdnum, server.host, nw.nntp_msg)
-            nw.reset_data_buffer()
+                logging.debug("%s@%s last message -> %d", nw.thrdnum, server.host, response.status_code)
         except NNTPPermanentError as error:
             # Handle login problems
             block = False
@@ -868,7 +875,7 @@ class Downloader(Thread):
                 errormsg = T("Too many connections to server %s [%s]") % (server.host, error.msg)
                 if server.active:
                     # Don't count this for the tries (max_art_tries) on this server
-                    self.__reset_nw(nw)
+                    self.reset_nw(nw)
                     self.plan_server(server, _PENALTY_TOOMANY)
             elif error.code in (502, 481, 482) and clues_too_many_ip(error.msg):
                 # Login from (too many) different IP addresses
@@ -918,7 +925,7 @@ class Downloader(Thread):
                         if penalty and (block or server.optional):
                             self.plan_server(server, penalty)
                 # Note that the article is discard for this server if the server is not required
-                self.__reset_nw(nw, retry_article=retry_article)
+                self.reset_nw(nw, retry_article=retry_article)
             return False
         except Exception as err:
             logging.error(
@@ -929,11 +936,11 @@ class Downloader(Thread):
             )
             logging.info("Traceback: ", exc_info=True)
             # No reset-warning needed, above logging is sufficient
-            self.__reset_nw(nw, retry_article=False)
+            self.reset_nw(nw, retry_article=False)
         return True
 
     @synchronized(DOWNLOADER_LOCK)
-    def __reset_nw(
+    def reset_nw(
         self,
         nw: NewsWrapper,
         reset_msg: Optional[str] = None,
@@ -941,6 +948,7 @@ class Downloader(Thread):
         wait: bool = True,
         count_article_try: bool = True,
         retry_article: bool = True,
+        article: Optional["sabnzbd.nzb.Article"] = None,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
@@ -949,48 +957,14 @@ class Downloader(Thread):
         elif reset_msg:
             logging.debug("Thread %s@%s: %s", nw.thrdnum, nw.server.host, reset_msg)
 
-        # Make sure this NewsWrapper is in the idle threads
-        nw.server.busy_threads.discard(nw)
-        nw.server.idle_threads.add(nw)
-
-        # Make sure it is not in the readable sockets
-        self.remove_socket(nw)
-
-        if nw.article and not nw.article.nzf.nzo.removed_from_queue:
-            # Only some errors should count towards the total tries for each server
-            if count_article_try:
-                nw.article.tries += 1
-
-            # Do we discard, or try again for this server
-            if not retry_article or (not nw.server.required and nw.article.tries > cfg.max_art_tries()):
-                # Too many tries on this server, consider article missing
-                self.decode(nw.article)
-                nw.article.tries = 0
-            else:
-                # Allow all servers again for this article
-                # Do not use the article_queue, as the server could already have been disabled when we get here!
-                nw.article.allow_new_fetcher()
+        # Discard the article request which failed
+        nw.discard(article, count_article_try=count_article_try, retry_article=retry_article)
 
         # Reset connection object
         nw.hard_reset(wait)
 
         # Empty SSL info, it might change on next connect
         nw.server.ssl_info = ""
-
-    def __request_article(self, nw: NewsWrapper):
-        try:
-            if sabnzbd.LOG_ALL:
-                logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
-            nw.body()
-            # Mark as ready to be read
-            self.add_socket(nw.nntp.fileno, nw)
-        except socket.error as err:
-            logging.info("Looks like server closed connection: %s", err)
-            self.__reset_nw(nw, "Server broke off connection", warn=True)
-        except Exception:
-            logging.error(T("Suspect error in downloader"))
-            logging.info("Traceback: ", exc_info=True)
-            self.__reset_nw(nw, "Server broke off connection", warn=True)
 
     # ------------------------------------------------------------------------------
     # Timed restart of servers admin.

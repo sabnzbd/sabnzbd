@@ -1,95 +1,68 @@
-Release Notes - SABnzbd 4.5.5
+Release Notes - SABnzbd 5.0.0
 =========================================================
 
-## Bug fixes and changes in 4.5.5
+In this fifth major release of SABnzbd, we included:
+* Smarter (and potentially faster) downloads with NNTP Pipelining and Direct Write.
+* Reliability gains from a reworked cache and safer processing.
+* A significant number of bug fixes and platform updates.
 
-* macOS: Failed to start on versions of macOS older than 11.
-  Python 3.14 dropped support for macOS 10.13 and 10.14.
-  Because of that macOS 10.15 is required to run 4.5.5.
+Please note the breaking changes described below!
 
-## Bug fixes and changes in 4.5.4
+## New features in 5.0.0
 
-### New Features
-* History details now includes option to mark job as `Completed`.
-* `Quota` notifications available for all notification services.
-  - Sends alerts at 75%, 90%, and 100% quota usage.
-* Multi-Operations now supports Move to Top/Bottom.
-* New `outgoing_nntp_ip` option to bind outgoing NNTP connections to specific IP address.
+* Added support for NNTP Pipelining which eliminates idle waiting between
+  requests, significantly improving speeds on high-latency connections.
+  Read more here: https://sabnzbd.org/wiki/advanced/nntp-pipelining
+  New servers will have `Articles per request` set to `2` by default.
+  Existing servers need to be manually changed to use NNTP Pipelining.
+* Implemented Direct Write to optimize assembly of downloaded files.
+  Read more here: https://sabnzbd.org/wiki/advanced/direct-write
+* Post-processing scripts will always be executed, even for failed jobs.
+  Make sure to check the status of the job in your scripts!
+* Removed Special setting `empty_postproc` as it is no longer needed.
+* Complete redesign of article cache.
+* Improved disk speed measurement in Status window.
+* Reduced delays between jobs during post-processing.
+* Improved handling of disks getting full.
+* Diskspace check will now include Category-specific folders.
+* If a download only contains `.nzb` files, the new downloads
+  will include the name of the original download.
+* No longer show tracebacks in the browser, only in the logs.
+* Dropped support for Python 3.8.
+* Windows: Added Windows ARM (portable) release.
+* Windows and macOS: Added HTML version of the Release Notes.
+* Windows and macOS: Updated Python to 3.14.4, Unrar to 7.20,
+  par2cmdline-turbo to 1.4 and 7zip to 26.00.
 
-### Improvements
-* Setup wizard now requires successful Server Test before proceeding.
-* Anime episode notation `S04 - 10` now supported for Sorting and Duplicate Detection.
-* Multi-Operations: Play/Resume button unselects on second click for better usability.
-* Unrar now handles renaming of invalid characters on Windows filesystem.
-* Switched from vendored `sabnzbd.rarfile` module to `rarfile>=4.2`.
-* Warning displayed when removing all Orphaned jobs (clears Temporary Download folder).
+## Bug fixes in 5.0.0
 
-### Bug Fixes
-* Active connections counter in Status window now updates correctly.
-* Job setting changes during URL-grabbing no longer ignored.
-* Incomplete `.par2` file parsing no longer leaves files behind.
-* `Local IPv4 address` now detectable when using Socks5 proxy.
-* Server configuration changes no longer show `Failure` message during page reload.
+* `Check before download` could get stuck or fail to reject.
+* Several stability changes for the core download process.
+* If only par2 files were missing, jobs could get incorrectly aborted.
+* No error was shown in case NZB upload failed.
+* Correct mobile layout if `Full Width` is enabled.
+* Handle passwords that exceed Unrar's password limit.
+* Aborted Direct Unpack could result in no files being unpacked.
+* Encrypted RAR detection could sometimes fail.
+* Unwanted extension check was unreliable on passworded downloads.
+* No longer exclusively lock all directory operations.
+* Improved handling of non-NFC unicode filenames.
+* Sorting of files inside jobs was inconsistent.
+* Linux: No longer break test-data in the release package.
+* Windows: Tray icon disappears after Explorer restart.
+* macOS: Slow to start on some network setups.
 
-### Platform-Specific
-* Linux: `Make Windows compatible` automatically enabled when needed.
-* Windows: Executables are now signed using SignPath Foundation certificate.
-* Windows: Can now start SABnzbd directly from installer.
-* Windows and macOS: Binaries now use Python 3.14.
+## Changes to default settings for new installations in 5.0.0
 
-## Bug fixes and changes in 4.5.3
-
-* Remember if `Permanently delete` was previously checked.
-* All available IP-addresses will be included when selecting the fastest.
-* Pre-queue script rejected NZBs were sometimes reported as `URL Fetching failed`.
-* RSS `Next scan` time was not adjusted after manual `Read All Feeds Now`.
-* Prevent renaming of `.cbr` files during verification.
-* If `--disable-file-log` was enabled, `Show Logging` would crash.
-* API: Added `time_added`, timestamp of when the job was added to the queue.
-* API: History output could contain duplicate items.
-* Snap: Updated packages and changed build process for reliability.
-* macOS: Repair would fail on macOS 10.13 High Sierra.
-* Windows: Unable to start on Windows 8.
-* Windows: Updated Unrar to 7.13, which resolves CVE-2025-8088.
-
-## Bug fixes and changes in 4.5.2
-
-* Added Tab and Shift+Tab navigation to move between rename fields in queue.
-* Invalid cookies of other services could result in errors.
-* Internet Bandwidth test could be stuck in infinite loop.
-* RSS readout did not ignore torrent alternatives.
-* Prowl and Pushover settings did not load correctly.
-* Renamed `osx` to `macos` internally.
-* API: Removed `B` post-fix from `quota` and `left_quota` fields in `queue`.
-* Windows: Support more languages in the installer.
-* Windows and macOS: Updated par2cmdline-turbo to 1.3.0 and Unrar to 7.12.
-
-## Bug fixes and changes in 4.5.1
-
-* Correct platform detection on Linux.
-* The `From SxxEyy` RSS filters did not always work.
-* Windows and macOS: Update Unrar to 7.11.
-
-## New features in 4.5.0
-
-* Improved failure detection by downloading additional par2 files right away.
-* Added more diagnostic information about the system.
-* Use XFF headers for login validation if `verify_xff_header` is enabled.
-* Added Turkish translation (by @cardpuncher).
-* Added `unrar_parameters` option to supply custom Unrar parameters.
-* Windows: Removed MultiPar support.
-* Windows and macOS: Updated Python to 3.13.2, 7zip to 24.09,
-  Unrar to 7.10 and par2cmdline-turbo to 1.2.0.
-
-## Bug fixes since 4.4.0
-
-* Handle filenames that exceed maximum filesystem lengths.
-* Directly decompress gzip responses when retrieving NZB's.
+* Default `Minimum Free Space for Temporary Download Folder` set to `500M`.
+* Enabled `verify_xff_header` setting by default.
 
 ## Upgrade notices
 
-* Direct upgrade supported from version 3.0.0 and newer.
-* Older versions require performing a `Queue repair` after upgrading.
+* You can directly upgrade from version 3.0.0 and newer.
+* Upgrading from older versions will require performing a `Queue repair`.
+* Downgrading from version 4.2.0 or newer to 3.7.2 or older will require
+  performing a `Queue repair` due to changes in the internal data format.
 
 ## Known problems and solutions
 
@@ -106,4 +79,4 @@ It simplifies the process of downloading from Usenet dramatically, thanks to its
 user interface and advanced built-in post-processing options that automatically verify, repair,
 extract and clean up posts downloaded from Usenet.
 
-(c) Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+(c) Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)

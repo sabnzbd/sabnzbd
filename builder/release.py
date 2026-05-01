@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2008-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,31 +19,29 @@ import hashlib
 import json
 import os
 import re
-import xml.etree.ElementTree as ET
 
 import github
 import praw
 
 from constants import (
     RELEASE_VERSION,
-    RELEASE_VERSION_BASE,
     PRERELEASE,
     RELEASE_SRC,
-    RELEASE_BINARY,
-    RELEASE_INSTALLER,
+    RELEASE_WIN_BIN_X64,
+    RELEASE_WIN_BIN_ARM64,
+    RELEASE_WIN_INSTALLER,
     RELEASE_MACOS,
     RELEASE_README,
     RELEASE_THIS,
     RELEASE_TITLE,
-    APPDATA_FILE,
-    ON_GITHUB_ACTIONS,
 )
 
 # Verify we have all assets
 files_to_check = (
     RELEASE_SRC,
-    RELEASE_BINARY,
-    RELEASE_INSTALLER,
+    RELEASE_WIN_BIN_X64,
+    RELEASE_WIN_BIN_ARM64,
+    RELEASE_WIN_INSTALLER,
     RELEASE_MACOS,
     RELEASE_README,
 )
@@ -51,16 +49,6 @@ for file_to_check in files_to_check:
     if not os.path.exists(file_to_check):
         raise RuntimeError("Not all release files are present!")
 print("All release files are present")
-
-# Verify that appdata file is updated
-if not isinstance(ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION_BASE}']"), ET.Element):
-    release_missing = f"Could not find {RELEASE_VERSION_BASE} in {APPDATA_FILE}"
-    if RELEASE_THIS:
-        raise RuntimeError(release_missing)
-    elif ON_GITHUB_ACTIONS:
-        print(f"::warning file={APPDATA_FILE},title=Missing release::{release_missing}")
-    else:
-        print(release_missing)
 
 # Calculate hashes for Synology release
 with open(RELEASE_SRC, "rb") as inp_file:
@@ -112,7 +100,7 @@ if RELEASE_THIS and gh_token:
                         print("Removing existing asset %s " % gh_asset.name)
                         gh_asset.delete_asset()
             # Upload the new one
-            print("Uploading %s to release %s" % (file_to_check, gh_release.title))
+            print("Uploading %s to release %s" % (file_to_check, gh_release.name))
             gh_release.upload_asset(file_to_check)
 
     # Check if we now have all files

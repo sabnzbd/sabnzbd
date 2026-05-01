@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
-from typing import List, Dict, Optional
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, KIBI
@@ -132,20 +132,20 @@ class BPSMeter:
         self.speed_log_time = t
         self.last_update = t
         self.bps = 0.0
-        self.bps_list: List[int] = []
+        self.bps_list: list[int] = []
 
-        self.server_bps: Dict[str, float] = {}
-        self.cached_amount: Dict[str, int] = {}
+        self.server_bps: dict[str, float] = {}
+        self.cached_amount: dict[str, int] = {}
         self.sum_cached_amount: int = 0
-        self.day_total: Dict[str, int] = {}
-        self.week_total: Dict[str, int] = {}
-        self.month_total: Dict[str, int] = {}
-        self.grand_total: Dict[str, int] = {}
+        self.day_total: dict[str, int] = {}
+        self.week_total: dict[str, int] = {}
+        self.month_total: dict[str, int] = {}
+        self.grand_total: dict[str, int] = {}
 
-        self.timeline_total: Dict[str, Dict[str, int]] = {}
+        self.timeline_total: dict[str, dict[str, int]] = {}
 
-        self.article_stats_tried: Dict[str, Dict[str, int]] = {}
-        self.article_stats_failed: Dict[str, Dict[str, int]] = {}
+        self.article_stats_tried: dict[str, dict[str, int]] = {}
+        self.article_stats_failed: dict[str, dict[str, int]] = {}
 
         self.delayed_assembler: int = 0
 
@@ -254,8 +254,6 @@ class BPSMeter:
             self.week_total[server] = 0
         if server not in self.month_total:
             self.month_total[server] = 0
-        if server not in self.month_total:
-            self.month_total[server] = 0
         if server not in self.grand_total:
             self.grand_total[server] = 0
         if server not in self.timeline_total:
@@ -302,45 +300,51 @@ class BPSMeter:
             for server in sabnzbd.Downloader.servers[:]:
                 self.init_server_stats(server.id)
 
+        # Cache dict references for faster access
+        day_total = self.day_total
+        week_total = self.week_total
+        month_total = self.month_total
+        grand_total = self.grand_total
+        timeline_total = self.timeline_total
+        cached_amount = self.cached_amount
+        server_bps = self.server_bps
+
+        start_time = self.start_time
+        last_update = self.last_update
+        # Minimum epsilon to avoid division by zero
+        dt_total = max(t - start_time, 1e-6)
+        dt_last = max(last_update - start_time, 1e-6)
+
         # Add amounts that have been stored temporarily to statistics
         for srv in self.cached_amount:
-            if self.cached_amount[srv]:
-                self.day_total[srv] += self.cached_amount[srv]
-                self.week_total[srv] += self.cached_amount[srv]
-                self.month_total[srv] += self.cached_amount[srv]
-                self.grand_total[srv] += self.cached_amount[srv]
-                self.timeline_total[srv][self.day_label] += self.cached_amount[srv]
+            if cached := self.cached_amount[srv]:
+                day_total[srv] += cached
+                week_total[srv] += cached
+                month_total[srv] += cached
+                grand_total[srv] += cached
+                timeline_total[srv][self.day_label] += cached
+
+                # Reset for next time
+                cached_amount[srv] = 0
 
             # Update server bps
-            try:
-                self.server_bps[srv] = (
-                    self.server_bps[srv] * (self.last_update - self.start_time) + self.cached_amount[srv]
-                ) / (t - self.start_time)
-            except ZeroDivisionError:
-                self.server_bps[srv] = 0.0
-
-            # Reset for next time
-            self.cached_amount[srv] = 0
+            server_bps[srv] = (server_bps[srv] * dt_last + cached) / dt_total
 
         # Quota check
+        total_cached = self.sum_cached_amount
         if self.have_quota and self.quota_enabled:
-            self.left -= self.sum_cached_amount
+            self.left -= total_cached
             self.check_quota()
 
         # Speedometer
-        try:
-            self.bps = (self.bps * (self.last_update - self.start_time) + self.sum_cached_amount) / (
-                t - self.start_time
-            )
-        except ZeroDivisionError:
-            self.bps = 0.0
+        self.bps = (self.bps * dt_last + total_cached) / dt_total
 
         self.sum_cached_amount = 0
         self.last_update = t
 
         check_time = t - 5.0
 
-        if self.start_time < check_time:
+        if start_time < check_time:
             self.start_time = check_time
 
         if self.bps < 0.01:
@@ -382,7 +386,7 @@ class BPSMeter:
 
         # Always trim the list to the max-length
         if len(self.bps_list) > BPS_LIST_MAX:
-            self.bps_list = self.bps_list[len(self.bps_list) - BPS_LIST_MAX :]
+            self.bps_list = self.bps_list[-BPS_LIST_MAX:]
 
     def get_sums(self):
         """return tuple of grand, month, week, day totals"""

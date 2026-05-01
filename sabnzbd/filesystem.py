@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2008-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
 """
 sabnzbd.misc - filesystem operations
 """
+
 import gzip
 import os
 import pickle
@@ -33,7 +34,8 @@ import fnmatch
 import stat
 import ctypes
 import random
-from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
+from dataclasses import dataclass
+from typing import Union, Any, Optional, BinaryIO
 
 try:
     import win32api
@@ -42,6 +44,7 @@ try:
 except ImportError:
     pass
 
+import sabctools
 import sabnzbd
 from sabnzbd.decorators import synchronized, conditional_cache
 from sabnzbd.constants import (
@@ -52,10 +55,10 @@ from sabnzbd.constants import (
     IGNORED_FILES_AND_FOLDERS,
     DEF_LOG_FILE,
     DEX_FILE_EXTENSION_MAX,
+    MEBI,
 )
-from sabnzbd.encoding import correct_unknown_encoding, utob, limit_encoded_length
+from sabnzbd.encoding import correct_unknown_encoding, unicode_nfc_normalize, utob, limit_encoded_length
 import rarfile
-
 
 # For Windows: determine executable extensions
 if os.name == "nt":
@@ -213,6 +216,8 @@ def sanitize_filename(filename: str) -> str:
     if not filename:
         return filename
 
+    filename = unicode_nfc_normalize(filename)
+
     illegal = CH_ILLEGAL
     if sabnzbd.WINDOWS or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
@@ -254,10 +259,12 @@ def sanitize_filename(filename: str) -> str:
 
 def sanitize_foldername(foldername: str) -> str:
     """Return foldername with dodgy chars converted to safe ones
-    Remove any leading and trailing dot and space characters
+    and remove any leading and trailing dot and space characters
     """
     if not foldername:
         return foldername
+
+    foldername = unicode_nfc_normalize(foldername)
 
     illegal = CH_ILLEGAL + ':"'
 
@@ -295,10 +302,10 @@ def sanitize_and_trim_path(path: str) -> str:
     if sabnzbd.WINDOWS:
         if path.startswith("\\\\?\\UNC\\"):
             new_path = "\\\\?\\UNC\\"
-            path = path[8:]
+            path = path.removeprefix("\\\\?\\UNC\\")
         elif path.startswith("\\\\?\\"):
             new_path = "\\\\?\\"
-            path = path[4:]
+            path = path.removeprefix("\\\\?\\")
 
     path = path.replace("\\", "/")
     parts = path.split("/")
@@ -314,7 +321,7 @@ def sanitize_and_trim_path(path: str) -> str:
     return os.path.abspath(os.path.normpath(new_path))
 
 
-def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] = None) -> List[str]:
+def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] = None) -> list[str]:
     """Sanitize each file in the folder or list of filepaths, return list of new names"""
     logging.info("Checking if any resulting filenames need to be sanitized")
     if folder:
@@ -330,7 +337,7 @@ def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] =
     return output_filelist
 
 
-def strip_extensions(name: str, ext_to_remove: Tuple[str, ...] = (".nzb", ".par", ".par2")):
+def strip_extensions(name: str, ext_to_remove: tuple[str, ...] = (".nzb", ".par", ".par2")) -> str:
     """Strip extensions from a filename, without sanitizing the filename"""
     name_base, ext = os.path.splitext(name)
     while ext.lower() in ext_to_remove:
@@ -378,7 +385,7 @@ def real_path(loc: str, path: str) -> str:
 
 def create_real_path(
     name: str, loc: str, path: str, apply_permissions: bool = False, writable: bool = True
-) -> Tuple[bool, str, Optional[str]]:
+) -> tuple[bool, str, Optional[str]]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
     'name' is used for logging.
@@ -484,7 +491,7 @@ TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
 
 def build_filelists(
     workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
-) -> Tuple[List[str], List[str], List[str], List[str]]:
+) -> tuple[list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
@@ -535,7 +542,7 @@ def safe_fnmatch(f: str, pattern: str) -> bool:
         return False
 
 
-def globber(path: str, pattern: str = "*") -> List[str]:
+def globber(path: str, pattern: str = "*") -> list[str]:
     """Return matching base file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
@@ -543,7 +550,7 @@ def globber(path: str, pattern: str = "*") -> List[str]:
     return []
 
 
-def globber_full(path: str, pattern: str = "*") -> List[str]:
+def globber_full(path: str, pattern: str = "*") -> list[str]:
     """Return matching full file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
@@ -572,7 +579,7 @@ def is_valid_script(basename: str) -> bool:
     return basename in list_scripts(default=False, none=False)
 
 
-def list_scripts(default: bool = False, none: bool = True) -> List[str]:
+def list_scripts(default: bool = False, none: bool = True) -> list[str]:
     """Return a list of script names, optionally with 'Default' added"""
     lst = []
     path = sabnzbd.cfg.script_dir.get_path()
@@ -613,7 +620,7 @@ def make_script_path(script: str) -> Optional[str]:
     return script_path
 
 
-def get_admin_path(name: str, future: bool):
+def get_admin_path(name: str, future: bool) -> str:
     """Return news-style full path to job-admin folder of names job
     or else the old cache path
     """
@@ -660,7 +667,7 @@ def set_permissions(path: str, recursive: bool = True):
 UNWANTED_FILE_PERMISSIONS = stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
 
 
-def removexbits(path: str, custom_permissions: int = None):
+def removexbits(path: str, custom_permissions: Optional[int] = None):
     """Remove all the x-bits from files, respecting current or custom permissions"""
     if os.path.isfile(path):
         # Use custom permissions as base
@@ -710,12 +717,16 @@ def long_path(path: str) -> str:
 
 
 ##############################################################################
-# Locked directory operations to avoid problems with simultaneous add/remove
+# Lock for check-then-create operations (get_unique_dir, get_unique_filename)
+# to prevent race conditions when multiple threads attempt to create unique
+# paths in the same parent directory simultaneously.
+# Other directory operations (create, rename, move, remove, list) don't need
+# this lock: they either operate on per-job paths that don't overlap between
+# threads, are inherently idempotent, or have their own retry logic.
 ##############################################################################
-DIR_LOCK = threading.RLock()
+UNIQUE_PATH_LOCK = threading.RLock()
 
 
-@synchronized(DIR_LOCK)
 def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bool]:
     """Create all required path elements and set permissions on all
     The apply_permissions argument is ignored on Windows
@@ -748,7 +759,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
         return False
 
 
-@synchronized(DIR_LOCK)
+@synchronized(UNIQUE_PATH_LOCK)
 def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
     """Determine a unique folder or filename"""
     if not mount_is_available(path):
@@ -767,7 +778,7 @@ def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str,
         return get_unique_dir(path, n=n + 1, create_dir=create_dir)
 
 
-@synchronized(DIR_LOCK)
+@synchronized(UNIQUE_PATH_LOCK)
 def get_unique_filename(path: str) -> str:
     """Check if path is unique.
     If not, add number like: "/path/name.NUM.ext".
@@ -782,8 +793,7 @@ def get_unique_filename(path: str) -> str:
     return path
 
 
-@synchronized(DIR_LOCK)
-def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
+def listdir_full(input_dir: str, recursive: bool = True) -> list[str]:
     """List all files in dirs and sub-dirs"""
     filelist = []
     for root, dirs, files in os.walk(input_dir):
@@ -796,8 +806,7 @@ def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
     return filelist
 
 
-@synchronized(DIR_LOCK)
-def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
+def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
     """Move a file to a new path, optionally give unique filename
     Return (ok, new_path)
     """
@@ -838,7 +847,6 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
     return ok, new_path
 
 
-@synchronized(DIR_LOCK)
 def cleanup_empty_directories(path: str):
     """Remove all empty folders inside (and including) 'path'"""
     path = os.path.normpath(path)
@@ -862,7 +870,6 @@ def cleanup_empty_directories(path: str):
             pass
 
 
-@synchronized(DIR_LOCK)
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
     Optionally allows the creation of local directories if they don't exist yet
@@ -932,7 +939,6 @@ def remove_file(path: str):
     os.remove(path)
 
 
-@synchronized(DIR_LOCK)
 def remove_dir(path: str):
     """Remove directory with retries for Win32"""
     logging.debug("[%s] Removing dir %s", sabnzbd.misc.caller_name(), path)
@@ -955,7 +961,6 @@ def remove_dir(path: str):
         os.rmdir(path)
 
 
-@synchronized(DIR_LOCK)
 def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursive: bool = False):
     """Remove folder and all its content (optionally recursive)"""
     if path and os.path.exists(path):
@@ -990,7 +995,14 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
+@dataclass(frozen=True)
+class Diskspace:
+    path: str
+    size: float = 0.0
+    free: float = 0.0
+
+
+def diskspace_base(dir_to_check: str) -> Diskspace:
     """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
     x = "x"
@@ -1001,9 +1013,9 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
         # windows diskfree
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
-            return disk_size / GIGI, available / GIGI
+            return Diskspace(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
-            return 0.0, 0.0
+            return Diskspace(path=dir_to_check)
     elif hasattr(os, "statvfs"):
         # posix diskfree
         try:
@@ -1016,24 +1028,23 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
                 available = float(sys.maxsize) * float(s.f_frsize)
             else:
                 available = float(s.f_bavail) * float(s.f_frsize)
-            return disk_size / GIGI, available / GIGI
+            return Diskspace(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
-            return 0.0, 0.0
+            return Diskspace(path=dir_to_check)
     else:
-        return 20.0, 10.0
+        return Diskspace(path=dir_to_check, size=20.0, free=10.0)
 
 
 @conditional_cache(cache_time=10)
-def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
+def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> tuple[Diskspace, Diskspace]:
     """Wrapper to keep results cached by conditional_cache
     If called with force=True, the wrapper will clear the results"""
-    return {
-        "download_dir": diskspace_base(sabnzbd.cfg.download_dir.get_path()),
-        "complete_dir": diskspace_base(sabnzbd.cfg.complete_dir.get_path()),
-    }
+    if not complete_dir:
+        complete_dir = sabnzbd.cfg.complete_dir.get_path()
+    return diskspace_base(sabnzbd.cfg.download_dir.get_path()), diskspace_base(complete_dir)
 
 
-def get_new_id(prefix, folder, check_list=None):
+def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> str:
     """Return unique prefixed admin identifier within folder
     optionally making sure that id is not in the check_list.
     """
@@ -1054,7 +1065,7 @@ def get_new_id(prefix, folder, check_list=None):
     raise IOError
 
 
-def save_data(data, _id, path, do_pickle=True, silent=False):
+def save_data(data: Any, _id: str, path: str, do_pickle: bool = True, silent: bool = False):
     """Save data to a diskfile"""
     if not silent:
         logging.debug("[%s] Saving data for %s in %s", sabnzbd.misc.caller_name(), _id, path)
@@ -1081,7 +1092,14 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                 time.sleep(0.1)
 
 
-def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
+def load_data(
+    data_id: str,
+    path: str,
+    remove: bool = True,
+    do_pickle: bool = True,
+    silent: bool = False,
+    mutable: bool = False,
+) -> Any:
     """Read data from disk file"""
     path = os.path.join(path, data_id)
 
@@ -1100,6 +1118,9 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
                 except UnicodeDecodeError:
                     # Could be Python 2 data that we can load using old encoding
                     data = pickle.load(data_file, encoding="latin1")
+            elif mutable:
+                data = bytearray(os.fstat(data_file.fileno()).st_size)
+                data_file.readinto(data)
             else:
                 data = data_file.read()
 
@@ -1129,7 +1150,7 @@ def save_admin(data: Any, data_id: str):
     save_data(data, data_id, sabnzbd.cfg.admin_dir.get_path())
 
 
-def load_admin(data_id: str, remove=False, silent=False) -> Any:
+def load_admin(data_id: str, remove: bool = False, silent: bool = False) -> Any:
     """Read data in admin folder in specified format"""
     logging.debug("[%s] Loading data for %s", sabnzbd.misc.caller_name(), data_id)
     return load_data(data_id, sabnzbd.cfg.admin_dir.get_path(), remove=remove, silent=silent)
@@ -1196,7 +1217,7 @@ def purge_log_files():
             logging.debug("Finished puring log files")
 
 
-def directory_is_writable_with_file(mydir, myfilename):
+def directory_is_writable_with_file(mydir: str, myfilename: str) -> bool:
     filename = os.path.join(mydir, myfilename)
     if os.path.exists(filename):
         try:
@@ -1222,7 +1243,7 @@ def directory_is_writable(test_dir: str) -> bool:
     return True
 
 
-def check_filesystem_capabilities(test_dir: str) -> bool:
+def check_filesystem_capabilities(test_dir: str, is_download_dir: bool = False) -> bool:
     """Checks if we can write long and unicode filenames to the given directory.
     If not on Windows, also check for special chars like slashes and :
     Returns True if all OK, otherwise False"""
@@ -1250,10 +1271,31 @@ def check_filesystem_capabilities(test_dir: str) -> bool:
         )
         allgood = False
 
+    # sparse files allow efficient use of empty space in files
+    if is_download_dir and not check_sparse_and_disable(test_dir):
+        # Writing to correct file offsets will be disabled, and it won't be possible to flush the article cache
+        # directly to the destination file
+        sabnzbd.misc.helpful_warning(
+            T(
+                "Direct Write mode has been disabled because %s does not support sparse files. "
+                "For details and possible solutions, see: https://sabnzbd.org/wiki/advanced/direct-write"
+            ),
+            test_dir,
+        )
+        allgood = False
+
     return allgood
 
 
-def get_win_drives() -> List[str]:
+def check_sparse_and_disable(test_dir: str) -> bool:
+    """Check if sparse files are supported, otherwise disable direct write mode"""
+    if sabnzbd.cfg.direct_write() and not is_sparse_supported(test_dir):
+        sabnzbd.cfg.direct_write.set(False)
+        return False
+    return True
+
+
+def get_win_drives() -> list[str]:
     """Return list of detected drives, adapted from:
     http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
     """
@@ -1281,7 +1323,7 @@ PATHBROWSER_JUNKFOLDERS = (
 )
 
 
-def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) -> List[Dict[str, str]]:
+def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) -> list[dict[str, str]]:
     """Returns a list of dictionaries with the folders and folders contained at the given path
     Give the empty string as the path to list the contents of the root path
     under Unix this means "/", on Windows this will be a list of drive letters
@@ -1367,3 +1409,51 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
         )
 
     return file_list
+
+
+def create_work_name(name: str) -> str:
+    """Remove ".nzb" and ".par(2)" and sanitize, skip URL's"""
+    if name.find("://") < 0:
+        # Invalid charters need to be removed before and after (see unit-tests)
+        return sanitize_foldername(strip_extensions(sanitize_foldername(name)))
+    else:
+        return name.strip()
+
+
+def is_sparse(path: str) -> bool:
+    """Check if a path is a sparse file"""
+    info = os.stat(path)
+    if sabnzbd.WINDOWS:
+        return bool(info.st_file_attributes & stat.FILE_ATTRIBUTE_SPARSE_FILE)
+
+    # Linux and macOS
+    if info.st_blocks * 512 < info.st_size:
+        return True
+
+    # Filesystem with SEEK_HOLE (ZFS)
+    try:
+        with open(path, "rb") as f:
+            pos = f.seek(0, os.SEEK_HOLE)
+            return pos < info.st_size
+    except (AttributeError, OSError):
+        pass
+
+    return False
+
+
+def is_sparse_supported(check_dir: str) -> bool:
+    """
+    Check if a directory supports sparse files.
+
+    A 1 MiB sparse file is created because some filesystems allocate at
+    least one physical block even for sparse files. Using a size that spans
+    many 512-byte blocks ensures we can reliably detect whether fewer
+    blocks than the logical size were actually allocated.
+    """
+    sparse_file = tempfile.NamedTemporaryFile(dir=check_dir, delete=False)
+    try:
+        sabctools.sparse(sparse_file.fileno(), int(MEBI))
+        sparse_file.close()
+        return is_sparse(sparse_file.name)
+    finally:
+        os.remove(sparse_file.name)

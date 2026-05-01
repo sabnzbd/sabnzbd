@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -45,13 +45,13 @@ class TestPar2Parsing:
             caplog.clear()
 
             assert (
-                "6f9d1d2e7466f09f1db010084bb4ca89",
+                "3ec589bd15a161194e2ec6b8189ec403",
                 {
                     "frènch_german_demö.rar": FilePar2Info(
                         filename="frènch_german_demö.rar",
-                        hash16k=b"C\t\x1d\xbd\xdf\x8c\xb5w \xcco\xbf~L)\xc2",
-                        filehash=1320056373,
-                        filesize=132,
+                        hash16k=b",F\x1f3\x83\xe7wa\xf4Q\xb0[\xd9\x9a\xc0\xa1",
+                        filehash=13964116,
+                        filesize=153,
                     )
                 },
             ) == parse_par2_file(

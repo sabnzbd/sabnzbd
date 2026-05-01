@@ -6,5 +6,5 @@
 # You MUST use double quotes (so " and not ')
 # Do not forget to update the appdata file for every major release!
 
-__version__ = "4.5.5"
-__baseline__ = "a61a5539a7e0e0dc1f9ae140222436ba8f9fe679"
+__version__ = "5.0.0"
+__baseline__ = "unknown"

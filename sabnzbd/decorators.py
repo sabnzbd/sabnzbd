@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,6 @@ import functools
 from typing import Union, Callable
 from threading import Lock, RLock, Condition
 
-
 # All operations that modify the queue need to happen in a lock
 # Also used when importing NZBs to prevent IO-race conditions
 # Names of wrapper-functions should be the same in misc.caller_name
@@ -35,15 +34,21 @@ DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 DOWNLOADER_LOCK = RLock()
 
 
-def synchronized(lock: Union[Lock, RLock]):
+def synchronized(lock: Union[Lock, RLock, Condition, None] = None):
     def wrap(func: Callable):
         def call_func(*args, **kw):
-            # Using the try/finally approach is 25% faster compared to using "with lock"
+            # Either use the supplied lock or the object-specific one
+            # Because it's a variable in the upper function, we cannot use it directly
+            lock_obj = lock
+            if not lock_obj:
+                lock_obj = getattr(args[0], "lock")
+
+            # Using try/finally is ~25% faster than "with lock"
             try:
-                lock.acquire()
+                lock_obj.acquire()
                 return func(*args, **kw)
             finally:
-                lock.release()
+                lock_obj.release()
 
         return call_func
 
@@ -70,7 +75,7 @@ def conditional_cache(cache_time: int):
     Empty results (None, empty collections, empty strings, False, 0) are not cached.
     If a keyword argument of `force=True` is used, the cache is skipped.
 
-    Unhashable types (such as List) can not be used as an input to the wrapped function in the current implementation!
+    Unhashable types (such as list) can not be used as an input to the wrapped function in the current implementation!
 
     :param cache_time: Time in seconds to cache non-empty results
     """
@@ -81,6 +86,9 @@ def conditional_cache(cache_time: int):
         def wrapper(*args, **kwargs):
             current_time = time.time()
 
+            # Exclude force from the cache key
+            force = kwargs.pop("force", False)
+
             # Create cache key using functools._make_key
             try:
                 key = functools._make_key(args, kwargs, typed=False)
@@ -90,15 +98,16 @@ def conditional_cache(cache_time: int):
                 # If args/kwargs aren't hashable, skip caching entirely
                 return func(*args, **kwargs)
 
-            # Allow force kward to skip cache
-            if not kwargs.get("force"):
+            # Allow force kwarg to skip cache
+            if not force:
                 # Check if we have a valid cached result
-                if key in cache:
-                    cached_result, timestamp = cache[key]
-                    if current_time - timestamp < cache_time:
+                entry = cache.get(key)
+                if entry is not None:
+                    cached_result, expires_at = entry
+                    if current_time < expires_at:
                         return cached_result
                     # Cache entry expired, remove it
-                    del cache[key]
+                    cache.pop(key, None)
 
             # Call the original function
             result = func(*args, **kwargs)
@@ -106,7 +115,7 @@ def conditional_cache(cache_time: int):
             # Only cache non-empty results
             # This excludes None, [], {}, "", 0, False, etc.
             if result:
-                cache[key] = (result, current_time)
+                cache[key] = (result, current_time + cache_time)
 
             return result
 

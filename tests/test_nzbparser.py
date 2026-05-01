@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ tests.test_nzbparser - Tests of basic NZB parsing
 
 from tests.testhelper import *
 import sabnzbd.nzbparser as nzbparser
-from sabnzbd import nzbstuff
+from sabnzbd.nzb import NzbObject
 from sabnzbd.filesystem import save_compressed
 
 
@@ -29,7 +29,7 @@ from sabnzbd.filesystem import save_compressed
 class TestNzbParser:
     @set_config({"download_dir": SAB_CACHE_DIR})
     def test_nzbparser(self):
-        nzo = nzbstuff.NzbObject("test_basic")
+        nzo = NzbObject("test_basic")
         # Create test file
         metadata = {"category": "test", "password": "testpass"}
         nzb_fp = create_and_read_nzb_fp("..", metadata=metadata)

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ import io
 import shutil
 import functools
 import rarfile
-from typing import Tuple, List, BinaryIO, Optional, Dict, Any, Union, Set
+from typing import BinaryIO, Optional, Any, Union
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
@@ -64,11 +64,11 @@ from sabnzbd.filesystem import (
     SEVENMULTI_RE,
     is_size,
     get_basename,
+    create_all_dirs,
 )
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzb import NzbObject
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
-
 
 # Regex globals
 RAR_V3_RE = re.compile(r"\.(?P<ext>part\d*)$", re.I)
@@ -117,7 +117,14 @@ def find_programs(curdir: str):
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "macos/7zip/7zz")
 
     if sabnzbd.WINDOWS:
-        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
+        if sabnzbd.WINDOWSARM64:
+            # ARM64 version of par2
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/arm64/par2.exe")
+        else:
+            # Regular x64 version
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
+
+        # UnRAR has no arm64 version, so we skip it also for 7zip
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
         sabnzbd.newsunpack.SEVENZIP_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:
@@ -198,9 +205,7 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(
-    extern_proc: str, nzo: NzbObject, complete_dir: str, nicename: str, status: int
-) -> Tuple[str, int]:
+def external_processing(extern_proc: str, nzo: NzbObject, complete_dir: str, status: int) -> tuple[str, int]:
     """Run a user postproc script, return console output and exit value"""
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
@@ -208,7 +213,7 @@ def external_processing(
         str(extern_proc),
         str(complete_dir),
         str(nzo.filename),
-        str(nicename),
+        str(nzo.final_name),
         "",
         str(nzo.cat),
         str(nzo.group),
@@ -262,12 +267,12 @@ def unpacker(
     nzo: NzbObject,
     workdir_complete: str,
     one_folder: bool,
-    joinables: List[str] = [],
-    rars: List[str] = [],
-    sevens: List[str] = [],
-    ts: List[str] = [],
+    joinables: list[str] = [],
+    rars: list[str] = [],
+    sevens: list[str] = [],
+    ts: list[str] = [],
     depth: int = 0,
-) -> Tuple[Union[int, bool], List[str]]:
+) -> tuple[Union[int, bool], list[str]]:
     """Do a recursive unpack from all archives in 'download_path' to 'workdir_complete'"""
     if depth > 2:
         # Prevent going to deep down the rabbit-hole
@@ -359,7 +364,7 @@ def unpacker(
 ##############################################################################
 # Filejoin Functions
 ##############################################################################
-def match_ts(file: str) -> Tuple[str, int]:
+def match_ts(file: str) -> tuple[str, int]:
     """Return True if file is a joinable TS file"""
     match = TS_RE.search(file)
     if not match:
@@ -374,7 +379,7 @@ def match_ts(file: str) -> Tuple[str, int]:
     return setname, num
 
 
-def clean_up_joinables(names: List[str]):
+def clean_up_joinables(names: list[str]):
     """Remove joinable files and their .1 backups"""
     for name in names:
         if os.path.exists(name):
@@ -403,7 +408,7 @@ def get_seq_number(name: str) -> int:
         return 0
 
 
-def file_join(nzo: NzbObject, workdir_complete: str, joinables: List[str]) -> Tuple[bool, List[str]]:
+def file_join(nzo: NzbObject, workdir_complete: str, joinables: list[str]) -> tuple[bool, list[str]]:
     """Join and joinable files in 'workdir' to 'workdir_complete' and
     when successful, delete originals
     """
@@ -494,7 +499,7 @@ def file_join(nzo: NzbObject, workdir_complete: str, joinables: List[str]) -> Tu
 ##############################################################################
 # (Un)Rar Functions
 ##############################################################################
-def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: List[str]) -> Tuple[int, List[str]]:
+def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: list[str]) -> tuple[int, list[str]]:
     """Unpack multiple sets 'rars' of RAR files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     When 'one_folder' is set, all files will be in a single folder
@@ -616,7 +621,7 @@ def rar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, rars: Li
 
 def rar_extract(
     rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str
-) -> Tuple[int, List[str], List[str]]:
+) -> tuple[int, list[str], list[str]]:
     """Unpack single rar set 'rarfile' to 'extraction_path',
     with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
@@ -625,6 +630,12 @@ def rar_extract(
     new_files = []
     rars = []
     passwords = get_all_passwords(nzo)
+
+    # Sanity check, does the folder exist? Could be removed by aborted Direct Unpack
+    if not os.path.exists(extraction_path):
+        # Similar to prepare_extraction_path
+        extraction_path = create_all_dirs(extraction_path, apply_permissions=True)
+        logging.info("Extraction path (re)created because it was missing: %s", extraction_path)
 
     for password in passwords:
         if password:
@@ -642,14 +653,14 @@ def rar_extract(
 
 def rar_extract_core(
     rarfile_path: str, numrars: int, one_folder: bool, nzo: NzbObject, setname: str, extraction_path: str, password: str
-) -> Tuple[int, List[str], List[str]]:
+) -> tuple[int, list[str], list[str]]:
     """Unpack single rar set 'rarfile_path' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
     start = time.time()
 
     logging.debug("Extraction path: %s", extraction_path)
-    logging.debug("Found rar version: %s", rarfile.is_rarfile(rarfile_path))
+    logging.debug("Found rar version: %s", rarfile.get_rar_version(rarfile_path))
 
     if password:
         password_command = "-p%s" % password
@@ -866,7 +877,7 @@ def rar_extract_core(
 ##############################################################################
 # 7Zip Functions
 ##############################################################################
-def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: List[str]):
+def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: list[str]) -> tuple[bool, list[str]]:
     """Unpack multiple sets '7z' of 7Zip files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
@@ -914,7 +925,7 @@ def unseven(nzo: NzbObject, workdir_complete: str, one_folder: bool, sevens: Lis
 
 def seven_extract(
     nzo: NzbObject, seven_path: str, seven_set: str, extraction_path: str, one_folder: bool
-) -> Tuple[int, List[str]]:
+) -> tuple[int, list[str]]:
     """Unpack single set 'sevenset' to 'extraction_path', with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
@@ -938,7 +949,7 @@ def seven_extract(
 
 def seven_extract_core(
     nzo: NzbObject, seven_path: str, extraction_path: str, seven_set: str, one_folder: bool, password: str
-) -> Tuple[int, List[str]]:
+) -> tuple[int, list[str]]:
     """Unpack single 7Z set 'sevenset' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
@@ -1004,7 +1015,7 @@ def seven_extract_core(
 ##############################################################################
 # PAR2 Functions
 ##############################################################################
-def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
+def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
     """Try to repair a set, return readd and correctness"""
     # Check which of the files exists
     for new_par in nzo.extrapars[setname]:
@@ -1117,8 +1128,8 @@ def par2_repair(nzo: NzbObject, setname: str) -> Tuple[bool, bool]:
 
 
 def par2cmdline_verify(
-    parfile: str, nzo: NzbObject, setname: str, joinables: List[str]
-) -> Tuple[bool, bool, List[str], List[str]]:
+    parfile: str, nzo: NzbObject, setname: str, joinables: list[str]
+) -> tuple[bool, bool, list[str], list[str]]:
     """Run par2 on par-set"""
     used_joinables = []
     used_for_repair = []
@@ -1403,7 +1414,7 @@ def par2cmdline_verify(
     return finished, readd, used_joinables, used_for_repair
 
 
-def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any] = {}) -> Optional[Dict[str, Any]]:
+def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: dict[str, Any] = {}) -> Optional[dict[str, Any]]:
     """Modify the environment for pp-scripts with extra information
     macOS: Return copy of environment without PYTHONPATH and PYTHONHOME
     other: return None
@@ -1460,7 +1471,7 @@ def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: Dict[str, Any]
     return env
 
 
-def rar_volumelist(rarfile_path: str, password: str, known_volumes: List[str]) -> List[str]:
+def rar_volumelist(rarfile_path: str, password: str, known_volumes: list[str]) -> list[str]:
     """List volumes that are part of this rarset
     and merge them with parsed paths list, removing duplicates.
     We assume RarFile is right and use parsed paths as backup.
@@ -1516,7 +1527,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     result = True
     nzf_list = nzo.finished_files
     renames = {}
-    found_paths: Set[str] = set()
+    found_paths: set[str] = set()
 
     # Files to ignore
     ignore_ext = cfg.quick_check_ext_ignore()
@@ -1590,7 +1601,7 @@ def quick_check_set(setname: str, nzo: NzbObject) -> bool:
     return result
 
 
-def unrar_check(rar: str) -> Tuple[int, bool]:
+def unrar_check(rar: str) -> tuple[int, bool]:
     """Return version number of unrar, where "5.01" returns 501
     Also return whether an original version is found
     (version, original)
@@ -1678,7 +1689,7 @@ def is_sfv_file(myfile: str) -> bool:
     return sfv_info_line_counter >= 1
 
 
-def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
+def sfv_check(sfvs: list[str], nzo: NzbObject) -> bool:
     """Verify files using SFV files"""
     # Update status
     nzo.status = Status.VERIFYING
@@ -1762,7 +1773,7 @@ def sfv_check(sfvs: List[str], nzo: NzbObject) -> bool:
     return result
 
 
-def parse_sfv(sfv_filename):
+def parse_sfv(sfv_filename: str) -> dict[str, bytes]:
     """Parse SFV file and return dictionary of crc32's and filenames"""
     results = {}
     with open(sfv_filename, mode="rb") as sfv_list:
@@ -1787,12 +1798,12 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def pre_queue(nzo: NzbObject, pp, cat):
+def pre_queue(nzo: NzbObject, pp: Optional[int], cat: str) -> list[Any]:
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied separate since they can change.
     """
 
-    def fix(p):
+    def fix(p: Any) -> str:
         # If added via API, some items can still be "None" (as a string)
         if is_none(p):
             return ""
@@ -1886,7 +1897,7 @@ class SevenZip:
         if not is_sevenfile(self.path):
             raise TypeError("File is not a 7zip file")
 
-    def namelist(self) -> List[str]:
+    def namelist(self) -> list[str]:
         """Return list of names in 7Zip"""
         names = []
         command = [SEVENZIP_COMMAND, "l", "-p", "-y", "-slt", "-sccUTF-8", self.path]
@@ -1909,6 +1920,6 @@ class SevenZip:
             p.wait()
         return data
 
-    def close(self):
+    def close(self) -> None:
         """Close file"""
         pass

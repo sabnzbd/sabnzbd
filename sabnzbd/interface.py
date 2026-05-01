@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ import copy
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
-from typing import Optional, Callable, Union, Any, Dict, List
+from typing import Optional, Callable, Union, Any
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -81,6 +81,7 @@ from sabnzbd.constants import (
     VALID_NZB_FILES,
     VALID_ARCHIVES,
     DEF_NETWORKING_TEST_TIMEOUT,
+    DEF_PIPELINING_REQUESTS,
 )
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -264,7 +265,7 @@ def check_hostname():
 COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 
 
-def remote_ip_from_xff(xff_ips: List[str]) -> str:
+def remote_ip_from_xff(xff_ips: list[str]) -> str:
     # Per MDN docs, the first non-local/non-trusted IP (rtl) is our "client"
     # However, it's possible that all IPs are local/trusted, so we may also
     # return the first ip in the list as it "should" be the client
@@ -399,7 +400,7 @@ def check_apikey(kwargs):
         return _MSG_APIKEY_INCORRECT
 
 
-def template_filtered_response(file: str, search_list: Dict[str, Any]):
+def template_filtered_response(file: str, search_list: dict[str, Any]):
     """Wrapper for Cheetah response"""
     # We need a copy, because otherwise source-dicts might be modified
     search_list_copy = copy.deepcopy(search_list)
@@ -558,7 +559,8 @@ class Wizard:
             info["password"] = ""
             info["connections"] = ""
             info["ssl"] = 1
-            info["ssl_verify"] = 2
+            info["ssl_verify"] = 3
+            info["pipelining_requests"] = DEF_PIPELINING_REQUESTS
         else:
             # Sort servers to get the first enabled one
             server_names = sorted(
@@ -577,6 +579,7 @@ class Wizard:
                 info["connections"] = s.connections()
                 info["ssl"] = s.ssl()
                 info["ssl_verify"] = s.ssl_verify()
+                info["pipelining_requests"] = s.pipelining_requests()
                 if s.enable():
                     break
         return template_filtered_response(file=os.path.join(sabnzbd.WIZARD_DIR, "one.html"), search_list=info)
@@ -882,7 +885,6 @@ SPECIAL_BOOL_LIST = (
     "rss_filenames",
     "ipv6_hosting",
     "keep_awake",
-    "empty_postproc",
     "new_nzb_on_failure",
     "html_login",
     "disable_archive",
@@ -895,6 +897,7 @@ SPECIAL_BOOL_LIST = (
     "allow_old_ssl_tls",
     "enable_season_sorting",
     "verify_xff_header",
+    "direct_write",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
@@ -906,6 +909,7 @@ SPECIAL_VALUE_LIST = (
     "max_foldername_length",
     "url_base",
     "receive_threads",
+    "assembler_max_queue_size",
     "switchinterval",
     "direct_unpack_threads",
     "selftest_host",
@@ -1268,7 +1272,7 @@ class ConfigRss:
                     active_feed,
                     download=self.__refresh_download,
                     force=self.__refresh_force,
-                    ignoreFirst=self.__refresh_ignore,
+                    ignore_first=self.__refresh_ignore,
                     readout=readout,
                 )
             else:

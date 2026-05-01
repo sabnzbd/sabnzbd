@@ -7,7 +7,7 @@
   "schedule": [
     "before 8am on Monday"
   ],
-  "baseBranches": ["develop", "feature/uvicorn"],
+  "baseBranches": ["develop"],
   "pip_requirements": {
     "fileMatch": [
       "requirements.txt",
@@ -22,8 +22,7 @@
     "jaraco.context",
     "jaraco.collections",
     "sabctools",
-    "paho-mqtt",
-    "werkzeug"
+    "paho-mqtt"
   ],
   "packageRules": [
     {

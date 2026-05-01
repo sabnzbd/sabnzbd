@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,12 +18,12 @@
 """
 tests.test_config - Tests of config methods
 """
+
 from sabnzbd.filesystem import long_path
 from tests.testhelper import *
 import shutil
 import zipfile
 import os
-from typing import List
 
 import sabnzbd.cfg
 from sabnzbd.constants import (
@@ -35,7 +35,6 @@ from sabnzbd.constants import (
 )
 from sabnzbd import config
 from sabnzbd import filesystem
-
 
 DEF_CHAIN_FILE = "server.chain"
 
@@ -87,7 +86,7 @@ class TestConfig:
             return zip_buffer.getvalue()
 
     @staticmethod
-    def create_and_verify_backup(admin_dir: str, must_haves: List[str]):
+    def create_and_verify_backup(admin_dir: str, must_haves: list[str]):
         # Create the backup
         config_backup_path = config.create_config_backup()
         assert os.path.exists(config_backup_path)

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,10 +23,10 @@ import os
 import logging
 import time
 import cherrypy._cpreqbody
-from typing import List, Dict, Union, Tuple, Optional
+from typing import Union, Optional
 
 import sabnzbd
-from sabnzbd.nzbstuff import NzbObject, Article
+from sabnzbd.nzb import Article, NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower, duplicate_warning
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
 from sabnzbd.nzbparser import process_single_nzb
@@ -57,8 +57,8 @@ class NzbQueue:
 
     def __init__(self):
         self.__top_only: bool = cfg.top_only()
-        self.__nzo_list: List[NzbObject] = []
-        self.__nzo_table: Dict[str, NzbObject] = {}
+        self.__nzo_list: list[NzbObject] = []
+        self.__nzo_table: dict[str, NzbObject] = {}
 
     def read_queue(self, repair: int):
         """Read queue from disk, supporting repair modes
@@ -121,7 +121,7 @@ class NzbQueue:
                             pass
 
     @NzbQueueLocker
-    def scan_jobs(self, all_jobs: bool = False, action: bool = True) -> List[str]:
+    def scan_jobs(self, all_jobs: bool = False, action: bool = True) -> list[str]:
         """Scan "incomplete" for missing folders,
         'all' is True: Include active folders
         'action' is True, do the recovery action
@@ -247,7 +247,7 @@ class NzbQueue:
         self.__top_only = value
 
     @NzbQueueLocker
-    def change_opts(self, nzo_ids: List[str], pp: int) -> int:
+    def change_opts(self, nzo_ids: list[str], pp: int) -> int:
         """Locked so changes during URLGrabbing are correctly passed to new job"""
         result = 0
         for nzo_id in nzo_ids:
@@ -257,7 +257,7 @@ class NzbQueue:
         return result
 
     @NzbQueueLocker
-    def change_script(self, nzo_ids: List[str], script: str) -> int:
+    def change_script(self, nzo_ids: list[str], script: str) -> int:
         """Locked so changes during URLGrabbing are correctly passed to new job"""
         result = 0
         if (script is None) or is_valid_script(script):
@@ -269,7 +269,7 @@ class NzbQueue:
         return result
 
     @NzbQueueLocker
-    def change_cat(self, nzo_ids: List[str], cat: str) -> int:
+    def change_cat(self, nzo_ids: list[str], cat: str) -> int:
         """Locked so changes during URLGrabbing are correctly passed to new job"""
         result = 0
         for nzo_id in nzo_ids:
@@ -387,7 +387,7 @@ class NzbQueue:
             return nzo
 
     @NzbQueueLocker
-    def remove_multiple(self, nzo_ids: List[str], delete_all_data=True) -> List[str]:
+    def remove_multiple(self, nzo_ids: list[str], delete_all_data=True) -> list[str]:
         """Remove multiple jobs from the queue. Also triggers duplicate handling
         and downloader-disconnect, so intended for external use only!"""
         removed = []
@@ -405,7 +405,7 @@ class NzbQueue:
         return removed
 
     @NzbQueueLocker
-    def remove_all(self, search: Optional[str] = None) -> List[str]:
+    def remove_all(self, search: Optional[str] = None) -> list[str]:
         """Remove NZO's that match the search-pattern"""
         nzo_ids = []
         search = safe_lower(search)
@@ -414,7 +414,7 @@ class NzbQueue:
                 nzo_ids.append(nzo_id)
         return self.remove_multiple(nzo_ids)
 
-    def remove_nzfs(self, nzo_id: str, nzf_ids: List[str]) -> List[str]:
+    def remove_nzfs(self, nzo_id: str, nzf_ids: list[str]) -> list[str]:
         removed = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -441,7 +441,7 @@ class NzbQueue:
             logging.info("Removed NZFs %s from job %s", removed, nzo.final_name)
         return removed
 
-    def pause_multiple_nzo(self, nzo_ids: List[str]) -> List[str]:
+    def pause_multiple_nzo(self, nzo_ids: list[str]) -> list[str]:
         handled = []
         for nzo_id in nzo_ids:
             self.pause_nzo(nzo_id)
@@ -449,7 +449,7 @@ class NzbQueue:
         return handled
 
     @NzbQueueLocker
-    def pause_nzo(self, nzo_id: str) -> List[str]:
+    def pause_nzo(self, nzo_id: str) -> list[str]:
         """Locked so changes during URLGrabbing are correctly passed to new job"""
         handled = []
         if nzo_id in self.__nzo_table:
@@ -459,7 +459,7 @@ class NzbQueue:
             handled.append(nzo_id)
         return handled
 
-    def resume_multiple_nzo(self, nzo_ids: List[str]) -> List[str]:
+    def resume_multiple_nzo(self, nzo_ids: list[str]) -> list[str]:
         handled = []
         for nzo_id in nzo_ids:
             self.resume_nzo(nzo_id)
@@ -467,7 +467,7 @@ class NzbQueue:
         return handled
 
     @NzbQueueLocker
-    def resume_nzo(self, nzo_id: str) -> List[str]:
+    def resume_nzo(self, nzo_id: str) -> list[str]:
         handled = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -477,7 +477,7 @@ class NzbQueue:
         return handled
 
     @NzbQueueLocker
-    def switch(self, item_id_1: str, item_id_2: str) -> Tuple[int, int]:
+    def switch(self, item_id_1: str, item_id_2: str) -> tuple[int, int]:
         try:
             # Allow an index as second parameter, easier for some skins
             i = int(item_id_2)
@@ -532,24 +532,24 @@ class NzbQueue:
         return -1, nzo1.priority
 
     @NzbQueueLocker
-    def move_nzf_up_bulk(self, nzo_id: str, nzf_ids: List[str], size: int):
+    def move_nzf_up_bulk(self, nzo_id: str, nzf_ids: list[str], size: int):
         if nzo_id in self.__nzo_table:
             for _ in range(size):
                 self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def move_nzf_top_bulk(self, nzo_id: str, nzf_ids: List[str]):
+    def move_nzf_top_bulk(self, nzo_id: str, nzf_ids: list[str]):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_top_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def move_nzf_down_bulk(self, nzo_id: str, nzf_ids: List[str], size: int):
+    def move_nzf_down_bulk(self, nzo_id: str, nzf_ids: list[str], size: int):
         if nzo_id in self.__nzo_table:
             for _ in range(size):
                 self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def move_nzf_bottom_bulk(self, nzo_id: str, nzf_ids: List[str]):
+    def move_nzf_bottom_bulk(self, nzo_id: str, nzf_ids: list[str]):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
@@ -670,7 +670,7 @@ class NzbQueue:
             return -1
 
     @NzbQueueLocker
-    def set_priority(self, nzo_ids: List[str], priority: int) -> int:
+    def set_priority(self, nzo_ids: list[str], priority: int) -> int:
         try:
             n = -1
             for nzo_id in nzo_ids:
@@ -692,7 +692,7 @@ class NzbQueue:
                 return False
         return False
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
+    def get_articles(self, server: Server, servers: list[Server], fetch_limit: int) -> None:
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """
@@ -705,12 +705,12 @@ class NzbQueue:
                 and not nzo.propagation_delay_left
             ) or nzo.priority == FORCE_PRIORITY:
                 if not nzo.server_in_try_list(server):
-                    if articles := nzo.get_articles(server, servers, fetch_limit):
-                        return articles
+                    nzo.get_articles(server, servers, fetch_limit)
+                    if server.article_queue:
+                        break
                 # Stop after first job that wasn't paused/propagating/etc
                 if self.__top_only:
-                    return []
-        return []
+                    break
 
     def register_article(self, article: Article, success: bool = True):
         """Register the articles we tried
@@ -730,20 +730,17 @@ class NzbQueue:
 
         articles_left, file_done, post_done = nzo.remove_article(article, success)
 
-        # Write data if file is done or at trigger time
-        # Skip if the file is already queued, since all available articles will then be written
-        if (
-            file_done
-            or (article.lowest_partnum and nzf.filename_checked and not nzf.import_finished)
-            or (articles_left and (articles_left % sabnzbd.ArticleCache.assembler_write_trigger) == 0)
-        ):
-            if not nzo.precheck:
-                # The type is only set if sabctools could decode the article
-                if nzf.type:
-                    sabnzbd.Assembler.process(nzo, nzf, file_done)
-                elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
-                    # Broken par2 file, try to get another one
-                    nzo.promote_par2(nzf)
+        if not nzo.precheck:
+            # Mark as on_disk so assembler knows it can skip this article
+            if not success:
+                article.on_disk = True
+            # The type is only set if sabctools could decode the article
+            if nzf.type:
+                sabnzbd.Assembler.process(nzo, nzf, file_done, article=article)
+            elif sabnzbd.par2file.has_par2_in_filename(nzf.filename):
+                # Broken par2 file, try to get another one
+                if nzo.promote_par2(nzf):
+                    post_done = False
 
         # Save bookkeeping in case of crash
         if file_done and (nzo.next_save is None or time.time() > nzo.next_save):
@@ -768,10 +765,9 @@ class NzbQueue:
             nzo.removed_from_queue = True
             if nzo.precheck:
                 nzo.save_to_disk()
-                # Check result
-                enough, _ = nzo.check_availability_ratio()
-                if enough:
-                    # Enough data present, do real download
+                # If not enough data is present, fail flag will be set (also used by postproc)
+                if not nzo.fail_msg:
+                    # Send back for real download
                     self.send_back(nzo)
                     return
                 else:
@@ -784,6 +780,7 @@ class NzbQueue:
         if not nzo.nzo_id:
             self.add(nzo, quiet=True)
         self.remove(nzo.nzo_id, cleanup=False)
+        sabnzbd.Assembler.clear_ready_bytes(*nzo.files)
         sabnzbd.PostProcessor.process(nzo)
 
     def actives(self, grabs: bool = True) -> int:
@@ -802,13 +799,13 @@ class NzbQueue:
     def queue_info(
         self,
         search: Optional[str] = None,
-        categories: Optional[List[str]] = None,
-        priorities: Optional[List[str]] = None,
-        statuses: Optional[List[str]] = None,
-        nzo_ids: Optional[List[str]] = None,
+        categories: Optional[list[str]] = None,
+        priorities: Optional[list[str]] = None,
+        statuses: Optional[list[str]] = None,
+        nzo_ids: Optional[list[str]] = None,
         start: int = 0,
         limit: int = 0,
-    ) -> Tuple[int, int, int, List[NzbObject], int, int]:
+    ) -> tuple[int, int, int, list[NzbObject], int, int]:
         """Return list of queued jobs, optionally filtered and limited by start and limit.
         Not locked for performance, only reads the queue
         """
@@ -894,12 +891,28 @@ class NzbQueue:
 
                     if nzf.all_servers_in_try_list(active_servers):
                         # Check for articles where all active servers have already been tried
-                        for article in nzf.articles[:]:
-                            if article.all_servers_in_try_list(active_servers):
-                                logging.debug("Removing article %s with bad trylist in file %s", article, nzf.filename)
-                                nzo.increase_bad_articles_counter("missing_articles")
-                                sabnzbd.NzbQueue.register_article(article, success=False)
+                        with nzf.lock:
+                            for article in nzf.articles:
+                                if article.all_servers_in_try_list(active_servers):
+                                    logging.debug(
+                                        "Removing article %s with bad trylist in file %s", article, nzf.filename
+                                    )
+                                    nzo.increase_bad_articles_counter("missing_articles")
+                                    sabnzbd.NzbQueue.register_article(article, success=False)
 
+                        if not nzf.assembled and not nzf.articles:
+                            logging.debug("Not assembled but no remaining articles for file %s", nzf.filename)
+                        if not nzf.assembled and (next_article := nzf.assembler_next_article):
+                            logging.debug(
+                                "Next article to assemble for file %s is %s, decoded: %s, on_disk: %s, decoded_size: %s, has_fetcher: %s, tries: %s",
+                                nzf.filename,
+                                next_article,
+                                next_article.decoded,
+                                next_article.on_disk,
+                                next_article.decoded_size,
+                                next_article.fetcher is not None,
+                                next_article.tries,
+                            )
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
 
@@ -934,7 +947,7 @@ class NzbQueue:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 
-    def get_urls(self) -> List[Tuple[str, NzbObject]]:
+    def get_urls(self) -> list[tuple[str, NzbObject]]:
         """Return list of future-types needing URL"""
         lst = []
         for nzo_id in self.__nzo_table:

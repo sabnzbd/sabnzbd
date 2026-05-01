@@ -1,15 +1,15 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Eduard Baniceru <war4peace@gmail.com>, 2021
-# Safihre <safihre@sabnzbd.org>, 2023
+# Eduard Baniceru <war4peace@gmail.com>, 2026
+# Safihre <safihre@sabnzbd.org>, 2026
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.6.0\n"
+"Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2023\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Romanian (https://app.transifex.com/sabnzbd/teams/111101/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -145,6 +145,11 @@ msgstr ""
 msgid ""
 "Current umask (%o) might deny SABnzbd access to the files and folders it "
 "creates."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
 
 #. Warning message
@@ -326,7 +331,7 @@ msgstr "Extensie nedorită în fișierul RAR al „%s”. Fișierul nedorit este
 msgid "Unwanted extension is in rar file %s"
 msgstr "Extensii fișier nedorite în fișierul rar %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Oprit, extensii nedorite detectate"
 
@@ -576,11 +581,6 @@ msgstr "Nu am putu inițializa %s@%s din cauza următorului motiv: %s"
 msgid "Fatal error in Downloader"
 msgstr ""
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr ""
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Prea multe conexiuni la serverul %s [%s]"
@@ -599,11 +599,6 @@ msgstr "Autentificare nereuşită la serverul %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Conectare %s@%s eșuată, mesaj=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Eroare suspectă în sistemul de descprcare"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -762,6 +757,14 @@ msgid ""
 "problems."
 msgstr ""
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"Direct Write mode has been disabled because %s does not support sparse "
+"files. For details and possible solutions, see: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr ""
@@ -863,6 +866,13 @@ msgstr "EROARE:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Înapoi"
+
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -993,7 +1003,7 @@ msgid "Update Available!"
 msgstr "Actualizare Disponibilă!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "Eșuare la încărcarea fișierului: %s"
 
@@ -1236,6 +1246,16 @@ msgstr "Încerc verificare SFV"
 msgid "left"
 msgstr "rămas"
 
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Eroare suspectă în sistemul de descprcare"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Acest server nu permite SSL pe acest port"
@@ -1383,6 +1403,103 @@ msgstr "Scriptul de notificare \"%s\" nu există"
 msgid "Failed to send Windows notification"
 msgstr "Nu am putut trimite notificări în Fereastră"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Fişier NZB gol %s"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr "Scriptul pre-coadă a marcat sarcina ca nereușită"
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "Extensie nedorită în fișierul %s (%s)"
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Anulat nu poate fi finalizat"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Eroare importare %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "DUPLICAT"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr ""
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "ENCRIPTAT"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "PREA MARE"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "INCOMPLET"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "NEDORIT"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "AŞTEAPTĂ %s sec"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "SE PROPAGHEAZĂ %s min"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Descărcat în %s cu o medie de %sB/s"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Vârsta"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s articolele au fost incorecte"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s articolele au fost lipsă"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s articolele au avut duplicate diferite"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Ignorăm duplicat NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Eșuare duplicat NZB „%s”"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr "NZB duplicat"
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Întrerupem duplicat NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1416,103 +1533,6 @@ msgstr "Eroare încărcare %s, fişier corupt detectat"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB adăugat în coadă"
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Ignorăm duplicat NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Eșuare duplicat NZB „%s”"
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "NZB duplicat"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Fişier NZB gol %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "Scriptul pre-coadă a marcat sarcina ca nereușită"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Extensie nedorită în fișierul %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Anulat nu poate fi finalizat"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Eroare importare %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DUPLICAT"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "ENCRIPTAT"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "PREA MARE"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "INCOMPLET"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "NEDORIT"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "AŞTEAPTĂ %s sec"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "SE PROPAGHEAZĂ %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Descărcat în %s cu o medie de %sB/s"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Vârsta"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s articolele au fost incorecte"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s articolele au fost lipsă"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s articolele au avut duplicate diferite"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Întrerupem duplicat NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1792,6 +1812,14 @@ msgstr "Eroare la oprirea sistemului"
 msgid "Received a DBus exception %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Valoare RSS gasită a fost goală (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Fulx RSS incompatibil"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1817,14 +1845,6 @@ msgstr "Serverul %s utilizează un certificat HTTPS nesigur"
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Fluxul RSS %s a fost gol"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Fulx RSS incompatibil"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Valoare RSS gasită a fost goală (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
@@ -3294,9 +3314,9 @@ msgstr "Post-Procesează Doar Sarcinile Verificate"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3385,8 +3405,9 @@ msgid "Enable SFV-based checks"
 msgstr "Activează verficări SFV"
 
 #: sabnzbd/skintext.py
-msgid "Do an extra verification based on SFV files."
-msgstr "Fă o verificare extra bazată pe fişiere SFV"
+msgid ""
+"If no par2 files are available, use sfv files (if present) to verify files"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3784,6 +3805,17 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Enable"
 msgstr "Activează"
+
+#: sabnzbd/skintext.py
+msgid "Articles per request"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Request multiple articles per connection without waiting for each response "
+"first.<br />This can improve download speeds, especially on connections with"
+" higher latency."
+msgstr ""
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
@@ -4198,17 +4230,22 @@ msgid "Enable Apprise notifications"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Send notifications using Apprise to almost any notification service"
+msgid ""
+"Send notifications directly to any notification service you use.<br>For "
+"example: Slack, Discord, Telegram, or any service from over 100 supported "
+"services!"
 msgstr ""
 
 #. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Default Apprise URLs"
+msgid "Use default Apprise URLs"
 msgstr ""
 
-#. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Use a comma and/or space to identify more than one URL."
+msgid ""
+"Apprise defines service connection information using URLs.<br>Read the "
+"Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
+"space to identify more than one URL."
 msgstr ""
 
 #: sabnzbd/skintext.py

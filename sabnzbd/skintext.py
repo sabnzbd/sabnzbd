@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -415,7 +415,8 @@ SKIN_TEXT = {
     "explain-top_only": TT("Enable for less memory usage. Disable to prevent slow jobs from blocking the queue."),
     "opt-safe_postproc": TT("Post-Process Only Verified Jobs"),
     "explain-safe_postproc": TT(
-        "Only unpack and run scripts on jobs that passed the verification stage. If turned off, all jobs will be marked as Completed even if they are incomplete."
+        "Only try to unpack jobs that passed the verification stage. "
+        "If turned off, all jobs will be marked as Completed and moved to the Complete folder even if they are incomplete."
     ),
     "opt-pause_on_pwrar": TT("Action when encrypted RAR is downloaded"),
     "explain-pause_on_pwrar": TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
@@ -442,7 +443,7 @@ SKIN_TEXT = {
         "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
     ),
     "opt-sfv_check": TT("Enable SFV-based checks"),
-    "explain-sfv_check": TT("Do an extra verification based on SFV files."),
+    "explain-sfv_check": TT("If no par2 files are available, use sfv files (if present) to verify files"),
     "opt-script_can_fail": TT("User script can flag job as failed"),
     "explain-script_can_fail": TT(
         "When the user script returns a non-zero exit code, the job will be flagged as failed."
@@ -574,6 +575,11 @@ SKIN_TEXT = {
         "For unreliable servers, will be ignored longer in case of failures"
     ),  #: Explain server optional tickbox
     "srv-enable": TT("Enable"),  #: Enable server tickbox
+    "srv-pipelining_requests": TT("Articles per request"),
+    "explain-pipelining_requests": TT(
+        "Request multiple articles per connection without waiting for each response first.<br />"
+        "This can improve download speeds, especially on connections with higher latency."
+    ),
     "button-addServer": TT("Add Server"),  #: Button: Add server
     "button-delServer": TT("Remove Server"),  #: Button: Remove server
     "button-testServer": TT("Test Server"),  #: Button: Test server
@@ -686,10 +692,15 @@ SKIN_TEXT = {
     "explain-pushbullet_device": TT("Device to which message should be sent"),  #: Pushbullet settings
     "opt-apprise_enable": TT("Enable Apprise notifications"),  #: Apprise settings
     "explain-apprise_enable": TT(
-        "Send notifications using Apprise to almost any notification service"
+        "Send notifications directly to any notification service you use.<br>"
+        "For example: Slack, Discord, Telegram, or any service from over 100 supported services!"
     ),  #: Apprise settings
-    "opt-apprise_urls": TT("Default Apprise URLs"),  #: Apprise settings
-    "explain-apprise_urls": TT("Use a comma and/or space to identify more than one URL."),  #: Apprise settings
+    "opt-apprise_urls": TT("Use default Apprise URLs"),  #: Apprise settings
+    "explain-apprise_urls": TT(
+        "Apprise defines service connection information using URLs.<br>"
+        "Read the Apprise wiki how to define the URL for each service.<br>"
+        "Use a comma and/or space to identify more than one URL."
+    ),  #: Apprise settings
     "explain-apprise_extra_urls": TT(
         "Override the default URLs for specific notification types below, if desired."
     ),  #: Apprise settings
@@ -894,6 +905,7 @@ SKIN_TEXT = {
     "Glitter-notification-removing1": TT("Removing job"),  # Notification window
     "Glitter-notification-removing": TT("Removing jobs"),  # Notification window
     "Glitter-notification-shutdown": TT("Shutting down"),  # Notification window
+    "Glitter-notification-upload-failed": TT("Failed to upload file: %s"),  # Notification window
     # Wizard
     "wizard-quickstart": TT("SABnzbd Quick-Start Wizard"),
     "wizard-version": TT("SABnzbd Version"),
@@ -922,11 +934,9 @@ SKIN_TEXT = {
     "wizard-test-server-required": TT("Click on Test Server before continuing"),  #: Tooltip for disabled Next button
     "restore-backup": TT("Restore backup"),
     # Special
-    "yourRights": TT(
-        """
+    "yourRights": TT("""
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
-"""
-    ),
+"""),
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,18 +18,16 @@
 """
 tests.test_functional_sorting - Test downloads with season sorting and sequential files
 """
+
 import os
 from tests.testhelper import *
-from flaky import flaky
 import sabnzbd.config as config
-
 
 # Use an ini file with a valid, old style series and movie sorting configuration
 # that also serves to verify conversion to the new sorter settings is performed
 INI_FILE = "sabnzbd.sorting.ini"
 
 
-@flaky
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestDownloadSorting(DownloadFlowBasics):
     def test_sorter_settings_conversion(self):

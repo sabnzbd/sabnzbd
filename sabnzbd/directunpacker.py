@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,19 +25,18 @@ import subprocess
 import time
 import threading
 import logging
-from typing import Optional, Dict, List, Tuple
+from typing import Optional
 
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
 from sabnzbd.filesystem import remove_all, real_path, remove_file, get_basename, clip_path
-from sabnzbd.nzbstuff import NzbObject, NzbFile
+from sabnzbd.nzb import NzbFile, NzbObject
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import RAR_EXTRACTFROM_RE, RAR_EXTRACTED_RE, rar_volumelist, add_time_left
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.misc import SABRarFile
-import rarfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 # Need a lock to make sure start and stop is handled correctly
@@ -62,11 +61,11 @@ class DirectUnpacker(threading.Thread):
         self.rarfile_nzf: Optional[NzbFile] = None
         self.cur_setname: Optional[str] = None
         self.cur_volume: int = 0
-        self.total_volumes: Dict[str, int] = {}
+        self.total_volumes: dict[str, int] = {}
         self.unpack_time: float = 0.0
 
-        self.success_sets: Dict[str, Tuple[List[str], List[str]]] = {}
-        self.next_sets: List[NzbFile] = []
+        self.success_sets: dict[str, tuple[list[str], list[str]]] = {}
+        self.next_sets: list[NzbFile] = []
 
         self.duplicate_lines: int = 0
 
@@ -259,10 +258,11 @@ class DirectUnpacker(threading.Thread):
                     extracted = []
 
                     # Are there more files left?
-                    while not self.nzo.removed_from_queue and not self.next_sets:
+                    with self.next_file_lock:
                         logging.debug("Direct Unpack for %s waiting for more sets", self.nzo.final_name)
-                        with self.next_file_lock:
-                            self.next_file_lock.wait()
+                        self.next_file_lock.wait_for(
+                            lambda: self.nzo.removed_from_queue or self.next_sets or self.killed
+                        )
 
                     # Is there another set to do?
                     logging.debug(
@@ -341,20 +341,24 @@ class DirectUnpacker(threading.Thread):
                         self.duplicate_lines = 0
                     last_volume_linebuf = linebuf
 
+            elif linebuf.endswith(b"[R]etry, [A]bort "):
+                logging.info("Error in DirectUnpack of %s: %s", self.cur_setname, platform_btou(linebuf.strip()))
+                self.abort(b"A")
+
         # Add last line and write any new output
         if linebuf:
             unrar_log.append(platform_btou(linebuf.strip()))
         if unrar_log:
             logging.debug("DirectUnpack Unrar output: \n%s", "\n".join(unrar_log))
 
-        # Make more space
-        self.reset_active()
-        if self in ACTIVE_UNPACKERS:
-            ACTIVE_UNPACKERS.remove(self)
-        logging.debug("Closing DirectUnpack for %s", self.nzo.final_name)
-
-        # Set the thread to killed so it never gets restarted by accident
-        self.killed = True
+        with START_STOP_LOCK:
+            # Set the thread to killed so it never gets restarted by accident
+            self.killed = True
+            # Make more space
+            self.reset_active()
+            if self in ACTIVE_UNPACKERS:
+                ACTIVE_UNPACKERS.remove(self)
+            logging.debug("Closing DirectUnpack for %s", self.nzo.final_name)
 
     def have_next_volume(self):
         """Check if next volume of set is available, start
@@ -374,9 +378,8 @@ class DirectUnpacker(threading.Thread):
         """Wait for the correct volume to appear but stop if it was killed
         or the NZB is in post-processing and no new files will be downloaded.
         """
-        while not self.have_next_volume() and not self.killed and not self.nzo.pp_active:
-            with self.next_file_lock:
-                self.next_file_lock.wait()
+        with self.next_file_lock:
+            self.next_file_lock.wait_for(lambda: self.have_next_volume() or self.killed or self.nzo.pp_active)
 
     @synchronized(START_STOP_LOCK)
     def create_unrar_instance(self):
@@ -454,7 +457,7 @@ class DirectUnpacker(threading.Thread):
         logging.info("DirectUnpacked volume %s for %s", self.cur_volume, self.cur_setname)
 
     @synchronized(START_STOP_LOCK)
-    def abort(self):
+    def abort(self, abort_input: bytes = b"Q"):
         """Abort running instance and delete generated files"""
         if not self.killed and self.cur_setname:
             logging.info("Aborting DirectUnpack for %s", self.cur_setname)
@@ -467,7 +470,7 @@ class DirectUnpacker(threading.Thread):
             if self.active_instance:
                 # First we try to abort gracefully
                 try:
-                    self.active_instance.stdin.write(b"Q\n")
+                    self.active_instance.stdin.write(abort_input + b"\n")
                     time.sleep(0.2)
                 except IOError:
                     pass

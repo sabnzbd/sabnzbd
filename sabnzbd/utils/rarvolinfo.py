@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,9 +19,8 @@
 """
 sabnzbd.utils.rarvolinfo - Find out volume number and/or original extension of a rar file. Useful with obfuscated files
 """
-import logging
-import os
 
+import os
 import rarfile
 
 

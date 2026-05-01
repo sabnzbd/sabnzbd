@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ import asyncio
 import os
 import logging
 import threading
-from typing import Generator, Set, Optional, Tuple
+from typing import Generator, Optional
 
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES, AddNzbFileResult
@@ -128,7 +128,7 @@ class DirScanner(threading.Thread):
 
     def get_suspected_files(
         self, folder: str, catdir: Optional[str] = None
-    ) -> Generator[Tuple[str, Optional[str], Optional[os.stat_result]], None, None]:
+    ) -> Generator[tuple[str, Optional[str], Optional[os.stat_result]], None, None]:
         """Generator listing possible paths to NZB files"""
 
         if catdir is None:
@@ -222,17 +222,15 @@ class DirScanner(threading.Thread):
 
     async def scan_async(self, dirscan_dir: str):
         """Do one scan of the watched folder"""
-        # On Python 3.8 we first need an event loop before we can create a asyncio.Lock
-        if not self.lock:
-            with DIR_SCANNER_LOCK:
-                self.lock = asyncio.Lock()
+        with DIR_SCANNER_LOCK:
+            self.lock = asyncio.Lock()
 
         async with self.lock:
             if sabnzbd.PAUSED_ALL:
                 return
 
-            files: Set[str] = set()
-            futures: Set[asyncio.Task] = set()
+            files: set[str] = set()
+            futures: set[asyncio.Task] = set()
 
             for path, catdir, stat_tuple in self.get_suspected_files(dirscan_dir):
                 files.add(path)

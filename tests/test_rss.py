@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,23 +18,51 @@
 """
 tests.test_misc - Testing functions in misc.py
 """
+
 import datetime
 import time
+from typing import Optional
+
 import configobj
+import pytest
 from pytest_httpserver import HTTPServer
 
 import sabnzbd.rss as rss
 import sabnzbd.config
+from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
+from sabnzbd.rss import FeedEvaluation, FeedConfig
 from tests.testhelper import httpserver_handler_data_dir
 
 
 class TestRSS:
     @staticmethod
-    def setup_rss(feed_name, feed_url):
+    def setup_rss(
+        feed_name: str,
+        feed_url: str,
+        *,
+        category: Optional[str] = None,
+        pp: Optional[str] = None,
+        script: Optional[str] = None,
+        priority: Optional[int] = None,
+        filters: list[tuple[str, str, str, str, str, int, str]] = None,
+    ):
         """Setup the basic settings to get things going"""
+        values: dict = {"uri": feed_url}
+        if category is not None:
+            values["category"] = category
+        if pp is not None:
+            values["pp"] = str(pp)
+        if script is not None:
+            values["script"] = script
+        if priority is not None:
+            values["priority"] = str(priority)
+        if filters is not None:
+            for n, f in enumerate(filters):
+                values[f"filter{n}"] = f
+
         # Setup the config settings
         sabnzbd.config.CFG_OBJ = configobj.ConfigObj()
-        sabnzbd.config.ConfigRSS(feed_name, {"uri": feed_url})
+        sabnzbd.config.ConfigRSS(feed_name, values)
 
         # Need to create the Default category
         # Otherwise it will try to save the config
@@ -163,3 +191,164 @@ class TestRSS:
         # of the system, so now we have to return to UTC
         adjusted_date = datetime.datetime(2025, 5, 20, 18, 21, 1) - datetime.timedelta(seconds=time.timezone)
         assert job_data["age"] == adjusted_date
+
+    @pytest.mark.parametrize(
+        "defaults, filters, title, category, size, season, episode, expected_match",
+        [
+            # filters are (cat, pp, script, ftype, regex, priority, enabled)
+            (
+                (None, None, None, None),
+                [],  # config always adds a default accept rule
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0),
+            ),
+            (
+                (None, None, None, None),
+                [("", "", "", ">", "500", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=True, rule_index=1, season=0, episode=0),
+            ),
+            (
+                (None, None, None, None),
+                [("", "", "", "F", "S03E08", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title S05E02",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=True, rule_index=1, season=5, episode=2),
+            ),
+            (
+                (None, None, None, None),
+                [("", "", "", "F", "S03E08", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title S01E02",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=False, rule_index=0, season=1, episode=2),
+            ),
+            (
+                (None, None, None, LOW_PRIORITY),
+                [],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, priority=LOW_PRIORITY),
+            ),
+            (
+                (None, None, None, LOW_PRIORITY),
+                [("", "", "", "A", "*", HIGH_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, priority=HIGH_PRIORITY),
+            ),
+            (
+                (None, 1, None, None),
+                [],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, pp=1),
+            ),
+            (
+                (None, 1, None, None),
+                [("", "3", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, pp=3),
+            ),
+            (  # category overrides
+                ("tv", 1, DEFAULT_PRIORITY, ""),
+                [("evaluator", "", "", "A", "*", "", "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(
+                    matched=True,
+                    rule_index=0,
+                    season=0,
+                    episode=0,
+                    category="evaluator",
+                    pp=3,
+                    script="evaluator.py",
+                    priority=FORCE_PRIORITY,
+                ),
+            ),
+            (  # category with rule overrides
+                ("tv", 1, DEFAULT_PRIORITY, ""),
+                [("evaluator", "2", "override.py", "A", "*", "", "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                FeedEvaluation(
+                    matched=True,
+                    rule_index=0,
+                    season=0,
+                    episode=0,
+                    category="evaluator",
+                    pp=2,
+                    script="override.py",
+                    priority=FORCE_PRIORITY,
+                ),
+            ),
+        ],
+    )
+    def test_feedconfig_evaluator(
+        self,
+        httpserver: HTTPServer,
+        defaults: tuple[Optional[str], Optional[str], Optional[str], Optional[int]],
+        filters: list[tuple[str, str, str, str, str, int, str]],
+        title: str,
+        category: Optional[str],
+        size: int,
+        season: int,
+        episode: int,
+        expected_match: FeedEvaluation,
+    ):
+        default_category, default_pp, default_script, default_priority = defaults
+        feed_name = "Evaluator"
+        self.setup_rss(
+            feed_name,
+            httpserver.url_for("/evaluator.xml"),
+            category=default_category,
+            pp=default_pp,
+            script=default_script,
+            priority=default_priority,
+            filters=filters,
+        )
+        sabnzbd.config.ConfigCat(
+            "evaluator",
+            {
+                "pp": "3",
+                "script": "evaluator.py",
+                "priority": FORCE_PRIORITY,
+            },
+        )
+
+        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
+        result_match = feed_cfg.evaluate(title=title, category=category, size=size, season=season, episode=episode)
+
+        assert result_match == expected_match

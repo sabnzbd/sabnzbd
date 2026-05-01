@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ import sabnzbd.downloader
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.filesystem import diskspace
+from sabnzbd.filesystem import diskspace_base
 from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 DAILY_RANGE = list(range(1, 8))
@@ -337,7 +337,11 @@ class Scheduler:
                 sabnzbd.downloader.unpause_all()
             sabnzbd.Downloader.set_paused_state(paused or paused_all)
 
-        sabnzbd.PostProcessor.paused = pause_post
+        # Handle pause_post state with proper notification
+        if pause_post and not sabnzbd.PostProcessor.paused:
+            sabnzbd.PostProcessor.pause()
+        elif not pause_post and sabnzbd.PostProcessor.paused:
+            sabnzbd.PostProcessor.resume()
         if speedlimit is not None:
             sabnzbd.Downloader.limit_speed(speedlimit)
 
@@ -391,7 +395,7 @@ class Scheduler:
             self.cancel_resume_task()
             return
 
-        disk_free = diskspace(force=True)[full_dir][1]
+        disk_free = diskspace_base(full_dir).free
         if disk_free > required_space:
             logging.info("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
             sabnzbd.Downloader.resume()
@@ -403,7 +407,12 @@ class Scheduler:
             self.cancel_resume_task()
 
     def plan_diskspace_resume(self, full_dir: str, required_space: float):
-        """Create regular check for free disk space"""
+        """
+        Create regular check for free disk space
+
+        :param str full_dir: directory path to monitor for free space
+        :param float required_space: Disk space required to resume
+        """
         self.cancel_resume_task()
         logging.info("Will resume when %s has more than %d GB free space", full_dir, required_space)
         self.resume_task = self.scheduler.add_interval_task(
@@ -506,11 +515,11 @@ def sort_schedules(all_events, now=None):
 
 
 def pp_pause():
-    sabnzbd.PostProcessor.paused = True
+    sabnzbd.PostProcessor.pause()
 
 
 def pp_resume():
-    sabnzbd.PostProcessor.paused = False
+    sabnzbd.PostProcessor.resume()
 
 
 def enable_server(server):

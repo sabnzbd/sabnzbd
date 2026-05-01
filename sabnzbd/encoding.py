@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,11 +20,20 @@ sabnzbd.encoding - Unicode/byte translation functions
 """
 
 import locale
-import chardet
+import unicodedata
+import charset_normalizer
 from xml.sax.saxutils import escape
 from typing import AnyStr
 
 CODEPAGE = locale.getpreferredencoding()
+
+
+def unicode_nfc_normalize(string: str) -> str:
+    """Normalize a Unicode string to NFC form.
+    Ensures consistent representation across sources that may produce NFD
+    (e.g. macOS) and those that produce NFC (e.g. par2, yEnc, NZB).
+    """
+    return unicodedata.normalize("NFC", string)
 
 
 def utob(str_in: AnyStr) -> bytes:
@@ -59,7 +68,8 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
     """Files created on Windows but unpacked/repaired on
     linux can result in invalid filenames. Try to fix this
     encoding by going to bytes and then back to unicode again.
-    Last resort we use chardet package
+    Last resort we use charset_normalizer package.
+    Always returns NFC-normalized Unicode.
     """
     # If already string, back to bytes
     if not isinstance(str_or_bytes_in, bytes):
@@ -67,14 +77,14 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
 
     # Try simple bytes-to-string
     try:
-        return ubtou(str_or_bytes_in)
+        return unicode_nfc_normalize(ubtou(str_or_bytes_in))
     except UnicodeDecodeError:
         try:
             # Try using 8-bit ASCII, if came from Windows
-            return str_or_bytes_in.decode("ISO-8859-1")
+            return unicode_nfc_normalize(str_or_bytes_in.decode("ISO-8859-1"))
         except ValueError:
-            # Last resort we use the slow chardet package
-            return str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)["encoding"])
+            # Last resort we use charset_normalizer
+            return unicode_nfc_normalize(str(charset_normalizer.from_bytes(str_or_bytes_in).best()))
 
 
 def correct_cherrypy_encoding(inputstring: str) -> str:

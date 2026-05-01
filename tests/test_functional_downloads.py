@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,11 +18,10 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
+
 from tests.testhelper import *
-from flaky import flaky
 
 
-@flaky
 class TestDownloadFlow(DownloadFlowBasics):
     def test_download_basic_rar5(self):
         self.download_nzb("basic_rar5", ["My_Test_Download.bin"])
@@ -38,7 +37,7 @@ class TestDownloadFlow(DownloadFlowBasics):
 
     @pytest.mark.xfail(reason="Probably #1633")
     def test_download_unicode_made_on_windows(self):
-        self.download_nzb("test_win_unicode", ["frènch_german_demö.bin"])
+        self.download_nzb("test_win_unicode", ["Frènch_German_Demö.bin"])
 
     def test_download_fully_obfuscated(self):
         # This is also covered by a unit test but added to test full flow

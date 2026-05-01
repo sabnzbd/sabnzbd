@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
 """
 sabnzbd.postproc - threaded post-processing of jobs
 """
+
 import os
 import logging
 import functools
@@ -27,7 +28,7 @@ import re
 import gc
 import queue
 import rarfile
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.newsunpack import (
@@ -39,7 +40,7 @@ from sabnzbd.newsunpack import (
     rar_sort,
     is_sfv_file,
 )
-from threading import Thread
+from threading import Thread, Event
 from sabnzbd.misc import (
     on_cleanup_list,
     is_sample,
@@ -73,7 +74,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
@@ -95,7 +96,6 @@ import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
 import sabnzbd.deobfuscate_filenames as deobfuscate
 
-
 MAX_FAST_JOB_COUNT = 3
 
 
@@ -107,7 +107,7 @@ class PostProcessor(Thread):
         super().__init__()
 
         # This history queue is simply used to log what active items to display in the web_ui
-        self.history_queue: List[NzbObject] = []
+        self.history_queue: list[NzbObject] = []
         self.load()
 
         # Fast-queue for jobs already finished by DirectUnpack
@@ -115,6 +115,9 @@ class PostProcessor(Thread):
 
         # Regular queue for jobs that might need more attention
         self.slow_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
+
+        # Event to signal when work is available or state changes
+        self.work_available = Event()
 
         # Load all old jobs
         for nzo in self.history_queue:
@@ -180,6 +183,9 @@ class PostProcessor(Thread):
         self.save()
         history_updated()
 
+        # Signal that work is available
+        self.work_available.set()
+
     def remove(self, nzo: NzbObject):
         """Remove given nzo from the queue"""
         try:
@@ -192,10 +198,22 @@ class PostProcessor(Thread):
     def stop(self):
         """Stop thread after finishing running job"""
         self.__stop = True
-        self.slow_queue.put(None)
-        self.fast_queue.put(None)
+        # Wake up the processor thread to check stop flag
+        self.work_available.set()
 
-    def cancel_pp(self, nzo_ids: List[str]) -> Optional[bool]:
+    def pause(self):
+        """Pause post-processing"""
+        self.paused = True
+        logging.info("Pausing post-processing")
+
+    def resume(self):
+        """Resume post-processing"""
+        self.paused = False
+        logging.info("Resuming post-processing")
+        # Wake up the processor thread
+        self.work_available.set()
+
+    def cancel_pp(self, nzo_ids: list[str]) -> Optional[bool]:
         """Abort Direct Unpack and change the status, so that the PP is canceled"""
         result = None
         for nzo in self.history_queue:
@@ -220,10 +238,10 @@ class PostProcessor(Thread):
     def get_queue(
         self,
         search: Optional[str] = None,
-        categories: Optional[List[str]] = None,
-        statuses: Optional[List[str]] = None,
-        nzo_ids: Optional[List[str]] = None,
-    ) -> List[NzbObject]:
+        categories: Optional[list[str]] = None,
+        statuses: Optional[list[str]] = None,
+        nzo_ids: Optional[list[str]] = None,
+    ) -> list[NzbObject]:
         """Return list of NZOs that still need to be processed.
         Optionally filtered by the search terms"""
         re_search = None
@@ -265,27 +283,40 @@ class PostProcessor(Thread):
         while not self.__stop:
             self.__busy = False
 
-            if self.paused:
-                time.sleep(5)
-                continue
-
             # Set NzbObject object to None so references from this thread do not keep the
             # object alive until the next job is added to post-processing (see #1628)
             nzo = None
 
+            # Wait for work to be available (no timeout!)
+            self.work_available.wait()
+
+            # Check if we should stop
+            if self.__stop:
+                break
+
+            # If paused, clear event and wait for resume
+            if self.paused:
+                self.work_available.clear()
+                continue
+
+            # If queues are empty (spurious wake or race condition), clear and loop back
+            if self.slow_queue.empty() and self.fast_queue.empty():
+                self.work_available.clear()
+                continue
+
             # Something in the fast queue?
             try:
-                # Every few fast-jobs we should check allow a
+                # Every few fast-jobs we should allow a
                 # slow job so that they don't wait forever
                 if self.__fast_job_count >= MAX_FAST_JOB_COUNT and self.slow_queue.qsize():
                     raise queue.Empty
 
-                nzo = self.fast_queue.get(timeout=2)
+                nzo = self.fast_queue.get_nowait()
                 self.__fast_job_count += 1
             except queue.Empty:
                 # Try the slow queue
                 try:
-                    nzo = self.slow_queue.get(timeout=2)
+                    nzo = self.slow_queue.get_nowait()
                     # Reset fast-counter
                     self.__fast_job_count = 0
                 except queue.Empty:
@@ -295,10 +326,6 @@ class PostProcessor(Thread):
                         handle_empty_queue()
                     # No fast or slow jobs, better luck next loop!
                     continue
-
-            # Stop job
-            if not nzo:
-                continue
 
             # Job was already deleted.
             if not nzo.work_name:
@@ -328,7 +355,7 @@ class PostProcessor(Thread):
             self.external_process = None
             check_eoq = True
 
-            # Allow download to proceed
+            # Allow download to proceed if it was paused for post-processing
             sabnzbd.Downloader.resume_from_postproc()
 
 
@@ -342,7 +369,7 @@ def process_job(nzo: NzbObject) -> bool:
     par_error = False
     # keep track of any unpacking errors
     unpack_error = False
-    # Signal empty download, for when 'empty_postproc' is enabled
+    # Signal empty download
     empty = False
     nzb_list = []
     one_folder = False
@@ -387,19 +414,17 @@ def process_job(nzo: NzbObject) -> bool:
             nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
-            all_ok = cfg.empty_postproc() and empty
-            if not all_ok:
-                par_error = True
-                unpack_error = 1
+            all_ok = False
+            par_error = True
+            unpack_error = 1
 
-        script = nzo.script
         logging.info(
             "Starting Post-Processing on %s => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s",
             filename,
             flag_repair,
             flag_unpack,
             nzo.delete,
-            script,
+            nzo.script,
             nzo.cat,
         )
 
@@ -492,10 +517,10 @@ def process_job(nzo: NzbObject) -> bool:
 
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
+                nzb_list = None
                 if flag_repair:
-                    nzb_list = nzb_redirect(tmp_workdir_complete, nzo.final_name, nzo.pp, script, nzo.cat, nzo.priority)
-                else:
-                    nzb_list = None
+                    nzb_list = process_nzb_only_download(tmp_workdir_complete, nzo)
+
                 if nzb_list:
                     nzo.set_unpack_info("Download", T("Sent %s to queue") % nzb_list)
                     cleanup_empty_directories(tmp_workdir_complete)
@@ -503,9 +528,10 @@ def process_job(nzo: NzbObject) -> bool:
                     # Full cleanup including nzb's
                     cleanup_list(tmp_workdir_complete, skip_nzb=False)
 
-        script_ret = 0
-        script_error = False
+        # No further processing for NZB-only downloads
         if not nzb_list:
+            script_ret = 0
+            script_error = False
             # Give destination its final name
             if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
                 if not all_ok:
@@ -542,8 +568,8 @@ def process_job(nzo: NzbObject) -> bool:
                         nzo.fail_msg = T("Failed to move files")
                         all_ok = False
 
-            # Run further post-processing
-            if (all_ok or not cfg.safe_postproc()) and not nzb_list:
+            # Run deobfuscation only on verified jobs
+            if all_ok:
                 # Use par2 files to deobfuscate unpacked file names
                 # Only if we also run cleanup, so not to process the "regular" par2 files
                 if nzo.delete and cfg.process_unpacked_par2():
@@ -556,56 +582,55 @@ def process_job(nzo: NzbObject) -> bool:
                     # Deobfuscate the subtitles
                     deobfuscate.deobfuscate_subtitles(nzo, newfiles)
 
-                # Run the user script
-                if script_path := make_script_path(script):
-                    # Set the current nzo status to "Ext Script...". Used in History
-                    nzo.status = Status.RUNNING
-                    nzo.set_action_line(T("Running script"), script)
-                    nzo.set_unpack_info("Script", T("Running user script %s") % script, unique=True)
-                    script_log, script_ret = external_processing(
-                        script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
+            # Always run the user script, even for failed jobs (see #3336)
+            # The script receives job_result indicating success/failure
+            if script_path := make_script_path(nzo.script):
+                # Set the current nzo status to "Ext Script...". Used in History
+                nzo.status = Status.RUNNING
+                nzo.set_action_line(T("Running script"), nzo.script)
+                nzo.set_unpack_info("Script", T("Running user script %s") % nzo.script, unique=True)
+                script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete), job_result)
+
+                # Format output depending on return status
+                script_line = get_last_line(script_log)
+                if script_ret:
+                    if script_line:
+                        script_line = "Exit(%s): %s " % (script_ret, script_line)
+                    else:
+                        script_line = T("Script exit code is %s") % script_ret
+                elif not script_line:
+                    script_line = T("Ran %s") % nzo.script
+                nzo.set_unpack_info("Script", script_line, unique=True)
+
+                # Maybe bad script result should fail job
+                if script_ret and cfg.script_can_fail():
+                    script_error = True
+                    all_ok = False
+                    nzo.fail_msg = script_line
+
+            # Email the results
+            if cfg.email_endjob():
+                if cfg.email_endjob() == 1 or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
+                    emailer.endjob(
+                        nzo.final_name,
+                        nzo.cat,
+                        all_ok,
+                        workdir_complete,
+                        nzo.bytes_downloaded,
+                        nzo.fail_msg,
+                        nzo.unpack_info,
+                        nzo.script,
+                        script_log,
+                        script_ret,
                     )
 
-                    # Format output depending on return status
-                    script_line = get_last_line(script_log)
-                    if script_ret:
-                        if script_line:
-                            script_line = "Exit(%s): %s " % (script_ret, script_line)
-                        else:
-                            script_line = T("Script exit code is %s") % script_ret
-                    elif not script_line:
-                        script_line = T("Ran %s") % script
-                    nzo.set_unpack_info("Script", script_line, unique=True)
-
-                    # Maybe bad script result should fail job
-                    if script_ret and cfg.script_can_fail():
-                        script_error = True
-                        all_ok = False
-                        nzo.fail_msg = script_line
-
-        # Email the results
-        if not nzb_list and cfg.email_endjob():
-            if cfg.email_endjob() == 1 or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
-                emailer.endjob(
-                    nzo.final_name,
-                    nzo.cat,
-                    all_ok,
-                    workdir_complete,
-                    nzo.bytes_downloaded,
-                    nzo.fail_msg,
-                    nzo.unpack_info,
-                    script,
-                    script_log,
-                    script_ret,
+            if script_log and len(script_log.rstrip().split("\n")) > 1:
+                # Can do this only now, otherwise it would show up in the email
+                nzo.set_unpack_info(
+                    "Script",
+                    '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_line, nzo.nzo_id, T("More")),
+                    unique=True,
                 )
-
-        if script_log and len(script_log.rstrip().split("\n")) > 1:
-            # Can do this only now, otherwise it would show up in the email
-            nzo.set_unpack_info(
-                "Script",
-                '%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_line, nzo.nzo_id, T("More")),
-                unique=True,
-            )
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):
@@ -693,13 +718,10 @@ def process_job(nzo: NzbObject) -> bool:
     return True
 
 
-def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Optional[str]]:
-    """Based on the information that we have, generate
-    the extraction path and create the directory.
-    Separated so it can be called from DirectUnpacker
-    """
+def get_complete_directory(nzo: NzbObject) -> tuple[str, Sorter, bool]:
+    """Get the complete directory for a nzo.
+    Seperated so the Assembler can check for a category override."""
     create_job_dir = True
-    marker_file = None
 
     # Determine category directory
     catdir = config.get_category(nzo.cat).dir()
@@ -727,6 +749,17 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
         create_job_dir = True
 
     complete_dir = sanitize_and_trim_path(complete_dir)
+
+    return complete_dir, file_sorter, create_job_dir
+
+
+def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Optional[str]]:
+    """Based on the information that we have, generate
+    the extraction path and create the directory.
+    Separated so it can be called from DirectUnpacker
+    """
+    complete_dir, file_sorter, create_job_dir = get_complete_directory(nzo)
+    marker_file = None
 
     if not create_job_dir:
         workdir_complete = create_all_dirs(complete_dir, apply_permissions=True)
@@ -757,7 +790,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     return tmp_workdir_complete, workdir_complete, file_sorter, not create_job_dir, marker_file
 
 
-def parring(nzo: NzbObject) -> Tuple[bool, bool]:
+def parring(nzo: NzbObject) -> tuple[bool, bool]:
     """Perform par processing. Returns: (par_error, re_add)"""
     logging.info("Starting verification and repair of %s", nzo.final_name)
     par_error = False
@@ -876,7 +909,7 @@ def try_sfv_check(nzo: NzbObject) -> Optional[bool]:
     return True
 
 
-def try_rar_check(nzo: NzbObject, rars: List[str]) -> bool:
+def try_rar_check(nzo: NzbObject, rars: list[str]) -> bool:
     """Attempt to verify set using the RARs
     Return True if verified, False when failed
     When setname is '', all RAR files will be used, otherwise only the matching one
@@ -1132,34 +1165,36 @@ def prefix(path: str, pre: str) -> str:
     return os.path.join(p, pre + d)
 
 
-def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
+def process_nzb_only_download(workdir: str, nzo: NzbObject) -> Optional[list[str]]:
     """Check if this job contains only NZB files,
     if so send to queue and remove if on clean-up list
     Returns list of processed NZB's
     """
-    files = listdir_full(wdir)
+    if files := listdir_full(workdir):
+        for nzb_file in files:
+            if get_ext(nzb_file) != ".nzb":
+                return None
 
-    for nzb_file in files:
-        if get_ext(nzb_file) != ".nzb":
-            return None
+        # Process all NZB files
+        new_nzbname = nzo.final_name
+        for nzb_file in files:
+            # Determine name based on number of files
+            nzb_filename = get_filename(nzb_file)
+            if len(files) > 1:
+                new_nzbname = f"{nzo.final_name} - {nzb_filename}"
 
-    # For multiple NZBs, cannot use the current job name
-    if len(files) != 1:
-        nzbname = None
-
-    # Process all NZB files
-    for nzb_file in files:
-        process_single_nzb(
-            get_filename(nzb_file),
-            nzb_file,
-            pp=pp,
-            script=script,
-            cat=cat,
-            priority=priority,
-            dup_check=False,
-            nzbname=nzbname,
-        )
-    return files
+            process_single_nzb(
+                nzb_filename,
+                nzb_file,
+                pp=nzo.pp,
+                script=nzo.script,
+                cat=nzo.cat,
+                url=nzo.url,
+                priority=nzo.priority,
+                nzbname=new_nzbname,
+                dup_check=False,
+            )
+        return files
 
 
 def one_file_or_folder(folder: str) -> str:
@@ -1221,7 +1256,7 @@ def remove_samples(path: str):
         logging.info("Skipping sample-removal, false-positive")
 
 
-def rename_and_collapse_folder(oldpath: str, newpath: str, files: List[str]) -> List[str]:
+def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> list[str]:
     """Rename folder, collapsing when there's just a single subfolder
     oldpath --> newpath OR oldpath/subfolder --> newpath
     Modify list of filenames accordingly
@@ -1273,7 +1308,7 @@ def del_marker(path: str):
             logging.info("Traceback: ", exc_info=True)
 
 
-def remove_from_list(name: Optional[str], lst: List[str]):
+def remove_from_list(name: Optional[str], lst: list[str]):
     if name:
         for n in range(len(lst)):
             if lst[n].endswith(name):

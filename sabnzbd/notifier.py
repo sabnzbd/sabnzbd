@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,6 @@
 sabnzbd.notifier - Send notifications to any notification services
 """
 
-
 import sys
 import os.path
 import logging
@@ -31,7 +30,7 @@ import http.client
 import json
 import apprise
 from threading import Thread
-from typing import Optional, Dict, Union
+from typing import Optional, Union
 
 import sabnzbd
 import sabnzbd.cfg
@@ -39,6 +38,10 @@ from sabnzbd.encoding import utob
 from sabnzbd.filesystem import make_script_path
 from sabnzbd.misc import build_and_run_command, int_conv
 from sabnzbd.newsunpack import create_env
+
+# Prevent logging sensitive information in the URLs called by Apprise
+logging.getLogger("apprise").setLevel(logging.INFO)
+logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
 
 if sabnzbd.WINDOWS:
     windows_major_version = int_conv(platform.version().split(".")[0])
@@ -160,7 +163,7 @@ def send_notification(
     msg: str,
     notification_type: str,
     job_cat: Optional[str] = None,
-    actions: Optional[Dict[str, str]] = None,
+    actions: Optional[dict[str, str]] = None,
 ):
     """Send Notification message"""
     logging.info("Sending notification: %s - %s (type=%s, job_cat=%s)", title, msg, notification_type, job_cat)
@@ -243,7 +246,7 @@ def send_notify_osd(title, message):
         return error
 
 
-def send_notification_center(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
+def send_notification_center(title: str, msg: str, notification_type: str, actions: Optional[dict[str, str]] = None):
     """Send message to macOS Notification Center.
     Only 1 button is possible on macOS!"""
     logging.debug("Sending macOS notification")
@@ -531,7 +534,7 @@ def send_nscript(title, msg, notification_type, force=False, test=None):
     return ""
 
 
-def send_windows(title: str, msg: str, notification_type: str, actions: Optional[Dict[str, str]] = None):
+def send_windows(title: str, msg: str, notification_type: str, actions: Optional[dict[str, str]] = None):
     """Send Windows notifications, either fancy with buttons (Windows 10+) or basic ones"""
     # Skip any notifications if ran as a Windows Service, it can result in crashes
     if sabnzbd.WIN_SERVICE:

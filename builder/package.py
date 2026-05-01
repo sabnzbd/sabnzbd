@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2008-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,8 +27,9 @@ import tarfile
 import urllib.request
 import urllib.error
 import configobj
+import markdown
 import packaging.version
-from typing import List
+import xml.etree.ElementTree as ET
 
 from constants import (
     RELEASE_VERSION,
@@ -36,13 +37,16 @@ from constants import (
     VERSION_FILE,
     RELEASE_README,
     RELEASE_NAME,
-    RELEASE_BINARY,
-    RELEASE_INSTALLER,
+    RELEASE_MACOS,
+    RELEASE_WIN_BIN,
+    RELEASE_WIN_INSTALLER,
     ON_GITHUB_ACTIONS,
     RELEASE_THIS,
     RELEASE_SRC,
     EXTRA_FILES,
     EXTRA_FOLDERS,
+    APPDATA_FILE,
+    RELEASE_VERSION_BASE,
 )
 
 
@@ -70,7 +74,7 @@ def delete_files_glob(glob_pattern: str, allow_no_matches: bool = False):
             raise FileNotFoundError(f"No files found that match '{glob_pattern}'")
 
 
-def run_external_command(command: List[str], print_output: bool = True, **kwargs):
+def run_external_command(command: list[str], print_output: bool = True, **kwargs):
     """Wrapper to ease the use of calling external programs"""
     process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs)
     output, _ = process.communicate()
@@ -107,6 +111,43 @@ def patch_version_file(release_name):
 
     with open(VERSION_FILE, "w") as ver:
         ver.write(version_file)
+
+
+def verify_appdata():
+    """Verify that appdata file is updated"""
+    if not isinstance(
+        ET.parse(APPDATA_FILE).find(f"./releases/release[@version='{RELEASE_VERSION_BASE}']"),
+        ET.Element,
+    ):
+        release_missing = f"Could not find {RELEASE_VERSION_BASE} in {APPDATA_FILE}"
+        if RELEASE_THIS:
+            raise RuntimeError(release_missing)
+        elif ON_GITHUB_ACTIONS:
+            print(f"::warning file={APPDATA_FILE},title=Missing release::{release_missing}")
+        else:
+            print(release_missing)
+
+
+def build_readme_html(output_path: str):
+    """Convert the release notes Markdown to a styled HTML file."""
+    with open(RELEASE_README, "r", encoding="utf-8") as f:
+        readme_html = markdown.markdown(f.read(), extensions=["nl2br"])
+
+    # Linkify bare URLs not already inside an HTML attribute
+    readme_html = re.sub(
+        r'(?<![="\'(])https?://[^\s<>"\']+',
+        lambda m: f'<a href="{m.group()}" target="_blank">{m.group()}</a>',
+        readme_html,
+    )
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(
+            f'<!DOCTYPE html><html><head><meta charset="utf-8">'
+            f"<title>SABnzbd {RELEASE_VERSION} Release Notes</title>"
+            f'<link rel="icon" href="icons/logo-arrow.svg">'
+            f"<style>body{{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}}</style>"
+            f"</head><body>{readme_html}</body></html>"
+        )
 
 
 def test_macos_min_version(binary_path: str):
@@ -232,12 +273,15 @@ if __name__ == "__main__":
     except ImportError:
         raise FileNotFoundError("Need certifi module")
 
+    # Check if we have correct appdata file
+    verify_appdata()
+
     # Patch release file
     patch_version_file(RELEASE_VERSION)
 
-    # Rename release notes file
-    safe_remove("README.txt")
-    shutil.copyfile(RELEASE_README, "README.txt")
+    # Convert release notes to HTML for the installer finish page
+    safe_remove("README.html")
+    build_readme_html("README.html")
 
     # Compile translations
     if not os.path.exists("locale"):
@@ -258,7 +302,7 @@ if __name__ == "__main__":
 
         # Remove any leftovers
         safe_remove(RELEASE_NAME)
-        safe_remove(RELEASE_BINARY)
+        safe_remove(RELEASE_WIN_BIN)
 
         # Run PyInstaller and check output
         shutil.copyfile("builder/SABnzbd.spec", "SABnzbd.spec")
@@ -276,8 +320,8 @@ if __name__ == "__main__":
         test_sab_binary("dist/SABnzbd/SABnzbd.exe")
 
         # Create the archive
-        run_external_command(["win/7zip/7za.exe", "a", RELEASE_BINARY, "SABnzbd"], cwd="dist")
-        shutil.move(f"dist/{RELEASE_BINARY}", RELEASE_BINARY)
+        run_external_command(["win/7zip/7za.exe", "a", RELEASE_WIN_BIN, "SABnzbd"], cwd="dist")
+        shutil.move(f"dist/{RELEASE_WIN_BIN}", RELEASE_WIN_BIN)
 
     if "installer" in sys.argv:
         # Check if we have the dist folder
@@ -285,10 +329,10 @@ if __name__ == "__main__":
             raise FileNotFoundError("SABnzbd executable not found, run binary creation first")
 
         # Check if we have a signed version
-        if os.path.exists(f"signed/{RELEASE_BINARY}"):
+        if os.path.exists(f"signed/{RELEASE_WIN_BIN}"):
             print("Using signed version of SABnzbd binaries")
             safe_remove("dist/SABnzbd")
-            run_external_command(["win/7zip/7za.exe", "x", "-odist", f"signed/{RELEASE_BINARY}"])
+            run_external_command(["win/7zip/7za.exe", "x", "-odist", f"signed/{RELEASE_WIN_BIN}"])
 
             # Make sure it exists
             if not os.path.exists("dist/SABnzbd/SABnzbd.exe"):
@@ -298,21 +342,16 @@ if __name__ == "__main__":
         else:
             print("Using unsigned version of SABnzbd binaries")
 
-        # Compile NSIS translations
-        safe_remove("NSIS_Installer.nsi")
-        safe_remove("NSIS_Installer.nsi.tmp")
-        shutil.copyfile("builder/win/NSIS_Installer.nsi", "NSIS_Installer.nsi")
-        run_external_command([sys.executable, "tools/make_mo.py", "nsis"])
-
         # Run NSIS to build installer
         run_external_command(
             [
                 "makensis.exe",
                 "/V3",
+                "/NOCD",  # No not change working directory
                 "/DSAB_VERSION=%s" % RELEASE_VERSION,
                 "/DSAB_VERSIONKEY=%s" % ".".join(map(str, RELEASE_VERSION_TUPLE)),
-                "/DSAB_FILE=%s" % RELEASE_INSTALLER,
-                "NSIS_Installer.nsi.tmp",
+                "/DSAB_FILE=%s" % RELEASE_WIN_INSTALLER,
+                "builder/win/NSIS_Installer.nsi",
             ]
         )
 
@@ -364,6 +403,7 @@ if __name__ == "__main__":
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
         # Make sure we created a fully universal2 release when releasing or during CI
+        # PyInstaller also includes a builtin check for this, but we double-check every executable
         if RELEASE_THIS or ON_GITHUB_ACTIONS:
             for bin_to_check in glob.glob("dist/SABnzbd.app/**/*.so", recursive=True):
                 print("Checking if binary is universal2: %s" % bin_to_check)
@@ -447,6 +487,46 @@ if __name__ == "__main__":
         # Test the release, as the very last step to not mess with any release code
         test_sab_binary("dist/SABnzbd.app/Contents/MacOS/SABnzbd")
 
+    if "dmg" in sys.argv:
+        # Must be run on macOS
+        if sys.platform != "darwin":
+            raise RuntimeError("DMG should be created on macOS")
+
+        # Only available for macOS
+        import dmgbuild
+
+        apppath = "dist/SABnzbd.app"
+        readmepath = os.path.join(apppath, "Contents/Resources/README.html")
+
+        print("Building DMG")
+        dmgbuild.build_dmg(
+            filename=RELEASE_MACOS,
+            volume_name=RELEASE_NAME,
+            settings={
+                "files": [apppath, readmepath],
+                "symlinks": {"Applications": "/Applications"},
+                "icon": "builder/macos/image/sabnzbdplus.icns",
+                "background": "builder/macos/image/sabnzbd_new_bg.png",
+                "icon_locations": {
+                    os.path.basename(readmepath): (70, 160),
+                    os.path.basename(apppath): (295, 220),
+                    "Applications": (510, 220),
+                },
+                "window_rect": ((100, 100), (660, 360)),
+                "sidebar_width": 0,
+                "grid_spacing": 50,
+                "icon_size": 64,
+            },
+            callback=lambda info: print("dmgbuild", info),
+        )
+
+        if authority := os.environ.get("SIGNING_AUTH"):
+            print("Signing DMG")
+            run_external_command(["codesign", "-f", "-i", "org.sabnzbd.sabnzbd", "-s", authority, RELEASE_MACOS])
+            print("Signed!")
+        else:
+            print("Signing skipped, missing SIGNING_AUTH.")
+
     if "source" in sys.argv:
         # Prepare Source distribution package.
         # We assume the sources are freshly cloned from the repo
@@ -471,7 +551,10 @@ if __name__ == "__main__":
             shutil.copyfile(source_file, os.path.join(src_folder, source_file))
 
         # Make sure all line-endings are correct
+        # Skip test data directories which contain binary files with misleading extensions
         for input_filename in glob.glob("%s/**/*.*" % src_folder, recursive=True):
+            if os.path.join("tests", "data", "") in input_filename:
+                continue
             base, ext = os.path.splitext(input_filename)
             if ext.lower() not in (".py", ".txt", ".css", ".js", ".tmpl", ".sh", ".cmd"):
                 continue

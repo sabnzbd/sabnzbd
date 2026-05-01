@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,6 +19,7 @@
 tests.conftest - Setup pytest fixtures
 These have to be separate otherwise SABnzbd is started multiple times!
 """
+
 import shutil
 import subprocess
 import sys
@@ -27,7 +28,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from warnings import warn
 
-from sabnzbd.constants import DEF_INI_FILE
 from tests.testhelper import *
 
 

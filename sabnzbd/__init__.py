@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,11 +32,12 @@ from threading import Lock, Condition
 # Determine platform flags
 ##############################################################################
 
-WINDOWS = MACOS = MACOSARM64 = FOUNDATION = False
+WINDOWS = WINDOWSARM64 = MACOS = MACOSARM64 = FOUNDATION = False
 KERNEL32 = LIBC = MACOSLIBC = PLATFORM = None
 
 if os.name == "nt":
     WINDOWS = True
+    WINDOWSARM64 = platform.uname().machine == "ARM64"
 
     if platform.uname().machine not in ["AMD64", "ARM64"]:
         print("SABnzbd only supports 64-bit Windows")
@@ -82,15 +83,15 @@ from sabnzbd.version import __version__, __baseline__
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
-import sabnzbd.rss as rss
-import sabnzbd.emailer as emailer
 import sabnzbd.encoding as encoding
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
+import sabnzbd.nzb
 import sabnzbd.nzbparser as nzbparser
-import sabnzbd.nzbstuff
+import sabnzbd.rss as rss
+import sabnzbd.emailer as emailer
 import sabnzbd.getipaddress
 import sabnzbd.newsunpack
 import sabnzbd.par2file
@@ -248,6 +249,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
 
     # Set call backs for Config items
     cfg.cache_limit.callback(cfg.new_limit)
+    cfg.direct_write.callback(cfg.new_direct_write)
     cfg.web_host.callback(cfg.guard_restart)
     cfg.web_port.callback(cfg.guard_restart)
     cfg.web_dir.callback(cfg.guard_restart)
@@ -302,6 +304,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.NzbQueue.read_queue(repair)
     sabnzbd.Scheduler.analyse(pause_downloader)
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
+    sabnzbd.Assembler.new_limit(sabnzbd.ArticleCache.cache_info().cache_limit)
 
     logging.info("All processes started")
     sabnzbd.RESTART_REQ = False
@@ -313,6 +316,9 @@ def start():
     if sabnzbd.__INITIALIZED__:
         logging.debug("Starting postprocessor")
         sabnzbd.PostProcessor.start()
+
+        logging.debug("Starting article cache")
+        sabnzbd.ArticleCache.start()
 
         logging.debug("Starting assembler")
         sabnzbd.Assembler.start()
@@ -379,6 +385,13 @@ def halt():
         sabnzbd.Assembler.stop()
         try:
             sabnzbd.Assembler.join(timeout=3)
+        except Exception:
+            pass
+
+        logging.debug("Stopping article cache")
+        sabnzbd.ArticleCache.stop()
+        try:
+            sabnzbd.ArticleCache.join(timeout=3)
         except Exception:
             pass
 
@@ -481,6 +494,10 @@ def delayed_startup_actions():
             sabnzbd.ORG_UMASK,
         )
 
+    # Check if maybe we are running x64 version on ARM hardware
+    if sabnzbd.WINDOWSARM64 and "AMD64" in sys.version:
+        misc.helpful_warning(T("Windows ARM version of SABnzbd is available from our Downloads page!"))
+
     # List the number of certificates available (can take up to 1.5 seconds)
     if cfg.log_level() > 1:
         logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
@@ -495,7 +512,7 @@ def delayed_startup_actions():
         logging.debug("Completed Download Folder %s is not on FAT", complete_dir)
 
     if filesystem.directory_is_writable(sabnzbd.cfg.download_dir.get_path()):
-        filesystem.check_filesystem_capabilities(sabnzbd.cfg.download_dir.get_path())
+        filesystem.check_filesystem_capabilities(sabnzbd.cfg.download_dir.get_path(), is_download_dir=True)
     if filesystem.directory_is_writable(sabnzbd.cfg.complete_dir.get_path()):
         filesystem.check_filesystem_capabilities(sabnzbd.cfg.complete_dir.get_path())
 

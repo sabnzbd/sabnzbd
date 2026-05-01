@@ -4,11 +4,9 @@
 Note: extension always contains a leading dot
 """
 
-
 import puremagic
 import os
 import sys
-from typing import List, Tuple
 from sabnzbd.filesystem import get_ext, RAR_RE
 import sabnzbd.cfg as cfg
 
@@ -260,7 +258,7 @@ ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
 
-def all_extensions() -> Tuple[str, ...]:
+def all_extensions() -> tuple[str, ...]:
     """returns tuple with ALL (standard + userdef) extensions (including leading dot in extension)"""
     user_defined_extensions = tuple(["." + i for i in cfg.ext_rename_ignore()])
     return ALL_EXT + user_defined_extensions
@@ -272,7 +270,7 @@ def has_popular_extension(file_path: str) -> bool:
     return file_extension in all_extensions() or RAR_RE.match(file_extension)
 
 
-def all_possible_extensions(file_path: str) -> List[str]:
+def all_possible_extensions(file_path: str) -> list[str]:
     """returns a list with all possible extensions (with leading dot) for given file_path as reported by puremagic"""
     extension_list = []
     for i in puremagic.magic_file(file_path):

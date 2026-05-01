@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
 """
 tests.test_newswrapper - Tests of various functions in newswrapper
 """
+
 import errno
 import ipaddress
 import logging
@@ -40,6 +41,7 @@ from sabnzbd import newswrapper
 from sabnzbd.get_addrinfo import AddrInfo
 
 TEST_HOST = "127.0.0.1"
+TEST_HOST_IPV6 = "::1"
 TEST_PORT = portend.find_available_local_port()
 TEST_DATA = b"connection_test"
 
@@ -76,7 +78,7 @@ def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
     sending any traffic but already prefills what would be the sender ip address.
     """
     s: Optional[socket.socket] = None
-    address_to_connect_to: Optional[Tuple[str, int]] = None
+    address_to_connect_to: Optional[tuple[str, int]] = None
     if protocol_version == IPProtocolVersion.IPV4:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Google DNS IPv4
@@ -186,15 +188,16 @@ class TestNewsWrapper:
         time.sleep(1.0)
 
     @pytest.mark.parametrize(
-        "local_ip, ip_protocol",
+        "test_host, local_ip, ip_protocol",
         [
-            (get_local_ip(protocol_version=IPProtocolVersion.IPV4), IPProtocolVersion.IPV4),
-            (get_local_ip(protocol_version=IPProtocolVersion.IPV6), IPProtocolVersion.IPV6),
-            ("", None),
+            (TEST_HOST, get_local_ip(protocol_version=IPProtocolVersion.IPV4), IPProtocolVersion.IPV4),
+            (TEST_HOST_IPV6, get_local_ip(protocol_version=IPProtocolVersion.IPV6), IPProtocolVersion.IPV6),
+            (TEST_HOST, "", None),
+            (TEST_HOST_IPV6, "", None),
         ],
     )
     def test_socket_binding_outgoing_ip(
-        self, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch
+        self, test_host: str, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch
     ):
         """Test to make sure that the binding of outgoing interface works as expected."""
         if local_ip is None and ip_protocol is not None:
@@ -208,9 +211,9 @@ class TestNewsWrapper:
         nw.blocking = True
         nw.thrdnum = 1
         nw.server = mock.Mock()
-        nw.server.host = TEST_HOST
+        nw.server.host = test_host
         nw.server.port = TEST_PORT
-        nw.server.info = AddrInfo(*socket.getaddrinfo(TEST_HOST, TEST_PORT, 0, socket.SOCK_STREAM)[0])
+        nw.server.info = AddrInfo(*socket.getaddrinfo(test_host, TEST_PORT, 0, socket.SOCK_STREAM)[0])
         nw.server.timeout = 10
         nw.server.ssl = True
         nw.server.ssl_context = None
@@ -238,7 +241,7 @@ class TestNewsWrapper:
             # On Linux and macOS, the error code is ECONNREFUSED
             assert excinfo.value.errno == errno.ECONNREFUSED
 
-        current_ip, _ = nntp.sock.getsockname()
+        current_ip = nntp.sock.getsockname()[0]
         if local_ip != "":
             assert current_ip == local_ip
         else:

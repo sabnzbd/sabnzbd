@@ -7,7 +7,7 @@ from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_VERSION_TUPLE
+from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_VERSION_BASE, RELEASE_VERSION_TUPLE
 
 # Add extra files in the PyInstaller-spec
 extra_pyinstaller_files = []
@@ -26,7 +26,7 @@ if sys.platform == "darwin":
     # Add NZB-icon file
     extra_pyinstaller_files.append(("builder/macos/image/nzbfile.icns", "."))
     # Version information is set differently on macOS
-    version_info = None
+    version_info_console = version_info = None
 else:
     # Build would fail on non-Windows
     from PyInstaller.utils.win32.versioninfo import (
@@ -46,37 +46,43 @@ else:
 
     # Detailed instructions are in the PyInstaller documentation
     # We don't include the alpha/beta/rc in the counters
-    version_info = VSVersionInfo(
-        ffi=FixedFileInfo(
-            filevers=RELEASE_VERSION_TUPLE,
-            prodvers=RELEASE_VERSION_TUPLE,
-            mask=0x3F,
-            flags=0x0,
-            OS=0x40004,
-            fileType=0x1,
-            subtype=0x0,
-            date=(0, 0),
-        ),
-        kids=[
-            StringFileInfo(
-                [
-                    StringTable(
-                        "040904B0",
-                        [
-                            StringStruct("Comments", f"SABnzbd {RELEASE_VERSION}"),
-                            StringStruct("CompanyName", "The SABnzbd-Team"),
-                            StringStruct("FileDescription", f"SABnzbd {RELEASE_VERSION}"),
-                            StringStruct("FileVersion", RELEASE_VERSION),
-                            StringStruct("LegalCopyright", "The SABnzbd-Team"),
-                            StringStruct("ProductName", f"SABnzbd {RELEASE_VERSION}"),
-                            StringStruct("ProductVersion", RELEASE_VERSION),
-                        ],
-                    )
-                ]
+    def make_version_info(filename):
+        return VSVersionInfo(
+            ffi=FixedFileInfo(
+                filevers=RELEASE_VERSION_TUPLE,
+                prodvers=RELEASE_VERSION_TUPLE,
+                mask=0x3F,
+                flags=0x0,
+                OS=0x40004,
+                fileType=0x1,
+                subtype=0x0,
+                date=(0, 0),
             ),
-            VarFileInfo([VarStruct("Translation", [1033, 1200])]),
-        ],
-    )
+            kids=[
+                StringFileInfo(
+                    [
+                        StringTable(
+                            "040904B0",
+                            [
+                                StringStruct("Comments", f"SABnzbd {RELEASE_VERSION}"),
+                                StringStruct("CompanyName", "The SABnzbd-Team"),
+                                StringStruct("FileDescription", f"SABnzbd {RELEASE_VERSION}"),
+                                StringStruct("FileVersion", RELEASE_VERSION),
+                                StringStruct("InternalName", "SABnzbd"),
+                                StringStruct("LegalCopyright", "The SABnzbd-Team"),
+                                StringStruct("OriginalFilename", filename),
+                                StringStruct("ProductName", f"SABnzbd {RELEASE_VERSION}"),
+                                StringStruct("ProductVersion", RELEASE_VERSION),
+                            ],
+                        )
+                    ]
+                ),
+                VarFileInfo([VarStruct("Translation", [1033, 1200])]),
+            ],
+        )
+
+    version_info = make_version_info("SABnzbd.exe")
+    version_info_console = make_version_info("SABnzbd-console.exe")
 
 # Process the extra-files and folders
 for file_item in EXTRA_FILES:
@@ -98,7 +104,7 @@ pyi_analysis = Analysis(
     module_collection_mode={"apprise.plugins": "py"},
 )
 
-pyz = PYZ(pyi_analysis.pure, pyi_analysis.zipped_data)
+pyz = PYZ(pyi_analysis.pure)
 
 codesign_identity = os.environ.get("SIGNING_AUTH")
 if not codesign_identity:
@@ -122,27 +128,26 @@ exe = EXE(
     codesign_identity=codesign_identity,
 )
 
-coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.zipfiles, pyi_analysis.datas, name="SABnzbd")
+coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.datas, name="SABnzbd")
 
 # We need to run again for the console-app
 if sys.platform == "win32":
-    # Enable console=True for this one
     console_exe = EXE(
         pyz,
         pyi_analysis.scripts,
         [],
         exclude_binaries=True,
         name="SABnzbd-console",
+        console=True,
         append_pkg=False,
         icon="icons/sabnzbd.ico",
         contents_directory=".",
-        version=version_info,
+        version=version_info_console,
     )
 
     console_coll = COLLECT(
         console_exe,
         pyi_analysis.binaries,
-        pyi_analysis.zipfiles,
         pyi_analysis.datas,
         name="SABnzbd-console",
     )
@@ -153,6 +158,7 @@ if sys.platform == "darwin":
         "NSUIElement": 1,
         "NSPrincipalClass": "NSApplication",
         "CFBundleShortVersionString": RELEASE_VERSION,
+        "CFBundleVersion": RELEASE_VERSION_BASE,
         "NSHumanReadableCopyright": "The SABnzbd-Team",
         "CFBundleIdentifier": "org.sabnzbd.sabnzbd",
         "CFBundleDocumentTypes": [
@@ -166,7 +172,7 @@ if sys.platform == "darwin":
                 "NSPersistentStoreTypeKey": "Binary",
             }
         ],
-        "LSMinimumSystemVersion": "10.13",
+        "LSMinimumSystemVersion": "10.15",
         "LSEnvironment": {"LANG": "en_US.UTF-8", "LC_ALL": "en_US.UTF-8"},
     }
 

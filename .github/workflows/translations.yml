@@ -12,7 +12,7 @@ jobs:
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
       - name: Generate translatable texts
@@ -30,7 +30,7 @@ jobs:
         run: |
           python3 tools/make_mo.py
       - name: Push translatable and translated texts back to repo
-        uses: stefanzweifel/git-auto-commit-action@v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
         if: env.TX_TOKEN
         with:
           commit_message: |
@@ -39,5 +39,5 @@ jobs:
           commit_user_name: SABnzbd Automation
           commit_user_email: bugs@sabnzbd.org
           commit_author: SABnzbd Automation <bugs@sabnzbd.org>
-          file_pattern: "po/*.pot po/*.po"
+          file_pattern: "po/*.pot po/*.po *.nsi"
           push_options: --force

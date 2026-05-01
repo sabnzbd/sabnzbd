@@ -1,15 +1,15 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2007-2025 by The SABnzbd-Team (sabnzbd.org)
+# Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2025
-# Fred L <88com88@gmail.com>, 2025
+# Safihre <safihre@sabnzbd.org>, 2026
+# Fred L <88com88@gmail.com>, 2026
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-4.6.0\n"
+"Project-Id-Version: SABnzbd-5.0.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Fred L <88com88@gmail.com>, 2025\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2026\n"
 "Language-Team: French (https://app.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -156,6 +156,13 @@ msgid ""
 msgstr ""
 "L'umask actuel (%o) pourrait refuser à SABnzbd l'accès aux fichiers et "
 "dossiers qu'il crée."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
+msgstr ""
+"La version Windows ARM de SABnzbd est disponible depuis notre page "
+"Téléchargements!"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -347,7 +354,7 @@ msgstr ""
 msgid "Unwanted extension is in rar file %s"
 msgstr "L'extension indésirable est dans le fichier rar %s"
 
-#: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
+#: sabnzbd/assembler.py, sabnzbd/nzb/object.py
 msgid "Aborted, unwanted extension detected"
 msgstr "Interrompu, extension indésirable détectée"
 
@@ -606,11 +613,6 @@ msgstr "Échec d'initialisation de %s@%s pour la raison suivante : %s"
 msgid "Fatal error in Downloader"
 msgstr "Erreur fatale dans le Téléchargeur"
 
-#. Warning message
-#: sabnzbd/downloader.py
-msgid "%s@%s: Received unknown status code %s for article %s"
-msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s"
-
 #: sabnzbd/downloader.py
 msgid "Too many connections to server %s [%s]"
 msgstr "Trop de connexions au serveur %s [%s]"
@@ -631,11 +633,6 @@ msgstr "Échec de la connexion au serveur %s [%s]"
 #: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "La connexion à %s@%s a échoué, message=%s"
-
-#. Error message
-#: sabnzbd/downloader.py
-msgid "Suspect error in downloader"
-msgstr "Erreur suspecte dans le téléchargeur"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -802,6 +799,17 @@ msgstr ""
 "Le fichier %s n'est pas inscriptible à cause des caractères spéciaux dans le"
 " nom. Cela peut causer des problèmes."
 
+#. Warning message
+#: sabnzbd/filesystem.py
+msgid ""
+"Direct Write mode has been disabled because %s does not support sparse "
+"files. For details and possible solutions, see: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
+msgstr ""
+"Le mode Écriture Directe a été désactivé car %s ne prend pas en charge les "
+"fichiers fragmentés. Pour plus d'informations et les solutions possibles, "
+"consultez : https://sabnzbd.org/wiki/advanced/direct-write"
+
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
 msgstr "Connexion refusée de:"
@@ -904,6 +912,15 @@ msgstr "ERREUR:"
 msgid "Back"
 msgstr "Retour"
 
+#. Warning message
+#: sabnzbd/internetspeed.py
+msgid ""
+"Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
+" %f MB/s"
+msgstr ""
+"La bande passante Internet de l'IPv4 diffère considérablement de celle de "
+"l'IPv6 : %f Mo/s contre %f Mo/s"
+
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
 msgid "Warnings"
@@ -967,7 +984,7 @@ msgstr "Lire tous les flux RSS"
 
 #: sabnzbd/macosmenu.py
 msgid "Complete Folder"
-msgstr "Dossier complet"
+msgstr "Dossier des téléchargements terminés"
 
 #: sabnzbd/macosmenu.py
 msgid "Incomplete Folder"
@@ -1035,7 +1052,7 @@ msgid "Update Available!"
 msgstr "Mise à Jour disponible!"
 
 #. Error message
-#: sabnzbd/misc.py
+#: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Failed to upload file: %s"
 msgstr "Échec de l'upload du fichier : %s"
 
@@ -1282,6 +1299,16 @@ msgstr "Essai vérification SFV"
 msgid "left"
 msgstr "restant"
 
+#. Warning message
+#: sabnzbd/newswrapper.py
+msgid "%s@%s: Received unknown status code %s for article %s"
+msgstr "%s@%s a reçu le code d'état inconnu %s pour l'article %s"
+
+#. Error message
+#: sabnzbd/newswrapper.py
+msgid "Suspect error in downloader"
+msgstr "Erreur suspecte dans le téléchargeur"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Ce serveur n'authorise pas de connexion SSL sur ce port"
@@ -1432,6 +1459,103 @@ msgstr "Le script de notification \"%s\" est introuvable"
 msgid "Failed to send Windows notification"
 msgstr "Echec d'envoi de la notification Windows"
 
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr "Fichier NZB %s invalide, sera ignoré (erreur : %s)"
+
+#. Warning message
+#: sabnzbd/nzb/object.py, sabnzbd/urlgrabber.py
+msgid "Empty NZB file %s"
+msgstr "Fichier NZB %s vide"
+
+#: sabnzbd/nzb/object.py
+msgid "Pre-queue script marked job as failed"
+msgstr "Le script de pré-file d'attente a marqué la tâche comme échouée"
+
+#. Warning message
+#: sabnzbd/nzb/object.py
+msgid "Unwanted Extension in file %s (%s)"
+msgstr "Extension non souhaitée dans le fichier %s (%s)"
+
+#: sabnzbd/nzb/object.py
+msgid "Aborted, cannot be completed"
+msgstr "Interrompu, ne peut être terminé"
+
+#. Error message
+#: sabnzbd/nzb/object.py
+msgid "Error importing %s"
+msgstr "Erreur lors de l'importation de %s"
+
+#: sabnzbd/nzb/object.py
+msgid "DUPLICATE"
+msgstr "DOUBLON"
+
+#: sabnzbd/nzb/object.py
+msgid "ALTERNATIVE"
+msgstr "ALTERNATIVE"
+
+#: sabnzbd/nzb/object.py
+msgid "ENCRYPTED"
+msgstr "CRYPTÉ"
+
+#: sabnzbd/nzb/object.py
+msgid "TOO LARGE"
+msgstr "TROP VOLUMINEUX"
+
+#: sabnzbd/nzb/object.py
+msgid "INCOMPLETE"
+msgstr "INCOMPLET"
+
+#: sabnzbd/nzb/object.py
+msgid "UNWANTED"
+msgstr "INDÉSIRABLE"
+
+#: sabnzbd/nzb/object.py
+msgid "WAIT %s sec"
+msgstr "PATIENTER %s sec"
+
+#: sabnzbd/nzb/object.py
+msgid "PROPAGATING %s min"
+msgstr "PROPAGATION %s min"
+
+#: sabnzbd/nzb/object.py
+msgid "Downloaded in %s at an average of %sB/s"
+msgstr "Téléchargé en %s à %sO/s de moyenne"
+
+#. Job details page, file age column header
+#: sabnzbd/nzb/object.py, sabnzbd/skintext.py
+msgid "Age"
+msgstr "Âge"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were malformed"
+msgstr "%s articles malformés"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles were missing"
+msgstr "%s articles manquants"
+
+#: sabnzbd/nzb/object.py
+msgid "%s articles had non-matching duplicates"
+msgstr "%s articles avec doublons sans correspondance"
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Ignoring duplicate NZB \"%s\""
+msgstr "Doublon NZB ignoré \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Failing duplicate NZB \"%s\""
+msgstr "Échec de duplication du NZB \"%s\""
+
+#: sabnzbd/nzb/object.py, sabnzbd/nzbqueue.py
+msgid "Duplicate NZB"
+msgstr "Dupliquer NZB"
+
+#: sabnzbd/nzb/object.py
+msgid "Pausing duplicate NZB \"%s\""
+msgstr "Mise en pause du doublon NZB \"%s\""
+
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Cannot create temp file for %s"
@@ -1465,103 +1589,6 @@ msgstr "Erreur lors du chargement de %s, fichier corrompu détecté"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB ajouté à la file d'attente"
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Ignoring duplicate NZB \"%s\""
-msgstr "Doublon NZB ignoré \"%s\""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Failing duplicate NZB \"%s\""
-msgstr "Échec de duplication du NZB \"%s\""
-
-#: sabnzbd/nzbqueue.py, sabnzbd/nzbstuff.py
-msgid "Duplicate NZB"
-msgstr "Dupliquer NZB"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr "Fichier NZB %s invalide, sera ignoré (erreur : %s)"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
-msgid "Empty NZB file %s"
-msgstr "Fichier NZB %s vide"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pre-queue script marked job as failed"
-msgstr "Le script de pré-file d'attente a marqué la tâche comme échouée"
-
-#. Warning message
-#: sabnzbd/nzbstuff.py
-msgid "Unwanted Extension in file %s (%s)"
-msgstr "Extension non souhaitée dans le fichier %s (%s)"
-
-#: sabnzbd/nzbstuff.py
-msgid "Aborted, cannot be completed"
-msgstr "Interrompu, ne peut être achevé"
-
-#. Error message
-#: sabnzbd/nzbstuff.py
-msgid "Error importing %s"
-msgstr "Erreur lors de l'importation de %s"
-
-#: sabnzbd/nzbstuff.py
-msgid "DUPLICATE"
-msgstr "DOUBLON"
-
-#: sabnzbd/nzbstuff.py
-msgid "ALTERNATIVE"
-msgstr "ALTERNATIVE"
-
-#: sabnzbd/nzbstuff.py
-msgid "ENCRYPTED"
-msgstr "CHIFFRÉ"
-
-#: sabnzbd/nzbstuff.py
-msgid "TOO LARGE"
-msgstr "TROP VOLUMINEUX"
-
-#: sabnzbd/nzbstuff.py
-msgid "INCOMPLETE"
-msgstr "INCOMPLET"
-
-#: sabnzbd/nzbstuff.py
-msgid "UNWANTED"
-msgstr "INDÉSIRABLE"
-
-#: sabnzbd/nzbstuff.py
-msgid "WAIT %s sec"
-msgstr "PATIENTER %s sec"
-
-#: sabnzbd/nzbstuff.py
-msgid "PROPAGATING %s min"
-msgstr "PROPAGATION %s min"
-
-#: sabnzbd/nzbstuff.py
-msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Téléchargé en %s à %sB/s de moyenne"
-
-#. Job details page, file age column header
-#: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
-msgid "Age"
-msgstr "Âge"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were malformed"
-msgstr "%s articles malformés"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were missing"
-msgstr "%s articles manquants"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles had non-matching duplicates"
-msgstr "%s articles avec doublons sans correspondance"
-
-#: sabnzbd/nzbstuff.py
-msgid "Pausing duplicate NZB \"%s\""
-msgstr "Mise en pause du doublon NZB \"%s\""
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1845,6 +1872,14 @@ msgstr "Erreur lors de l'arrêt du système"
 msgid "Received a DBus exception %s"
 msgstr "Exception DBus reçue %s"
 
+#: sabnzbd/rss.py
+msgid "Empty RSS entry found (%s)"
+msgstr "Entrée vide de flux RSS trouvée (%s)"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Flux incompatible"
+
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1871,14 +1906,6 @@ msgstr "Le serveur %s utilise un certificat de sécurité HTTPS non authentifié
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Le flux RSS %s était vide"
-
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Flux incompatible"
-
-#: sabnzbd/rss.py
-msgid "Empty RSS entry found (%s)"
-msgstr "Entrée vide de flux RSS trouvée (%s)"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
@@ -3403,13 +3430,13 @@ msgstr "Ne post-traiter que les tâches vérifiées"
 
 #: sabnzbd/skintext.py
 msgid ""
-"Only unpack and run scripts on jobs that passed the verification stage. If "
-"turned off, all jobs will be marked as Completed even if they are "
-"incomplete."
+"Only try to unpack jobs that passed the verification stage. If turned off, "
+"all jobs will be marked as Completed and moved to the Complete folder even "
+"if they are incomplete."
 msgstr ""
-"Décompresser et lancer les scripts uniquement sur les tâches qui ont passé "
-"l'étape de vérification. Si désactivé, toutes les tâches seront marquées "
-"comme Terminées même si elles sont incomplètes."
+"N'essaye de décompresser que les tâches ayant passé l'étape de vérification."
+" Si désactivé, toutes les tâches seront marquées comme Terminées et "
+"déplacées vers le dossier Terminées, même si elles sont incomplètes."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3502,8 +3529,11 @@ msgid "Enable SFV-based checks"
 msgstr "Activer les contrôles SFV"
 
 #: sabnzbd/skintext.py
-msgid "Do an extra verification based on SFV files."
-msgstr "Fait une vérification supplémentaire basée sur les fichiers SFV."
+msgid ""
+"If no par2 files are available, use sfv files (if present) to verify files"
+msgstr ""
+"Si aucun fichier par2 n'est disponible, utiliser les fichiers sfv (si "
+"présents) pour vérifier les fichiers"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3934,6 +3964,20 @@ msgstr ""
 msgid "Enable"
 msgstr "Activer"
 
+#: sabnzbd/skintext.py
+msgid "Articles per request"
+msgstr "Articles par demande"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Request multiple articles per connection without waiting for each response "
+"first.<br />This can improve download speeds, especially on connections with"
+" higher latency."
+msgstr ""
+" Demandez plusieurs articles par connexion sans attendre chaque réponse.<br "
+"/>Cela peut améliorer les vitesses de téléchargement, en particulier sur les"
+" connexions à latence élevée. "
+
 #. Button: Remove server
 #: sabnzbd/skintext.py
 msgid "Remove Server"
@@ -4353,20 +4397,30 @@ msgid "Enable Apprise notifications"
 msgstr "Activer les notifications Apprise"
 
 #: sabnzbd/skintext.py
-msgid "Send notifications using Apprise to almost any notification service"
+msgid ""
+"Send notifications directly to any notification service you use.<br>For "
+"example: Slack, Discord, Telegram, or any service from over 100 supported "
+"services!"
 msgstr ""
-"Envoyer des notifications en utilisant Apprise vers presque n'importe quel "
-"service de notification"
+"Envoyez des notifications directement vers n'importe quel service de "
+"notification que vous utilisez.<br>Par exemple : Slack, Discord, Telegram ou"
+" tout autre service parmi plus de 100 services pris en charge !"
 
 #. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Default Apprise URLs"
-msgstr "URLs par défaut d'Apprise"
+msgid "Use default Apprise URLs"
+msgstr "Utiliser les URLs Apprise par défaut"
 
-#. Apprise settings
 #: sabnzbd/skintext.py
-msgid "Use a comma and/or space to identify more than one URL."
-msgstr "Utilisez une virgule et/ou un espace pour identifier plusieurs URL."
+msgid ""
+"Apprise defines service connection information using URLs.<br>Read the "
+"Apprise wiki how to define the URL for each service.<br>Use a comma and/or "
+"space to identify more than one URL."
+msgstr ""
+"Apprise définit les informations de connexion au service à l'aide "
+"d'URL.<br>Consultez le wiki Apprise pour savoir comment définir l'URL de "
+"chaque service.<br>Utilisez une virgule et/ou un espace pour identifier "
+"plusieurs URL."
 
 #: sabnzbd/skintext.py
 msgid ""
