@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 5.0.0
+Release Notes - SABnzbd 5.0.1
 =========================================================
 
 In this fifth major release of SABnzbd, we included:
@@ -7,7 +7,9 @@ In this fifth major release of SABnzbd, we included:
 * Reliability gains from a reworked cache and safer processing.
 * A significant number of bug fixes and platform updates.
 
-Please note the breaking changes described below!
+## Bug fixes in 5.0.1
+
+* Queued downloads from older versions did not load after updating.
 
 ## New features in 5.0.0
 
