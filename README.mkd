@@ -2,6 +2,7 @@ Release Notes - SABnzbd 5.0.0
 =========================================================
 
 In this fifth major release of SABnzbd, we included:
+
 * Smarter (and potentially faster) downloads with NNTP Pipelining and Direct Write.
 * Reliability gains from a reworked cache and safer processing.
 * A significant number of bug fixes and platform updates.
