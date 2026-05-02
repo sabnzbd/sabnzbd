@@ -223,7 +223,7 @@ class FakeHistoryDB(db.HistoryDB):
             nzo.url = "placeholder_url"
             nzo.status = choice([Status.COMPLETED, choice(self.status_options)])
             nzo.fail_msg = "¡Fracaso absoluto!" if nzo.status == Status.FAILED else ""
-            nzo.nzo_id = "SABnzbd_nzo_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(8)))
+            nzo.nzo_id = str(uuid.uuid4())
             nzo.bytes_downloaded = randint(1024, 1024**4)
             nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
             nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"

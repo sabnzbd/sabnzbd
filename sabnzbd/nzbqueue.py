@@ -22,6 +22,7 @@ sabnzbd.nzbqueue - nzb queue
 import os
 import logging
 import time
+import uuid
 import cherrypy._cpreqbody
 from typing import Union, Optional
 
@@ -45,6 +46,7 @@ from sabnzbd.constants import (
     Status,
     IGNORED_FILES_AND_FOLDERS,
     DuplicateStatus,
+    NZO_FILE,
 )
 
 import sabnzbd.cfg as cfg
@@ -93,7 +95,9 @@ class NzbQueue:
             path = get_admin_path(folder, future=False)
 
             # Try as normal job
-            nzo = sabnzbd.filesystem.load_data(_id, path, remove=False)
+            nzo = sabnzbd.filesystem.load_data(NZO_FILE, path, remove=False)
+            if not nzo:
+                nzo = sabnzbd.filesystem.load_data(_id, path, remove=False)
             if not nzo:
                 # Try as future job
                 path = get_admin_path(folder, future=True)
@@ -312,7 +316,7 @@ class NzbQueue:
     def add(self, nzo: NzbObject, save: bool = True, quiet: bool = False) -> str:
         # Can already be set for future jobs
         if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.filesystem.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
+            nzo.nzo_id = str(uuid.uuid4())
 
         # If no files are to be downloaded anymore, send to postproc
         if not nzo.files and not nzo.futuretype:

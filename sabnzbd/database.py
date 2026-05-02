@@ -21,6 +21,7 @@ sabnzbd.database - Database Support
 
 import os
 import time
+import uuid
 import zlib
 import logging
 import sys
@@ -114,12 +115,19 @@ class HistoryDB:
                 _ = self.execute("PRAGMA user_version = 5;") and self.execute(
                     "ALTER TABLE history ADD COLUMN time_added INTEGER;"
                 )
-            if version < 6:
-                _ = (
-                    self.execute("PRAGMA user_version = 6;")
-                    and self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
-                    and self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
-                )
+            if version < 7:
+                with self.connection:
+                    self.execute("PRAGMA user_version = 7;")
+                    if self.execute("""
+                        WITH duplicates AS (SELECT id, ROW_NUMBER() OVER (PARTITION BY nzo_id ORDER BY id) AS rn FROM history)
+                        SELECT id FROM duplicates WHERE rn > 1
+                        """):
+                        for (row_id,) in self.cursor.fetchall():
+                            self.execute("UPDATE history SET nzo_id = ? WHERE id = ?", (str(uuid.uuid4()), row_id))
+                    self.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_history_nzo_id ON history(nzo_id);")
+                    self.execute(
+                        "CREATE INDEX IF NOT EXISTS idx_history_archive_completed ON history(archive, completed DESC);"
+                    )
 
             HistoryDB.startup_done = True
 
@@ -200,7 +208,7 @@ class HistoryDB:
             "time_added" INTEGER
         )
         """)
-        self.execute("PRAGMA user_version = 6;")
+        self.execute("PRAGMA user_version = 7;")
         self.execute("CREATE UNIQUE INDEX idx_history_nzo_id ON history(nzo_id);")
         self.execute("CREATE INDEX idx_history_archive_completed ON history(archive, completed DESC);")
 

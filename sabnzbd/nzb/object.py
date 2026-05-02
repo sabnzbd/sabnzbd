@@ -47,6 +47,7 @@ from sabnzbd.constants import (
     MAX_BAD_ARTICLES,
     Status,
     DuplicateStatus,
+    NZO_FILE,
 )
 from sabnzbd.misc import (
     to_units,
@@ -1474,7 +1475,7 @@ class NzbObject(TryList):
         """Save job's admin to disk"""
         self.save_attribs()
         if self.nzo_id and not self.removed_from_queue:
-            save_data(self, self.nzo_id, self.admin_path)
+            save_data(self, NZO_FILE, self.admin_path)
 
     def save_attribs(self):
         """Save specific attributes for Retry"""
