@@ -371,6 +371,7 @@ class NzbObject(TryList):
 
         # When doing a retry or repair, remove old cache-files
         if reuse:
+            remove_all(admin_dir, NZO_FILE, keep_folder=True)
             remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
