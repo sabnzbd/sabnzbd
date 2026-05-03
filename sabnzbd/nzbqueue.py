@@ -243,7 +243,7 @@ class NzbQueue:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
                     else:
-                        sabnzbd.filesystem.save_data(nzo, nzo.nzo_id, nzo.admin_path)
+                        sabnzbd.filesystem.save_data(nzo, f"SABnzbd_nzo_{nzo.nzo_id}", nzo.admin_path)
 
         sabnzbd.filesystem.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 

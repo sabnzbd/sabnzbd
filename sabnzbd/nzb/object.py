@@ -1430,7 +1430,7 @@ class NzbObject(TryList):
             # If duplicate is discarded during URL-fetches, no nzo_id is known yet
             if self.nzo_id:
                 # Remove temporary file left from URL-fetches
-                remove_data(self.nzo_id, self.admin_path)
+                remove_data(f"SABnzbd_nzo_{self.nzo_id}", self.admin_path)
         elif delete_all_data:
             remove_all(self.download_path, recursive=True)
         else:
