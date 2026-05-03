@@ -1435,6 +1435,7 @@ class NzbObject(TryList):
             remove_all(self.download_path, recursive=True)
         else:
             # We remove any saved articles and save the renames file
+            remove_all(self.download_path, NZO_FILE, keep_folder=True)
             remove_all(self.download_path, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(self.download_path, "SABnzbd_article_*", keep_folder=True)
             save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
