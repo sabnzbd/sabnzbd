@@ -92,19 +92,24 @@ class NzbQueue:
         folders = []
         for nzo_id in nzo_ids:
             folder, _id = os.path.split(nzo_id)
-            path = get_admin_path(folder, future=False)
+            normal_path = get_admin_path(folder, future=False)
+            future_path = get_admin_path(folder, future=True)
 
-            # Try as normal job
-            nzo = sabnzbd.filesystem.load_data(NZO_FILE, path, remove=False)
-            if not nzo:
-                nzo = sabnzbd.filesystem.load_data(_id, path, remove=False)
-            if not nzo:
+            attempts = [
+                # Try as normal job
+                (normal_path, NZO_FILE, False),
+                (normal_path, _id, False),
                 # Try as future job
-                path = get_admin_path(folder, future=True)
-                nzo = sabnzbd.filesystem.load_data(_id, path)
-            if nzo:
-                self.add(nzo, save=False, quiet=True)
-                folders.append(folder)
+                (future_path, f"SABnzbd_nzo_{_id}", True),
+                (future_path, _id, True),
+            ]
+
+            for path, filename, remove in attempts:
+                nzo = sabnzbd.filesystem.load_data(filename, path, remove=remove)
+                if nzo:
+                    self.add(nzo, save=False, quiet=True)
+                    folders.append(folder)
+                    break
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
