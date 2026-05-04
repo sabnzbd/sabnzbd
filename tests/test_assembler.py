@@ -261,7 +261,7 @@ class TestAssembler:
         )
         # Nothing written
         Assembler.assemble(self.nzo, self.nzf, file_done=False, allow_non_contiguous=False, direct_write=False)
-        assert os.path.getsize(self.nzf.filepath) == 0
+        assert not os.path.exists(self.nzf.filepath)
         self.nzf.decodetable[0].decoded = True
         Assembler.assemble(self.nzo, self.nzf, file_done=True, allow_non_contiguous=False, direct_write=False)
         self._assert_expected_content(self.nzf, expected)

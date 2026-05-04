@@ -273,6 +273,7 @@ class NzbObject(TryList):
         self.files: list[NzbFile] = []  # List of all NZFs
         self.files_table: dict[str, NzbFile] = {}  # Dictionary of NZFs indexed using NZF_ID
         self.renames: dict[str, str] = {}  # Dictionary of all renamed files
+        self.filenames: set[str] = set()  # Reserved filenames
 
         self.finished_files: list[NzbFile] = []  # List of all finished NZFs
 
@@ -1392,6 +1393,23 @@ class NzbObject(TryList):
         else:
             self.renames[name_set] = old_name
 
+    @synchronized()
+    def get_unique_filepath(self, filename: str) -> str:
+        """
+        Ensure a unique filepath by appending .N before extension if needed
+        """
+        directory = self.download_path
+        base_name, ext = os.path.splitext(filename)
+        candidate = filename
+        path = os.path.join(directory, candidate)
+        num = 1
+        while candidate in self.filenames or os.path.exists(path):
+            candidate = f"{base_name}.{num}{ext}"
+            path = os.path.join(directory, candidate)
+            num += 1
+        self.filenames.add(candidate)
+        return path
+
     @property
     def admin_path(self):
         """Return the full path for my job-admin folder"""
@@ -1668,6 +1686,10 @@ class NzbObject(TryList):
         self.url_tries = 0
         self.to_be_removed = False
         self.direct_unpacker = None
+        self.filenames = set()
+        for nzf in self.files_table.values():
+            if nzf.filepath:
+                self.filenames.add(get_filename(nzf.filepath))
 
         # Attributes added since 3.0.0
         if self.bytes_par2 is None:
