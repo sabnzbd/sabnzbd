@@ -500,7 +500,12 @@ class NewsWrapper:
         retry_article: bool = True,
     ) -> None:
         """Discard an article back to the queue"""
-        if article and not article.nzf.nzo.removed_from_queue:
+        if article:
+            # The job might return to the queue in the future so clear the current server
+            if article.nzf.nzo.removed_from_queue:
+                article.allow_new_fetcher()
+                return
+
             # Only some errors should count towards the total tries for each server
             if count_article_try:
                 article.tries += 1

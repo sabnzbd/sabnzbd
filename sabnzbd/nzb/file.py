@@ -23,6 +23,7 @@ import datetime
 import logging
 import os
 import threading
+from contextlib import suppress
 from typing import Optional, Any
 
 import sabctools
@@ -228,8 +229,17 @@ class NzbFile(TryList):
 
             self.nzo.verify_nzf_filename(self)
             filename = sanitize_filename(self.filename)
-            self.filepath = get_unique_filename(os.path.join(self.nzo.download_path, filename))
-            self.filename = get_filename(self.filepath)
+            # Lock because paths need to be unique, get_unique_filename only considers if the path currently exists
+            # so concurrent use could pick the same path.
+            # Must acquire nzo lock first, then nzf lock to prevent deadlock.
+            with self.nzo.lock, self.lock:
+                if self.filepath:
+                    return self.filepath
+                self.filepath = get_unique_filename(os.path.join(self.nzo.download_path, filename))
+                self.filename = get_filename(self.filepath)
+                with suppress(Exception):
+                    # Reserve the filepath on disk, so future get_unique_filename calls do not pick the same one
+                    open(self.filepath, "wb").close()
         return self.filepath
 
     @property
