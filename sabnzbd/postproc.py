@@ -299,11 +299,6 @@ class PostProcessor(Thread):
                 self.work_available.clear()
                 continue
 
-            # If queues are empty (spurious wake or race condition), clear and loop back
-            if self.slow_queue.empty() and self.fast_queue.empty():
-                self.work_available.clear()
-                continue
-
             # Something in the fast queue?
             try:
                 # Every few fast-jobs we should allow a
@@ -320,11 +315,11 @@ class PostProcessor(Thread):
                     # Reset fast-counter
                     self.__fast_job_count = 0
                 except queue.Empty:
-                    # Check for empty queue
-                    if check_eoq:
-                        check_eoq = False
-                        handle_empty_queue()
                     # No fast or slow jobs, better luck next loop!
+                    if check_eoq and self.fast_queue.empty() and self.slow_queue.empty():
+                        handle_empty_queue()
+                        check_eoq = False
+                    self.work_available.clear()
                     continue
 
             # Job was already deleted.
