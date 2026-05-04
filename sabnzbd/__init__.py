@@ -128,6 +128,9 @@ BPSMeter: sabnzbd.bpsmeter.BPSMeter
 RSSReader: sabnzbd.rss.RSSReader
 Scheduler: sabnzbd.scheduler.Scheduler
 
+# For backwards compatibility with pre-5.0 queue files
+sys.modules["sabnzbd.nzbstuff"] = sabnzbd.nzb
+
 # Regular constants
 START = datetime.datetime.now()
 MY_NAME = None
@@ -225,9 +228,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.__SHUTTING_DOWN__ = False
 
     sys.setswitchinterval(cfg.switchinterval())
-
-    # For backwards compatibility with pre-5.0 queue files
-    sys.modules["sabnzbd.nzbstuff"] = sabnzbd.nzb
 
     # Set global database connection for Web-UI threads
     cherrypy.engine.subscribe("start_thread", get_db_connection)
