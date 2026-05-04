@@ -316,9 +316,9 @@ class PostProcessor(Thread):
                     self.__fast_job_count = 0
                 except queue.Empty:
                     # No fast or slow jobs, better luck next loop!
-                    if check_eoq:
-                        check_eoq = False
+                    if check_eoq and self.fast_queue.empty() and self.slow_queue.empty():
                         handle_empty_queue()
+                        check_eoq = False
                     self.work_available.clear()
                     continue
 
