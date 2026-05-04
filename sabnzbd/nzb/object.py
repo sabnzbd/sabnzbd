@@ -371,7 +371,6 @@ class NzbObject(TryList):
 
         # When doing a retry or repair, remove old cache-files
         if reuse:
-            remove_all(admin_dir, NZO_FILE, keep_folder=True)
             remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
@@ -1430,12 +1429,14 @@ class NzbObject(TryList):
             # If duplicate is discarded during URL-fetches, no nzo_id is known yet
             if self.nzo_id:
                 # Remove temporary file left from URL-fetches
-                remove_data(f"SABnzbd_nzo_{self.nzo_id}", self.admin_path)
+                if self.nzo_id.startswith("SABnzbd_nzo_"):
+                    remove_data(self.nzo_id, self.admin_path)
+                else:
+                    remove_data(f"SABnzbd_nzo_{self.nzo_id}", self.admin_path)
         elif delete_all_data:
             remove_all(self.download_path, recursive=True)
         else:
             # We remove any saved articles and save the renames file
-            remove_all(self.download_path, NZO_FILE, keep_folder=True)
             remove_all(self.download_path, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(self.download_path, "SABnzbd_article_*", keep_folder=True)
             save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)

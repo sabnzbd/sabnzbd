@@ -247,6 +247,8 @@ class NzbQueue:
                     if not nzo.futuretype:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
+                    elif nzo.nzo_id.startswith("SABnzbd_nzo_"):
+                        sabnzbd.filesystem.save_data(nzo, nzo.nzo_id, nzo.admin_path)
                     else:
                         sabnzbd.filesystem.save_data(nzo, f"SABnzbd_nzo_{nzo.nzo_id}", nzo.admin_path)
 
