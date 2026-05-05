@@ -739,7 +739,7 @@ class NzbQueue:
             nzf.reset_try_list()
             return
 
-        articles_left, file_done, post_done = nzo.remove_article(article, success)
+        file_done, post_done = nzo.remove_article(article, success)
 
         if not nzo.precheck:
             # Mark as on_disk so assembler knows it can skip this article

@@ -797,12 +797,7 @@ class NzbObject(TryList):
                     job_can_succeed = self.check_first_article_availability()
 
         # Remove from file-tracking
-        articles_left = nzf.remove_article(article, success)
-        file_done = not articles_left
-
-        # Only on fully loaded files we can know if it's really done
-        if not nzf.import_finished:
-            file_done = False
+        file_done = nzf.remove_article(article, success)
 
         # File completed, remove and do checks
         if file_done:
@@ -821,7 +816,7 @@ class NzbObject(TryList):
             return True, True, True
 
         # Check if there are any files left here, so the check is inside the NZO_LOCK
-        return articles_left, file_done, not self.files
+        return file_done, not self.files
 
     def check_existing_files(self, wdir: str):
         """Check if downloaded files already exits, for these set NZF to complete"""
