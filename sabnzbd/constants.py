@@ -49,6 +49,7 @@ JOB_ADMIN = "__ADMIN__"
 VERIFIED_FILE = "__verified__"
 RENAMES_FILE = "__renames__"
 ATTRIB_FILE = "SABnzbd_attrib"
+NZO_FILE = "SABnzbd_nzo_data"
 REPAIR_REQUEST = "repair-all.sab"
 
 SABCTOOLS_VERSION_REQUIRED = "9.4.0"

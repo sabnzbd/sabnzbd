@@ -22,6 +22,7 @@ sabnzbd.nzbqueue - nzb queue
 import os
 import logging
 import time
+import uuid
 import cherrypy._cpreqbody
 from typing import Union, Optional
 
@@ -45,6 +46,7 @@ from sabnzbd.constants import (
     Status,
     IGNORED_FILES_AND_FOLDERS,
     DuplicateStatus,
+    NZO_FILE,
 )
 
 import sabnzbd.cfg as cfg
@@ -90,17 +92,24 @@ class NzbQueue:
         folders = []
         for nzo_id in nzo_ids:
             folder, _id = os.path.split(nzo_id)
-            path = get_admin_path(folder, future=False)
+            normal_path = get_admin_path(folder, future=False)
+            future_path = get_admin_path(folder, future=True)
 
-            # Try as normal job
-            nzo = sabnzbd.filesystem.load_data(_id, path, remove=False)
-            if not nzo:
+            attempts = [
+                # Try as normal job
+                (normal_path, NZO_FILE, False),
+                (normal_path, _id, False),
                 # Try as future job
-                path = get_admin_path(folder, future=True)
-                nzo = sabnzbd.filesystem.load_data(_id, path)
-            if nzo:
-                self.add(nzo, save=False, quiet=True)
-                folders.append(folder)
+                (future_path, f"SABnzbd_nzo_{_id}", True),
+                (future_path, _id, True),
+            ]
+
+            for path, filename, remove in attempts:
+                nzo = sabnzbd.filesystem.load_data(filename, path, remove=remove)
+                if nzo:
+                    self.add(nzo, save=False, quiet=True)
+                    folders.append(folder)
+                    break
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
@@ -238,8 +247,10 @@ class NzbQueue:
                     if not nzo.futuretype:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
-                    else:
+                    elif nzo.nzo_id.startswith("SABnzbd_nzo_"):
                         sabnzbd.filesystem.save_data(nzo, nzo.nzo_id, nzo.admin_path)
+                    else:
+                        sabnzbd.filesystem.save_data(nzo, f"SABnzbd_nzo_{nzo.nzo_id}", nzo.admin_path)
 
         sabnzbd.filesystem.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -312,7 +323,7 @@ class NzbQueue:
     def add(self, nzo: NzbObject, save: bool = True, quiet: bool = False) -> str:
         # Can already be set for future jobs
         if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.filesystem.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
+            nzo.nzo_id = str(uuid.uuid4())
 
         # If no files are to be downloaded anymore, send to postproc
         if not nzo.files and not nzo.futuretype:
