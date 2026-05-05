@@ -167,12 +167,13 @@ class NzbFile(TryList):
         return article
 
     @synchronized()
-    def remove_article(self, article: Article, success: bool) -> int:
+    def remove_article(self, article: Article, success: bool) -> bool:
         """Handle completed article, possibly end of file"""
         if self.articles.pop(article, None) is not None:
             if success:
                 self.bytes_left -= article.bytes
-        return len(self.articles)
+        # Only on fully loaded files we can know if it's really done
+        return self.import_finished and not self.articles
 
     def set_par2(self, setname, vol, blocks):
         """Designate this file as a par2 file"""
