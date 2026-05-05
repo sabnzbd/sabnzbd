@@ -21,7 +21,7 @@ from collections import namedtuple
 CONFIG_VERSION = 19
 
 QUEUE_VERSION = 10
-POSTPROC_QUEUE_VERSION = 2
+POSTPROC_QUEUE_VERSION = 3
 
 REC_RAR_VERSION = 550
 RAR_MAX_PASSWORD = 127  #: Max number of utf-16 chars in passwords.

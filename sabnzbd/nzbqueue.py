@@ -773,9 +773,9 @@ class NzbQueue:
         # Notify assembler to call postprocessor
         if not nzo.removed_from_queue:
             logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
+            nzo.save_to_disk()
             nzo.removed_from_queue = True
             if nzo.precheck:
-                nzo.save_to_disk()
                 # If not enough data is present, fail flag will be set (also used by postproc)
                 if not nzo.fail_msg:
                     # Send back for real download
