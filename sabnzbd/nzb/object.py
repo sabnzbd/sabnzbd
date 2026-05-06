@@ -756,7 +756,7 @@ class NzbObject(TryList):
             return 0
 
     @synchronized()
-    def remove_article(self, article: Article, success: bool):
+    def remove_article(self, article: Article, success: bool) -> tuple[bool, bool]:
         """Remove article from the NzbFile and do check if it can succeed"""
         job_can_succeed = True
         nzf = article.nzf
@@ -813,7 +813,7 @@ class NzbObject(TryList):
             self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
             self.set_unpack_info("Download", self.fail_msg)
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
-            return True, True, True
+            return True, True
 
         # Check if there are any files left here, so the check is inside the NZO_LOCK
         return file_done, not self.files
