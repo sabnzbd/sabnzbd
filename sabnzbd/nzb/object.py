@@ -1399,6 +1399,19 @@ class NzbObject(TryList):
         return long_path(get_admin_path(self.work_name, self.futuretype))
 
     @property
+    def data_file_path(self) -> Optional[str]:
+        """Return the absolute path to the persisted state file"""
+        if not self.nzo_id:
+            return None
+        if self.nzo_id.startswith("SABnzbd_nzo_"):
+            filename = self.nzo_id
+        elif self.futuretype:
+            filename = f"SABnzbd_nzo_{self.nzo_id}"
+        else:
+            filename = NZO_FILE
+        return os.path.join(self.admin_path, filename)
+
+    @property
     def group(self):
         if self.groups:
             return self.groups[0]

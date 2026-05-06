@@ -142,7 +142,7 @@ class PostProcessor(Thread):
     def save(self):
         """Save postproc queue"""
         logging.info("Saving postproc queue")
-        snapshot = [os.path.join(nzo.work_name, nzo.nzo_id) for nzo in self.history_queue]
+        snapshot = [(nzo.nzo_id, nzo.data_file_path) for nzo in self.history_queue if nzo.data_file_path]
         sabnzbd.filesystem.save_admin((POSTPROC_QUEUE_VERSION, snapshot), POSTPROC_QUEUE_FILE_NAME)
 
     @synchronized(POSTPROC_LOCK)
@@ -154,16 +154,18 @@ class PostProcessor(Thread):
             return
         try:
             version, history_queue = data
-            if POSTPROC_QUEUE_VERSION != version:
+            if version == 2:
+                # A list of NzbObject
+                self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.download_path)]
+            elif version == 3:
+                # A list of (id, absolute_path)
+                for nzo_id, nzo_path in history_queue:
+                    basepath, filename = os.path.split(nzo_path)
+                    nzo = sabnzbd.filesystem.load_data(filename, basepath, remove=False)
+                    if nzo and nzo.nzo_id == nzo_id:
+                        self.history_queue.append(nzo)
+            else:
                 logging.warning(T("Old queue detected, use Status->Repair to convert the queue"))
-            elif isinstance(history_queue, list):
-                for item in history_queue:
-                    folder, _id = os.path.split(item)
-                    normal_path = get_admin_path(folder, future=False)
-                    if (nzo := sabnzbd.filesystem.load_data(NZO_FILE, normal_path, remove=False)) and nzo.nzo_id == _id:
-                        self.history_queue.append(nzo)
-                    elif nzo := sabnzbd.filesystem.load_data(_id, normal_path, remove=False):
-                        self.history_queue.append(nzo)
         except Exception:
             logging.info("Corrupt %s file, discarding", POSTPROC_QUEUE_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
