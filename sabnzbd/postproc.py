@@ -271,7 +271,6 @@ class PostProcessor(Thread):
             except Exception:
                 logging.error(T("Failed to compile regex for search term: %s"), search_text)
 
-        # Need a copy to prevent race conditions
         filtered_queue = []
         for nzo in self.history_queue:
             if not nzo.work_name:
