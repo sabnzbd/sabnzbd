@@ -142,7 +142,7 @@ class PostProcessor(Thread):
     def save(self):
         """Save postproc queue"""
         logging.info("Saving postproc queue")
-        snapshot = [(nzo.nzo_id, path) for nzo in self.history_queue if (path := nzo.data_file_path)]
+        snapshot = [(nzo.nzo_id, path) for nzo in self.history_queue if (path := nzo.data_file_path())]
         sabnzbd.filesystem.save_admin((POSTPROC_QUEUE_VERSION, snapshot), POSTPROC_QUEUE_FILE_NAME)
 
     @synchronized(POSTPROC_LOCK)
@@ -158,10 +158,11 @@ class PostProcessor(Thread):
                 # A list of NzbObject
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.download_path)]
             elif version == 3:
-                # A list of (id, absolute_path)
+                # A list of (id, relative_path)
                 for nzo_id, nzo_path in history_queue:
                     basepath, filename = os.path.split(nzo_path)
-                    nzo = sabnzbd.filesystem.load_data(filename, basepath, remove=False)
+                    admin_path = os.path.join(sabnzbd.cfg.download_dir.get_path(), basepath)
+                    nzo = sabnzbd.filesystem.load_data(filename, admin_path, remove=False)
                     if nzo and nzo.nzo_id == nzo_id:
                         self.history_queue.append(nzo)
             else:
