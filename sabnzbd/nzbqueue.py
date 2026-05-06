@@ -754,7 +754,7 @@ class NzbQueue:
                     post_done = False
 
         # Save bookkeeping in case of crash
-        if file_done and (nzo.next_save is None or time.time() > nzo.next_save):
+        if file_done and (post_done or nzo.next_save is None or time.time() > nzo.next_save):
             nzo.save_to_disk()
             sabnzbd.BPSMeter.save()
             if nzo.save_timeout is None:
