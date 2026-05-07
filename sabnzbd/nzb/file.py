@@ -229,12 +229,10 @@ class NzbFile(TryList):
 
             self.nzo.verify_nzf_filename(self)
             filename = sanitize_filename(self.filename)
-            # Must acquire nzo lock first, then nzf lock to prevent deadlock.
-            with self.nzo.lock, self.lock:
-                if self.filepath:
-                    return self.filepath
-                self.filepath = self.nzo.get_unique_filepath(filename)
-                self.filename = get_filename(self.filepath)
+            with self.nzo.lock:
+                if not self.filepath:
+                    self.filepath = self.nzo.get_unique_filepath(filename)
+                    self.filename = get_filename(self.filepath)
         return self.filepath
 
     @property
