@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 5.0.1
+Release Notes - SABnzbd 5.0.2 - Release Candidate 1
 =========================================================
 
 In this fifth major release of SABnzbd, we included:
@@ -7,9 +7,19 @@ In this fifth major release of SABnzbd, we included:
 * Reliability gains from a reworked cache and safer processing.
 * A significant number of bug fixes and platform updates.
 
-## Bug fixes in 5.0.1
+## Features and bug fixes in 5.0.1 and 5.0.2
 
-* Queued downloads from older versions did not load after updating.
+* Queue entries from older versions now load correctly after upgrading.
+* `nzo_id` now uses GUIDs to prevent duplicates.
+* Updating to 5.0 now succeeds even when duplicate `nzo_id` values exist.
+* URL fetching no longer crashes when duplicate jobs are present.
+* Default RSS priority is now applied correctly.
+* Duplicate filenames no longer cause queue stalls.
+* IPv6 binding now works correctly for the Web interface.
+* The `On queue finish` action now executes reliably.
+* Saving the post-processing queue no longer throws errors.
+* Directory creation now handles existing directories gracefully.
+* Windows and macOS: Updated Unrar to 7.21 and 7zip to 26.01.
 
 ## New features in 5.0.0
 
