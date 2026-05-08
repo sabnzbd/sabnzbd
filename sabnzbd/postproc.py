@@ -40,7 +40,7 @@ from sabnzbd.newsunpack import (
     rar_sort,
     is_sfv_file,
 )
-from threading import Thread, Event
+from threading import Thread, Event, RLock
 from sabnzbd.misc import (
     on_cleanup_list,
     is_sample,
@@ -73,6 +73,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     get_filename,
+    get_admin_path,
 )
 from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
@@ -85,8 +86,10 @@ from sabnzbd.constants import (
     Status,
     VERIFIED_FILE,
     IGNORED_MOVIE_FOLDERS,
+    NZO_FILE,
 )
 from sabnzbd.nzbparser import process_single_nzb
+from sabnzbd.decorators import synchronized
 import sabnzbd.emailer as emailer
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -97,6 +100,7 @@ import sabnzbd.utils.checkdir
 import sabnzbd.deobfuscate_filenames as deobfuscate
 
 MAX_FAST_JOB_COUNT = 3
+POSTPROC_LOCK = RLock()
 
 
 class PostProcessor(Thread):
@@ -134,11 +138,14 @@ class PostProcessor(Thread):
         self.__busy = False
         self.paused = False
 
+    @synchronized(POSTPROC_LOCK)
     def save(self):
         """Save postproc queue"""
         logging.info("Saving postproc queue")
-        sabnzbd.filesystem.save_admin((POSTPROC_QUEUE_VERSION, self.history_queue), POSTPROC_QUEUE_FILE_NAME)
+        snapshot = [(nzo.nzo_id, path) for nzo in self.history_queue if (path := nzo.data_file_path())]
+        sabnzbd.filesystem.save_admin((POSTPROC_QUEUE_VERSION, snapshot), POSTPROC_QUEUE_FILE_NAME)
 
+    @synchronized(POSTPROC_LOCK)
     def load(self):
         """Save postproc queue"""
         logging.info("Loading postproc queue")
@@ -147,14 +154,24 @@ class PostProcessor(Thread):
             return
         try:
             version, history_queue = data
-            if POSTPROC_QUEUE_VERSION != version:
-                logging.warning(T("Old queue detected, use Status->Repair to convert the queue"))
-            elif isinstance(history_queue, list):
+            if version == 2:
+                # A list of NzbObject
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.download_path)]
+            elif version == 3:
+                # A list of (id, relative_path)
+                for nzo_id, nzo_path in history_queue:
+                    basepath, filename = os.path.split(nzo_path)
+                    admin_path = os.path.join(sabnzbd.cfg.download_dir.get_path(), basepath)
+                    nzo = sabnzbd.filesystem.load_data(filename, admin_path, remove=False)
+                    if nzo and nzo.nzo_id == nzo_id:
+                        self.history_queue.append(nzo)
+            else:
+                logging.warning(T("Old queue detected, use Status->Repair to convert the queue"))
         except Exception:
             logging.info("Corrupt %s file, discarding", POSTPROC_QUEUE_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
 
+    @synchronized(POSTPROC_LOCK)
     def delete(self, nzo_id: str, del_files: bool = False):
         """Remove a job from the post processor queue"""
         for nzo in self.history_queue:
@@ -168,6 +185,7 @@ class PostProcessor(Thread):
                     nzo.work_name = ""  # Mark as deleted job
                 break
 
+    @synchronized(POSTPROC_LOCK)
     def process(self, nzo: NzbObject):
         """Push on finished job in the queue"""
         # Make sure we return the status "Waiting"
@@ -186,6 +204,7 @@ class PostProcessor(Thread):
         # Signal that work is available
         self.work_available.set()
 
+    @synchronized(POSTPROC_LOCK)
     def remove(self, nzo: NzbObject):
         """Remove given nzo from the queue"""
         try:
@@ -213,6 +232,7 @@ class PostProcessor(Thread):
         # Wake up the processor thread
         self.work_available.set()
 
+    @synchronized(POSTPROC_LOCK)
     def cancel_pp(self, nzo_ids: list[str]) -> Optional[bool]:
         """Abort Direct Unpack and change the status, so that the PP is canceled"""
         result = None
@@ -235,6 +255,7 @@ class PostProcessor(Thread):
         """Return True if pp queue is empty"""
         return self.slow_queue.empty() and self.fast_queue.empty() and not self.__busy
 
+    @synchronized(POSTPROC_LOCK)
     def get_queue(
         self,
         search: Optional[str] = None,
@@ -253,9 +274,8 @@ class PostProcessor(Thread):
             except Exception:
                 logging.error(T("Failed to compile regex for search term: %s"), search_text)
 
-        # Need a copy to prevent race conditions
         filtered_queue = []
-        for nzo in self.history_queue[:]:
+        for nzo in self.history_queue:
             if not nzo.work_name:
                 continue
             if re_search and not re_search.search(nzo.final_name):
@@ -269,6 +289,7 @@ class PostProcessor(Thread):
             filtered_queue.append(nzo)
         return filtered_queue
 
+    @synchronized(POSTPROC_LOCK)
     def get_path(self, nzo_id: str) -> Optional[str]:
         """Return download path for given nzo_id or None when not found"""
         for nzo in self.history_queue:
