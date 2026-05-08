@@ -740,19 +740,22 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
             if not os.path.exists(path):
                 os.makedirs(path)
         else:
-            # We need to build the directory recursively, so we can
-            # apply permissions to only the newly created folders
-            # We cannot use os.makedirs() as it could ignore the mode
+            # Build the directory tree one level at a time so we can
+            # apply permissions to only the newly created folders.
+            # We cannot use os.makedirs() as it could ignore the mode.
             path_part_combined = "/"
             for path_part in path.split("/"):
                 if path_part:
                     path_part_combined = os.path.join(path_part_combined, path_part)
-                    # Only create if it doesn't exist
-                    if not os.path.exists(path_part_combined):
+                    try:
+                        # Only create if it doesn't exist
                         os.mkdir(path_part_combined)
                         # Try to set permissions if desired, ignore failures
                         if apply_permissions:
                             set_permissions(path_part_combined, recursive=False)
+                    except FileExistsError:
+                        if not os.path.isdir(path_part_combined):
+                            raise
         return path
     except OSError:
         logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)

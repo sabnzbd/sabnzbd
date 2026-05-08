@@ -47,6 +47,7 @@ from sabnzbd.constants import (
     MAX_BAD_ARTICLES,
     Status,
     DuplicateStatus,
+    NZO_FILE,
 )
 from sabnzbd.misc import (
     to_units,
@@ -273,6 +274,7 @@ class NzbObject(TryList):
         self.files: list[NzbFile] = []  # List of all NZFs
         self.files_table: dict[str, NzbFile] = {}  # Dictionary of NZFs indexed using NZF_ID
         self.renames: dict[str, str] = {}  # Dictionary of all renamed files
+        self.filenames: set[str] = set()  # Reserved filenames
 
         self.finished_files: list[NzbFile] = []  # List of all finished NZFs
 
@@ -755,7 +757,7 @@ class NzbObject(TryList):
             return 0
 
     @synchronized()
-    def remove_article(self, article: Article, success: bool):
+    def remove_article(self, article: Article, success: bool) -> tuple[bool, bool]:
         """Remove article from the NzbFile and do check if it can succeed"""
         job_can_succeed = True
         nzf = article.nzf
@@ -796,12 +798,7 @@ class NzbObject(TryList):
                     job_can_succeed = self.check_first_article_availability()
 
         # Remove from file-tracking
-        articles_left = nzf.remove_article(article, success)
-        file_done = not articles_left
-
-        # Only on fully loaded files we can know if it's really done
-        if not nzf.import_finished:
-            file_done = False
+        file_done = nzf.remove_article(article, success)
 
         # File completed, remove and do checks
         if file_done:
@@ -817,10 +814,10 @@ class NzbObject(TryList):
             self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
             self.set_unpack_info("Download", self.fail_msg)
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
-            return True, True, True
+            return True, True
 
         # Check if there are any files left here, so the check is inside the NZO_LOCK
-        return articles_left, file_done, not self.files
+        return file_done, not self.files
 
     def check_existing_files(self, wdir: str):
         """Check if downloaded files already exits, for these set NZF to complete"""
@@ -1392,10 +1389,41 @@ class NzbObject(TryList):
         else:
             self.renames[name_set] = old_name
 
+    @synchronized()
+    def get_unique_filepath(self, filename: str) -> str:
+        """
+        Ensure a unique filepath by appending .N before extension if needed
+        """
+        directory = self.download_path
+        base_name, ext = os.path.splitext(filename)
+        candidate = filename
+        path = os.path.join(directory, candidate)
+        num = 1
+        while candidate in self.filenames or os.path.exists(path):
+            candidate = f"{base_name}.{num}{ext}"
+            path = os.path.join(directory, candidate)
+            num += 1
+        self.filenames.add(candidate)
+        return path
+
     @property
     def admin_path(self):
         """Return the full path for my job-admin folder"""
         return long_path(get_admin_path(self.work_name, self.futuretype))
+
+    @property
+    def admin_data_file_path(self) -> Optional[str]:
+        """Return the relative path to the persisted state file"""
+        if not self.nzo_id:
+            return None
+        if self.nzo_id.startswith("SABnzbd_nzo_"):
+            # Fallback for pre-5.0 nzo_id's
+            filename = self.nzo_id
+        elif self.futuretype:
+            filename = f"SABnzbd_nzo_{self.nzo_id}"
+        else:
+            filename = NZO_FILE
+        return os.path.join(self.work_name, JOB_ADMIN, filename)
 
     @property
     def group(self):
@@ -1428,7 +1456,10 @@ class NzbObject(TryList):
             # If duplicate is discarded during URL-fetches, no nzo_id is known yet
             if self.nzo_id:
                 # Remove temporary file left from URL-fetches
-                remove_data(self.nzo_id, self.admin_path)
+                if self.nzo_id.startswith("SABnzbd_nzo_"):
+                    remove_data(self.nzo_id, self.admin_path)
+                else:
+                    remove_data(f"SABnzbd_nzo_{self.nzo_id}", self.admin_path)
         elif delete_all_data:
             remove_all(self.download_path, recursive=True)
         else:
@@ -1474,7 +1505,7 @@ class NzbObject(TryList):
         """Save job's admin to disk"""
         self.save_attribs()
         if self.nzo_id and not self.removed_from_queue:
-            save_data(self, self.nzo_id, self.admin_path)
+            save_data(self, NZO_FILE, self.admin_path)
 
     def save_attribs(self):
         """Save specific attributes for Retry"""
@@ -1668,6 +1699,10 @@ class NzbObject(TryList):
         self.url_tries = 0
         self.to_be_removed = False
         self.direct_unpacker = None
+        self.filenames = set()
+        for nzf in self.files_table.values():
+            if nzf.filepath:
+                self.filenames.add(get_filename(nzf.filepath))
 
         # Attributes added since 3.0.0
         if self.bytes_par2 is None:

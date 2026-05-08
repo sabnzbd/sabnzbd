@@ -56,7 +56,7 @@ stages:
           finish: !anyint
           slots: !anylist
             index: !re_match "[0-9]+"
-            nzo_id: !re_match "SABnzbd_nzo_.*"
+            nzo_id: "!anystr"
             unpackopts: !re_match "-?[0-9]+"
             priority: "!anystr"
             script: "!anystr"
