@@ -1411,18 +1411,18 @@ class NzbObject(TryList):
         """Return the full path for my job-admin folder"""
         return long_path(get_admin_path(self.work_name, self.futuretype))
 
-    def data_file_path(self, absolute: bool = False) -> Optional[str]:
-        """Return the path to the persisted state file"""
+    @property
+    def admin_data_file_path(self) -> Optional[str]:
+        """Return the relative path to the persisted state file"""
         if not self.nzo_id:
             return None
         if self.nzo_id.startswith("SABnzbd_nzo_"):
+            # Fallback for pre-5.0 nzo_id's
             filename = self.nzo_id
         elif self.futuretype:
             filename = f"SABnzbd_nzo_{self.nzo_id}"
         else:
             filename = NZO_FILE
-        if absolute:
-            return os.path.join(self.admin_path, filename)
         return os.path.join(self.work_name, JOB_ADMIN, filename)
 
     @property

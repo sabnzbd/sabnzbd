@@ -142,7 +142,7 @@ class PostProcessor(Thread):
     def save(self):
         """Save postproc queue"""
         logging.info("Saving postproc queue")
-        snapshot = [(nzo.nzo_id, path) for nzo in self.history_queue if (path := nzo.data_file_path())]
+        snapshot = [(nzo.nzo_id, path) for nzo in self.history_queue if (path := nzo.admin_data_file_path)]
         sabnzbd.filesystem.save_admin((POSTPROC_QUEUE_VERSION, snapshot), POSTPROC_QUEUE_FILE_NAME)
 
     @synchronized(POSTPROC_LOCK)
