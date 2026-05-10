@@ -21,7 +21,6 @@ jobs:
           builder
           builder/SABnzbd.spec
           tests
-          --line-length=120
           --check
           --diff
 
