@@ -1,3 +1,19 @@
 [tool.black]
 line-length = 120
-target-version = ["py39"]
+target-version = ["py310"]
+
+[tool.ruff]
+exclude = ["tools"]
+builtins = ["T", "TT"]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["F821"]
+
+[tool.ruff.lint.per-file-ignores]
+# Dynamic symbol injection during version/build setup.
+"builder/constants.py" = ["F821"]
+# macOS Bonjour symbols resolved via ctypes/dylib at runtime.
+"sabnzbd/utils/pybonjour.py" = ["F821"]
+"sabnzbd/utils/sleepless.py" = ["F821"]

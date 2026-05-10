@@ -521,7 +521,7 @@ def delayed_startup_actions():
 
     # Do an extra purge of the history on startup to ensure timely removal on systems that
     # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
-    database.scheduled_history_purge()
+    sabnzbd.database.scheduled_history_purge()
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
     if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):
