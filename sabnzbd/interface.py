@@ -1268,7 +1268,7 @@ class ConfigRss:
                 self.__refresh_force = False
                 self.__refresh_ignore = False
             if self.__evaluate:
-                msg = sabnzbd.RSSReader.run_feed(
+                msg = sabnzbd.RSSReader.process_feed(
                     active_feed,
                     download=self.__refresh_download,
                     force=self.__refresh_force,
@@ -1514,7 +1514,7 @@ class ConfigRss:
         """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
-        if att := sabnzbd.RSSReader.lookup_url(feed, url):
+        if att := sabnzbd.RSSReader.find_job_by_url(feed, url):
             nzbname = kwargs.get("nzbname")
             pp = att.get("pp")
             cat = att.get("cat")
@@ -1950,7 +1950,7 @@ def GetRssLog(feed):
         job["title"] = job["title"]
         job["skip"] = "*" * int(job.get("status", "").endswith("*"))
         # These fields could be empty
-        job["cat"] = job.get("cat", "")
+        job["cat"] = job.get("cat", "") or T("Default")
         job["size"] = job.get("size", "")
         job["infourl"] = job.get("infourl", "")
 
@@ -1987,7 +1987,7 @@ def GetRssLog(feed):
 
         return job
 
-    jobs = sabnzbd.RSSReader.show_result(feed).values()
+    jobs = sabnzbd.RSSReader.get_feed_jobs(feed).values()
     good, bad, done = ([], [], [])
     for job in jobs:
         if job["status"][0] == "G":

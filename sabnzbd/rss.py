@@ -26,7 +26,7 @@ import datetime
 import threading
 import urllib.parse
 from dataclasses import dataclass, field
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 import sabnzbd
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY
@@ -177,7 +177,7 @@ class NormalisedEntry:
             episode=job.get("episode", 0),
         )
 
-    def is_duplicate(self, jobs: dict[str, dict]) -> bool:
+    def is_duplicate(self, jobs: dict[str, dict[str, Any]]) -> bool:
         """Check if a job with the same title and size already exists in another feed"""
         for job_link, job in jobs.items():
             # Allow 5% size deviation because indexers might have small differences for same release
@@ -269,10 +269,10 @@ class FeedRule:
             return False
 
         # Episode / season rules
-        elif self.type == "F" and not self.ep_match(season, episode, self.regex):
+        elif self.type == "F" and not self.episode_matches(season, episode, self.regex):
             logging.debug("Filter rejected on rule %d (episode too early)", rule_index)
             return False
-        elif self.type == "S" and self.ep_match(season, episode, self.regex, title):
+        elif self.type == "S" and self.episode_matches(season, episode, self.regex, title):
             logging.debug("Filter matched on rule %d (show SxxEyy match)", rule_index)
             return True
 
@@ -296,7 +296,7 @@ class FeedRule:
         return None
 
     @staticmethod
-    def ep_match(season: int, episode: int, expr: str, title: Optional[str] = None):
+    def episode_matches(season: int, episode: int, expr: str, title: Optional[str] = None):
         """Return True if season, episode is at or above expected
         Optionally `title` can be matched
         """
@@ -374,36 +374,37 @@ class FeedConfig:
         episode: int,
     ) -> FeedEvaluation:
         """Evaluate rules for a single RSS entry."""
-        is_match: bool = False
-        matched_rule: Optional[FeedRule] = None
-        matched_index: int = 0
-        cur_season: int = season
-        cur_episode: int = episode
+        entry_cat = category
+        rule_matched: bool = False
+        matching_rule: Optional[FeedRule] = None
+        matching_rule_index: int = 0
+        feed_season: int = season
+        feed_episode: int = episode
 
         # Start from feed defaults for options.
-        my_category: Optional[str] = self.default_category
-        my_pp: Optional[str] = self.default_pp
-        my_script: Optional[str] = self.default_script
-        my_priority: Optional[int] = self.default_priority
+        resolved_cat: Optional[str] = self.default_category
+        resolved_pp: Optional[int] = self.default_pp
+        resolved_script: Optional[str] = self.default_script
+        resolved_priority: Optional[int] = self.default_priority
 
         # If there are no rules; return early
         if not self.rules:
             return FeedEvaluation(
-                matched=is_match,
-                rule_index=matched_index,
-                season=int_conv(cur_season),
-                episode=int_conv(cur_episode),
-                category=my_category,
-                pp=my_pp,
-                script=my_script,
-                priority=my_priority,
+                matched=rule_matched,
+                rule_index=matching_rule_index,
+                season=int_conv(feed_season),
+                episode=int_conv(feed_episode),
+                category=resolved_cat,
+                pp=resolved_pp,
+                script=resolved_script,
+                priority=resolved_priority,
             )
 
         # Fill in missing season / episode information when F/S rules exist
-        if self.has_type("F", "S") and (not cur_season or not cur_episode):
+        if self.has_type("F", "S") and (not feed_season or not feed_episode):
             show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
-            cur_season = show_analysis.info.get("season_num")
-            cur_episode = show_analysis.info.get("episode_num")
+            feed_season = show_analysis.info.get("season_num")
+            feed_episode = show_analysis.info.get("episode_num")
 
         # Match against all filters until a positive or negative match
         for idx, rule in enumerate(self.rules):
@@ -412,76 +413,75 @@ class FeedConfig:
 
             outcome = rule.matches(
                 title=title,
-                category=category,
+                category=entry_cat,
                 size=size,
-                season=cur_season,
-                episode=cur_episode,
+                season=feed_season,
+                episode=feed_episode,
                 rule_index=idx,
             )
 
             if outcome is None:
                 continue
 
-            matched_index = idx
-            is_match = outcome
-            matched_rule = rule if outcome else None
+            matching_rule_index = idx
+            rule_matched = outcome
+            matching_rule = rule if outcome else None
             break
 
-        if matched_rule is None:
-            base_category = (
-                cat_convert(category) if category and self.default_category is None else self.default_category
+        if matching_rule is None:
+            effective_category = (
+                cat_convert(entry_cat) if entry_cat and self.default_category is None else self.default_category
             )
         else:
-            base_category = matched_rule.category or cat_convert(category) or self.default_category
+            effective_category = matching_rule.category or cat_convert(entry_cat) or self.default_category
 
-        my_category, my_pp, my_script, my_priority = self._resolve_options(
-            base_category=base_category,
-            rule=matched_rule,
+        resolved_cat, resolved_pp, resolved_script, resolved_priority = self._resolve_options(
+            effective_category=effective_category,
+            matching_rule=matching_rule,
         )
 
         return FeedEvaluation(
-            matched=is_match,
-            rule_index=matched_index,
-            season=int_conv(cur_season),
-            episode=int_conv(cur_episode),
-            category=my_category,
-            pp=my_pp,
-            script=my_script,
-            priority=my_priority,
+            matched=rule_matched,
+            rule_index=matching_rule_index,
+            season=int_conv(feed_season),
+            episode=int_conv(feed_episode),
+            category=resolved_cat,
+            pp=resolved_pp,
+            script=resolved_script,
+            priority=resolved_priority,
         )
 
     def _resolve_options(
         self,
         *,
-        base_category: Optional[str],
-        rule: Optional[FeedRule],
+        effective_category: Optional[str],
+        matching_rule: Optional[FeedRule],
     ) -> tuple[Optional[str], Optional[int], Optional[str], Optional[int]]:
         """Resolve options for a feed rule."""
-        if base_category:
-            cat, cat_pp, cat_script, cat_prio = cat_to_opts(base_category)
+        if effective_category:
+            cat, cat_pp, cat_script, cat_prio = cat_to_opts(effective_category)
             cat_pp = _normalise_pp(cat_pp)
             cat_script = _normalise_str_or_none(cat_script)
             cat_prio = _normalise_priority(cat_prio)
         else:
             cat = cat_pp = cat_script = cat_prio = None
 
-        pp = first_not_none(
-            rule.pp if rule else None,
+        resolved_pp = first_not_none(
+            matching_rule.pp if matching_rule else None,
             cat_pp,
             self.default_pp,
         )
-        script = first_not_none(
-            rule.script if rule else None,
+        resolved_script = first_not_none(
+            matching_rule.script if matching_rule else None,
             cat_script,
             self.default_script,
         )
-        priority = first_not_none(
-            rule.priority if rule else None,
+        resolved_priority = first_not_none(
+            matching_rule.priority if matching_rule else None,
             cat_prio,
             self.default_priority,
         )
-
-        return cat, pp, script, priority
+        return cat, resolved_pp, resolved_script, resolved_priority
 
 
 class RSSReader:
@@ -529,7 +529,7 @@ class RSSReader:
         self.shutdown = True
 
     @synchronized(RSS_LOCK)
-    def run_feed(
+    def process_feed(
         self,
         feed: str,
         download: bool = False,
@@ -547,93 +547,12 @@ class RSSReader:
         new_downloads: list[str] = []
 
         # Configuration
-        uris, filters, first, jobs, config_error = self.configure_rss(feed, ignore_first)
-        if config_error:
-            return config_error
-
-        # Fetch & parse RSS
-        if readout:
-            entries, msg = self.fetch_rss(feed, uris)
-        else:
-            entries, msg = (jobs, "")
-
-        # Error in readout or no new readout
-        if readout and not entries:
-            return msg
-
-        # Normalise entries, evaluate rules and apply side effects
-        for entry in entries:
-            if self.shutdown:
-                return ""
-
-            try:
-                if readout:
-                    normalised = NormalisedEntry.from_feed_entry(entry)
-                    if not normalised:
-                        continue
-                    # Skip duplicates across multiple feeds
-                    if len(uris) > 1 and self.is_duplicate(normalised, jobs):
-                        continue
-                else:
-                    normalised = NormalisedEntry.from_job_entry(entry, jobs)
-            except (AttributeError, IndexError):
-                last_uri = uris[-1] if uris else ""
-                logging.info(T("Incompatible feed") + " " + last_uri)
-                logging.info("Traceback: ", exc_info=True)
-                return T("Incompatible feed")
-
-            if not normalised.link:
-                continue
-
-            # Track all valid links so obsolete ones can be cleaned up later
-            new_links.append(normalised.link)
-
-            evaluation, should_download, is_starred = self._evaluate_entry(
-                entry=normalised,
-                jobs=jobs,
-                filters=filters,
-                first=first,
-                download=download,
-                force=force,
-                readout=readout,
-            )
-            if evaluation is None:
-                continue
-
-            downloaded = self._process_entry(
-                feed=feed,
-                entry=normalised,
-                jobs=jobs,
-                evaluation=evaluation,
-                should_download=should_download,
-                is_starred=is_starred,
-            )
-            if downloaded:
-                new_downloads.append(normalised.title)
-
-        # Send email if wanted and not "forced"
-        if new_downloads and cfg.email_rss() and not force:
-            emailer.rss_mail(feed, new_downloads)
-
-        self.remove_obsolete(jobs, new_links)
-
-        return msg
-
-    def configure_rss(
-        self, feed: str, ignore_first: bool
-    ) -> tuple[list[str], Optional[FeedConfig], bool, dict, Optional[str]]:
-        """Prepare configuration and state for a feed run.
-
-        Returns (uris, filters, first, jobs, error_message).
-        If `error_message` is not empty, the caller should abort and return it.
-        """
-        # Preparations, get options
         try:
             feeds = config.get_rss()[feed]
         except KeyError:
             logging.error(T('Incorrect RSS feed description "%s"'), feed)
             logging.info("Traceback: ", exc_info=True)
-            return [], None, False, {}, T('Incorrect RSS feed description "%s"') % feed
+            return T('Incorrect RSS feed description "%s"') % feed
 
         uris = feeds.uri()
         filters = FeedConfig.from_config(feeds)
@@ -646,7 +565,72 @@ class RSSReader:
             self.jobs[feed] = {}
         jobs = self.jobs[feed]
 
-        return uris, filters, first, jobs, ""
+        # Fetch & parse RSS
+        if readout:
+            entries, msg = self.fetch_rss(feed, uris)
+        else:
+            entries, msg = (jobs, "")
+
+        # Error in readout or no new readout
+        if readout and not entries:
+            return msg
+
+        # Normalise entries, evaluate rules and apply side effects
+        for raw_entry in entries:
+            if self.shutdown:
+                return ""
+
+            try:
+                if readout:
+                    feed_entry = NormalisedEntry.from_feed_entry(raw_entry)
+                    if not feed_entry:
+                        continue
+                    # Skip duplicates across multiple feeds
+                    if len(uris) > 1 and feed_entry.is_duplicate(jobs):
+                        continue
+                else:
+                    feed_entry = NormalisedEntry.from_job_entry(raw_entry, jobs)
+            except (AttributeError, IndexError):
+                last_uri = uris[-1] if uris else ""
+                logging.info(T("Incompatible feed") + " " + last_uri)
+                logging.info("Traceback: ", exc_info=True)
+                return T("Incompatible feed")
+            if not feed_entry.link:
+                continue
+
+            # Track all valid links so obsolete ones can be cleaned up later
+            new_links.append(feed_entry.link)
+
+            evaluation, should_download, is_starred = self._evaluate_entry(
+                feed_entry=feed_entry,
+                jobs=jobs,
+                filters=filters,
+                first=first,
+                download=download,
+                force=force,
+                readout=readout,
+            )
+            if evaluation is None:
+                continue
+
+            downloaded = self._process_entry(
+                feed=feed,
+                feed_entry=feed_entry,
+                jobs=jobs,
+                evaluation=evaluation,
+                should_download=should_download,
+                is_starred=is_starred,
+            )
+            if downloaded:
+                new_downloads.append(feed_entry.title)
+
+        # Send email if wanted and not "forced"
+        if new_downloads and cfg.email_rss() and not force:
+            emailer.rss_mail(feed, new_downloads)
+
+        self.remove_obsolete(jobs, new_links)
+
+        return msg
 
     @staticmethod
     def patch_feedparser():
@@ -769,7 +753,7 @@ class RSSReader:
     @staticmethod
     def _evaluate_entry(
         *,
-        entry: NormalisedEntry,
+        feed_entry: NormalisedEntry,
         jobs: dict,
         filters: FeedConfig,
         first: bool,
@@ -781,7 +765,7 @@ class RSSReader:
 
         Returns a tuple (evaluation, should_download, star) or None if the entry should be skipped.
         """
-        link = entry.link
+        link = feed_entry.link
         job = jobs.get(link)
         job_status = job.get("status", " ")[0] if job else "N"
 
@@ -789,13 +773,13 @@ class RSSReader:
             return None, None, None
 
         # Match this title against all filters
-        logging.debug("Trying title=%r, size=%d", entry.title, entry.size)
+        logging.debug("Trying title=%r, size=%d", feed_entry.title, feed_entry.size)
         evaluation = filters.evaluate(
-            title=entry.title,
-            category=entry.category,
-            size=entry.size,
-            season=entry.season,
-            episode=entry.episode,
+            title=feed_entry.title,
+            category=feed_entry.category,
+            size=feed_entry.size,
+            season=feed_entry.season,
+            episode=feed_entry.episode,
         )
 
         is_starred = job and job.get("status", "").endswith("*")
@@ -805,67 +789,53 @@ class RSSReader:
         return evaluation, should_download, star
 
     @staticmethod
-    def update_job_entry(jobs: dict, update: ResolvedEntry) -> None:
+    def update_job_entry(jobs: dict, resolved_entry: ResolvedEntry) -> None:
         """Update the stored job entry"""
-        jobs[update.link] = {
-            "title": update.title,
-            "url": update.link,
-            "infourl": update.infourl,
-            "cat": update.cat,
-            "pp": update.pp,
-            "script": update.script,
-            "prio": str(update.priority) if update.priority is not None else str(DEFAULT_PRIORITY),
-            "orgcat": update.orgcat,
-            "size": update.size,
-            "age": update.age,
+        jobs[resolved_entry.link] = {
+            "title": resolved_entry.title,
+            "url": resolved_entry.link,
+            "infourl": resolved_entry.infourl,
+            "cat": resolved_entry.cat,
+            "pp": resolved_entry.pp,
+            "script": resolved_entry.script,
+            "prio": str(resolved_entry.priority) if resolved_entry.priority is not None else str(DEFAULT_PRIORITY),
+            "orgcat": resolved_entry.orgcat,
+            "size": resolved_entry.size,
+            "age": resolved_entry.age,
             "time": time.time(),
-            "rule": str(update.rule),
-            "season": str(update.season),
-            "episode": str(update.episode),
-            "status": update.status,
+            "rule": str(resolved_entry.rule),
+            "season": str(resolved_entry.season),
+            "episode": str(resolved_entry.episode),
+            "status": resolved_entry.status,
         }
 
-        if update.status == "D":
-            jobs[update.link]["time_downloaded"] = time.localtime()
+        if resolved_entry.status == "D":
+            jobs[resolved_entry.link]["time_downloaded"] = time.localtime()
 
     @staticmethod
-    def enqueue_download(feed: str, update: ResolvedEntry) -> None:
-        if not update.download:
+    def enqueue_download(feed: str, resolved_entry: ResolvedEntry) -> None:
+        if not resolved_entry.download:
             return
 
-        nzbname = None if special_rss_site(update.link) else update.title
+        nzbname = None if special_rss_site(resolved_entry.link) else resolved_entry.title
 
-        logging.info("Adding %s (%s) to queue", update.link, update.title)
+        logging.info("Adding %s (%s) to queue", resolved_entry.link, resolved_entry.title)
         sabnzbd.urlgrabber.add_url(
-            update.link,
-            pp=update.pp,
-            script=update.script,
-            cat=update.cat,
-            priority=update.priority,
+            resolved_entry.link,
+            pp=resolved_entry.pp,
+            script=resolved_entry.script,
+            cat=resolved_entry.cat,
+            priority=resolved_entry.priority,
             nzbname=nzbname,
             nzo_info={"RSS": feed},
         )
-
-    @staticmethod
-    def is_duplicate(entry: NormalisedEntry, jobs: dict[str, dict]) -> bool:
-        """Check if a job with the same title and size already exists in another feed"""
-        for job_link, job in jobs.items():
-            # Allow 5% size deviation because indexers might have small differences for same release
-            if (
-                job.get("title") == entry.title
-                and entry.link != job_link
-                and (job.get("size") * 0.95) < entry.size < (job.get("size") * 1.05)
-            ):
-                logging.info("Ignoring job %s from other feed", entry.title)
-                return True
-        return False
 
     def _process_entry(
         self,
         *,
         feed: str,
         jobs: dict[str, dict],
-        entry: NormalisedEntry,
+        feed_entry: NormalisedEntry,
         evaluation: FeedEvaluation,
         should_download: bool,
         is_starred: bool,
@@ -883,15 +853,15 @@ class RSSReader:
         else:
             status = "B"
 
-        update = ResolvedEntry(
-            link=entry.link,
-            title=entry.title,
-            infourl=entry.infourl,
-            size=entry.size,
-            age=entry.age,
+        resolved_entry = ResolvedEntry(
+            link=feed_entry.link,
+            title=feed_entry.title,
+            infourl=feed_entry.infourl,
+            size=feed_entry.size,
+            age=feed_entry.age,
             season=evaluation.season,
             episode=evaluation.episode,
-            orgcat=entry.category,
+            orgcat=feed_entry.category,
             cat=evaluation.category,
             pp=evaluation.pp,
             script=evaluation.script,
@@ -901,8 +871,8 @@ class RSSReader:
             download=(status == "D"),
         )
 
-        self.update_job_entry(jobs, update)
-        self.enqueue_download(feed, update)
+        self.update_job_entry(jobs, resolved_entry)
+        self.enqueue_download(feed, resolved_entry)
 
         return bool(evaluation.matched and should_download)
 
@@ -918,7 +888,7 @@ class RSSReader:
                     if feeds[feed].enable():
                         logging.info('Starting scheduled RSS read-out for "%s"', feed)
                         active = True
-                        self.run_feed(feed, download=True, ignore_first=True)
+                        self.process_feed(feed, download=True, ignore_first=True)
                         # Wait 15 seconds, else sites may get irritated
                         for _ in range(15):
                             if self.shutdown:
@@ -935,7 +905,7 @@ class RSSReader:
                 logging.info("Finished scheduled RSS read-outs")
 
     @synchronized(RSS_LOCK)
-    def show_result(self, feed):
+    def get_feed_jobs(self, feed):
         if feed in self.jobs:
             try:
                 return self.jobs[feed]
@@ -969,7 +939,7 @@ class RSSReader:
                     lst[link]["time_downloaded"] = time.localtime()
 
     @synchronized(RSS_LOCK)
-    def lookup_url(self, feed, url):
+    def find_job_by_url(self, feed, url):
         if url and feed in self.jobs:
             lst = self.jobs[feed]
             for link in lst:

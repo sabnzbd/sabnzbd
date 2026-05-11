@@ -29,7 +29,7 @@ from pytest_httpserver import HTTPServer
 
 import sabnzbd.rss as rss
 import sabnzbd.config
-from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
+from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY, PAUSED_PRIORITY
 from sabnzbd.rss import FeedEvaluation, FeedConfig
 from tests.testhelper import httpserver_handler_data_dir
 
@@ -79,7 +79,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -106,7 +106,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -136,7 +136,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -161,7 +161,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -175,7 +175,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -352,3 +352,180 @@ class TestRSS:
         result_match = feed_cfg.evaluate(title=title, category=category, size=size, season=season, episode=episode)
 
         assert result_match == expected_match
+
+    def test_feedconfig_default_category_priority_is_applied(self, httpserver: HTTPServer):
+        feed_name = "Evaluator"
+        self.setup_rss(
+            feed_name,
+            httpserver.url_for("/evaluator.xml"),
+            filters=[],
+        )
+        sabnzbd.config.ConfigCat(
+            "*",
+            {
+                "priority": PAUSED_PRIORITY,
+            },
+        )
+
+        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
+        result_match = feed_cfg.evaluate(title="Title", category=None, size=1000, season=0, episode=0)
+
+        assert result_match == FeedEvaluation(
+            matched=True,
+            rule_index=0,
+            season=0,
+            episode=0,
+            category=None,
+            priority=None,
+        )
+
+    def test_feedconfig_entry_category_priority_overrides_feed_default_priority(self, httpserver: HTTPServer):
+        feed_name = "Evaluator"
+        self.setup_rss(
+            feed_name,
+            httpserver.url_for("/evaluator.xml"),
+            priority=LOW_PRIORITY,
+            filters=[],
+        )
+        sabnzbd.config.ConfigCat(
+            "evaluator",
+            {
+                "pp": "3",
+                "script": "evaluator.py",
+                "priority": FORCE_PRIORITY,
+            },
+        )
+
+        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
+        result_match = feed_cfg.evaluate(title="Title", category="evaluator", size=1000, season=0, episode=0)
+
+        assert result_match == FeedEvaluation(
+            matched=True,
+            rule_index=0,
+            season=0,
+            episode=0,
+            category="evaluator",
+            pp=3,
+            script="evaluator.py",
+            priority=FORCE_PRIORITY,
+        )
+
+    def test_feedconfig_rule_category_priority_overrides_feed_default_priority(self, httpserver: HTTPServer):
+        feed_name = "Evaluator"
+        self.setup_rss(
+            feed_name,
+            httpserver.url_for("/evaluator.xml"),
+            priority=LOW_PRIORITY,
+            filters=[("tv", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+        )
+        sabnzbd.config.ConfigCat(
+            "tv",
+            {
+                "priority": HIGH_PRIORITY,
+            },
+        )
+
+        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
+        result_match = feed_cfg.evaluate(title="Title", category=None, size=1000, season=0, episode=0)
+
+        assert result_match == FeedEvaluation(
+            matched=True,
+            rule_index=0,
+            season=0,
+            episode=0,
+            category="tv",
+            priority=HIGH_PRIORITY,
+        )
+
+    def test_feedconfig_entry_category_pp_overrides_feed_default_pp(self, httpserver: HTTPServer):
+        feed_name = "Evaluator"
+        self.setup_rss(
+            feed_name,
+            httpserver.url_for("/evaluator.xml"),
+            pp=1,
+            filters=[],
+        )
+        sabnzbd.config.ConfigCat(
+            "evaluator",
+            {
+                "pp": "3",
+                "script": "evaluator.py",
+                "priority": FORCE_PRIORITY,
+            },
+        )
+
+        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
+        result_match = feed_cfg.evaluate(title="Title", category="evaluator", size=1000, season=0, episode=0)
+
+        assert result_match == FeedEvaluation(
+            matched=True,
+            rule_index=0,
+            season=0,
+            episode=0,
+            category="evaluator",
+            pp=3,
+            script="evaluator.py",
+            priority=FORCE_PRIORITY,
+        )
+
+    def test_feedconfig_rule_pp_overrides_category_pp(self, httpserver: HTTPServer):
+        feed_name = "Evaluator"
+        self.setup_rss(
+            feed_name,
+            httpserver.url_for("/evaluator.xml"),
+            pp=1,
+            filters=[("evaluator", "2", "", "A", "*", DEFAULT_PRIORITY, "1")],
+        )
+        sabnzbd.config.ConfigCat(
+            "evaluator",
+            {
+                "pp": "3",
+                "script": "evaluator.py",
+                "priority": FORCE_PRIORITY,
+            },
+        )
+
+        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
+        result_match = feed_cfg.evaluate(title="Title", category=None, size=1000, season=0, episode=0)
+
+        assert result_match == FeedEvaluation(
+            matched=True,
+            rule_index=0,
+            season=0,
+            episode=0,
+            category="evaluator",
+            pp=2,
+            script="evaluator.py",
+            priority=FORCE_PRIORITY,
+        )
+
+    def test_feedconfig_rule_pp_overrides_entry_category_pp(self, httpserver: HTTPServer):
+        feed_name = "Evaluator"
+        self.setup_rss(
+            feed_name,
+            httpserver.url_for("/evaluator.xml"),
+            pp=1,
+            filters=[("", "2", "", "A", "*", DEFAULT_PRIORITY, "1")],
+        )
+        sabnzbd.config.ConfigCat(
+            "evaluator",
+            {
+                "pp": "3",
+                "script": "evaluator.py",
+                "priority": FORCE_PRIORITY,
+            },
+        )
+
+        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
+        result_match = feed_cfg.evaluate(title="Title", category="evaluator", size=1000, season=0, episode=0)
+
+        assert result_match == FeedEvaluation(
+            matched=True,
+            rule_index=0,
+            season=0,
+            episode=0,
+            category="evaluator",
+            pp=2,
+            script="evaluator.py",
+            priority=FORCE_PRIORITY,
+        )
