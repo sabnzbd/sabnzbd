@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: mauron, 2026\n"
 "Language-Team: Turkish (https://app.transifex.com/sabnzbd/teams/111101/tr/)\n"
@@ -1847,14 +1847,14 @@ msgstr "Bir DBUS istisnası alındı %s"
 msgid "Empty RSS entry found (%s)"
 msgstr "Boş RSS girdisi bulundu (%s)"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Uyumsuz besleme"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
 msgstr "Yanlış RSS besleme tanımlaması \"%s\""
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Uyumsuz besleme"
 
 #: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"

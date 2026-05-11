@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Finnish (https://app.transifex.com/sabnzbd/teams/111101/fi/)\n"
@@ -1780,14 +1780,14 @@ msgstr ""
 msgid "Empty RSS entry found (%s)"
 msgstr "Tyhjä RSS kohde löytyi (%s)"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Puutteellinen syöte"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
 msgstr "Virheellinen RSS syötteen kuvaus \"%s\""
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Puutteellinen syöte"
 
 #: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"

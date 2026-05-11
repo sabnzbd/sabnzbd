@@ -1657,13 +1657,13 @@ msgstr ""
 msgid "Empty RSS entry found (%s)"
 msgstr ""
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr ""
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
+msgstr ""
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
 msgstr ""
 
 #: sabnzbd/rss.py

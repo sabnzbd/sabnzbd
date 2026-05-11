@@ -6,7 +6,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-5.0.0\n"
+"Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Italian (https://app.transifex.com/sabnzbd/teams/111101/it/)\n"
@@ -1850,14 +1850,14 @@ msgstr "Ricevuta un'eccezione DBus %s"
 msgid "Empty RSS entry found (%s)"
 msgstr "Trovata voce RSS vuota (%s)"
 
-#: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Feed incompatibile"
-
 #. Error message
 #: sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
 msgstr "Descrizione del feed RSS non corretta \"%s\""
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Feed incompatibile"
 
 #: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
