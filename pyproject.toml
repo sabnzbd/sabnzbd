@@ -17,3 +17,10 @@ select = ["F821"]
 # macOS Bonjour symbols resolved via ctypes/dylib at runtime.
 "sabnzbd/utils/pybonjour.py" = ["F821"]
 "sabnzbd/utils/sleepless.py" = ["F821"]
+
+[tool.pytest.ini_options]
+markers = [
+    "config",
+    "platform",
+    "fake_fs",
+]
