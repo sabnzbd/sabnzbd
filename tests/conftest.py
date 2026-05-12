@@ -35,8 +35,7 @@ from tests.testhelper import *
 def clean_cache_dir(request):
     # Remove cache if already there
     try:
-        if os.path.isdir(SAB_CACHE_DIR):
-            shutil.rmtree(SAB_CACHE_DIR)
+        shutil.rmtree(SAB_CACHE_DIR, ignore_errors=True)
         # Create an empty placeholder
         os.makedirs(SAB_CACHE_DIR)
     except Exception:
@@ -47,12 +46,14 @@ def clean_cache_dir(request):
     # Remove cache dir with retries in case it's still running
     for x in range(10):
         try:
-            time.sleep(1)
             shutil.rmtree(SAB_CACHE_DIR)
             break
+        except (FileNotFoundError, PermissionError):
+            break
         except OSError:
-            print("Unable to remove cache dir (try %d)" % x)
             time.sleep(1)
+    else:
+        print("Unable to remove cache dir")
 
 
 @pytest.fixture(scope="module")
