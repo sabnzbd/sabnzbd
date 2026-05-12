@@ -199,6 +199,7 @@ class TestDaemonizing(SABnzbdBaseTest):
             lambda: "version" in get_api_result("version", daemon_host, daemon_port),
             timeout=3,
             err_msg="Did not start within 3 seconds",
+            suppress=(requests.exceptions.RequestException,),
         )
 
         # Did it create the PID file
