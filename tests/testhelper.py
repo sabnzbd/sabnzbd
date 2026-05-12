@@ -279,13 +279,20 @@ def random_name(length: int = 16) -> str:
 
 
 def wait_for(
-    condition: Callable[[], bool], timeout: float = 2, interval: float = 0.05, err_msg: str = "Condition not met"
+    condition: Callable,
+    timeout: float = 2,
+    interval: float = 0.05,
+    err_msg: str = "Condition not met",
+    suppress: tuple[type[Exception], ...] = (),
 ):
     """Polls condition every interval until timeout."""
     deadline = time.time() + timeout
     while True:
-        if condition():
-            return
+        try:
+            if result := condition():
+                return result
+        except suppress:
+            pass
         if time.time() > deadline:
             pytest.fail(err_msg)
         time.sleep(interval)

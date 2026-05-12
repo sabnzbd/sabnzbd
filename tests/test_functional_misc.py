@@ -63,22 +63,12 @@ class TestQueueRepair(SABnzbdBaseTest):
         assert get_api_result("restart_repair") == {"status": True}
 
         # Let's check the queue, this can take long on GitHub Actions
-        for _ in range(60):
-            queue_result_slots = {}
-            try:
-                # Can give timeout if still restarting
-                queue_result_slots = get_api_result("queue", extra_arguments={"limit": 10000})["queue"]["slots"]
-            except requests.exceptions.RequestException:
-                pass
-
-            # Check if the repaired job was added to the queue
-            if queue_result_slots:
-                break
-            time.sleep(1)
-        else:
-            # The loop never stopped, so we fail
-            pytest.fail("Did not find the repaired job in the queue")
-            return
+        queue_result_slots = wait_for(
+            lambda: get_api_result("queue", extra_arguments={"limit": 10000})["queue"]["slots"],
+            timeout=60,
+            err_msg="Did not find the repaired job in the queue",
+            suppress=(requests.exceptions.RequestException,),
+        )
 
         # Verify filename
         assert test_job_name in [slot["filename"] for slot in queue_result_slots]
