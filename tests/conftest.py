@@ -110,13 +110,13 @@ def run_sabnzbd(clean_cache_dir, request):
     )
 
     # Wait for SAB to respond
-    for _ in range(30):
+    for _ in range(600):
         try:
             get_url_result()
             # Woohoo, we're up!
             break
         except requests.ConnectionError:
-            time.sleep(1)
+            time.sleep(0.05)
     else:
         # Make sure we clean up
         shutdown_sabnzbd()
