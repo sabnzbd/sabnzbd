@@ -63,22 +63,12 @@ class TestQueueRepair(SABnzbdBaseTest):
         assert get_api_result("restart_repair") == {"status": True}
 
         # Let's check the queue, this can take long on GitHub Actions
-        for _ in range(60):
-            queue_result_slots = {}
-            try:
-                # Can give timeout if still restarting
-                queue_result_slots = get_api_result("queue", extra_arguments={"limit": 10000})["queue"]["slots"]
-            except requests.exceptions.RequestException:
-                pass
-
-            # Check if the repaired job was added to the queue
-            if queue_result_slots:
-                break
-            time.sleep(1)
-        else:
-            # The loop never stopped, so we fail
-            pytest.fail("Did not find the repaired job in the queue")
-            return
+        queue_result_slots = wait_for(
+            lambda: get_api_result("queue", extra_arguments={"limit": 10000})["queue"]["slots"],
+            timeout=60,
+            err_msg="Did not find the repaired job in the queue",
+            suppress=(requests.exceptions.RequestException,),
+        )
 
         # Verify filename
         assert test_job_name in [slot["filename"] for slot in queue_result_slots]
@@ -205,12 +195,20 @@ class TestDaemonizing(SABnzbdBaseTest):
         assert not errs
 
         # It should be online after 3 seconds
-        time.sleep(3.0)
-        assert "version" in get_api_result("version", daemon_host, daemon_port)
+        wait_for(
+            lambda: "version" in get_api_result("version", daemon_host, daemon_port),
+            timeout=3,
+            err_msg="Did not start within 3 seconds",
+            suppress=(requests.exceptions.RequestException,),
+        )
 
         # Did it create the PID file
         pid_file = os.path.join(ini_location, "sabnzbd-%d.pid" % daemon_port)
-        assert os.path.exists(pid_file)
+        wait_for(
+            lambda: os.path.exists(pid_file),
+            timeout=3,
+            err_msg="Did not create the PID file",
+        )
 
         # Did it remove the bad log file?
         assert os.path.exists(error_log_path)
@@ -219,7 +217,11 @@ class TestDaemonizing(SABnzbdBaseTest):
         try:
             # Let's shut it down and give it some time to do so
             get_url_result("shutdown", daemon_host, daemon_port)
-            time.sleep(3.0)
+            wait_for(
+                lambda: not os.path.exists(pid_file),
+                timeout=3,
+                err_msg="Did not shutdown within 3 seconds",
+            )
         except requests.exceptions.RequestException:
             # Shutdown can be faster than the request
             pass

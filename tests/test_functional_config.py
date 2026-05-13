@@ -72,8 +72,11 @@ class TestBasicPages(SABnzbdBaseTest):
                 self.no_page_crash()
             else:
                 # For others if all is fine, button will be back to normal in 1 second
-                time.sleep(1.5)
-                assert submit_btn.text == "Save Changes"
+                wait_for(
+                    lambda: submit_btn.text == "Save Changes",
+                    timeout=1.5,
+                    err_msg=f"submit_btn.text was '{submit_btn.text}' but expected 'Save Changes'",
+                )
 
 
 class TestConfigLogin(SABnzbdBaseTest):
@@ -228,20 +231,12 @@ class TestConfigRSS(SABnzbdBaseTest):
         # Does the page think it's a success?
         assert "Added NZB" in download_btn.text
 
-        # Wait 2 seconds for the fetch
-        time.sleep(2)
-
-        # Let's check the queue
-        for _ in range(10):
-            queue_result_slots = get_api_result("queue")["queue"]["slots"]
-            # Check if the fetch-request was added to the queue
-            if queue_result_slots:
-                break
-            time.sleep(1)
-        else:
-            # The loop never stopped, so we fail
-            pytest.fail("Did not find the RSS job in the queue")
-            return
+        # Check if the fetch-request was added to the queue
+        wait_for(
+            lambda: len(get_api_result("queue")["queue"]["slots"]) > 0,
+            timeout=10,
+            err_msg="Did not find the RSS job in the queue",
+        )
 
         # Let's remove this thing
         get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
@@ -292,9 +287,12 @@ class TestConfigServers(SABnzbdBaseTest):
 
         # Add and show details
         port_inp.send_keys(Keys.RETURN)
-        time.sleep(1)
-        if not self.selenium_wrapper(self.driver.find_element, By.ID, "host0").is_displayed():
-            self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
+        wait_for(
+            lambda: not self.selenium_wrapper(self.driver.find_element, By.ID, "host0").is_displayed(),
+            timeout=2,
+            err_msg=f"The Add Server interface did not close",
+        )
+        self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
 
     def remove_server(self):
         # Remove the first server and accept the confirmation
@@ -302,8 +300,11 @@ class TestConfigServers(SABnzbdBaseTest):
         self.driver.switch_to.alert.accept()
 
         # Check that it's gone
-        time.sleep(2)
-        assert self.server_name not in self.driver.page_source
+        wait_for(
+            lambda: self.server_name not in self.driver.page_source,
+            timeout=2,
+            err_msg=f"Page still contains '{self.server_name}'",
+        )
 
     def test_add_and_remove_server(self):
         self.open_config_servers()

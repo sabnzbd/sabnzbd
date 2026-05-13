@@ -35,8 +35,7 @@ from tests.testhelper import *
 def clean_cache_dir(request):
     # Remove cache if already there
     try:
-        if os.path.isdir(SAB_CACHE_DIR):
-            shutil.rmtree(SAB_CACHE_DIR)
+        shutil.rmtree(SAB_CACHE_DIR, ignore_errors=True)
         # Create an empty placeholder
         os.makedirs(SAB_CACHE_DIR)
     except Exception:
@@ -45,14 +44,16 @@ def clean_cache_dir(request):
     yield request
 
     # Remove cache dir with retries in case it's still running
-    for x in range(10):
+    for x in range(100):
         try:
-            time.sleep(1)
             shutil.rmtree(SAB_CACHE_DIR)
             break
+        except (FileNotFoundError, PermissionError):
+            break
         except OSError:
-            print("Unable to remove cache dir (try %d)" % x)
-            time.sleep(1)
+            time.sleep(0.1)
+    else:
+        print("Unable to remove cache dir")
 
 
 @pytest.fixture(scope="module")
@@ -109,13 +110,13 @@ def run_sabnzbd(clean_cache_dir, request):
     )
 
     # Wait for SAB to respond
-    for _ in range(30):
+    for _ in range(600):
         try:
             get_url_result()
             # Woohoo, we're up!
             break
         except requests.ConnectionError:
-            time.sleep(1)
+            time.sleep(0.05)
     else:
         # Make sure we clean up
         shutdown_sabnzbd()

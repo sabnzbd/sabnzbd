@@ -171,7 +171,7 @@ class TestConfig:
         assert not config.validate_config_backup(self.create_dummy_zip("dummyfile"))
         assert config.validate_config_backup(self.create_dummy_zip(DEF_INI_FILE))
 
-    @set_config(
+    @pytest.mark.config(
         {
             "admin_dir": os.path.join(SAB_CACHE_DIR, "test_config_backup"),
             "complete_dir": os.path.join(SAB_COMPLETE_DIR, "test_config_backup"),

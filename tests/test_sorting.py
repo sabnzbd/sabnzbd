@@ -117,8 +117,8 @@ class TestSortingFunctions:
             ("", False, False),
         ],
     )
+    @pytest.mark.platform(lambda params: params["platform"])
     def test_is_full_path(self, platform, path, result_unix, result_win):
-        @set_platform(platform)
         def _func():
             result = result_win if sabnzbd.WINDOWS else result_unix
             assert sorting.is_full_path(path) == result

@@ -27,7 +27,7 @@ from sabnzbd.filesystem import save_compressed
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestNzbParser:
-    @set_config({"download_dir": SAB_CACHE_DIR})
+    @pytest.mark.config({"download_dir": SAB_CACHE_DIR})
     def test_nzbparser(self):
         nzo = NzbObject("test_basic")
         # Create test file

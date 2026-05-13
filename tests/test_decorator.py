@@ -205,7 +205,7 @@ class TestConditionalCache:
         """Test that conditional_cache expires entries after specified time"""
         call_count = 0
 
-        @conditional_cache(cache_time=0.5)
+        @conditional_cache(cache_time=0.01)
         def test_func(value):
             nonlocal call_count
             call_count += 1
@@ -222,7 +222,7 @@ class TestConditionalCache:
         assert call_count == 1
 
         # Wait for cache to expire
-        time.sleep(0.6)
+        time.sleep(0.02)
 
         # Third call - should execute function again
         result3 = test_func("test")

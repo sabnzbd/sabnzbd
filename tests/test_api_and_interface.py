@@ -117,12 +117,12 @@ class TestSecuredExpose:
             set_remote_host_or_ip(hostname=test_hostname)
             self.check_full_access()
 
-    @set_config({"username": "foo", "password": "bar"})
+    @pytest.mark.config({"username": "foo", "password": "bar"})
     def test_check_hostname_not_user_password(self):
         set_remote_host_or_ip(hostname="not_me")
         self.check_full_access(redirect_match=r".*login.*")
 
-    @set_config({"host_whitelist": "test.com, not_evil"})
+    @pytest.mark.config({"host_whitelist": "test.com, not_evil"})
     def test_check_hostname_whitelist(self):
         set_remote_host_or_ip(hostname="test.com")
         self.check_full_access()
@@ -133,7 +133,7 @@ class TestSecuredExpose:
         set_remote_host_or_ip(remote_ip="::ffff:192.168.0.10")
         self.check_full_access()
 
-    @set_config({"local_ranges": "132.10."})
+    @pytest.mark.config({"local_ranges": "132.10."})
     def test_dual_stack_local_ranges(self):
         # Without custom local_ranges this one would be allowed
         set_remote_host_or_ip(remote_ip="::ffff:192.168.0.10")
@@ -209,7 +209,7 @@ class TestSecuredExpose:
         # Reset it
         sabnzbd.cfg.inet_exposure.set(sabnzbd.cfg.inet_exposure.default)
 
-    @set_config({"inet_exposure": 5, "username": "foo", "password": "bar"})
+    @pytest.mark.config({"inet_exposure": 5, "username": "foo", "password": "bar"})
     def test_inet_exposure_login_for_external(self):
         # Local user: full access
         set_remote_host_or_ip()
@@ -219,7 +219,7 @@ class TestSecuredExpose:
         set_remote_host_or_ip(hostname="100.100.100.100", remote_ip="11.11.11.11")
         self.check_full_access(redirect_match=r".*login.*")
 
-    @set_config({"api_warnings": False})
+    @pytest.mark.config({"api_warnings": False})
     def test_no_text_warnings(self):
         assert self.main_page.index() is None
         assert cherrypy.response.status == 403

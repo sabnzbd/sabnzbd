@@ -128,13 +128,21 @@ class TestPostProc:
     @pytest.mark.parametrize("sort_string", ["%sn (%r)", "%sn (%r)/file.%ext", ""])  # Identical path result
     @pytest.mark.parametrize("marker_file", [None, ".marker"])
     @pytest.mark.parametrize("do_folder_rename", [True, False])
+    @pytest.mark.config(
+        lambda params: {
+            "marker_file": params["marker_file"],
+            "folder_rename": params["do_folder_rename"],
+            "download_dir": os.path.join(SAB_CACHE_DIR, "incomplete"),
+            "complete_dir": os.path.join(SAB_CACHE_DIR, "complete"),
+        }
+    )
     def test_prepare_extraction_path(
         self, category, has_jobdir, has_catdir, has_active_sorter, sort_string, marker_file, do_folder_rename
     ):
         # Ensure global CFG_ vars are initialised
         sabnzbd.config.read_config(os.devnull)
 
-        # Define a sorter and a category (as @set_config cannot handle those)
+        # Define a sorter and a category (as @pytest.mark.config cannot handle those)
         ConfigSorter(
             "sorter__test_prepare_extraction_path",
             {
@@ -175,14 +183,6 @@ class TestPostProc:
         fake_nzo.cat = category
         fake_nzo.nzo_info = {}  # Placeholder to prevent a crash in sorting.get_titles()
 
-        @set_config(
-            {
-                "download_dir": os.path.join(SAB_CACHE_DIR, "incomplete"),
-                "complete_dir": os.path.join(SAB_CACHE_DIR, "complete"),
-                "marker_file": marker_file,
-                "folder_rename": do_folder_rename,
-            }
-        )
         def _func():
             (
                 tmp_workdir_complete,

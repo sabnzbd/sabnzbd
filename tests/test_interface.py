@@ -137,16 +137,16 @@ class TestInterfaceFunctions:
     @pytest.mark.parametrize("access_type", [1, 2, 3, 4, 5, 6])
     @pytest.mark.parametrize("inet_exposure", [0, 1, 2, 3, 4, 5])
     @pytest.mark.parametrize("verify_xff_header", [False, True])
+    @pytest.mark.config(
+        lambda params: {
+            "local_ranges": params["local_ranges"],
+            "inet_exposure": params["inet_exposure"],
+            "verify_xff_header": params["verify_xff_header"],
+        }
+    )
     def test_check_access(
         self, access_type, inet_exposure, local_ranges, remote_ip, xff_header, verify_xff_header, result_with_xff
     ):
-        @set_config(
-            {
-                "local_ranges": local_ranges,
-                "inet_exposure": inet_exposure,
-                "verify_xff_header": verify_xff_header,
-            }
-        )
         def _func():
             # Insert fake request data
             cherrypy.request.remote.ip = remote_ip
@@ -216,8 +216,12 @@ class TestInterfaceFunctions:
             ([], ["4.3.2.1:56789"], "4.3.2.1:56789"),  # Garbage in, garbage out.
         ],
     )
+    @pytest.mark.config(
+        lambda params: {
+            "local_ranges": params["local_ranges"],
+        }
+    )
     def test_remote_ip_from_xff(self, local_ranges, xff_ips, expected_result):
-        @set_config({"local_ranges": local_ranges})
         def _func():
             # Insert fake request data; should *not* influence the results of the tested function
             cherrypy.request.remote.ip = "6.6.6.6"
