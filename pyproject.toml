@@ -3,14 +3,35 @@ line-length = 120
 target-version = ["py310"]
 
 [tool.ruff]
-exclude = ["tests", "tools", "sabnzbd/utils"]
+exclude = [
+    "tests",
+    "tools",
+    "sabnzbd/utils"
+]
 builtins = ["T", "TT"]
 line-length = 120
 target-version = "py39"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "RUF"]
-ignore = ["E402", "E501", "E731", "RUF012", "RUF022", "RUF023"]
+select = [
+    "E",
+    "F",
+    "W",
+    "RUF",
+    "UP"
+]
+ignore = [
+    "E402",
+    "E501",
+    "E731",
+    "RUF012",
+    "RUF022",
+    "RUF023",
+    "UP015",
+    "UP024",
+    "UP031",
+    "UP035"
+]
 
 [tool.ruff.lint.per-file-ignores]
 # We want to keep the start-up import checks
@@ -23,4 +44,8 @@ ignore = ["E402", "E501", "E731", "RUF012", "RUF022", "RUF023"]
 "sabnzbd/utils/sleepless.py" = ["F821"]
 
 [tool.pytest.ini_options]
-markers = ["config",  "platform", "fake_fs"]
+markers = [
+    "config",
+    "platform",
+    "fake_fs"
+]

@@ -28,7 +28,7 @@ import sys
 import ssl
 import time
 from datetime import date
-from typing import Optional, Union, Deque, Callable
+from typing import Optional, Union, Callable
 
 import sabctools
 
@@ -152,7 +152,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        self.article_queue: Deque[sabnzbd.nzb.Article] = deque()
+        self.article_queue: deque[sabnzbd.nzb.Article] = deque()
 
         # Skip during server testing
         if threads:

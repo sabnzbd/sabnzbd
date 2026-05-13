@@ -29,7 +29,7 @@ from threading import Thread
 import time
 import logging
 import ssl
-from typing import Optional, Tuple, Union, Callable
+from typing import Optional, Union, Callable
 
 import sabctools
 import sabnzbd
@@ -103,7 +103,7 @@ class NewsWrapper:
         self.group: Optional[str] = None
 
         # Command queue and concurrency
-        self.next_request: Optional[tuple[bytes, Optional["sabnzbd.nzb.Article"]]] = None
+        self.next_request: Optional[tuple[bytes, Optional[sabnzbd.nzb.Article]]] = None
         self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
             self.server.pipelining_requests()
         )
@@ -286,7 +286,7 @@ class NewsWrapper:
         nbytes: int = 0,
         on_response: Optional[Callable[[int, str], None]] = None,
         generation: Optional[int] = None,
-    ) -> Tuple[int, Optional[int]]:
+    ) -> tuple[int, Optional[int]]:
         """Receive data, return #bytes, #pendingbytes
         :param nbytes: maximum number of bytes to read
         :param on_response: callback for each complete response received

@@ -1,5 +1,4 @@
 #!/usr/bin/python3 -OO
-# -*- coding: utf-8 -*-
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
 #
 # This program is free software; you can redistribute it and/or

@@ -25,7 +25,8 @@ import logging
 import datetime
 import threading
 import difflib
-from typing import Any, Optional, Union, BinaryIO, Deque
+from typing import Any, Optional, Union, BinaryIO
+from collections import deque
 
 # SABnzbd modules
 import sabnzbd
@@ -1206,7 +1207,7 @@ class NzbObject(TryList):
 
     def get_articles(self, server: Server, servers: list[Server], fetch_limit: int):
         """Assign articles server up to the fetch_limit"""
-        articles: Deque[Article] = server.article_queue
+        articles: deque[Article] = server.article_queue
         nzf_remove_list = []
 
         # Did we go through all first-articles?
