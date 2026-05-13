@@ -423,7 +423,9 @@ class NewsWrapper:
                     command, article = self.next_request
                     if article:
                         nzo = article.nzf.nzo
-                        if nzo.removed_from_queue or nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY:
+                        if nzo.removed_from_queue or (
+                            nzo.status is Status.PAUSED and nzo.priority is not FORCE_PRIORITY
+                        ):
                             self.discard(article, count_article_try=False, retry_article=True)
                             self.concurrent_requests.release()
                             self.next_request = None
@@ -655,7 +657,7 @@ class NNTP:
             error = T("This server does not allow SSL on this port")
 
         # Catch certificate errors
-        if type(error) == ssl.CertificateError or "CERTIFICATE_VERIFY_FAILED" in raw_error_str:
+        if isinstance(error, ssl.CertificateError) or "CERTIFICATE_VERIFY_FAILED" in raw_error_str:
             # Log the raw message for debug purposes
             logging.info("Certificate error for host %s: %s", self.nw.server.host, raw_error_str)
 

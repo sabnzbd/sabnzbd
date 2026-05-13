@@ -81,8 +81,7 @@ class ArticleCache(threading.Thread):
             and self.__cache_limit
             and (
                 self.__cache_size > self.__non_contiguous_trigger
-                or self.__cache_size
-                and sabnzbd.Downloader.no_active_jobs()
+                or (self.__cache_size and sabnzbd.Downloader.no_active_jobs())
             )
         )
 

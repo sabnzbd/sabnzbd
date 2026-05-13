@@ -89,7 +89,7 @@ def run_external_command(command: list[str], print_output: bool = True, **kwargs
 
 def run_git_command(parms):
     """Run git command, raise error if it failed"""
-    return run_external_command(["git"] + parms)
+    return run_external_command(["git", *parms])
 
 
 def patch_version_file(release_name):
@@ -194,7 +194,7 @@ def test_macos_min_version(binary_path: str):
             print(lines)
             raise RuntimeError(f"Could not determine minimum macOS version for {binary_path}")
     else:
-        print(f"Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
+        print("Skipping macOS version check, MACOSX_DEPLOYMENT_TARGET not set")
 
 
 def test_sab_binary(binary_path: str):

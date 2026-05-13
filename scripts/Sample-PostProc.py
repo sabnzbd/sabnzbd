@@ -6,7 +6,8 @@
 # Example test run on Linux:
 # env SAB_VERSION=X.Y SAB_AVG_BPS=666 python3 ./Sample-PostProc.py somedir222 nzbname CleanJobName123 Index12 Cat88 MyGroup PP0 https://example.com/
 
-import sys, os
+import sys
+import os
 
 # Raw parsing of input parameters en SABnzbd environment variables
 counter = 0

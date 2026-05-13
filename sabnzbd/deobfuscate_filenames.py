@@ -34,7 +34,7 @@ import os
 import re
 
 import sabnzbd
-from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, get_basename
+from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, get_basename, get_filename
 from sabnzbd.par2file import is_par2_file, parse_par2_file
 import sabnzbd.utils.file_extension as file_extension
 from sabnzbd.misc import match_str
@@ -106,8 +106,7 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
     myinputfilename (string) can be a plain file name, or a full path"""
 
     # Find filebasename
-    path, filename = os.path.split(myinputfilename)
-    filebasename, fileextension = os.path.splitext(filename)
+    filebasename = get_basename(get_filename(myinputfilename))
     logging.debug("Checking: %s", filebasename)
 
     # First: the patterns that are certainly obfuscated:

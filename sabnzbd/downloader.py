@@ -562,7 +562,7 @@ class Downloader(Thread):
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
 
         # Handle broken articles directly
-        if not response or not response.bytes_decoded and not article.nzf.nzo.precheck:
+        if not response or (not response.bytes_decoded and not article.nzf.nzo.precheck):
             if not article.search_new_server():
                 article.nzf.nzo.increase_bad_articles_counter("missing_articles")
                 sabnzbd.NzbQueue.register_article(article, success=False)
@@ -595,11 +595,6 @@ class Downloader(Thread):
         try:
             while 1:
                 now = time.time()
-
-                # Set Article to None so references from this
-                # thread do not keep the parent objects alive (see #1628)
-                article = None
-
                 for server in self.servers:
                     # Skip this server if there's no point searching for new stuff to do
                     if server.addrinfo and not server.busy_threads and server.next_article_search > now:

@@ -194,7 +194,7 @@ class GUIHandler(logging.Handler):
 
 def print_help():
     print()
-    print(("Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME))
+    print("Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME)
     print()
     print("Options marked [*] are stored in the config file")
     print()
@@ -236,7 +236,7 @@ def print_help():
 
 
 def print_version():
-    print(("""
+    print("""
 %s-%s
 
 (C) Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
@@ -245,7 +245,7 @@ This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
 GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
-""" % (sabnzbd.MY_NAME, sabnzbd.__version__)))
+""" % (sabnzbd.MY_NAME, sabnzbd.__version__))
 
 
 def daemonize():
@@ -1593,7 +1593,7 @@ def handle_windows_service():
             # In this case check for required parameters
             path = get_f_option(sab_opts)
             if not path:
-                print(("The -f <path> parameter is required.\n" "Use: -f <path> %s" % service))
+                print("The -f <path> parameter is required.\n" "Use: -f <path> %s" % service)
                 return True
 
             # First run the service installed, because this will

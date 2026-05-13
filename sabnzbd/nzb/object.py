@@ -699,7 +699,7 @@ class NzbObject(TryList):
         """In case of a broken par2 or missing par2, move another
         of the same set to the top (if we can find it)
         """
-        setname, vol, block = analyse_par2(nzf.filename)
+        setname, _vol, _block = analyse_par2(nzf.filename)
         # Now we need to identify if we have more in this set
         if setname and self.repair:
             # Maybe it was the first one

@@ -104,7 +104,7 @@ class Article(TryList):
     """Representation of one article"""
 
     # Pre-define attributes to save memory
-    __slots__ = ArticleSaver + ("fetcher", "fetcher_priority", "tries", "lock")
+    __slots__ = (*ArticleSaver, "fetcher", "fetcher_priority", "tries", "lock")
 
     def __init__(self, article, article_bytes, nzf):
         super().__init__()

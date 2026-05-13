@@ -296,7 +296,7 @@ class NzbQueue:
         return result
 
     @NzbQueueLocker
-    def change_name(self, nzo_id: str, name: str, password: str = None) -> bool:
+    def change_name(self, nzo_id: str, name: str, password: Optional[str] = None) -> bool:
         """Locked so changes during URLGrabbing are correctly passed to new job"""
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -516,7 +516,7 @@ class NzbQueue:
             nzo3 = self.__nzo_table[item_id_3]
             nzo3_priority = nzo3.priority
             # if id1 is surrounded by items of a different priority then change its priority to match
-            if nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority or nzo2_priority > nzo1_priority:
+            if (nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority) or nzo2_priority > nzo1_priority:
                 nzo1.priority = nzo2_priority
         except Exception:
             nzo1.priority = nzo2_priority

@@ -544,7 +544,7 @@ class Sorter:
                     cleanup_empty_directories(base_path)
                     return move_to_parent_directory(base_path)
                 else:
-                    logging.debug("Season pack sorting didn´t rename any files")
+                    logging.debug("Season pack sorting didn't rename any files")
 
             # Try generic sequential files handling
             if self.multipart_label and (sequential_files := check_for_multiple(files)):
@@ -664,7 +664,7 @@ def guess_what(name: str) -> MatchesDict:
     # Handle weird anime episode notation, that results in the episode number ending up as the episode title
     if (
         guess.get("type") == "episode"
-        and not "episode" in guess
+        and "episode" not in guess
         and "season" in guess
         and guess.get("episode_title", "").isdigit()
     ):

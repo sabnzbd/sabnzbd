@@ -751,7 +751,7 @@ def get_memory() -> int:
             return mem_info["TotalPhys"]
         elif sabnzbd.MACOS:
             # Use system-call to extract total memory on macOS
-            system_output = run_command(["sysctl", "-n", "hw.memsize"]).strip()
+            return int(run_command(["sysctl", "-n", "hw.memsize"]).strip())
         else:
             try:
                 with open("/proc/meminfo") as f:
@@ -1144,7 +1144,7 @@ def is_lan_addr(ip: str) -> bool:
         ip = strip_ipv4_mapped_notation(ip)
         return (
             # The ipaddress module considers these private, see https://bugs.python.org/issue38655
-            not ip in ("0.0.0.0", "255.255.255.255")
+            ip not in ("0.0.0.0", "255.255.255.255")
             and not ip_in_subnet(ip, "::/128")  # Also catch (partially) exploded forms of "::"
             and ipaddress.ip_address(ip).is_private
             and not is_loopback_addr(ip)
@@ -1202,7 +1202,7 @@ def get_base_url(url: str) -> str:
         # Exception for localhost and IPv6 addresses
         if len(url_split) < 3:
             return url_host
-        return ".".join(len(url_split[-2]) < 4 and url_split[-3:] or url_split[-2:])
+        return ".".join((len(url_split[-2]) < 4 and url_split[-3:]) or url_split[-2:])
     else:
         return ""
 

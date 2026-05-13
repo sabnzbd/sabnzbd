@@ -243,7 +243,7 @@ class BPSMeter:
             self.defaults()
         return res
 
-    def init_server_stats(self, server: str = None):
+    def init_server_stats(self, server: Optional[str] = None):
         """Initialize counters for "server" """
         if server not in self.cached_amount:
             self.cached_amount[server] = 0

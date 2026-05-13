@@ -288,7 +288,7 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, super().default)
             if not error:
                 if value and (self.__create or create):
-                    _, path, error = self.create_path(value)
+                    _success, _path, error = self.create_path(value)
             if not error:
                 super().set(value)
         return error
@@ -785,21 +785,21 @@ def delete_from_database(section, keyword):
 
 
 @synchronized(CONFIG_LOCK)
-def get_dconfig(section, keyword, nested=False):
+def get_dconfig(section: str, keyword: Optional[str], nested: bool = False) -> dict:
     """Return a config values dictionary,
     Single item or slices based on 'section', 'keyword'
     """
     data = {}
     if not section:
         for section in CFG_DATABASE.keys():
-            res, conf = get_dconfig(section, None, True)
+            conf = get_dconfig(section, None, True)
             data.update(conf)
 
     elif not keyword:
         try:
             sect = CFG_DATABASE[section]
         except KeyError:
-            return False, {}
+            return {}
 
         if section == "categories":
             data[section] = get_ordered_categories()
@@ -808,19 +808,19 @@ def get_dconfig(section, keyword, nested=False):
         elif section in ("servers", "rss"):
             data[section] = []
             for keyword in sect.keys():
-                res, conf = get_dconfig(section, keyword, True)
+                conf = get_dconfig(section, keyword, True)
                 data[section].append(conf)
         else:
             data[section] = {}
             for keyword in sect.keys():
-                res, conf = get_dconfig(section, keyword, True)
+                conf = get_dconfig(section, keyword, True)
                 data[section].update(conf)
 
     else:
         try:
             item = CFG_DATABASE[section][keyword]
         except KeyError:
-            return False, {}
+            return {}
         data = item.get_dict(for_public_api=True)
         if not nested:
             if section in ("sorters", "servers", "categories", "rss"):
@@ -828,7 +828,7 @@ def get_dconfig(section, keyword, nested=False):
             else:
                 data = {section: data}
 
-    return True, data
+    return data
 
 
 @synchronized(CONFIG_LOCK)

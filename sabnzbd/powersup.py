@@ -183,7 +183,7 @@ def linux_shutdown():
             if proxy.CanShutdown():
                 proxy.Shutdown(dbus_interface=interface)
         else:
-            proxy, interface, pinterface = _get_systemproxy("Logind")
+            proxy, interface, _pinterface = _get_systemproxy("Logind")
             if proxy:
                 if proxy.CanPowerOff(dbus_interface=interface) == _LOGIND_SUCCESSFUL_RESULT:
                     proxy.PowerOff(_IS_NOT_INTERACTIVE, dbus_interface=interface)

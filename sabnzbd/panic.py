@@ -213,7 +213,7 @@ def panic(reason, remedy=""):
 
 def launch_a_browser(url, force=False):
     """Launch a browser pointing to the URL"""
-    if not force and not cfg.autobrowser() or sabnzbd.DAEMON:
+    if (not force and not cfg.autobrowser()) or sabnzbd.DAEMON:
         return
 
     if "::1" in url and "[::1]" not in url:

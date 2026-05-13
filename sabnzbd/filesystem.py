@@ -1015,7 +1015,7 @@ def diskspace_base(dir_to_check: str) -> Diskspace:
     if sabnzbd.WINDOWS:
         # windows diskfree
         try:
-            available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
+            available, disk_size, _total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
             return Diskspace(path=dir_to_check, size=disk_size / GIGI, free=available / GIGI)
         except Exception:
             return Diskspace(path=dir_to_check)
@@ -1057,9 +1057,9 @@ def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> s
                 os.makedirs(folder)
             fd, path = tempfile.mkstemp("", "SABnzbd_%s_" % prefix, folder)
             os.close(fd)
-            head, tail = os.path.split(path)
-            if not check_list or tail not in check_list:
-                return tail
+            new_id = get_filename(path)
+            if not check_list or new_id not in check_list:
+                return new_id
         except Exception:
             logging.error(T("Failure in tempfile.mkstemp"))
             logging.info("Traceback: ", exc_info=True)

@@ -50,7 +50,8 @@ if os.name == "nt":
     except Exception:
         pass
 elif os.name == "posix":
-    ORG_UMASK = os.umask(18)
+    # Retrieve current umask by setting any umask and then restoring it
+    ORG_UMASK = os.umask(0o022)
     os.umask(ORG_UMASK)
 
     # See if we have the GNU glibc malloc_trim() memory release function
@@ -482,7 +483,7 @@ def delayed_startup_actions():
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
-    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
+    if not sabnzbd.WINDOWS and not sabnzbd.MACOS and "utf-8" not in sabnzbd.encoding.CODEPAGE.lower():
         misc.helpful_warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."

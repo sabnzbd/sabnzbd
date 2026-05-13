@@ -122,7 +122,7 @@ def api_handler(kwargs: dict[str, Union[str, list[str]]]) -> bytes:
 
 def _api_get_config(name: str, kwargs: dict[str, Union[str, list[str]]]) -> bytes:
     """API: accepts keyword, section"""
-    _, data = config.get_dconfig(kwargs.get("section"), kwargs.get("keyword"))
+    data = config.get_dconfig(kwargs.get("section"), kwargs.get("keyword"))
     return report(keyword="config", data=data)
 
 
@@ -143,7 +143,7 @@ def _api_set_config(name: str, kwargs: dict[str, Union[str, list[str]]]) -> byte
         if not res:
             return report(_MSG_NO_SUCH_CONFIG)
     config.save_config()
-    res, data = config.get_dconfig(kwargs.get("section"), kwargs.get("keyword"))
+    data = config.get_dconfig(kwargs.get("section"), kwargs.get("keyword"))
     return report(keyword="config", data=data)
 
 

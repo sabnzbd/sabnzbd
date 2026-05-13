@@ -72,7 +72,7 @@ class NormalisedEntry:
         age: datetime.datetime = datetime.datetime.now()
 
         # Try standard link and enclosures first
-        if "enclosures" in entry and entry["enclosures"]:
+        if entry.get("enclosures"):
             try:
                 for enclosure in entry["enclosures"]:
                     if "type" in enclosure and enclosure["type"] != "application/x-nzb":

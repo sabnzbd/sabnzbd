@@ -397,11 +397,11 @@ def clean_up_joinables(names: list[str]):
 
 def get_seq_number(name: str) -> int:
     """Return sequence number if name as an int"""
-    head, tail = os.path.splitext(name)
-    if tail == ".ts":
+    ext = get_ext(name)
+    if ext == ".ts":
         _, num = match_ts(name)
     else:
-        num = tail[1:]
+        num = ext[1:]
     if num.isdigit():
         return int(num)
     else:
