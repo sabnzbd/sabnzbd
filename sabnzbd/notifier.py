@@ -48,7 +48,7 @@ if sabnzbd.WINDOWS:
 
     try:
         from win32comext.shell import shell
-        from windows_toasts import InteractableWindowsToaster, Toast, ToastActivatedEventArgs, ToastButton
+        from windows_toasts import InteractableWindowsToaster, Toast, ToastButton
 
         # Only Windows 10 and above are supported
         if windows_major_version < 10:

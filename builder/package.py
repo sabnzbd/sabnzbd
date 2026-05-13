@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import glob
+import importlib.util
 import re
 import sys
 import os
@@ -268,9 +269,7 @@ if __name__ == "__main__":
         raise FileNotFoundError("Run from the main SABnzbd source folder: python builder/package.py")
 
     # Check if we have the needed certificates
-    try:
-        import certifi
-    except ImportError:
+    if importlib.util.find_spec("certifi") is None:
         raise FileNotFoundError("Need certifi module")
 
     # Check if we have correct appdata file

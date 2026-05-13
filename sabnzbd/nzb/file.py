@@ -30,7 +30,6 @@ from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import (
     sanitize_filename,
-    get_unique_filename,
     get_filename,
     remove_file,
     get_new_id,

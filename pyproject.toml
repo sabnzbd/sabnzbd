@@ -3,18 +3,21 @@ line-length = 120
 target-version = ["py310"]
 
 [tool.ruff]
-exclude = ["tools"]
+exclude = ["tests", "tools"]
 builtins = ["T", "TT"]
 line-length = 120
 target-version = "py310"
 
 [tool.ruff.lint]
-select = ["F821"]
+select = ["F821", "F401"]
 
 [tool.ruff.lint.per-file-ignores]
-# Dynamic symbol injection during version/build setup.
+# We want to keep the top-level import checks
+"SABnzbd.py" = ["F401"]
+"sabnzbd/__init__.py" = ["F401"]
+# Dynamic symbol injection during version/build setup
 "builder/constants.py" = ["F821"]
-# macOS Bonjour symbols resolved via ctypes/dylib at runtime.
+# macOS Bonjour symbols resolved via ctypes/dylib at runtime
 "sabnzbd/utils/pybonjour.py" = ["F821"]
 "sabnzbd/utils/sleepless.py" = ["F821"]
 

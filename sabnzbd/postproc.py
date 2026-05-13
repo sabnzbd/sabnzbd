@@ -73,7 +73,6 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     get_filename,
-    get_admin_path,
 )
 from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
@@ -86,7 +85,6 @@ from sabnzbd.constants import (
     Status,
     VERIFIED_FILE,
     IGNORED_MOVIE_FOLDERS,
-    NZO_FILE,
 )
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.decorators import synchronized
