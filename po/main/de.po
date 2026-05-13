@@ -4069,10 +4069,6 @@ msgstr "Feed lesen"
 msgid "Force Download"
 msgstr "Download erzwingen"
 
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "Filter übernehmen"
-
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"

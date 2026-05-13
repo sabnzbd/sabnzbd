@@ -4010,10 +4010,6 @@ msgstr "Beslemeyi Oku"
 msgid "Force Download"
 msgstr "İndirmeyi Zorla"
 
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "Filtreleri Uygula"
-
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"

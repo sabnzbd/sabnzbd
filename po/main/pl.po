@@ -3872,10 +3872,6 @@ msgstr "Pobierz kanał"
 msgid "Force Download"
 msgstr "Wymuś pobranie"
 
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
-
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"

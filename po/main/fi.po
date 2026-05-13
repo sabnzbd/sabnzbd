@@ -3881,10 +3881,6 @@ msgstr "Lue syöte"
 msgid "Force Download"
 msgstr "Pakota lataus"
 
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr ""
-
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"

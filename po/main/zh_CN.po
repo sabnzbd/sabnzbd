@@ -3806,10 +3806,6 @@ msgstr "读取 Feed"
 msgid "Force Download"
 msgstr "强制下载"
 
-#: sabnzbd/skintext.py
-msgid "Apply filters"
-msgstr "应用过滤器"
-
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
