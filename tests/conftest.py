@@ -44,14 +44,14 @@ def clean_cache_dir(request):
     yield request
 
     # Remove cache dir with retries in case it's still running
-    for x in range(10):
+    for x in range(100):
         try:
             shutil.rmtree(SAB_CACHE_DIR)
             break
         except (FileNotFoundError, PermissionError):
             break
         except OSError:
-            time.sleep(1)
+            time.sleep(0.1)
     else:
         print("Unable to remove cache dir")
 
