@@ -29,15 +29,8 @@ SABnzbd-*/
 
 # WingIDE/PyCharm project files
 *.wp[ru]
-.idea
-
-# VScode
-.vscode/
 
 # Testing folders
-.cache
-.xprocess
-.pytest*
 tests/cache
 
 # General junk
@@ -45,12 +38,10 @@ tests/cache
 *.bak
 *.log
 
-# Some people use Emacs as an editor
-\#*
-.\#*
-
-# AI tools
-.claude/
+# Ignore all hidden directories at repo root, except used ones
+.*/
+!.github/
+!.tx/
 
 # Apple
 .DS_Store
