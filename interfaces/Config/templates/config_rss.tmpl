@@ -368,9 +368,6 @@
                     <button type="button" class="btn btn-default testFeed" rel="$active_feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                     <button type="submit" class="btn btn-default Save"><span class="glyphicon glyphicon-forward"></span> $T('button-forceFeed')</button>
                     <button type="button" class="btn btn-default cleanFeed"><span class="glyphicon glyphicon-trash"></span> $T('button-clear') $T('rss-done')</button>
-                    <!--#if $evalButton#-->
-                      <button type="button" class="btn btn-default evalFeed" rel="$active_feed"><span class="glyphicon glyphicon-ok-circle"></span> $T('button-evalFeed')</button>
-                    <!--#end if#-->
                 </div>
             </form>
         </div>
@@ -658,12 +655,6 @@ jQuery(document).ready(function(){
         setActiveIcon(this)
         var theForm = jQuery(this).closest("form");
         theForm.attr("action", "clean_rss_jobs").submit();
-    });
-
-    jQuery('.evalFeed').click(function(){
-        setActiveIcon(this)
-        var theForm = jQuery(this).closest("form");
-        theForm.attr("action", "eval_rss_feed").submit();
     });
 
     jQuery('.delFilter').click(function(){
