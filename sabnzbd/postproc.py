@@ -1148,19 +1148,22 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir: str, skip_nzb: bool):
+def cleanup_list(wdir: str, skip_nzb: bool, base_dir: Optional[str] = None):
     """Remove all files whose extension matches the cleanup list,
     optionally ignoring the nzb extension
     """
     if cfg.cleanup_list():
+        if base_dir is None:
+            base_dir = wdir
         try:
             with os.scandir(wdir) as files:
                 for entry in files:
                     if entry.is_dir():
-                        cleanup_list(entry.path, skip_nzb)
+                        cleanup_list(entry.path, skip_nzb, base_dir)
                         cleanup_empty_directories(entry.path)
                     else:
-                        if on_cleanup_list(entry.name, skip_nzb):
+                        relative_path = os.path.relpath(entry.path, base_dir)
+                        if on_cleanup_list(entry.name, skip_nzb, relative_path):
                             try:
                                 logging.info("Removing unwanted file %s", entry.path)
                                 remove_file(entry.path)

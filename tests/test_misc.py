@@ -237,6 +237,51 @@ class TestMisc:
         assert not misc.on_cleanup_list("test.nzb", skip_nzb=True)
         assert not misc.on_cleanup_list("test.exe.lnk")
 
+    @pytest.mark.config({"cleanup_list": ["Thumbs.db"]})
+    def test_on_cleanup_list_exact_filenames(self):
+        # Exact filename matching (case-insensitive)
+        assert misc.on_cleanup_list("Thumbs.db")
+        assert misc.on_cleanup_list("thumbs.db")
+        assert misc.on_cleanup_list("THUMBS.DB")
+        assert not misc.on_cleanup_list("Thumbs.db.bak")
+        assert not misc.on_cleanup_list("not_thumbs.db")
+
+    @pytest.mark.config({"cleanup_list": ["*.tmp", "cleanup.*"]})
+    def test_on_cleanup_list_wildcard_patterns(self):
+        # Wildcard filename patterns
+        assert misc.on_cleanup_list("file.tmp")
+        assert misc.on_cleanup_list("temp.tmp")
+        assert misc.on_cleanup_list("FILE.TMP")
+        assert not misc.on_cleanup_list("file.tmp.bak")
+        assert misc.on_cleanup_list("cleanup.log")
+        assert misc.on_cleanup_list("cleanup.txt")
+        assert misc.on_cleanup_list("CLEANUP.LOG")
+        assert not misc.on_cleanup_list("cleanup")
+
+    # cleanup_list is always lowercased by validator
+    @pytest.mark.config({"cleanup_list": ["images/*", "*/test.jpg", "cache/*.log"]})
+    def test_on_cleanup_list_path_patterns(self):
+        # Path patterns with relative paths
+        assert misc.on_cleanup_list("file.jpg", relative_path="images/file.jpg")
+        assert misc.on_cleanup_list("pic.png", relative_path="images/pic.png")
+        assert not misc.on_cleanup_list("file.jpg", relative_path="file.jpg")
+        assert misc.on_cleanup_list("test.jpg", relative_path="subfolder/test.jpg")
+        assert misc.on_cleanup_list("test.jpg", relative_path="deep/nested/test.jpg")
+        assert not misc.on_cleanup_list("other.jpg", relative_path="subfolder/other.jpg")
+        assert misc.on_cleanup_list("error.log", relative_path="cache/error.log")
+        assert not misc.on_cleanup_list("error.log", relative_path="logs/error.log")
+        # Case-insensitive path matching
+        assert misc.on_cleanup_list("file.jpg", relative_path="IMAGES/file.jpg")
+
+    # cleanup_list is always lowercased by validator
+    @pytest.mark.config({"cleanup_list": ["exe", "thumbs.db", "*.tmp"]})
+    def test_on_cleanup_list_mixed(self):
+        # Mixed list of extensions, filenames, and patterns
+        assert misc.on_cleanup_list("test.exe")
+        assert misc.on_cleanup_list("Thumbs.db")
+        assert misc.on_cleanup_list("temp.tmp")
+        assert not misc.on_cleanup_list("test.txt")
+
     def test_format_time_string(self):
         assert "0 seconds" == misc.format_time_string(None)
         assert "0 seconds" == misc.format_time_string("Test")

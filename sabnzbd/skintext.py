@@ -314,7 +314,8 @@ SKIN_TEXT = {
     ),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
-        "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
+        "List of file extensions, filenames or patterns that should be deleted after download.<br />"
+        "Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> (filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
     ),
     "opt-history_retention": TT("History Retention"),
     "history_retention-all": TT("Keep all jobs"),

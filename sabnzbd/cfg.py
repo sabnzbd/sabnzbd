@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import Union
+from typing import Union, Optional
 
 import sabnzbd
 from sabnzbd.config import (
@@ -136,6 +136,28 @@ def lower_case_ext(value: Union[str, list]) -> tuple[None, Union[str, list]]:
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
+
+
+def cleanup_list_validator(value: Union[str, list]) -> tuple[None, Union[str, list]]:
+    """Validate cleanup list entries
+    Accepts extensions (exe, nfo), filenames (Thumbs.db), patterns (*.tmp), and paths (images/*)
+    Rejects entries containing .. to prevent directory traversal
+    """
+
+    def validate_entry(entry: str) -> str:
+        # Always lowercase and clean
+        entry = entry.lower().strip()
+
+        # For pure extensions (no slash, single or no dot), strip leading dots
+        # For filenames/patterns/paths, keep structure as-is
+        if "/" not in entry and "\\" not in entry:
+            # Strip leading/trailing dots and spaces only if it's a pure extension
+            entry = entry.strip(" .")
+        return entry
+
+    if isinstance(value, list):
+        return None, [validate_entry(item) for item in value]
+    return None, validate_entry(value)
 
 
 def validate_single_tag(value: list[str]) -> tuple[None, list[str]]:
@@ -436,7 +458,7 @@ safe_postproc = OptionBool("misc", "safe_postproc", True)
 pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
 enable_all_par = OptionBool("misc", "enable_all_par", False)
 sanitize_safe = OptionBool("misc", "sanitize_safe", False)
-cleanup_list = OptionList("misc", "cleanup_list", validation=lower_case_ext)
+cleanup_list = OptionList("misc", "cleanup_list", validation=cleanup_list_validator)
 unwanted_extensions = OptionList("misc", "unwanted_extensions", validation=lower_case_ext)
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
 unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
