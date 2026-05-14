@@ -862,14 +862,16 @@ def on_cleanup_list(filename: str, skip_nzb: bool = False, relative_path: Option
     - Path patterns (with slashes): images/*, */test.jpg -> matches relative paths
     """
     if cleanup_list := cfg.cleanup_list():
+        filename = filename.lower()
         name, ext = os.path.splitext(filename)
-        ext = ext.strip().lower()
-        name = name.strip().lower()
-        filename_lower = filename.lower()
+        ext = ext.strip()
+        name = name.strip()
+        if relative_path:
+            relative_path = relative_path.lower().replace("\\", "/")
 
         for entry in cleanup_list:
-            # Skip empty entries or entries that end with nzb
-            if not entry or (skip_nzb and entry.endswith("nzb")):
+            # Skip empty entries, entries with ".." in it or entries that end with nzb
+            if not entry or ".." in entry or (skip_nzb and entry.endswith("nzb")):
                 continue
 
             # Type 1: Pure extension (no dots or slashes) - backwards compatible
@@ -880,14 +882,15 @@ def on_cleanup_list(filename: str, skip_nzb: bool = False, relative_path: Option
 
             # Type 2: Filename/wildcard pattern (has dots, no slashes)
             elif "." in entry and "/" not in entry and "\\" not in entry:
-                if safe_fnmatch(filename_lower, entry):
+                if safe_fnmatch(filename, entry):
                     return True
 
             # Type 3: Path pattern (has slashes)
             elif "/" in entry or "\\" in entry:
                 if relative_path:
-                    relative_path_lower = relative_path.lower().replace("\\", "/")
-                    if safe_fnmatch(relative_path_lower, entry):
+                    # Normalize both to forward slashes for cross-platform matching
+                    entry_normalized = entry.replace("\\", "/")
+                    if safe_fnmatch(relative_path, entry_normalized):
                         return True
 
     return False

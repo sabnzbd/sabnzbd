@@ -259,7 +259,7 @@ class TestMisc:
         assert not misc.on_cleanup_list("cleanup")
 
     # cleanup_list is always lowercased by validator
-    @pytest.mark.config({"cleanup_list": ["images/*", "*/test.jpg", "cache/*.log"]})
+    @pytest.mark.config({"cleanup_list": ["images/*", "*/test.jpg", "cache/*.log", "deep/*/pic.png", "temp\\*.tmp"]})
     def test_on_cleanup_list_path_patterns(self):
         # Path patterns with relative paths
         assert misc.on_cleanup_list("file.jpg", relative_path="images/file.jpg")
@@ -272,6 +272,15 @@ class TestMisc:
         assert not misc.on_cleanup_list("error.log", relative_path="logs/error.log")
         # Case-insensitive path matching
         assert misc.on_cleanup_list("file.jpg", relative_path="IMAGES/file.jpg")
+        # Wildcard with paths: deep/*/pic.png uses fnmatch which treats * as matching any chars including /
+        assert misc.on_cleanup_list("pic.png", relative_path="deep/nested/pic.png")
+        assert misc.on_cleanup_list("pic.png", relative_path="deep/nested/subfolder/pic.png")
+        # Cross-platform: patterns with backslashes in config are normalized at match time
+        # temp\*.tmp pattern should match temp/file.tmp
+        assert misc.on_cleanup_list("file.tmp", relative_path="temp/file.tmp")
+        # Cross-platform: relative paths with backslashes (from os.path.relpath on Windows)
+        # should also work with forward slash patterns
+        assert misc.on_cleanup_list("pic.png", relative_path="deep\\nested\\pic.png")
 
     # cleanup_list is always lowercased by validator
     @pytest.mark.config({"cleanup_list": ["exe", "thumbs.db", "*.tmp"]})

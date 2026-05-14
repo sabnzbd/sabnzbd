@@ -141,7 +141,6 @@ def lower_case_ext(value: Union[str, list]) -> tuple[None, Union[str, list]]:
 def cleanup_list_validator(value: Union[str, list]) -> tuple[None, Union[str, list]]:
     """Validate cleanup list entries
     Accepts extensions (exe, nfo), filenames (Thumbs.db), patterns (*.tmp), and paths (images/*)
-    Rejects entries containing .. to prevent directory traversal
     """
 
     def validate_entry(entry: str) -> str:
