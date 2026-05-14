@@ -1004,7 +1004,7 @@ def _normalise_str_or_none(value: Optional[str]) -> Optional[str]:
 
 def _normalise_priority(value) -> Optional[int]:
     """Normalise default priority values to None"""
-    if value in (None, "", "*", "default", DEFAULT_PRIORITY):
+    if value in (None, "", "*", "default", DEFAULT_PRIORITY, str(DEFAULT_PRIORITY)):
         return None
     try:
         return int(value)

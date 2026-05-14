@@ -751,7 +751,7 @@ def get_memory() -> int:
             return mem_info["TotalPhys"]
         elif sabnzbd.MACOS:
             # Use system-call to extract total memory on macOS
-            system_output = run_command(["sysctl", "-n", "hw.memsize"]).strip()
+            return int(run_command(["sysctl", "-n", "hw.memsize"]).strip())
         else:
             try:
                 with open("/proc/meminfo") as f:
@@ -826,7 +826,7 @@ def get_platform_description() -> str:
             platform_tags.append("Flatpak")
         elif "APPIMAGE" in os.environ:
             platform_tags.append("AppImage")
-        elif "SNAP" in os.environ:
+        elif os.environ.get("SNAP_NAME") == "sabnzbd":
             platform_tags.append("Snap")
         else:
             # Check for other forms of virtualization

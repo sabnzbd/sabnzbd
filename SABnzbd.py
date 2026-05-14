@@ -521,15 +521,22 @@ def get_webhost(web_host, web_port, https_port):
     """Determine the webhost address and port,
     return (host, port, browserhost)
     """
+
+    # Fallback to automatic hostname selection when the requested
+    # all-interfaces bind address uses an unavailable address family.
     if web_host == "0.0.0.0" and not check_resolve("127.0.0.1"):
         web_host = ""
-    elif web_host == "::" and not check_resolve("::1"):
+    elif web_host in ("::", "::1") and not check_resolve("::1"):
         web_host = ""
 
     if web_host is None:
         web_host = sabnzbd.cfg.web_host()
     else:
         sabnzbd.cfg.web_host.set(web_host)
+
+    # When passed as command-line arguments "[::]:8080" would result in
+    # hostname set to "[::]" which cannot use used for getaddrinfo
+    web_host_lookup = web_host.strip("[]")
 
     # Get IP address, but discard APIPA/IPV6
     # If only APIPA's or IPV6 are found, fall back to localhost
@@ -538,9 +545,9 @@ def get_webhost(web_host, web_port, https_port):
 
     try:
         # Valid user defined name?
-        info = socket.getaddrinfo(web_host, None)
+        info = socket.getaddrinfo(web_host_lookup, None)
     except socket.error:
-        if not is_localhost(web_host):
+        if not is_localhost(web_host_lookup):
             web_host = "0.0.0.0"
         try:
             info = socket.getaddrinfo(localhost, None)
@@ -576,7 +583,7 @@ def get_webhost(web_host, web_port, https_port):
 
     # :: will listen on all ipv6 interfaces (no ipv4 addresses)
     elif web_host in ("::", "[::]"):
-        web_host = web_host.strip("[").strip("]")
+        web_host = web_host_lookup
         # Assume '::1' == 'localhost'
         browserhost = localhost
 
@@ -601,12 +608,12 @@ def get_webhost(web_host, web_port, https_port):
 
         # Some systems don't like brackets in numerical ipv6
         if sabnzbd.MACOS:
-            web_host = web_host.strip("[]")
+            web_host = web_host_lookup
         else:
             try:
                 socket.getaddrinfo(web_host, None)
             except socket.error:
-                web_host = web_host.strip("[]")
+                web_host = web_host_lookup
 
     if ipv6 and ipv4 and web_host == "" and sabnzbd.WINDOWS:
         helpful_warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))

@@ -167,12 +167,13 @@ class NzbFile(TryList):
         return article
 
     @synchronized()
-    def remove_article(self, article: Article, success: bool) -> int:
+    def remove_article(self, article: Article, success: bool) -> bool:
         """Handle completed article, possibly end of file"""
         if self.articles.pop(article, None) is not None:
             if success:
                 self.bytes_left -= article.bytes
-        return len(self.articles)
+        # Only on fully loaded files we can know if it's really done
+        return self.import_finished and not self.articles
 
     def set_par2(self, setname, vol, blocks):
         """Designate this file as a par2 file"""
@@ -228,8 +229,10 @@ class NzbFile(TryList):
 
             self.nzo.verify_nzf_filename(self)
             filename = sanitize_filename(self.filename)
-            self.filepath = get_unique_filename(os.path.join(self.nzo.download_path, filename))
-            self.filename = get_filename(self.filepath)
+            with self.nzo.lock:
+                if not self.filepath:
+                    self.filepath = self.nzo.get_unique_filepath(filename)
+                    self.filename = get_filename(self.filepath)
         return self.filepath
 
     @property
