@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import Union, Optional
+from typing import Union
 
 import sabnzbd
 from sabnzbd.config import (
