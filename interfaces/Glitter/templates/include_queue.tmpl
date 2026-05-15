@@ -65,7 +65,7 @@
                 <!-- ko foreach: extraQueueColumns -->
                 <th class="table-header-extra"></th>
                 <!-- /ko -->
-                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumns().length }"></th>
+                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumns().length || displayCompact() }"></th>
                 <th style="width: 85px;"></th>
                 <th style="width: 60px;"></th>
             </tr>
