@@ -384,30 +384,36 @@ def real_path(loc: str, path: str) -> str:
 
 
 def create_real_path(
-    name: str, loc: str, path: str, apply_permissions: bool = False, writable: bool = True
+    name: str,
+    loc: str,
+    path: str,
+    apply_permissions: bool = False,
+    writable: bool = True,
 ) -> tuple[bool, str, Optional[str]]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
     'name' is used for logging.
-    Optional 'umask' will be applied.
+    Optional permissions will be applied.
     'writable' means that an existing folder should be writable
     Returns ('success', 'full path', 'error_msg')
     """
     if path:
-        my_dir = real_path(loc, path)
-        if not os.path.exists(my_dir):
-            if not create_all_dirs(my_dir, apply_permissions):
-                msg = T("Cannot create directory %s") % clip_path(my_dir)
+        real_dir = real_path(loc, path)
+        if not os.path.exists(real_dir):
+            if not create_all_dirs(real_dir, apply_permissions):
+                msg = T("Cannot create directory %s") % clip_path(real_dir)
                 logging.error(msg)
-                return False, my_dir, msg
+                return False, real_dir, msg
 
-        checks = (os.W_OK + os.R_OK) if writable else os.R_OK
-        if os.access(my_dir, checks):
-            return True, my_dir, None
-        else:
-            msg = T("%s directory: %s error accessing") % (name, clip_path(my_dir))
+        # os.access() uses the real UID/GID via the access(2) syscall, which can
+        # return false negatives, for example on NFS mounts with UID mapping or root-squashing.
+        # Verify access by performing actual I/O operations (read/write) instead.
+        if not os.path.isdir(real_dir) or (writable and not directory_is_writable_with_file(real_dir, "sab_test.txt")):
+            msg = T("%s directory: %s error accessing") % (name, clip_path(real_dir))
             logging.error(msg)
-            return False, my_dir, msg
+            return False, real_dir, msg
+        else:
+            return True, real_dir, None
     else:
         return False, path, None
 
@@ -1229,7 +1235,7 @@ def directory_is_writable_with_file(mydir: str, myfilename: str) -> bool:
             return False
     try:
         with open(filename, "w") as f:
-            f.write("Some random content")
+            f.write("Some random content to test directory and file permissions")
         os.remove(filename)
         return True
     except Exception:
