@@ -56,7 +56,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.decorators import conditional_cache, synchronized
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions
+from sabnzbd.filesystem import userxbit, make_script_path, remove_file, strip_extensions, safe_fnmatch
 
 if sabnzbd.WINDOWS:
     try:
@@ -853,17 +853,46 @@ def get_platform_description() -> str:
     return sabnzbd.PLATFORM
 
 
-def on_cleanup_list(filename: str, skip_nzb: bool = False) -> bool:
-    """Return True if a filename matches the clean-up list"""
-    cleanup_list = cfg.cleanup_list()
-    if cleanup_list:
+def on_cleanup_list(filename: str, skip_nzb: bool = False, relative_path: Optional[str] = None) -> bool:
+    """Return True if a filename matches the clean-up list
+
+    Supports three match types:
+    - Extensions (no dots): exe, nfo -> matches file.exe, file.nfo
+    - Filename patterns (with dots): *.tmp, Thumbs.db -> matches file.tmp, Thumbs.db
+    - Path patterns (with slashes): images/*, */test.jpg -> matches relative paths
+    """
+    if cleanup_list := cfg.cleanup_list():
+        filename = filename.lower()
         name, ext = os.path.splitext(filename)
-        ext = ext.strip().lower()
+        ext = ext.strip()
         name = name.strip()
-        for cleanup_ext in cleanup_list:
-            cleanup_ext = "." + cleanup_ext
-            if (cleanup_ext == ext or (ext == "" and cleanup_ext == name)) and not (skip_nzb and cleanup_ext == ".nzb"):
-                return True
+        if relative_path:
+            relative_path = relative_path.lower().replace("\\", "/")
+
+        for entry in cleanup_list:
+            # Skip empty entries, entries with ".." in it or entries that end with nzb
+            if not entry or ".." in entry or (skip_nzb and entry.endswith("nzb")):
+                continue
+
+            # Type 1: Pure extension (no dots or slashes) - backwards compatible
+            if "." not in entry and "/" not in entry and "\\" not in entry:
+                cleanup_ext = "." + entry
+                if cleanup_ext == ext or (ext == "" and cleanup_ext == name):
+                    return True
+
+            # Type 2: Filename/wildcard pattern (has dots, no slashes)
+            elif "." in entry and "/" not in entry and "\\" not in entry:
+                if safe_fnmatch(filename, entry):
+                    return True
+
+            # Type 3: Path pattern (has slashes)
+            elif "/" in entry or "\\" in entry:
+                if relative_path:
+                    # Normalize both to forward slashes for cross-platform matching
+                    entry_normalized = entry.replace("\\", "/")
+                    if safe_fnmatch(relative_path, entry_normalized):
+                        return True
+
     return False
 
 
