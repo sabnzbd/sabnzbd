@@ -35,9 +35,10 @@ from tests.testhelper import *
 def clean_cache_dir(request):
     # Remove cache if already there
     try:
-        shutil.rmtree(SAB_CACHE_DIR, ignore_errors=True)
+        if os.path.exists(SAB_CACHE_DIR):
+            shutil.rmtree(SAB_CACHE_DIR)
         # Create an empty placeholder
-        os.makedirs(SAB_CACHE_DIR)
+        os.makedirs(SAB_CACHE_DIR, exist_ok=True)
     except Exception:
         pytest.fail("Failed to freshen up cache dir %s" % SAB_CACHE_DIR)
 
