@@ -29,7 +29,7 @@ from typing import Union, Optional
 import sabnzbd
 from sabnzbd.nzb import Article, NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, safe_lower, duplicate_warning
-from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
+from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script, create_all_dirs
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
 from sabnzbd.decorators import NzbQueueLocker
@@ -61,6 +61,11 @@ class NzbQueue:
         self.__top_only: bool = cfg.top_only()
         self.__nzo_list: list[NzbObject] = []
         self.__nzo_table: dict[str, NzbObject] = {}
+
+        # Make sure the future-dir exists so the URLGrabber can download files
+        # This will also create admin_dir if it doesn't exist already by calling get_path on it
+        if not os.path.exists(future_dir := os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
+            create_all_dirs(future_dir)
 
     def read_queue(self, repair: int):
         """Read queue from disk, supporting repair modes
