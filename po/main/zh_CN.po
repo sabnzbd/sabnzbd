@@ -2888,9 +2888,10 @@ msgstr "清理列表"
 
 #: sabnzbd/skintext.py
 msgid ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>nfo</b> or <b>nfo, sfv</b>"
-msgstr "下载后应删除的文件扩展名列表。<br />例如: <b>nfo</b> 或 <b>nfo, sfv</b>"
+"List of file extensions, filenames or patterns that should be deleted after "
+"download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
+"(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "History Retention"

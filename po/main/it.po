@@ -3002,11 +3002,10 @@ msgstr "Lista di pulizia"
 
 #: sabnzbd/skintext.py
 msgid ""
-"List of file extensions that should be deleted after download.<br />For "
-"example: <b>nfo</b> or <b>nfo, sfv</b>"
+"List of file extensions, filenames or patterns that should be deleted after "
+"download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
+"(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
-"Elenco delle estensioni dei file che dovrebbero essere eliminate dopo il "
-"download.<br />Ad esempio: <b>nfo</b> o <b>nfo, sfv</b>"
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
