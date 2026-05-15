@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 5.0.2
+Release Notes - SABnzbd 5.0.3
 =========================================================
 
 In this fifth major release of SABnzbd, we included:
@@ -7,8 +7,9 @@ In this fifth major release of SABnzbd, we included:
 * Reliability gains from a reworked cache and safer processing.
 * A significant number of bug fixes and platform updates.
 
-## Features and bug fixes in 5.0.1 and 5.0.2
+## Features and bug fixes in 5.0.1, 5.0.2 and 5.0.3
 
+* Fetching NZB's failed on new installations.
 * Queue entries from older versions now load correctly after upgrading.
 * `nzo_id` now uses GUIDs to prevent duplicates.
 * Updating to 5.0 now succeeds even when duplicate `nzo_id` values exist.
