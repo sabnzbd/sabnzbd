@@ -2,6 +2,10 @@ name: Build binaries and source distribution
 
 on: [push, pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Setting PYTHONNODEBUGRANGES reduces binary size
 env:
   PYTHONNODEBUGRANGES: 1
