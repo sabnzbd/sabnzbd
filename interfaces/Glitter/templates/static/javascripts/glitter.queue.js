@@ -549,7 +549,7 @@ function QueueModel(parent, data) {
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
     self.labels = ko.observableArray(data.labels);
-    self.isGrabbing = ko.observable(data.status === 'Grabbing' || !parseFloat(data.mb)) // Paused URL-grab jobs report status 'Paused', not 'Grabbing'
+    self.isGrabbing = ko.observable(data.status === 'Grabbing' || !parseFloat(data.mb)) // mb===0 catches paused URL-grab jobs (status 'Paused'), needed to block show-files
     self.isFetchingBlocks = data.status === 'Fetching' || data.priority === 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
     self.remainingMB = ko.observable(parseFloat(data.mbleft))

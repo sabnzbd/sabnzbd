@@ -134,7 +134,6 @@
                     <label data-bind="visible: parent.isMultiEditing()">
                         <input type="checkbox" name="multiedit" title="$T('Glitter-multiSelect')" data-bind="click: parent.addMultiEdit, attr: { 'id': 'multiedit_' + id } " />
                     </label>
-                    <!-- ko if: !isGrabbing() -->
                     <div class="dropdown" data-bind="visible: !parent.isMultiEditing()">
                         <a href="#" data-toggle="dropdown" data-bind="click: toggleDropdown">
                             <span class="caret"></span>
@@ -162,7 +161,6 @@
                         </ul>
                         <!-- /ko -->
                     </div>
-                    <!-- /ko -->
                     <a href="#" class="hover-button" title="$T('removeNZB-Files')" data-bind="click: parent.triggerRemoveDownload"><span class="glyphicon glyphicon-trash"></span></a>
                 </td>
             </tr>

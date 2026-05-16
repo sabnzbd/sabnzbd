@@ -128,6 +128,7 @@ INTERFACE_PRIORITIES = {
     REPAIR_PRIORITY: "Repair",
     HIGH_PRIORITY: "High",
     NORMAL_PRIORITY: "Normal",
+    DEFAULT_PRIORITY: "Normal",
     LOW_PRIORITY: "Low",
 }
 
