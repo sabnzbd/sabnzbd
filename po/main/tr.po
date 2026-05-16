@@ -3006,6 +3006,9 @@ msgid ""
 "download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
 "(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
+"İndirmeden sonra silinecek dosya uzantılarının, isimlerinin veya örüntülerin"
+" listesi. <br /> Örnekler: <b>nfo, sfv</b> (uzantılar) veya <b>thumbs.db</b>"
+" (dosya isimleri) veya <b>*.tmp, images/*, */test.jpg</b> (örüntüler)."
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
