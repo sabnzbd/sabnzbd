@@ -21,7 +21,7 @@ more-itertools==11.0.2; python_version > '3.9'
 zc.lockfile==4.0
 python-dateutil==2.9.0.post0
 tempora==5.8.1
-pytz==2026.1.post1
+pytz==2026.2
 sgmllib3k==1.0.0
 portend==3.2.1
 PySocks==1.7.1
