@@ -54,7 +54,12 @@ parts:
         sed -i "s/__baseline__ = .*/__baseline__ = \"${COMMIT}\"/" sabnzbd/version.py
       fi
     override-build: |
+      # SABnzbd is an application source tree, not a pip-installable package.
+      # The Python plugin runs `pip install -U .` when pyproject.toml exists,
+      # so hide it during `craftctl default` and restore it immediately after.
+      mv pyproject.toml pyproject.toml.snapcraft-backup
       craftctl default
+      mv pyproject.toml.snapcraft-backup pyproject.toml
       python3 tools/make_mo.py
       rsync -av --mkpath \
         --exclude=.git \
