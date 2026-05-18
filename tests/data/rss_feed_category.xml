@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+   <channel>
+      <title>RSS feed</title>
+      <description>RSS feed</description>
+      <link>https://sabnzbd.org/</link>
+      <item>
+         <title>TITLE</title>
+         <link>http://LINK</link>
+         <comments>COMMENTS</comments>
+         <pubDate>Tue, 20 May 2025 18:21:01 +0000</pubDate>
+         <guid isPermaLink="true">https://sabnzbd.org/rss_feed_category</guid>
+         <category>TV &gt; HD</category>
+      </item>
+   </channel>
+</rss>

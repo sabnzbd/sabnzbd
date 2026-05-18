@@ -376,8 +376,8 @@ class FeedConfig:
         """Evaluate rules for a single RSS entry."""
         entry_cat = category
         rule_matched: bool = False
-        matching_rule: Optional[FeedRule] = None
         matching_rule_index: int = 0
+        last_rule: Optional[FeedRule] = None
         feed_season: int = season
         feed_episode: int = episode
 
@@ -386,19 +386,6 @@ class FeedConfig:
         resolved_pp: Optional[int] = self.default_pp
         resolved_script: Optional[str] = self.default_script
         resolved_priority: Optional[int] = self.default_priority
-
-        # If there are no rules; return early
-        if not self.rules:
-            return FeedEvaluation(
-                matched=rule_matched,
-                rule_index=matching_rule_index,
-                season=int_conv(feed_season),
-                episode=int_conv(feed_episode),
-                category=resolved_cat,
-                pp=resolved_pp,
-                script=resolved_script,
-                priority=resolved_priority,
-            )
 
         # Fill in missing season / episode information when F/S rules exist
         if self.has_type("F", "S") and (not feed_season or not feed_episode):
@@ -425,20 +412,48 @@ class FeedConfig:
 
             matching_rule_index = idx
             rule_matched = outcome
-            matching_rule = rule if outcome else None
+            last_rule = rule
             break
 
-        if matching_rule is None:
-            effective_category = (
-                cat_convert(entry_cat) if entry_cat and self.default_category is None else self.default_category
-            )
+        # Category resolution
+        if not rule_matched and self.default_category:
+            effective_category = self.default_category
+        elif rule_matched and last_rule and last_rule.category is not None:
+            effective_category = last_rule.category
+        elif entry_cat and not self.default_category:
+            effective_category = cat_convert(entry_cat)
         else:
-            effective_category = matching_rule.category or cat_convert(entry_cat) or self.default_category
+            effective_category = resolved_cat
 
-        resolved_cat, resolved_pp, resolved_script, resolved_priority = self._resolve_options(
-            effective_category=effective_category,
-            matching_rule=matching_rule,
-        )
+        # Category-derived defaults
+        if effective_category:
+            resolved_cat, cat_pp, cat_script, cat_prio = cat_to_opts(effective_category)
+            cat_pp = _normalise_pp(cat_pp)
+            cat_script = _normalise_str_or_none(cat_script)
+            cat_prio = _normalise_priority(cat_prio)
+        else:
+            resolved_cat = cat_pp = cat_script = cat_prio = None
+
+        # PP resolution
+        if last_rule and last_rule.pp is not None:
+            resolved_pp = last_rule.pp
+        elif not ((last_rule and last_rule.category) or entry_cat):
+            resolved_pp = cat_pp
+
+        # Script resolution
+        if last_rule and last_rule.script is not None:
+            resolved_script = last_rule.script
+        elif not ((last_rule and last_rule.category is not None) or entry_cat):
+            resolved_script = cat_script
+
+        # Priority resolution
+        if last_rule and last_rule.priority is not None and str(last_rule.priority) != str(DEFAULT_PRIORITY):
+            resolved_priority = last_rule.priority
+        elif not (
+            (last_rule and last_rule.priority is not None and str(last_rule.priority) != str(DEFAULT_PRIORITY))
+            or entry_cat
+        ):
+            resolved_priority = cat_prio
 
         return FeedEvaluation(
             matched=rule_matched,
@@ -450,38 +465,6 @@ class FeedConfig:
             script=resolved_script,
             priority=resolved_priority,
         )
-
-    def _resolve_options(
-        self,
-        *,
-        effective_category: Optional[str],
-        matching_rule: Optional[FeedRule],
-    ) -> tuple[Optional[str], Optional[int], Optional[str], Optional[int]]:
-        """Resolve options for a feed rule."""
-        if effective_category:
-            cat, cat_pp, cat_script, cat_prio = cat_to_opts(effective_category)
-            cat_pp = _normalise_pp(cat_pp)
-            cat_script = _normalise_str_or_none(cat_script)
-            cat_prio = _normalise_priority(cat_prio)
-        else:
-            cat = cat_pp = cat_script = cat_prio = None
-
-        resolved_pp = first_not_none(
-            matching_rule.pp if matching_rule else None,
-            cat_pp,
-            self.default_pp,
-        )
-        resolved_script = first_not_none(
-            matching_rule.script if matching_rule else None,
-            cat_script,
-            self.default_script,
-        )
-        resolved_priority = first_not_none(
-            matching_rule.priority if matching_rule else None,
-            cat_prio,
-            self.default_priority,
-        )
-        return cat, resolved_pp, resolved_script, resolved_priority
 
 
 class RSSReader:
@@ -992,14 +975,6 @@ def _normalise_pp(value) -> Optional[int]:
             return iv
     except (TypeError, ValueError):
         pass
-    return None
-
-
-def first_not_none(*args):
-    """Return first value which is not None"""
-    for a in args:
-        if a is not None:
-            return a
     return None
 
 
