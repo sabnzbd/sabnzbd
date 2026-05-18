@@ -692,6 +692,7 @@ def guess_what(name: str) -> MatchesDict:
                 and guess.get("container") == "nzb"
             )  # URL to an nzb file, can happen when pre-queue script rejects a job
         ):
+            logging.debug("Switching type from 'movie' to 'unknown' due to release name: %s", name)
             guess["type"] = "unknown"
 
     return guess
