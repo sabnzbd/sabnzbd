@@ -3,10 +3,6 @@ body {
     background-color: #E4E4E4;
 }
 
-* {
-    border-radius: 0 !important;
-}
-
 .btn,
 .btn:hover,
 .btn:active,

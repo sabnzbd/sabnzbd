@@ -21,12 +21,6 @@ textarea,
     border-color: #252525 !important;
 }
 
-#addFeed,
-#addFeedContent,
-.section {
-    border-bottom: 1px solid #555555;
-}
-
 .col2 p,
 .col2-cats {
     color: #AAA;
@@ -39,7 +33,6 @@ textarea,
 .catTable,
 .dropdown-menu,
 .dropdown-menu .divider,
-.even,
 .Key tr:nth-child(odd),
 .language:hover,
 .navbar-default .navbar-nav>.open>a,
@@ -80,6 +73,7 @@ small {
 .btn-default.disabled:focus,
 .btn-default.disabled:hover,
 a.btn.btn-default,
+.nav-tabs li a,
 select.form-control,
 .form-control[disabled],
 .input-group-addon,
@@ -115,6 +109,8 @@ textarea:hover,
 a.list-group-item:hover,
 select:hover,
 textarea:hover,
+.nav-tabs li a:hover,
+.nav-tabs li.active a,
 input[type="date"]:hover,
 input[type="datetime"]:hover,
 input[type="datetime-local"]:hover,
@@ -161,7 +157,8 @@ select:focus {
     background-color: #262626 !important;
 }
 
-.Key tr {
+.Key tr,
+.Config .table {
     border: none;
 }
 
@@ -170,7 +167,7 @@ select:focus {
 .infoTableSeperator,
 .modal-footer,
 .data-row {
-    border-top: 1px solid #555555;
+    border-top: none
 }
 
 hr {
@@ -183,10 +180,11 @@ hr {
 
 .tab-content .catTable tbody,
 ul.tabs a,
-.colmask,
+.section,
+#addFeed,
+#addFeedContent,
 #subscriptions,
-.RSS form[action="add_rss_feed"] tr:nth-child(even),
-.Config .table {
+.RSS form[action="add_rss_feed"] tr:nth-child(even) {
     border: 1px solid #555555;
 }
 
@@ -227,9 +225,6 @@ col2 h3 a,
     background-color: unset !important;
 }
 
-#content>div.colmask>div:nth-child(3) {
-    border-bottom: 1px solid #555555 !important;
-}
 
 .Servers .ct-series-a .ct-line,
 .Servers .ct-series-a .ct-point {
@@ -237,7 +232,14 @@ col2 h3 a,
 }
 
 #inner,
-.colmask {
+.section,
+#addFeed,
+#addFeedContent {
+    background-color: #303030;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.nav-tabs>li.active>a {
     background-color: #303030;
 }
 

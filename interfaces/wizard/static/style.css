@@ -136,9 +136,7 @@ label {
     Bootstrap overwrites
 ***/
 
-* {
-    border-radius: 0 !important;
-}
+
 a,
 a:hover,
 a:active,
@@ -147,7 +145,7 @@ a:visited,
     color: #555;
 }
 .btn {
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, .1) !important;
+
     min-width: 150px;
 }
 .btn .glyphicon,

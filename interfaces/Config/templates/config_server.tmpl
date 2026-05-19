@@ -140,10 +140,11 @@
                     <div class="field-pair no-field-pair-bg">
                         <button class="btn btn-default addNewServer" disabled data-toggle="tooltip" data-placement="top" title="$T('wizard-test-server-required')"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                         <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
+                        <div class="result-box">
+                            <div class="alert"></div>
+                        </div>
                     </div>
-                    <div class="field-pair result-box">
-                        <div class="alert"></div>
-                    </div>
+
                 </fieldset>
             </form>
         </div>
@@ -278,13 +279,14 @@
                             <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                             <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                             <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
-                        </div>
-                        <div class="field-pair result-box">
-                            <div class="alert"></div>
+
+                            <div class="result-box">
+                                <div class="alert"></div>
+                            </div>
                         </div>
                     </fieldset>
                 </div>
-                <div class="col1" style="display:block;">
+                <div class="col1 padding" style="display:block;">
                     <!--#if 'amounts' in $server#-->
                         <div class="server-amounts-text">
                             <p>

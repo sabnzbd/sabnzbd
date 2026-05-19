@@ -340,14 +340,6 @@ function removeObfuscation() {
     return true
 }
 
-// Add coloring to rows (shorthand function)
-function addRowColor() {
-    // Have to do it seperate for each section
-    $('.section').each(function(i, elmn) {
-        $(elmn).find('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
-    })
-}
-
 // Set default functions for the autocomplete everywhere
 jQuery.extend(jQuery.fn.typeahead.defaults, {
     source: function (query, process) {
@@ -482,14 +474,11 @@ $(document).ready(function () {
     $('.advanced-button').on('change', function(event){
         localStorage.setItem('advanced-settings', !$('.advanced-settings').is(':visible'))
         $('.advanced-settings').toggle()
-        addRowColor()
     })
     if(localStorage.getItem('advanced-settings') === 'true') {
         $('.advanced-settings').show()
         $('#advanced-settings-button').prop('checked', true)
-        addRowColor()
     }
-    addRowColor()
 
     // Add tooltips
     jQuery('[title]').tooltip()

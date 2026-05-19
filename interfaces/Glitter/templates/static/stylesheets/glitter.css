@@ -80,7 +80,6 @@ h2 {
     display: block;
     width: 16px;
     height: 3px;
-    border-radius: 1px !important;
     background-color: white;
     margin-top: 3px;
 }
@@ -2028,10 +2027,6 @@ html[dir="rtl"] #modal-options .modal-header a {
 /***
     Bootstrap overwrites
 ***/
-
-* {
-    border-radius: 0 !important;
-}
 
 a,
 a:active,

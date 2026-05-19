@@ -372,123 +372,39 @@
             </form>
         </div>
     </div>
-    <br/>
-    <div style="padding-left: 10px; border-bottom: 1px solid #DFDEDE;">
-        <ul class="tabs">
-            <li class="active"><a href="#rss-tab-matched" data-toggle="tab">$T('rss-matched') <span class="count"><!--#echo len($matched)#--></span></a></li>
-            <li><a href="#rss-tab-not-matched">$T('rss-notMatched') <span class="count"><!--#echo len($unmatched)#--></span></a></li>
-            <li><a href="#rss-tab-done">$T('rss-done') <span class="count"><!--#echo len($downloaded)#--></span></a></li>
-        </ul>
-    </div>
-    <div class="tab-content">
-        <div class="tab-pane fade in active padTable" id="rss-tab-matched">
-            <!--#if $matched#-->
-            <table class="catTable">
-                <thead>
-                    <tr>
-                        <th class="no-sort">$T('link-download')</th>
-                        <th>$T('rss-filter')</th>
-                        <th>$T('size')</th>
-                        <th width="60%">$T('sort-title')</th>
-                        <th>$T('category')</th>
-                        <th class="default-sort">$T('nzo-age')</th>
-                        <th>$T('source')</th>
-                    </tr>
-                </thead>
-                <!--#for $job in $matched#-->
-                    <tr class="infoTableSeperator">
-                        <td>
-                            <form action="download" method="get">
-                                <input type="hidden" value="$active_feed" name="feed" />
-                                <input type="hidden" name="apikey" value="$apikey" />
-                                <input type="hidden" name="url" value="$job['url']" />
-                                <input type="hidden" name="nzbname" value="$job['nzbname']" />
-                                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
-                            </form>
-                        </td>
-                        <td>$job['rule'] $job['skip']</td>
-                        <td data-sort-value="$job['size']">$job['size_units']</td>
-                        <td>$job['title']</td>
-                        <td>$job['cat']</td>
-                        <td data-sort-value="$job['age_ms']">$job['age']</td>
-                        <td data-sort-value="$job['baselink']" title="$job['baselink']">
-                            <!--#if not $job['infourl']#-->
-                            <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
-                            <!--#else#-->
-                            <a class="favicon source-icon" href="$job['infourl']" target="_blank" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></a>
-                            <!--#end if#-->
-                        </td>
-                    </tr>
-                <!--#end for#-->
-            </table>
-            <!--#else#-->
-            $T('none')
-            <!--#end if#-->
-        </div>
-        <div class="tab-pane padTable" id="rss-tab-not-matched">
-            <!--#if $unmatched#-->
-            <table class="catTable">
-                <thead>
-                    <tr>
-                        <th class="no-sort">$T('link-download')</th>
-                        <th>$T('rss-filter')</th>
-                        <th>$T('size')</th>
-                        <th width="60%">$T('sort-title')</th>
-                        <th>$T('category')</th>
-                        <th class="default-sort">$T('nzo-age')</th>
-                        <th>$T('source')</th>
-                    </tr>
-                </thead>
-                <!--#for $job in $unmatched#-->
-                    <tr class="infoTableSeperator">
-                        <td>
-                            <form action="download" method="get">
-                                <input type="hidden" value="$active_feed" name="feed" />
-                                <input type="hidden" name="apikey" value="$apikey" />
-                                <input type="hidden" name="url" value="$job['url']" />
-                                <input type="hidden" name="nzbname" value="$job['nzbname']" />
-                                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
-                            </form>
-                        </td>
-                        <td>$job['rule'] $job['skip']</td>
-                        <td data-sort-value="$job['size']">$job['size_units']</td>
-                        <td>$job['title']</td>
-                        <td>$job['cat']</td>
-                        <td data-sort-value="$job['age_ms']">$job['age']</td>
-                        <td data-sort-value="$job['baselink']" title="$job['baselink']">
-                            <!--#if not $job['infourl']#-->
-                            <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
-                            <!--#else#-->
-                            <a class="favicon source-icon" href="$job['infourl']" target="_blank" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></a>
-                            <!--#end if#-->
-                        </td>
-                    </tr>
-                <!--#end for#-->
-            </table>
-            <!--#else#-->
-                $T('none')
-            <!--#end if#-->
-        </div>
-        <div class="tab-pane padTable" id="rss-tab-done">
-            <!--#if $downloaded#-->
-            <form action="clean_rss_jobs" method="post">
-                <input type="hidden" value="$active_feed" name="feed" />
-                <input type="hidden" name="apikey" value="$apikey" />
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#rss-tab-matched" data-toggle="tab">$T('rss-matched') <span class="count"><!--#echo len($matched)#--></span></a></li>
+        <li><a href="#rss-tab-not-matched">$T('rss-notMatched') <span class="count"><!--#echo len($unmatched)#--></span></a></li>
+        <li><a href="#rss-tab-done">$T('rss-done') <span class="count"><!--#echo len($downloaded)#--></span></a></li>
+    </ul>
+    <div class="section">
+        <div class="tab-content">
+            <div class="tab-pane fade in active padTable" id="rss-tab-matched">
+                <!--#if $matched#-->
                 <table class="catTable">
                     <thead>
                         <tr>
-                            <th class="default-sort">$T('rss-added')</th>
+                            <th class="no-sort">$T('link-download')</th>
                             <th>$T('rss-filter')</th>
                             <th>$T('size')</th>
                             <th width="60%">$T('sort-title')</th>
                             <th>$T('category')</th>
-                            <th>$T('nzo-age')</th>
+                            <th class="default-sort">$T('nzo-age')</th>
                             <th>$T('source')</th>
                         </tr>
                     </thead>
-                    <!--#for $job in $downloaded#-->
+                    <!--#for $job in $matched#-->
                         <tr class="infoTableSeperator">
-                            <td data-sort-value="$job['time_downloaded_ms']">$job['time_downloaded']</td>
+                            <td>
+                                <form action="download" method="get">
+                                    <input type="hidden" value="$active_feed" name="feed" />
+                                    <input type="hidden" name="apikey" value="$apikey" />
+                                    <input type="hidden" name="url" value="$job['url']" />
+                                    <input type="hidden" name="nzbname" value="$job['nzbname']" />
+                                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
+                                </form>
+                            </td>
                             <td>$job['rule'] $job['skip']</td>
                             <td data-sort-value="$job['size']">$job['size_units']</td>
                             <td>$job['title']</td>
@@ -504,12 +420,96 @@
                         </tr>
                     <!--#end for#-->
                 </table>
-            </form>
-            <!--#else#-->
+                <!--#else#-->
                 $T('none')
+                <!--#end if#-->
+            </div>
+            <div class="tab-pane padTable" id="rss-tab-not-matched">
+                <!--#if $unmatched#-->
+                <table class="catTable">
+                    <thead>
+                        <tr>
+                            <th class="no-sort">$T('link-download')</th>
+                            <th>$T('rss-filter')</th>
+                            <th>$T('size')</th>
+                            <th width="60%">$T('sort-title')</th>
+                            <th>$T('category')</th>
+                            <th class="default-sort">$T('nzo-age')</th>
+                            <th>$T('source')</th>
+                        </tr>
+                    </thead>
+                    <!--#for $job in $unmatched#-->
+                        <tr class="infoTableSeperator">
+                            <td>
+                                <form action="download" method="get">
+                                    <input type="hidden" value="$active_feed" name="feed" />
+                                    <input type="hidden" name="apikey" value="$apikey" />
+                                    <input type="hidden" name="url" value="$job['url']" />
+                                    <input type="hidden" name="nzbname" value="$job['nzbname']" />
+                                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
+                                </form>
+                            </td>
+                            <td>$job['rule'] $job['skip']</td>
+                            <td data-sort-value="$job['size']">$job['size_units']</td>
+                            <td>$job['title']</td>
+                            <td>$job['cat']</td>
+                            <td data-sort-value="$job['age_ms']">$job['age']</td>
+                            <td data-sort-value="$job['baselink']" title="$job['baselink']">
+                                <!--#if not $job['infourl']#-->
+                                <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                                <!--#else#-->
+                                <a class="favicon source-icon" href="$job['infourl']" target="_blank" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></a>
+                                <!--#end if#-->
+                            </td>
+                        </tr>
+                    <!--#end for#-->
+                </table>
+                <!--#else#-->
+                    $T('none')
+                <!--#end if#-->
+            </div>
+            <div class="tab-pane padTable" id="rss-tab-done">
+                <!--#if $downloaded#-->
+                <form action="clean_rss_jobs" method="post">
+                    <input type="hidden" value="$active_feed" name="feed" />
+                    <input type="hidden" name="apikey" value="$apikey" />
+                    <table class="catTable">
+                        <thead>
+                            <tr>
+                                <th class="default-sort">$T('rss-added')</th>
+                                <th>$T('rss-filter')</th>
+                                <th>$T('size')</th>
+                                <th width="60%">$T('sort-title')</th>
+                                <th>$T('category')</th>
+                                <th>$T('nzo-age')</th>
+                                <th>$T('source')</th>
+                            </tr>
+                        </thead>
+                        <!--#for $job in $downloaded#-->
+                            <tr class="infoTableSeperator">
+                                <td data-sort-value="$job['time_downloaded_ms']">$job['time_downloaded']</td>
+                                <td>$job['rule'] $job['skip']</td>
+                                <td data-sort-value="$job['size']">$job['size_units']</td>
+                                <td>$job['title']</td>
+                                <td>$job['cat']</td>
+                                <td data-sort-value="$job['age_ms']">$job['age']</td>
+                                <td data-sort-value="$job['baselink']" title="$job['baselink']">
+                                    <!--#if not $job['infourl']#-->
+                                    <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                                    <!--#else#-->
+                                    <a class="favicon source-icon" href="$job['infourl']" target="_blank" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></a>
+                                    <!--#end if#-->
+                                </td>
+                            </tr>
+                        <!--#end for#-->
+                    </table>
+                </form>
+                <!--#else#-->
+                    $T('none')
+                <!--#end if#-->
+            </div>
             <!--#end if#-->
         </div>
-        <!--#end if#-->
     </div>
 </div>
 <!-- /colmask -->
@@ -561,7 +561,7 @@ jQuery(document).ready(function(){
         }
     })
 
-    jQuery('.tabs a').click(function (e) {
+    jQuery('.nav-tabs a').click(function (e) {
         e.preventDefault()
         jQuery(this).tab('show')
     })

@@ -1,3 +1,10 @@
+:root {
+    /* Border radius scale */
+    --radius-sm:    4px;   /* dropdowns */
+    --radius-md:    4px;   /* inputs, buttons, section headers */
+    --radius-lg:    6px;  /* cards, modals */
+}
+
 body {
     overflow-y: scroll;
     background-color: #E4E4E4;
@@ -18,10 +25,7 @@ body {
     clear: both;
     float: left;
     overflow: visible;
-    border: 1px solid #dfdede;
-    border-bottom: none !important;
-    background-color: #FFF;
-    width: 100%
+    width: 100%;
 }
 .advanced-button {
     float: right;
@@ -44,8 +48,12 @@ body {
     margin: 0px 10px;
 }
 .section, #addFeed, #addFeedContent {
-    border-bottom: 1px solid #dfdede;
-    overflow: auto;
+    overflow: hidden !important;
+    background-color: #FFF;
+    border: 1px solid #dfdede;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
 }
 .col2 {
     z-index: 10;
@@ -58,7 +66,7 @@ body {
     z-index: 11;
     width: 100%;
     float: none;
-    padding: 12px 0 0;
+    padding: 2px 0;
 }
 .col2 h3 {
     background: none repeat scroll 0 0 #666;
@@ -71,6 +79,7 @@ body {
     white-space: nowrap;
     text-overflow: ellipsis;
     position: relative;
+    border-radius: var(--radius-md);
 }
 .col2 h3 a {
     display: none;
@@ -169,15 +178,18 @@ input[type="checkbox"]+.desc {
     margin-left: 3px;
 }
 .field-pair {
-    padding: 6px;
+    padding: 10px 5px;
     clear: both;
     float: none;
     overflow: hidden;
     min-width: 555px;
+    border-bottom: 1px solid rgb(131 131 131 / 0.4);
+}
+.field-pair:last-child {
+    border-bottom: none;
 }
 .Key tr:nth-child(odd),
-.tab-pane tr:nth-child(odd),
-.even {
+.tab-pane tr:nth-child(odd) {
     background-color: #F8F8F8;
 }
 .field-pair:last-child,
@@ -195,6 +207,8 @@ input[type="checkbox"]+.desc {
     padding: 0;
     min-width: 300px;
     margin: 0;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 .typeahead.dropdown-menu>li>a {
     padding-left: 12px;
@@ -211,7 +225,7 @@ input[type="checkbox"]+.desc {
     outline: 0;
     min-width: 350px;
     margin: 0;
-    padding: 0 12px 12px 6px;
+    padding: 0 12px 0 6px;
 }
 textarea, select, input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="time"], input[type="url"], input[type="week"] {
     padding-left: 5px;
@@ -454,7 +468,9 @@ tr.separator {
 }
 .Config .table {
     margin: 0;
-    border: 1px solid #ddd
+}
+.Config .table {
+    border: 1px solid #ddd;
 }
 .Config .colmask {
     margin-bottom: 12px;
@@ -511,6 +527,8 @@ tr.separator {
     display: none;
     border: 1px solid #ccc;
     width: 425px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
 }
 .Key th {
     background: none repeat scroll 0 0 #666;
@@ -545,7 +563,9 @@ tr.separator {
     padding-left: 5px;
 }
 .modal-content {
-    box-shadow: none;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
 }
 .modal-backdrop {
     background-color: white;
@@ -602,6 +622,11 @@ tr.separator {
 .btn-default.clearBtn {
     margin-left: -1px !important;
     box-shadow: 1px 0px 1px rgba(0,0,0,.1) !important;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+}
+input:has(+ .fileBrowser),
+input:has(+ .clearBtn) {
+    border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
 }
 #filebrowser_modal .list-group-item {
     font-weight: bold;
@@ -755,47 +780,18 @@ span.count {
     padding: 1px 10px;
 }
 a.current .count {
-    background-color: #777!important;
+    background-color: #777 !important;
 }
 a.current:hover .count {
-    background-color: #333!important;
+    background-color: #333 !important;
 }
-ul.tabs {
-    margin: 0!important;
-    padding: 0;
-    height: 30px;
+.nav-tabs {
+    margin: 10px 10px 0 10px;
+    border: none;
 }
-ul.tabs li {
-    float: left;
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-}
-ul.tabs a {
-    float: left;
-    font-size: 13px;
-    display: block;
-    padding: 5px 30px;
-    text-decoration: none;
-    border: 1px solid #dfdede;
-    border-bottom: 0;
-    color: black;
-    margin-right: 2px;
-    position: relative;
-    top: 1px;
-    outline: 0;
-}
-ul.tabs a:hover {
-    background-color: #eee;
+.nav-tabs>li>a {
     color: #333;
 }
-ul.tabs li.active a {
-    background-color: #eee;
-    border-bottom: 1px solid #f8f4e7;
-    color: #000;
-    cursor: default;
-}
-
 .checkbox-days {
     float:  left;
 }
@@ -812,9 +808,6 @@ ul.tabs li.active a {
 }
 
 /** EDITS 2015 **/
-* {
-    border-radius: 0 !important;
-}
 
 .collapsing {
     -webkit-transition: none;
@@ -842,6 +835,7 @@ input[type="submit"] {
     background: #fff none;
     border:1px solid #ccc;
     height: 34px;
+    border-radius: var(--radius-md);
 }
 
 input[type="button"]:hover,
@@ -870,6 +864,7 @@ select {
     min-width: 55px;
     font-size: 13px;
     background-color: white;
+    border-radius: var(--radius-md);
 }
 
 input[type="text"]:not([size]),
@@ -885,7 +880,8 @@ input[type="text"].smaller_input {
 .btn {
     font-size: 13px;
     height: 34px;
-    box-shadow: 1px 1px 1px rgba(0,0,0,.1) !important;
+    box-shadow: 1px 1px 1px rgba(0,0,0,.1);
+    border-radius: var(--radius-md);
 }
 
 .btn .glyphicon {
@@ -961,6 +957,7 @@ input[type="checkbox"] {
     background-color: #FFF;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .navbar-fixed-top {
@@ -1092,6 +1089,10 @@ input[type="checkbox"] {
     opacity: 0.7;
 }
 
+.Servers .col1.padding {
+    padding: 12px;
+}
+
 .Servers .server-amounts-text {
     width: 20%;
     float: left;
@@ -1155,6 +1156,7 @@ input[type="checkbox"] {
 }
 
 .result-box .alert {
+    margin-top: 10px;
     margin-bottom: 0px;
     display: none;
 }
@@ -1327,7 +1329,6 @@ html[dir="rtl"] .Scheduling form[action="addSchedule"] input[type="checkbox"] {
 @media screen and (max-width: 1000px) {
     .col1 {
         float: right;
-        padding: 5px 0px;
     }
 
     .col1 h5 {
