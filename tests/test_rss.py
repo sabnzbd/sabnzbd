@@ -325,7 +325,7 @@ class TestRSS:
                     category="evaluator",
                     pp=1,
                     script=None,
-                    priority=FORCE_PRIORITY,
+                    priority=None,
                 ),
             ),
             (  # category with rule overrides
@@ -344,7 +344,7 @@ class TestRSS:
                     category="evaluator",
                     pp=2,
                     script="override.py",
-                    priority=FORCE_PRIORITY,
+                    priority=None,
                 ),
             ),
         ],
@@ -467,7 +467,7 @@ class TestRSS:
             season=0,
             episode=0,
             category="tv",
-            priority=HIGH_PRIORITY,
+            priority=LOW_PRIORITY,
         )
 
     def test_feedconfig_entry_category_pp_overrides_feed_default_pp(self, httpserver: HTTPServer):
@@ -529,7 +529,7 @@ class TestRSS:
             category="evaluator",
             pp=2,
             script=None,
-            priority=FORCE_PRIORITY,
+            priority=None,
         )
 
     def test_feedconfig_rule_pp_overrides_entry_category_pp(self, httpserver: HTTPServer):

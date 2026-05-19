@@ -415,10 +415,12 @@ class FeedConfig:
             last_rule = rule
             break
 
+        rule_has_category = bool(last_rule and last_rule.category)
+
         # Category resolution
         if not rule_matched and self.default_category:
             effective_category = self.default_category
-        elif rule_matched and last_rule and last_rule.category is not None:
+        elif rule_matched and rule_has_category:
             effective_category = last_rule.category
         elif entry_cat and not self.default_category:
             effective_category = cat_convert(entry_cat)
@@ -437,22 +439,19 @@ class FeedConfig:
         # PP resolution
         if last_rule and last_rule.pp is not None:
             resolved_pp = last_rule.pp
-        elif not ((last_rule and last_rule.category) or entry_cat):
+        elif not (rule_has_category or entry_cat):
             resolved_pp = cat_pp
 
         # Script resolution
         if last_rule and last_rule.script is not None:
             resolved_script = last_rule.script
-        elif not ((last_rule and last_rule.category is not None) or entry_cat):
+        elif not (rule_has_category or entry_cat):
             resolved_script = cat_script
 
         # Priority resolution
-        if last_rule and last_rule.priority is not None and str(last_rule.priority) != str(DEFAULT_PRIORITY):
+        if last_rule and last_rule.priority is not None:
             resolved_priority = last_rule.priority
-        elif not (
-            (last_rule and last_rule.priority is not None and str(last_rule.priority) != str(DEFAULT_PRIORITY))
-            or entry_cat
-        ):
+        elif not (rule_has_category or entry_cat):
             resolved_priority = cat_prio
 
         return FeedEvaluation(
