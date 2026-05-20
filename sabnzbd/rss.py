@@ -449,9 +449,9 @@ class FeedConfig:
             resolved_script = cat_script
 
         # Priority resolution
-        if last_rule and last_rule.priority is not None:
+        if last_rule and last_rule.priority not in (DEFAULT_PRIORITY, None):
             resolved_priority = last_rule.priority
-        elif not (rule_has_category or entry_cat):
+        elif not ((last_rule and last_rule.priority != DEFAULT_PRIORITY) or entry_cat):
             resolved_priority = cat_prio
 
         return FeedEvaluation(
