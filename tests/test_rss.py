@@ -316,7 +316,6 @@ class TestRSS:
             ),
             (
                 ("", "", "", PAUSED_PRIORITY),
-                # Empty filters gives wrong prio
                 [("", "", "", "A", "*", "", "")],
                 "Title",
                 "TV > HD",
