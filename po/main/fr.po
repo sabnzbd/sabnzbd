@@ -3037,6 +3037,10 @@ msgid ""
 "download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
 "(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
+"Liste des extensions, noms de fichiers ou modèles à supprimer après le "
+"téléchargement.<br />Exemples : <b>nfo, sfv</b> (extensions) ou "
+"<b>thumbs.db</b> (noms de fichiers) ou <b>*.tmp, images/*, */test.jpg</b> "
+"(modèles)."
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
