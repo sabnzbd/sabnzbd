@@ -1,3 +1,10 @@
+:root {
+    /* Border radius scale */
+    --radius-sm: 4px;   /* small elements: progress bars */
+    --radius-md: 6px;   /* search bar, multi-edit toolbar, file controls */
+    --radius-lg: 8px;   /* cards, modals, notification box */
+}
+
 body {
     background-color: #E4E4E4;
     text-align: center;
@@ -5,11 +12,11 @@ body {
 .container {
     max-width: 1000px;
     border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-lg);
     background-color: #fff;
     text-align: left;
 }
 #inner {
-    background-color: #fff;
     padding: 4px 32px 20px 32px;
 }
 #content {
@@ -145,8 +152,8 @@ a:visited,
     color: #555;
 }
 .btn {
-
     min-width: 150px;
+    box-shadow: 1px 0px 1px rgba(0,0,0,.1);
 }
 .btn .glyphicon,
 a .glyphicon {

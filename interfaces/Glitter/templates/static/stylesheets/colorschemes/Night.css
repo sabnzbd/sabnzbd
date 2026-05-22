@@ -7,7 +7,7 @@ body,
 nav {
     background-color: #444444 !important;
     border: 0 !important;
-    border-radius: 6px;
+    border-radius: var(--radius-lg);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -273,7 +273,7 @@ hr {
 }
 
 .modal-content {
-    border-color: #727272;
+    background-color: #727272;
     border-top: none;
 }
 

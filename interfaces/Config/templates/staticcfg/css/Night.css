@@ -220,12 +220,6 @@ col2 h3 a,
     color: #EBEBEB;
 }
 
-.container,
-#content {
-    background-color: unset !important;
-}
-
-
 .Servers .ct-series-a .ct-line,
 .Servers .ct-series-a .ct-point {
     stroke: #EBEBEB;
