@@ -7,7 +7,8 @@ body,
 nav {
     background-color: #444444 !important;
     border: 0 !important;
-    border-bottom: 1px solid black !important;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 nav .btn {
@@ -73,10 +74,16 @@ legend,
     color: #F95151;
 }
 
-.container,
 .modal-body,
 .modal-footer {
     background-color: #727272;
+}
+
+.queue,
+.history {
+    background-color: #727272;
+    border-color: #808080;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .dropdown-menu,

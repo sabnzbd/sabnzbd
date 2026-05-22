@@ -15,9 +15,13 @@ h2 {
 }
 
 .main-navbar {
-    padding: 0 0 0 0;
-    margin-bottom: 0px;
+    margin-bottom: 2px;
     z-index: 999;
+
+}
+
+.navbar.main-navbar {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .sparkline-container svg {
@@ -50,7 +54,6 @@ h2 {
 
 .navbar-collapse.in .dropdown-menu {
     position: absolute;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     background-color: #ffffff;
     border: 1px solid #cccccc;
     margin-left: -220px;
@@ -94,6 +97,12 @@ h2 {
 
 .active-on-queue-finish-menu .icon-bar {
     background-color: red;
+}
+
+/* Fix: middle caret in pause group gets wrong right-radius from Bootstrap's dropdown-toggle rule */
+.navbar-header .btn-group .btn-group > .dropdown-toggle:not(:last-child) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
 .navbar-timeleft {
@@ -246,8 +255,6 @@ li.dropdown {
 
 .main-content {
     padding-top: 8px;
-    background-color: #FFF;
-    border: 1px solid rgba(0, 0, 0, 0.2);
     margin-top: 0;
     margin-bottom: 30px;
 }
@@ -258,6 +265,7 @@ li.dropdown {
     left: 50%;
     background-color: white;
     border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
     padding: 10px 25px;
     z-index: 2005;
     width: 250px;
@@ -508,6 +516,12 @@ tbody>tr>td:last-child {
 
 .queue {
     position: relative;
+    background-color: #FFF;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 8px 10px 0;
+    margin-bottom: 12px;
 }
 
 .queue h2 {
@@ -773,10 +787,10 @@ tr.queue-item>td:first-child>a {
     position: relative;
     height: 24px;
     line-height: 24px;
-    overflow: visible;
+    overflow: hidden;
     margin-bottom: 0;
+    border-radius: 4px;
     box-shadow: inset 0 0px 2px rgba(0, 0, 0, 0.2);
-    -webkit-box-shadow: inset 0 0px 2px rgba(0, 0, 0, 0.2);
 }
 
 .progress>span,
@@ -850,7 +864,7 @@ tr.queue-item>td:first-child>a {
 .multioperations-selector {
     padding-left: 10px;
     border: 1px solid #F0F0F0;
-    margin: -7px 0px 10px;
+    margin: 0 0 0;
     background-color: #f9f9f9;
     max-width: 720px;
     float: right;
@@ -989,8 +1003,13 @@ tr.queue-item>td:first-child>a {
 ***/
 
 .history {
-    margin-top: 2px;
     position: relative;
+    background-color: #FFF;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 8px 10px 0;
+    margin-bottom: 12px;
 }
 
 .history-header {
@@ -998,6 +1017,12 @@ tr.queue-item>td:first-child>a {
     width: 100%;
     display: flex;
     justify-content: space-between;
+}
+
+.history-footer,
+.queue-footer {
+    overflow: hidden; /* clearfix for floated children */
+    padding-bottom: 8px;
 }
 
 .history-header a {
@@ -1164,8 +1189,6 @@ tr.queue-item>td:first-child>a {
     width: 130px !important;
     transition: width 0.2s ease-out !important;
     border: 1px solid #dddddd;
-    box-shadow: none !important;
-    -webkit-box-shadow: none !important;
 }
 
 .search-box input:focus,
@@ -2065,7 +2088,6 @@ a:focus {
 
 .dropdown-menu {
     margin-top: 0;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     display: block;
     visibility: hidden;
     opacity: 0;
@@ -2144,7 +2166,6 @@ legend {
 
 .nav-tabs>li.active>a,
 .nav-tabs>li.active>a:hover {
-    box-shadow: 0px -1px 1px 0px rgba(0,0,0,0.08);
     color: black;
 }
 
@@ -2188,7 +2209,9 @@ legend {
 }
 
 .modal-content {
-    box-shadow: none;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 .modal-backdrop {

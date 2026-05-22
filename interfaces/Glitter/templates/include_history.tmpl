@@ -132,6 +132,8 @@
         </tbody>
     </table>
 
+    <div class="history-footer">
+
     <div class="input-group search-box">
         <input type="text" class="form-control" placeholder="$T('Glitter-search')" required data-bind="textInput: history.searchTerm, event: { keydown: history.clearSearchTerm }" />
         <a data-bind="event: { mousedown: history.clearSearchTerm }">
@@ -172,4 +174,6 @@
         <span data-bind="text: history.downloadedMonth"></span>B $T('Glitter-thisMonth')
         <span data-bind="text: history.downloadedTotal"></span>B $T('Glitter-total')
     </div>
+
+    </div><!-- /.history-footer -->
 </div>
