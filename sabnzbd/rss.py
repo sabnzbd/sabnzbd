@@ -742,7 +742,7 @@ class RSSReader:
         download: bool,
         force: bool,
         readout: bool,
-    ) -> tuple[Optional[FeedEvaluation], Optional[bool], Optional[bool]]:
+    ) -> tuple[Optional[FeedEvaluation], bool, bool]:
         """Evaluate a normalised entry against filters
 
         Returns a tuple (evaluation, should_download, star) or None if the entry should be skipped.
@@ -752,7 +752,7 @@ class RSSReader:
         job_status = job.get("status", " ")[0] if job else "N"
 
         if job_status not in "NGB" and not (job_status == "X" and readout):
-            return None, None, None
+            return None, False, False
 
         # Match this title against all filters
         logging.debug("Trying title=%r, size=%d", feed_entry.title, feed_entry.size)
@@ -764,7 +764,7 @@ class RSSReader:
             episode=feed_entry.episode,
         )
 
-        is_starred = job and job.get("status", "").endswith("*")
+        is_starred = bool(job and job.get("status", "").endswith("*"))
         star = first or is_starred
         should_download = (download and not first and not is_starred) or force
 
