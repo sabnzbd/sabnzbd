@@ -93,8 +93,8 @@ class TestRSS:
         assert job_data["infourl"] == "https://nzbgeek.info/geekseek.php?guid=FakeKey"
         assert job_data["orgcat"] == "TV > HD"
         assert job_data["cat"] == "tv"
-        assert job_data["episode"] == "3"
-        assert job_data["season"] == "4"
+        assert job_data["episode"] == 3
+        assert job_data["season"] == 4
         assert job_data["size"] == 1209464000
 
         # feedparser returns UTC so SABnzbd converts to locale
@@ -121,8 +121,8 @@ class TestRSS:
         assert job_data["infourl"] == "https://nzbfinder.ws/details/FakeKey"
         assert job_data["orgcat"] == "Movies > HD"
         assert job_data["cat"] == "movies"
-        assert job_data["episode"] == "720"
-        assert job_data["season"] == "2018"
+        assert job_data["episode"] == 720
+        assert job_data["season"] == 2018
         assert job_data["size"] == 5164539914
 
         # feedparser returns UTC so SABnzbd converts to locale
@@ -206,7 +206,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="0", season="0", episode="0"),
+                dict(rule=0, season=0, episode=0),
             ),
             (
                 (None, None, None, None),
@@ -216,7 +216,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="1", season="0", episode="0"),
+                dict(rule=1, season=0, episode=0),
             ),
             (
                 (None, None, None, None),
@@ -226,7 +226,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="1", season="5", episode="2"),
+                dict(rule=1, season=5, episode=2),
             ),
             (
                 (None, None, None, None),
@@ -236,7 +236,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="0", season="1", episode="2"),
+                dict(rule=0, season=1, episode=2),
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -246,7 +246,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="0", season="0", episode="0", prio=str(LOW_PRIORITY)),
+                dict(rule=0, season=0, episode=0, prio=LOW_PRIORITY),
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -256,7 +256,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="0", season="0", episode="0", prio=str(HIGH_PRIORITY)),
+                dict(rule=0, season=0, episode=0, prio=HIGH_PRIORITY),
             ),
             (
                 (None, 1, None, None),
@@ -266,7 +266,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="0", season="0", episode="0", pp=None),
+                dict(rule=0, season=0, episode=0, pp=None),
             ),
             (
                 (None, 1, None, None),
@@ -276,7 +276,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule="0", season="0", episode="0", pp=3),
+                dict(rule=0, season=0, episode=0, pp=3),
             ),
             (  # category overrides
                 ("tv", 1, "", DEFAULT_PRIORITY),
@@ -287,13 +287,13 @@ class TestRSS:
                 0,
                 0,
                 dict(
-                    rule="0",
-                    season="0",
-                    episode="0",
+                    rule=0,
+                    season=0,
+                    episode=0,
                     cat="evaluator",
                     pp=1,
                     script=None,
-                    prio=str(DEFAULT_PRIORITY),
+                    prio=DEFAULT_PRIORITY,
                 ),
             ),
             (  # category with rule overrides
@@ -305,13 +305,13 @@ class TestRSS:
                 0,
                 0,
                 dict(
-                    rule="0",
-                    season="0",
-                    episode="0",
+                    rule=0,
+                    season=0,
+                    episode=0,
                     cat="evaluator",
                     pp=2,
                     script="override.py",
-                    prio=str(DEFAULT_PRIORITY),
+                    prio=DEFAULT_PRIORITY,
                 ),
             ),
             (
@@ -323,11 +323,27 @@ class TestRSS:
                 0,
                 0,
                 dict(
-                    rule="0",
-                    season="0",
-                    episode="0",
+                    rule=0,
+                    season=0,
+                    episode=0,
                     cat="tv",
-                    prio=str(PAUSED_PRIORITY),
+                    prio=PAUSED_PRIORITY,
+                ),
+            ),
+            (
+                ("", "", "", PAUSED_PRIORITY),
+                [("", "", "", "F", "", "", "")],
+                "Title",
+                "TV > HD",
+                1000,
+                3,
+                5,
+                dict(
+                    rule=0,
+                    season=3,
+                    episode=5,
+                    cat="tv",
+                    prio=PAUSED_PRIORITY,
                 ),
             ),
         ],
@@ -373,10 +389,24 @@ class TestRSS:
                 SubElement(item, "size").text = str(size)
 
             if season is not None:
-                SubElement(item, "season").text = str(season)
+                SubElement(
+                    item,
+                    "newznab:attr",
+                    {
+                        "name": "season",
+                        "value": str(season),
+                    },
+                )
 
             if episode is not None:
-                SubElement(item, "episode").text = str(episode)
+                SubElement(
+                    item,
+                    "newznab:attr",
+                    {
+                        "name": "episode",
+                        "value": str(episode),
+                    },
+                )
 
             xml_bytes = tostring(root, encoding="utf-8")
 

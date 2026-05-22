@@ -120,8 +120,8 @@ class NormalisedEntry:
 
         # Maybe the newznab also provided SxxExx info
         try:
-            season = re.findall(r"\d+", entry["newznab"]["season"])[0]
-            episode = re.findall(r"\d+", entry["newznab"]["episode"])[0]
+            season = int_conv(re.findall(r"\d+", entry["newznab"]["season"])[0])
+            episode = int_conv(re.findall(r"\d+", entry["newznab"]["episode"])[0])
         except (KeyError, IndexError):
             season = episode = 0
 
@@ -390,8 +390,8 @@ class FeedConfig:
         # Fill in missing season / episode information when F/S rules exist
         if self.has_type("F", "S") and (not feed_season or not feed_episode):
             show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
-            feed_season = show_analysis.info.get("season_num")
-            feed_episode = show_analysis.info.get("episode_num")
+            feed_season = int_conv(show_analysis.info.get("season_num"))
+            feed_episode = int_conv(show_analysis.info.get("episode_num"))
 
         # Match against all filters until a positive or negative match
         for idx, rule in enumerate(self.rules):
@@ -457,8 +457,8 @@ class FeedConfig:
         return FeedEvaluation(
             matched=rule_matched,
             rule_index=matching_rule_index,
-            season=int_conv(feed_season),
-            episode=int_conv(feed_episode),
+            season=feed_season,
+            episode=feed_episode,
             category=resolved_cat,
             pp=resolved_pp,
             script=resolved_script,
@@ -780,14 +780,14 @@ class RSSReader:
             "cat": resolved_entry.cat,
             "pp": resolved_entry.pp,
             "script": resolved_entry.script,
-            "prio": str(resolved_entry.priority) if resolved_entry.priority is not None else str(DEFAULT_PRIORITY),
+            "prio": resolved_entry.priority if resolved_entry.priority is not None else DEFAULT_PRIORITY,
             "orgcat": resolved_entry.orgcat,
             "size": resolved_entry.size,
             "age": resolved_entry.age,
             "time": time.time(),
-            "rule": str(resolved_entry.rule),
-            "season": str(resolved_entry.season),
-            "episode": str(resolved_entry.episode),
+            "rule": resolved_entry.rule,
+            "season": resolved_entry.season,
+            "episode": resolved_entry.episode,
             "status": resolved_entry.status,
         }
 
