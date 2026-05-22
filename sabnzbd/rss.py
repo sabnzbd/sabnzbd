@@ -376,8 +376,8 @@ class FeedConfig:
         """Evaluate rules for a single RSS entry."""
         entry_cat = category
         rule_matched: bool = False
-        matching_rule_index: int = 0
         last_rule: Optional[FeedRule] = None
+        last_rule_index: int = 0
         feed_season: int = season
         feed_episode: int = episode
 
@@ -410,9 +410,9 @@ class FeedConfig:
             if outcome is None:
                 continue
 
-            matching_rule_index = idx
-            rule_matched = outcome
             last_rule = rule
+            last_rule_index = idx
+            rule_matched = outcome
             break
 
         rule_has_category = bool(last_rule and last_rule.category)
@@ -456,7 +456,7 @@ class FeedConfig:
 
         return FeedEvaluation(
             matched=rule_matched,
-            rule_index=matching_rule_index,
+            rule_index=last_rule_index,
             season=feed_season,
             episode=feed_episode,
             category=resolved_cat,
