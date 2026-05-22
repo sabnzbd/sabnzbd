@@ -829,12 +829,13 @@ class NzbObject(TryList):
 
         # Substitute renamed files
         if renames := load_data(RENAMES_FILE, self.admin_path, remove=True):
-            for name in renames:
-                if name in existing_files or renames[name] in existing_files:
+            for name, old_name in renames.items():
+                if name in existing_files or old_name in existing_files:
                     if name in existing_files:
                         existing_files.remove(name)
-                    existing_files.append(renames[name])
-            self.renames = renames
+                    if os.path.exists(os.path.join(wdir, old_name)):
+                        existing_files.append(old_name)
+                self.renamed_file(name, old_name)
 
         # Looking for the longest name first, minimizes the chance on a mismatch
         existing_files.sort(key=len)
@@ -1380,15 +1381,17 @@ class NzbObject(TryList):
             self.direct_unpacker.set_volumes_for_nzo()
 
     @synchronized()
-    def renamed_file(self, name_set, old_name=None):
+    def renamed_file(self, renames_or_name: Union[dict[str, str], str], old_name: Optional[str] = None):
         """Save renames at various stages (Download/PP)
         to be used on Retry. Accepts strings and dicts.
         """
-        if not old_name:
+        if isinstance(renames_or_name, dict):
             # Add to dict
-            self.renames.update(name_set)
-        else:
-            self.renames[name_set] = old_name
+            for name, old_name in renames_or_name.items():
+                if old_name is not None:
+                    self.renames[name] = self.renames.pop(old_name, old_name)
+        elif old_name is not None:
+            self.renames[renames_or_name] = self.renames.pop(old_name, old_name)
 
     @synchronized()
     def get_unique_filepath(self, filename: str) -> str:
