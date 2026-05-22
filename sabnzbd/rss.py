@@ -120,8 +120,8 @@ class NormalisedEntry:
 
         # Maybe the newznab also provided SxxExx info
         try:
-            season = re.findall(r"\d+", entry["newznab"]["season"])[0]
-            episode = re.findall(r"\d+", entry["newznab"]["episode"])[0]
+            season = int_conv(re.findall(r"\d+", entry["newznab"]["season"])[0])
+            episode = int_conv(re.findall(r"\d+", entry["newznab"]["episode"])[0])
         except (KeyError, IndexError):
             season = episode = 0
 
@@ -376,8 +376,8 @@ class FeedConfig:
         """Evaluate rules for a single RSS entry."""
         entry_cat = category
         rule_matched: bool = False
-        matching_rule: Optional[FeedRule] = None
-        matching_rule_index: int = 0
+        last_rule: Optional[FeedRule] = None
+        last_rule_index: int = 0
         feed_season: int = season
         feed_episode: int = episode
 
@@ -387,24 +387,11 @@ class FeedConfig:
         resolved_script: Optional[str] = self.default_script
         resolved_priority: Optional[int] = self.default_priority
 
-        # If there are no rules; return early
-        if not self.rules:
-            return FeedEvaluation(
-                matched=rule_matched,
-                rule_index=matching_rule_index,
-                season=int_conv(feed_season),
-                episode=int_conv(feed_episode),
-                category=resolved_cat,
-                pp=resolved_pp,
-                script=resolved_script,
-                priority=resolved_priority,
-            )
-
         # Fill in missing season / episode information when F/S rules exist
         if self.has_type("F", "S") and (not feed_season or not feed_episode):
             show_analysis = sabnzbd.sorting.BasicAnalyzer(title)
-            feed_season = show_analysis.info.get("season_num")
-            feed_episode = show_analysis.info.get("episode_num")
+            feed_season = int_conv(show_analysis.info.get("season_num"))
+            feed_episode = int_conv(show_analysis.info.get("episode_num"))
 
         # Match against all filters until a positive or negative match
         for idx, rule in enumerate(self.rules):
@@ -423,65 +410,60 @@ class FeedConfig:
             if outcome is None:
                 continue
 
-            matching_rule_index = idx
+            last_rule = rule
+            last_rule_index = idx
             rule_matched = outcome
-            matching_rule = rule if outcome else None
             break
 
-        if matching_rule is None:
-            effective_category = (
-                cat_convert(entry_cat) if entry_cat and self.default_category is None else self.default_category
-            )
-        else:
-            effective_category = matching_rule.category or cat_convert(entry_cat) or self.default_category
+        rule_has_category = bool(last_rule and last_rule.category)
 
-        resolved_cat, resolved_pp, resolved_script, resolved_priority = self._resolve_options(
-            effective_category=effective_category,
-            matching_rule=matching_rule,
-        )
+        # Category resolution
+        if not rule_matched and self.default_category:
+            effective_category = self.default_category
+        elif rule_matched and rule_has_category:
+            effective_category = last_rule.category
+        elif entry_cat and not self.default_category:
+            effective_category = cat_convert(entry_cat)
+        else:
+            effective_category = resolved_cat
+
+        # Category-derived defaults
+        if effective_category:
+            resolved_cat, cat_pp, cat_script, cat_prio = cat_to_opts(effective_category)
+            cat_pp = _normalise_pp(cat_pp)
+            cat_script = _normalise_str_or_none(cat_script)
+            cat_prio = _normalise_priority(cat_prio)
+        else:
+            resolved_cat = cat_pp = cat_script = cat_prio = None
+
+        # PP resolution
+        if last_rule and last_rule.pp is not None:
+            resolved_pp = last_rule.pp
+        elif not (rule_has_category or entry_cat):
+            resolved_pp = cat_pp
+
+        # Script resolution
+        if last_rule and last_rule.script is not None:
+            resolved_script = last_rule.script
+        elif not (rule_has_category or entry_cat):
+            resolved_script = cat_script
+
+        # Priority resolution
+        if last_rule and last_rule.priority not in (DEFAULT_PRIORITY, None):
+            resolved_priority = last_rule.priority
+        elif not ((last_rule and last_rule.priority != DEFAULT_PRIORITY) or entry_cat):
+            resolved_priority = cat_prio
 
         return FeedEvaluation(
             matched=rule_matched,
-            rule_index=matching_rule_index,
-            season=int_conv(feed_season),
-            episode=int_conv(feed_episode),
+            rule_index=last_rule_index,
+            season=feed_season,
+            episode=feed_episode,
             category=resolved_cat,
             pp=resolved_pp,
             script=resolved_script,
             priority=resolved_priority,
         )
-
-    def _resolve_options(
-        self,
-        *,
-        effective_category: Optional[str],
-        matching_rule: Optional[FeedRule],
-    ) -> tuple[Optional[str], Optional[int], Optional[str], Optional[int]]:
-        """Resolve options for a feed rule."""
-        if effective_category:
-            cat, cat_pp, cat_script, cat_prio = cat_to_opts(effective_category)
-            cat_pp = _normalise_pp(cat_pp)
-            cat_script = _normalise_str_or_none(cat_script)
-            cat_prio = _normalise_priority(cat_prio)
-        else:
-            cat = cat_pp = cat_script = cat_prio = None
-
-        resolved_pp = first_not_none(
-            matching_rule.pp if matching_rule else None,
-            cat_pp,
-            self.default_pp,
-        )
-        resolved_script = first_not_none(
-            matching_rule.script if matching_rule else None,
-            cat_script,
-            self.default_script,
-        )
-        resolved_priority = first_not_none(
-            matching_rule.priority if matching_rule else None,
-            cat_prio,
-            self.default_priority,
-        )
-        return cat, resolved_pp, resolved_script, resolved_priority
 
 
 class RSSReader:
@@ -760,7 +742,7 @@ class RSSReader:
         download: bool,
         force: bool,
         readout: bool,
-    ) -> tuple[Optional[FeedEvaluation], Optional[bool], Optional[bool]]:
+    ) -> tuple[Optional[FeedEvaluation], bool, bool]:
         """Evaluate a normalised entry against filters
 
         Returns a tuple (evaluation, should_download, star) or None if the entry should be skipped.
@@ -770,7 +752,7 @@ class RSSReader:
         job_status = job.get("status", " ")[0] if job else "N"
 
         if job_status not in "NGB" and not (job_status == "X" and readout):
-            return None, None, None
+            return None, False, False
 
         # Match this title against all filters
         logging.debug("Trying title=%r, size=%d", feed_entry.title, feed_entry.size)
@@ -782,7 +764,7 @@ class RSSReader:
             episode=feed_entry.episode,
         )
 
-        is_starred = job and job.get("status", "").endswith("*")
+        is_starred = bool(job and job.get("status", "").endswith("*"))
         star = first or is_starred
         should_download = (download and not first and not is_starred) or force
 
@@ -798,14 +780,14 @@ class RSSReader:
             "cat": resolved_entry.cat,
             "pp": resolved_entry.pp,
             "script": resolved_entry.script,
-            "prio": str(resolved_entry.priority) if resolved_entry.priority is not None else str(DEFAULT_PRIORITY),
+            "prio": resolved_entry.priority if resolved_entry.priority is not None else DEFAULT_PRIORITY,
             "orgcat": resolved_entry.orgcat,
             "size": resolved_entry.size,
             "age": resolved_entry.age,
             "time": time.time(),
-            "rule": str(resolved_entry.rule),
-            "season": str(resolved_entry.season),
-            "episode": str(resolved_entry.episode),
+            "rule": resolved_entry.rule,
+            "season": resolved_entry.season,
+            "episode": resolved_entry.episode,
             "status": resolved_entry.status,
         }
 
@@ -992,14 +974,6 @@ def _normalise_pp(value) -> Optional[int]:
             return iv
     except (TypeError, ValueError):
         pass
-    return None
-
-
-def first_not_none(*args):
-    """Return first value which is not None"""
-    for a in args:
-        if a is not None:
-            return a
     return None
 
 
