@@ -2,12 +2,32 @@
     /* Border radius scale */
     --radius-sm:    4px;   /* dropdowns */
     --radius-md:    4px;   /* inputs, buttons, section headers */
-    --radius-lg:    6px;  /* cards, modals */
+    --radius-lg:    6px;   /* cards, modals */
+
+    /* Color palette — light mode defaults; override in Night.css */
+    --clr-page-bg:         #E4E4E4;   /* body/page background */
+    --clr-surface:         #FFFFFF;   /* cards/sections (.section, #addFeed, etc.) */
+    --clr-surface-alt:     #F8F8F8;  /* alternating rows, .alt elements */
+    --clr-surface-hover:   #f6f6f6;  /* hovered rows and buttons */
+    --clr-border:          #dfdede;  /* card/section borders */
+    --clr-border-subtle:   #E5E5E5;  /* inner dividers (#subscriptions, data-row) */
+    --clr-text:            #000000;  /* primary body text */
+    --clr-text-muted:      #666666;  /* secondary text (.col2 p, .feed-row td) */
+    --clr-error:           red;       /* errors, failed items */
+    --clr-link:            inherit;   /* links (Bootstrap default in light) */
+    --clr-input-bg:        #FFFFFF;   /* form inputs, buttons */
+    --clr-input-border:    #d4d0c8;  /* input borders */
+    --clr-dropdown-bg:     #FFFFFF;   /* dropdown menus */
+    --clr-modal-bg:        #FFFFFF;   /* modal body/footer */
+    --clr-modal-header-bg: #3C3C3C;  /* modal header (dark in both themes) */
+    --clr-table-bg:        #FFFFFF;   /* table background */
+    --clr-table-row-alt:   #F8F8F8;  /* alternating table row background */
 }
 
 body {
     overflow-y: scroll;
-    background-color: #E4E4E4;
+    background-color: var(--clr-page-bg);
+    color: var(--clr-text);
 }
 #logo {
     display: block;
@@ -15,7 +35,7 @@ body {
 }
 
 #content {
-    color: #000;
+    color: var(--clr-text);
     padding: 65px 20px 20px;
     font-size: 13px;
 }
@@ -43,14 +63,14 @@ body {
 .advanced-buttonSeperator {
     width: 1px;
     height: 34px;
-    background-color: #dfdede;
+    background-color: var(--clr-border);
     float: right;
     margin: 0px 10px;
 }
 .section, #addFeed, #addFeedContent {
     overflow: hidden !important;
-    background-color: #FFF;
-    border: 1px solid #dfdede;
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
     border-radius: var(--radius-lg);
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     margin-bottom: 12px;
@@ -171,7 +191,7 @@ input[type="checkbox"]+.desc {
 .col2 p,
 .col2-cats {
     font-size: 12px;
-    color: #666;
+    color: var(--clr-text-muted);
     margin: 1em 0;
 }
 .col2 p {
@@ -190,7 +210,7 @@ input[type="checkbox"]+.desc {
 }
 .Key tr:nth-child(odd),
 .tab-pane tr:nth-child(odd) {
-    background-color: #F8F8F8;
+    background-color: var(--clr-table-row-alt);
 }
 .field-pair:last-child,
 .field-pair.no-field-pair-bg {
@@ -198,7 +218,7 @@ input[type="checkbox"]+.desc {
 }
 .alt,
 .infoTableSeperator.alt {
-    background-color: #F8F8F8;
+    background-color: var(--clr-surface-alt);
 }
 .success {
     color: #5cb85c !important;
@@ -271,7 +291,8 @@ input[type="text"]:focus,
 input[type="time"]:focus,
 input[type="url"]:focus,
 input[type="week"]:focus {
-    background-color: #fffff0;
+    background-color: var(--clr-surface-hover);
+    color: var(--clr-text);
     border: 1px solid #aaa;
 }
 
@@ -557,24 +578,26 @@ tr.separator {
     width: 160px;
 }
 .infoTableSeperator {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--clr-border-subtle);
 }
 .icon {
     padding-left: 5px;
 }
 .modal-content {
+    background-color: var(--clr-modal-bg);
     box-shadow: 0 8px 30px rgba(0,0,0,0.2);
     border-radius: var(--radius-lg);
     overflow: hidden;
 }
 .modal-backdrop {
-    background-color: white;
+    background-color: var(--clr-page-bg);
 }
 .modal-backdrop.in {
     opacity: 0.8;
 }
 .modal-body {
     padding-bottom: 0;
+    background-color: var(--clr-modal-bg);
 }
 .modal-dialog {
     padding: 3px;
@@ -583,7 +606,7 @@ tr.separator {
     word-break: break-all;
 }
 .modal-header {
-    background-color: #3C3C3C;
+    background-color: var(--clr-modal-header-bg);
     color: white;
     border: 0;
     padding:11px 12px 8px;
@@ -704,11 +727,11 @@ h2.activeRSS {
     color: red !important;
 }
 #subscriptions {
-    border: 1px solid #E5E5E5;
+    border: 1px solid var(--clr-border-subtle);
     width: 100%;
 }
 .data-row {
-    border-top: 1px solid #E5E5E5;
+    border-top: 1px solid var(--clr-border-subtle);
 }
 #subscriptions td {
     border: 0 none;
@@ -746,7 +769,7 @@ h2.activeRSS {
     white-space: nowrap;
 }
 .feed-row td {
-    color: #777;
+    color: var(--clr-text-muted);
     max-width: 515px;
     padding: 0 0 .5em;
 }
@@ -762,7 +785,7 @@ h2.activeRSS {
     text-align: left;
 }
 .tab-content .catTable tbody {
-    border: 1px solid #ddd;
+    border: 1px solid var(--clr-border);
 }
 .tab-content .catTable td {
     line-height: 2em;
@@ -771,7 +794,7 @@ h2.activeRSS {
     word-break: break-all;
 }
 .tab-content .catTable tr:hover td {
-    background-color: #F2F2F2;
+    background-color: var(--clr-surface-hover);
 }
 span.count {
     background-color: #6E6E6E;
@@ -821,7 +844,7 @@ input[type=radio] {
 
 input[type="button"],
 input[type="submit"] {
-    color: #333;
+    color: var(--clr-text);
     display:inline-block;
     padding:6px 12px;
     margin-bottom: 0;
@@ -832,17 +855,17 @@ input[type="submit"] {
     white-space:nowrap;
     vertical-align:middle;
     cursor:pointer;
-    background: #fff none;
-    border:1px solid #ccc;
+    background: var(--clr-input-bg) none;
+    border:1px solid var(--clr-input-border);
     height: 34px;
     border-radius: var(--radius-md);
 }
 
 input[type="button"]:hover,
 input[type="submit"]:hover {
-    color: #333;
-    background-color: #e6e6e6;
-    border-color: #adadad;
+    color: var(--clr-text);
+    background-color: var(--clr-surface-hover);
+    border-color: var(--clr-input-border);
 }
 
 input[type="text"],
@@ -855,7 +878,7 @@ textarea,
 select {
     line-height:1.42857143;
     padding:6px 12px;
-    border: 1px solid #d4d0c8;
+    border: 1px solid var(--clr-input-border);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
     display:inline-block;
     vertical-align:middle;
@@ -863,7 +886,8 @@ select {
     min-height: 34px;
     min-width: 55px;
     font-size: 13px;
-    background-color: white;
+    background-color: var(--clr-input-bg);
+    color: var(--clr-text);
     border-radius: var(--radius-md);
 }
 
@@ -1262,6 +1286,51 @@ input[type="checkbox"] {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(359deg); }
+}
+
+/***
+    Theme-aware rules
+    These use CSS variables so Night.css only needs to override :root.
+    Most color properties are already applied at each selector's first declaration above;
+    only rules with no earlier home live here.
+***/
+
+/* Dropdown menus */
+.dropdown-menu {
+    background-color: var(--clr-dropdown-bg);
+}
+
+.dropdown-menu>li>a {
+    color: var(--clr-text);
+}
+
+.dropdown-menu>li>a:hover,
+.dropdown-menu>li>a:focus {
+    background-color: var(--clr-surface-hover);
+    color: var(--clr-text);
+}
+
+/* Modal footer (modal-body bg is set at its first declaration above) */
+.modal-footer {
+    background-color: var(--clr-modal-bg);
+}
+
+/* Table rows */
+.table>tbody>tr:nth-child(odd),
+.table-striped>tbody>tr:nth-child(odd) {
+    background-color: var(--clr-table-row-alt);
+    color: var(--clr-text);
+}
+
+.table>tbody>tr:nth-child(even),
+.table-striped>tbody>tr:nth-child(even) {
+    background-color: var(--clr-table-bg);
+    color: var(--clr-text);
+}
+
+/* Placeholder text */
+::placeholder {
+    color: var(--clr-text-muted) !important;
 }
 
 /***

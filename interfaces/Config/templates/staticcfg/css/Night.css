@@ -1,37 +1,55 @@
-body {
-    background-color: black;
-    color: #EBEBEB !important;
+/*
+ * Night theme — overrides :root color tokens defined in style.css.
+ * Only structural/behavioural rules that can't be expressed as color tokens remain below.
+ */
+:root {
+    --clr-page-bg:         black;
+    --clr-surface:         #303030;
+    --clr-surface-alt:     #444444;
+    --clr-surface-hover:   #666666;
+    --clr-border:          #555555;
+    --clr-border-subtle:   #252525;
+    --clr-text:            #EBEBEB;
+    --clr-text-muted:      #c7c7c7;
+    --clr-error:           #ff3333;
+    --clr-link:            #63a7e1;
+    --clr-input-bg:        #555555;
+    --clr-input-border:    #252525;
+    --clr-dropdown-bg:     #444444;
+    --clr-modal-bg:        #727272;
+    --clr-modal-header-bg: #3C3C3C;
+    --clr-table-bg:        #555555;
+    --clr-table-row-alt:   #444444;
 }
 
+/* Links use a custom colour in dark mode */
 a:not(.btn) {
-    color: #63a7e1;
+    color: var(--clr-link);
 }
 
+/* Buttons get a subtle white shadow in dark mode for depth */
 .btn {
-    box-shadow: 1px 1px 1px rgba(255, 255, 255, .1) !important;
+    box-shadow: 1px 1px 1px rgba(255, 255, 255, .1);
 }
 
+/* Borders on interactive controls */
 .btn:not(.btn-danger),
 .btn-default,
 input,
 select,
 textarea,
 .advanced-button,
-.list-group-item  {
-    border-color: #252525 !important;
+.list-group-item {
+    border-color: var(--clr-input-border) !important;
 }
 
-.col2 p,
-.col2-cats {
-    color: #AAA;
-}
-
+/* Sidebar section header */
 .col2 h3 {
-    background: none repeat scroll 0 0 #555555;
+    background: none repeat scroll 0 0 var(--clr-surface-alt);
 }
 
+/* Various elements that need the alt surface */
 .catTable,
-.dropdown-menu,
 .dropdown-menu .divider,
 .Key tr:nth-child(odd),
 .language:hover,
@@ -50,19 +68,29 @@ textarea,
 ul.tabs li.active a,
 select[disabled],
 select:hover {
-    background-color: #444444 !important;
-    color: #EBEBEB !important;
+    background-color: var(--clr-surface-alt) !important;
+    color: var(--clr-text) !important;
 }
 
+/* Button hovers */
+.btn:not(.btn-danger):hover,
+.nav.nav-tabs a:hover,
+.nav.nav-tabs li.active a:hover{
+    background-color: var(--clr-surface-hover);
+}
+
+/* Error / failed colour */
 .failed {
-    color: #ff3333 !important;
+    color: var(--clr-error) !important;
 }
 
+/* Secondary text */
 #rightGreyText,
 small {
-    color: #c7c7c7 !important;
+    color: var(--clr-text-muted) !important;
 }
 
+/* Controls and form elements using input bg */
 .Categories form.sorting-row:nth-child(2n-1) tr,
 .advanced-button,
 .advanced-buttonSeperator,
@@ -95,54 +123,12 @@ input[type="date"],
 input[type="number"],
 input[type="password"],
 input[disabled],
-textarea,
 select {
-    background-color: #555555;
-    color: #EBEBEB;
+    background-color: var(--clr-input-bg);
+    color: var(--clr-text);
 }
 
-.btn:hover:not(.btn-danger),
-.btn-default:hover,
-.tab-content .catTable tr:hover td,
-input:hover,
-textarea:hover,
-a.list-group-item:hover,
-select:hover,
-textarea:hover,
-.nav-tabs li a:hover,
-.nav-tabs li.active a,
-input[type="date"]:hover,
-input[type="datetime"]:hover,
-input[type="datetime-local"]:hover,
-input[type="email"]:hover,
-input[type="month"]:hover,
-input[type="number"]:hover,
-input[type="password"]:hover,
-input[type="search"]:hover,
-input[type="tel"]:hover,
-input[type="text"]:hover,
-input[type="time"]:hover,
-input[type="url"]:hover,
-input[type="week"]:hover,
-textarea:focus,
-select:focus,
-input[type="date"]:focus,
-input[type="datetime"]:focus,
-input[type="datetime-local"]:focus,
-input[type="email"]:focus,
-input[type="month"]:focus,
-input[type="number"]:focus,
-input[type="password"]:focus,
-input[type="search"]:focus,
-input[type="tel"]:focus,
-input[type="text"]:focus,
-input[type="time"]:focus,
-input[type="url"]:focus,
-input[type="week"]:focus {
-    background-color: #666;
-    color: #EBEBEB;
-}
-
+/* Focus / active border */
 .btn-default:focus,
 .form-control:focus,
 input:focus,
@@ -153,10 +139,12 @@ select:focus {
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3) !important;
 }
 
+/* Modal backdrop */
 .modal-backdrop {
     background-color: #262626 !important;
 }
 
+/* Table structural */
 .Key tr,
 .Config .table {
     border: none;
@@ -167,17 +155,19 @@ select:focus {
 .infoTableSeperator,
 .modal-footer,
 .data-row {
-    border-top: none
+    border-top: none;
 }
 
 hr {
-    border-top: 1px solid #555555;
+    border-top: 1px solid var(--clr-border);
 }
 
+/* Danger button dark border */
 .btn-danger {
     border-color: #7b2b28;
 }
 
+/* Section borders */
 .tab-content .catTable tbody,
 ul.tabs a,
 .section,
@@ -185,16 +175,18 @@ ul.tabs a,
 #addFeedContent,
 #subscriptions,
 .RSS form[action="add_rss_feed"] tr:nth-child(even) {
-    border: 1px solid #555555;
+    border: 1px solid var(--clr-border);
 }
 
+/* Hover states */
 .Categories form:first-of-type tr:last-of-type,
 .default,
 .dropdown-menu>li>a:focus,
 .dropdown-menu>li>a:hover {
-    background-color: #696969;
+    background-color: var(--clr-surface-hover);
 }
 
+/* Elements using primary text colour */
 .activeRSS,
 .activeRSS a,
 .activeRSS a:visited,
@@ -214,69 +206,73 @@ ul.tabs a,
 a.wizard-advanced-settings,
 .quoteBlock a,
 a.main-helplink,
-col2 h3 a,
+.col2 h3 a,
 .text-center a,
 .text-center a:hover {
-    color: #EBEBEB;
+    color: var(--clr-text);
 }
 
+/* Remove backgrounds on container/content wrappers */
+.container,
+#content {
+    background-color: unset !important;
+}
+
+/* Server chart lines */
 .Servers .ct-series-a .ct-line,
 .Servers .ct-series-a .ct-point {
-    stroke: #EBEBEB;
+    stroke: var(--clr-text);
 }
 
+/* Sections/cards use dark surface */
 #inner,
 .section,
 #addFeed,
 #addFeedContent {
-    background-color: #303030;
+    background-color: var(--clr-surface);
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* Active tab uses card surface */
 .nav-tabs>li.active>a {
-    background-color: #303030;
+    background-color: var(--clr-surface);
 }
 
-.modal-header {
-    background-color: #3C3C3C;
-}
-
-.modal-content,
-.modal-body,
-.modal-footer {
-    background-color: #727272;
-}
-
+/* QR modal needs light background */
 #modal_qr .modal-body {
     background-color: #EBEBEB;
 }
 
+/* Login button */
 .form-signin .btn.btn-default {
     color: black;
 }
 
+/* RSS icon */
 .rss-icon-svg {
     fill: white;
 }
 
 .rss-symbol {
-    fill: #555555;
+    fill: var(--clr-input-bg);
 }
 
+/* Placeholder */
 ::placeholder {
-    color: #EBEBEB !important;
+    color: var(--clr-text) !important;
     opacity: 0.5;
 }
 
+/* Tooltip — inverted (light tooltip on dark page) */
 .tooltip-inner {
     background-color: #E4E4E4 !important;
     color: #000 !important;
 }
-/* for login */
+
 .tooltip.bottom .tooltip-arrow {
     border-bottom-color: #E4E4E4 !important;
 }
-/* config>general - host-warning */
+
 .tooltip.top .tooltip-arrow {
     border-top-color: #E4E4E4 !important;
 }
