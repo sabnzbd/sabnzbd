@@ -911,16 +911,13 @@ class NzbQueue:
                         # register_article later calls nzf.remove_article (see #3431).
                         with nzf.lock:
                             articles_to_remove = [
-                                article for article in nzf.articles
-                                if article.all_servers_in_try_list(active_servers)
+                                article for article in nzf.articles if article.all_servers_in_try_list(active_servers)
                             ]
                         # Act outside the iteration; register_article is intentionally
                         # not locked ("not locked for performance") and must not be
                         # called while nzf.lock is held by the same thread.
                         for article in articles_to_remove:
-                            logging.debug(
-                                "Removing article %s with bad trylist in file %s", article, nzf.filename
-                            )
+                            logging.debug("Removing article %s with bad trylist in file %s", article, nzf.filename)
                             nzo.increase_bad_articles_counter("missing_articles")
                             sabnzbd.NzbQueue.register_article(article, success=False)
 
