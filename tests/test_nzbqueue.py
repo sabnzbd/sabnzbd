@@ -112,6 +112,34 @@ class TestNzbQueue:
         # Try list restored
         assert sabnzbd.Downloader.servers[0] in list(joba.files[0].articles)[0].try_list
 
+    def test_stop_idle_jobs_no_crash_on_exhausted_articles(self):
+        """Regression test: stop_idle_jobs must not raise RuntimeError when
+        register_article removes an article from nzf.articles (a dict) while
+        the same dict is being iterated.  Introduced by commit 44d94226e when
+        nzf.articles was changed from list to dict but the protective [:] copy
+        was dropped from the iteration in stop_idle_jobs."""
+        server = sabnzbd.Downloader.servers[0]
+
+        nzo = make_dummy_nzo("stall-test", files=1, articles=3)
+        nzf = nzo.files[0]
+
+        # Load all articles into memory (only first is loaded at NzbFile init)
+        nzf.finish_import()
+
+        q = NzbQueue()
+        # add() resets try lists, so saturate them after adding
+        q.add(nzo)
+        sabnzbd.NzbQueue = q
+
+        # Saturate all try-lists so stop_idle_jobs enters the article-removal branch
+        nzo.add_to_try_list(server)
+        nzf.add_to_try_list(server)
+        for article in list(nzf.articles):
+            article.add_to_try_list(server)
+
+        # Must not raise RuntimeError: dictionary changed size during iteration
+        q.stop_idle_jobs()
+
     @pytest.mark.skipif(not sabnzbd.WINDOWS, reason="Legacy 3.0.0 queue fixture contains Windows-specific paths")
     def test_restore_legacy_queue_format_3_0_0(self, tmp_path, monkeypatch):
         fixture_path = Path(SAB_DATA_DIR) / "test_3_0_0_queue_format"
