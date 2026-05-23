@@ -1036,6 +1036,7 @@ input[type="checkbox"] {
 */
 .navbar-default .navbar-nav>li>a {
     color: black;
+    outline: none;
 }
 
 .navbar-default .navbar-nav>li>a:hover,
