@@ -906,15 +906,23 @@ class NzbQueue:
                         break
 
                     if nzf.all_servers_in_try_list(active_servers):
-                        # Check for articles where all active servers have already been tried
+                        # Collect articles where all active servers have already been tried.
+                        # Snapshot under lock to avoid RuntimeError from dict mutation when
+                        # register_article later calls nzf.remove_article (see #3431).
                         with nzf.lock:
-                            for article in nzf.articles:
-                                if article.all_servers_in_try_list(active_servers):
-                                    logging.debug(
-                                        "Removing article %s with bad trylist in file %s", article, nzf.filename
-                                    )
-                                    nzo.increase_bad_articles_counter("missing_articles")
-                                    sabnzbd.NzbQueue.register_article(article, success=False)
+                            articles_to_remove = [
+                                article for article in nzf.articles
+                                if article.all_servers_in_try_list(active_servers)
+                            ]
+                        # Act outside the iteration; register_article is intentionally
+                        # not locked ("not locked for performance") and must not be
+                        # called while nzf.lock is held by the same thread.
+                        for article in articles_to_remove:
+                            logging.debug(
+                                "Removing article %s with bad trylist in file %s", article, nzf.filename
+                            )
+                            nzo.increase_bad_articles_counter("missing_articles")
+                            sabnzbd.NzbQueue.register_article(article, success=False)
 
                         if not nzf.assembled and not nzf.articles:
                             logging.debug("Not assembled but no remaining articles for file %s", nzf.filename)
