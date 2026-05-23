@@ -226,10 +226,10 @@ class NzbFile(TryList):
             if not self.first_article_processed():
                 return None
 
-            self.nzo.verify_nzf_filename(self)
-            filename = sanitize_filename(self.filename)
             with self.nzo.lock:
                 if not self.filepath:
+                    self.nzo.verify_nzf_filename(self)
+                    filename = sanitize_filename(self.filename)
                     self.filepath = self.nzo.get_unique_filepath(filename)
                     self.filename = get_filename(self.filepath)
         return self.filepath

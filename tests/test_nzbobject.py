@@ -40,6 +40,13 @@ class TestNZO:
         assert nzo.work_name == "test_basic"
         assert not nzo.files
 
+        # Renaming a file twice should remove the redundant entry
+        nzo.renamed_file("YENC NAME", "NZF NAME")
+        assert nzo.renames["YENC NAME"] == "NZF NAME"
+        nzo.renamed_file("PAR2 NAME", "YENC NAME")
+        assert nzo.renames["PAR2 NAME"] == "NZF NAME"
+        assert len(nzo.renames) == 1
+
         # Create NZB-file to import
         nzb_fp = create_and_read_nzb_fp("basic_rar5")
 
