@@ -869,6 +869,14 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
                 if rars:
                     par_error = not try_rar_check(nzo, rars)
 
+            # Any non-par2 files missing data
+            if not par_error and any(not f.is_par2 and f.bytes_left for f in nzo.finished_files):
+                emsg = T("Repair failed - Not on your server(s)") + " - https://sabnzbd.org/not-complete"
+                nzo.fail_msg = emsg
+                nzo.set_unpack_info("Repair", emsg)
+                nzo.status = Status.FAILED
+                par_error = True
+
             # Save that we already tried SFV/RAR-verification
             verified[""] = not par_error
 
