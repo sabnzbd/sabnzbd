@@ -30,5 +30,4 @@ class TestBitmap:
         assert len(bm.to_bytes()) == 19
         assert bm[7] is True
         assert bm[100] is True
-        assert bm.count() == 2
         assert bm.size == 150

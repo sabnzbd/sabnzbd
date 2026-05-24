@@ -83,9 +83,6 @@ class Bitmap:
         bits = "".join("1" if b else "0" for b in self)
         return f"Bitmap({self.size}, '{bits}')"
 
-    def count(self):
-        return sum(byte.bit_count() for byte in self._data)
-
     # Pickle support
     def __getstate__(self):
         return {
