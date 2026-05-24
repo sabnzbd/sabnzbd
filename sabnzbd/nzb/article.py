@@ -104,7 +104,7 @@ class Article(TryList):
     """Representation of one article"""
 
     # Pre-define attributes to save memory
-    __slots__ = (*ArticleSaver, "fetcher", "fetcher_priority", "tries", "lock")
+    __slots__ = (*ArticleSaver, "fetcher", "fetcher_priority", "tries", "lock", "failed")
 
     def __init__(self, article, article_bytes, nzf):
         super().__init__()
@@ -121,6 +121,7 @@ class Article(TryList):
         self.data_size: Optional[int] = None
         self.decoded_size: Optional[int] = None  # Size of the decoded article
         self.on_disk: bool = False
+        self.failed: bool = False  # Download failed, assembler should skip this article
         self.crc32: Optional[int] = None
         self.nzf: sabnzbd.nzb.NzbFile = nzf  # NzbFile reference
         # Share NzbFile lock for file-wide atomicity of try-list ops
@@ -221,6 +222,7 @@ class Article(TryList):
         self.fetcher = None
         self.fetcher_priority = 0
         self.tries = 0
+        self.failed = False
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % (self.article, self.bytes, self.art_id)

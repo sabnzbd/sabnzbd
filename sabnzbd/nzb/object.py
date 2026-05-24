@@ -30,6 +30,7 @@ from collections import deque
 
 # SABnzbd modules
 import sabnzbd
+from sabnzbd.bitmap import Bitmap
 from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.nzb.file import NzbFile
 from sabnzbd.constants import (
@@ -49,6 +50,7 @@ from sabnzbd.constants import (
     Status,
     DuplicateStatus,
     NZO_FILE,
+    ONDISK_FILE,
 )
 from sabnzbd.misc import (
     to_units,
@@ -870,16 +872,35 @@ class NzbObject(TryList):
         nzfs = self.files[:]
         nzfs.sort(key=lambda x: len(x.filename))
 
+        # Mapping of filename to bitmap of articles already on disk
+        on_disk_lookup: dict[str, Bitmap] = {}
+        if cfg.direct_write() and (on_disk_data := load_data(ONDISK_FILE, self.admin_path, remove=True)):
+            _, mapping = on_disk_data
+            for filename, (count, data) in mapping.items():
+                on_disk_lookup[filename] = Bitmap(size=count, data=data)
+
         # Flag files from NZB that already exist as finished
         for existing_filename in existing_files[:]:
             for nzf in nzfs:
                 if existing_filename in nzf.filename:
                     logging.info("Matched file %s to %s of %s", existing_filename, nzf.filename, self.final_name)
                     nzf.filename = existing_filename
-                    nzf.bytes_left = 0
-                    self.remove_nzf(nzf)
-                    nzfs.remove(nzf)
-                    existing_files.remove(existing_filename)
+                    nzf.filename_checked = True
+                    nzf.filepath = os.path.join(self.download_path, existing_filename)
+                    self.filenames.add(existing_filename)
+
+                    # Does the finished file have missing articles
+                    if bitmap := on_disk_lookup.get(existing_filename, None):
+                        nzf.finish_import()
+                        for index, on_disk in enumerate(bitmap):
+                            if on_disk:
+                                article = nzf.decodetable[index]
+                                article.on_disk = True
+                                self.remove_article(article, True)
+                    else:
+                        self.remove_nzf(nzf)
+                        nzfs.remove(nzf)
+                        existing_files.remove(existing_filename)
 
                     # Set bytes correctly
                     nzf.bytes_left = 0
@@ -899,7 +920,8 @@ class NzbObject(TryList):
                 self.files.append(nzf)
                 self.files_table[nzf.nzf_id] = nzf
                 nzf.filename = existing_filename
-                self.remove_nzf(nzf)
+                if not nzf.articles:
+                    self.remove_nzf(nzf)
 
                 # Set bytes correctly
                 nzf.bytes_left = 0
@@ -1702,6 +1724,11 @@ class NzbObject(TryList):
         ):
             logging.info("Pausing duplicate alternative %s", self.final_name)
             self.pause()
+
+    @synchronized()
+    def on_disk_bitmap(self) -> dict[str, tuple[int, bytes]]:
+        """Mapping of filename to bitmap (size, bytes) of on_disk articles per file"""
+        return {nzf.filename: bm for nzf in self.finished_files if (bm := nzf.on_disk_bitmap()) is not None}
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""
