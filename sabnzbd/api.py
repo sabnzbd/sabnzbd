@@ -728,7 +728,7 @@ def _api_showlog(name: str, kwargs: ApiParams) -> Generator[bytes, Any, None]:
 
     def sanitize_line(line: bytes) -> bytes:
         """Apply regex substitutions to a single line to remove sensitive data"""
-        line = LOG_JSON_RE.sub(b"'REMOVED': '<REMOVED>'", line)
+        line = LOG_JSON_RE.sub(b"'\\1': '<REMOVED>'", line)
         line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
         line = LOG_NNTP_AUTH_RE.sub(b"\\1 <REMOVED>", line)
         line = LOG_HASH_RE.sub(b"<HASH>", line)
