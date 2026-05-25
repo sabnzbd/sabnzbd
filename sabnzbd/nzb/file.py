@@ -155,6 +155,8 @@ class NzbFile(TryList):
 
     def finish_import(self):
         """Load the article objects from disk"""
+        if self.import_finished:
+            return
         logging.debug("Finishing import on %s", self.filename)
         if raw_article_db := load_data(self.nzf_id, self.nzo.admin_path, remove=False):
             for raw_article in raw_article_db:
