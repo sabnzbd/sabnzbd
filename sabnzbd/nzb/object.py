@@ -888,7 +888,8 @@ class NzbObject(TryList):
                     nzf.filename_checked = True
                     nzf.filepath = os.path.join(self.download_path, existing_filename)
                     self.filenames.add(existing_filename)
-                    nzf.finish_import()
+                    if not nzf.import_finished:
+                        nzf.finish_import()
 
                     # Does the finished file have missing articles
                     if bitmap := on_disk_lookup.get(existing_filename, None):
