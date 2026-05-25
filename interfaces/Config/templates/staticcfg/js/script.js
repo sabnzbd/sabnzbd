@@ -415,11 +415,11 @@ $(document).ready(function () {
                     do_restart();
                 } else {
                     $('#config_err_msg').text(" ");
-                    setTimeout(config_success, config.disableDelays ? 0 : 1000);
+                    setTimeout(config_success, 1000);
                 }
             } else {
                $('#config_err_msg').text(" ");
-               setTimeout(config_success, config.disableDelays ? 0 : 1000);
+               setTimeout(config_success, 1000);
             }
         },
         error: function () {
