@@ -19,9 +19,11 @@
 sabnzbd.bitmap - a compact data structure of True/False
 """
 
+from typing import Optional
+
 
 class Bitmap:
-    def __init__(self, size, data=None, default=False):
+    def __init__(self, size: int, data: Optional[bytes] = None, default: bool = False):
         self.size = size
         num_bytes = (size + 7) // 8
 
@@ -43,13 +45,13 @@ class Bitmap:
                     self._data[-1] &= mask
 
     @classmethod
-    def from_bytes(cls, size, data):
+    def from_bytes(cls, size: int, data: bytes):
         return cls(size=size, data=data)
 
-    def to_bytes(self):
+    def to_bytes(self) -> bytes:
         return bytes(self._data)
 
-    def _check_index(self, index):
+    def _check_index(self, index: int):
         if not 0 <= index < self.size:
             raise IndexError("bitmap index out of range")
 
