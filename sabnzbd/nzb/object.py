@@ -888,24 +888,26 @@ class NzbObject(TryList):
                     nzf.filename_checked = True
                     nzf.filepath = os.path.join(self.download_path, existing_filename)
                     self.filenames.add(existing_filename)
+                    nzf.finish_import()
 
                     # Does the finished file have missing articles
                     if bitmap := on_disk_lookup.get(existing_filename, None):
-                        nzf.finish_import()
                         for index, on_disk in enumerate(bitmap):
                             if on_disk:
                                 article = nzf.decodetable[index]
                                 article.on_disk = True
                                 self.remove_article(article, True)
                     else:
+                        for article in nzf.decodetable:
+                            article.on_disk = True
                         self.remove_nzf(nzf)
                         nzfs.remove(nzf)
                         existing_files.remove(existing_filename)
 
-                    # Set bytes correctly
-                    nzf.bytes_left = 0
-                    self.bytes_tried += nzf.bytes
-                    self.bytes_downloaded += nzf.bytes
+                        # Set bytes correctly
+                        nzf.bytes_left = 0
+                        self.bytes_tried += nzf.bytes
+                        self.bytes_downloaded += nzf.bytes
                     break
 
         # Create an NZF for each remaining existing file

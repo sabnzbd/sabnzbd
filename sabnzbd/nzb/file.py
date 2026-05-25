@@ -146,7 +146,7 @@ class NzbFile(TryList):
 
     @synchronized()
     def on_disk_bitmap(self) -> Optional[tuple[int, bytes]]:
-        if any(not article.on_disk for article in self.decodetable):
+        if self.import_finished and any(not article.on_disk for article in self.decodetable):
             bm = Bitmap(size=len(self.decodetable))
             for index, article in enumerate(self.decodetable):
                 bm[index] = article.on_disk
