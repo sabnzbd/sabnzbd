@@ -19,22 +19,28 @@
 tests.test_nzbqueue - Testing functions in nzbqueue.py
 """
 
+import os
 import shutil
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Optional
 
 import pytest
 
 import sabnzbd
-from sabnzbd.constants import NORMAL_PRIORITY
+from sabnzbd.constants import NORMAL_PRIORITY, JOB_ADMIN, ONDISK_VERSION, ONDISK_FILE, RENAMES_FILE
 from sabnzbd.downloader import Server
+from sabnzbd.filesystem import save_compressed, save_data
 from sabnzbd.nzb import NzbFile, NzbObject
 from sabnzbd.nzbqueue import NzbQueue
-from tests.testhelper import SAB_DATA_DIR, SAB_NEWSSERVER_HOST, SAB_NEWSSERVER_PORT
+from tests.testhelper import SAB_DATA_DIR, SAB_NEWSSERVER_HOST, SAB_NEWSSERVER_PORT, create_and_read_nzb_fp
 
 
 @pytest.fixture()
 def nzbqueue_env(monkeypatch, mocker, tmp_path):
+    sabnzbd.config.ConfigCat("*", {})
+
     sabnzbd.Scheduler = mocker.Mock()
     sabnzbd.Scheduler.analyse = mocker.Mock(return_value=False)
     sabnzbd.ArticleCache = mocker.Mock()
@@ -56,11 +62,13 @@ def nzbqueue_env(monkeypatch, mocker, tmp_path):
             pipelining_requests=mocker.Mock(return_value=1),
         )
     ]
+    sabnzbd.NzbQueue = NzbQueue()
     monkeypatch.setattr(sabnzbd.cfg.admin_dir, "get_path", lambda: str(tmp_path))
     monkeypatch.setattr(sabnzbd.cfg.download_dir, "get_path", lambda: str(tmp_path))
 
     yield
 
+    del sabnzbd.NzbQueue
     del sabnzbd.Downloader
     del sabnzbd.BPSMeter
     del sabnzbd.Assembler
@@ -85,6 +93,31 @@ def make_dummy_nzo(name: str, priority: int = NORMAL_PRIORITY, files: int = 50, 
     ]
 
     return nzo
+
+
+@pytest.fixture()
+def make_nzb_workdir(nzbqueue_env):
+    def _make_workdir(
+        name: str,
+        on_disk: Optional[dict[str, tuple[int, bytes]]] = None,
+        renames: Optional[dict[str, str]] = None,
+    ) -> str:
+        """Create a working directory for nzbqueue from tests/data"""
+        wdir = tempfile.TemporaryDirectory(prefix=name, dir=sabnzbd.cfg.download_dir.get_path()).name
+        admin_dir = os.path.join(wdir, JOB_ADMIN)
+        os.makedirs(admin_dir)
+
+        # Copy test data, create NZB-file and __ADMIN__
+        nzb_fp = create_and_read_nzb_fp(name)
+        save_compressed(admin_dir, name, nzb_fp)
+        shutil.copytree(os.path.join(SAB_DATA_DIR, name), wdir, dirs_exist_ok=True)
+        if on_disk:
+            save_data((ONDISK_VERSION, on_disk), ONDISK_FILE, admin_dir)
+        if renames:
+            save_data(renames, RENAMES_FILE, admin_dir)
+        return wdir
+
+    yield _make_workdir
 
 
 @pytest.mark.usefixtures("nzbqueue_env")
@@ -191,3 +224,39 @@ class TestNzbQueue:
         assert cnzf.bytes == 27049565
         assert cnzf.bytes_left == 10777869
         assert cnzf.crc32 is None
+
+    def test_nzo_reuse(self, make_nzb_workdir):
+        wdir = make_nzb_workdir("basic_rar5")
+
+        nzo_id = sabnzbd.NzbQueue.repair_job(wdir, None, None)
+        assert nzo_id
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
+        # No files to download so goes straight to post-processing
+        assert not nzo
+
+    def test_nzo_reuse_failed_articles(self, make_nzb_workdir):
+        wdir = make_nzb_workdir("basic_rar5", {"testfile.rar": (1, b"\x00")})
+
+        nzo_id = sabnzbd.NzbQueue.repair_job(wdir, None, None)
+        assert nzo_id
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
+        assert nzo
+        # testfile.rar is on disk, but it has missing articles
+        assert nzo.files
+        assert not nzo.finished_files
+
+    def test_nzo_reuse_failed_articles_renamed(self, make_nzb_workdir):
+        wdir = make_nzb_workdir(
+            "basic_rar5",
+            {"renamed.rar": (1, b"\x00")},
+            {"renamed.rar": "testfile.rar"},
+        )
+        os.rename(os.path.join(wdir, "testfile.rar"), os.path.join(wdir, "renamed.rar"))
+
+        nzo_id = sabnzbd.NzbQueue.repair_job(wdir, None, None)
+        assert nzo_id
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
+        assert nzo
+        # renamed.rar is on disk, but it has missing articles
+        assert nzo.files
+        assert not nzo.finished_files
