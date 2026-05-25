@@ -689,14 +689,17 @@ def _api_warnings(name: str, kwargs: ApiParams) -> bytes:
     return report(keyword="warnings", data=sabnzbd.GUIHANDLER.content())
 
 
-LOG_JSON_RE = re.compile(rb"'(apikey|api|username|password|email_(server|to|from|account|pwd))': '(.*?)'", re.I)
+LOG_JSON_RE = re.compile(
+    rb"'(apikey|api|username|password|email_(server|to|from|account|pwd)|host_whitelist)': '(.*?)'", re.I
+)
 LOG_INI_HIDE_RE = re.compile(
-    rb"(apikey|api|user|username|password|email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey"
+    rb"(apikey|api|user|username|password|email_pwd|email_account|email_to|email_from|pushover_token|pushover_userkey|host_whitelist"
     rb"|apprise_(target_[a-z_]+|urls)|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address|Public address IPv[4|6]-only|Local IPv6 address)\s?=.*",
     re.I,
 )
 LOG_NNTP_AUTH_RE = re.compile(rb"(authinfo (?:user|pass)) [^\\'\'\r\n]+", re.I)
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
+LOG_IP_RE = re.compile(rb"((?:login (?:attempt )?|request .*)from )(.*?)( \[)", re.I)
 
 
 def _api_showlog(name: str, kwargs: ApiParams) -> Generator[bytes, Any, None]:
@@ -729,6 +732,7 @@ def _api_showlog(name: str, kwargs: ApiParams) -> Generator[bytes, Any, None]:
         line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
         line = LOG_NNTP_AUTH_RE.sub(b"\\1 <REMOVED>", line)
         line = LOG_HASH_RE.sub(b"<HASH>", line)
+        line = LOG_IP_RE.sub(b"\\1<REMOVED>\\3", line)
         if cur_user_bytes:
             line = line.replace(cur_user_bytes, b"<USERNAME>")
         return line
