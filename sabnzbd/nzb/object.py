@@ -858,11 +858,6 @@ class NzbObject(TryList):
         # Substitute renamed files
         if renames := load_data(RENAMES_FILE, self.admin_path, remove=True):
             for name, old_name in renames.items():
-                if name in existing_files or old_name in existing_files:
-                    if name in existing_files:
-                        existing_files.remove(name)
-                    if os.path.exists(os.path.join(wdir, old_name)):
-                        existing_files.append(old_name)
                 self.renamed_file(name, old_name)
 
         # Looking for the longest name first, minimizes the chance on a mismatch
@@ -882,7 +877,7 @@ class NzbObject(TryList):
         # Flag files from NZB that already exist as finished
         for existing_filename in existing_files[:]:
             for nzf in nzfs:
-                if existing_filename in nzf.filename:
+                if existing_filename in nzf.filename or nzf.filename == self.renames.get(existing_filename, None):
                     logging.info("Matched file %s to %s of %s", existing_filename, nzf.filename, self.final_name)
                     nzf.filename = existing_filename
                     nzf.filename_checked = True
@@ -890,6 +885,7 @@ class NzbObject(TryList):
                     self.filenames.add(existing_filename)
                     if not nzf.import_finished:
                         nzf.finish_import()
+                    existing_files.remove(existing_filename)
 
                     # Does the finished file have missing articles
                     if bitmap := on_disk_lookup.get(existing_filename, None):
@@ -903,7 +899,6 @@ class NzbObject(TryList):
                             article.on_disk = True
                         self.remove_nzf(nzf)
                         nzfs.remove(nzf)
-                        existing_files.remove(existing_filename)
 
                         # Set bytes correctly
                         nzf.bytes_left = 0
