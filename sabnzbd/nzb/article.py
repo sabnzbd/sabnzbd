@@ -94,6 +94,7 @@ ArticleSaver = (
     "data_begin",
     "data_size",
     "on_disk",
+    "failed",
     "nzf",
     "crc32",
     "decoded_size",
@@ -104,7 +105,7 @@ class Article(TryList):
     """Representation of one article"""
 
     # Pre-define attributes to save memory
-    __slots__ = (*ArticleSaver, "fetcher", "fetcher_priority", "tries", "lock", "failed")
+    __slots__ = (*ArticleSaver, "fetcher", "fetcher_priority", "tries", "lock")
 
     def __init__(self, article, article_bytes, nzf):
         super().__init__()
@@ -222,7 +223,6 @@ class Article(TryList):
         self.fetcher = None
         self.fetcher_priority = 0
         self.tries = 0
-        self.failed = False
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % (self.article, self.bytes, self.art_id)
