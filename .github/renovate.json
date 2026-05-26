@@ -22,6 +22,7 @@
     "jaraco.text",
     "jaraco.context",
     "jaraco.collections",
+    "tempora",
     "sabctools",
     "paho-mqtt"
   ],
