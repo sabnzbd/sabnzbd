@@ -260,6 +260,10 @@ msgstr ""
 "puerto diferente."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "No se pudo determinar el resultado de la conexión (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "El servidor necesita usuario y contraseña."
 
@@ -275,10 +279,6 @@ msgstr "Autenticación fallida, compruebe el usuario o la contraseña."
 msgid "Too many connections, please pause downloading or try again later"
 msgstr ""
 "Demasiadas conexiones; pause las descargas o inténtelo de nuevo más tarde"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "No se pudo determinar el resultado de la conexión (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

@@ -258,6 +258,10 @@ msgstr ""
 "Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kan verbindingsresultaat niet bepalen (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
 
@@ -273,10 +277,6 @@ msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 msgid "Too many connections, please pause downloading or try again later"
 msgstr ""
 "Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

@@ -245,6 +245,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nu pot determina reultatul conexiunii (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Serverul necesită nume utilizator şi parolă"
 
@@ -261,10 +265,6 @@ msgid "Too many connections, please pause downloading or try again later"
 msgstr ""
 "Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
 "din nou mai târziu"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nu pot determina reultatul conexiunii (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

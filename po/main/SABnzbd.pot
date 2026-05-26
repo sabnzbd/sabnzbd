@@ -208,6 +208,10 @@ msgid "Unknown SSL protocol: Try disabling SSL or connecting on a different port
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr ""
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr ""
 
@@ -221,10 +225,6 @@ msgstr ""
 
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
 msgstr ""
 
 #: sabnzbd/api.py

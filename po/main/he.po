@@ -244,6 +244,10 @@ msgid ""
 msgstr "פרוטוקול SSL בלתי ידוע: נסה להשבית SSL או להתחבר על פתחה שונה."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr ".השרת דורש שם משתמש וסיסמה"
 
@@ -258,10 +262,6 @@ msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

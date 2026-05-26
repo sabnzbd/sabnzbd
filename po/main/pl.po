@@ -235,6 +235,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nie można określić wyniku połączenia (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Serwer wymaga podania nazwy użytkownika i hasła."
 
@@ -251,10 +255,6 @@ msgid "Too many connections, please pause downloading or try again later"
 msgstr ""
 "Zbyt wiele połączeń, proszę wstrzymać pobieranie lub spróbować ponownie "
 "później"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nie można określić wyniku połączenia (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

@@ -235,6 +235,10 @@ msgid ""
 msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "无法判断连接结果 (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "服务器需要用户名与密码。"
 
@@ -249,10 +253,6 @@ msgstr "身份认证失败，请检查用户名/密码。"
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "连接数过多，请先暂停下载或稍后再试"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "无法判断连接结果 (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

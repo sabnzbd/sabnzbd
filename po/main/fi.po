@@ -240,6 +240,10 @@ msgstr ""
 "Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
 
@@ -254,10 +258,6 @@ msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

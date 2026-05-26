@@ -234,6 +234,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nemoguće odrediti rezultate konekcije (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Серверу су потребни име и лозинка."
 
@@ -248,10 +252,6 @@ msgstr "Аутентификација погрешна, проверити им
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "Превише конекција, паузирајте преузимање или поновите касније"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nemoguće odrediti rezultate konekcije (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

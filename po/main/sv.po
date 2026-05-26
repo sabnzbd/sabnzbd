@@ -234,6 +234,10 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Det gick inte att ansluta (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Servern kräver användarnamn och lösenord."
 
@@ -248,10 +252,6 @@ msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
 #: sabnzbd/api.py
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "För många anslutningar, pausa en nedladdning eller försök igen senare"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Det gick inte att ansluta (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"

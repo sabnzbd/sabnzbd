@@ -237,6 +237,10 @@ msgstr ""
 "port."
 
 #: sabnzbd/api.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kunne ikke koble til (%s)"
+
+#: sabnzbd/api.py
 msgid "Server requires username and password."
 msgstr "Server krever brukernavn og passord."
 
@@ -252,10 +256,6 @@ msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
 msgid "Too many connections, please pause downloading or try again later"
 msgstr ""
 "For mange tilkoblinger, sett nedlasting på pause eller prøv igjen senere"
-
-#: sabnzbd/api.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kunne ikke koble til (%s)"
 
 #: sabnzbd/api.py
 msgid "Resolving address"
