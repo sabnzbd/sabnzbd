@@ -20,7 +20,8 @@ more-itertools # Version-less for Python 3.9 and below
 more-itertools==11.0.2; python_version > '3.9'
 zc.lockfile==4.0
 python-dateutil==2.9.0.post0
-tempora==5.8.1
+tempora # Version-less for Python 3.9 and below
+tempora==5.8.1; python_version > '3.9'
 pytz==2026.2
 sgmllib3k==1.0.0
 portend==3.2.1
