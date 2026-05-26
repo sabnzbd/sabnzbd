@@ -384,7 +384,6 @@ class SABnzbdBaseTest:
         # Open a page and test for crash
         self.driver.get(url)
         self.no_page_crash()
-        self.disable_delays()
 
     def scroll_to_top(self):
         self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.CONTROL + Keys.HOME)
@@ -402,10 +401,6 @@ class SABnzbdBaseTest:
             wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")
         except (RemoteDisconnected, ProtocolError):
             pass
-
-    def disable_delays(self):
-        """Remove delayed UI changes"""
-        self.driver.execute_script("window.config = window.config || {}; window.config.disableDelays = true")
 
     @staticmethod
     def selenium_wrapper(func, *args):
