@@ -54,7 +54,7 @@ IPV6_MAPPING = {
 
 
 # For typing and convenience!
-@dataclass
+@dataclass(slots=True)
 class AddrInfo:
     family: socket.AddressFamily
     type: socket.SocketKind

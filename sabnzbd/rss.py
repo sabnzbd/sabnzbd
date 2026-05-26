@@ -53,7 +53,7 @@ _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class NormalisedEntry:
     link: Optional[str]
     infourl: Optional[str]
@@ -191,7 +191,7 @@ class NormalisedEntry:
         return False
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ResolvedEntry:
     link: str
     title: str
@@ -212,7 +212,7 @@ class ResolvedEntry:
     download: bool
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class FeedEvaluation:
     matched: bool
     rule_index: int
@@ -224,7 +224,7 @@ class FeedEvaluation:
     script: Optional[str] = None
 
 
-@dataclass
+@dataclass(slots=True)
 class FeedRule:
     regex: Union[str, re.Pattern]
     type: str
@@ -319,7 +319,7 @@ class FeedRule:
             return True
 
 
-@dataclass
+@dataclass(slots=True)
 class FeedConfig:
     default_category: Optional[str] = None
     default_priority: Optional[int] = None

@@ -1004,7 +1004,7 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Diskspace:
     path: str
     size: float = 0.0
