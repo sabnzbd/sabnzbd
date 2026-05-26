@@ -35,7 +35,7 @@ import stat
 import ctypes
 import random
 from dataclasses import dataclass
-from typing import Union, Any, Optional, BinaryIO
+from typing import Any, Optional, BinaryIO
 
 try:
     import win32api
@@ -733,7 +733,7 @@ def long_path(path: str) -> str:
 UNIQUE_PATH_LOCK = threading.RLock()
 
 
-def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bool]:
+def create_all_dirs(path: str, apply_permissions: bool = False) -> str | bool:
     """Create all required path elements and set permissions on all
     The apply_permissions argument is ignored on Windows
     Return path if elements could be made or exists
@@ -769,7 +769,7 @@ def create_all_dirs(path: str, apply_permissions: bool = False) -> Union[str, bo
 
 
 @synchronized(UNIQUE_PATH_LOCK)
-def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> Union[str, bool]:
+def get_unique_dir(path: str, n: int = 0, create_dir: bool = True) -> str | bool:
     """Determine a unique folder or filename"""
     if not mount_is_available(path):
         return path

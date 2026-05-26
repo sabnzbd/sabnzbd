@@ -28,7 +28,7 @@ import sys
 import ssl
 import time
 from datetime import date
-from typing import Optional, Union, Callable
+from typing import Optional, Callable
 
 import sabctools
 
@@ -147,7 +147,7 @@ class Server:
         self.bad_cons: int = 0
         self.errormsg: str = ""
         self.warning: str = ""
-        self.addrinfo: Union[AddrInfo, None, bool] = None  # Will hold fasted address information
+        self.addrinfo: AddrInfo | None | bool = None  # Will hold fasted address information
         self.ssl_info: str = ""  # Will hold the type and cipher of SSL connection
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
@@ -459,7 +459,7 @@ class Downloader(Thread):
         logging.info("Forcing disconnect")
         self.force_disconnect = True
 
-    def limit_speed(self, value: Union[str, int]):
+    def limit_speed(self, value: str | int):
         """Set the actual download speed in Bytes/sec
         When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a percentage of the maximum bandwidth
         When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).

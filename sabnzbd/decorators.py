@@ -20,7 +20,7 @@
 ##############################################################################
 import time
 import functools
-from typing import Union, Callable
+from typing import Callable
 from threading import Lock, RLock, Condition
 
 # All operations that modify the queue need to happen in a lock
@@ -34,7 +34,7 @@ DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 DOWNLOADER_LOCK = RLock()
 
 
-def synchronized(lock: Union[Lock, RLock, Condition, None] = None):
+def synchronized(lock: Lock | RLock | Condition | None = None):
     def wrap(func: Callable):
         def call_func(*args, **kw):
             # Either use the supplied lock or the object-specific one

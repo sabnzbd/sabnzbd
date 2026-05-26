@@ -32,7 +32,7 @@ from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
 import base64
-from typing import Optional, Union, Any
+from typing import Optional, Any
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -411,10 +411,10 @@ def filename_from_content_disposition(content_disposition: str) -> Optional[str]
 
 def add_url(
     url: str,
-    pp: Optional[Union[int, str]] = None,
+    pp: Optional[int | str] = None,
     script: Optional[str] = None,
     cat: Optional[str] = None,
-    priority: Optional[Union[int, str]] = None,
+    priority: Optional[int | str] = None,
     nzbname: Optional[str] = None,
     password: Optional[str] = None,
     nzo_info: Optional[dict[str, Any]] = None,

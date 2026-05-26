@@ -29,7 +29,7 @@ from threading import Thread
 import time
 import logging
 import ssl
-from typing import Optional, Union, Callable
+from typing import Optional, Callable
 
 import sabctools
 import sabnzbd
@@ -592,7 +592,7 @@ class NNTP:
                 self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
 
         # Create socket and store fileno of the socket
-        self.sock: Union[socket.socket, ssl.SSLSocket] = socket.socket(self.addrinfo.family, self.addrinfo.type)
+        self.sock: socket.socket | ssl.SSLSocket = socket.socket(self.addrinfo.family, self.addrinfo.type)
         self.fileno: int = self.sock.fileno()
 
         # Open the connection in a separate thread due to avoid blocking

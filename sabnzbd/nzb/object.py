@@ -25,7 +25,7 @@ import logging
 import datetime
 import threading
 import difflib
-from typing import Any, Optional, Union, BinaryIO
+from typing import Any, Optional, BinaryIO
 from collections import deque
 
 # SABnzbd modules
@@ -191,7 +191,7 @@ class NzbObject(TryList):
         futuretype: bool = False,
         cat: Optional[str] = None,
         url: Optional[str] = None,
-        priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+        priority: Optional[int | str] = DEFAULT_PRIORITY,
         password: Optional[str] = None,
         nzbname: Optional[str] = None,
         status: str = Status.QUEUED,
@@ -917,7 +917,7 @@ class NzbObject(TryList):
         if not self.unpack:
             self.abort_direct_unpacker()
 
-    def set_priority(self, value: Optional[Union[int, str]]):
+    def set_priority(self, value: Optional[int | str]):
         """Check if this is a valid priority"""
         # When unknown (0 is a known one), set to DEFAULT
         if value == "" or value is None:
@@ -1381,7 +1381,7 @@ class NzbObject(TryList):
             self.direct_unpacker.set_volumes_for_nzo()
 
     @synchronized()
-    def renamed_file(self, renames_or_name: Union[dict[str, str], str], old_name: Optional[str] = None):
+    def renamed_file(self, renames_or_name: dict[str, str] | str, old_name: Optional[str] = None):
         """Save renames at various stages (Download/PP)
         to be used on Retry. Accepts strings and dicts.
         """

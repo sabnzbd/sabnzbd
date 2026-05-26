@@ -30,7 +30,7 @@ import http.client
 import json
 import apprise
 from threading import Thread
-from typing import Optional, Union
+from typing import Optional
 
 import sabnzbd
 import sabnzbd.cfg
@@ -128,7 +128,7 @@ def get_prio(notification_type: str, section: str) -> int:
         return -1000
 
 
-def get_targets(notification_type: str, section: str) -> Union[str, bool, None]:
+def get_targets(notification_type: str, section: str) -> str | bool | None:
     """Check target of `notification_type` in `section` if enabled is set"""
     try:
         if sabnzbd.config.get_config(section, "%s_target_%s_enable" % (section, notification_type))() > 0:

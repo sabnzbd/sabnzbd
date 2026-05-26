@@ -26,7 +26,7 @@ import re
 import threading
 from threading import Thread
 import ctypes
-from typing import Optional, NamedTuple, Union
+from typing import Optional, NamedTuple
 import rarfile
 import time
 
@@ -526,7 +526,7 @@ class Assembler(Thread):
         return written
 
     @staticmethod
-    def _write(fd: int, nzf: NzbFile, data: Union[bytearray, memoryview], offset: int) -> int:
+    def _write(fd: int, nzf: NzbFile, data: bytearray | memoryview, offset: int) -> int:
         if sabnzbd.WINDOWS:
             # pwrite is not implemented on Windows so fallback to os.lseek and os.write
             # Must lock since it is possible to write from multiple threads (assembler + downloader)

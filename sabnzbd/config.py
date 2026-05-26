@@ -28,7 +28,7 @@ import time
 import uuid
 import io
 import zipfile
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional, TypeAlias
 from urllib.parse import urlparse
 
 import configobj
@@ -186,7 +186,7 @@ class OptionNumber(Option):
                     value = self.__minval
                 super().set(value)
 
-    def __call__(self) -> Union[int, float]:
+    def __call__(self) -> int | float:
         """get() replacement"""
         return self.get()
 
@@ -309,7 +309,7 @@ class OptionList(Option):
         self,
         section: str,
         keyword: str,
-        default_val: Union[str, list, None] = None,
+        default_val: str | list | None = None,
         validation: Optional[Callable] = None,
         add: bool = True,
         public: bool = True,
@@ -320,7 +320,7 @@ class OptionList(Option):
             default_val = []
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
-    def set(self, value: Union[str, list]) -> Optional[str]:
+    def set(self, value: str | list) -> Optional[str]:
         """Set the list given a comma-separated string or a list"""
         error = None
         if value is not None:
@@ -747,19 +747,7 @@ class ConfigRSS:
 
 
 # Add typing to the options database-dict
-AllConfigTypes = Union[
-    Option,
-    OptionStr,
-    OptionPassword,
-    OptionNumber,
-    OptionBool,
-    OptionList,
-    OptionDir,
-    ConfigCat,
-    ConfigSorter,
-    ConfigRSS,
-    ConfigServer,
-]
+AllConfigTypes: TypeAlias = Option | ConfigCat | ConfigSorter | ConfigRSS | ConfigServer
 CFG_DATABASE: dict[str, dict[str, AllConfigTypes]] = {}
 
 
@@ -1019,7 +1007,7 @@ def save_config(force=False):
     return res
 
 
-def create_config_backup() -> Union[str, bool]:
+def create_config_backup() -> str | bool:
     """Put config data in a zip file, returns path on success"""
     admin_path = sabnzbd.cfg.admin_dir.get_path()
     output_filename = "sabnzbd_backup_%s_%s.zip" % (sabnzbd.__version__, time.strftime("%Y.%m.%d_%H.%M.%S"))

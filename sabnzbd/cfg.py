@@ -25,7 +25,7 @@ import re
 import argparse
 import socket
 import ipaddress
-from typing import Union
+from typing import TypeAlias
 
 import sabnzbd
 from sabnzbd.config import (
@@ -59,7 +59,7 @@ from sabnzbd.filesystem import same_directory, real_path, is_valid_script, is_ne
 
 # Validators currently only are made for string/list-of-strings
 # and return those on success or an error message.
-ValidateResult = Union[tuple[None, str], tuple[None, list[str]], tuple[str, None]]
+ValidateResult: TypeAlias = tuple[None, str | list[str]] | tuple[str, None]
 
 
 ##############################################################################
@@ -124,21 +124,21 @@ def supported_unrar_parameters(value: str) -> ValidateResult:
     return None, value
 
 
-def all_lowercase(value: Union[str, list]) -> tuple[None, Union[str, list]]:
+def all_lowercase(value: str | list) -> tuple[None, str | list]:
     """Lowercase and strip everything!"""
     if isinstance(value, list):
         return None, [item.lower().strip() for item in value]
     return None, value.lower().strip()
 
 
-def lower_case_ext(value: Union[str, list]) -> tuple[None, Union[str, list]]:
+def lower_case_ext(value: str | list) -> tuple[None, str | list]:
     """Generate lower case extension(s), without dot"""
     if isinstance(value, list):
         return None, [item.lower().strip(" .") for item in value]
     return None, value.lower().strip(" .")
 
 
-def cleanup_list_validator(value: Union[str, list]) -> tuple[None, Union[str, list]]:
+def cleanup_list_validator(value: str | list) -> tuple[None, str | list]:
     """Validate cleanup list entries
     Accepts extensions (exe, nfo), filenames (Thumbs.db), patterns (*.tmp), and paths (images/*)
     """
@@ -181,7 +181,7 @@ def validate_url_base(value: str) -> tuple[None, str]:
 RE_VAL = re.compile(r"[^@ ]+@[^.@ ]+\.[^.@ ]")
 
 
-def validate_email(value: Union[list, str]) -> ValidateResult:
+def validate_email(value: list | str) -> ValidateResult:
     if email_endjob() or email_full() or email_rss():
         if isinstance(value, list):
             values = value

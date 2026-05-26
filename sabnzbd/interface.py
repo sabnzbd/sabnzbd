@@ -34,7 +34,7 @@ import copy
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
-from typing import Optional, Callable, Union, Any
+from typing import Optional, Callable, Any
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
@@ -110,7 +110,7 @@ def secured_expose(
     check_for_login: bool = True,
     check_api_key: bool = False,
     access_type: int = 4,
-) -> Union[Callable, str]:
+) -> Callable | str:
     """Wrapper for both cherrypy.expose and login/access check"""
     if not wrap_func:
         return functools.partial(

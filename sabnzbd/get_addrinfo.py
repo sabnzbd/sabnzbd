@@ -25,7 +25,7 @@ import time
 import logging
 from dataclasses import dataclass
 from more_itertools import roundrobin
-from typing import Union, Optional
+from typing import Optional
 
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import DEF_NETWORKING_TIMEOUT
@@ -60,7 +60,7 @@ class AddrInfo:
     type: socket.SocketKind
     proto: int
     canonname: str
-    sockaddr: Union[tuple[str, int], tuple[str, int, int, int]]
+    sockaddr: tuple[str, int] | tuple[str, int, int, int]
     ipaddress: str = ""
     port: int = 0
     connection_time: float = 0.0

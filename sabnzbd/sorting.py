@@ -25,7 +25,7 @@ import re
 import guessit
 from rebulk.match import MatchesDict
 from string import whitespace, punctuation
-from typing import Optional, Union
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.filesystem import (
@@ -180,7 +180,7 @@ class Sorter:
         self.get_showdescriptions()
         self.get_date()
 
-    def format_series_numbers(self, numbers: Union[int, list[int]], info_name: str):
+    def format_series_numbers(self, numbers: int | list[int], info_name: str):
         """Format the numbers in both plain and alternative (zero-padded) format and set as showinfo"""
         # Guessit returns multiple episodes or seasons as a list of integers, single values as int
         if isinstance(numbers, int):

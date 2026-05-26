@@ -29,7 +29,7 @@ import io
 import shutil
 import functools
 import rarfile
-from typing import BinaryIO, Optional, Any, Union
+from typing import BinaryIO, Optional, Any
 
 import sabnzbd
 from sabnzbd.encoding import correct_unknown_encoding, ubtou
@@ -272,7 +272,7 @@ def unpacker(
     sevens: list[str] = [],
     ts: list[str] = [],
     depth: int = 0,
-) -> tuple[Union[int, bool], list[str]]:
+) -> tuple[int | bool, list[str]]:
     """Do a recursive unpack from all archives in 'download_path' to 'workdir_complete'"""
     if depth > 2:
         # Prevent going to deep down the rabbit-hole

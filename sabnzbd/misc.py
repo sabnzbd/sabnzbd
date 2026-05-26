@@ -40,7 +40,7 @@ import math
 import rarfile
 from threading import Thread, RLock
 from collections.abc import Iterable
-from typing import Union, Any, AnyStr, Optional, Collection
+from typing import Any, AnyStr, Optional, Collection
 
 import sabnzbd
 import sabnzbd.getipaddress
@@ -222,9 +222,9 @@ class MultiAddQueue(queue.Queue):
 
 def cat_pp_script_sanitizer(
     cat: Optional[str] = None,
-    pp: Optional[Union[int, str]] = None,
+    pp: Optional[int | str] = None,
     script: Optional[str] = None,
-) -> tuple[Optional[Union[int, str]], Optional[str], Optional[str]]:
+) -> tuple[Optional[int | str], Optional[str], Optional[str]]:
     """Basic sanitizer from outside input to a bit more predictable values"""
     # * and Default are valid values
     if safe_lower(cat) in ("", "none"):
@@ -606,7 +606,7 @@ def from_units(val: str) -> float:
         return 0.0
 
 
-def to_units(val: Union[int, float], postfix="") -> str:
+def to_units(val: int | float, postfix="") -> str:
     """Convert number to K/M/G/T/P notation
     Show single decimal for M and higher
     Also supports negative numbers
@@ -1072,7 +1072,7 @@ def is_sample(filename: str) -> bool:
     return bool(re.search(RE_SAMPLE, filename))
 
 
-def find_on_path(targets: Union[str, tuple[str, ...]]) -> Optional[str]:
+def find_on_path(targets: str | tuple[str, ...]) -> Optional[str]:
     """Search the PATH for a program and return full path"""
     if sabnzbd.WINDOWS:
         paths = os.getenv("PATH").split(";")
@@ -1245,7 +1245,7 @@ def match_str(text: AnyStr, matches: tuple[AnyStr, ...]) -> Optional[AnyStr]:
     return None
 
 
-def recursive_html_escape(input_dict_or_list: Union[dict[str, Any], list], exclude_items: tuple[str, ...] = ()):
+def recursive_html_escape(input_dict_or_list: dict[str, Any] | list, exclude_items: tuple[str, ...] = ()):
     """Recursively update the input_dict in-place with html-safe values"""
     if isinstance(input_dict_or_list, (dict, list)):
         if isinstance(input_dict_or_list, dict):

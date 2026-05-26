@@ -24,7 +24,7 @@ import logging
 import time
 import uuid
 import cherrypy._cpreqbody
-from typing import Union, Optional
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.nzb import Article, NzbObject
@@ -239,7 +239,7 @@ class NzbQueue:
             self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
-    def save(self, save_nzo: Union[NzbObject, None, bool] = None):
+    def save(self, save_nzo: NzbObject | None | bool = None):
         """Save queue, all nzo's or just the specified one"""
         logging.info("Saving queue")
 
@@ -608,7 +608,7 @@ class NzbQueue:
             self.sort_queue("remaining")
 
     @NzbQueueLocker
-    def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
+    def __set_priority(self, nzo_id: str, priority: int | str) -> Optional[int]:
         """Sets the priority on the nzo and places it in the queue at the appropriate position"""
         try:
             priority = int_conv(priority)

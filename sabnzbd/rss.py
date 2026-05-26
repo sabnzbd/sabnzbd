@@ -26,7 +26,7 @@ import datetime
 import threading
 import urllib.parse
 from dataclasses import dataclass, field
-from typing import Union, Optional, Any
+from typing import Optional, Any
 
 import sabnzbd
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY
@@ -226,7 +226,7 @@ class FeedEvaluation:
 
 @dataclass(slots=True)
 class FeedRule:
-    regex: Union[str, re.Pattern]
+    regex: str | re.Pattern
     type: str
     category: Optional[str] = None
     priority: Optional[int] = None
