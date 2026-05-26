@@ -1441,14 +1441,16 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
         # Trying SSL on non-SSL port?
         if match_str(str(err), ("unknown protocol", "wrong version number")):
             return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
-        return False, str(err)
+        logging.info("Traceback: ", exc_info=True)
+        return False, T("Could not determine connection result (%s)") % str(err)
 
     except NNTPPermanentError:
         # Handled by the code below
         pass
 
     except Exception as err:
-        return False, str(err)
+        logging.info("Traceback: ", exc_info=True)
+        return False, T("Could not determine connection result (%s)") % str(err)
 
     if not username or not password:
         nw.queue_command(b"ARTICLE <test@home>\r\n")
@@ -1457,7 +1459,8 @@ def test_nntp_server_dict(kwargs: dict[str, Union[str, list[str]]]) -> tuple[boo
             nw.read(on_response=on_response)
         except Exception as err:
             # Some internal error, not always safe to close connection
-            return False, str(err)
+            logging.info("Traceback: ", exc_info=True)
+            return False, T("Could not determine connection result (%s)") % str(err)
 
     # Parse result
     return_status = ()

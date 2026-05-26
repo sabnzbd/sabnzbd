@@ -450,9 +450,13 @@ class DownloadFlowBasics(SABnzbdBaseTest):
         port_inp.send_keys(SAB_NEWSSERVER_PORT)
 
         # Test server-check
+        server_response = self.selenium_wrapper(self.driver.find_element, By.ID, "serverResponse")
         self.selenium_wrapper(self.driver.find_element, By.ID, "serverTest").click()
-        self.wait_for_ajax()
-        assert "Connection Successful" in self.selenium_wrapper(self.driver.find_element, By.ID, "serverResponse").text
+        wait_for(
+            lambda: "Connection Successful" in server_response.text,
+            timeout=5,
+            err_msg="The connection test was not successful",
+        )
 
         # Final page done
         self.selenium_wrapper(self.driver.find_element, By.ID, "next-button").click()

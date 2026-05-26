@@ -226,10 +226,13 @@ class TestConfigRSS(SABnzbdBaseTest):
             self.driver.find_element, By.XPATH, '//div[@id="rss-tab-matched"]/table/tbody//button'
         )
         download_btn.click()
-        self.wait_for_ajax()
 
         # Does the page think it's a success?
-        assert "Added NZB" in download_btn.text
+        wait_for(
+            lambda: "Added NZB" in download_btn.text,
+            timeout=5,
+            err_msg="Added NZB is not visible",
+        )
 
         # Check if the fetch-request was added to the queue
         wait_for(
@@ -275,12 +278,13 @@ class TestConfigServers(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element, By.NAME, "ssl").click()
 
         # Test server-check
+        result_box = self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "#addServerContent .result-box")
         self.selenium_wrapper(self.driver.find_element, By.CSS_SELECTOR, "#addServerContent .testServer").click()
-        self.wait_for_ajax()
-        check_result = self.selenium_wrapper(
-            self.driver.find_element, By.CSS_SELECTOR, "#addServerContent .result-box"
-        ).text
-        assert "Connection Successful" in check_result
+        wait_for(
+            lambda: "Connection Successful" in result_box.text,
+            timeout=5,
+            err_msg="The connection test was not successful",
+        )
 
         # Set test-servername
         self.selenium_wrapper(self.driver.find_element, By.ID, "displayname").send_keys(self.server_name)
