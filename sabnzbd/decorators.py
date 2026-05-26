@@ -18,6 +18,10 @@
 ##############################################################################
 # Decorators
 ##############################################################################
+# threading.Lock and RLock are factory functions, not classes, so `|` union syntax fails at runtime
+# This import makes all annotations lazy strings
+from __future__ import annotations
+
 import time
 import functools
 from typing import Callable
