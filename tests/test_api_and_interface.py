@@ -65,12 +65,22 @@ class TestApiInternals:
                 b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 8.8.8.8 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
                 b"<REMOVED>",
             ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 127.0.0.1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"127.0.0.1",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from fe80::1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"fe80::1",
+            ),
         ],
         ids=[
             "ipv6-local",
             "ipv4-local",
             "ipv6-removed",
             "ipv4-removed",
+            "ipv4-loopback",
+            "ipv6-linklocal",
         ],
     )
     def test_log_sanitize_remote_label(self, line, ip):
@@ -105,12 +115,24 @@ class TestApiInternals:
                 b"<REMOVED>",
                 [b"<REMOVED>"],
             ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 127.0.0.1 (X-Forwarded-For: 127.1.2.3) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"127.0.0.1",
+                [b"127.1.2.3"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from fe80::1 (X-Forwarded-For: fe80::2) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"fe80::1",
+                [b"fe80::2"],
+            ),
         ],
         ids=[
             "ipv6-local-removed-removed",
             "ipv4-local-removed-removed",
             "ipv6-removed-local-removed",
             "ipv4-removed-removed",
+            "ipv4-loopback-loopback",
+            "ipv6-linklocal-linklocal",
         ],
     )
     def test_log_sanitize_remote_label_xff(self, line, ip, xff):
