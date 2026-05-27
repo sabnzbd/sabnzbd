@@ -80,6 +80,8 @@ from sabnzbd.misc import (
     match_str,
     bool_conv,
     get_platform_description,
+    is_loopback_addr,
+    is_local_addr,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
 from sabnzbd.encoding import xml_name, utob
@@ -701,10 +703,39 @@ LOG_NNTP_AUTH_RE = re.compile(rb"(authinfo (?:user|pass)) [^\\'\'\r\n]+", re.I)
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 LOG_REMOTE_LABEL_RE = re.compile(
     rb"(?P<prefix>^.*?]\s*.*?)"
-    rb"(?P<ip>\S+)"
+    rb"(?P<ip>(?:\d{1,3}\.){3}\d{1,3}|(?:[A-Fa-f0-9:]+:+)+[A-Fa-f0-9.]+)"
     rb"(?:\s+\(X-Forwarded-For:\s*(?P<xff>[^)]+)\))?"
     rb"\s+\[(?P<ua>[^]]+)]"
 )
+
+
+def remote_label_replacement(m: re.Match[bytes]) -> bytes:
+    """Apply regex substitutions to remote labels, allows local IP addresses"""
+    if (ip_str := m.group("ip").decode()) and (is_loopback_addr(ip_str) or is_local_addr(ip_str)):
+        ip = m.group("ip")
+    else:
+        ip = b"<REMOVED>"
+    if m.group("xff"):
+        xff = []
+        for xff_ip in m.group("xff").decode().split(", "):
+            if is_loopback_addr(xff_ip) or is_local_addr(xff_ip):
+                xff.append(xff_ip.encode())
+            else:
+                xff.append(b"<REMOVED>")
+        return b"%s%s (X-Forwarded-For: %s) [%s]" % (m.group("prefix"), ip, b", ".join(xff), m.group("ua"))
+    return b"%s%s [%s]" % (m.group("prefix"), ip, m.group("ua"))
+
+
+def sanitize_line(line: bytes, cur_user_bytes: Optional[bytes] = None) -> bytes:
+    """Apply regex substitutions to a single line to remove sensitive data"""
+    line = LOG_JSON_RE.sub(b"'\\1': '<REMOVED>'", line)
+    line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
+    line = LOG_NNTP_AUTH_RE.sub(b"\\1 <REMOVED>", line)
+    line = LOG_HASH_RE.sub(b"<HASH>", line)
+    line = LOG_REMOTE_LABEL_RE.sub(remote_label_replacement, line)
+    if cur_user_bytes:
+        line = line.replace(cur_user_bytes, b"<USERNAME>")
+    return line
 
 
 def _api_showlog(name: str, kwargs: ApiParams) -> Generator[bytes, Any, None]:
@@ -724,41 +755,25 @@ def _api_showlog(name: str, kwargs: ApiParams) -> Generator[bytes, Any, None]:
     yield header.encode("utf-8")
 
     # Try to replace the username
+    cur_user_bytes: Optional[bytes] = None
     try:
-        cur_user_bytes = None
         if cur_user := getpass.getuser():
             cur_user_bytes = utob(cur_user)
     except Exception:
         pass
 
-    def remote_label_replacement(m: re.Match[bytes]) -> bytes:
-        if m.group("xff"):
-            return b"%s<REMOVED> (X-Forwarded-For: <REMOVED>) [%s]" % (m.group("prefix"), m.group("ua"))
-        return b"%s<REMOVED> [%s]" % (m.group("prefix"), m.group("ua"))
-
-    def sanitize_line(line: bytes) -> bytes:
-        """Apply regex substitutions to a single line to remove sensitive data"""
-        line = LOG_JSON_RE.sub(b"'\\1': '<REMOVED>'", line)
-        line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
-        line = LOG_NNTP_AUTH_RE.sub(b"\\1 <REMOVED>", line)
-        line = LOG_HASH_RE.sub(b"<HASH>", line)
-        line = LOG_REMOTE_LABEL_RE.sub(remote_label_replacement, line)
-        if cur_user_bytes:
-            line = line.replace(cur_user_bytes, b"<USERNAME>")
-        return line
-
     # Stream log file line by line
     if sabnzbd.LOGFILE and os.path.exists(sabnzbd.LOGFILE):
         with open(sabnzbd.LOGFILE, "rb") as f:
             for line in f:
-                yield sanitize_line(line)
+                yield sanitize_line(line, cur_user_bytes)
     else:
         yield b"\nFile log disabled or not found.\n\n"
 
     # Stream config file line by line
     with open(config.get_filename(), "rb") as f:
         for line in f:
-            yield sanitize_line(line)
+            yield sanitize_line(line, cur_user_bytes)
 
 
 def _api_get_cats(name: str, kwargs: ApiParams) -> bytes:
