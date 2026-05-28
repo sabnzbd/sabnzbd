@@ -371,7 +371,7 @@ class NewsWrapper:
         server = self.server
 
         # Do not pipeline requests until authentication is completed (connected)
-        if self.ready or not self._response_queue:
+        if not self.blocking and (self.ready or not self._response_queue):
             server_ready = (
                 server.active
                 and not server.restart

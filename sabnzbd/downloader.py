@@ -380,7 +380,7 @@ class Downloader(Thread):
     @synchronized(DOWNLOADER_LOCK)
     def add_socket(self, nw: NewsWrapper):
         """Add a socket to be watched for read or write availability"""
-        if nw.nntp:
+        if nw.nntp and not nw.blocking:
             nw.server.idle_threads.discard(nw)
             nw.server.busy_threads.add(nw)
             try:
@@ -402,7 +402,7 @@ class Downloader(Thread):
     @synchronized(DOWNLOADER_LOCK)
     def remove_socket(self, nw: NewsWrapper):
         """Remove a socket to be watched"""
-        if nw.nntp:
+        if nw.nntp and not nw.blocking:
             nw.server.busy_threads.discard(nw)
             nw.server.idle_threads.add(nw)
             nw.timeout = None
