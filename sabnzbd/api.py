@@ -702,7 +702,6 @@ LOG_INI_HIDE_RE = re.compile(
 LOG_NNTP_AUTH_RE = re.compile(rb"(authinfo (?:user|pass)) [^\\'\'\r\n]+", re.I)
 LOG_HASH_RE = re.compile(rb"([a-zA-Z\d]{25})", re.I)
 LOG_REMOTE_LABEL_RE = re.compile(
-    rb"(?P<prefix>^.*?]\s*.*?)"
     rb"(?P<ip>(?:\d{1,3}\.){3}\d{1,3}|(?:[A-Fa-f0-9:]+:+)+[A-Fa-f0-9.]+)"
     rb"(?:\s+\(X-Forwarded-For:\s*(?P<xff>[^)]+)\))?"
     rb"\s+\[(?P<ua>[^]]+)]"
@@ -722,8 +721,8 @@ def remote_label_replacement(m: re.Match[bytes]) -> bytes:
                 xff.append(xff_ip.encode())
             else:
                 xff.append(b"<REMOVED>")
-        return b"%s%s (X-Forwarded-For: %s) [%s]" % (m.group("prefix"), ip, b", ".join(xff), m.group("ua"))
-    return b"%s%s [%s]" % (m.group("prefix"), ip, m.group("ua"))
+        return b"%s (X-Forwarded-For: %s) [%s]" % (ip, b", ".join(xff), m.group("ua"))
+    return b"%s [%s]" % (ip, m.group("ua"))
 
 
 def sanitize_line(line: bytes, cur_user_bytes: Optional[bytes] = None) -> bytes:
