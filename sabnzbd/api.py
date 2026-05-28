@@ -81,7 +81,7 @@ from sabnzbd.misc import (
     bool_conv,
     get_platform_description,
     is_loopback_addr,
-    is_local_addr,
+    is_lan_addr,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
 from sabnzbd.encoding import xml_name, utob
@@ -711,14 +711,14 @@ LOG_REMOTE_LABEL_RE = re.compile(
 
 def remote_label_replacement(m: re.Match[bytes]) -> bytes:
     """Apply regex substitutions to remote labels, allows local IP addresses"""
-    if (ip_str := m.group("ip").decode()) and (is_loopback_addr(ip_str) or is_local_addr(ip_str)):
+    if (ip_str := m.group("ip").decode()) and (is_loopback_addr(ip_str) or is_lan_addr(ip_str)):
         ip = m.group("ip")
     else:
         ip = b"<REMOVED>"
     if m.group("xff"):
         xff = []
         for xff_ip in m.group("xff").decode().split(", "):
-            if is_loopback_addr(xff_ip) or is_local_addr(xff_ip):
+            if is_loopback_addr(xff_ip) or is_lan_addr(xff_ip):
                 xff.append(xff_ip.encode())
             else:
                 xff.append(b"<REMOVED>")
