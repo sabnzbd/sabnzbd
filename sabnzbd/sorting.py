@@ -569,19 +569,20 @@ class Sorter:
             base_path,
             to_lowercase(path_subst(self.filename_set, [("%fn", f_name), ("%ext", f_ext.lstrip("."))]) + f_ext),
         )
-        if not os.path.exists(new_filepath):
-            renamed_files = []
-            try:
-                logging.debug("Renaming %s to %s", filepath, new_filepath)
-                renamer(filepath, new_filepath)
-                renamed_files.append(new_filepath)
-            except Exception:
-                logging.error(T("Failed to rename %s to %s"), clip_path(base_path), clip_path(new_filepath))
-                logging.info("Traceback: ", exc_info=True)
+        if filepath != new_filepath:
+            if not os.path.exists(new_filepath):
+                renamed_files = []
+                try:
+                    logging.debug("Renaming %s to %s", filepath, new_filepath)
+                    renamer(filepath, new_filepath)
+                    renamed_files.append(new_filepath)
+                except Exception:
+                    logging.error(T("Failed to rename %s to %s"), clip_path(base_path), clip_path(new_filepath))
+                    logging.info("Traceback: ", exc_info=True)
 
-            rename_similar(base_path, f_ext, self.filename_set, renamed_files)
-        else:
-            logging.debug("Cannot rename %s, new path %s already exists.", largest_file.get("name"), new_filepath)
+                rename_similar(base_path, f_ext, self.filename_set, renamed_files)
+            else:
+                logging.debug("Cannot rename %s, new path %s already exists.", largest_file.get("name"), new_filepath)
 
         return move_to_parent_directory(base_path)
 
