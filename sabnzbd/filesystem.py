@@ -1227,19 +1227,26 @@ def purge_log_files():
 
 
 def directory_is_writable_with_file(mydir: str, myfilename: str) -> bool:
+    """Test whether a file named myfilename can be created and written in mydir.
+
+    Only creating and writing the file needs to succeed. Cleaning up the test
+    file afterwards is best-effort: if it has already been removed (for example
+    by a concurrent writability check), that is not a failure. Treating it as
+    one caused spurious "is not writable at all. This blocks downloads."
+    warnings at startup."""
     filename = os.path.join(mydir, myfilename)
-    if os.path.exists(filename):
-        try:
-            os.remove(filename)
-        except Exception:
-            return False
     try:
         with open(filename, "w") as f:
             f.write("Some random content to test directory and file permissions")
-        os.remove(filename)
-        return True
-    except Exception:
+    except Exception as e:
+        logging.info("Cannot write test file %s: %s", filename, e)
         return False
+    finally:
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
+    return True
 
 
 def directory_is_writable(test_dir: str) -> bool:
