@@ -25,7 +25,7 @@ import logging
 import datetime
 import threading
 import difflib
-from typing import Any, Optional, BinaryIO
+from typing import Literal, Optional, TypedDict, BinaryIO
 from collections import deque
 
 # SABnzbd modules
@@ -97,6 +97,32 @@ import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
 from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
+
+# Fixed types for the bad-article counter keys
+BadArticleType = Literal["bad_articles", "missing_articles", "duplicate_articles"]
+
+
+class NzoInfo(TypedDict, total=False):
+    """Metadata accumulated during download and post-processing of an NZB job.
+    All fields are optional — they are set incrementally as information becomes available.
+    """
+
+    # Set from HTTP response headers (urlgrabber) or NZB <meta> tags
+    more_info: str
+    propername: str
+    episodename: str
+    year: str
+    failure: str
+    details: str
+    password: str
+    # RSS feed source name
+    RSS: str
+    # Download duration in seconds (set on completion)
+    download_time: int
+    # Article quality counters (incremented during download)
+    bad_articles: int
+    missing_articles: int
+    duplicate_articles: int
 
 
 class NzbEmpty(Exception):
@@ -195,7 +221,7 @@ class NzbObject(TryList):
         password: Optional[str] = None,
         nzbname: Optional[str] = None,
         status: str = Status.QUEUED,
-        nzo_info: Optional[dict[str, Any]] = None,
+        nzo_info: Optional[NzoInfo] = None,
         reuse: Optional[str] = None,
         nzo_id: Optional[str] = None,
         dup_check: bool = True,
@@ -314,7 +340,7 @@ class NzbObject(TryList):
         # Stores one line containing the last failure
         self.fail_msg = ""
         # Stores various info about the nzo to be
-        self.nzo_info: dict[str, Any] = nzo_info or {}
+        self.nzo_info: NzoInfo = nzo_info or {}
 
         self.next_save = None
         self.save_timeout = None
@@ -1198,7 +1224,7 @@ class NzbObject(TryList):
         self.set_unpack_info("Source", self.url or self.filename, unique=True)
 
     @synchronized()
-    def increase_bad_articles_counter(self, bad_article_type: str):
+    def increase_bad_articles_counter(self, bad_article_type: BadArticleType):
         """Record information about bad articles. Should be called before
         register_article, which triggers the availability check."""
         if bad_article_type not in self.nzo_info:

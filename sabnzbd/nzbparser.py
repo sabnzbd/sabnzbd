@@ -31,7 +31,7 @@ import zipfile
 import tempfile
 
 import cherrypy._cpreqbody
-from typing import Optional, Any
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.nzb import (
@@ -40,6 +40,7 @@ from sabnzbd.nzb import (
     NzbRejected,
     NzbPreQueueRejected,
     NzbRejectToHistory,
+    NzoInfo,
     NzbFile,
     SkippedNzbFile,
 )
@@ -161,7 +162,7 @@ def process_nzb_archive_file(
     priority: Optional[int | str] = None,
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
-    nzo_info: Optional[dict[str, Any]] = None,
+    nzo_info: Optional[NzoInfo] = None,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
@@ -280,7 +281,7 @@ def process_single_nzb(
     priority: Optional[int | str] = None,
     nzbname: Optional[str] = None,
     reuse: Optional[str] = None,
-    nzo_info: Optional[dict[str, Any]] = None,
+    nzo_info: Optional[NzoInfo] = None,
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
