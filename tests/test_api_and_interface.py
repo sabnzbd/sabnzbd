@@ -46,6 +46,105 @@ class TestApiInternals:
     def test_auth(self):
         assert "apikey" in str(api.api_handler({"mode": "auth"}))
 
+    @pytest.mark.parametrize(
+        "line,ip",
+        [
+            (
+                b"2026-05-19 18:35:18,271::INFO::[notifier:169] Sending notification: Warning - Unsuccessful login attempt from ::ffff:172.18.0.1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0] (type=warning, job_cat=None)\n",
+                b"::ffff:172.18.0.1",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 172.18.0.1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"172.18.0.1",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 2001:4860::1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 8.8.8.8 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 127.0.0.1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"127.0.0.1",
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from fe80::1 [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"fe80::1",
+            ),
+        ],
+        ids=[
+            "ipv6-local",
+            "ipv4-local",
+            "ipv6-removed",
+            "ipv4-removed",
+            "ipv4-loopback",
+            "ipv6-linklocal",
+        ],
+    )
+    def test_log_sanitize_remote_label(self, line, ip):
+        sanitized = api.sanitize_line(line)
+        assert (
+            sanitized.count(
+                b"%s [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]" % ip
+            )
+            == 1
+        )
+
+    @pytest.mark.parametrize(
+        "line,ip,xff",
+        [
+            (
+                b"2026-05-19 18:35:18,271::INFO::[notifier:169] Sending notification: Warning - Unsuccessful login attempt from ::ffff:172.18.0.1 (X-Forwarded-For: 8.8.8.8, 1.1.1.1) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0] (type=warning, job_cat=None)\n",
+                b"::ffff:172.18.0.1",
+                [b"<REMOVED>", b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 172.18.0.1 (X-Forwarded-For: 8.8.8.8, 1.1.1.1) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"172.18.0.1",
+                [b"<REMOVED>", b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 2001:4860::1 (X-Forwarded-For: 192.168.0.50, 8.8.8.8) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+                [b"192.168.0.50", b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 8.8.8.8 (X-Forwarded-For: 1.1.1.1) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"<REMOVED>",
+                [b"<REMOVED>"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from 127.0.0.1 (X-Forwarded-For: 127.1.2.3) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"127.0.0.1",
+                [b"127.1.2.3"],
+            ),
+            (
+                b"2026-05-19 18:35:18,271::WARNING::[interface:689] Unsuccessful login attempt from fe80::1 (X-Forwarded-For: fe80::2) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]\n",
+                b"fe80::1",
+                [b"fe80::2"],
+            ),
+        ],
+        ids=[
+            "ipv6-local-removed-removed",
+            "ipv4-local-removed-removed",
+            "ipv6-removed-local-removed",
+            "ipv4-removed-removed",
+            "ipv4-loopback-loopback",
+            "ipv6-linklocal-linklocal",
+        ],
+    )
+    def test_log_sanitize_remote_label_xff(self, line, ip, xff):
+        sanitized = api.sanitize_line(line)
+        assert (
+            sanitized.count(
+                b"%s (X-Forwarded-For: %s) [Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0]"
+                % (ip, b", ".join(xff))
+            )
+            == 1
+        )
+
 
 def set_remote_host_or_ip(hostname: str = "localhost", remote_ip: str = "127.0.0.1"):
     """Change CherryPy's "Host" and "remote.ip"-values"""
