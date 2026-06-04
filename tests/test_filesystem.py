@@ -1242,6 +1242,34 @@ class TestOtherFileSystemFunctions:
         # any modern filesystem (ext3, ext4, ntfs, modern FAT) should succeed
         assert filesystem.check_filesystem_capabilities(tempfile.gettempdir())
 
+    def test_directory_is_writable_with_file_survives_lost_test_file(self, monkeypatch):
+        # Regression test: losing the temporary test file before cleanup (e.g. a
+        # concurrent writability check removed it) must NOT be reported as "not
+        # writable". This used to surface as a false "is not writable at all.
+        # This blocks downloads." warning at startup.
+        test_dir = tempfile.gettempdir()
+        real_remove = os.remove
+        leftover = os.path.join(test_dir, "sab_test.txt")
+
+        def raise_enoent(path):
+            raise FileNotFoundError("simulated race: test file already removed")
+
+        monkeypatch.setattr(os, "remove", raise_enoent)
+        try:
+            assert filesystem.directory_is_writable_with_file(test_dir, "sab_test.txt") is True
+        finally:
+            # os.remove was patched out, so the test file was left behind
+            if os.path.exists(leftover):
+                real_remove(leftover)
+
+    def test_directory_is_writable_with_file_reports_write_failure(self, monkeypatch):
+        # A genuine failure to create/write the file must still return False
+        def raise_permission(*args, **kwargs):
+            raise PermissionError("simulated read-only filesystem")
+
+        monkeypatch.setattr("builtins.open", raise_permission)
+        assert filesystem.directory_is_writable_with_file(tempfile.gettempdir(), "sab_test.txt") is False
+
     @pytest.mark.parametrize(
         "name, ext_to_remove, output",
         [
