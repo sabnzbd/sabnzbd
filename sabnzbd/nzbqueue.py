@@ -885,7 +885,7 @@ class NzbQueue:
     def stop_idle_jobs(self):
         """Detect jobs that have zero files left and send them to post processing"""
         # Only check servers that are active
-        active_servers = set(server for server in sabnzbd.Downloader.servers[:] if server.active)
+        active_servers = {server for server in sabnzbd.Downloader.servers[:] if server.active}
         empty = []
 
         if len(active_servers) <= 0:

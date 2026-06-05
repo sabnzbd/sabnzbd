@@ -228,7 +228,7 @@ def deobfuscate(nzo: "sabnzbd.nzb.NzbObject", filelist: list[str], usefulname: s
     """
 
     # to be sure, only keep really existing files and remove any duplicates:
-    filtered_filelist = list(set(f for f in filelist if os.path.isfile(f)))
+    filtered_filelist = list({f for f in filelist if os.path.isfile(f)})
 
     # Do not deobfuscate/rename anything if there is a typical DVD or Bluray directory:
     ignored_movie_folders_with_dir_sep = tuple(os.path.sep + f + os.path.sep for f in IGNORED_MOVIE_FOLDERS)

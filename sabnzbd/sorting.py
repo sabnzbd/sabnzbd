@@ -678,7 +678,7 @@ def guess_what(name: str) -> MatchesDict:
         guess.setdefault("season", 1)
 
     # Try to avoid setting the type to movie on arbitrary jobs (e.g. 'Setup.exe') just because guessit defaults to that
-    table = str.maketrans({char: "" for char in whitespace + "_.-()[]{}"})
+    table = str.maketrans(dict.fromkeys(whitespace + "_.-()[]{}", ""))
     if guess.get("type") == "movie":
         if (
             guess.get("title", "").translate(table) == name.translate(table)  # Check for full name used as title
@@ -686,7 +686,7 @@ def guess_what(name: str) -> MatchesDict:
                 c in guess.get("release_group", "") for c in (whitespace + punctuation)
             )  # interpuction of white spaces in the groupname
             or not any(
-                [key in guess for key in ("year", "screen_size", "video_codec")]
+                key in guess for key in ("year", "screen_size", "video_codec")
             )  # No typical movie properties set
             or (
                 name.lower().startswith(("http://", "https://"))

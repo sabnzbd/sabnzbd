@@ -72,7 +72,7 @@ class TryList:
 
     def __getstate__(self):
         """Save the servers"""
-        return set(server.id for server in self.try_list)
+        return {server.id for server in self.try_list}
 
     def __setstate__(self, servers_ids: list[str]):
         self.try_list = set()

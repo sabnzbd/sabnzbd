@@ -79,9 +79,9 @@ class Assembler(Thread):
         self.queued_lock = threading.Lock()
         self.queued_nzf: set[str] = set()
         self.queued_nzf_non_contiguous: set[str] = set()
-        self.queued_next_time: dict[str, float] = dict()
+        self.queued_next_time: dict[str, float] = {}
         self.ready_bytes_lock = threading.Lock()
-        self.ready_bytes: dict[str, int] = dict()
+        self.ready_bytes: dict[str, int] = {}
 
     def stop(self):
         self.queue.put(AssemblerTask())

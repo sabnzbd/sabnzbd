@@ -18,7 +18,8 @@ select = [
     "F",
     "W",
     "RUF",
-    "UP"
+    "UP",
+    "C4"
 ]
 ignore = [
     "E402",

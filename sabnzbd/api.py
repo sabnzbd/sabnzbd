@@ -2003,7 +2003,7 @@ def build_history(
 
 def add_active_history(postproc_queue: list[NzbObject], items: list[dict[str, Any]]):
     """Get the active history queue and add it to the existing items list"""
-    nzo_ids = set([nzo["nzo_id"] for nzo in items])
+    nzo_ids = {nzo["nzo_id"] for nzo in items}
 
     for nzo in postproc_queue:
         # Skip already in history
