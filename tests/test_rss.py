@@ -206,7 +206,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=0, season=0, episode=0),
+                {"rule": 0, "season": 0, "episode": 0},
             ),
             (
                 (None, None, None, None),
@@ -216,7 +216,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=1, season=0, episode=0),
+                {"rule": 1, "season": 0, "episode": 0},
             ),
             (
                 (None, None, None, None),
@@ -226,7 +226,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=1, season=5, episode=2),
+                {"rule": 1, "season": 5, "episode": 2},
             ),
             (
                 (None, None, None, None),
@@ -236,7 +236,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=0, season=1, episode=2),
+                {"rule": 0, "season": 1, "episode": 2},
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -246,7 +246,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=0, season=0, episode=0, prio=LOW_PRIORITY),
+                {"rule": 0, "season": 0, "episode": 0, "prio": LOW_PRIORITY},
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -256,7 +256,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=0, season=0, episode=0, prio=HIGH_PRIORITY),
+                {"rule": 0, "season": 0, "episode": 0, "prio": HIGH_PRIORITY},
             ),
             (
                 (None, 1, None, None),
@@ -266,7 +266,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=0, season=0, episode=0, pp=None),
+                {"rule": 0, "season": 0, "episode": 0, "pp": None},
             ),
             (
                 (None, 1, None, None),
@@ -276,7 +276,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(rule=0, season=0, episode=0, pp=3),
+                {"rule": 0, "season": 0, "episode": 0, "pp": 3},
             ),
             (  # category overrides
                 ("tv", 1, "", DEFAULT_PRIORITY),
@@ -286,15 +286,15 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(
-                    rule=0,
-                    season=0,
-                    episode=0,
-                    cat="evaluator",
-                    pp=1,
-                    script=None,
-                    prio=DEFAULT_PRIORITY,
-                ),
+                {
+                    "rule": 0,
+                    "season": 0,
+                    "episode": 0,
+                    "cat": "evaluator",
+                    "pp": 1,
+                    "script": None,
+                    "prio": DEFAULT_PRIORITY,
+                },
             ),
             (  # category with rule overrides
                 ("tv", 1, "", DEFAULT_PRIORITY),
@@ -304,15 +304,15 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(
-                    rule=0,
-                    season=0,
-                    episode=0,
-                    cat="evaluator",
-                    pp=2,
-                    script="override.py",
-                    prio=DEFAULT_PRIORITY,
-                ),
+                {
+                    "rule": 0,
+                    "season": 0,
+                    "episode": 0,
+                    "cat": "evaluator",
+                    "pp": 2,
+                    "script": "override.py",
+                    "prio": DEFAULT_PRIORITY,
+                },
             ),
             (
                 ("", "", "", PAUSED_PRIORITY),
@@ -322,13 +322,13 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                dict(
-                    rule=0,
-                    season=0,
-                    episode=0,
-                    cat="tv",
-                    prio=PAUSED_PRIORITY,
-                ),
+                {
+                    "rule": 0,
+                    "season": 0,
+                    "episode": 0,
+                    "cat": "tv",
+                    "prio": PAUSED_PRIORITY,
+                },
             ),
             (
                 ("", "", "", PAUSED_PRIORITY),
@@ -338,13 +338,13 @@ class TestRSS:
                 1000,
                 3,
                 5,
-                dict(
-                    rule=0,
-                    season=3,
-                    episode=5,
-                    cat="tv",
-                    prio=PAUSED_PRIORITY,
-                ),
+                {
+                    "rule": 0,
+                    "season": 3,
+                    "episode": 5,
+                    "cat": "tv",
+                    "prio": PAUSED_PRIORITY,
+                },
             ),
         ],
     )

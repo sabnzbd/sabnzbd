@@ -21,13 +21,14 @@ tests.test_downloader - Test the downloader connection state machine
 
 import socket
 import threading
+import pytest
+import time
+from unittest import mock
 
 import sabnzbd.cfg
 from sabnzbd.downloader import Server, Downloader
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.get_addrinfo import AddrInfo
-
-from tests.testhelper import *
 
 
 class FakeNNTPServer:
@@ -54,7 +55,7 @@ class FakeNNTPServer:
     def _accept_loop(self):
         while not self._stop.is_set():
             try:
-                conn, addr = self.server_socket.accept()
+                conn, _addr = self.server_socket.accept()
                 self.connections.append(conn)
                 threading.Thread(target=self._handle_client, args=(conn,), daemon=True).start()
             except OSError:
@@ -78,7 +79,7 @@ class FakeNNTPServer:
                         conn.sendall(b"381 More auth required\r\n")
                     elif data.startswith(b"authinfo pass"):
                         conn.sendall(b"281 Auth accepted\r\n")
-                except socket.timeout:
+                except TimeoutError:
                     continue
         except Exception:
             pass

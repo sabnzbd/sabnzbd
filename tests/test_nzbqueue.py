@@ -23,10 +23,14 @@ import shutil
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
+import sabnzbd
+from sabnzbd.constants import NORMAL_PRIORITY
 from sabnzbd.downloader import Server
-from sabnzbd.nzb import NzbObject, NzbFile
+from sabnzbd.nzb import NzbFile, NzbObject
 from sabnzbd.nzbqueue import NzbQueue
-from tests.testhelper import *
+from tests.testhelper import SAB_DATA_DIR, SAB_NEWSSERVER_HOST, SAB_NEWSSERVER_PORT
 
 
 @pytest.fixture()
@@ -93,7 +97,7 @@ class TestNzbQueue:
         q.add(jobb)
 
         # Mark one of joba articles as tried
-        article = list(joba.files[0].articles)[0]
+        article = next(iter(joba.files[0].articles))
         article.add_to_try_list(sabnzbd.Downloader.servers[0])
         q.save()
 
@@ -110,7 +114,7 @@ class TestNzbQueue:
         assert jobb
 
         # Try list restored
-        assert sabnzbd.Downloader.servers[0] in list(joba.files[0].articles)[0].try_list
+        assert sabnzbd.Downloader.servers[0] in next(iter(joba.files[0].articles)).try_list
 
     def test_stop_idle_jobs_no_crash_on_exhausted_articles(self):
         """Regression test: stop_idle_jobs must not raise RuntimeError when

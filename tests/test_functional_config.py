@@ -21,10 +21,22 @@ tests.test_functional_config - Basic testing if Config pages work
 
 from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from pytest_httpserver import HTTPServer
 
 
-from tests.testhelper import *
+import os
+from tests.testhelper import (
+    SAB_DATA_DIR,
+    SAB_HOST,
+    SAB_PORT,
+    SAB_NEWSSERVER_HOST,
+    SAB_NEWSSERVER_PORT,
+    SABnzbdBaseTest,
+    create_and_read_nzb_fp,
+    get_api_result,
+    wait_for,
+)
 
 
 class TestBasicPages(SABnzbdBaseTest):
@@ -294,7 +306,7 @@ class TestConfigServers(SABnzbdBaseTest):
         wait_for(
             lambda: not self.selenium_wrapper(self.driver.find_element, By.ID, "host0").is_displayed(),
             timeout=2,
-            err_msg=f"The Add Server interface did not close",
+            err_msg="The Add Server interface did not close",
         )
         self.selenium_wrapper(self.driver.find_element, By.CLASS_NAME, "showserver").click()
 

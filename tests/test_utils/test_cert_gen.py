@@ -19,6 +19,8 @@
 tests.test_cert_gen - Testing Certificate generation
 """
 
+import os
+import pytest
 import datetime
 
 from cryptography import x509
@@ -26,7 +28,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 from sabnzbd.utils.certgen import generate_key, generate_local_cert
-from tests.testhelper import *
+from tests.testhelper import SAB_CACHE_DIR
 
 
 @pytest.mark.usefixtures("clean_cache_dir")

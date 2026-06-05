@@ -19,8 +19,12 @@
 Testing SABnzbd par2 parsing
 """
 
-from sabnzbd.par2file import *
-from tests.testhelper import *
+import logging
+import os
+
+
+from sabnzbd.par2file import FilePar2Info, parse_par2_file
+from tests.testhelper import SAB_DATA_DIR
 
 # TODO: Add testing for edge cases, such as non-unique md5of16k or broken par files
 

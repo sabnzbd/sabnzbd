@@ -19,10 +19,16 @@
 tests.test_functional_adding_nzbs - Tests for settings interaction when adding NZBs
 """
 
+import os
 import shutil
 import stat
 import sys
-from random import sample
+import time
+from random import choice, randint, sample
+
+import pytest
+
+from tests.testhelper import SAB_CACHE_DIR, create_nzb, get_api_result, random_name
 
 from sabnzbd.constants import (
     PAUSED_PRIORITY,
@@ -34,8 +40,6 @@ from sabnzbd.constants import (
     REPAIR_PRIORITY,
     PP_LOOKUP,
 )
-
-from tests.testhelper import *
 
 # Repair priority is out of scope for the purpose of these tests: it cannot be
 # set as a default, upon adding a job, or from a pre-queue script.
@@ -179,7 +183,7 @@ class TestAddingNZBs:
                     % (
                         sys.executable,
                         (category if category else ""),
-                        (str(priority) if priority != None else ""),
+                        (str(priority) if priority is not None else ""),
                     )
                 )
             if not sys.platform.startswith("win"):
@@ -199,13 +203,13 @@ class TestAddingNZBs:
             "name": category_name,
             "pp": choice(list(PP_LOOKUP.keys())),
             "script": "None",
-            "priority": priority if priority != None else DEFAULT_PRIORITY,
+            "priority": priority if priority is not None else DEFAULT_PRIORITY,
         }
 
         # Add the category
         json = get_api_result(mode="set_config", extra_arguments=category_config)
         assert json["config"]["categories"][0]["name"] == category_name
-        if priority != None:
+        if priority is not None:
             assert json["config"]["categories"][0]["priority"] == priority
 
         return category_name
@@ -247,7 +251,7 @@ class TestAddingNZBs:
             # Fallback is always category-based, so nix any explicit priorities (stages 1, 3).
             # This is conditional only because explicit priority-upon-adding takes precedence
             # over implicit-from-pre-queue, as discussed in #1703.
-            if not (hit_stage == 4 and STAGES[1] != None):
+            if not (hit_stage == 4 and STAGES[1] is not None):
                 STAGES[1] = None
                 STAGES[3] = None
 
@@ -278,17 +282,17 @@ class TestAddingNZBs:
             # default cat -> implicit meta -> implicit on add -> explicit on add -> implicit pre-q -> explicit pre-q
             for stage in (0, 5, 2, 1, 4, 3):
                 if stage == hit_stage:
-                    if hit_stage == 1 and STAGES[4] != None:
+                    if hit_stage == 1 and STAGES[4] is not None:
                         # An explicit state-setting priority still has to deal with the category from pre-queue
                         # for fallback purposes, unlike non-state-setting priorities-on-add that override it.
                         continue
                     else:
                         break
-                if STAGES[stage] != None:
+                if STAGES[stage] is not None:
                     pre_state_prio = STAGES[stage]
                     pre_state_stage = stage
 
-            if pre_state_prio != None and LOW_PRIORITY <= pre_state_prio <= HIGH_PRIORITY:
+            if pre_state_prio is not None and LOW_PRIORITY <= pre_state_prio <= HIGH_PRIORITY:
                 return pre_state_prio, return_state
             else:
                 # The next-in-line prio is unsuitable; recurse with relevant stages zero'ed out
@@ -315,8 +319,8 @@ class TestAddingNZBs:
         # Work backwards through all stages:
         # explicit pre-q -> implicit pre-q -> explicit on add -> implicit on add -> implicit meta
         for stage in (3, 4, 1, 2, 5):
-            if STAGES[stage] != None:
-                if stage == 4 and STAGES[1] != None:
+            if STAGES[stage] is not None:
+                if stage == 4 and STAGES[1] is not None:
                     # Explicit priority on add takes precedence over implicit-from-pre-queue
                     continue
                 if STAGES[stage] in REGULAR_PRIOS:
@@ -351,16 +355,16 @@ class TestAddingNZBs:
 
         # Setup categories
         cat_meta = None
-        if prio_meta_cat != None:
+        if prio_meta_cat is not None:
             cat_meta = self._configure_cat(prio_meta_cat, "meta")
             if not VAR.META_NZB_FILE:
                 VAR.META_NZB_FILE = self._create_meta_nzb(cat_meta)
         cat_add = None
-        if prio_add_cat != None:
+        if prio_add_cat is not None:
             cat_add = self._configure_cat(prio_add_cat, "add")
 
         cat_preq = None
-        if prio_preq_cat != None:
+        if prio_preq_cat is not None:
             cat_preq = self._configure_cat(prio_preq_cat, "pre")
 
         # Setup the pre-queue script
@@ -370,7 +374,7 @@ class TestAddingNZBs:
         extra = {"name": VAR.META_NZB_FILE if cat_meta else VAR.NZB_FILE}
         if cat_add:
             extra["cat"] = cat_add
-        if prio_add != None:
+        if prio_add is not None:
             extra["priority"] = prio_add
         nzo_id = ",".join(get_api_result(mode="addlocalfile", extra_arguments=extra)["nzo_ids"])
 

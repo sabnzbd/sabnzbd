@@ -22,22 +22,25 @@ tests.test_newswrapper - Tests of various functions in newswrapper
 import errno
 import ipaddress
 import logging
+import os
 import os.path
 import socket
+import ssl
 import sys
 import tempfile
 import threading
-import ssl
 import time
 import warnings
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional
+from unittest import mock
+
 import portend
+import pytest
 from flaky import flaky
 
-from tests.testhelper import *
-from sabnzbd import misc
-from sabnzbd import newswrapper
+import sabnzbd
+from sabnzbd import misc, newswrapper
 from sabnzbd.get_addrinfo import AddrInfo
 
 TEST_HOST = "127.0.0.1"

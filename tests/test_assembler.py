@@ -19,14 +19,18 @@
 tests.test_assembler - Testing functions in assembler.py
 """
 
+import os
 from types import SimpleNamespace
+from unittest import mock
 from zlib import crc32
 
+import pytest
+
+import sabnzbd
 from sabnzbd.assembler import Assembler
 from sabnzbd.constants import GIGI
 from sabnzbd.filesystem import Diskspace
 from sabnzbd.nzb import Article, NzbFile, NzbObject
-from tests.testhelper import *
 
 
 class TestAssembler:
@@ -125,7 +129,7 @@ class TestAssembler:
 
     def test_assemble_direct_write(self, assembler):
         """Pure direct write mode"""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
@@ -141,7 +145,7 @@ class TestAssembler:
         Start in direct_write, but encounter an article that cannot be direct-written.
         Assembler should abort direct_write and switch to append mode.
         """
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
@@ -155,7 +159,7 @@ class TestAssembler:
 
     def test_assemble_direct_append_direct_append(self, assembler):
         """Out-of-order direct write via cache, append fills the gap."""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
@@ -187,7 +191,7 @@ class TestAssembler:
 
     def test_assemble_direct_write_aborted_to_append_second_attempt(self, assembler):
         """Second attempt after initial partial assemble, including revert to append mode."""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=True),
@@ -207,7 +211,7 @@ class TestAssembler:
 
     def test_assemble_append_direct_second_attempt(self, assembler):
         """Second attempt after initial partial assemble"""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"hello"), can_direct_write=False),
@@ -223,7 +227,7 @@ class TestAssembler:
 
     def test_assemble_append_only(self, assembler):
         """Pure append mode"""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), can_direct_write=False),
@@ -235,7 +239,7 @@ class TestAssembler:
 
     def test_assemble_append_second_attempt(self, assembler):
         """Pure append mode, second attempt"""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), can_direct_write=False),
@@ -252,7 +256,7 @@ class TestAssembler:
 
     def test_assemble_append_first_not_decoded(self, assembler):
         """Pure append mode, second attempt"""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"abcd"), decoded=False, can_direct_write=False),
@@ -268,7 +272,7 @@ class TestAssembler:
 
     def test_force_append(self, assembler):
         """Force in direct_write mode, then fill in gaps in append mode"""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),
@@ -291,7 +295,7 @@ class TestAssembler:
 
     def test_force_force_direct(self, assembler):
         """Force the first, then force the last, then direct the gap"""
-        data, expected = self._make_request(
+        _data, expected = self._make_request(
             self.nzf,
             [
                 self._make_article(self.nzf, offset=0, data=bytearray(b"hello")),

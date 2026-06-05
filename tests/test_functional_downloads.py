@@ -19,7 +19,9 @@
 tests.test_functional_downloads - Test the downloading flow
 """
 
-from tests.testhelper import *
+import pytest
+
+from tests.testhelper import DownloadFlowBasics
 
 
 class TestDownloadFlow(DownloadFlowBasics):

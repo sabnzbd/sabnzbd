@@ -21,16 +21,18 @@ tests.test_newsunpack - Tests of various functions in newspack
 
 import glob
 import logging
+import os
 import os.path
 import shutil
+from unittest import mock
 from unittest.mock import call
 
-
-from tests.testhelper import *
+import pytest
 
 import sabnzbd
 import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
+from tests.testhelper import SAB_CACHE_DIR
 from sabnzbd.misc import format_time_string
 from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full
 
@@ -410,7 +412,7 @@ class TestRarUnpack:
         rar_files = ["testfile.rar"]
         expected_files = {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"}
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_rar_unpack(test_dir, rar_files)
         )
 
@@ -432,7 +434,7 @@ class TestRarUnpack:
         expected_files = {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"}
         custom_nzo_settings = {"delete": False}
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_rar_unpack(test_dir, rar_files, custom_nzo_settings=custom_nzo_settings)
         )
 
@@ -467,7 +469,7 @@ class TestRarUnpack:
         rar_files = ["testfile.rar"]
         expected_files = {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"}
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, actual_temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, actual_temp_complete_dir = (
             self._run_rar_unpack(
                 test_dir, rar_files, custom_temp_test_dir=temp_test_dir, custom_temp_complete_dir=temp_complete_dir
             )
@@ -497,7 +499,7 @@ class TestRarUnpack:
         nested_path_parts = [long_dir_name] * 4  # 4 levels of 82-char names = 328
         expected_files = {os.path.join(*nested_path_parts, expected_file) for expected_file in expected_files}
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_rar_unpack(test_dir, rar_files)
         )
 
@@ -527,7 +529,7 @@ class TestRarUnpack:
         ]
         expected_files = {"我喜欢编程_My_Test_Download.bin"}
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_rar_unpack(test_dir, rar_files)
         )
 
@@ -557,7 +559,7 @@ class TestRarUnpack:
             "meta": {"password": ["secret"]},  # And in meta for get_all_passwords
         }
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_rar_unpack(test_dir, rar_files, custom_nzo_settings=custom_nzo_settings)
         )
 
@@ -586,7 +588,7 @@ class TestRarUnpack:
             "meta": {"password": ["wrongpassword"]},
         }
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, _temp_complete_dir = (
             self._run_rar_unpack(test_dir, rar_files, custom_nzo_settings=custom_nzo_settings)
         )
 
@@ -616,7 +618,7 @@ class TestRarUnpack:
         else:
             expected_files = {'blabla :: bla " bla << || bla ??? CON.bin'}
 
-        error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir = (
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_rar_unpack(test_dir, rar_files)
         )
 

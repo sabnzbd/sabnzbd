@@ -21,12 +21,9 @@ tests.test_decorator - Testing decorators in decorators.py
 
 import pytest
 import time
-import functools
 import threading
-from unittest.mock import Mock
 
-from sabnzbd.decorators import synchronized, NzbQueueLocker, conditional_cache, NZBQUEUE_LOCK, DOWNLOADER_CV
-from tests.testhelper import *
+from sabnzbd.decorators import synchronized, NzbQueueLocker, conditional_cache
 
 
 class TestSynchronized:
@@ -180,7 +177,7 @@ class TestConditionalCache:
         empty_values = ["none", "empty_list", "empty_dict", "empty_string", "zero", "false"]
 
         for i, empty_type in enumerate(empty_values):
-            result = test_func(empty_type)
+            test_func(empty_type)
             assert call_count == i + 1  # Should increment each time
 
             # Call again - should execute again (not cached)

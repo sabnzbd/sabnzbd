@@ -22,18 +22,22 @@ tests.test_filesystem - Testing functions in filesystem.py
 import stat
 import sys
 import os
-import random
 import shutil
 import unicodedata
 from pathlib import Path
 import tempfile
+from random import choice, randint
 
+import pytest
 from pyfakefs.helpers import set_uid
 
+from tests.testhelper import SAB_DATA_DIR
+
+import sabnzbd
 import sabnzbd.cfg
+from sabnzbd import cfg
 import sabnzbd.filesystem as filesystem
 from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX
-from tests.testhelper import *
 
 # Set the global uid for fake filesystems to a non-root user;
 # by default this depends on the user running pytest.
@@ -1098,7 +1102,7 @@ class TestRenamer:
     # test filesystem.renamer() for different scenario's
     def test_renamer(self, fake_fs):
         # First of all, create a working directory (with a random name)
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(randint(10000, 99999)))
         fake_fs.create_dir(dirname)
 
         # base case: rename file within directory
@@ -1112,7 +1116,7 @@ class TestRenamer:
         # standard behaviour: renaming (moving) into an exiting other directory *is* allowed
         filename = os.path.join(dirname, "myfile.txt")
         Path(filename).touch()  # create file
-        sameleveldirname = os.path.join(SAB_DATA_DIR, "othertestdir" + str(random.randint(10000, 99999)))
+        sameleveldirname = os.path.join(SAB_DATA_DIR, "othertestdir" + str(randint(10000, 99999)))
         os.mkdir(sameleveldirname)
         newfilename = os.path.join(sameleveldirname, "newfile.txt")
         assert newfilename == filesystem.renamer(filename, newfilename)

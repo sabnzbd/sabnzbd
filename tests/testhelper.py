@@ -37,26 +37,15 @@ from string import ascii_lowercase, digits
 from unittest import mock
 from urllib3.exceptions import ProtocolError
 import xmltodict
-import functools
 from werkzeug import Request
 from werkzeug.utils import send_from_directory
 from pyfakefs.fake_filesystem_unittest import Patcher
 from pyfakefs.fake_filesystem import OSType
-from pyfakefs.helpers import set_uid
 
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import (
-    DB_HISTORY_NAME,
-    DEF_ADMIN_DIR,
     DEF_INI_FILE,
-    DEFAULT_PRIORITY,
-    FORCE_PRIORITY,
-    HIGH_PRIORITY,
-    INTERFACE_PRIORITIES,
-    LOW_PRIORITY,
-    NORMAL_PRIORITY,
-    REPAIR_PRIORITY,
     Status,
     PP_LOOKUP,
 )

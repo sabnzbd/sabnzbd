@@ -19,21 +19,42 @@
 tests.test_functional_api - Functional tests for the API
 """
 
+import os
 import shutil
 import stat
 import sys
-
+import time
 from math import ceil
-from random import sample
-
-from tavern.core import run
+from random import choice, randint, sample
 from warnings import warn
 
-import sabnzbd.interface as interface
-from sabnzbd.constants import DEF_SORTER_RENAME_SIZE
-from sabnzbd.misc import from_units
+import pytest
+from tavern.core import run
 
-from tests.testhelper import *
+import sabnzbd
+import sabnzbd.interface as interface
+from sabnzbd.constants import (
+    DEFAULT_PRIORITY,
+    DEF_SORTER_RENAME_SIZE,
+    FORCE_PRIORITY,
+    HIGH_PRIORITY,
+    INTERFACE_PRIORITIES,
+    LOW_PRIORITY,
+    NORMAL_PRIORITY,
+    Status,
+)
+from sabnzbd.misc import from_units
+from tests.testhelper import (
+    SAB_APIKEY,
+    SAB_BASE_DIR,
+    SAB_CACHE_DIR,
+    SAB_DATA_DIR,
+    SAB_HOST,
+    SAB_PORT,
+    create_nzb,
+    get_api_result,
+    random_name,
+)
 
 
 class ApiTestFunctions:
@@ -464,7 +485,7 @@ class TestOtherApi(ApiTestFunctions):
                 "keyword": sorter_name,
             },
         )
-        assert json_del["status"] == True
+        assert json_del["status"]
 
         # Try getting the deleted sorter again and make sure it's actually gone
         json_get_again = self._get_api_json(
@@ -517,7 +538,7 @@ class TestQueueApi(ApiTestFunctions):
                 else:
                     assert slot["status"] != Status.PAUSED
 
-    @pytest.mark.parametrize("sample_size", [i for i in range(0, 5)])
+    @pytest.mark.parametrize("sample_size", list(range(0, 5)))
     @pytest.mark.parametrize("select_filename", [True, False])
     def test_api_queue_search_and_nzo_ids(self, sample_size, select_filename):
         queue_size = max(4, sample_size)

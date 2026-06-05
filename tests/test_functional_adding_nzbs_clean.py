@@ -19,11 +19,15 @@
 tests.test_functional_adding_nzbs_clean - Tests for settings interaction when adding NZBs (clean SABnzbd instance)
 """
 
+import os
 import time
 from zipfile import ZipFile
+
+import pytest
+
 import tests.test_functional_adding_nzbs as test_functional_adding_nzbs
 from sabnzbd.constants import STOP_PRIORITY
-from tests.testhelper import *
+from tests.testhelper import get_api_result
 
 
 @pytest.mark.usefixtures("run_sabnzbd")

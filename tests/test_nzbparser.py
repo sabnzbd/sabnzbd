@@ -19,7 +19,9 @@
 tests.test_nzbparser - Tests of basic NZB parsing
 """
 
-from tests.testhelper import *
+import os
+import pytest
+from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR, create_and_read_nzb_fp
 import sabnzbd.nzbparser as nzbparser
 from sabnzbd.nzb import NzbObject
 from sabnzbd.filesystem import save_compressed

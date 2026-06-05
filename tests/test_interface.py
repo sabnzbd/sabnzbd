@@ -20,11 +20,10 @@ tests.test_interface - Testing functions in interface.py
 """
 
 import cherrypy
+import pytest
 
 from sabnzbd import interface
 from sabnzbd.misc import is_local_addr, is_loopback_addr
-
-from tests.testhelper import *
 
 
 class TestInterfaceFunctions:

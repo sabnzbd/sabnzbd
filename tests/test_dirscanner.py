@@ -19,12 +19,13 @@
 tests.test_dirscanner - Testing functions in dirscanner.py
 """
 
-import asyncio
+import os
 
 import pyfakefs.fake_filesystem_unittest as ffs
+import pytest
 
+import sabnzbd
 from sabnzbd.constants import AddNzbFileResult
-from tests.testhelper import *
 
 # Set the global uid for fake filesystems to a non-root user;
 # by default this depends on the user running pytest.

@@ -190,12 +190,12 @@ class TestValidators:
         is_correct = is_correct_win if sys.platform.startswith("win") else is_correct_unix
 
         if is_correct:
-            assert msg == None
+            assert msg is None
             assert value == setting
         else:
             assert msg
             assert msg.startswith("Incorrect parameter")
-            assert value == None
+            assert value is None
 
     def test_validate_single_tag(self):
         assert cfg.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])

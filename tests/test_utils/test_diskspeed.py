@@ -20,7 +20,6 @@ tests.test_utils.test_diskspeed - Testing SABnzbd diskspeed
 """
 
 import os
-import pytest
 import tempfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from tests.testhelper import SAB_CACHE_DIR

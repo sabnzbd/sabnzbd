@@ -20,15 +20,38 @@ tests.conftest - Setup pytest fixtures
 These have to be separate otherwise SABnzbd is started multiple times!
 """
 
+import os
 import shutil
 import subprocess
 import sys
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
+import time
+from random import randint
 from warnings import warn
 
-from tests.testhelper import *
+import pytest
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+
+from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, DEF_INI_FILE
+from tests.testhelper import (
+    FakeHistoryDB,
+    SAB_BASE_DIR,
+    SAB_CACHE_DIR,
+    SAB_DATA_DIR,
+    SAB_HOST,
+    SAB_PORT,
+    SABnzbdBaseTest,
+    get_api_result,
+    get_url_result,
+)
+
+# Re-export the shared fixtures so they are registered suite-wide. These are
+# defined in testhelper.py; importing them here (in conftest) makes them
+# available to every test without needing a wildcard import. The autouse
+# fixtures (config_env, platform_env) are what apply the @pytest.mark.config
+# and @pytest.mark.platform markers, so they must be globally visible.
+from tests.testhelper import config_env, platform_env, fake_fs, sleepless  # noqa: F401
 
 
 @pytest.fixture(scope="module")

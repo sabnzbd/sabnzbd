@@ -24,12 +24,15 @@ import re
 import shutil
 from unittest import mock
 
-from sabnzbd import postproc
-from sabnzbd.config import ConfigSorter, ConfigCat
-from sabnzbd.filesystem import globber_full, clip_path
-from sabnzbd.misc import sort_to_opts
+import pytest
 
-from tests.testhelper import *
+import sabnzbd
+import sabnzbd.config
+from sabnzbd import postproc
+from sabnzbd.config import ConfigCat, ConfigSorter
+from sabnzbd.filesystem import clip_path, globber_full
+from sabnzbd.misc import sort_to_opts
+from tests.testhelper import SAB_CACHE_DIR, SAB_DATA_DIR
 
 
 @pytest.mark.usefixtures("clean_cache_dir")

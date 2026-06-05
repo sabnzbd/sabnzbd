@@ -20,7 +20,7 @@ Testing SABnzbd correct extension functionality module
 """
 
 import os
-from tests.testhelper import *
+import pytest
 import sabnzbd.utils.file_extension as file_extension
 
 

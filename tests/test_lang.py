@@ -19,7 +19,7 @@
 tests.test_lang - Test stuff in sabnzbd/lang.py
 """
 
-from sabnzbd.lang import *
+from sabnzbd.lang import is_rtl
 
 
 def test_is_rtl():

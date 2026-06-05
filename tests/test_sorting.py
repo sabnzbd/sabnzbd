@@ -19,21 +19,24 @@
 tests.test_sorting - Testing functions in sorting.py
 """
 
+import datetime
 import os
-import pyfakefs
 import re
 import shutil
 import sys
-import datetime
 from random import choice, choices, randint, sample
 from string import ascii_letters
 from unittest import mock
 
+import pyfakefs
+import pytest
+
+import sabnzbd
 from sabnzbd import sorting
-from sabnzbd.constants import IGNORED_MOVIE_FOLDERS, GUESSIT_PART_INDICATORS
-from sabnzbd.filesystem import globber, get_ext
+from sabnzbd.constants import GUESSIT_PART_INDICATORS, IGNORED_MOVIE_FOLDERS
+from sabnzbd.filesystem import get_ext, globber
 from sabnzbd.misc import sort_to_opts
-from tests.testhelper import *
+from tests.testhelper import SAB_CACHE_DIR
 
 
 class TestSortingFunctions:
@@ -684,7 +687,7 @@ class TestSortingSorter:
                         + spacer
                         + ("S23" if pack_files_have_season else "")
                         + "E"
-                        + "{0:0>2}".format(i)
+                        + f"{i:0>2}"
                         + spacer
                         + "2160p-SABnzbdTeam"
                         + extension
@@ -1315,12 +1318,13 @@ class TestSortingSorter:
             sorted_path = sorter.construct_path()
             # Check season pack status again after constructing the path
             assert sorter.is_season_pack is result_is_season_pack_later
-            sorted_dest, sorted_ok = sorter.rename(globber(job_dir), job_dir)
+            sorted_dest, _sorted_ok = sorter.rename(globber(job_dir), job_dir)
 
             # Verify the results
             for pattern, number in result_globs.items():
                 try:
-                    assert len(glob := globber(sorted_dest or job_dir, pattern)) == number
+                    glob = globber(sorted_dest or job_dir, pattern)
+                    assert len(glob) == number
                 except AssertionError:
                     # Print some details to help diagnose the issue
                     pytest.fail(

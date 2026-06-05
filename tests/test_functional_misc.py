@@ -19,14 +19,29 @@
 tests.test_functional_misc - Functional tests of various functions
 """
 
+import os
 import shutil
 import subprocess
 import sys
+import time
+
+import pytest
+import requests
 
 import sabnzbd.encoding
 from sabnzbd.filesystem import save_compressed
 from sabnzbd.constants import JOB_ADMIN
-from tests.testhelper import *
+from tests.testhelper import (
+    SAB_BASE_DIR,
+    SAB_CACHE_DIR,
+    SAB_DATA_DIR,
+    SAB_INCOMPLETE_DIR,
+    SABnzbdBaseTest,
+    create_and_read_nzb_fp,
+    get_api_result,
+    get_url_result,
+    wait_for,
+)
 
 
 class TestShowLogging(SABnzbdBaseTest):
@@ -104,7 +119,7 @@ class TestSamplePostProc:
 
         # Run script and check output
         script_call = subprocess.Popen(script_call, stdout=subprocess.PIPE, env=env)
-        script_output, errs = script_call.communicate(timeout=15)
+        script_output, _errs = script_call.communicate(timeout=15)
 
         # This is a bit bad, since we use our own function
         # But in a way it is also a test if the function does its job!
@@ -124,7 +139,7 @@ class TestExtractPot:
 
         # Run script and check output
         script_call = subprocess.Popen(script_call, stdout=subprocess.PIPE)
-        script_output, errs = script_call.communicate(timeout=15)
+        script_output, _errs = script_call.communicate(timeout=15)
         script_output = sabnzbd.encoding.platform_btou(script_output)
 
         # Success message?

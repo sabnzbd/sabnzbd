@@ -19,22 +19,26 @@
 tests.test_config - Tests of config methods
 """
 
-from sabnzbd.filesystem import long_path
-from tests.testhelper import *
-import shutil
-import zipfile
+import io
 import os
+import shutil
+import time
+import zipfile
 
+import pytest
+
+import sabnzbd
 import sabnzbd.cfg
+from sabnzbd import config, filesystem
 from sabnzbd.constants import (
-    DEF_INI_FILE,
+    CONFIG_BACKUP_FILES,
+    CONFIG_BACKUP_HTTPS,
     DEF_HTTPS_CERT_FILE,
     DEF_HTTPS_KEY_FILE,
-    CONFIG_BACKUP_HTTPS,
-    CONFIG_BACKUP_FILES,
+    DEF_INI_FILE,
 )
-from sabnzbd import config
-from sabnzbd import filesystem
+from sabnzbd.filesystem import long_path
+from tests.testhelper import SAB_CACHE_DIR, SAB_COMPLETE_DIR, SAB_DATA_DIR
 
 DEF_CHAIN_FILE = "server.chain"
 
@@ -56,7 +60,7 @@ class TestOptions:
     @pytest.mark.xfail(reason="These tests should be added")
     def test_all(self):
         # Need to add tests for all the relevant options
-        raise NotImplemented
+        raise NotImplementedError
 
     def test_non_public(self):
         test_option = config.Option(self.test_section, self.test_keyword, public=True)
@@ -197,7 +201,7 @@ class TestConfig:
             with open(admin_file := os.path.join(admin_dir, basename), "wb") as fp:
                 fp.write(os.urandom(128))
             assert os.path.exists(admin_file)
-        self.create_and_verify_backup(admin_dir, [DEF_INI_FILE] + CONFIG_BACKUP_FILES)
+        self.create_and_verify_backup(admin_dir, [DEF_INI_FILE, *CONFIG_BACKUP_FILES])
 
         # Add some useless files in the admin_dir
         for basename in ["totals3.sab", "Best.Movie.Ever.1951.240p.avi", "Rating.sab"]:
@@ -205,7 +209,7 @@ class TestConfig:
                 fp.write(os.urandom(256))
             assert os.path.exists(useless_file)
         # None of these should appear in the backup
-        self.create_and_verify_backup(admin_dir, [DEF_INI_FILE] + CONFIG_BACKUP_FILES)
+        self.create_and_verify_backup(admin_dir, [DEF_INI_FILE, *CONFIG_BACKUP_FILES])
 
         # Remove the extra admin files, but keep the useless ones around
         for basename in CONFIG_BACKUP_FILES:

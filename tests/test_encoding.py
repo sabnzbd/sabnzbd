@@ -21,7 +21,6 @@ tests.test_misc - Testing functions in encoding.py
 
 import unicodedata
 
-import pytest
 
 import sabnzbd.encoding as enc
 
@@ -84,7 +83,7 @@ class TestEncoding:
 
         # and now more automatic: craft from utf8
 
-        nice_utf8_string = "aaa你好🚀🤔zzzαβγ"  # correct UTF8
+        nice_utf8_string = "aaa你好🚀🤔zzzαβγ"  # correct UTF8  # noqa: RUF001
         # now break it
         raw_input = ""
         for i in nice_utf8_string.encode("utf-8"):

@@ -20,8 +20,13 @@ tests.test_functional_sorting - Test downloads with season sorting and sequentia
 """
 
 import os
-from tests.testhelper import *
+
+import pytest
+
+import sabnzbd
 import sabnzbd.config as config
+from sabnzbd.constants import DEF_INI_FILE
+from tests.testhelper import DownloadFlowBasics, SAB_CACHE_DIR
 
 # Use an ini file with a valid, old style series and movie sorting configuration
 # that also serves to verify conversion to the new sorter settings is performed

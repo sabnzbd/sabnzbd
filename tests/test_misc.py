@@ -20,17 +20,28 @@ tests.test_misc - Testing functions in misc.py
 """
 
 import datetime
+import functools
+import os
 import subprocess
 import sys
 import tempfile
 from random import randint, sample
+from unittest import mock
 
-from sabnzbd import lang
-from sabnzbd import misc
-from sabnzbd import newsunpack
+import pytest
+
+import sabnzbd
+import sabnzbd.cfg
+from sabnzbd import lang, misc, newsunpack, cfg
 from sabnzbd.config import ConfigCat, get_sorters, save_config
-from sabnzbd.constants import HIGH_PRIORITY, FORCE_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY, GUESSIT_SORT_TYPES
-from tests.testhelper import *
+from sabnzbd.constants import (
+    DEFAULT_PRIORITY,
+    FORCE_PRIORITY,
+    GUESSIT_SORT_TYPES,
+    HIGH_PRIORITY,
+    NORMAL_PRIORITY,
+)
+from tests.testhelper import SAB_BASE_DIR
 
 
 class TestMisc:

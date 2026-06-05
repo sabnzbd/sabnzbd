@@ -19,9 +19,11 @@
 tests.test_nzbarticle - Testing functions in nzbarticle.py
 """
 
-from sabnzbd.nzb import Article
+import os
+from random import randint
+from unittest import mock
 
-from tests.testhelper import *
+from sabnzbd.nzb import Article
 
 
 class Server:
@@ -46,15 +48,15 @@ class TestArticle:
         assert article.get_article(server, servers) == article
         assert article.fetcher_priority == 10
         assert article.fetcher == server
-        assert article.get_article(server, servers) == None
+        assert article.get_article(server, servers) is None
         article.fetcher = None
         article.add_to_try_list(server)
-        assert article.get_article(server, servers) == None
+        assert article.get_article(server, servers) is None
 
         # Test fetching when there is a higher priority server available
         server = servers[2]
         assert article.fetcher_priority == 10
-        assert article.get_article(server, servers) == None
+        assert article.get_article(server, servers) is None
         assert article.fetcher_priority == 20
 
         # Server should be used even if article.fetcher_priority is a higher number than server.priority

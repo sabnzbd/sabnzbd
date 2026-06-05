@@ -19,13 +19,22 @@
 tests.test_api - Tests for API functions
 """
 
+import os
+from random import choice, randint
+from unittest import mock
+
 import cherrypy
 import pytest
 
-from tests.testhelper import *
-
+import sabnzbd
 import sabnzbd.api as api
+import sabnzbd.cfg
+import sabnzbd.config
+import sabnzbd.database as db
 import sabnzbd.interface as interface
+from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP
+from sabnzbd.misc import pp_to_opts
+from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR
 
 
 class TestApiInternals:
@@ -336,7 +345,7 @@ class TestHistory:
         history_db = os.path.join(SAB_CACHE_DIR, DEF_ADMIN_DIR, DB_HISTORY_NAME)
         with FakeHistoryDB(history_db) as fake_history:
             fake_history.add_fake_history_jobs(1)
-            jobs, total_items = fake_history.fetch_history()
+            jobs, _total_items = fake_history.fetch_history()
             history_job = jobs[-1]
 
             # Add minimal attributes to create pp-job

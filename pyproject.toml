@@ -4,7 +4,6 @@ target-version = ["py310"]
 
 [tool.ruff]
 exclude = [
-    "tests",
     "tools",
     "sabnzbd/utils"
 ]
