@@ -958,7 +958,12 @@ tr.queue-item>td:first-child>a {
     width: 100%;
     overflow: auto;
     max-height: 180px;
-    margin-bottom: 0px;
+    margin-bottom: 12px;
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 10px 12px 0px;
 }
 
 .table-messages {
