@@ -26,6 +26,7 @@ import time
 import datetime
 import threading
 import urllib.parse
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Optional, Any, Generator, Iterable
 from enum import Enum
@@ -858,9 +859,7 @@ class RSSReader:
         uris = feeds.uri()
         filters = FeedConfig.from_config(feeds)
 
-        with HistoryDB() as history_db:
-            repo = RSSRepository(history_db)
-
+        with sabnzbd.rss.rss_repository() as repo:
             # Set first if this is the very first scan of this URI
             first = (not repo.has_feed(feed)) and ignore_first
 
@@ -966,9 +965,8 @@ class RSSReader:
 
     def fetch_rss(self, feed: str, uris: list[str]) -> Generator[ResolvedEntry, Any, None]:
         """Fetch and parse RSS feeds for the given URIs."""
-        with HistoryDB() as history_db:
-            repo = RSSRepository(history_db)
 
+        with sabnzbd.rss.rss_repository() as repo:
             for uri in uris:
                 try:
                     # Reset parsing message for each feed
@@ -1197,6 +1195,14 @@ def special_rss_site(url: str) -> bool:
 
 def expired_purge():
     """Purge links older than 3 days"""
-    with sabnzbd.database.HistoryDB() as db:
-        repo = sabnzbd.rss.RSSRepository(db)
+    with rss_repository() as repo:
         repo.expired_purge()
+
+
+@contextmanager
+def rss_repository(db: Optional[sabnzbd.database.HistoryDB] = None):
+    if db is None:
+        with HistoryDB() as db:
+            yield RSSRepository(db)
+    else:
+        yield RSSRepository(db)

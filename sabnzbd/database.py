@@ -146,8 +146,8 @@ class HistoryDB:
                     raise
             if version < 8:
                 _ = self.execute("PRAGMA user_version = 8;") and self.create_rss_table()
-                repo = sabnzbd.rss.RSSRepository(self)
-                repo.import_rss_records()
+                with sabnzbd.rss.rss_repository(self) as repo:
+                    repo.import_rss_records()
 
             HistoryDB.startup_done = True
 

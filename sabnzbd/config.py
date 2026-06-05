@@ -742,8 +742,7 @@ class ConfigRSS:
         # Sanitize the name before using it
         new_name = clean_section_name(new_name)
         delete_from_database("rss", self.__name)
-        with sabnzbd.database.HistoryDB() as history_db:
-            repo = sabnzbd.rss.RSSRepository(history_db)
+        with sabnzbd.rss.rss_repository() as repo:
             repo.rename(self.__name, new_name)
         self.__name = new_name
         add_to_database("rss", self.__name, self)

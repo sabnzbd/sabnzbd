@@ -1386,9 +1386,8 @@ class ConfigRss:
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
-                db = sabnzbd.get_db_connection()
-                repo = sabnzbd.rss.RSSRepository(db)
-                repo.clear_feed(feed)
+                with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+                    repo.clear_feed(feed)
                 config.save_config()
                 self.process_feed(feed, readout=True, ignore_first=True)
                 raise rssRaiser(self.__root, kwargs)
@@ -1439,9 +1438,8 @@ class ConfigRss:
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
-        db = sabnzbd.get_db_connection()
-        repo = sabnzbd.rss.RSSRepository(db)
-        repo.clear_feed(kwargs.get("feed"))
+        with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+            repo.clear_feed(kwargs.get("feed"))
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1471,9 +1469,8 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
         """Remove processed RSS jobs from UI"""
-        db = sabnzbd.get_db_connection()
-        repo = sabnzbd.rss.RSSRepository(db)
-        repo.clear_downloaded(kwargs["feed"])
+        with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+            repo.clear_downloaded(kwargs["feed"])
         self.process_feed(kwargs["feed"])
         raise rssRaiser(self.__root, kwargs)
 
@@ -1963,16 +1960,15 @@ def GetRssLog(feed):
 
         return job
 
-    good, bad, done = ([], [], [])
-    db = sabnzbd.get_db_connection()
-    repo = sabnzbd.rss.RSSRepository(db)
-    for job in repo.get_feed_jobs(feed, states=[RSSState.GOOD, RSSState.BAD, RSSState.DOWNLOADED]):
-        if job.is_good:
-            good.append(make_item(job))
-        elif job.is_bad:
-            bad.append(make_item(job))
-        elif job.is_downloaded:
-            done.append(make_item(job))
+    with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+        good, bad, done = ([], [], [])
+        for job in repo.get_feed_jobs(feed, states=[RSSState.GOOD, RSSState.BAD, RSSState.DOWNLOADED]):
+            if job.is_good:
+                good.append(make_item(job))
+            elif job.is_bad:
+                bad.append(make_item(job))
+            elif job.is_downloaded:
+                done.append(make_item(job))
 
     return done, good, bad
 
