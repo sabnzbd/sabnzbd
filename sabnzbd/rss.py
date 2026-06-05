@@ -883,24 +883,14 @@ class RSSReader:
                     # Track all valid links so obsolete ones can be cleaned up later
                     new_links.add(entry.link)
 
-                    evaluation, should_download, is_starred = self._evaluate_entry(
+                    downloaded = self._process_entry(
+                        repo,
                         feed_entry=entry,
                         filters=filters,
                         first=first,
                         download=download,
                         force=force,
                         readout=readout,
-                    )
-                    if evaluation is None:
-                        continue
-
-                    downloaded = self._process_entry(
-                        repo,
-                        feed=feed,
-                        feed_entry=entry,
-                        evaluation=evaluation,
-                        should_download=should_download,
-                        is_starred=is_starred,
                     )
                     if downloaded:
                         new_downloads.append(entry.title)
@@ -1030,8 +1020,9 @@ class RSSReader:
                     logging.info("Traceback: ", exc_info=True)
                     raise RuntimeError(T("Incompatible feed"))
 
-    @staticmethod
-    def _evaluate_entry(
+    def _process_entry(
+        self,
+        repo: RSSRepository,
         *,
         feed_entry: ResolvedEntry,
         filters: FeedConfig,
@@ -1039,13 +1030,13 @@ class RSSReader:
         download: bool,
         force: bool,
         readout: bool,
-    ) -> tuple[Optional[FeedEvaluation], bool, bool]:
+    ) -> bool:
         """Evaluate a normalised entry against filters
 
-        Returns a tuple (evaluation, should_download, star) if evaluation is None the entry should be skipped.
+        Returns True if the entry was queued for download.
         """
         if feed_entry.state not in (None, RSSState.GOOD, RSSState.BAD) and not (feed_entry.is_expired and readout):
-            return None, False, False
+            return False
 
         # Match this title against all filters
         logging.debug("Trying title=%r, size=%d", feed_entry.title, feed_entry.size)
@@ -1057,42 +1048,9 @@ class RSSReader:
             episode=feed_entry.episode,
         )
 
-        star = first or feed_entry.is_starred
+        is_starred = first or feed_entry.is_starred
         should_download = (download and not first and not feed_entry.is_starred) or force
 
-        return evaluation, should_download, star
-
-    def enqueue_download(self, repo: RSSRepository, resolved_entry: ResolvedEntry) -> None:
-        if not resolved_entry.is_downloaded:
-            return
-        if not resolved_entry.downloaded_at:
-            repo.flag_downloaded(resolved_entry.feed, resolved_entry.link)
-
-        logging.info("Adding %s (%s) to queue", resolved_entry.link, resolved_entry.title)
-        sabnzbd.urlgrabber.add_url(
-            resolved_entry.link,
-            pp=resolved_entry.pp,
-            script=resolved_entry.script,
-            cat=resolved_entry.cat,
-            priority=resolved_entry.priority,
-            nzbname=resolved_entry.nzbname,
-            nzo_info=NzoInfo(RSS=resolved_entry.feed),
-        )
-
-    def _process_entry(
-        self,
-        repo: RSSRepository,
-        *,
-        feed: str,
-        feed_entry: ResolvedEntry,
-        evaluation: FeedEvaluation,
-        should_download: bool,
-        is_starred: bool,
-    ) -> bool:
-        """Apply side effects for a single normalised entry.
-
-        Returns True if the entry was queued for download.
-        """
         if should_download and evaluation.matched:
             state = RSSState.DOWNLOADED
         elif evaluation.matched:
@@ -1103,7 +1061,7 @@ class RSSReader:
         initial_scan = bool(is_starred and state is RSSState.GOOD)
 
         resolved_entry = ResolvedEntry(
-            feed=feed,
+            feed=feed_entry.feed,
             link=feed_entry.link,
             title=feed_entry.title,
             infourl=feed_entry.infourl,
@@ -1126,6 +1084,23 @@ class RSSReader:
         self.enqueue_download(repo, resolved_entry)
 
         return bool(evaluation.matched and should_download)
+
+    def enqueue_download(self, repo: RSSRepository, resolved_entry: ResolvedEntry) -> None:
+        if not resolved_entry.is_downloaded:
+            return
+        if not resolved_entry.downloaded_at:
+            repo.flag_downloaded(resolved_entry.feed, resolved_entry.link)
+
+        logging.info("Adding %s (%s) to queue", resolved_entry.link, resolved_entry.title)
+        sabnzbd.urlgrabber.add_url(
+            resolved_entry.link,
+            pp=resolved_entry.pp,
+            script=resolved_entry.script,
+            cat=resolved_entry.cat,
+            priority=resolved_entry.priority,
+            nzbname=resolved_entry.nzbname,
+            nzo_info=NzoInfo(RSS=resolved_entry.feed),
+        )
 
     def run(self):
         """Run all the URI's and filters"""
