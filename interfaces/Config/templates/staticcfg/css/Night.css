@@ -243,11 +243,6 @@ a.main-helplink,
     background-color: #EBEBEB;
 }
 
-/* Login button */
-.form-signin .btn.btn-default {
-    color: black;
-}
-
 /* RSS icon */
 .rss-icon-svg {
     fill: white;

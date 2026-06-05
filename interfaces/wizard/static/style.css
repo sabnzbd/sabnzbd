@@ -3,21 +3,32 @@
     --radius-sm: 4px;   /* small elements: progress bars */
     --radius-md: 6px;   /* search bar, multi-edit toolbar, file controls */
     --radius-lg: 8px;   /* cards, modals, notification box */
+
+    /* Color palette — light mode defaults; overridden by Night.css */
+    --clr-page-bg:       #E4E4E4;
+    --clr-surface:       #FFFFFF;
+    --clr-surface-alt:   #F5F5F5;
+    --clr-surface-hover: #E4E4E4;
+    --clr-border:        rgba(0, 0, 0, 0.2);
+    --clr-text:          #000000;
+    --clr-text-muted:    #777777;
+    --clr-link:          #555555;
 }
 
 body {
-    background-color: #E4E4E4;
+    background-color: var(--clr-page-bg);
+    color: var(--clr-text);
     text-align: center;
 }
 .container {
     max-width: 1000px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: var(--radius-lg);
-    background-color: #fff;
     text-align: left;
 }
 #inner {
     padding: 4px 32px 20px 32px;
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--clr-surface);
 }
 #content {
     min-height: 550px;
@@ -40,7 +51,7 @@ body {
     float: left;
 }
 .language:hover {
-    background-color: #E4E4E4;
+    background-color: var(--clr-surface-hover);
 }
 .float {
     float: left;
@@ -58,7 +69,7 @@ body {
     padding: 12px;
     margin-top: 1px;
     margin-bottom: 15px;
-    background-color: #f5f5f5;
+    background-color: var(--clr-surface-alt);
 }
 .quoteBlock a,
 a[target="_blank"] {
@@ -149,7 +160,7 @@ a:hover,
 a:active,
 a:visited,
 #serverResponse {
-    color: #555;
+    color: var(--clr-link);
 }
 .btn {
     min-width: 150px;
@@ -160,5 +171,5 @@ a .glyphicon {
     top: 2px;
 }
 small {
-    color: #777;
+    color: var(--clr-text-muted);
 }
