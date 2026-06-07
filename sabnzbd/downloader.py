@@ -313,6 +313,8 @@ class Downloader(Thread):
         for server in config.get_servers():
             self.init_server(None, server)
 
+        self.check_total_number_of_connections()
+
     def init_server(self, oldserver: Optional[str], newserver: str):
         """Setup or re-setup single server
         When oldserver is defined and in use, delay startup.
@@ -1037,6 +1039,18 @@ class Downloader(Thread):
         the update in the loop to do housekeeping"""
         self.init_server(oldserver, newserver)
         self.wakeup()
+
+    def check_total_number_of_connections(self):
+        """Check the total number of connections,
+        because on Windows select() has a hard limit of 512"""
+        total_connections = sum(srv.threads for srv in self.servers)
+        if sabnzbd.WINDOWS and total_connections > 512:
+            logging.warning(
+                T(
+                    "Total number of configured connections (%d) is greater than the operating system limit (512), downloading will crash if all connections become active"
+                ),
+                total_connections,
+            )
 
     @NzbQueueLocker
     def wakeup(self):
