@@ -17,13 +17,32 @@
       "builder/release-requirements.txt"
     ]
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/build_release\\.yml$"],
+      "matchStrings": [
+        "PYTHON_VERSION:\\s*\"(?<currentValue>.*?)\""
+      ],
+      "datasourceTemplate": "python-version",
+      "depNameTemplate": "python"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^sabnzbd/constants\\.py$"],
+      "matchStrings": [
+        "SABCTOOLS_VERSION_REQUIRED\\s*=\\s*\"(?<currentValue>.*?)\""
+      ],
+      "datasourceTemplate": "pypi",
+      "depNameTemplate": "sabctools"
+    }
+  ],
   "ignorePaths": [],
   "ignoreDeps": [
     "jaraco.text",
     "jaraco.context",
     "jaraco.collections",
     "tempora",
-    "sabctools",
     "paho-mqtt"
   ],
   "packageRules": [
