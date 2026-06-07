@@ -1787,10 +1787,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Неправильное описание RSS-ленты «%s»"
 
 #: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Несовместимая лента"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Неправильные учётные данные для ленты %s"
 
@@ -1806,10 +1802,13 @@ msgstr "Не удалось получить RSS-ленту из %s: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-лента %s была пустой"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Несовместимая лента"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

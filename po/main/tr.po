@@ -1853,10 +1853,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Yanlış RSS besleme tanımlaması \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Uyumsuz besleme"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "%s beslemesi için geçerli kimlik doğrulaması yok"
 
@@ -1872,10 +1868,13 @@ msgstr "%s unsurundan RSS alınması başarısız oldu: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "%s sunucusu güvenilmez bir HTTPS sertifikası kullanıyor"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "%s RSS Beselemesi boştu"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Uyumsuz besleme"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

@@ -1892,10 +1892,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Ungültige RSS-Feed-Beschreibung \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Inkompatibeler RSS-Feed"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Keine gültige Berechtigung für Feed %s"
 
@@ -1911,10 +1907,13 @@ msgstr "Abrufen des RSS-Feeds von %s fehlgeschlagen: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Der Server %s nutzt ein nicht vertrauenswürdiges HTTPS-Zertifikat"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-Feed %s war leer"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Inkompatibeler RSS-Feed"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

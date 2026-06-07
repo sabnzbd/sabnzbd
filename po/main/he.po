@@ -1805,10 +1805,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "תיאור הזנת RSS לא נכון \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "הזנה בלתי תואמת"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "אין אימות תקף עבור ההזנה %s"
 
@@ -1824,10 +1820,13 @@ msgstr "כישלון באחזור RSS מן %s: %s"
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "השרת %s משתמש בתעודת HTTPS בלתי מהימנה"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "הזנת RSS %s הייתה ריקה"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "הזנה בלתי תואמת"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"

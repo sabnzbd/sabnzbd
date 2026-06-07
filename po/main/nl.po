@@ -1860,10 +1860,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Foutieve RSS-feed definitie \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Incompatible feed"
-msgstr "Ongeschikte RSS-feed"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Geen geldige inlog gegevens beschikbaar voor RSS-feed %s"
 
@@ -1879,10 +1875,13 @@ msgstr "Kan RSS-feed \"%s\" niet lezen vanwege: \"%s\""
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Server %s gebruikt een onbetrouwbaar HTTPS-certificaat"
 
-#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-feed %s is leeg"
+
+#: sabnzbd/rss.py
+msgid "Incompatible feed"
+msgstr "Ongeschikte RSS-feed"
 
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Show interface"
