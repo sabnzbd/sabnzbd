@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 5.0.3
+Release Notes - SABnzbd 5.0.4 Release Candidate 1
 =========================================================
 
 In this fifth major release of SABnzbd, we included:
@@ -6,6 +6,17 @@ In this fifth major release of SABnzbd, we included:
 * Smarter (and potentially faster) downloads with NNTP Pipelining and Direct Write.
 * Reliability gains from a reworked cache and safer processing.
 * A significant number of bug fixes and platform updates.
+
+## Features and bug fixes in 5.0.4
+
+* RSS feed modifications no longe require clicking `Apply Filters`.
+* Fixed RSS priority handling.
+* Server Test could block the queue.
+* Use reduced progress bar width in Compact layout.
+* Replaced unreliable directory access check.
+* Prevent crash in idle-jobs check.
+* Jobs with invalid date would show as `Fetching`.
+* Windows and macOS: Updated Python to 3.14.5 and Unrar to 7.22.
 
 ## Features and bug fixes in 5.0.1, 5.0.2 and 5.0.3
 
