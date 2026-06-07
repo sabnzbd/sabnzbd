@@ -611,6 +611,13 @@ msgstr "Det lykkedes ikke at logge på serveren %s [%s]"
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Forbindelse %s@%s mislykkedes, besked %s"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
+
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "Påbegynder lukning af SABnzbd"

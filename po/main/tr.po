@@ -623,6 +623,13 @@ msgstr "%s [%s] sunucusunda oturum açılışı başarısız oldu"
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "%s@%s bağlantısı başarısız oldu, mesaj=%s"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
+
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "Kapatılıyor"

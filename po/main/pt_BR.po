@@ -592,6 +592,13 @@ msgstr "Falha de logon ao servidor %s [%s]"
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "A conexão a %s@%s falhou. Mensagem=%s"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
+
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "Encerrando"

@@ -593,6 +593,13 @@ msgstr "כניסה נכשלה עבור שרת %s [%s]"
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "התחברות אל %s@%s נכשלה, הודעה=%s"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid ""
+"Total number of configured connections (%d) is greater than the operating "
+"system limit (512), downloading will crash if all connections become active"
+msgstr ""
+
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "מכבה"
