@@ -528,14 +528,14 @@ class RSSRepository:
     def __init__(self, db: HistoryDB):
         self.db = db
 
-    def remove_obsolete(self, feed: str, new_urls: Optional[Iterable[str]] = None):
+    def remove_obsolete(self, feed: str, new_urls: Optional[Iterable[str]] = None, purge_downloaded: bool = False):
         """
         Expire G/B links that are not in new_jobs (mark them 'X')
 
         Expired links older than 3 days are removed
         """
-        now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
-        limit = now - 3 * 24 * 3600  # 3 days in seconds
+        now = datetime.datetime.now(datetime.timezone.utc)
+        limit = int((now - datetime.timedelta(days=3)).timestamp())
 
         if new_urls:
             # Create temporary table for all new URLs
@@ -567,25 +567,32 @@ class RSSRepository:
             self.db.execute("DROP TABLE temp_urls")
 
         # Purge
+        if purge_downloaded:
+            states = (RSSState.EXPIRED, RSSState.DOWNLOADED)
+        else:
+            states = (RSSState.EXPIRED,)
+        placeholders = ", ".join("?" for _ in states)
         if not self.db.execute(
-            """
+            f"""
             SELECT url FROM rss
             WHERE feed = ?
-              AND state = ?
+              AND state in ({placeholders})
               AND seen_at < ?
         """,
             (
                 feed,
-                RSSState.EXPIRED,
+                *states,
                 limit,
             ),
         ):
             return
 
         expired_urls = [row["url"] for row in self.db.cursor]
-        for url in expired_urls:
-            logging.debug("Purging link %s", url)
-            self.db.execute("DELETE FROM rss WHERE feed = ? AND url = ?", (feed, url))
+        for batch in batched(expired_urls, 500):
+            for url in batch:
+                logging.debug("Purging link %s", url)
+            placeholders = ",".join("?" * len(batch))
+            self.db.execute(f"DELETE FROM rss WHERE feed = ? AND url IN ({placeholders})", (feed, *batch))
 
     def get_feed_jobs(
         self,
@@ -901,7 +908,7 @@ class RSSReader:
             if new_downloads and cfg.email_rss() and not force:
                 emailer.rss_mail(feed, new_downloads)
 
-            repo.remove_obsolete(feed, new_links)
+            repo.remove_obsolete(feed, new_links, purge_downloaded=True)
 
         return ""
 

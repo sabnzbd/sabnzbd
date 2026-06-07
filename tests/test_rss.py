@@ -619,7 +619,7 @@ class TestRSS:
                 title="keep",
                 infourl=None,
                 size=10,
-                age=old_seen_at,
+                age=age,
                 seen_at=old_seen_at,
                 season=1,
                 episode=1,
@@ -637,7 +637,7 @@ class TestRSS:
                 title="old-g",
                 infourl=None,
                 size=20,
-                age=old_seen_at,
+                age=age,
                 seen_at=old_seen_at,
                 season=1,
                 episode=1,
@@ -655,12 +655,30 @@ class TestRSS:
                 title="old-x",
                 infourl=None,
                 size=30,
-                age=old_seen_at,
+                age=age,
                 seen_at=old_seen_at,
                 season=1,
                 episode=1,
                 category=None,
                 state=RSSState.EXPIRED,
+            )
+        )
+
+        # Old D item should be purged directly
+        purge_old_d_url = "http://example.test/purge-old-d"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=purge_old_d_url,
+                title="old-d",
+                infourl=None,
+                size=30,
+                age=age,
+                seen_at=old_seen_at,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.DOWNLOADED,
             )
         )
 
@@ -682,8 +700,26 @@ class TestRSS:
             )
         )
 
+        # Recent D item should be kept
+        keep_d_url = "http://example.test/keep-young-d"
+        repo.upsert(
+            ResolvedEntry(
+                feed=feed,
+                link=keep_d_url,
+                title="young-d",
+                infourl=None,
+                size=40,
+                age=age,
+                seen_at=new_seen_at,
+                season=1,
+                episode=1,
+                category=None,
+                state=RSSState.DOWNLOADED,
+            )
+        )
+
         # Run remove_obsolete with only keep_url as the set of current URLs
-        repo.remove_obsolete(feed, {keep_url})
+        repo.remove_obsolete(feed, {keep_url}, purge_downloaded=True)
 
         jobs = {e.link: e for e in repo.get_feed_jobs(feed=feed)}
 
@@ -697,9 +733,16 @@ class TestRSS:
         # Old X should have been purged
         assert purge_old_x_url not in jobs
 
+        # Old D should have been purged
+        assert purge_old_d_url not in jobs
+
         # Young X should still exist
         assert keep_x_url in jobs
         assert jobs[keep_x_url].state is RSSState.EXPIRED
+
+        # Young D should still exist
+        assert keep_d_url in jobs
+        assert jobs[keep_d_url].state is RSSState.DOWNLOADED
 
     def test_rss_is_starred_persists_and_affects_later_runs(self, httpserver: HTTPServer, tmp_rss, mocker):
         """Initial scan should mark GOOD entries as starred and persist this across runs.
