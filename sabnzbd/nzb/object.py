@@ -883,20 +883,23 @@ class NzbObject(TryList):
                     nzf.filename_checked = True
                     nzf.filepath = os.path.join(self.download_path, existing_filename)
                     self.filenames.add(existing_filename)
-                    if not nzf.import_finished:
-                        nzf.finish_import()
                     existing_files.remove(existing_filename)
 
                     # Does the finished file have missing articles
                     if bitmap := on_disk_lookup.get(existing_filename, None):
+                        if not nzf.import_finished:
+                            nzf.finish_import()
                         for index, on_disk in enumerate(bitmap):
                             if on_disk:
                                 article = nzf.decodetable[index]
                                 article.on_disk = True
                                 self.remove_article(article, True)
                     else:
+                        # Since not import_finished will only contain first articles
                         for article in nzf.decodetable:
                             article.on_disk = True
+                        # Mark as assembled so when it is imported the articles are marked on_disk
+                        nzf.assembled = True
                         self.remove_nzf(nzf)
                         nzfs.remove(nzf)
 
