@@ -459,7 +459,6 @@ def save_state():
     sabnzbd.BPSMeter.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
-    sabnzbd.RSSReader.save()
 
 
 def delayed_startup_actions():
@@ -523,6 +522,9 @@ def delayed_startup_actions():
     # Do an extra purge of the history on startup to ensure timely removal on systems that
     # aren't on 24/7 and typically don't benefit from the daily scheduled call at midnight
     sabnzbd.database.scheduled_history_purge()
+
+    # Purge links older than 3 days
+    sabnzbd.rss.expired_purge()
 
     # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
     if sabnzbd.cfg.enable_broadcast() and not misc.is_localhost(cfg.web_host()):
