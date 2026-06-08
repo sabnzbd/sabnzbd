@@ -168,6 +168,7 @@ SKIN_TEXT = {
     "hibernatePc": TT("Hibernate PC"),  #: Queue page end-of-queue action
     "shutdownSab": TT("Shutdown SABnzbd"),  #: Queue page end-of-queue action
     "pauseFor": TT("Pause for"),  #: Queue page button or entry box
+    "unpauseFor": TT("Unpause for"),  #: Queue page button or entry box
     "mode": TT("Processing"),  #: Queue page table column header
     "name": TT("Name"),  #: Queue page table column header
     "button-retry": TT("Retry"),  #: Queue page button
@@ -811,6 +812,12 @@ SKIN_TEXT = {
     "Glitter-pause1h": TT("Pause for 1 hour"),
     "Glitter-pause3h": TT("Pause for 3 hours"),
     "Glitter-pause6h": TT("Pause for 6 hours"),
+    "Glitter-unpause5m": TT("Unpause for 5 minutes"),
+    "Glitter-unpause15m": TT("Unpause for 15 minutes"),
+    "Glitter-unpause30m": TT("Unpause for 30 minutes"),
+    "Glitter-unpause1h": TT("Unpause for 1 hour"),
+    "Glitter-unpause3h": TT("Unpause for 3 hours"),
+    "Glitter-unpause6h": TT("Unpause for 6 hours"),
     "Glitter-setMaxLinespeed": TT("You must set a maximum bandwidth before you can set a bandwidth limit"),
     "Glitter-left": TT("left"),
     "Glitter-free": TT("Free Space"),
@@ -889,6 +896,8 @@ SKIN_TEXT = {
     "Glitter-pausePrompt": TT("How long or untill when do you want to pause? (in English!)"),
     "Glitter-pausePromptFail": TT("Sorry, we could not interpret that. Try again."),
     "Glitter-pauseFor": TT("Pause for..."),
+    "Glitter-unpauseFor": TT("Unpause for..."),
+    "Glitter-pausingIn": TT("Pausing in"),
     "Glitter-refresh": TT("Refresh"),
     "Glitter-logText": TT(
         "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
