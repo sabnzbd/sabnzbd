@@ -606,8 +606,9 @@ class TestRSS:
         feed = "feed-remove"
 
         now = datetime.datetime.now(datetime.timezone.utc)
-        old_age = now - datetime.timedelta(days=4)
-        new_age = now - datetime.timedelta(days=1)
+        age = now - datetime.timedelta(weeks=52)
+        old_seen_at = now - datetime.timedelta(days=4)
+        new_seen_at = now - datetime.timedelta(days=1)
 
         # Old good item that should be kept because it is part of the new_urls set
         keep_url = "http://example.test/keep"
@@ -618,7 +619,8 @@ class TestRSS:
                 title="keep",
                 infourl=None,
                 size=10,
-                age=old_age,
+                age=old_seen_at,
+                seen_at=old_seen_at,
                 season=1,
                 episode=1,
                 category=None,
@@ -635,7 +637,8 @@ class TestRSS:
                 title="old-g",
                 infourl=None,
                 size=20,
-                age=old_age,
+                age=old_seen_at,
+                seen_at=old_seen_at,
                 season=1,
                 episode=1,
                 category=None,
@@ -652,7 +655,8 @@ class TestRSS:
                 title="old-x",
                 infourl=None,
                 size=30,
-                age=old_age,
+                age=old_seen_at,
+                seen_at=old_seen_at,
                 season=1,
                 episode=1,
                 category=None,
@@ -669,7 +673,8 @@ class TestRSS:
                 title="young-x",
                 infourl=None,
                 size=40,
-                age=new_age,
+                age=age,
+                seen_at=new_seen_at,
                 season=1,
                 episode=1,
                 category=None,
