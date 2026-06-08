@@ -991,6 +991,13 @@ def _api_config_set_pause(name: str, kwargs: ApiParams) -> bytes:
     return report()
 
 
+def _api_config_set_unpause(name: str, kwargs: ApiParams) -> bytes:
+    """API: accepts value(=resume interval)"""
+    value = kwargs.get("value")
+    sabnzbd.Scheduler.plan_pause(int_conv(value))
+    return report()
+
+
 def _api_config_set_apikey(name: str, kwargs: ApiParams) -> bytes:
     cfg.api_key.set(config.create_api_key())
     config.save_config()
@@ -1149,6 +1156,7 @@ _api_status_table = {
 _api_config_table = {
     "speedlimit": (_api_config_speedlimit, 2),
     "set_pause": (_api_config_set_pause, 2),
+    "set_unpause": (_api_config_set_unpause, 2),
     "set_apikey": (_api_config_set_apikey, 3),
     "set_nzbkey": (_api_config_set_nzbkey, 3),
     "regenerate_certs": (_api_config_regenerate_certs, 3),
@@ -1891,6 +1899,7 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
     header["version"] = sabnzbd.__version__
     header["paused"] = bool(sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc)
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
+    header["resume_int"] = sabnzbd.Scheduler.resume_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
     download_dir, complete_dir = diskspace()
