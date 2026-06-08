@@ -19,6 +19,7 @@
     --clr-table-bg:       #555555;
     --clr-table-row-alt:  #444444;
     --clr-progress-track: #DADADA;
+    --clr-toggle-inactive: #666666;
 }
 
 /* Links and glyphicons inside links */
