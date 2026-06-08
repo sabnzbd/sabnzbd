@@ -629,6 +629,8 @@ msgid ""
 "Total number of configured connections (%d) is greater than the operating "
 "system limit (512), downloading will crash if all connections become active"
 msgstr ""
+"Toplam yapılandırılmış bağlantı sayısı (%d) işletim sisteminin sınırından "
+"yüksektir (512), tüm bağlantılar faal hâle gelirse indirme işlemi çökecektir"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"

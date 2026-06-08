@@ -640,6 +640,9 @@ msgid ""
 "Total number of configured connections (%d) is greater than the operating "
 "system limit (512), downloading will crash if all connections become active"
 msgstr ""
+"Le nombre total de connexions configurées (%d) est supérieur à la limite du "
+"système d'exploitation (512) ; le téléchargement va s'interrompre si toutes "
+"les connexions deviennent actives"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
