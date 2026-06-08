@@ -17,6 +17,8 @@
     --clr-link:            inherit;   /* links (Bootstrap default in light) */
     --clr-input-bg:        #FFFFFF;   /* form inputs, buttons */
     --clr-input-border:    #d4d0c8;  /* input borders */
+    --clr-toggle-active:   #f9ca33;  /* accent color (toggles, focus rings) */
+    --clr-toggle-inactive: #aaaaaa;  /* toggle track when off */
     --clr-dropdown-bg:     #FFFFFF;   /* dropdown menus */
     --clr-modal-bg:        #FFFFFF;   /* modal body/footer */
     --clr-modal-header-bg: #3C3C3C;  /* modal header (dark in both themes) */
@@ -55,10 +57,11 @@ body {
     color: inherit;
     height: auto;
     padding-bottom: 5px;
+    line-height: 1.5em;
 }
 #advanced-settings-button {
-    float: left;
-    margin: 2px 7px 0px 0px;
+    float: right;
+    margin: 0px 0px 0px 7px;
 }
 .advanced-buttonSeperator {
     width: 1px;
@@ -87,6 +90,9 @@ body {
     width: 100%;
     float: none;
     padding: 2px 0;
+}
+.col1 .field-pair {
+    position: relative;
 }
 .col2 h3 {
     background: none repeat scroll 0 0 #666;
@@ -149,7 +155,7 @@ label.config,
     display: block;
     text-align: left;
     margin-right: 10px;
-    margin-left: 20px;
+    margin-left: 5px;
     padding-top: 5px;
 }
 label.config-hover {
@@ -170,7 +176,7 @@ label.wide,
 .desc {
     display: block;
     margin: 0 0 0 24%;
-    padding: 3px 0 0 31px;
+    padding: 3px 0 0 16px;
     font-size: 12px;
     font-style: italic;
 }
@@ -296,18 +302,59 @@ input[type="week"]:focus {
     border: 1px solid #aaa;
 }
 
-.col1 input[type='checkbox'] {
+/* Bootstrap's .checkbox reserves only 20px for the input, but our toggle is 36px.
+   Override to give the label enough padding so the text doesn't overlap the toggle. */
+.checkbox label {
+    padding-left: 46px;
+}
+.checkbox input[type='checkbox'] {
+    margin-left: -46px;
+}
+
+input[type='checkbox'] {
+    appearance: none;
+    transform: translateY(0%);
+    width: 36px;
+    height: 20px;
+    background: var(--clr-toggle-inactive);
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+input[type='checkbox']::after {
+    content: '';
     position: absolute;
-    top: auto!important;
-    height: 16px;
-    width: 16px;
-    margin-left: 0;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: left 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
-.col2 input[type='checkbox'] {
-    height: 16px;
-    width: 16px;
-    margin-top: 0;
+
+input[type='checkbox']:checked {
+    background: var(--clr-toggle-active);
 }
+
+input[type='checkbox']:checked::after {
+    left: 19px;
+}
+
+input[type='checkbox']:focus-visible {
+    outline: 2px solid var(--clr-toggle-active);
+    outline-offset: 2px;
+    border-radius: 10px;
+}
+
+/*.col2 input[type='checkbox'] {*/
+/*    height: 16px;*/
+/*    width: 16px;*/
+/*    margin-top: 0;*/
+/*}*/
 .readonly {
     background-color: #eff;
 }
@@ -668,6 +715,7 @@ input:has(+ .clearBtn) {
 #filebrowser_modal .checkbox input+span {
     opacity: 0.6;
     font-weight: bold;
+    line-height: 1.5em;
 }
 #filebrowser_modal .checkbox input:checked+span,
 #filebrowser_modal .checkbox span:hover {
@@ -1070,7 +1118,7 @@ input[type="checkbox"] {
 }
 
 .col2 table {
-    margin: 10px 0px;
+    margin: 5px 0px 10px;
 }
 
 .Servers .server-frame {
@@ -1337,7 +1385,10 @@ input[type="checkbox"] {
 /***
     RTL Fixes
 ***/
-html[dir="rtl"] .col1 input[type='checkbox'],
+html[dir="rtl"] .col1 input[type='checkbox'] {
+    right: auto;
+    left: 10px;
+}
 html[dir="rtl"] .col2 h3 a {
     left: 5px;
 }

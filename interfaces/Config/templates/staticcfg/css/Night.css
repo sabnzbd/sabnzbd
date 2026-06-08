@@ -20,6 +20,7 @@
     --clr-modal-header-bg: #3C3C3C;
     --clr-table-bg:        #555555;
     --clr-table-row-alt:   #444444;
+    --clr-toggle-inactive: #666666;
 }
 
 /* Links use a custom colour in dark mode */
@@ -41,6 +42,10 @@ textarea,
 .advanced-button,
 .list-group-item {
     border-color: var(--clr-input-border) !important;
+}
+
+.advanced-button {
+    background-color: var(--clr-surface-alt);
 }
 
 /* Sidebar section header */
@@ -94,8 +99,6 @@ small {
 }
 
 /* Controls and form elements using input bg */
-.Categories form.sorting-row:nth-child(2n-1) tr,
-.advanced-button,
 .advanced-buttonSeperator,
 .alt,
 .infoTableSeperator.alt,
@@ -130,6 +133,10 @@ select {
     color: var(--clr-text);
 }
 
+.Categories form.sorting-row:nth-child(2n-1) tr {
+     background-color: var(--clr-surface);
+}
+
 /* Focus / active border */
 .btn-default:focus,
 .form-control:focus,
@@ -157,7 +164,7 @@ select:focus {
 .infoTableSeperator,
 .modal-footer,
 .data-row {
-    border-top: none;
+    border-top: 1px solid rgb(131 131 131);
 }
 
 hr {
