@@ -30,6 +30,7 @@ function ViewModel() {
     self.speedMetric = ko.observable();
     self.bandwithLimit = ko.observable(false);
     self.pauseCustom = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
+    self.unpauseCustom = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
     self.speedLimit = ko.observable(100).extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
     self.speedLimitInt = ko.observable(false); // We need the 'internal' counter so we don't trigger the API all the time
     self.downloadsPaused = ko.observable(false);
@@ -298,6 +299,28 @@ function ViewModel() {
                 // Set title with pause information
                 self.title(timeString + ' - SABnzbd')
             }
+        } else if (response.queue.resume_int !== '0') {
+            // Temporary resume, re-pause countdown
+            var resumeSplit = response.queue.resume_int.split(/:/);
+            var seconds = parseInt(resumeSplit[0]) * 60 + parseInt(resumeSplit[1]);
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds -= hours * 3600) / 60);
+            seconds -= minutes * 60;
+
+            // Add leading zeros
+            if (minutes < 10) minutes = '0' + minutes;
+            if (seconds < 10) seconds = '0' + seconds;
+
+            // Final formatting
+            timeString = glitterTranslate.pausingIn + ' ' + rewriteTime(hours + ":" + minutes + ":" + seconds);
+
+            // Add info about amount of download (if actually downloading)
+            if (response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
+                self.title(timeString + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
+            } else {
+                // Set title with pause information
+                self.title(timeString + ' - SABnzbd')
+            }
         } else if (response.queue.noofslots > 0 && parseInt(self.queueDataLeft()) > 0) {
             // Set title only if we are actually downloading something..
             self.title(self.speedText() + ' - ' + self.queueDataLeft() + ' ' + glitterTranslate.left + ' - SABnzbd')
@@ -502,6 +525,102 @@ function ViewModel() {
                 self.refresh()
                 self.downloadsPaused(true);
                 $('#modal-custom-pause').modal('hide')
+            });
+        }
+    }
+
+    // Set unpause timer
+    self.unpauseTime = function(item, event) {
+        callAPI({
+            mode: 'config',
+            name: 'set_unpause',
+            value: $(event.currentTarget).data('time')
+        }).then(self.refresh);
+        self.downloadsPaused(false);
+    };
+
+    // Open modal
+    self.openCustomUnpauseTime = function() {
+        // Was it loaded already?
+        if (!Date.i18n) {
+            jQuery.getScript('./static/javascripts/date.min.js').then(function() {
+                // After loading we start again
+                self.openCustomUnpauseTime()
+            })
+            return;
+        }
+        // Show modal
+        $('#modal-custom-unpause').modal('show')
+    }
+
+    $('#modal-custom-unpause').on('shown.bs.modal', function() {
+        // Focus on the input field when opening the modal
+        $('#customUnpauseInput').focus()
+    }).on('hide.bs.modal', function() {
+        // Reset on modal close
+        self.unpauseCustom('');
+    })
+
+    // Update on changes
+    self.unpauseCustom.subscribe(function(newValue) {
+        // Is it plain numbers?
+        if (newValue.match(/^\s*\d+\s*$/)) {
+            // Treat it as a number of minutes
+            newValue += "minutes";
+        }
+
+        // At least 3 characters
+        if (newValue.length < 3) {
+            $('#customUnpauseOutput').text('').data('time', 0)
+            $('#modal-custom-unpause .btn-default').addClass('disabled')
+            return;
+        }
+
+        // Fix DateJS bug it has some strange problem with the current day-of-month + 1
+        // Removing the space makes DateJS work properly
+        newValue = newValue.replace(/\s*h|\s*m|\s*d/g, function(match) {
+            return match.trim()
+        });
+
+        // Parse
+        var unpauseParsed = Date.parse(newValue);
+
+        // Did we get it?
+        if (unpauseParsed) {
+            // Is it just now?
+            if (unpauseParsed <= Date.parse('now')) {
+                // Try again with the '+' in front, the parser doesn't get 100min
+                unpauseParsed = Date.parse('+' + newValue);
+            }
+
+            // Calculate difference in minutes and save
+            var unpauseDuration = Math.round((unpauseParsed - Date.parse('now')) / 1000 / 60);
+            $('#customUnpauseOutput').html('<span class="glyphicon glyphicon-play"></span> ' + glitterTranslate.unpauseFor + ' ' + unpauseDuration + ' ' + glitterTranslate.minutes)
+            $('#customUnpauseOutput').data('time', unpauseDuration)
+            $('#modal-custom-unpause .btn-default').removeClass('disabled')
+        } else if (newValue) {
+            // No..
+            $('#customUnpauseOutput').text(glitterTranslate.pausePromptFail)
+            $('#modal-custom-unpause .btn-default').addClass('disabled')
+        }
+    })
+
+    // Save custom unpause
+    self.saveCustomUnpause = function() {
+        // Get duration
+        var unpauseDuration = $('#customUnpauseOutput').data('time');
+
+        // If in the future
+        if (unpauseDuration > 0) {
+            callAPI({
+                mode: 'config',
+                name: 'set_unpause',
+                value: unpauseDuration
+            }).then(function() {
+                // Refresh and close the modal
+                self.refresh()
+                self.downloadsPaused(false);
+                $('#modal-custom-unpause').modal('hide')
             });
         }
     }
