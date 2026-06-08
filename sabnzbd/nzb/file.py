@@ -26,7 +26,6 @@ import threading
 from typing import Optional, Any
 
 import sabctools
-from sabnzbd.bitmap import Bitmap
 from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import (
@@ -145,12 +144,10 @@ class NzbFile(TryList):
         return None
 
     @synchronized()
-    def on_disk_bitmap(self) -> Optional[tuple[int, bytes]]:
+    def on_disk(self) -> Optional[list[bool]]:
+        """List of each articles on_disk state, if any are not on_disk"""
         if self.import_finished and any(not article.on_disk for article in self.decodetable):
-            bm = Bitmap(size=len(self.decodetable))
-            for index, article in enumerate(self.decodetable):
-                bm[index] = article.on_disk
-            return bm.size, bm.to_bytes()
+            return [bool(article.on_disk) for article in self.decodetable]
         return None
 
     def finish_import(self):

@@ -99,7 +99,7 @@ def make_dummy_nzo(name: str, priority: int = NORMAL_PRIORITY, files: int = 50, 
 def make_nzb_workdir(nzbqueue_env):
     def _make_workdir(
         name: str,
-        on_disk: Optional[dict[str, tuple[int, bytes]]] = None,
+        on_disk: Optional[dict[str, list[bool]]] = None,
         renames: Optional[dict[str, str]] = None,
     ) -> str:
         """Create a working directory for nzbqueue from tests/data"""
@@ -235,7 +235,7 @@ class TestNzbQueue:
         assert not nzo
 
     def test_nzo_reuse_failed_articles(self, make_nzb_workdir):
-        wdir = make_nzb_workdir("basic_rar5", {"testfile.rar": (1, b"\x00")})
+        wdir = make_nzb_workdir("basic_rar5", {"testfile.rar": [False]})
 
         nzo_id = sabnzbd.NzbQueue.repair_job(wdir, None, None)
         assert nzo_id
@@ -248,7 +248,7 @@ class TestNzbQueue:
     def test_nzo_reuse_failed_articles_renamed(self, make_nzb_workdir):
         wdir = make_nzb_workdir(
             "basic_rar5",
-            {"renamed.rar": (1, b"\x00")},
+            {"renamed.rar": [False]},
             {"renamed.rar": "testfile.rar"},
         )
         os.rename(os.path.join(wdir, "testfile.rar"), os.path.join(wdir, "renamed.rar"))

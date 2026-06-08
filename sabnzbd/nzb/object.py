@@ -30,7 +30,6 @@ from collections import deque
 
 # SABnzbd modules
 import sabnzbd
-from sabnzbd.bitmap import Bitmap
 from sabnzbd.nzb.article import TryList, Article
 from sabnzbd.nzb.file import NzbFile
 from sabnzbd.constants import (
@@ -868,11 +867,10 @@ class NzbObject(TryList):
         nzfs.sort(key=lambda x: len(x.filename))
 
         # Mapping of filename to bitmap of articles already on disk
-        on_disk_lookup: dict[str, Bitmap] = {}
+        on_disk_lookup: dict[str, list[bool]] = {}
         if cfg.direct_write() and (on_disk_data := load_data(ONDISK_FILE, self.admin_path, remove=True)):
             _, mapping = on_disk_data
-            for filename, (count, data) in mapping.items():
-                on_disk_lookup[filename] = Bitmap(size=count, data=data)
+            on_disk_lookup: dict[str, list[bool]] = mapping
 
         # Flag files from NZB that already exist as finished
         for existing_filename in existing_files[:]:
@@ -886,10 +884,10 @@ class NzbObject(TryList):
                     existing_files.remove(existing_filename)
 
                     # Does the finished file have missing articles
-                    if bitmap := on_disk_lookup.get(existing_filename, None):
+                    if on_disks := on_disk_lookup.get(existing_filename, None):
                         if not nzf.import_finished:
                             nzf.finish_import()
-                        for index, on_disk in enumerate(bitmap):
+                        for index, on_disk in enumerate(on_disks):
                             if on_disk:
                                 article = nzf.decodetable[index]
                                 article.on_disk = True
@@ -1727,9 +1725,9 @@ class NzbObject(TryList):
             self.pause()
 
     @synchronized()
-    def on_disk_bitmap(self) -> dict[str, tuple[int, bytes]]:
-        """Mapping of filename to bitmap (size, bytes) of on_disk articles per file"""
-        return {nzf.filename: bm for nzf in self.finished_files if (bm := nzf.on_disk_bitmap()) is not None}
+    def on_disk(self) -> dict[str, list[bool]]:
+        """Mapping of filename to list of on_disk articles per file"""
+        return {nzf.filename: bm for nzf in self.finished_files if (bm := nzf.on_disk()) is not None}
 
     def __getstate__(self):
         """Save to pickle file, selecting attributes"""

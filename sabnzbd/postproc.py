@@ -889,7 +889,7 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
     logging.debug("Verified sets: %s", verified)
     sabnzbd.filesystem.save_data(verified, VERIFIED_FILE, nzo.admin_path)
 
-    if cfg.direct_write() and (on_disk_data := nzo.on_disk_bitmap()):
+    if cfg.direct_write() and (on_disk_data := nzo.on_disk()):
         sabnzbd.filesystem.save_data((ONDISK_VERSION, on_disk_data), ONDISK_FILE, nzo.admin_path)
 
     logging.info("Verification and repair finished for %s", nzo.final_name)
