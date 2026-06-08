@@ -350,11 +350,6 @@ input[type='checkbox']:focus-visible {
     border-radius: 10px;
 }
 
-/*.col2 input[type='checkbox'] {*/
-/*    height: 16px;*/
-/*    width: 16px;*/
-/*    margin-top: 0;*/
-/*}*/
 .readonly {
     background-color: #eff;
 }
@@ -494,11 +489,6 @@ tr.separator {
 
 .RSS .catTable select {
     max-width: 120px;
-}
-.RSS input[type="checkbox"] {
-    width:16px;
-    height: 16px;
-    margin-top: 0px;
 }
 .RSS form[action="add_rss_feed"] tr:nth-child(even) {
     border: 1px solid #E5E5E5;

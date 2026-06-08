@@ -130,6 +130,10 @@ hr {
     box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 1);
 }
 
+.modal-footer {
+    border-top: 1px solid rgb(131 131 131);
+}
+
 /* Help table transparent bg override */
 #modal-help table td,
 #modal-help table {

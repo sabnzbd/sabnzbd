@@ -162,8 +162,11 @@ select:focus {
 .table>tbody>tr>td,
 .table>tbody>tr>th,
 .infoTableSeperator,
-.modal-footer,
 .data-row {
+    border-top: none;
+}
+
+.modal-footer {
     border-top: 1px solid rgb(131 131 131);
 }
 
