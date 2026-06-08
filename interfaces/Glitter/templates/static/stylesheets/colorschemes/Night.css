@@ -22,14 +22,17 @@
 }
 
 /* Links and glyphicons inside links */
-a, a:active, a:hover, a:focus,
+a, a:active,
+a:hover,
+a:focus,
+.btn:not(.btn-danger):active,
 .hover-button.glyphicon-play,
 .hover-button.glyphicon-stop,
 legend,
 #modal-options legend label,
 #modal-options legend a,
 #modal-item-files .item-files-table .progress small,
-.text-muted {
+.text-muted{
     color: var(--clr-text);
 }
 

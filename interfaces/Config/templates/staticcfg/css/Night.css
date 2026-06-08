@@ -74,9 +74,12 @@ select:hover {
 
 /* Button hovers */
 .btn:not(.btn-danger):hover,
-.nav.nav-tabs a:hover,
-.nav.nav-tabs li.active a:hover{
+.btn:not(.btn-danger):active:focus {
     background-color: var(--clr-surface-hover);
+}
+
+.btn:not(.btn-danger):active {
+    color: var(--clr-text);
 }
 
 /* Error / failed colour */
@@ -101,7 +104,6 @@ small {
 .btn-default.disabled:focus,
 .btn-default.disabled:hover,
 a.btn.btn-default,
-.nav-tabs li a,
 select.form-control,
 .form-control[disabled],
 .input-group-addon,
@@ -234,8 +236,22 @@ a.main-helplink,
 }
 
 /* Active tab uses card surface */
-.nav-tabs>li.active>a {
+.nav.nav-tabs li a {
+    color: var(--clr-text);
+}
+
+.nav.nav-tabs li a:hover {
+    background-color: var(--clr-surface-alt);
+    border-color: var(--clr-border);
+    border-bottom: none;
+}
+
+.nav.nav-tabs li.active a,
+.nav.nav-tabs li.active a:hover {
+    border-color: var(--clr-border);
+    border-bottom: none;
     background-color: var(--clr-surface);
+    color: var(--clr-text);
 }
 
 /* QR modal needs light background */

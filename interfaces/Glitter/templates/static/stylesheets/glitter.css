@@ -2395,7 +2395,8 @@ select:hover {
     border-color: var(--clr-input-border);
 }
 
-.btn-default:not(.navbar-btn):hover {
+.btn-default:not(.navbar-btn):hover,
+.btn-default:not(.navbar-btn):active:focus{
     background-color: var(--clr-surface-hover);
 }
 
