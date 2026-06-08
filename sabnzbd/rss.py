@@ -572,7 +572,7 @@ class RSSRepository:
             SELECT url FROM rss
             WHERE feed = ?
               AND state = ?
-              AND age < ?
+              AND seen_at < ?
         """,
             (
                 feed,
