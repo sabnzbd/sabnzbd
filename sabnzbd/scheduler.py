@@ -39,6 +39,7 @@ class Scheduler:
     def __init__(self):
         self.scheduler = kronos.ThreadedScheduler()
         self.pause_end: Optional[float] = None  # Moment when pause will end
+        self.resume_end: Optional[float] = None  # Moment when temporary resume will end
         self.resume_task: Optional[kronos.Task] = None
         self.rss_task: Optional[kronos.Task] = None  # RSS interval task
         self.restart_scheduler = False
@@ -380,6 +381,7 @@ class Scheduler:
 
     def plan_resume(self, interval):
         """Set a scheduled resume after the interval"""
+        self.resume_end = None
         if interval > 0:
             self.pause_end = time.time() + (interval * 60)
             logging.debug("Schedule resume at %s", self.pause_end)
@@ -388,6 +390,29 @@ class Scheduler:
         else:
             self.pause_end = None
             sabnzbd.downloader.unpause_all()
+
+    def __oneshot_pause(self, when):
+        """Called by delayed re-pause schedule
+        Only pauses if call comes at the planned time
+        """
+        if self.resume_end is not None and (when > self.resume_end - 5) and (when < self.resume_end + 55):
+            self.resume_end = None
+            logging.debug("Re-pause after resume-interval")
+            sabnzbd.Downloader.pause()
+        else:
+            logging.debug("Ignoring cancelled re-pause")
+
+    def plan_pause(self, interval):
+        """Set a scheduled re-pause after the interval"""
+        self.pause_end = None
+        if interval > 0:
+            self.resume_end = time.time() + (interval * 60)
+            logging.debug("Schedule re-pause at %s", self.resume_end)
+            self.scheduler.add_single_task(self.__oneshot_pause, "", interval * 60, args=[self.resume_end])
+            sabnzbd.downloader.unpause_all()
+        else:
+            self.resume_end = None
+            sabnzbd.Downloader.pause()
 
     def __check_diskspace(self, full_dir: str, required_space: float):
         """Resume if there is sufficient available space"""
@@ -446,12 +471,31 @@ class Scheduler:
             sec = int(val - mins * 60)
             return "%s%d:%02d" % (sign, mins, sec)
 
+    def resume_int(self) -> str:
+        """Return minutes:seconds until resume ends"""
+        if self.resume_end is None:
+            return "0"
+        else:
+            val = self.resume_end - time.time()
+            if val < 0:
+                sign = "-"
+                val = abs(val)
+            else:
+                sign = ""
+            mins = int(val / 60)
+            sec = int(val - mins * 60)
+            return "%s%d:%02d" % (sign, mins, sec)
+
     def pause_check(self):
         """Unpause when time left is negative, compensate for missed schedule"""
         if self.pause_end is not None and (self.pause_end - time.time()) < 0:
             self.pause_end = None
             logging.debug("Force resume, negative timer")
             sabnzbd.downloader.unpause_all()
+        if self.resume_end is not None and (self.resume_end - time.time()) < 0:
+            self.resume_end = None
+            logging.debug("Force re-pause, negative timer")
+            sabnzbd.Downloader.pause()
 
     def plan_server(self, action, parms, interval):
         """Plan to re-activate server after 'interval' minutes"""
