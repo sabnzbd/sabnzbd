@@ -35,6 +35,7 @@ import socket
 import subprocess
 import multiprocessing
 import ssl
+import shlex
 import time
 import re
 import gc
@@ -1463,11 +1464,16 @@ def main():
             # Binaries require special restart
             if hasattr(sys, "frozen"):
                 if sabnzbd.MACOS:
-                    # On macOS restart of app instead of embedded python
-                    my_args = " ".join(sys.argv[1:])
-                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), sys.executable, my_args)
-                    logging.info("Launching: %s", cmd)
-                    os.system(cmd)
+                    # Relaunch the .app via LaunchServices (clean env, proper menu-bar
+                    # context). Opening sys.executable directly makes macOS launch the
+                    # raw binary in Terminal.app — issue #3455.
+                    from Foundation import NSBundle
+
+                    subprocess.Popen(
+                        'open -n "%s" --args %s'
+                        % (NSBundle.mainBundle().bundlePath(), " ".join(shlex.quote(a) for a in sys.argv[1:])),
+                        shell=True,
+                    )
                 elif sabnzbd.WIN_SERVICE:
                     # Use external service handler to do the restart
                     # Wait 5 seconds to clean up
