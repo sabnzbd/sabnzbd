@@ -20,10 +20,12 @@ sabnzbd.newsunpack
 """
 
 import os
+import stat
 import sys
 import re
 import subprocess
 import logging
+import tarfile
 import time
 import io
 import shutil
@@ -271,6 +273,7 @@ def unpacker(
     rars: list[str] = [],
     sevens: list[str] = [],
     ts: list[str] = [],
+    tars: list[str] = [],
     depth: int = 0,
 ) -> tuple[int | bool, list[str]]:
     """Do a recursive unpack from all archives in 'download_path' to 'workdir_complete'"""
@@ -283,9 +286,11 @@ def unpacker(
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path)
+        xjoinables, xrars, xsevens, xts, xtars = build_filelists(nzo.download_path)
     else:
-        xjoinables, xrars, xsevens, xts = build_filelists(nzo.download_path, workdir_complete, check_both=nzo.delete)
+        xjoinables, xrars, xsevens, xts, xtars = build_filelists(
+            nzo.download_path, workdir_complete, check_both=nzo.delete
+        )
 
     force_rerun = False
     newfiles = []
@@ -328,6 +333,15 @@ def unpacker(
                 newfiles.extend(newf)
             logging.info("TS Joining finished on %s", nzo.download_path)
 
+    if cfg.enable_tar() and sys.version_info >= (3, 12):
+        new_tars = [tar for tar in xtars if tar not in tars]
+        if new_tars:
+            logging.info("Tar starting on %s", nzo.download_path)
+            error, newf = tar_unpack(nzo, workdir_complete, one_folder, new_tars)
+            if newf:
+                newfiles.extend(newf)
+            logging.info("Tar finished on %s", nzo.download_path)
+
     # Refresh history and set output
     nzo.set_action_line()
 
@@ -349,10 +363,10 @@ def unpacker(
     if rerun and nzo.delete and depth == 1 and any(build_filelists(nzo.download_path)):
         force_rerun = True
         # Clear lists to force re-scan of files
-        xjoinables, xrars, xsevens, xts = ([], [], [], [])
+        xjoinables, xrars, xsevens, xts, xtars = ([], [], [], [], [])
 
     if rerun and (cfg.enable_recursive() or new_ts or new_joins or force_rerun):
-        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xrars, xsevens, xts, depth)
+        z, y = unpacker(nzo, workdir_complete, one_folder, xjoinables, xrars, xsevens, xts, xtars, depth)
         if z:
             error = z
         if y:
@@ -1013,6 +1027,96 @@ def seven_extract_core(
 
 
 ##############################################################################
+# Tar Functions
+##############################################################################
+def tar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, tars: list[str]) -> tuple[bool, list[str]]:
+    """Unpack tar files from 'download_path' to 'workdir_complete.
+    When 'delete' is set, originals will be deleted.
+    """
+    untar_failed = False
+    new_files = []
+
+    # Unpack each tar
+    for tar_path in tars:
+        logging.info("Starting extract on tar file: %s ", tar_path)
+        nzo.set_action_line(T("Unpacking"), setname_from_path(tar_path))
+
+        if workdir_complete and tar_path.startswith(nzo.download_path):
+            extraction_path = workdir_complete
+        else:
+            extraction_path = os.path.split(tar_path)[0]
+
+        res, new_files_set = tar_extract(nzo, tar_path, extraction_path, one_folder)
+        if res:
+            untar_failed = True
+        new_files.extend(new_files_set)
+
+    # Delete the old files if we have to
+    if not untar_failed and nzo.delete:
+        for tar_path in tars:
+            try:
+                remove_file(tar_path)
+            except Exception:
+                logging.warning(T("Deleting %s failed!"), tar_path)
+
+    return untar_failed, new_files
+
+
+def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder: bool) -> tuple[int, list[str]]:
+    """Unpack single tar file to 'extraction_path'
+    Return fail==0(ok)/fail==1(error), new_files
+    """
+    ret = 0
+    new_files = []
+
+    with tarfile.open(tar_path) as tar:
+        for member in tar.getmembers():
+            if member.isfile():
+                if one_folder:
+                    member.name = os.path.basename(member.name)
+                try:
+                    if not cfg.overwrite_files():
+                        # Ensure a unique filepath by appending .N before extension if needed
+                        info = tar_non_executable_data_filter(member, extraction_path)
+                        if info is not None and os.path.exists(os.path.join(extraction_path, info.name)):
+                            base_name, ext = os.path.splitext(info.name)
+                            candidate = info.name
+                            path = os.path.join(extraction_path, candidate)
+                            num = 1
+                            while os.path.exists(path):
+                                candidate = f"{base_name}.{num}{ext}"
+                                path = os.path.join(extraction_path, candidate)
+                                num += 1
+                            member.name = candidate
+                    tar.extract(member, path=extraction_path, filter=tar_non_executable_data_filter)
+                    new_files.append(os.path.join(extraction_path, member.name))
+                except tarfile.FilterError:
+                    ret = 1
+                    msg = T("Unpacking failed, potentially unsafe file %s") % member.name
+                    logging.info(msg)
+                    nzo.fail_msg = msg
+                    nzo.set_unpack_info("Unpack", msg, tar_path)
+                except (OSError, tarfile.TarError) as e:
+                    ret = 1
+                    msg = T("Unpacking failed, %s") % str(e)
+                    logging.info(msg)
+                    nzo.fail_msg = msg
+                    nzo.set_unpack_info("Unpack", msg, tar_path)
+
+    return ret, new_files
+
+
+def tar_non_executable_data_filter(member, path) -> Optional[tarfile.TarInfo]:
+    """Applies tarfile.data_filter and removes executable permissions from files"""
+    member = tarfile.data_filter(member, path)
+
+    if member is not None and member.isreg():
+        member = member.replace(mode=member.mode & ~(stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
+
+    return member
+
+
+##############################################################################
 # PAR2 Functions
 ##############################################################################
 def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
@@ -1065,7 +1169,7 @@ def par2_repair(nzo: NzbObject, setname: str) -> tuple[bool, bool]:
             nzo.set_action_line(T("Repair"), T("Starting Repair"))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
+            joinables, _, _, _, _ = build_filelists(nzo.download_path, check_rar=False)
 
             finished, readd, used_joinables, used_for_repair = par2cmdline_verify(parfile, nzo, setname, joinables)
 

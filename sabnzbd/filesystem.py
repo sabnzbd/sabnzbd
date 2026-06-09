@@ -493,16 +493,17 @@ SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
 SEVENZIP_RE = re.compile(r"\.(zip|7z)$", re.I)
 SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)
 TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
+TAR_RE = re.compile(r"\.(tar$)", re.I)
 
 
 def build_filelists(
     workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
-) -> tuple[list[str], list[str], list[str], list[str]]:
+) -> tuple[list[str], list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
     Optionally test content to establish RAR-ness
     """
-    sevens, joinables, rars, ts, filelist = ([], [], [], [], [])
+    sevens, joinables, rars, ts, filelist, tars = ([], [], [], [], [], [])
 
     if workdir_complete:
         filelist.extend(listdir_full(workdir_complete))
@@ -529,13 +530,17 @@ def build_filelists(
         elif TS_RE.search(file):
             # TS split files
             ts.append(file)
+        elif TAR_RE.search(file):
+            # TAR files
+            tars.append(file)
 
     logging.debug("build_filelists(): joinables: %s", joinables)
     logging.debug("build_filelists(): rars: %s", rars)
     logging.debug("build_filelists(): 7zips: %s", sevens)
     logging.debug("build_filelists(): ts: %s", ts)
+    logging.debug("build_filelists(): tars: %s", tars)
 
-    return joinables, rars, sevens, ts
+    return joinables, rars, sevens, ts, tars
 
 
 def safe_fnmatch(f: str, pattern: str) -> bool:
