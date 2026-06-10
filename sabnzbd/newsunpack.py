@@ -1033,33 +1033,33 @@ def tar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, tars: li
     """Unpack tar files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
-    if sys.version_info < (3, 12):
-        msg = T("Unpacking failed, Python version 3.12+ required")
-        logging.info(msg)
-        nzo.fail_msg = msg
-        nzo.set_unpack_info("Unpack", msg)
-        return True, []
 
     untar_failed = False
     new_files = []
 
     # Unpack each tar
     for tar_path in tars:
-        logging.info("Starting extract on tar file: %s ", tar_path)
-        nzo.set_action_line(T("Unpacking"), setname_from_path(tar_path))
-
-        if workdir_complete and tar_path.startswith(nzo.download_path):
-            extraction_path = workdir_complete
+        setname = setname_from_path(tar_path)
+        if sys.version_info < (3, 12):
+            msg = T("Unpacking failed, TAR support requires Python 3.12 or later")
+            logging.info(msg)
+            nzo.set_unpack_info("Unpack", msg, setname)
         else:
-            extraction_path = os.path.split(tar_path)[0]
+            logging.info("Starting extract on tar file: %s ", tar_path)
+            nzo.set_action_line(T("Unpacking"), setname)
 
-        res, new_files_set = tar_extract(nzo, tar_path, extraction_path, one_folder)
-        if res:
-            untar_failed = True
-        new_files.extend(new_files_set)
+            if workdir_complete and tar_path.startswith(nzo.download_path):
+                extraction_path = workdir_complete
+            else:
+                extraction_path = os.path.split(tar_path)[0]
+
+            res, new_files_set = tar_extract(nzo, tar_path, extraction_path, one_folder)
+            if res:
+                untar_failed = True
+            new_files.extend(new_files_set)
 
     # Delete the old files if we have to
-    if not untar_failed and nzo.delete:
+    if not untar_failed and new_files and nzo.delete:
         for tar_path in tars:
             try:
                 remove_file(tar_path)
