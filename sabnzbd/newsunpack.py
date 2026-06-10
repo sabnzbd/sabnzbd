@@ -20,7 +20,6 @@ sabnzbd.newsunpack
 """
 
 import os
-import stat
 import sys
 import re
 import subprocess
