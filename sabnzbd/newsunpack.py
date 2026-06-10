@@ -333,7 +333,7 @@ def unpacker(
                 newfiles.extend(newf)
             logging.info("TS Joining finished on %s", nzo.download_path)
 
-    if cfg.enable_tar() and sys.version_info >= (3, 12):
+    if cfg.enable_tar():
         new_tars = [tar for tar in xtars if tar not in tars]
         if new_tars:
             logging.info("Tar starting on %s", nzo.download_path)
@@ -1033,6 +1033,13 @@ def tar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, tars: li
     """Unpack tar files from 'download_path' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
+    if sys.version_info < (3, 12):
+        msg = T("Unpacking failed, Python version 3.12+ required")
+        logging.info(msg)
+        nzo.fail_msg = msg
+        nzo.set_unpack_info("Unpack", msg)
+        return True, []
+
     untar_failed = False
     new_files = []
 
