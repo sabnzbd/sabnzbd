@@ -67,6 +67,7 @@ from sabnzbd.filesystem import (
     is_size,
     get_basename,
     create_all_dirs,
+    UNWANTED_FILE_PERMISSIONS,
 )
 from sabnzbd.nzb import NzbObject
 import sabnzbd.cfg as cfg
@@ -1118,7 +1119,7 @@ def tar_non_executable_data_filter(member, path) -> Optional[tarfile.TarInfo]:
     member = tarfile.data_filter(member, path)
 
     if member is not None and member.isreg():
-        member = member.replace(mode=member.mode & ~(stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
+        member = member.replace(mode=member.mode & ~UNWANTED_FILE_PERMISSIONS)
 
     return member
 
