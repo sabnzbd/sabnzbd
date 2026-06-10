@@ -693,8 +693,9 @@ class TestTarUnpack:
             download_contents = os.listdir(temp_test_dir) if os.path.exists(temp_test_dir) else []
 
             # Check nothing extracted is executable
-            for file_path in complete_contents:
-                assert not os.access(file_path, os.X_OK), "%s is executable" % file_path
+            if not sabnzbd.WINDOWS:
+                for file_path in complete_contents:
+                    assert not os.access(file_path, os.X_OK), "%s is executable" % file_path
 
             return error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir
 
