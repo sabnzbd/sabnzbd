@@ -1041,7 +1041,7 @@ def tar_unpack(nzo: NzbObject, workdir_complete: str, one_folder: bool, tars: li
     for tar_path in tars:
         setname = setname_from_path(tar_path)
         if sys.version_info < (3, 12):
-            msg = T("Unpacking failed, TAR support requires Python 3.12 or later")
+            msg = T("Unpacking skipped, TAR support requires Python 3.12 or later")
             logging.info(msg)
             nzo.set_unpack_info("Unpack", msg, setname)
         else:
