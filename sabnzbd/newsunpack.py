@@ -67,6 +67,7 @@ from sabnzbd.filesystem import (
     get_basename,
     create_all_dirs,
     UNWANTED_FILE_PERMISSIONS,
+    get_unique_filename,
 )
 from sabnzbd.nzb import NzbObject
 import sabnzbd.cfg as cfg
@@ -1076,39 +1077,24 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
     ret = 0
     new_files = []
 
-    with tarfile.open(tar_path) as tar:
-        for member in tar.getmembers():
-            if member.isfile():
+    try:
+        with tarfile.open(tar_path) as tar:
+            members = []
+            for member in tar.getmembers():
+                member = tar_non_executable_data_filter(member, extraction_path)
+                if not member or not member.isfile():
+                    continue
                 if one_folder:
-                    member.name = os.path.basename(member.name)
-                try:
-                    if not cfg.overwrite_files():
-                        # Ensure a unique filepath by appending .N before extension if needed
-                        info = tar_non_executable_data_filter(member, extraction_path)
-                        if info is not None and os.path.exists(os.path.join(extraction_path, info.name)):
-                            base_name, ext = os.path.splitext(info.name)
-                            candidate = info.name
-                            path = os.path.join(extraction_path, candidate)
-                            num = 1
-                            while os.path.exists(path):
-                                candidate = f"{base_name}.{num}{ext}"
-                                path = os.path.join(extraction_path, candidate)
-                                num += 1
-                            member.name = candidate
-                    tar.extract(member, path=extraction_path, filter=tar_non_executable_data_filter)
-                    new_files.append(os.path.join(extraction_path, member.name))
-                except tarfile.FilterError:
-                    ret = 1
-                    msg = T("Unpacking failed, potentially unsafe file %s") % member.name
-                    logging.info(msg)
-                    nzo.fail_msg = msg
-                    nzo.set_unpack_info("Unpack", msg, tar_path)
-                except (OSError, tarfile.TarError) as e:
-                    ret = 1
-                    msg = T("Unpacking failed, %s") % str(e)
-                    logging.info(msg)
-                    nzo.fail_msg = msg
-                    nzo.set_unpack_info("Unpack", msg, tar_path)
+                    member = member.replace(name=os.path.basename(member.name))
+                members.append(member)
+                new_files.append(os.path.join(extraction_path, member.name))
+            tar.extractall(extraction_path, members, filter=tar_non_executable_data_filter)
+    except (OSError, tarfile.TarError) as e:
+        ret = 1
+        msg = T("Unpacking failed, %s") % str(e)
+        logging.info(msg)
+        nzo.fail_msg = msg
+        nzo.set_unpack_info("Unpack", msg, tar_path)
 
     return ret, new_files
 
@@ -1119,6 +1105,8 @@ def tar_non_executable_data_filter(member, path) -> Optional[tarfile.TarInfo]:
 
     if member is not None and member.isreg():
         member = member.replace(mode=member.mode & ~UNWANTED_FILE_PERMISSIONS)
+        if not cfg.overwrite_files():
+            member = member.replace(name=os.path.relpath(get_unique_filename(os.path.join(path, member.name)), path))
 
     return member
 
