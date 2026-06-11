@@ -504,19 +504,17 @@ def process_job(nzo: NzbObject) -> bool:
             if all_ok:
                 # Move any (left-over) files to destination
                 nzo.status = Status.MOVING
-                for root, _, files in os.walk(nzo.download_path):
-                    if not root.endswith(JOB_ADMIN):
-                        for file in files:
-                            path = os.path.join(root, file)
-                            new_path = path.replace(nzo.download_path, tmp_workdir_complete)
-                            nzo.set_action_line(T("Moving"), file)
-                            ok, new_path = move_to_path(path, new_path)
-                            if new_path:
-                                newfiles.append(new_path)
-                            if not ok:
-                                nzo.set_unpack_info("Unpack", T("Failed moving %s to %s") % (path, new_path))
-                                all_ok = False
-                                break
+                for path in listdir_full(nzo.download_path):
+                    if JOB_ADMIN not in path:
+                        new_path = path.replace(nzo.download_path, tmp_workdir_complete)
+                        nzo.set_action_line(T("Moving"), get_filename(path))
+                        ok, new_path = move_to_path(path, new_path)
+                        if new_path:
+                            newfiles.append(new_path)
+                        if not ok:
+                            nzo.set_unpack_info("Unpack", T("Failed moving %s to %s") % (path, new_path))
+                            all_ok = False
+                            break
 
             # Set permissions right
             set_permissions(tmp_workdir_complete)
