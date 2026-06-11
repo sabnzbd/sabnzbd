@@ -1888,6 +1888,9 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
         header["apikey"] = cfg.api_key()
         header["new_release"], header["new_rel_url"] = sabnzbd.NEW_VERSION
 
+        # Add the commit hash so static files are refreshed on nightly/development builds
+        header["cache_buster"] = f"{sabnzbd.__version__}-{sabnzbd.__baseline__}"
+
     header["version"] = sabnzbd.__version__
     header["paused"] = bool(sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc)
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
