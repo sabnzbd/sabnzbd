@@ -20,11 +20,13 @@ tests.test_newsunpack - Tests of various functions in newspack
 """
 
 import glob
+import io
 import logging
 import os
 import os.path
 import shutil
 import sys
+import tarfile
 from unittest import mock
 from unittest.mock import call
 
@@ -696,6 +698,10 @@ class TestTarUnpack:
             if not sabnzbd.WINDOWS:
                 for file_path in complete_contents:
                     assert not os.access(file_path, os.X_OK), "%s is executable" % file_path
+                    st = os.stat(file_path)
+                    assert st.st_mode & 0o777 == 0o666 & ~sabnzbd.ORG_UMASK
+                    assert st.st_uid == os.getuid(), "%s has wrong owner" % file_path
+                    assert st.st_gid == os.getgid(), "%s has wrong group" % file_path
 
             return error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir
 
@@ -752,6 +758,56 @@ class TestTarUnpack:
 
         error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_tar_unpack(test_dir, tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+    def test_path_traversal(self, tmp_path):
+        tar_path = tmp_path / "bad.tar"
+
+        # Create a tar containing a path traversal entry
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("../evil.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"evil"))
+
+        tar_files = ["bad.tar"]
+
+        error_code, extracted_files, _complete_contents, _download_contents, _nzo, _temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        assert error_code == 1, "TAR extraction should fail"
+        assert not extracted_files
+
+    def test_owner_permissions_sanitized(self, tmp_path):
+        tar_path = tmp_path / "owner.tar"
+
+        # Create a tar containing a file owned by root with read, write, and execute permissions for everyone
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("file.txt")
+            info.size = 4
+            info.uid = 0
+            info.gid = 0
+            info.uname = "root"
+            info.gname = "root"
+            info.mode = 0o777
+            tar.addfile(info, io.BytesIO(b"test"))
+
+        tar_files = ["owner.tar"]
+        expected_files = {"file.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
         )
 
         self._assert_successful_extraction(
