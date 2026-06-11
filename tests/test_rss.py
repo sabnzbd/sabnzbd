@@ -21,16 +21,18 @@ tests.test_misc - Testing functions in misc.py
 
 import datetime
 import time
+import uuid
 from typing import Optional
 
 import configobj
 import pytest
 from pytest_httpserver import HTTPServer
+from werkzeug import Response
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 import sabnzbd.rss as rss
 import sabnzbd.config
-from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY
-from sabnzbd.rss import FeedEvaluation, FeedConfig
+from sabnzbd.constants import DEFAULT_PRIORITY, LOW_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY, PAUSED_PRIORITY
 from tests.testhelper import httpserver_handler_data_dir
 
 
@@ -44,7 +46,7 @@ class TestRSS:
         pp: Optional[str] = None,
         script: Optional[str] = None,
         priority: Optional[int] = None,
-        filters: list[tuple[str, str, str, str, str, int, str]] = None,
+        filters: Optional[list[tuple[str, str, str, str, str, int, str]]] = None,
     ):
         """Setup the basic settings to get things going"""
         values: dict = {"uri": feed_url}
@@ -79,7 +81,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -91,8 +93,8 @@ class TestRSS:
         assert job_data["infourl"] == "https://nzbgeek.info/geekseek.php?guid=FakeKey"
         assert job_data["orgcat"] == "TV > HD"
         assert job_data["cat"] == "tv"
-        assert job_data["episode"] == "3"
-        assert job_data["season"] == "4"
+        assert job_data["episode"] == 3
+        assert job_data["season"] == 4
         assert job_data["size"] == 1209464000
 
         # feedparser returns UTC so SABnzbd converts to locale
@@ -106,7 +108,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -119,8 +121,8 @@ class TestRSS:
         assert job_data["infourl"] == "https://nzbfinder.ws/details/FakeKey"
         assert job_data["orgcat"] == "Movies > HD"
         assert job_data["cat"] == "movies"
-        assert job_data["episode"] == "720"
-        assert job_data["season"] == "2018"
+        assert job_data["episode"] == 720
+        assert job_data["season"] == 2018
         assert job_data["size"] == 5164539914
 
         # feedparser returns UTC so SABnzbd converts to locale
@@ -136,7 +138,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -161,7 +163,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -175,7 +177,7 @@ class TestRSS:
 
         # Start the RSS reader
         rss_obj = rss.RSSReader()
-        rss_obj.run_feed(feed_name)
+        rss_obj.process_feed(feed_name)
 
         # Is the feed processed?
         assert feed_name in rss_obj.jobs
@@ -204,7 +206,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0),
+                dict(rule=0, season=0, episode=0),
             ),
             (
                 (None, None, None, None),
@@ -214,7 +216,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=True, rule_index=1, season=0, episode=0),
+                dict(rule=1, season=0, episode=0),
             ),
             (
                 (None, None, None, None),
@@ -224,7 +226,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=True, rule_index=1, season=5, episode=2),
+                dict(rule=1, season=5, episode=2),
             ),
             (
                 (None, None, None, None),
@@ -234,17 +236,17 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=False, rule_index=0, season=1, episode=2),
+                dict(rule=0, season=1, episode=2),
             ),
             (
                 (None, None, None, LOW_PRIORITY),
-                [],
+                [("", "", "", "A", "*", "", "")],
                 "Title",
                 None,
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, priority=LOW_PRIORITY),
+                dict(rule=0, season=0, episode=0, prio=LOW_PRIORITY),
             ),
             (
                 (None, None, None, LOW_PRIORITY),
@@ -254,7 +256,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, priority=HIGH_PRIORITY),
+                dict(rule=0, season=0, episode=0, prio=HIGH_PRIORITY),
             ),
             (
                 (None, 1, None, None),
@@ -264,7 +266,7 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, pp=1),
+                dict(rule=0, season=0, episode=0, pp=None),
             ),
             (
                 (None, 1, None, None),
@@ -274,44 +276,74 @@ class TestRSS:
                 1000,
                 0,
                 0,
-                FeedEvaluation(matched=True, rule_index=0, season=0, episode=0, pp=3),
+                dict(rule=0, season=0, episode=0, pp=3),
             ),
             (  # category overrides
-                ("tv", 1, DEFAULT_PRIORITY, ""),
+                ("tv", 1, "", DEFAULT_PRIORITY),
                 [("evaluator", "", "", "A", "*", "", "1")],
                 "Title",
                 None,
                 1000,
                 0,
                 0,
-                FeedEvaluation(
-                    matched=True,
-                    rule_index=0,
+                dict(
+                    rule=0,
                     season=0,
                     episode=0,
-                    category="evaluator",
-                    pp=3,
-                    script="evaluator.py",
-                    priority=FORCE_PRIORITY,
+                    cat="evaluator",
+                    pp=1,
+                    script=None,
+                    prio=DEFAULT_PRIORITY,
                 ),
             ),
             (  # category with rule overrides
-                ("tv", 1, DEFAULT_PRIORITY, ""),
+                ("tv", 1, "", DEFAULT_PRIORITY),
                 [("evaluator", "2", "override.py", "A", "*", "", "1")],
                 "Title",
                 None,
                 1000,
                 0,
                 0,
-                FeedEvaluation(
-                    matched=True,
-                    rule_index=0,
+                dict(
+                    rule=0,
                     season=0,
                     episode=0,
-                    category="evaluator",
+                    cat="evaluator",
                     pp=2,
                     script="override.py",
-                    priority=FORCE_PRIORITY,
+                    prio=DEFAULT_PRIORITY,
+                ),
+            ),
+            (
+                ("", "", "", PAUSED_PRIORITY),
+                [("", "", "", "A", "*", "", "")],
+                "Title",
+                "TV > HD",
+                1000,
+                0,
+                0,
+                dict(
+                    rule=0,
+                    season=0,
+                    episode=0,
+                    cat="tv",
+                    prio=PAUSED_PRIORITY,
+                ),
+            ),
+            (
+                ("", "", "", PAUSED_PRIORITY),
+                [("", "", "", "F", "", "", "")],
+                "Title",
+                "TV > HD",
+                1000,
+                3,
+                5,
+                dict(
+                    rule=0,
+                    season=3,
+                    episode=5,
+                    cat="tv",
+                    prio=PAUSED_PRIORITY,
                 ),
             ),
         ],
@@ -326,8 +358,67 @@ class TestRSS:
         size: int,
         season: int,
         episode: int,
-        expected_match: FeedEvaluation,
+        expected_match: dict,
     ):
+        def build_xml_response(
+            title: str, category: Optional[str], size: Optional[int], season: Optional[int], episode: Optional[int]
+        ):
+            root = Element("rss", version="2.0")
+
+            channel = SubElement(root, "channel")
+            SubElement(channel, "title").text = "RSS feed"
+            SubElement(channel, "description").text = "RSS feed"
+            SubElement(channel, "link").text = "https://sabnzbd.org/"
+
+            item = SubElement(channel, "item")
+
+            SubElement(item, "title").text = title
+            SubElement(item, "link").text = "http://LINK"
+            SubElement(item, "comments").text = "COMMENTS"
+            SubElement(item, "pubDate").text = "Tue, 20 May 2025 18:21:01 +0000"
+
+            guid = SubElement(item, "guid")
+            guid.set("isPermaLink", "true")
+            guid.text = uuid.uuid4().hex
+
+            # optional fields
+            if category is not None:
+                SubElement(item, "category").text = category
+
+            if size is not None:
+                SubElement(item, "size").text = str(size)
+
+            if season is not None:
+                SubElement(
+                    item,
+                    "newznab:attr",
+                    {
+                        "name": "season",
+                        "value": str(season),
+                    },
+                )
+
+            if episode is not None:
+                SubElement(
+                    item,
+                    "newznab:attr",
+                    {
+                        "name": "episode",
+                        "value": str(episode),
+                    },
+                )
+
+            xml_bytes = tostring(root, encoding="utf-8")
+
+            return xml_bytes
+
+        httpserver.expect_request("/evaluator.xml").respond_with_handler(
+            lambda request: Response(
+                build_xml_response(title=title, category=category, size=size, season=season, episode=episode),
+                status=200,
+                content_type="application/rss+xml",
+            )
+        )
         default_category, default_pp, default_script, default_priority = defaults
         feed_name = "Evaluator"
         self.setup_rss(
@@ -348,7 +439,16 @@ class TestRSS:
             },
         )
 
-        feed_cfg = FeedConfig.from_config(sabnzbd.config.get_rss()[feed_name])
-        result_match = feed_cfg.evaluate(title=title, category=category, size=size, season=season, episode=episode)
+        # Start the RSS reader
+        rss_obj = rss.RSSReader()
+        rss_obj.process_feed(feed_name)
 
-        assert result_match == expected_match
+        # Is the feed processed?
+        assert feed_name in rss_obj.jobs
+        assert "http://LINK" in rss_obj.jobs[feed_name]
+
+        # Check some job-data
+        job_data = rss_obj.jobs[feed_name]["http://LINK"]
+        for k, v in expected_match.items():
+            assert k in job_data
+            assert job_data[k] == v, f"Expected {k!r}: {job_data[k]!r} == {v!r}"

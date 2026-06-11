@@ -443,6 +443,34 @@ class TestAddingNZBs:
     ):
         self._priority_tester(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat)
 
+    @pytest.mark.parametrize(
+        "prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat, expected_priority, expected_status",
+        [
+            # Added category priority should apply when no explicit priority is set.
+            (LOW_PRIORITY, None, HIGH_PRIORITY, None, None, None, HIGH_PRIORITY, "Queued"),
+            # Pre-queue category should override category supplied during add.
+            (LOW_PRIORITY, None, LOW_PRIORITY, None, HIGH_PRIORITY, None, HIGH_PRIORITY, "Queued"),
+            # Explicit priority on add should beat implicit category from pre-queue.
+            (LOW_PRIORITY, NORMAL_PRIORITY, None, None, HIGH_PRIORITY, None, NORMAL_PRIORITY, "Queued"),
+            # NZB metadata category should be used if no category is provided later.
+            (LOW_PRIORITY, None, None, None, None, HIGH_PRIORITY, HIGH_PRIORITY, "Queued"),
+        ],
+    )
+    def test_adding_nzbs_category_priority_precedence(
+        self,
+        prio_def_cat,
+        prio_add,
+        prio_add_cat,
+        prio_preq,
+        prio_preq_cat,
+        prio_meta_cat,
+        expected_priority,
+        expected_status,
+    ):
+        job = self._prep_priority_tester(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat)
+        assert job["priority"] == ALL_PRIOS.get(expected_priority)
+        assert job["status"] == expected_status
+
     def test_adding_nzbs_partial(self):
         """Test adding parts of an NZB file, cut off somewhere in the middle to simulate
         the effects of an interrupted download or bad hardware. Should fail, of course."""

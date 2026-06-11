@@ -10,7 +10,7 @@
             <tr>
                 <th style="width: 25px;"></th>
                 <th></th>
-                <th class="table-status-header" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumns().length }"></th>
+                <th class="table-status-header" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumns().length || displayCompact() }"></th>
                 <!-- ko foreach: extraHistoryColumns -->
                 <th class="table-header-extra"></th>
                 <!-- /ko -->

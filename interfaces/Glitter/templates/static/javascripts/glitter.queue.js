@@ -549,7 +549,7 @@ function QueueModel(parent, data) {
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
     self.labels = ko.observableArray(data.labels);
-    self.isGrabbing = ko.observable(data.status === 'Grabbing' || data.avg_age === '-')
+    self.isGrabbing = ko.observable(data.status === 'Grabbing' || !parseFloat(data.mb)) // Paused URL-grab jobs report status 'Paused', not 'Grabbing'
     self.isFetchingBlocks = data.status === 'Fetching' || data.priority === 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
     self.remainingMB = ko.observable(parseFloat(data.mbleft))
@@ -669,7 +669,7 @@ function QueueModel(parent, data) {
         self.password(data.password);
         self.index(data.index);
         self.status(data.status)
-        self.isGrabbing(data.status === 'Grabbing' || data.avg_age === '-')
+        self.isGrabbing(data.status === 'Grabbing' || !parseFloat(data.mb))
         self.totalMB(parseFloat(data.mb));
         self.remainingMB(parseFloat(data.mbleft));
         self.missingMB(parseFloat(data.mbmissing))
