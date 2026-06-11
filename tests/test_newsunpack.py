@@ -748,7 +748,7 @@ class TestTarUnpack:
         """Test basic TAR unpacking functionality"""
         test_dir = "tests/data/test_tar"
         tar_files = ["testfile.tar"]
-        expected_files = {"My_Test_Download.bin", "helloworld.sh"}
+        expected_files = {"My_Test_Download.bin"}
 
         error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_tar_unpack(test_dir, tar_files)

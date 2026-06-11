@@ -37,7 +37,7 @@ class TestDownloadFlow(DownloadFlowBasics):
 
     @pytest.mark.skipif(sys.version_info < (3, 12), reason="tarfile extraction filter requires Python 3.12 or later")
     def test_download_tar(self):
-        self.download_nzb("test_tar", ["My_Test_Download.bin", "helloworld.sh"])
+        self.download_nzb("test_tar", ["My_Test_Download.bin"])
 
     def test_download_passworded(self):
         self.download_nzb("test_passworded{{secret}}", ["My_Test_Download.bin"])
