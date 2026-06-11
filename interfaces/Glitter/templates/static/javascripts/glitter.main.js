@@ -10,6 +10,7 @@ function ViewModel() {
 
     // Set status varibales
     self.isRestarting = ko.observable(false);
+    self.isLoaded = ko.observable(false); // Becomes true after the first queue response
     self.useGlobalOptions = ko.observable(true).extend({ persist: 'useGlobalOptions' });
     self.refreshRate = ko.observable(1).extend({ persist: 'pageRefreshRate' });
     self.dateFormat = ko.observable('fromNow').extend({ persist: 'pageDateFormat' });
@@ -1108,7 +1109,6 @@ function ViewModel() {
             })
         }
 
-
         // Already set if we are using a proxy
         if (response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)
 
@@ -1165,6 +1165,9 @@ function ViewModel() {
                 }
             });
         }
+
+        // First refresh has completed (success or failure): fade in the UI
+        self.isLoaded(true);
     })
 
     // Orphaned folder check - Not for 5 days if user ignored it

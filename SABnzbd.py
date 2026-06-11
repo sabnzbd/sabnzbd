@@ -1471,7 +1471,7 @@ def main():
 
                     subprocess.Popen(
                         'open -n "%s" --args %s'
-                        % (NSBundle.mainBundle().bundlePath(), " ".join(shlex.quote(a) for a in sys.argv[1:])),
+                        % (NSBundle.mainBundle().bundlePath(), " ".join(shlex.quote(arg) for arg in sys.argv[1:])),
                         shell=True,
                     )
                 elif sabnzbd.WIN_SERVICE:

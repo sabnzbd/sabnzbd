@@ -50,6 +50,11 @@ nav .btn {
     border-color: #5D5D5D !important;
 }
 
+nav .btn:active {
+    /* Restore bootstrap default */
+    color: #333 !important;
+}
+
 @media (max-width: 767px) {
     nav {
         background-color: black !important;
