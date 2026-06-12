@@ -771,7 +771,7 @@ class TestTarUnpack:
             original_files=tar_files,
         )
 
-    def test_path_traversal(self, tmp_path):
+    def test_path_traversal_tar_unpack(self, tmp_path):
         tar_path = tmp_path / "bad.tar"
 
         # Create a tar containing a path traversal entry
@@ -789,7 +789,7 @@ class TestTarUnpack:
         assert error_code == 1, "TAR extraction should fail"
         assert not extracted_files
 
-    def test_owner_permissions_sanitized(self, tmp_path):
+    def test_owner_permissions_sanitized_tar_unpack(self, tmp_path):
         tar_path = tmp_path / "owner.tar"
 
         # Create a tar containing a file owned by root with read, write, and execute permissions for everyone
@@ -808,6 +808,34 @@ class TestTarUnpack:
 
         error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
             self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+    def test_one_folder_tar_unpack(self, tmp_path):
+        tar_path = tmp_path / "flatten.tar"
+
+        # Create a tar containing a file owned by root with read, write, and execute permissions for everyone
+        with tarfile.open(tar_path, "w") as tar:
+            for i in range(2):
+                info = tarfile.TarInfo(os.path.join(str(i), "file.txt"))
+                info.size = 4
+                tar.addfile(info, io.BytesIO(b"test"))
+
+        tar_files = ["flatten.tar"]
+        expected_files = {"file.txt", "file.1.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files, True)
         )
 
         self._assert_successful_extraction(

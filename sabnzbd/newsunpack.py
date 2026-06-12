@@ -1077,18 +1077,23 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
     ret = 0
     new_files = []
 
+    def tar_non_executable_data_filter(member: tarfile.TarInfo, path: str) -> Optional[tarfile.TarInfo]:
+        """Applies tarfile.data_filter, removes unwanted permissions and can prevent overwrites"""
+        member = tarfile.data_filter(member, path)
+        if member is not None and member.isreg():
+            member = member.replace(mode=member.mode & ~UNWANTED_FILE_PERMISSIONS)
+            if one_folder:
+                member = member.replace(name=os.path.basename(member.name))
+            if not cfg.overwrite_files():
+                member = member.replace(
+                    name=os.path.relpath(get_unique_filename(os.path.join(path, member.name)), path)
+                )
+            new_files.append(os.path.join(extraction_path, member.name))
+        return member
+
     try:
         with tarfile.open(tar_path) as tar:
-            members = []
-            for member in tar.getmembers():
-                member = tar_non_executable_data_filter(member, extraction_path)
-                if not member or not member.isfile():
-                    continue
-                if one_folder:
-                    member = member.replace(name=os.path.basename(member.name))
-                members.append(member)
-                new_files.append(os.path.join(extraction_path, member.name))
-            tar.extractall(extraction_path, members, filter=tar_non_executable_data_filter)
+            tar.extractall(extraction_path, filter=tar_non_executable_data_filter)
     except (OSError, tarfile.TarError) as e:
         ret = 1
         msg = T("Unpacking failed, %s") % str(e)
@@ -1097,18 +1102,6 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
         nzo.set_unpack_info("Unpack", msg, tar_path)
 
     return ret, new_files
-
-
-def tar_non_executable_data_filter(member, path) -> Optional[tarfile.TarInfo]:
-    """Applies tarfile.data_filter and removes executable permissions from files"""
-    member = tarfile.data_filter(member, path)
-
-    if member is not None and member.isreg():
-        member = member.replace(mode=member.mode & ~UNWANTED_FILE_PERMISSIONS)
-        if not cfg.overwrite_files():
-            member = member.replace(name=os.path.relpath(get_unique_filename(os.path.join(path, member.name)), path))
-
-    return member
 
 
 ##############################################################################
