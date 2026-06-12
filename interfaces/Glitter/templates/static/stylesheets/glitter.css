@@ -661,6 +661,22 @@ tbody>tr>td:last-child {
     text-align: left;
 }
 
+.queue-table .row-extra-text select.row-extra-select {
+    width: 100%;
+    height: auto;
+    padding: 0 16px 0 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: var(--clr-text);
+    cursor: pointer;
+}
+
+.queue-table .row-extra-text select.row-extra-select option {
+    background: var(--clr-dropdown-bg);
+    color: var(--clr-text);
+}
+
 td.name .row-wrap-text {
     max-width: calc(100% - 1px);
     display: block;
@@ -1987,6 +2003,11 @@ input[name="nzbURL"] {
     /* Need to reduce sparkline width when RSS button is added */
     .navbar-have-rss .sparkline-container svg {
         width: 220px !important;
+    }
+
+    /* Hidden columns (table-header-extra width: 0) would still show the select arrow */
+    .queue-table .row-extra-text select.row-extra-select {
+        display: none;
     }
 }
 

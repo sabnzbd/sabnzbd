@@ -117,7 +117,21 @@
                 </td>
                 <!-- ko foreach: parent.parent.extraQueueColumns -->
                 <td class="row-extra-text">
+                    <!-- ko if: \$data == 'category' -->
+                    <select class="form-control row-extra-select" data-bind="options: \$parent.parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText', value: \$parent.category, valueAllowUnset: true, event: { change: \$parent.changeCat }"></select>
+                    <!-- /ko -->
+                    <!-- ko if: \$data == 'priority' && !\$parent.isFetchingBlocks -->
+                    <select class="form-control row-extra-select" data-bind="options: \$parent.parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: \$parent.priority, valueAllowUnset: true, event: { change: \$parent.changePriority }"></select>
+                    <!-- /ko -->
+                    <!-- ko if: \$data == 'processing' -->
+                    <select class="form-control row-extra-select" data-bind="options: \$parent.parent.processingOptions, optionsValue: 'value', optionsText: 'name', value: \$parent.unpackopts, valueAllowUnset: true, event: { change: \$parent.changeProcessing }"></select>
+                    <!-- /ko -->
+                    <!-- ko if: \$data == 'scripts' -->
+                    <select class="form-control row-extra-select" data-bind="options: \$parent.parent.scriptsList, optionsValue: 'scriptValue', optionsText: 'scriptText', value: \$parent.script, valueAllowUnset: true, event: { change: \$parent.changeScript }, enable: (\$parent.parent.scriptsList().length > 1)"></select>
+                    <!-- /ko -->
+                    <!-- ko if: \$data == 'age' -->
                     <div class="row-wrap-text" data-bind="text: \$parent.showColumn(\$data)"></div>
+                    <!-- /ko -->
                 </td>
                 <!-- /ko -->
                 <td class="progress-indicator">
@@ -142,21 +156,21 @@
                         <ul class="dropdown-menu queue-item-settings">
                             <li title="$T('category')" data-tooltip="true" data-placement="left">
                                 <span class="glyphicon glyphicon-tag"></span>
-                                <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
+                                <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, valueAllowUnset: true, event: { change: changeCat }"></select>
                             </li>
                             <!-- ko if: !isFetchingBlocks -->
                             <li title="$T('priority')" data-tooltip="true" data-placement="left">
                                 <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-                                <select name="Priority" class="form-control" data-bind="options: parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: priority, event: { change: changePriority }"></select>
+                                <select name="Priority" class="form-control" data-bind="options: parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: priority, valueAllowUnset: true, event: { change: changePriority }"></select>
                             </li>
                             <!-- /ko -->
                             <li title="$T('swtag-pp')" data-tooltip="true" data-placement="left">
                                 <span class="glyphicon glyphicon-check"></span>
-                                <select name="Processing" class="form-control" data-bind="options: parent.processingOptions, optionsValue: 'value', optionsText: 'name', value: unpackopts, event: { change: changeProcessing }"></select>
+                                <select name="Processing" class="form-control" data-bind="options: parent.processingOptions, optionsValue: 'value', optionsText: 'name', value: unpackopts, valueAllowUnset: true, event: { change: changeProcessing }"></select>
                             </li>
                             <li title="$T('eoq-scripts')" data-tooltip="true" data-placement="left">
                                 <span class="glyphicon glyphicon-flash"></span>
-                                <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, optionsValue: 'scriptValue', optionsText: 'scriptText', event: { change: changeScript }, enable: (parent.scriptsList().length > 1)"></select>
+                                <select name="Post-processing" class="form-control" data-bind="options: parent.scriptsList, value: script, valueAllowUnset: true, optionsValue: 'scriptValue', optionsText: 'scriptText', event: { change: changeScript }, enable: (parent.scriptsList().length > 1)"></select>
                             </li>
                         </ul>
                         <!-- /ko -->
