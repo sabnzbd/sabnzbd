@@ -1146,6 +1146,10 @@ msgid "see logfile"
 msgstr "ראה קובץ יומן"
 
 #: sabnzbd/newsunpack.py
+msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Quick Checking"
 msgstr "בדיקה זריזה"
 
