@@ -1077,7 +1077,7 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
     ret = 0
     new_files = []
 
-    def tar_non_executable_data_filter(member: tarfile.TarInfo, path: str) -> Optional[tarfile.TarInfo]:
+    def tar_filter(member: tarfile.TarInfo, path: str) -> Optional[tarfile.TarInfo]:
         """Applies tarfile.data_filter, removes unwanted permissions and can prevent overwrites"""
         member = tarfile.data_filter(member, path)
         if member is not None and member.isreg():
@@ -1093,7 +1093,7 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
 
     try:
         with tarfile.open(tar_path) as tar:
-            tar.extractall(extraction_path, filter=tar_non_executable_data_filter)
+            tar.extractall(extraction_path, filter=tar_filter)
     except (OSError, tarfile.TarError) as e:
         ret = 1
         msg = T("Unpacking failed, %s") % str(e)
