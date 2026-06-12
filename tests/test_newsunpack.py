@@ -20,10 +20,13 @@ tests.test_newsunpack - Tests of various functions in newspack
 """
 
 import glob
+import io
 import logging
 import os
 import os.path
 import shutil
+import sys
+import tarfile
 from unittest import mock
 from unittest.mock import call
 
@@ -631,4 +634,217 @@ class TestRarUnpack:
             expected_files,
             should_delete_original=True,
             original_files=rar_files,
+        )
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="tarfile extraction filter requires Python 3.12 or later")
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestTarUnpack:
+    @staticmethod
+    def _run_tar_unpack(
+        test_dir,
+        tar_files,
+        one_folder=False,
+        custom_temp_test_dir=None,
+        custom_temp_complete_dir=None,
+        custom_nzo_settings=None,
+    ):
+        """Run tar_unpack with test data"""
+        # Base
+        temp_test_dir_base = temp_test_dir = long_path(os.path.join(SAB_CACHE_DIR, "tar_unpack_temp"))
+        temp_complete_dir_base = temp_complete_dir = long_path(os.path.join(SAB_CACHE_DIR, "tar_complete_temp"))
+
+        # Extend if needed
+        if custom_temp_test_dir:
+            temp_test_dir = os.path.join(temp_test_dir, custom_temp_test_dir)
+        if custom_temp_complete_dir:
+            temp_complete_dir = os.path.join(temp_complete_dir, custom_temp_complete_dir)
+
+        assert create_all_dirs(temp_test_dir), f"Failed to create {temp_test_dir}"
+        assert create_all_dirs(temp_complete_dir), f"Failed to create {temp_complete_dir}"
+
+        # Copy test files to temp directory
+        copied_tars = []
+        for tar_file in tar_files:
+            src_path = os.path.join(test_dir, tar_file)
+            if os.path.exists(src_path):
+                dst_path = os.path.join(temp_test_dir, tar_file)
+                shutil.copy(src_path, dst_path)
+                copied_tars.append(dst_path)
+
+        # Make sure all programs are found
+        newsunpack.find_programs(".")
+
+        # Mock PostProcessor that's needed for TAR extraction
+        sabnzbd.PostProcessor = mock.Mock()
+
+        # Create mock NZO
+        nzo = TestRarUnpack._create_test_nzo(temp_test_dir)
+
+        # Apply custom NZO settings if provided
+        if custom_nzo_settings:
+            for key, value in custom_nzo_settings.items():
+                setattr(nzo, key, value)
+
+        try:
+            # Run the tar_unpack function
+            error_code, extracted_files = newsunpack.tar_unpack(nzo, temp_complete_dir, one_folder, copied_tars)
+
+            # Get directory contents with full paths
+            complete_contents = listdir_full(temp_complete_dir) if os.path.exists(temp_complete_dir) else []
+            download_contents = os.listdir(temp_test_dir) if os.path.exists(temp_test_dir) else []
+
+            # Check nothing extracted is executable
+            if not sabnzbd.WINDOWS:
+                for file_path in complete_contents:
+                    assert not os.access(file_path, os.X_OK), "%s is executable" % file_path
+                    st = os.stat(file_path)
+                    assert st.st_mode & 0o777 == 0o666 & ~sabnzbd.ORG_UMASK
+                    assert st.st_uid == os.getuid(), "%s has wrong owner" % file_path
+                    assert st.st_gid == os.getgid(), "%s has wrong group" % file_path
+
+            return error_code, extracted_files, complete_contents, download_contents, nzo, temp_complete_dir
+
+        finally:
+            # Cleanup
+            shutil.rmtree(temp_test_dir_base)
+            shutil.rmtree(temp_complete_dir_base)
+
+    def _assert_successful_extraction(
+        self,
+        error_code,
+        extracted_files,
+        complete_contents,
+        download_contents,
+        temp_complete_dir,
+        expected_files,
+        should_delete_original=True,
+        original_files=None,
+    ):
+        """Helper method to assert common successful extraction conditions"""
+        # Check that extraction was successful
+        assert error_code == 0, "TAR extraction should succeed"
+        assert len(extracted_files) > 0, "Should have extracted files"
+        assert len(complete_contents) > 0, "Should have files in complete directory"
+
+        # Check file deletion behavior
+        if should_delete_original and original_files:
+            for original_file in original_files:
+                tar_still_exists = any(original_file in f for f in download_contents)
+                assert not tar_still_exists, f"Original TAR file {original_file} should be deleted after extraction"
+        elif not should_delete_original and original_files:
+            for original_file in original_files:
+                tar_still_exists = any(original_file in f for f in download_contents)
+                assert tar_still_exists, f"Original TAR file {original_file} should still exist when delete=False"
+
+        # Verify full paths, but since extracted_files also includes the in-between folders we use issubset
+        complete_contents_set = set(complete_contents)
+        extracted_files_set = set(extracted_files)
+        assert complete_contents_set.issubset(
+            extracted_files_set
+        ), f"{complete_contents_set} should be in {extracted_files_set}"
+
+        # Verify the expected files are present using full paths
+        expected_full_paths = {os.path.join(temp_complete_dir, filename) for filename in expected_files}
+        assert expected_full_paths.issubset(
+            extracted_files_set
+        ), f"{expected_full_paths} should be in {extracted_files_set}"
+
+    def test_basic_tar_unpack(self):
+        """Test basic TAR unpacking functionality"""
+        test_dir = "tests/data/test_tar"
+        tar_files = ["testfile.tar"]
+        expected_files = {"My_Test_Download.bin"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(test_dir, tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+    def test_path_traversal_tar_unpack(self, tmp_path):
+        tar_path = tmp_path / "bad.tar"
+
+        # Create a tar containing a path traversal entry
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("../evil.txt")
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"evil"))
+
+        tar_files = ["bad.tar"]
+
+        error_code, extracted_files, _complete_contents, _download_contents, _nzo, _temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        assert error_code == 1, "TAR extraction should fail"
+        assert not extracted_files
+
+    def test_owner_permissions_sanitized_tar_unpack(self, tmp_path):
+        tar_path = tmp_path / "owner.tar"
+
+        # Create a tar containing a file owned by root with read, write, and execute permissions for everyone
+        with tarfile.open(tar_path, "w") as tar:
+            info = tarfile.TarInfo("file.txt")
+            info.size = 4
+            info.uid = 0
+            info.gid = 0
+            info.uname = "root"
+            info.gname = "root"
+            info.mode = 0o777
+            tar.addfile(info, io.BytesIO(b"test"))
+
+        tar_files = ["owner.tar"]
+        expected_files = {"file.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
+        )
+
+    def test_one_folder_tar_unpack(self, tmp_path):
+        tar_path = tmp_path / "flatten.tar"
+
+        # Create a tar containing a file owned by root with read, write, and execute permissions for everyone
+        with tarfile.open(tar_path, "w") as tar:
+            for i in range(2):
+                info = tarfile.TarInfo(os.path.join(str(i), "file.txt"))
+                info.size = 4
+                tar.addfile(info, io.BytesIO(b"test"))
+
+        tar_files = ["flatten.tar"]
+        expected_files = {"file.txt", "file.1.txt"}
+
+        error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
+            self._run_tar_unpack(str(tmp_path), tar_files, True)
+        )
+
+        self._assert_successful_extraction(
+            error_code,
+            extracted_files,
+            complete_contents,
+            download_contents,
+            temp_complete_dir,
+            expected_files,
+            should_delete_original=True,
+            original_files=tar_files,
         )

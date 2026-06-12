@@ -880,6 +880,7 @@ SPECIAL_BOOL_LIST = (
     "enable_7zip",
     "enable_filejoin",
     "enable_tsjoin",
+    "enable_tar",
     "ignore_unrar_dates",
     "tray_icon",
     "allow_incomplete_nzb",
