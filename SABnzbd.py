@@ -245,7 +245,7 @@ def build_parser():
     service_group.add_argument("--perfmonini", help=argparse.SUPPRESS)
     service_group.add_argument("--perfmondll", help=argparse.SUPPRESS)
     service_group.add_argument("--interactive", action="store_true", help=argparse.SUPPRESS)
-    service_group.add_argument("--wait", help=argparse.SUPPRESS)
+    service_group.add_argument("-2", "--wait", help=argparse.SUPPRESS)
     service_group.add_argument("--autorestarted", action="store_true", help=argparse.SUPPRESS)
     service_group.add_argument("--servicecall", help=argparse.SUPPRESS)
 
