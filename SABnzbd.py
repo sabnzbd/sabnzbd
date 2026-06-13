@@ -207,7 +207,9 @@ def build_parser():
         epilog="NZB (or related) file:\n"
         "  NZB or compressed NZB file, with extension .nzb, .zip, .rar, .7z, .gz, or .bz2",
     )
-    parser.add_argument("-f", "--config-file", metavar="<ini>", help="Location of config file")
+    parser.add_argument(
+        "-f", "--config", "--config-file", dest="config_file", metavar="<ini>", help="Location of config file"
+    )
     parser.add_argument("-s", "--server", metavar="<srv:port>", help="Listen on server:port [*]")
     parser.add_argument("-t", "--templates", metavar="<templ>", help="Template directory [*]")
     parser.add_argument(
@@ -229,8 +231,22 @@ def build_parser():
     parser.add_argument("-c", "--clean", action="store_true", help="Remove queue, cache and logs")
     parser.add_argument("-p", "--pause", action="store_true", help="Start in paused mode")
     parser.add_argument("--https", type=int, metavar="<port>", help="Port to use for HTTPS server")
-    parser.add_argument("--ipv6_hosting", type=int, choices=[0, 1], help="Listen on IPv6 address [::1] [*]")
-    parser.add_argument("--inet_exposure", type=int, choices=range(0, 6), help="Set external internet access [*]")
+    parser.add_argument(
+        "--ipv6",
+        "--ipv6_hosting",
+        dest="ipv6_hosting",
+        type=int,
+        choices=[0, 1],
+        help="Listen on IPv6 address [::1] [*]",
+    )
+    parser.add_argument(
+        "--inet",
+        "--inet_exposure",
+        dest="inet_exposure",
+        type=int,
+        choices=range(0, 6),
+        help="Set external internet access [*]",
+    )
     parser.add_argument("--no-login", action="store_true", help="Start with username and password reset")
     parser.add_argument(
         "--repair", action="store_true", help="Add orphaned jobs from the incomplete folder to the queue"
@@ -239,7 +255,13 @@ def build_parser():
         "--repair-all", action="store_true", help="Try to reconstruct the queue from the incomplete folder"
     )
     parser.add_argument("--log-all", action="store_true", help="Log all article handling (for developers)")
-    parser.add_argument("--disable-file-log", action="store_true", help="Logging is only written to console")
+    parser.add_argument(
+        "--disable",
+        "--disable-file-log",
+        dest="disable_file_log",
+        action="store_true",
+        help="Logging is only written to console",
+    )
     parser.add_argument("--console", action="store_true", help="Force logging to console")
     parser.add_argument("--new", action="store_true", help="Run a new instance of SABnzbd")
     if not sabnzbd.WINDOWS:
