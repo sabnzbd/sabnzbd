@@ -113,10 +113,10 @@ class PostProcessor(Thread):
         self.load()
 
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
+        self.fast_queue: queue.Queue[NzbObject | None] = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
+        self.slow_queue: queue.Queue[NzbObject | None] = queue.Queue()
 
         # Event to signal when work is available or state changes
         self.work_available = Event()
@@ -126,7 +126,7 @@ class PostProcessor(Thread):
             self.process(nzo)
 
         # So we can always cancel external processes
-        self.external_process: Optional[subprocess.Popen] = None
+        self.external_process: subprocess.Popen | None = None
 
         # Counter to not only process fast-jobs
         self.__fast_job_count = 0
@@ -231,7 +231,7 @@ class PostProcessor(Thread):
         self.work_available.set()
 
     @synchronized(POSTPROC_LOCK)
-    def cancel_pp(self, nzo_ids: list[str]) -> Optional[bool]:
+    def cancel_pp(self, nzo_ids: list[str]) -> bool | None:
         """Abort Direct Unpack and change the status, so that the PP is canceled"""
         result = None
         for nzo in self.history_queue:
@@ -256,10 +256,10 @@ class PostProcessor(Thread):
     @synchronized(POSTPROC_LOCK)
     def get_queue(
         self,
-        search: Optional[str] = None,
-        categories: Optional[list[str]] = None,
-        statuses: Optional[list[str]] = None,
-        nzo_ids: Optional[list[str]] = None,
+        search: str | None = None,
+        categories: list[str] | None = None,
+        statuses: list[str] | None = None,
+        nzo_ids: list[str] | None = None,
     ) -> list[NzbObject]:
         """Return list of NZOs that still need to be processed.
         Optionally filtered by the search terms"""
@@ -288,7 +288,7 @@ class PostProcessor(Thread):
         return filtered_queue
 
     @synchronized(POSTPROC_LOCK)
-    def get_path(self, nzo_id: str) -> Optional[str]:
+    def get_path(self, nzo_id: str) -> str | None:
         """Return download path for given nzo_id or None when not found"""
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
@@ -765,7 +765,7 @@ def get_complete_directory(nzo: NzbObject) -> tuple[str, Sorter, bool]:
     return complete_dir, file_sorter, create_job_dir
 
 
-def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, Optional[str]]:
+def prepare_extraction_path(nzo: NzbObject) -> tuple[str, str, Sorter, bool, str | None]:
     """Based on the information that we have, generate
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
@@ -889,7 +889,7 @@ def parring(nzo: NzbObject) -> tuple[bool, bool]:
     return par_error, re_add
 
 
-def try_sfv_check(nzo: NzbObject) -> Optional[bool]:
+def try_sfv_check(nzo: NzbObject) -> bool | None:
     """Attempt to verify set using SFV file
     Return None if no SFV-sets, True/False based on verification
     """
@@ -1146,7 +1146,7 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir: str, skip_nzb: bool, base_dir: Optional[str] = None):
+def cleanup_list(wdir: str, skip_nzb: bool, base_dir: str | None = None):
     """Remove all files whose extension matches the cleanup list,
     optionally ignoring the nzb extension
     """
@@ -1180,7 +1180,7 @@ def prefix(path: str, pre: str) -> str:
     return os.path.join(p, pre + d)
 
 
-def process_nzb_only_download(workdir: str, nzo: NzbObject) -> Optional[list[str]]:
+def process_nzb_only_download(workdir: str, nzo: NzbObject) -> list[str] | None:
     """Check if this job contains only NZB files,
     if so send to queue and remove if on clean-up list
     Returns list of processed NZB's
@@ -1297,7 +1297,7 @@ def rename_and_collapse_folder(oldpath: str, newpath: str, files: list[str]) -> 
     return files
 
 
-def set_marker(folder: str) -> Optional[str]:
+def set_marker(folder: str) -> str | None:
     """Set marker file and return name"""
     if name := cfg.marker_file():
         path = os.path.join(folder, name)
@@ -1323,7 +1323,7 @@ def del_marker(path: str):
             logging.info("Traceback: ", exc_info=True)
 
 
-def remove_from_list(name: Optional[str], lst: list[str]):
+def remove_from_list(name: str | None, lst: list[str]):
     if name:
         for n in range(len(lst)):
             if lst[n].endswith(name):

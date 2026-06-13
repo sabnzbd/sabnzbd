@@ -72,7 +72,7 @@ def addresslookup6(myhost):
     return socket.getaddrinfo(myhost, 80, socket.AF_INET6)
 
 
-def active_socks5_proxy() -> Optional[str]:
+def active_socks5_proxy() -> str | None:
     """Return the active proxy. And None if no proxy is set"""
     if socks.socksocket.default_proxy:
         socks5host = socks.socksocket.default_proxy[1]
@@ -93,7 +93,7 @@ def dnslookup() -> bool:
     return result
 
 
-def local_ipv4() -> Optional[str]:
+def local_ipv4() -> str | None:
     """return IPv4 address of default local LAN interface"""
     try:
         if not socks.socksocket.default_proxy:
@@ -116,7 +116,7 @@ def local_ipv4() -> Optional[str]:
     return ipv4
 
 
-def public_ip(family: int = socket.AF_UNSPEC) -> Optional[str]:
+def public_ip(family: int = socket.AF_UNSPEC) -> str | None:
     """
     Reports the client's public IP address (IPv4 or IPv6, if specified by family), as reported by selftest host
     """
@@ -164,11 +164,11 @@ def public_ip(family: int = socket.AF_UNSPEC) -> Optional[str]:
     return client_ip
 
 
-def public_ipv4() -> Optional[str]:
+def public_ipv4() -> str | None:
     return public_ip(family=socket.AF_INET)
 
 
-def local_ipv6() -> Optional[str]:
+def local_ipv6() -> str | None:
     """
     return IPv6 address on local LAN interface. So a first check if there is IPv6 connectivity
     """
@@ -185,7 +185,7 @@ def local_ipv6() -> Optional[str]:
     return ipv6_address
 
 
-def public_ipv6() -> Optional[str]:
+def public_ipv6() -> str | None:
     if (local_address := local_ipv6()) and not sabnzbd.misc.ip_in_subnet(local_address, "fe80::/10"):
         if public_address := public_ip(family=socket.AF_INET6):
             return public_address

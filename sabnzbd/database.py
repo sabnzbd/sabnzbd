@@ -57,8 +57,8 @@ class HistoryDB:
     @synchronized(DB_LOCK)
     def __init__(self):
         """Determine database path and create connection"""
-        self.connection: Optional[Connection] = None
-        self.cursor: Optional[Cursor] = None
+        self.connection: Connection | None = None
+        self.cursor: Cursor | None = None
         self.connect()
 
     def connect(self):
@@ -293,7 +293,7 @@ class HistoryDB:
         self.execute("""DELETE FROM history WHERE nzo_id = ?""", (job,))
         logging.info("[%s] Removing job %s from history", caller_name(), job)
 
-    def archive_with_status(self, status: str, search: Optional[str] = None):
+    def archive_with_status(self, status: str, search: str | None = None):
         """Archive all jobs with a specific status, optional with `search` pattern"""
         search = convert_search(search)
         logging.info("Archiving all jobs with status=%s", status)
@@ -302,7 +302,7 @@ class HistoryDB:
             (search, status),
         )
 
-    def remove_with_status(self, status: str, search: Optional[str] = None):
+    def remove_with_status(self, status: str, search: str | None = None):
         """Remove all jobs from the database with a specific status, optional with `search` pattern"""
         search = convert_search(search)
         logging.info("Removing all jobs with status=%s", status)
@@ -313,7 +313,7 @@ class HistoryDB:
         self.execute("""UPDATE history SET status = ? WHERE nzo_id = ?""", (Status.COMPLETED, job))
         logging.info("[%s] Marked job %s as completed", caller_name(), job)
 
-    def get_failed_paths(self, search: Optional[str] = None) -> list[str]:
+    def get_failed_paths(self, search: str | None = None) -> list[str]:
         """Return list of all storage paths of failed jobs (may contain non-existing or empty paths)"""
         search = convert_search(search)
         fetch_ok = self.execute(
@@ -387,13 +387,13 @@ class HistoryDB:
 
     def fetch_history(
         self,
-        start: Optional[int] = None,
-        limit: Optional[int] = None,
-        archive: Optional[bool] = None,
-        search: Optional[str] = None,
-        categories: Optional[list[str]] = None,
-        statuses: Optional[list[str]] = None,
-        nzo_ids: Optional[list[str]] = None,
+        start: int | None = None,
+        limit: int | None = None,
+        archive: bool | None = None,
+        search: str | None = None,
+        categories: list[str] | None = None,
+        statuses: list[str] | None = None,
+        nzo_ids: list[str] | None = None,
     ) -> tuple[list[dict[str, Any]], int]:
         """Return records for specified jobs"""
         command_args = [convert_search(search)]
@@ -554,7 +554,7 @@ class HistoryDB:
         self.close()
 
 
-def convert_search(search: Optional[str]) -> str:
+def convert_search(search: str | None) -> str:
     """Convert classic wildcard to SQL wildcard"""
     if not search or not isinstance(search, str):
         # Default value

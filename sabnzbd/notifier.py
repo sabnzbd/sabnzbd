@@ -142,7 +142,7 @@ def get_targets(notification_type: str, section: str) -> str | bool | None:
     return False
 
 
-def check_cat(section: str, job_cat: str, keyword: Optional[str] = None) -> bool:
+def check_cat(section: str, job_cat: str, keyword: str | None = None) -> bool:
     """Check if `job_cat` is enabled in `section`.
     * = All, if no other categories selected.
     """
@@ -162,8 +162,8 @@ def send_notification(
     title: str,
     msg: str,
     notification_type: str,
-    job_cat: Optional[str] = None,
-    actions: Optional[dict[str, str]] = None,
+    job_cat: str | None = None,
+    actions: dict[str, str] | None = None,
 ):
     """Send Notification message"""
     logging.info("Sending notification: %s - %s (type=%s, job_cat=%s)", title, msg, notification_type, job_cat)
@@ -246,7 +246,7 @@ def send_notify_osd(title, message):
         return error
 
 
-def send_notification_center(title: str, msg: str, notification_type: str, actions: Optional[dict[str, str]] = None):
+def send_notification_center(title: str, msg: str, notification_type: str, actions: dict[str, str] | None = None):
     """Send message to macOS Notification Center.
     Only 1 button is possible on macOS!"""
     logging.debug("Sending macOS notification")
@@ -534,7 +534,7 @@ def send_nscript(title, msg, notification_type, force=False, test=None):
     return ""
 
 
-def send_windows(title: str, msg: str, notification_type: str, actions: Optional[dict[str, str]] = None):
+def send_windows(title: str, msg: str, notification_type: str, actions: dict[str, str] | None = None):
     """Send Windows notifications, either fancy with buttons (Windows 10+) or basic ones"""
     # Skip any notifications if ran as a Windows Service, it can result in crashes
     if sabnzbd.WIN_SERVICE:

@@ -57,10 +57,10 @@ from sabnzbd.nzb import NzbObject, NzbRejected, NzbRejectToHistory, NzoInfo
 class URLGrabber(Thread):
     def __init__(self):
         super().__init__()
-        self.queue: queue.Queue[tuple[Optional[str], Optional[NzbObject]]] = queue.Queue()
+        self.queue: queue.Queue[tuple[str | None, NzbObject | None]] = queue.Queue()
         self.shutdown = False
 
-    def add(self, url: str, future_nzo: NzbObject, when: Optional[int] = None):
+    def add(self, url: str, future_nzo: NzbObject, when: int | None = None):
         """Add an URL to the URLGrabber queue, 'when' is seconds from now"""
         if future_nzo and when:
             # Always increase counter
@@ -391,7 +391,7 @@ def _analyse(fetch_request: HTTPResponse, future_nzo: NzbObject):
     return fetch_request, fetch_request.msg, False, 0, data
 
 
-def filename_from_content_disposition(content_disposition: str) -> Optional[str]:
+def filename_from_content_disposition(content_disposition: str) -> str | None:
     """
     Extract and validate filename from a Content-Disposition header.
 
@@ -411,13 +411,13 @@ def filename_from_content_disposition(content_disposition: str) -> Optional[str]
 
 def add_url(
     url: str,
-    pp: Optional[int | str] = None,
-    script: Optional[str] = None,
-    cat: Optional[str] = None,
-    priority: Optional[int | str] = None,
-    nzbname: Optional[str] = None,
-    password: Optional[str] = None,
-    nzo_info: Optional[NzoInfo] = None,
+    pp: int | str | None = None,
+    script: str | None = None,
+    cat: str | None = None,
+    priority: int | str | None = None,
+    nzbname: str | None = None,
+    password: str | None = None,
+    nzo_info: NzoInfo | None = None,
     dup_check: bool = True,
 ) -> tuple[AddNzbFileResult, list[str]]:
     """Add NZB based on a URL, attributes optional"""

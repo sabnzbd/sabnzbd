@@ -174,9 +174,9 @@ class ArticleCache(threading.Thread):
             # No data saved in memory, direct to disk
             self.__flush_article_to_disk(article, data)
 
-    def load_article(self, article: Article) -> Optional[bytearray]:
+    def load_article(self, article: Article) -> bytearray | None:
         """Load the data of the article"""
-        data: Optional[bytearray] = None
+        data: bytearray | None = None
         nzo = article.nzf.nzo
 
         if article in self.__article_table:

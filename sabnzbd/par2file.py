@@ -49,7 +49,7 @@ class FilePar2Info:
     filename: str
     hash16k: bytes
     filesize: int
-    filehash: Optional[int] = None
+    filehash: int | None = None
     has_duplicate: bool = False
 
 
@@ -72,7 +72,7 @@ def is_par2_file(filepath: str) -> bool:
     return False
 
 
-def analyse_par2(name: str, filepath: Optional[str] = None) -> tuple[str, int, int]:
+def analyse_par2(name: str, filepath: str | None = None) -> tuple[str, int, int]:
     """Check if file is a par2-file and determine vol/block
     return setname, vol, block
     setname is empty when not a par2 file

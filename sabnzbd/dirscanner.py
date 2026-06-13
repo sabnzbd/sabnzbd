@@ -66,8 +66,8 @@ class DirScanner(threading.Thread):
 
         # Create loop right away, so socks5 proxy doesn't break it
         self.loop = asyncio.new_event_loop()
-        self.scanner_task: Optional[asyncio.Task] = None
-        self.lock: Optional[asyncio.Lock] = None  # Prevents concurrent scans
+        self.scanner_task: asyncio.Task | None = None
+        self.lock: asyncio.Lock | None = None  # Prevents concurrent scans
         self.error_reported = False  # Prevents multiple reporting of missing watched folder
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
@@ -127,8 +127,8 @@ class DirScanner(threading.Thread):
                 self.scanner_task = asyncio.run_coroutine_threadsafe(self.scanner(), self.loop)
 
     def get_suspected_files(
-        self, folder: str, catdir: Optional[str] = None
-    ) -> Generator[tuple[str, Optional[str], Optional[os.stat_result]], None, None]:
+        self, folder: str, catdir: str | None = None
+    ) -> Generator[tuple[str, str | None, os.stat_result | None], None, None]:
         """Generator listing possible paths to NZB files"""
 
         if catdir is None:
@@ -180,7 +180,7 @@ class DirScanner(threading.Thread):
                 logging.info("Traceback: ", exc_info=True)
                 self.error_reported = True
 
-    async def when_stable_add_nzbfile(self, path: str, catdir: Optional[str], stat_tuple: os.stat_result):
+    async def when_stable_add_nzbfile(self, path: str, catdir: str | None, stat_tuple: os.stat_result):
         """Try and import the NZB but wait until the attributes are stable for 1 second, but give up after 3 sec"""
         logging.info("Trying to import %s", path)
 

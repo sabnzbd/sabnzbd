@@ -72,12 +72,12 @@ class Sorter:
 
     def __init__(
         self,
-        nzo: Optional[NzbObject],
+        nzo: NzbObject | None,
         job_name: str,
-        path: Optional[str] = None,
-        cat: Optional[str] = None,
-        force: Optional[bool] = False,
-        sorter_config: Optional[dict] = None,
+        path: str | None = None,
+        cat: str | None = None,
+        force: bool | None = False,
+        sorter_config: dict | None = None,
     ):
         self.sorter_active = False
         self.original_job_name = job_name
@@ -722,7 +722,7 @@ def path_subst(path: str, mapping: list[tuple[str, str]]) -> str:
 
 
 def get_titles(
-    nzo: Optional[NzbObject], guess: Optional[MatchesDict], jobname: str, titleing: bool = False
+    nzo: NzbObject | None, guess: MatchesDict | None, jobname: str, titleing: bool = False
 ) -> tuple[str, str, str]:
     """Get the title from NZB metadata or jobname, and return it in various formats. Formatting
     mostly deals with working around quirks of Python's str.title(). NZB metadata is used as-is,
@@ -783,7 +783,7 @@ def replace_word(word_input: str, one: str, two: str) -> str:
     return word_input
 
 
-def get_descriptions(nzo: Optional[NzbObject], guess: Optional[MatchesDict]) -> tuple[str, str, str]:
+def get_descriptions(nzo: NzbObject | None, guess: MatchesDict | None) -> tuple[str, str, str]:
     """Try to get an episode title or similar description from the NZB metadata or jobname, e.g.
     'Download This' in Show.S01E23.Download.This.1080p.HDTV.x264 and return multiple formats"""
     ep_name = None
@@ -840,7 +840,7 @@ def strip_path_elements(path: str) -> str:
     return "\\\\" + path if is_unc else path
 
 
-def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[list[str]] = None):
+def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: list[str] | None = None):
     """Rename all other files in the 'folder' hierarchy after 'name'
     and move them to the root of 'folder'.
     Files having extension 'skip_ext' will be moved, but not renamed.
@@ -880,7 +880,7 @@ def is_full_path(file: str) -> bool:
     return file.startswith("/") or (sabnzbd.WINDOWS and (file.startswith("\\") or file[1:3] == ":\\"))
 
 
-def eval_sort(sort_string: str, job_name: str, multipart_label: str = "") -> Optional[str]:
+def eval_sort(sort_string: str, job_name: str, multipart_label: str = "") -> str | None:
     """Preview results for a given jobname and sort_string"""
     job_name = sanitize_foldername(job_name)
     if not job_name or not sort_string:
@@ -925,7 +925,7 @@ def eval_sort(sort_string: str, job_name: str, multipart_label: str = "") -> Opt
     return sorted_path
 
 
-def check_for_multiple(files: list[str]) -> Optional[dict[str, str]]:
+def check_for_multiple(files: list[str]) -> dict[str, str] | None:
     """Return a dictionary of a single set of files that look like parts of
     a multi-part post. Takes a limited set of indicators from guessit into
     consideration and only accepts numerical sequences. The files argument

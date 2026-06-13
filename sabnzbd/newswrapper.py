@@ -87,11 +87,11 @@ class NewsWrapper:
         if getattr(self, "lock", None) is None:
             self.lock: threading.Lock = threading.Lock()
 
-        self.timeout: Optional[float] = None
+        self.timeout: float | None = None
 
-        self.decoder: Optional[sabctools.Decoder] = None
+        self.decoder: sabctools.Decoder | None = None
 
-        self.nntp: Optional[NNTP] = None
+        self.nntp: NNTP | None = None
 
         self.connected: bool = False  # TCP/TLS handshake complete
         self.ready: bool = False  # Auth complete, can serve requests
@@ -100,14 +100,14 @@ class NewsWrapper:
         self.user_ok: bool = False
         self.pass_ok: bool = False
         self.force_login: bool = False
-        self.group: Optional[str] = None
+        self.group: str | None = None
 
         # Command queue and concurrency
-        self.next_request: Optional[tuple[bytes, Optional[sabnzbd.nzb.Article]]] = None
+        self.next_request: tuple[bytes, sabnzbd.nzb.Article | None] | None = None
         self.concurrent_requests: threading.BoundedSemaphore = threading.BoundedSemaphore(
             self.server.pipelining_requests()
         )
-        self._response_queue: deque[Optional[sabnzbd.nzb.Article]] = deque()
+        self._response_queue: deque[sabnzbd.nzb.Article | None] = deque()
         self.selector_events = 0
         self.tls_wants_write: bool = False
 
@@ -284,9 +284,9 @@ class NewsWrapper:
     def read(
         self,
         nbytes: int = 0,
-        on_response: Optional[Callable[[int, str], None]] = None,
-        generation: Optional[int] = None,
-    ) -> tuple[int, Optional[int]]:
+        on_response: Callable[[int, str], None] | None = None,
+        generation: int | None = None,
+    ) -> tuple[int, int | None]:
         """Receive data, return #bytes, #pendingbytes
         :param nbytes: maximum number of bytes to read
         :param on_response: callback for each complete response received
@@ -539,7 +539,7 @@ class NNTP:
         self.nw: NewsWrapper = nw
         # Add local reference to prevent crash in case the server.addrinfo is reset
         self.addrinfo: AddrInfo = addrinfo
-        self.error_msg: Optional[str] = None
+        self.error_msg: str | None = None
 
         # Prevent closing this socket until it's done connecting
         self.closed = False

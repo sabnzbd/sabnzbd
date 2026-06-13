@@ -725,7 +725,7 @@ def remote_label_replacement(m: re.Match[bytes]) -> bytes:
     return b"%s [%s]" % (ip, m.group("ua"))
 
 
-def sanitize_line(line: bytes, cur_user_bytes: Optional[bytes] = None) -> bytes:
+def sanitize_line(line: bytes, cur_user_bytes: bytes | None = None) -> bytes:
     """Apply regex substitutions to a single line to remove sensitive data"""
     line = LOG_JSON_RE.sub(b"'\\1': '<REMOVED>'", line)
     line = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", line)
@@ -754,7 +754,7 @@ def _api_showlog(name: str, kwargs: ApiParams) -> Generator[bytes, Any, None]:
     yield header.encode("utf-8")
 
     # Try to replace the username
-    cur_user_bytes: Optional[bytes] = None
+    cur_user_bytes: bytes | None = None
     try:
         if cur_user := getpass.getuser():
             cur_user_bytes = utob(cur_user)
@@ -1174,7 +1174,7 @@ def api_level(mode: str, name: str) -> int:
     return 4
 
 
-def report(error: Optional[str] = None, keyword: str = "value", data: Optional[Any] = None) -> bytes:
+def report(error: str | None = None, keyword: str = "value", data: Any | None = None) -> bytes:
     """Report message in json, xml or plain text
     If error is set, only a status/error report is made.
     If no error and no data, only a status report is made.
@@ -1285,7 +1285,7 @@ def handle_server_api(kwargs: ApiParams) -> str:
     return name
 
 
-def handle_sorter_api(kwargs: ApiParams) -> Optional[str]:
+def handle_sorter_api(kwargs: ApiParams) -> str | None:
     """Special handler for API-call 'set_config' [sorters]"""
     name = kwargs.get("keyword")
     if not name:
@@ -1301,7 +1301,7 @@ def handle_sorter_api(kwargs: ApiParams) -> Optional[str]:
     return name
 
 
-def handle_rss_api(kwargs: ApiParams) -> Optional[str]:
+def handle_rss_api(kwargs: ApiParams) -> str | None:
     """Special handler for API-call 'set_config' [rss]"""
     name = kwargs.get("keyword")
     if not name:
@@ -1335,7 +1335,7 @@ def handle_rss_api(kwargs: ApiParams) -> Optional[str]:
     return name
 
 
-def handle_cat_api(kwargs: ApiParams) -> Optional[str]:
+def handle_cat_api(kwargs: ApiParams) -> str | None:
     """Special handler for API-call 'set_config' [categories]"""
     name = kwargs.get("keyword")
     if not name:
@@ -1617,11 +1617,11 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 def build_queue(
     start: int = 0,
     limit: int = 0,
-    search: Optional[str] = None,
-    categories: Optional[list[str]] = None,
-    priorities: Optional[list[str]] = None,
-    statuses: Optional[list[str]] = None,
-    nzo_ids: Optional[list[str]] = None,
+    search: str | None = None,
+    categories: list[str] | None = None,
+    priorities: list[str] | None = None,
+    statuses: list[str] | None = None,
+    nzo_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     info = build_header(for_template=False)
     (
@@ -1795,9 +1795,9 @@ def build_file_list(nzo_id: str) -> list[dict[str, Any]]:
 
 def retry_job(
     job: str,
-    new_nzb: Optional[cherrypy._cpreqbody.Part] = None,
-    password: Optional[str] = None,
-) -> Optional[str]:
+    new_nzb: cherrypy._cpreqbody.Part | None = None,
+    password: str | None = None,
+) -> str | None:
     """Re enter failed job in the download queue"""
     if job:
         history_db = sabnzbd.get_db_connection()
@@ -1924,10 +1924,10 @@ def build_history(
     start: int = 0,
     limit: int = 1000000,
     archive: bool = False,
-    search: Optional[str] = None,
-    categories: Optional[list[str]] = None,
-    statuses: Optional[list[str]] = None,
-    nzo_ids: Optional[list[str]] = None,
+    search: str | None = None,
+    categories: list[str] | None = None,
+    statuses: list[str] | None = None,
+    nzo_ids: list[str] | None = None,
 ) -> tuple[list[dict[str, Any]], int, int]:
     """Combine the jobs still in post-processing and the database history"""
     if not archive:

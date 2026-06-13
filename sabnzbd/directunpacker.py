@@ -53,13 +53,13 @@ class DirectUnpacker(threading.Thread):
         super().__init__()
 
         self.nzo: NzbObject = nzo
-        self.active_instance: Optional[subprocess.Popen] = None
+        self.active_instance: subprocess.Popen | None = None
         self.killed: bool = False
         self.next_file_lock = threading.Condition(threading.RLock())
 
         self.unpack_dir_info = None
-        self.rarfile_nzf: Optional[NzbFile] = None
-        self.cur_setname: Optional[str] = None
+        self.rarfile_nzf: NzbFile | None = None
+        self.cur_setname: str | None = None
         self.cur_volume: int = 0
         self.total_volumes: dict[str, int] = {}
         self.unpack_time: float = 0.0

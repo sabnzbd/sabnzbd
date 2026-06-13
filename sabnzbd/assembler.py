@@ -59,8 +59,8 @@ from sabnzbd.postproc import get_complete_directory
 
 
 class AssemblerTask(NamedTuple):
-    nzo: Optional[NzbObject] = None
-    nzf: Optional[NzbFile] = None
+    nzo: NzbObject | None = None
+    nzf: NzbFile | None = None
     file_done: bool = False
     allow_non_contiguous: bool = False
     direct_write: bool = False
@@ -144,10 +144,10 @@ class Assembler(Thread):
     def process(
         self,
         nzo: NzbObject = None,
-        nzf: Optional[NzbFile] = None,
+        nzf: NzbFile | None = None,
         file_done: bool = False,
         allow_non_contiguous: bool = False,
-        article: Optional[Article] = None,
+        article: Article | None = None,
     ) -> None:
         if nzf is None:
             # post-proc
@@ -228,7 +228,7 @@ class Assembler(Thread):
         return False
 
     @staticmethod
-    def should_track_ready_bytes(article: Optional[Article], allow_non_contiguous: bool) -> bool:
+    def should_track_ready_bytes(article: Article | None, allow_non_contiguous: bool) -> bool:
         """"""
         return article and not allow_non_contiguous and article.decoded_size
 
@@ -325,7 +325,7 @@ class Assembler(Thread):
         """Check diskspace requirements.
         If not enough space left, pause downloader and send email"""
         download_dir, complete_dir = diskspace(force=True, complete_dir=get_complete_directory(nzo)[0])
-        full_dir: Optional[str] = None
+        full_dir: str | None = None
         required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
         if download_dir.free < required_space:
             full_dir = download_dir.path
@@ -365,7 +365,7 @@ class Assembler(Thread):
         downloader = sabnzbd.Downloader
         decodetable = nzf.decodetable
 
-        fd: Optional[int] = None
+        fd: int | None = None
         skipped: bool = False  # have any articles been skipped
         offset: int = 0  # sequential offset for append writes
 
@@ -498,7 +498,7 @@ class Assembler(Thread):
 
     @staticmethod
     def write(
-        fd: int, nzf_index: Optional[int], nzf: NzbFile, article: Article, data: bytearray, offset: Optional[int] = None
+        fd: int, nzf_index: int | None, nzf: NzbFile, article: Article, data: bytearray, offset: int | None = None
     ) -> int:
         """Write data at position in a file"""
         pos = article.data_begin if offset is None else offset
@@ -596,7 +596,7 @@ def is_cloaked(nzo: NzbObject, path: str, names: list[str]) -> bool:
     return False
 
 
-def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[bool, Optional[str]]:
+def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[bool, str | None]:
     """Combines check for unwanted and encrypted files to save on CPU and IO"""
     encrypted = False
     unwanted = None

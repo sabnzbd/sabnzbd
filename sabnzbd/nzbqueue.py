@@ -173,8 +173,8 @@ class NzbQueue:
         return result
 
     def repair_job(
-        self, repair_folder: str, new_nzb: Optional[cherrypy._cpreqbody.Part] = None, password: Optional[str] = None
-    ) -> Optional[str]:
+        self, repair_folder: str, new_nzb: cherrypy._cpreqbody.Part | None = None, password: str | None = None
+    ) -> str | None:
         """Reconstruct admin for a single job folder, optionally with new NZB"""
         # Check if folder exists
         if not repair_folder or not os.path.exists(repair_folder):
@@ -301,7 +301,7 @@ class NzbQueue:
         return result
 
     @NzbQueueLocker
-    def change_name(self, nzo_id: str, name: str, password: Optional[str] = None) -> bool:
+    def change_name(self, nzo_id: str, name: str, password: str | None = None) -> bool:
         """Locked so changes during URLGrabbing are correctly passed to new job"""
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -318,7 +318,7 @@ class NzbQueue:
         else:
             return False
 
-    def get_nzo(self, nzo_id) -> Optional[NzbObject]:
+    def get_nzo(self, nzo_id) -> NzbObject | None:
         if nzo_id in self.__nzo_table:
             return self.__nzo_table[nzo_id]
         else:
@@ -384,7 +384,7 @@ class NzbQueue:
         return nzo.nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> Optional[NzbObject]:
+    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> NzbObject | None:
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
@@ -421,7 +421,7 @@ class NzbQueue:
         return removed
 
     @NzbQueueLocker
-    def remove_all(self, search: Optional[str] = None) -> list[str]:
+    def remove_all(self, search: str | None = None) -> list[str]:
         """Remove NZO's that match the search-pattern"""
         nzo_ids = []
         search = safe_lower(search)
@@ -570,7 +570,7 @@ class NzbQueue:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def sort_queue(self, field: str, direction: Optional[str] = None):
+    def sort_queue(self, field: str, direction: str | None = None):
         """Sort queue by field: "name", "size" or "avg_age" or by percentage remaining
         Direction is specified as "desc" or "asc"
         """
@@ -608,7 +608,7 @@ class NzbQueue:
             self.sort_queue("remaining")
 
     @NzbQueueLocker
-    def __set_priority(self, nzo_id: str, priority: int | str) -> Optional[int]:
+    def __set_priority(self, nzo_id: str, priority: int | str) -> int | None:
         """Sets the priority on the nzo and places it in the queue at the appropriate position"""
         try:
             priority = int_conv(priority)
@@ -814,11 +814,11 @@ class NzbQueue:
 
     def queue_info(
         self,
-        search: Optional[str] = None,
-        categories: Optional[list[str]] = None,
-        priorities: Optional[list[str]] = None,
-        statuses: Optional[list[str]] = None,
-        nzo_ids: Optional[list[str]] = None,
+        search: str | None = None,
+        categories: list[str] | None = None,
+        priorities: list[str] | None = None,
+        statuses: list[str] | None = None,
+        nzo_ids: list[str] | None = None,
         start: int = 0,
         limit: int = 0,
     ) -> tuple[int, int, int, list[NzbObject], int, int]:

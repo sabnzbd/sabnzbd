@@ -74,26 +74,26 @@ class RSSState(str, Enum):
 class ResolvedEntry:
     feed: str
     link: str
-    infourl: Optional[str]
-    category: Optional[str]
+    infourl: str | None
+    category: str | None
     title: str
     size: int
-    age: Optional[datetime.datetime]
+    age: datetime.datetime | None
     season: int
     episode: int
     seen_at: datetime.datetime = field(
         # When last seen in feed and evaluated
         default_factory=lambda: datetime.datetime.now(datetime.timezone.utc)
     )
-    downloaded_at: Optional[datetime.datetime] = None  # When added to queue
-    archived_at: Optional[datetime.datetime] = None  # When expired
+    downloaded_at: datetime.datetime | None = None  # When added to queue
+    archived_at: datetime.datetime | None = None  # When expired
     initial_scan: bool = True  # True if discovered during initial scan
-    state: Optional[RSSState] = None
-    cat: Optional[str] = None
-    pp: Optional[int] = None
-    script: Optional[str] = None
-    priority: Optional[int] = None
-    rule: Optional[int] = None
+    state: RSSState | None = None
+    cat: str | None = None
+    pp: int | None = None
+    script: str | None = None
+    priority: int | None = None
+    rule: int | None = None
 
     def __post_init__(self):
         # Normalise "default-ish" values to None
@@ -129,7 +129,7 @@ class ResolvedEntry:
         return bool(cfg.rss_filenames() or match_str(self.link, cfg.rss_odd_titles()))
 
     @property
-    def nzbname(self) -> Optional[str]:
+    def nzbname(self) -> str | None:
         return None if self.is_special_rss_site else self.title
 
     def merge(self, existing: "ResolvedEntry"):
@@ -275,21 +275,21 @@ class FeedEvaluation:
     rule_index: int
     season: int
     episode: int
-    category: Optional[str] = None
-    priority: Optional[int] = None
-    pp: Optional[int] = None
-    script: Optional[str] = None
+    category: str | None = None
+    priority: int | None = None
+    pp: int | None = None
+    script: str | None = None
 
 
 @dataclass(slots=True)
 class FeedRule:
     type: str
     value: str
-    regex: Optional[re.Pattern] = None
-    category: Optional[str] = None
-    priority: Optional[int] = None
-    pp: Optional[int] = None
-    script: Optional[str] = None
+    regex: re.Pattern | None = None
+    category: str | None = None
+    priority: int | None = None
+    pp: int | None = None
+    script: str | None = None
     enabled: bool = True
 
     def __post_init__(self):
@@ -303,8 +303,8 @@ class FeedRule:
         self.script = _normalise_str_or_none(self.script)
 
     def matches(
-        self, *, title: str, category: Optional[str], size: int, season: int, episode: int, rule_index: int
-    ) -> Optional[bool]:
+        self, *, title: str, category: str | None, size: int, season: int, episode: int, rule_index: int
+    ) -> bool | None:
         """
         Returns:
             True  -> positive match
@@ -354,7 +354,7 @@ class FeedRule:
         return None
 
     @staticmethod
-    def episode_matches(season: int, episode: int, expr: str, title: Optional[str] = None):
+    def episode_matches(season: int, episode: int, expr: str, title: str | None = None):
         """Return True if season, episode is at or above expected
         Optionally `title` can be matched
         """
@@ -379,10 +379,10 @@ class FeedRule:
 
 @dataclass(slots=True)
 class FeedConfig:
-    default_category: Optional[str] = None
-    default_priority: Optional[int] = None
-    default_pp: Optional[int] = None
-    default_script: Optional[str] = None
+    default_category: str | None = None
+    default_priority: int | None = None
+    default_pp: int | None = None
+    default_script: str | None = None
     rules: list[FeedRule] = field(default_factory=list)
 
     def __post_init__(self):
@@ -426,7 +426,7 @@ class FeedConfig:
         self,
         *,
         title: str,
-        category: Optional[str],
+        category: str | None,
         size: int,
         season: int,
         episode: int,
@@ -434,16 +434,16 @@ class FeedConfig:
         """Evaluate rules for a single RSS entry."""
         entry_cat = category
         rule_matched: bool = False
-        last_rule: Optional[FeedRule] = None
+        last_rule: FeedRule | None = None
         last_rule_index: int = 0
         feed_season: int = season
         feed_episode: int = episode
 
         # Start from feed defaults for options.
-        resolved_cat: Optional[str] = self.default_category
-        resolved_pp: Optional[int] = self.default_pp
-        resolved_script: Optional[str] = self.default_script
-        resolved_priority: Optional[int] = self.default_priority
+        resolved_cat: str | None = self.default_category
+        resolved_pp: int | None = self.default_pp
+        resolved_script: str | None = self.default_script
+        resolved_priority: int | None = self.default_priority
 
         # Fill in missing season / episode information when F/S rules exist
         if self.has_type("F", "S") and (not feed_season or not feed_episode):
@@ -528,7 +528,7 @@ class RSSRepository:
     def __init__(self, db: HistoryDB):
         self.db = db
 
-    def remove_obsolete(self, feed: str, new_urls: Optional[Iterable[str]] = None, purge_downloaded: bool = False):
+    def remove_obsolete(self, feed: str, new_urls: Iterable[str] | None = None, purge_downloaded: bool = False):
         """
         Expire G/B links that are not in new_jobs (mark them 'X')
 
@@ -596,9 +596,9 @@ class RSSRepository:
 
     def get_feed_jobs(
         self,
-        feed: Optional[str] = None,
-        search: Optional[str] = None,
-        states: Optional[list[RSSState]] = None,
+        feed: str | None = None,
+        search: str | None = None,
+        states: list[RSSState] | None = None,
     ) -> Generator[ResolvedEntry, Any, None]:
         """Return records for specified jobs"""
         command_args = []
@@ -627,7 +627,7 @@ class RSSRepository:
             for item in self.db.cursor:
                 yield ResolvedEntry.from_sqlite(item)
 
-    def find_job_by_url(self, feed: str, url: str) -> Optional[ResolvedEntry]:
+    def find_job_by_url(self, feed: str, url: str) -> ResolvedEntry | None:
         if not feed or not url:
             return None
         if self.db.execute("SELECT * FROM rss WHERE feed = ? AND url = ?", (feed, url)):
@@ -769,7 +769,7 @@ class RSSRepository:
             local_tz = datetime.datetime.now().astimezone().tzinfo
             for feed, jobs in data.items():
                 for link, job in jobs.items():
-                    category: Optional[str] = job.get("orgcat", None) or None
+                    category: str | None = job.get("orgcat", None) or None
                     if category in ("", "*"):
                         category = None
                     if category is not None and len(category) > 128:
@@ -1137,7 +1137,7 @@ class RSSReader:
                 logging.info("Finished scheduled RSS read-outs")
 
 
-def _normalise_str_or_none(value: Optional[str]) -> Optional[str]:
+def _normalise_str_or_none(value: str | None) -> str | None:
     """Normalise default values to None"""
     if not value:
         return None
@@ -1147,7 +1147,7 @@ def _normalise_str_or_none(value: Optional[str]) -> Optional[str]:
     return v
 
 
-def _normalise_priority(value) -> Optional[int]:
+def _normalise_priority(value) -> int | None:
     """Normalise default priority values to None"""
     if value in (None, "", "*", "default", DEFAULT_PRIORITY, str(DEFAULT_PRIORITY)):
         return None
@@ -1157,7 +1157,7 @@ def _normalise_priority(value) -> Optional[int]:
         return None
 
 
-def _normalise_pp(value) -> Optional[int]:
+def _normalise_pp(value) -> int | None:
     """Normalise pp value to an int between 0 and 3, or None if invalid/empty."""
     if value in (None, ""):
         return None
@@ -1182,7 +1182,7 @@ def expired_purge():
 
 
 @contextmanager
-def rss_repository(db: Optional[sabnzbd.database.HistoryDB] = None):
+def rss_repository(db: sabnzbd.database.HistoryDB | None = None):
     if db is None:
         with HistoryDB() as db:
             yield RSSRepository(db)

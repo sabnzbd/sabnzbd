@@ -106,7 +106,7 @@ _MSG_APIKEY_INCORRECT = "API Key Incorrect"
 
 
 def secured_expose(
-    wrap_func: Optional[Callable] = None,
+    wrap_func: Callable | None = None,
     check_configlock: bool = False,
     check_for_login: bool = True,
     check_api_key: bool = False,

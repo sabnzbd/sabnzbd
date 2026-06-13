@@ -243,7 +243,7 @@ class BPSMeter:
             self.defaults()
         return res
 
-    def init_server_stats(self, server: Optional[str] = None):
+    def init_server_stats(self, server: str | None = None):
         """Initialize counters for "server" """
         if server not in self.cached_amount:
             self.cached_amount[server] = 0
@@ -269,7 +269,7 @@ class BPSMeter:
             self.article_stats_tried[server][self.day_label] = 0
             self.article_stats_failed[server][self.day_label] = 0
 
-    def update(self, server: Optional[str] = None, amount: int = 0):
+    def update(self, server: str | None = None, amount: int = 0):
         """Update counters for "server" with "amount" bytes"""
         # Add amount to temporary storage
         if server:
@@ -481,7 +481,7 @@ class BPSMeter:
         else:
             return True
 
-    def next_reset(self, t: Optional[float] = None):
+    def next_reset(self, t: float | None = None):
         """Determine next reset time"""
         t = t or time.time()
         tm = time.localtime(t)

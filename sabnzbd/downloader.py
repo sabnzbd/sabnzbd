@@ -120,7 +120,7 @@ class Server:
         retention=0,
     ):
         self.id: str = server_id
-        self.newid: Optional[str] = None
+        self.newid: str | None = None
         self.restart: bool = False
         self.displayname: str = displayname
         self.host: str = host
@@ -131,12 +131,12 @@ class Server:
         self.ssl: bool = use_ssl
         self.ssl_verify: int = ssl_verify
         self.ssl_ciphers: str = ssl_ciphers
-        self.ssl_context: Optional[ssl.SSLContext] = None
+        self.ssl_context: ssl.SSLContext | None = None
         self.required: bool = required
         self.optional: bool = optional
         self.retention: int = retention
-        self.username: Optional[str] = username
-        self.password: Optional[str] = password
+        self.username: str | None = username
+        self.password: str | None = password
         self.pipelining_requests: Callable[[], int] = pipelining_requests
 
         self.busy_threads: set[NewsWrapper] = set()
@@ -315,7 +315,7 @@ class Downloader(Thread):
 
         self.check_total_number_of_connections()
 
-    def init_server(self, oldserver: Optional[str], newserver: str):
+    def init_server(self, oldserver: str | None, newserver: str):
         """Setup or re-setup single server
         When oldserver is defined and in use, delay startup.
         Note that the server names are "host:port" strings!
@@ -558,7 +558,7 @@ class Downloader(Thread):
             server.addrinfo = None
 
     @staticmethod
-    def decode(article: "sabnzbd.nzb.Article", response: Optional[sabctools.NNTPResponse] = None):
+    def decode(article: "sabnzbd.nzb.Article", response: sabctools.NNTPResponse | None = None):
         """Decode article"""
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
@@ -940,7 +940,7 @@ class Downloader(Thread):
     def reset_nw(
         self,
         nw: NewsWrapper,
-        reset_msg: Optional[str] = None,
+        reset_msg: str | None = None,
         warn: bool = False,
         wait: bool = True,
         count_article_try: bool = True,
@@ -1034,7 +1034,7 @@ class Downloader(Thread):
                     logging.debug("Forcing activation of server %s", server.host)
                     self.init_server(server.id, server.id)
 
-    def update_server(self, oldserver: str, newserver: Optional[str]):
+    def update_server(self, oldserver: str, newserver: str | None):
         """Update the server and make sure we trigger
         the update in the loop to do housekeeping"""
         self.init_server(oldserver, newserver)

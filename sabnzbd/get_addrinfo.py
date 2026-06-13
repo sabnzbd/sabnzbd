@@ -120,7 +120,7 @@ def get_fastest_addrinfo(
     port: int,
     timeout: int = DEF_NETWORKING_TIMEOUT,
     family=socket.AF_UNSPEC,
-) -> Optional[AddrInfo]:
+) -> AddrInfo | None:
     """Return the fastest result of getaddrinfo() by testing all IP addresses concurrently.
     Tests all available IP addresses simultaneously (alternating IPv4/6) in separate threads and returns the
     connection with the shortest response time after CONNECTION_CHECK interval.

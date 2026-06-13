@@ -85,16 +85,16 @@ class NzbFile(TryList):
         self.file_lock: threading.RLock = threading.RLock()
 
         self.date: datetime.datetime = date
-        self.type: Optional[str] = None
+        self.type: str | None = None
         self.filename: str = sanitize_filename(subject_name_extractor(subject))
         self.filename_checked = False
-        self.filepath: Optional[str] = None
+        self.filepath: str | None = None
 
         # Identifiers for par2 files
         self.is_par2: bool = False
-        self.vol: Optional[int] = None
-        self.blocks: Optional[int] = None
-        self.setname: Optional[str] = None
+        self.vol: int | None = None
+        self.blocks: int | None = None
+        self.setname: str | None = None
 
         # Articles are removed from "articles" after being fetched
         self.articles: dict[Article, Article] = {}
@@ -107,9 +107,9 @@ class NzbFile(TryList):
         self.deleted = False
         self.import_finished = False
 
-        self.crc32: Optional[int] = 0
+        self.crc32: int | None = 0
         self.assembled: bool = False
-        self.md5of16k: Optional[bytes] = None
+        self.md5of16k: bytes | None = None
         self.assembler_next_index: int = 0
 
         # Add first article to decodetable, this way we can check
@@ -138,7 +138,7 @@ class NzbFile(TryList):
 
     @property
     @synchronized()
-    def assembler_next_article(self) -> Optional[Article]:
+    def assembler_next_article(self) -> Article | None:
         if (next_index := self.assembler_next_index) < len(self.decodetable):
             return self.decodetable[next_index]
         return None
@@ -182,7 +182,7 @@ class NzbFile(TryList):
         self.blocks = int_conv(blocks)
 
     @synchronized()
-    def update_crc32(self, crc32: Optional[int], length: int) -> None:
+    def update_crc32(self, crc32: int | None, length: int) -> None:
         if self.crc32 is None or crc32 is None:
             self.crc32 = None
         else:

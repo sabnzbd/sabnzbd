@@ -211,19 +211,19 @@ class NzbObject(TryList):
     def __init__(
         self,
         filename: str,
-        pp: Optional[int] = None,
-        script: Optional[str] = None,
-        nzb_fp: Optional[BinaryIO] = None,
+        pp: int | None = None,
+        script: str | None = None,
+        nzb_fp: BinaryIO | None = None,
         futuretype: bool = False,
-        cat: Optional[str] = None,
-        url: Optional[str] = None,
-        priority: Optional[int | str] = DEFAULT_PRIORITY,
-        password: Optional[str] = None,
-        nzbname: Optional[str] = None,
+        cat: str | None = None,
+        url: str | None = None,
+        priority: int | str | None = DEFAULT_PRIORITY,
+        password: str | None = None,
+        nzbname: str | None = None,
         status: str = Status.QUEUED,
-        nzo_info: Optional[NzoInfo] = None,
-        reuse: Optional[str] = None,
-        nzo_id: Optional[str] = None,
+        nzo_info: NzoInfo | None = None,
+        reuse: str | None = None,
+        nzo_id: str | None = None,
         dup_check: bool = True,
     ):
         super().__init__()
@@ -270,7 +270,7 @@ class NzbObject(TryList):
         self.unpack: bool = u  # True if we want to unpack this set
         self.delete: bool = d  # True if we want to delete this set
         self.cat = cat  # User-set category
-        self.script: Optional[str] = None  # External script for this set
+        self.script: str | None = None  # External script for this set
         if is_valid_script(script):
             self.script = script
 
@@ -279,14 +279,14 @@ class NzbObject(TryList):
         self.groups = []
         self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
-        self.propagation_delay: Optional[float] = None  # Set during parsing
-        self.correct_password: Optional[str] = None
+        self.propagation_delay: float | None = None  # Set during parsing
+        self.correct_password: str | None = None
         self.time_added: int = int(time.time())  # When the NZB was added to the queue
 
         # Bookkeeping values
         self.meta = {}
         self.servercount: dict[str, int] = {}  # Dict to keep bytes per server
-        self.direct_unpacker: Optional[sabnzbd.directunpacker.DirectUnpacker] = None  # The DirectUnpacker instance
+        self.direct_unpacker: sabnzbd.directunpacker.DirectUnpacker | None = None  # The DirectUnpacker instance
         self.bytes: int = 0  # Original bytesize
         self.bytes_par2: int = 0  # Bytes in par2 files
         self.bytes_downloaded: int = 0  # Downloaded byte
@@ -315,10 +315,10 @@ class NzbObject(TryList):
         self.first_articles: list[Article] = []
         self.first_articles_count = 0
         self.saved_articles: set[Article] = set()
-        self.nzo_id: Optional[str] = None
+        self.nzo_id: str | None = None
 
-        self.duplicate: Optional[str] = None
-        self.duplicate_key: Optional[str] = None
+        self.duplicate: str | None = None
+        self.duplicate_key: str | None = None
 
         self.futuretype = futuretype
         self.removed_from_queue = False
@@ -345,10 +345,10 @@ class NzbObject(TryList):
         self.next_save = None
         self.save_timeout = None
         self.encrypted = 0
-        self.url_wait: Optional[float] = None
+        self.url_wait: float | None = None
         self.url_tries = 0
         self.pp_active = False
-        self.md5sum: Optional[str] = None
+        self.md5sum: str | None = None
 
         # Path is empty in case of a future NZB
         self.download_path = ""
@@ -919,7 +919,7 @@ class NzbObject(TryList):
                 self.bytes_par2 += nzf.bytes
 
     @property
-    def pp(self) -> Optional[int]:
+    def pp(self) -> int | None:
         if self.repair is None:
             return None
         else:
@@ -943,7 +943,7 @@ class NzbObject(TryList):
         if not self.unpack:
             self.abort_direct_unpacker()
 
-    def set_priority(self, value: Optional[int | str]):
+    def set_priority(self, value: int | str | None):
         """Check if this is a valid priority"""
         # When unknown (0 is a known one), set to DEFAULT
         if value == "" or value is None:
@@ -1037,7 +1037,7 @@ class NzbObject(TryList):
             self.save_to_disk()
 
     @property
-    def direct_unpack_progress(self) -> Optional[str]:
+    def direct_unpack_progress(self) -> str | None:
         """Report status of current Direct Unpack, if one is active"""
         if self.direct_unpacker and self.direct_unpacker.active_instance:
             return self.direct_unpacker.get_formatted_stats()
@@ -1354,7 +1354,7 @@ class NzbObject(TryList):
                         self.files[pos + 1] = nzf
                         self.files[pos] = tmp_nzf
 
-    def verify_nzf_filename(self, nzf: NzbFile, yenc_filename: Optional[str] = None):
+    def verify_nzf_filename(self, nzf: NzbFile, yenc_filename: str | None = None):
         """Get filename from par2-info or from yenc"""
         # Already done?
         if nzf.filename_checked:
@@ -1407,7 +1407,7 @@ class NzbObject(TryList):
             self.direct_unpacker.set_volumes_for_nzo()
 
     @synchronized()
-    def renamed_file(self, renames_or_name: dict[str, str] | str, old_name: Optional[str] = None):
+    def renamed_file(self, renames_or_name: dict[str, str] | str, old_name: str | None = None):
         """Save renames at various stages (Download/PP)
         to be used on Retry. Accepts strings and dicts.
         """
@@ -1442,7 +1442,7 @@ class NzbObject(TryList):
         return long_path(get_admin_path(self.work_name, self.futuretype))
 
     @property
-    def admin_data_file_path(self) -> Optional[str]:
+    def admin_data_file_path(self) -> str | None:
         """Return the relative path to the persisted state file"""
         if not self.nzo_id:
             return None
@@ -1498,12 +1498,12 @@ class NzbObject(TryList):
             remove_all(self.download_path, "SABnzbd_article_*", keep_folder=True)
             save_data(self.renames, RENAMES_FILE, self.admin_path, silent=True)
 
-    def get_nzf_by_id(self, nzf_id: str) -> Optional[NzbFile]:
+    def get_nzf_by_id(self, nzf_id: str) -> NzbFile | None:
         if nzf_id in self.files_table:
             return self.files_table[nzf_id]
 
     @synchronized()
-    def set_unpack_info(self, key: str, msg: str, setname: Optional[str] = None, unique: bool = False):
+    def set_unpack_info(self, key: str, msg: str, setname: str | None = None, unique: bool = False):
         """Builds a dictionary containing the stage name (key) and a message
         If unique is present, it will only have a single line message
         """
@@ -1522,7 +1522,7 @@ class NzbObject(TryList):
         else:
             self.unpack_info[key] = [msg]
 
-    def set_action_line(self, action: Optional[str] = None, msg: Optional[str] = None):
+    def set_action_line(self, action: str | None = None, msg: str | None = None):
         if action and msg:
             self.action_line = "%s: %s" % (action, msg.strip())
         else:
@@ -1545,7 +1545,7 @@ class NzbObject(TryList):
         logging.debug("Saving attributes %s for %s", attribs, self.final_name)
         save_data(attribs, ATTRIB_FILE, self.admin_path, silent=True)
 
-    def load_attribs(self) -> tuple[Optional[str], Optional[int], Optional[str]]:
+    def load_attribs(self) -> tuple[str | None, int | None, str | None]:
         """Load saved attributes and return them to be parsed"""
         attribs = load_data(ATTRIB_FILE, self.admin_path, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)

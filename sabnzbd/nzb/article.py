@@ -109,19 +109,19 @@ class Article(TryList):
     def __init__(self, article, article_bytes, nzf):
         super().__init__()
         self.article: str = article
-        self.art_id: Optional[str] = None
+        self.art_id: str | None = None
         self.bytes: int = article_bytes
         self.lowest_partnum: bool = False
-        self.fetcher: Optional[Server] = None
+        self.fetcher: Server | None = None
         self.fetcher_priority: int = 0
         self.tries: int = 0  # Try count
         self.decoded: bool = False
-        self.file_size: Optional[int] = None
-        self.data_begin: Optional[int] = None
-        self.data_size: Optional[int] = None
-        self.decoded_size: Optional[int] = None  # Size of the decoded article
+        self.file_size: int | None = None
+        self.data_begin: int | None = None
+        self.data_size: int | None = None
+        self.decoded_size: int | None = None  # Size of the decoded article
         self.on_disk: bool = False
-        self.crc32: Optional[int] = None
+        self.crc32: int | None = None
         self.nzf: sabnzbd.nzb.NzbFile = nzf  # NzbFile reference
         # Share NzbFile lock for file-wide atomicity of try-list ops
         self.lock: threading.RLock = nzf.lock

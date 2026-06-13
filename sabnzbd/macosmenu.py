@@ -553,8 +553,8 @@ class SABnzbdDelegate(NSObject):
         title: str,
         subtitle: str,
         msg: str,
-        button_text: Optional[str] = None,
-        button_action: Optional[str] = None,
+        button_text: str | None = None,
+        button_action: str | None = None,
     ):
         """Send a macOS notification, optionally with 1 action button"""
         notification = NSUserNotification.alloc().init()

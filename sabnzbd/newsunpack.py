@@ -100,7 +100,7 @@ SEVENZIP_VERSION = ""
 def find_programs(curdir: str):
     """Find external programs"""
 
-    def check(path: str, program: str) -> Optional[str]:
+    def check(path: str, program: str) -> str | None:
         p = os.path.abspath(os.path.join(path, program))
         if os.access(p, os.X_OK):
             return p
@@ -1077,7 +1077,7 @@ def tar_extract(nzo: NzbObject, tar_path: str, extraction_path: str, one_folder:
     ret = 0
     new_files = []
 
-    def tar_filter(member: tarfile.TarInfo, path: str) -> Optional[tarfile.TarInfo]:
+    def tar_filter(member: tarfile.TarInfo, path: str) -> tarfile.TarInfo | None:
         """Applies tarfile.data_filter, removes unwanted permissions and can prevent overwrites"""
         member = tarfile.data_filter(member, path)
         if member is not None and member.isreg():
@@ -1506,7 +1506,7 @@ def par2cmdline_verify(
     return finished, readd, used_joinables, used_for_repair
 
 
-def create_env(nzo: Optional[NzbObject] = None, extra_env_fields: dict[str, Any] = {}) -> Optional[dict[str, Any]]:
+def create_env(nzo: NzbObject | None = None, extra_env_fields: dict[str, Any] = {}) -> dict[str, Any] | None:
     """Modify the environment for pp-scripts with extra information
     macOS: Return copy of environment without PYTHONPATH and PYTHONHOME
     other: return None
@@ -1881,7 +1881,7 @@ def parse_sfv(sfv_filename: str) -> dict[str, bytes]:
     return results
 
 
-def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Optional[float] = None) -> str:
+def add_time_left(perc: float, start_time: float | None = None, time_used: float | None = None) -> str:
     """Calculate time left based on current progress, if it is taking more than 10 seconds"""
     if not time_used:
         time_used = time.time() - start_time
@@ -1890,7 +1890,7 @@ def add_time_left(perc: float, start_time: Optional[float] = None, time_used: Op
     return ""
 
 
-def pre_queue(nzo: NzbObject, pp: Optional[int], cat: str) -> list[Any]:
+def pre_queue(nzo: NzbObject, pp: int | None, cat: str) -> list[Any]:
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied separate since they can change.
     """

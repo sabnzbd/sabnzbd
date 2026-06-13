@@ -226,10 +226,10 @@ class MultiAddQueue(queue.Queue):
 
 
 def cat_pp_script_sanitizer(
-    cat: Optional[str] = None,
-    pp: Optional[int | str] = None,
-    script: Optional[str] = None,
-) -> tuple[Optional[int | str], Optional[str], Optional[str]]:
+    cat: str | None = None,
+    pp: int | str | None = None,
+    script: str | None = None,
+) -> tuple[int | str | None, str | None, str | None]:
     """Basic sanitizer from outside input to a bit more predictable values"""
     # * and Default are valid values
     if safe_lower(cat) in ("", "none"):
@@ -246,7 +246,7 @@ def cat_pp_script_sanitizer(
     return cat, pp, script
 
 
-def name_to_cat(fname: str, cat: Optional[str] = None) -> tuple[str, Optional[str]]:
+def name_to_cat(fname: str, cat: str | None = None) -> tuple[str, str | None]:
     """Retrieve category from file name, but only if "cat" is None."""
     if cat is None and fname.startswith("{{"):
         n = fname.find("}}")
@@ -259,7 +259,7 @@ def name_to_cat(fname: str, cat: Optional[str] = None) -> tuple[str, Optional[st
 
 
 def cat_to_opts(
-    cat: Optional[str], pp: Optional[int] = None, script: Optional[str] = None, priority: Optional[int] = None
+    cat: str | None, pp: int | None = None, script: str | None = None, priority: int | None = None
 ) -> tuple[str, int, str, int]:
     """Derive options from category, if options not already defined.
     Specified options have priority over category-options.
@@ -293,7 +293,7 @@ def cat_to_opts(
     return cat, pp, script, priority
 
 
-def pp_to_opts(pp: Optional[int]) -> tuple[bool, bool, bool]:
+def pp_to_opts(pp: int | None) -> tuple[bool, bool, bool]:
     """Convert numeric processing options to (repair, unpack, delete)"""
     # Convert the pp to an int
     pp = int_conv(pp)
@@ -350,7 +350,7 @@ def wildcard_to_re(text: str) -> str:
     return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
 
 
-def convert_filter(text: str) -> Optional[re.Pattern]:
+def convert_filter(text: str) -> re.Pattern | None:
     """Return compiled regex.
     If string starts with re: it's a real regex
     else quote all regex specials, replace '*' by '.*'
@@ -367,7 +367,7 @@ def convert_filter(text: str) -> Optional[re.Pattern]:
         return None
 
 
-def cat_convert(cat: Optional[str]) -> Optional[str]:
+def cat_convert(cat: str | None) -> str | None:
     """Convert indexer's category/group-name to user categories.
     If no match found, but indexer-cat equals user-cat, then return user-cat
     If no match found, but the indexer-cat starts with the user-cat, return user-cat
@@ -447,7 +447,7 @@ def set_serv_parms(service: str, args: list) -> bool:
     return True
 
 
-def get_from_url(url: str) -> Optional[str]:
+def get_from_url(url: str) -> str | None:
     """Retrieve URL and return content"""
     try:
         req = urllib.request.Request(url)
@@ -696,7 +696,7 @@ def exit_sab(value: int):
     os._exit(value)
 
 
-def split_host(srv: Optional[str]) -> tuple[Optional[str], Optional[int]]:
+def split_host(srv: str | None) -> tuple[str | None, int | None]:
     """Split host:port notation, allowing for IPV6"""
     if not srv:
         return None, None
@@ -772,7 +772,7 @@ def get_memory() -> int:
 
 
 @conditional_cache(cache_time=3600)
-def get_cpu_name() -> Optional[str]:
+def get_cpu_name() -> str | None:
     """Find the CPU name (which needs a different method per OS), and return it
     If none found, return platform.platform()"""
 
@@ -858,7 +858,7 @@ def get_platform_description() -> str:
     return sabnzbd.PLATFORM
 
 
-def on_cleanup_list(filename: str, skip_nzb: bool = False, relative_path: Optional[str] = None) -> bool:
+def on_cleanup_list(filename: str, skip_nzb: bool = False, relative_path: str | None = None) -> bool:
     """Return True if a filename matches the clean-up list
 
     Supports three match types:
@@ -901,7 +901,7 @@ def on_cleanup_list(filename: str, skip_nzb: bool = False, relative_path: Option
     return False
 
 
-def memory_usage() -> Optional[str]:
+def memory_usage() -> str | None:
     try:
         # Probably only works on Linux because it uses /proc/<pid>/statm
         with open("/proc/%d/statm" % os.getpid()) as t:
@@ -1077,7 +1077,7 @@ def is_sample(filename: str) -> bool:
     return bool(re.search(RE_SAMPLE, filename))
 
 
-def find_on_path(targets: str | tuple[str, ...]) -> Optional[str]:
+def find_on_path(targets: str | tuple[str, ...]) -> str | None:
     """Search the PATH for a program and return full path"""
     if sabnzbd.WINDOWS:
         paths = os.getenv("PATH").split(";")
@@ -1241,7 +1241,7 @@ def get_base_url(url: str) -> str:
         return ""
 
 
-def match_str(text: AnyStr, matches: tuple[AnyStr, ...]) -> Optional[AnyStr]:
+def match_str(text: AnyStr, matches: tuple[AnyStr, ...]) -> AnyStr | None:
     """Return first matching element of list 'matches' in 'text', otherwise None"""
     text = text.lower()
     for match in matches:
@@ -1616,7 +1616,7 @@ def convert_history_retention():
             cfg.history_retention_option.set("all-delete")
 
 
-def scan_password(name: str) -> tuple[str, Optional[str]]:
+def scan_password(name: str) -> tuple[str, str | None]:
     """Get password (if any) from the title"""
     if "http://" in name or "https://" in name:
         return name, None

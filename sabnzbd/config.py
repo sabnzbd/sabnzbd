@@ -86,7 +86,7 @@ class Option:
         self.__keyword: str = keyword
         self.__default_val: Any = default_val
         self.__value: Any = None
-        self.__callback: Optional[Callable] = None
+        self.__callback: Callable | None = None
         self.__public: bool = public
         self.__protect = protect
 
@@ -155,16 +155,16 @@ class OptionNumber(Option):
         section: str,
         keyword: str,
         default_val: float = 0,
-        minval: Optional[float] = None,
-        maxval: Optional[float] = None,
-        validation: Optional[Callable] = None,
+        minval: float | None = None,
+        maxval: float | None = None,
+        validation: Callable | None = None,
         add: bool = True,
         public: bool = True,
         protect: bool = False,
     ):
-        self.__minval: Optional[float] = minval
-        self.__maxval: Optional[float] = maxval
-        self.__validation: Optional[Callable] = validation
+        self.__minval: float | None = minval
+        self.__maxval: float | None = maxval
+        self.__validation: Callable | None = validation
         self.__int: bool = isinstance(default_val, int)
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
@@ -227,20 +227,20 @@ class OptionDir(Option):
         default_val: str = "",
         apply_permissions: bool = False,
         create: bool = True,
-        validation: Optional[Callable] = None,
+        validation: Callable | None = None,
         writable: bool = True,
         add: bool = True,
         public: bool = True,
         protect: bool = False,
     ):
-        self.__validation: Optional[Callable] = validation
+        self.__validation: Callable | None = validation
         self.__root: str = ""  # Base directory for relative paths
         self.__apply_permissions: bool = apply_permissions
         self.__create: bool = create
         self.__writable: bool = writable
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
-    def create_path(self, path: Optional[str] = None):
+    def create_path(self, path: str | None = None):
         if not path:
             path = self.get()
         return create_real_path(self.keyword, self.__root, path, self.__apply_permissions, self.__writable)
@@ -277,7 +277,7 @@ class OptionDir(Option):
         """Set new root, is assumed to be valid"""
         self.__root = root
 
-    def set(self, value: str, create: bool = False) -> Optional[str]:
+    def set(self, value: str, create: bool = False) -> str | None:
         """Set new dir value, validate and create if needed
         Return None when directory is accepted
         Return error-string when not accepted, value will not be changed
@@ -312,17 +312,17 @@ class OptionList(Option):
         section: str,
         keyword: str,
         default_val: str | list | None = None,
-        validation: Optional[Callable] = None,
+        validation: Callable | None = None,
         add: bool = True,
         public: bool = True,
         protect: bool = False,
     ):
-        self.__validation: Optional[Callable] = validation
+        self.__validation: Callable | None = validation
         if default_val is None:
             default_val = []
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
-    def set(self, value: str | list) -> Optional[str]:
+    def set(self, value: str | list) -> str | None:
         """Set the list given a comma-separated string or a list"""
         error = None
         if value is not None:
@@ -358,13 +358,13 @@ class OptionStr(Option):
         section: str,
         keyword: str,
         default_val: str = "",
-        validation: Optional[Callable] = None,
+        validation: Callable | None = None,
         add: bool = True,
         strip: bool = True,
         public: bool = True,
         protect: bool = False,
     ):
-        self.__validation: Optional[Callable] = validation
+        self.__validation: Callable | None = validation
         self.__strip: bool = strip
         super().__init__(section, keyword, default_val, add=add, public=public, protect=protect)
 
@@ -376,7 +376,7 @@ class OptionStr(Option):
         """Return value converted to an int, allowing KMGT notation"""
         return int(self.get_float())
 
-    def set(self, value: Any) -> Optional[str]:
+    def set(self, value: Any) -> str | None:
         """Set stripped value"""
         error = None
         if isinstance(value, str) and self.__strip:
@@ -400,11 +400,11 @@ class OptionPassword(Option):
         self.get_string = self.get_stars
         super().__init__(section, keyword, default_val, add=add)
 
-    def get(self) -> Optional[str]:
+    def get(self) -> str | None:
         """Return decoded password"""
         return decode_password(super().get(), self.keyword)
 
-    def get_stars(self) -> Optional[str]:
+    def get_stars(self) -> str | None:
         """Return non-descript asterisk string"""
         if self.get():
             return "*" * 10
@@ -776,7 +776,7 @@ def delete_from_database(section, keyword):
 
 
 @synchronized(CONFIG_LOCK)
-def get_dconfig(section: str, keyword: Optional[str], nested: bool = False) -> dict:
+def get_dconfig(section: str, keyword: str | None, nested: bool = False) -> dict:
     """Return a config values dictionary,
     Single item or slices based on 'section', 'keyword'
     """
@@ -823,7 +823,7 @@ def get_dconfig(section: str, keyword: Optional[str], nested: bool = False) -> d
 
 
 @synchronized(CONFIG_LOCK)
-def get_config(section: str, keyword: str) -> Optional[AllConfigTypes]:
+def get_config(section: str, keyword: str) -> AllConfigTypes | None:
     """Return a config object, based on 'section', 'keyword'"""
     try:
         return CFG_DATABASE[section][keyword]

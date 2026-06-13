@@ -321,7 +321,7 @@ def sanitize_and_trim_path(path: str) -> str:
     return os.path.abspath(os.path.normpath(new_path))
 
 
-def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] = None) -> list[str]:
+def sanitize_files(folder: str | None = None, filelist: list[str] | None = None) -> list[str]:
     """Sanitize each file in the folder or list of filepaths, return list of new names"""
     logging.info("Checking if any resulting filenames need to be sanitized")
     if folder:
@@ -389,7 +389,7 @@ def create_real_path(
     path: str,
     apply_permissions: bool = False,
     writable: bool = True,
-) -> tuple[bool, str, Optional[str]]:
+) -> tuple[bool, str, str | None]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
     'name' is used for logging.
@@ -497,7 +497,7 @@ TAR_RE = re.compile(r"\.(tar$)", re.I)
 
 
 def build_filelists(
-    workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
+    workdir: str | None, workdir_complete: str | None = None, check_both: bool = False, check_rar: bool = True
 ) -> tuple[list[str], list[str], list[str], list[str], list[str]]:
     """Build filelists, if workdir_complete has files, ignore workdir.
     Optionally scan both directories.
@@ -616,7 +616,7 @@ def list_scripts(default: bool = False, none: bool = True) -> list[str]:
     return lst
 
 
-def make_script_path(script: str) -> Optional[str]:
+def make_script_path(script: str) -> str | None:
     """Return full script path, if any valid script exists, else None"""
     script_path = None
     script_dir = sabnzbd.cfg.script_dir.get_path()
@@ -678,7 +678,7 @@ def set_permissions(path: str, recursive: bool = True):
 UNWANTED_FILE_PERMISSIONS = stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
 
 
-def removexbits(path: str, custom_permissions: Optional[int] = None):
+def removexbits(path: str, custom_permissions: int | None = None):
     """Remove all the x-bits from files, respecting current or custom permissions"""
     if os.path.isfile(path):
         # Use custom permissions as base
@@ -820,7 +820,7 @@ def listdir_full(input_dir: str, recursive: bool = True) -> list[str]:
     return filelist
 
 
-def move_to_path(path: str, new_path: str) -> tuple[bool, Optional[str]]:
+def move_to_path(path: str, new_path: str) -> tuple[bool, str | None]:
     """Move a file to a new path, optionally give unique filename
     Return (ok, new_path)
     """
@@ -1050,7 +1050,7 @@ def diskspace_base(dir_to_check: str) -> Diskspace:
 
 
 @conditional_cache(cache_time=10)
-def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> tuple[Diskspace, Diskspace]:
+def diskspace(force: bool = False, complete_dir: str | None = None) -> tuple[Diskspace, Diskspace]:
     """Wrapper to keep results cached by conditional_cache
     If called with force=True, the wrapper will clear the results"""
     if not complete_dir:
@@ -1058,7 +1058,7 @@ def diskspace(force: bool = False, complete_dir: Optional[str] = None) -> tuple[
     return diskspace_base(sabnzbd.cfg.download_dir.get_path()), diskspace_base(complete_dir)
 
 
-def get_new_id(prefix: str, folder: str, check_list: Optional[list] = None) -> str:
+def get_new_id(prefix: str, folder: str, check_list: list | None = None) -> str:
     """Return unique prefixed admin identifier within folder
     optionally making sure that id is not in the check_list.
     """

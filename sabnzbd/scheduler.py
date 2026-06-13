@@ -38,9 +38,9 @@ DAILY_RANGE = list(range(1, 8))
 class Scheduler:
     def __init__(self):
         self.scheduler = kronos.ThreadedScheduler()
-        self.pause_end: Optional[float] = None  # Moment when pause will end
-        self.resume_task: Optional[kronos.Task] = None
-        self.rss_task: Optional[kronos.Task] = None  # RSS interval task
+        self.pause_end: float | None = None  # Moment when pause will end
+        self.resume_task: kronos.Task | None = None
+        self.rss_task: kronos.Task | None = None  # RSS interval task
         self.restart_scheduler = False
         self.pp_pause_event = False
         self.load_schedules()

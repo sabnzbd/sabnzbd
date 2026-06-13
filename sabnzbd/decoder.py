@@ -61,7 +61,7 @@ class BadUu(Exception):
 
 
 def decode(article: Article, decoder: sabctools.NNTPResponse):
-    decoded_data: Optional[bytearray] = None
+    decoded_data: bytearray | None = None
     nzo = article.nzf.nzo
     art_id = article.article
 
