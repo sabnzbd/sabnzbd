@@ -210,11 +210,18 @@ def build_parser():
     parser.add_argument("-f", "--config-file", metavar="<ini>", help="Location of config file")
     parser.add_argument("-s", "--server", metavar="<srv:port>", help="Listen on server:port [*]")
     parser.add_argument("-t", "--templates", metavar="<templ>", help="Template directory [*]")
-    parser.add_argument("-l", "--logging", type=int, choices=range(-1, 3), metavar="-1..2",
-                        help="Set logging level (-1=off, 0=least, 2=most) [*]")
+    parser.add_argument(
+        "-l",
+        "--logging",
+        type=int,
+        choices=range(-1, 3),
+        metavar="-1..2",
+        help="Set logging level (-1=off, 0=least, 2=most) [*]",
+    )
     parser.add_argument("-w", "--weblogging", action="store_true", help="Enable cherrypy access logging")
-    parser.add_argument("-b", "--browser", type=int, choices=[0, 1], metavar="0..1",
-                        help="Auto browser launch (0=off, 1=on) [*]")
+    parser.add_argument(
+        "-b", "--browser", type=int, choices=[0, 1], metavar="0..1", help="Auto browser launch (0=off, 1=on) [*]"
+    )
     parser.add_argument("-d", "--daemon", action="store_true", help=daemon_help)
     parser.add_argument("-h", "--help", action="help", help="Print this message")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s-" + (sabnzbd.__version__ or ""))
@@ -225,10 +232,12 @@ def build_parser():
     parser.add_argument("--ipv6_hosting", type=int, choices=[0, 1], help="Listen on IPv6 address [::1] [*]")
     parser.add_argument("--inet_exposure", type=int, choices=range(0, 6), help="Set external internet access [*]")
     parser.add_argument("--no-login", action="store_true", help="Start with username and password reset")
-    parser.add_argument("--repair", action="store_true",
-                        help="Add orphaned jobs from the incomplete folder to the queue")
-    parser.add_argument("--repair-all", action="store_true",
-                        help="Try to reconstruct the queue from the incomplete folder")
+    parser.add_argument(
+        "--repair", action="store_true", help="Add orphaned jobs from the incomplete folder to the queue"
+    )
+    parser.add_argument(
+        "--repair-all", action="store_true", help="Try to reconstruct the queue from the incomplete folder"
+    )
     parser.add_argument("--log-all", action="store_true", help="Log all article handling (for developers)")
     parser.add_argument("--disable-file-log", action="store_true", help="Logging is only written to console")
     parser.add_argument("--console", action="store_true", help="Force logging to console")
