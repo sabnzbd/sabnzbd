@@ -32,7 +32,6 @@ import threading
 import time
 import warnings
 from enum import Enum
-from typing import Optional
 from unittest import mock
 
 import portend
@@ -75,13 +74,13 @@ def socket_test_server(ssl_context: ssl.SSLContext):
         server_socket.close()
 
 
-def get_local_ip(protocol_version: IPProtocolVersion) -> Optional[str]:
+def get_local_ip(protocol_version: IPProtocolVersion) -> str | None:
     """
     Find the ip address that would be used to send traffic towards internet. Uses the UDP Socket trick: connect is not
     sending any traffic but already prefills what would be the sender ip address.
     """
-    s: Optional[socket.socket] = None
-    address_to_connect_to: Optional[tuple[str, int]] = None
+    s: socket.socket | None = None
+    address_to_connect_to: tuple[str, int] | None = None
     if protocol_version == IPProtocolVersion.IPV4:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Google DNS IPv4
@@ -131,9 +130,9 @@ class TestNewsWrapper:
     )
     def test_newswrapper(
         self,
-        server_tls: Optional[ssl.TLSVersion],
-        expected_client_tls: Optional[str],
-        client_cipher: Optional[str],
+        server_tls: ssl.TLSVersion | None,
+        expected_client_tls: str | None,
+        client_cipher: str | None,
         can_connect: bool,
     ):
         # We need at least some certificates for the server to work
@@ -200,7 +199,7 @@ class TestNewsWrapper:
         ],
     )
     def test_socket_binding_outgoing_ip(
-        self, test_host: str, local_ip: Optional[str], ip_protocol: Optional[IPProtocolVersion], monkeypatch
+        self, test_host: str, local_ip: str | None, ip_protocol: IPProtocolVersion | None, monkeypatch
     ):
         """Test to make sure that the binding of outgoing interface works as expected."""
         if local_ip is None and ip_protocol is not None:

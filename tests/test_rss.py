@@ -21,7 +21,6 @@ tests.test_misc - Testing functions in misc.py
 
 import datetime
 import uuid
-from typing import Optional
 import random
 
 import configobj
@@ -55,7 +54,7 @@ def tmp_rss(tmp_path, monkeypatch):
 
 def _build_random_store(
     repo: rss.RSSRepository,
-    rnd: Optional[random.Random] = None,
+    rnd: random.Random | None = None,
     min_feeds: int = 1,
     max_feeds: int = 3,
     min_jobs: int = 1,
@@ -114,11 +113,11 @@ class TestRSS:
         feed_name: str,
         feed_url: str,
         *,
-        category: Optional[str] = None,
-        pp: Optional[str] = None,
-        script: Optional[str] = None,
-        priority: Optional[int] = None,
-        filters: Optional[list[tuple[str, str, str, str, str, int, str]]] = None,
+        category: str | None = None,
+        pp: str | None = None,
+        script: str | None = None,
+        priority: int | None = None,
+        filters: list[tuple[str, str, str, str, str, int, str]] | None = None,
     ):
         """Setup the basic settings to get things going"""
         values: dict = {"uri": feed_url}
@@ -419,17 +418,17 @@ class TestRSS:
         self,
         httpserver: HTTPServer,
         tmp_rss: RSSReader,
-        defaults: tuple[Optional[str], Optional[str], Optional[str], Optional[int]],
+        defaults: tuple[str | None, str | None, str | None, int | None],
         filters: list[tuple[str, str, str, str, str, int, str]],
         title: str,
-        category: Optional[str],
+        category: str | None,
         size: int,
         season: int,
         episode: int,
         expected_match: dict,
     ):
         def build_xml_response(
-            title: str, category: Optional[str], size: Optional[int], season: Optional[int], episode: Optional[int]
+            title: str, category: str | None, size: int | None, season: int | None, episode: int | None
         ):
             root = Element("rss", version="2.0")
 
