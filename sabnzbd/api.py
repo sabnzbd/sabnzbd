@@ -29,7 +29,7 @@ import time
 import getpass
 import cherrypy
 from threading import Thread
-from typing import Any, Callable, Generator, Optional, TypeAlias
+from typing import Any, Callable, Generator, TypeAlias
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
 # compile due to Rust dependency. Since the output is the same, we support all modules.

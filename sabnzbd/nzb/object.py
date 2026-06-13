@@ -25,7 +25,7 @@ import logging
 import datetime
 import threading
 import difflib
-from typing import Literal, Optional, TypedDict, BinaryIO
+from typing import Literal, TypedDict, BinaryIO
 from collections import deque
 
 # SABnzbd modules

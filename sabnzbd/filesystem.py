@@ -35,7 +35,7 @@ import stat
 import ctypes
 import random
 from dataclasses import dataclass
-from typing import Any, Optional, BinaryIO
+from typing import Any, BinaryIO
 
 try:
     import win32api

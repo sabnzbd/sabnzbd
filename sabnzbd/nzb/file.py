@@ -23,7 +23,7 @@ import datetime
 import logging
 import os
 import threading
-from typing import Optional, Any
+from typing import Any
 
 import sabctools
 from sabnzbd.nzb.article import TryList, Article

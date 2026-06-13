@@ -25,7 +25,7 @@ import socket
 import time
 import urllib.error
 import urllib.request
-from typing import Callable, Optional
+from typing import Callable
 
 import socks
 

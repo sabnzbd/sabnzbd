@@ -31,7 +31,6 @@ import zipfile
 import tempfile
 
 import cherrypy._cpreqbody
-from typing import Optional
 
 import sabnzbd
 from sabnzbd.nzb import (

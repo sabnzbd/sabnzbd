@@ -29,7 +29,7 @@ import uuid
 import io
 import zipfile
 from itertools import chain
-from typing import Any, Callable, Optional, TypeAlias
+from typing import Any, Callable, TypeAlias
 from urllib.parse import urlparse
 
 import configobj

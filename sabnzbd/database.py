@@ -28,7 +28,7 @@ import sys
 import threading
 import sqlite3
 from sqlite3 import Connection, Cursor
-from typing import Optional, Sequence, Any
+from typing import Sequence, Any
 
 import sabnzbd
 import sabnzbd.cfg

@@ -28,7 +28,6 @@ import re
 import gc
 import queue
 import rarfile
-from typing import Optional
 
 import sabnzbd
 from sabnzbd.newsunpack import (

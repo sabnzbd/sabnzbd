@@ -23,7 +23,7 @@ import logging
 import threading
 import struct
 import time
-from typing import Collection, Optional
+from typing import Collection
 
 import sabnzbd
 import sabnzbd.cfg as cfg

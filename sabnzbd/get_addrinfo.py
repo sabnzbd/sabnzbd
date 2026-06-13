@@ -25,7 +25,6 @@ import time
 import logging
 from dataclasses import dataclass
 from more_itertools import roundrobin
-from typing import Optional
 
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import DEF_NETWORKING_TIMEOUT

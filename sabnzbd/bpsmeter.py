@@ -22,7 +22,6 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
-from typing import Optional
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, KIBI

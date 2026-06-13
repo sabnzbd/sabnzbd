@@ -26,7 +26,7 @@ import re
 import threading
 from threading import Thread
 import ctypes
-from typing import Optional, NamedTuple
+from typing import NamedTuple
 import rarfile
 import time
 

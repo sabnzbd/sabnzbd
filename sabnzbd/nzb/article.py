@@ -21,7 +21,6 @@ sabnzbd.article - Article and TryList classes for NZB downloading
 
 import logging
 import threading
-from typing import Optional
 
 import sabnzbd
 from sabnzbd.downloader import Server

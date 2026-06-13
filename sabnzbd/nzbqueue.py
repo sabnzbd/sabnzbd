@@ -24,7 +24,6 @@ import logging
 import time
 import uuid
 import cherrypy._cpreqbody
-from typing import Optional
 
 import sabnzbd
 from sabnzbd.nzb import Article, NzbObject

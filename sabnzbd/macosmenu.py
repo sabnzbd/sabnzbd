@@ -23,7 +23,6 @@ import os
 import sys
 import time
 import logging
-from typing import Optional
 
 from objc import YES, NO
 from Foundation import (

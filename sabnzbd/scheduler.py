@@ -22,7 +22,6 @@ sabnzbd.scheduler - Event Scheduler
 import random
 import logging
 import time
-from typing import Optional
 
 import sabnzbd.utils.kronos as kronos
 import sabnzbd.downloader

@@ -26,7 +26,6 @@ import re
 import struct
 import sabctools
 from dataclasses import dataclass
-from typing import Optional
 
 from sabnzbd.constants import MEBI
 from sabnzbd.encoding import correct_unknown_encoding

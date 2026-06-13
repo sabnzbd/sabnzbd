@@ -32,7 +32,6 @@ from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message
 from threading import Thread
 import base64
-from typing import Optional
 
 import sabnzbd
 from sabnzbd.constants import (

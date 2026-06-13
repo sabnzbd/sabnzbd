@@ -40,7 +40,7 @@ import math
 import rarfile
 from threading import Thread, RLock
 from collections.abc import Iterable
-from typing import Any, AnyStr, Optional, Collection
+from typing import Any, AnyStr, Collection
 
 import sabnzbd
 import sabnzbd.getipaddress

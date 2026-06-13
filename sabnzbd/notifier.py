@@ -30,7 +30,6 @@ import http.client
 import json
 import apprise
 from threading import Thread
-from typing import Optional
 
 import sabnzbd
 import sabnzbd.cfg
