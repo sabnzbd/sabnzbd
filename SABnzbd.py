@@ -225,7 +225,6 @@ def build_parser():
         "-b", "--browser", type=int, choices=[0, 1], metavar="0..1", help="Auto browser launch (0=off, 1=on) [*]"
     )
     parser.add_argument("-d", "--daemon", action="store_true", help=daemon_help)
-    parser.add_argument("-h", "--help", action="help", help="Print this message")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s-" + (sabnzbd.__version__ or ""))
     parser.add_argument("-n", "--nobrowser", action="store_true", help="Disable auto browser launch")
     parser.add_argument("-c", "--clean", action="store_true", help="Remove queue, cache and logs")
