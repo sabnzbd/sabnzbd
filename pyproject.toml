@@ -39,7 +39,7 @@ ignore = [
 "SABnzbd.py" = ["F401"]
 "sabnzbd/__init__.py" = ["F401"]
 # Dynamic symbol injection during version/build setup
-"builder/constants.py" = ["F821"]
+"builder/common.py" = ["F821"]
 # macOS Bonjour symbols resolved via ctypes/dylib at runtime
 "sabnzbd/utils/pybonjour.py" = ["F821"]
 "sabnzbd/utils/sleepless.py" = ["F821"]

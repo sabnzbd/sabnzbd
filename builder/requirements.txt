@@ -7,9 +7,9 @@ altgraph==0.17.5
 wrapt==2.2.1
 setuptools==82.0.1
 markdown==3.10.2
+pefile==2024.8.26
 
 # For the Windows build
-pefile==2024.8.26; sys_platform == 'win32'
 pywin32-ctypes==0.2.3; sys_platform == 'win32'
 
 # For the macOS build

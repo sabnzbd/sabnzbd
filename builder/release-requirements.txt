@@ -1,2 +1,3 @@
 PyGithub==2.9.1
 praw==7.8.1
+pefile==2024.8.26

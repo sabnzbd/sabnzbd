@@ -7,7 +7,7 @@ from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-from builder.constants import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_VERSION_BASE, RELEASE_VERSION_TUPLE
+from builder.common import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_VERSION_BASE, RELEASE_VERSION_TUPLE
 
 # Add extra files in the PyInstaller-spec
 extra_pyinstaller_files = []
