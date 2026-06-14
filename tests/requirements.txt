@@ -1,5 +1,5 @@
 # Testing requirements
-pytest<9.1 # tavern and pytest 9.1 is incompatible: taverntesting/tavern#1054
+pytest
 setuptools
 selenium
 requests
@@ -10,7 +10,6 @@ pytest-httpserver
 flaky
 xmltodict
 tavern
-tavern==3.5.0; python_version >= '3.11' # Latest version only supported on Python 3.11 and above
 flask
 tavalidate
 importlib_metadata
