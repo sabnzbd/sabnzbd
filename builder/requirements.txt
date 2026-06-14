@@ -18,3 +18,7 @@ mac-alias==2.2.3; sys_platform == 'darwin'
 macholib==1.16.4; sys_platform == 'darwin'
 ds-store==1.3.2; sys_platform == 'darwin'
 PyNaCl==1.6.2; sys_platform == 'darwin'
+
+# 48.0.0 is the last cryptography version shipping a macOS universal2 wheel (49+ is arm64-only)
+# See https://github.com/pyca/cryptography/issues/13520
+cryptography<49.0.0; sys_platform == 'darwin'

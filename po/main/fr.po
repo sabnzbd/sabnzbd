@@ -1216,6 +1216,8 @@ msgstr "voir le journal"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
 msgstr ""
+"Décompression ignorée, la prise en charge des fichiers TAR nécessite Python "
+"3.12 ou une version ultérieure"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"

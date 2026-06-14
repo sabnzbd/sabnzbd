@@ -1359,7 +1359,7 @@ def test_nntp_server_dict(kwargs: ApiParams) -> tuple[bool, str]:
     username = kwargs.get("username", "").strip()
     password = kwargs.get("password", "").strip()
     server = kwargs.get("server", "").strip()
-    connections = int_conv(kwargs.get("connections", 0))
+    connections = int_conv(kwargs.get("connections", 1))
     timeout = int_conv(kwargs.get("timeout", DEF_NETWORKING_TEST_TIMEOUT))
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 3))

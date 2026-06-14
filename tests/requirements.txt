@@ -1,5 +1,5 @@
 # Testing requirements
-pytest
+pytest<9.1 # tavern and pytest 9.1 is incompatible: taverntesting/tavern#1054
 setuptools
 selenium
 requests
