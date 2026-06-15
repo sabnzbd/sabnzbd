@@ -29,7 +29,7 @@ import logging
 import logging.handlers
 import importlib.util
 import traceback
-import getopt
+import argparse
 import signal
 import socket
 import subprocess
@@ -193,60 +193,106 @@ class GUIHandler(logging.Handler):
         return self.store
 
 
-def print_help():
-    print()
-    print("Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME)
-    print()
-    print("Options marked [*] are stored in the config file")
-    print()
-    print("Options:")
-    print("  -f  --config-file <ini>     Location of config file")
-    print("  -s  --server <srv:port>     Listen on server:port [*]")
-    print("  -t  --templates <templ>     Template directory [*]")
-    print()
-    print("  -l  --logging <-1..2>       Set logging level (-1=off, 0=least,2= most) [*]")
-    print("  -w  --weblogging            Enable cherrypy access logging")
-    print()
-    print("  -b  --browser <0..1>        Auto browser launch (0= off, 1= on) [*]")
+def _logging_type(value):
+    """Custom type for --logging that handles negative numbers.
+
+    argparse can't parse "-l -1" because it tokenizes "-1" as a flag.
+    This type function handles both "-l=-1" and "-l -1" after pre-processing.
+    """
+    try:
+        value = int(value)
+    except (ValueError, TypeError):
+        raise argparse.ArgumentTypeError("invalid integer value: '%s'" % value)
+    if value < -1 or value > 2:
+        raise argparse.ArgumentTypeError("invalid choice: %d (choose from -1, 0, 1, 2)" % value)
+    return value
+
+
+def build_parser():
+    """Build the argument parser for SABnzbd CLI."""
     if sabnzbd.WINDOWS:
-        print("  -d  --daemon                Use when run as a service")
+        daemon_help = "Use when run as a service"
     else:
-        print("  -d  --daemon                Fork daemon process")
-        print("      --pid <path>            Create a PID file in the given folder (full path)")
-        print("      --pidfile <path>        Create a PID file with the given name (full path)")
-    print()
-    print("  -h  --help                  Print this message")
-    print("  -v  --version               Print version information")
-    print("  -c  --clean                 Remove queue, cache and logs")
-    print("  -p  --pause                 Start in paused mode")
-    print("      --repair                Add orphaned jobs from the incomplete folder to the queue")
-    print("      --repair-all            Try to reconstruct the queue from the incomplete folder")
-    print("                              with full data reconstruction")
-    print("      --https <port>          Port to use for HTTPS server")
-    print("      --ipv6_hosting <0|1>    Listen on IPv6 address [::1] [*]")
-    print("      --inet_exposure <0..5>  Set external internet access [*]")
-    print("      --no-login              Start with username and password reset")
-    print("      --log-all               Log all article handling (for developers)")
-    print("      --disable-file-log      Logging is only written to console")
-    print("      --console               Force logging to console")
-    print("      --new                   Run a new instance of SABnzbd")
-    print()
-    print("NZB (or related) file:")
-    print("  NZB or compressed NZB file, with extension .nzb, .zip, .rar, .7z, .gz, or .bz2")
-    print()
+        daemon_help = "Fork daemon process"
 
+    parser = argparse.ArgumentParser(
+        prog=sabnzbd.MY_NAME or "SABnzbd",
+        description="Usage: %s [-f <configfile>] <other options>" % (sabnzbd.MY_NAME or "SABnzbd"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Options marked [*] are stored in the config file\n\n"
+        "NZB (or related) file:\n"
+        "  NZB or compressed NZB file, with extension .nzb, .zip, .rar, .7z, .gz, or .bz2",
+    )
 
-def print_version():
-    print("""
-%s-%s
+    parser.add_argument(
+        "-f", "--config", "--config-file", dest="config_file", metavar="<ini>", help="Location of config file"
+    )
+    parser.add_argument("-s", "--server", metavar="<srv:port>", help="Listen on server:port [*]")
+    parser.add_argument("-t", "--templates", metavar="<templ>", help="Template directory [*]")
+    parser.add_argument(
+        "-l", "--logging", type=_logging_type, metavar="-1..2", help="Set logging level (-1=off, 0=least, 2=most) [*]"
+    )
+    parser.add_argument("-w", "--weblogging", action="store_true", help="Enable cherrypy access logging")
+    parser.add_argument(
+        "-b", "--browser", type=int, choices=[0, 1], metavar="0..1", help="Auto browser launch (0=off, 1=on) [*]"
+    )
+    parser.add_argument("-d", "--daemon", action="store_true", help=daemon_help)
+    parser.add_argument("-v", "--version", action="version", version="%(prog)s-" + (sabnzbd.__version__ or ""))
+    parser.add_argument("-n", "--nobrowser", action="store_true", help="Disable auto browser launch")
+    parser.add_argument("-c", "--clean", action="store_true", help="Remove queue, cache and logs")
+    parser.add_argument("-p", "--pause", action="store_true", help="Start in paused mode")
+    parser.add_argument("--https", type=int, metavar="<port>", help="Port to use for HTTPS server")
+    parser.add_argument(
+        "--ipv6",
+        "--ipv6_hosting",
+        dest="ipv6_hosting",
+        type=int,
+        choices=[0, 1],
+        help="Listen on IPv6 address [::1] [*]",
+    )
+    parser.add_argument(
+        "--inet",
+        "--inet_exposure",
+        dest="inet_exposure",
+        type=int,
+        choices=range(0, 6),
+        help="Set external internet access [*]",
+    )
+    parser.add_argument("--no-login", action="store_true", help="Start with username and password reset")
+    parser.add_argument(
+        "--repair", action="store_true", help="Add orphaned jobs from the incomplete folder to the queue"
+    )
+    parser.add_argument(
+        "--repair-all", action="store_true", help="Try to reconstruct the queue from the incomplete folder"
+    )
+    parser.add_argument("--log-all", action="store_true", help="Log all article handling (for developers)")
+    parser.add_argument(
+        "--disable",
+        "--disable-file-log",
+        dest="disable_file_log",
+        action="store_true",
+        help="Logging is only written to console",
+    )
+    parser.add_argument("--console", action="store_true", help="Force logging to console")
+    parser.add_argument("--new", action="store_true", help="Run a new instance of SABnzbd")
+    if not sabnzbd.WINDOWS:
+        parser.add_argument("--pid", metavar="<path>", help="Create a PID file in the given folder")
+        parser.add_argument("--pidfile", metavar="<path>", help="Create a PID file with the given name")
 
-(C) Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
-SABnzbd comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
-under certain conditions. It is licensed under the
-GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
+    # Win32 service options (hidden from --help)
+    service_group = parser.add_argument_group("Win32 service options")
+    service_group.add_argument("--password", help=argparse.SUPPRESS)
+    service_group.add_argument("--username", help=argparse.SUPPRESS)
+    service_group.add_argument("--startup", help=argparse.SUPPRESS)
+    service_group.add_argument("--perfmonini", help=argparse.SUPPRESS)
+    service_group.add_argument("--perfmondll", help=argparse.SUPPRESS)
+    service_group.add_argument("--interactive", action="store_true", help=argparse.SUPPRESS)
+    service_group.add_argument("-2", "--wait", help=argparse.SUPPRESS)
+    service_group.add_argument("--autorestarted", action="store_true", help=argparse.SUPPRESS)
+    service_group.add_argument("--servicecall", help=argparse.SUPPRESS)
 
-""" % (sabnzbd.MY_NAME, sabnzbd.__version__))
+    parser.add_argument("args", nargs="*", help=argparse.SUPPRESS)
+    return parser
 
 
 def daemonize():
@@ -735,100 +781,61 @@ def evaluate_inipath(path):
 
 
 def commandline_handler():
-    """Split win32-service commands are true parameters
+    """Parse command-line arguments.
     Returns:
-        service, sab_opts, serv_opts, upload_nzbs
+        service, parsed, serv_opts, upload_nzbs
     """
+    parser = build_parser()
+
+    # Pre-process sys.argv: convert "-l -1" to "--logging=-1" for backward compat.
+    # argparse can't parse negative numbers as option arguments (treats them as flags).
+    raw_args = sys.argv[1:]
+    processed_args = []
+    i = 0
+    while i < len(raw_args):
+        if raw_args[i] in ("-l", "--logging") and i + 1 < len(raw_args):
+            processed_args.append("--logging=%s" % raw_args[i + 1])
+            i += 2
+        else:
+            processed_args.append(raw_args[i])
+            i += 1
+
+    parsed = parser.parse_args(processed_args)
+
     service = ""
-    sab_opts = []
     serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
     upload_nzbs = []
 
-    try:
-        opts, args = getopt.getopt(
-            sys.argv[1:],
-            "phdvncwl:s:f:t:b:2:",
-            [
-                "pause",
-                "help",
-                "daemon",
-                "nobrowser",
-                "clean",
-                "logging=",
-                "weblogging",
-                "server=",
-                "templates",
-                "ipv6_hosting=",
-                "inet_exposure=",
-                "browser=",
-                "config-file=",
-                "disable-file-log",
-                "version",
-                "https=",
-                "autorestarted",
-                "repair",
-                "repair-all",
-                "log-all",
-                "no-login",
-                "pid=",
-                "new",
-                "console",
-                "pidfile=",
-                # Below Win32 Service options
-                "password=",
-                "username=",
-                "startup=",
-                "perfmonini=",
-                "perfmondll=",
-                "interactive",
-                "wait=",
-            ],
-        )
-    except getopt.GetoptError:
-        print_help()
-        exit_sab(2)
+    remaining = parsed.args
 
     # Check for Win32 service commands
-    if args and args[0] in ("install", "update", "remove", "start", "stop", "restart", "debug"):
-        service = args[0]
-        serv_opts.extend(args)
+    WIN32_SERVICE_CMDS = {"install", "update", "remove", "start", "stop", "restart", "debug"}
+    if remaining and remaining[0] in WIN32_SERVICE_CMDS:
+        service = remaining[0]
+        serv_opts.extend(remaining)
 
+    # Collect NZB files from remaining args (not service commands)
     if not service:
-        # Get and remove any NZB file names
-        for entry in args:
-            if get_ext(entry) in VALID_NZB_FILES + VALID_ARCHIVES:
+        for entry in remaining:
+            if entry not in WIN32_SERVICE_CMDS and get_ext(entry) in VALID_NZB_FILES + VALID_ARCHIVES:
                 upload_nzbs.append(os.path.abspath(entry))
 
-    for opt, arg in opts:
-        if opt in ("password", "username", "startup", "perfmonini", "perfmondll", "interactive", "wait"):
-            # Service option, just collect
-            if service:
-                serv_opts.append(opt)
-                if arg:
-                    serv_opts.append(arg)
-        else:
-            if opt == "-f":
-                arg = os.path.normpath(os.path.abspath(arg))
-            sab_opts.append((opt, arg))
+    # Win32 service options → serv_opts
+    for attr in ("password", "username", "startup", "perfmonini", "perfmondll", "wait"):
+        val = getattr(parsed, attr, None)
+        if val is not None:
+            serv_opts.append("--%s" % attr)
+            serv_opts.append(str(val))
+    if getattr(parsed, "interactive", False):
+        serv_opts.append("--interactive")
 
-    return service, sab_opts, serv_opts, upload_nzbs
-
-
-def get_f_option(opts):
-    """Return value of the -f option"""
-    for opt, arg in opts:
-        if opt == "-f":
-            return arg
-    else:
-        return None
+    return service, parsed, serv_opts, upload_nzbs
 
 
 def main():
     global LOG_FLAG
     import sabnzbd  # Due to ApplePython bug
 
-    autobrowser = None
-    autorestarted = False
     sabnzbd.MY_FULLNAME = __file__
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     fork = False
@@ -851,85 +858,70 @@ def main():
     new_instance = False
     ipv6_hosting = None
     inet_exposure = None
+    autobrowser = None
+    autorestarted = False
 
-    _service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
+    _service, opts, _serv_opts, upload_nzbs = commandline_handler()
 
-    for opt, arg in sab_opts:
-        if opt == "--servicecall":
-            sabnzbd.MY_FULLNAME = arg
-        elif opt in ("-d", "--daemon"):
-            if not sabnzbd.WINDOWS:
-                fork = True
-            autobrowser = False
-            sabnzbd.DAEMON = True
-            sabnzbd.RESTART_ARGS.append(opt)
-        elif opt in ("-f", "--config-file"):
-            inifile = arg
-            sabnzbd.RESTART_ARGS.append(opt)
-            sabnzbd.RESTART_ARGS.append(arg)
-        elif opt in ("-h", "--help"):
-            print_help()
-            exit_sab(0)
-        elif opt in ("-t", "--templates"):
-            web_dir = arg
-        elif opt in ("-s", "--server"):
-            web_host, web_port = split_host(arg)
-        elif opt in ("-n", "--nobrowser"):
-            autobrowser = False
-        elif opt in ("-b", "--browser"):
-            autobrowser = sabnzbd.misc.bool_conv(arg)
-        elif opt == "--autorestarted":
-            autorestarted = True
-        elif opt in ("-c", "--clean"):
-            clean_up = True
-        elif opt in ("-w", "--weblogging"):
-            cherrypylogging = True
-        elif opt in ("-l", "--logging"):
-            try:
-                logging_level = int(arg)
-            except Exception:
-                logging_level = -2
-            if logging_level < -1 or logging_level > 2:
-                print_help()
-                exit_sab(1)
-        elif opt == "--console":
-            console_logging = True
-            sabnzbd.RESTART_ARGS.append(opt)
-        elif opt in ("-v", "--version"):
-            print_version()
-            exit_sab(0)
-        elif opt in ("-p", "--pause"):
-            pause = True
-        elif opt == "--https":
-            https_port = int(arg)
-            sabnzbd.RESTART_ARGS.append(opt)
-            sabnzbd.RESTART_ARGS.append(arg)
-        elif opt == "--repair":
-            repair = 1
-            pause = True
-        elif opt == "--repair-all":
-            repair = 2
-            pause = True
-        elif opt == "--log-all":
-            sabnzbd.LOG_ALL = True
-        elif opt == "--disable-file-log":
-            no_file_log = True
-        elif opt == "--no-login":
-            no_login = True
-        elif opt == "--pid":
-            pid_path = arg
-            sabnzbd.RESTART_ARGS.append(opt)
-            sabnzbd.RESTART_ARGS.append(arg)
-        elif opt == "--pidfile":
-            pid_file = arg
-            sabnzbd.RESTART_ARGS.append(opt)
-            sabnzbd.RESTART_ARGS.append(arg)
-        elif opt == "--new":
-            new_instance = True
-        elif opt == "--ipv6_hosting":
-            ipv6_hosting = arg
-        elif opt == "--inet_exposure":
-            inet_exposure = arg
+    if opts.servicecall:
+        sabnzbd.MY_FULLNAME = opts.servicecall
+    if opts.daemon:
+        if not sabnzbd.WINDOWS:
+            fork = True
+        autobrowser = False
+        sabnzbd.DAEMON = True
+        sabnzbd.RESTART_ARGS.append("--daemon")
+    if opts.config_file:
+        inifile = os.path.normpath(os.path.abspath(opts.config_file))
+        sabnzbd.RESTART_ARGS.extend(["--config-file", inifile])
+    if opts.templates:
+        web_dir = opts.templates
+    if opts.server:
+        web_host, web_port = split_host(opts.server)
+    if opts.nobrowser:
+        autobrowser = False
+    if opts.browser is not None:
+        autobrowser = bool(opts.browser)
+    if opts.autorestarted:
+        autorestarted = True
+    if opts.clean:
+        clean_up = True
+    if opts.weblogging:
+        cherrypylogging = True
+    if opts.logging is not None:
+        logging_level = opts.logging
+    if opts.console:
+        console_logging = True
+        sabnzbd.RESTART_ARGS.append("--console")
+    if opts.pause:
+        pause = True
+    if opts.https is not None:
+        https_port = opts.https
+        sabnzbd.RESTART_ARGS.extend(["--https", str(https_port)])
+    if opts.repair:
+        repair = 1
+        pause = True
+    if opts.repair_all:
+        repair = 2
+        pause = True
+    if opts.log_all:
+        sabnzbd.LOG_ALL = True
+    if opts.disable_file_log:
+        no_file_log = True
+    if opts.no_login:
+        no_login = True
+    if opts.pid:
+        pid_path = opts.pid
+        sabnzbd.RESTART_ARGS.extend(["--pid", pid_path])
+    if opts.pidfile:
+        pid_file = opts.pidfile
+        sabnzbd.RESTART_ARGS.extend(["--pidfile", pid_file])
+    if opts.new:
+        new_instance = True
+    if opts.ipv6_hosting is not None:
+        ipv6_hosting = opts.ipv6_hosting
+    if opts.inet_exposure is not None:
+        inet_exposure = opts.inet_exposure
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1592,12 +1584,12 @@ def handle_windows_service():
         return True
 
     # Handle installation and other options
-    service, sab_opts, serv_opts, _upload_nzbs = commandline_handler()
+    service, opts, serv_opts, _upload_nzbs = commandline_handler()
 
     if service:
         if service in ("install", "update"):
             # In this case check for required parameters
-            path = get_f_option(sab_opts)
+            path = opts.config_file
             if not path:
                 print("The -f <path> parameter is required.\n" "Use: -f <path> %s" % service)
                 return True
@@ -1605,6 +1597,41 @@ def handle_windows_service():
             # First run the service installed, because this will
             # set the service key in the Registry
             win32serviceutil.HandleCommandLine(SABnzbd, argv=serv_opts)
+
+            # Convert parsed args to tuples for set_serv_parms
+            sab_opts = []
+            _OPTION_MAP = [
+                ("config_file", "-f"),
+                ("daemon", "--daemon"),
+                ("templates", "--templates"),
+                ("server", "--server"),
+                ("logging", "--logging"),
+                ("browser", "--browser"),
+                ("https", "--https"),
+                ("ipv6_hosting", "--ipv6_hosting"),
+                ("inet_exposure", "--inet_exposure"),
+                ("pid", "--pid"),
+                ("pidfile", "--pidfile"),
+                ("pause", "--pause"),
+                ("clean", "--clean"),
+                ("weblogging", "--weblogging"),
+                ("console", "--console"),
+                ("no_login", "--no-login"),
+                ("log_all", "--log-all"),
+                ("disable_file_log", "--disable-file-log"),
+                ("repair", "--repair"),
+                ("repair_all", "--repair-all"),
+                ("new", "--new"),
+                ("autorestarted", "--autorestarted"),
+                ("nobrowser", "--nobrowser"),
+                ("servicecall", "--servicecall"),
+            ]
+            for attr, flag in _OPTION_MAP:
+                val = getattr(opts, attr, None)
+                if val is True:
+                    sab_opts.append((flag, ""))
+                elif val is not None and val is not False:
+                    sab_opts.append((flag, str(val)))
 
             # Add our own parameter to the Registry
             if set_serv_parms(SABnzbd._svc_name_, sab_opts):
