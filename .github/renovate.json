@@ -42,8 +42,7 @@
     "jaraco.text",
     "jaraco.context",
     "jaraco.collections",
-    "tempora",
-    "paho-mqtt"
+    "tempora"
   ],
   "packageRules": [
     {
