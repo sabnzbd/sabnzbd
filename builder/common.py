@@ -59,7 +59,6 @@ if platform.machine() == "ARM64":
 EXTRA_FILES = [
     RELEASE_README,
     "README.html",
-    "INSTALL.txt",
     "LICENSE.txt",
     "GPL2.txt",
     "GPL3.txt",
