@@ -1,5 +1,4 @@
-# Basic build requirements
-# Note that not all sub-dependencies are listed, but only ones we know could cause trouble
+# All sub-dependencies are listed below and installed with --no-dependencies for security
 pyinstaller==6.20.0
 packaging==26.2
 pyinstaller-hooks-contrib==2026.5

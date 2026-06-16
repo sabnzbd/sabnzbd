@@ -41,8 +41,8 @@ jobs:
       run: |
         python --version
         python -m pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt --no-dependencies --only-binary=cryptography
-        pip install --upgrade -r builder/requirements.txt --no-dependencies
+        pip install -r requirements.txt --no-dependencies --only-binary=cryptography
+        pip install -r builder/requirements.txt --no-dependencies
     - name: Build Windows standalone binary
       id: windows_binary
       run: python builder/package.py binary
@@ -139,8 +139,8 @@ jobs:
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        pip3 install --upgrade -r requirements.txt --no-binary cffi,CT3,PyYAML --no-dependencies
-        pip3 install --upgrade -r builder/requirements.txt --no-dependencies
+        pip3 install -r requirements.txt --no-binary cffi,CT3,PyYAML --no-dependencies
+        pip3 install -r builder/requirements.txt --no-dependencies
     - name: Import macOS codesign certificates
       # Taken from https://github.com/Apple-Actions/import-codesign-certs/pull/27 (comments)
       env:
@@ -200,5 +200,5 @@ jobs:
           AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
           REDDIT_TOKEN: ${{ secrets.REDDIT_TOKEN }}
         run: |
-          pip3 install -r builder/release-requirements.txt
+          pip3 install -r builder/release-requirements.txt --no-dependencies
           python3 builder/release.py
