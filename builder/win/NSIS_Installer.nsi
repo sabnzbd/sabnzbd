@@ -18,6 +18,10 @@
 
 Unicode true
 
+; Must precede any data/header output. Solid LZMA dedups identical files (e.g. the
+; two SABnzbd*.pkg archives) and shrinks the whole installer.
+SetCompressor /SOLID lzma
+
 !addplugindir builder\win\nsis\Plugins
 !addincludedir builder\win\nsis\Include
 
@@ -86,7 +90,6 @@ Unicode true
 
 ;------------------------------------------------------------------
 ; Some default compiler settings (uncomment and change at will):
-  SetCompress auto ; (can be off or force)
   SetDatablockOptimize on ; (can be off)
   CRCCheck on ; (can be off)
   AutoCloseWindow false ; (can be true for the window go away automatically at end)
