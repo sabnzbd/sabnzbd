@@ -23,13 +23,13 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def _reset_sabnzbd_env():
-    """Ensure SABnzbd module state doesn't leak between tests."""
+def _mock_sabnzbd_env(monkeypatch):
+    """Set sabnzbd module state for CLI tests."""
     import sabnzbd
 
-    orig_windows = sabnzbd.WINDOWS
-    yield
-    sabnzbd.WINDOWS = orig_windows
+    monkeypatch.setattr(sabnzbd, "MY_NAME", "SABnzbd")
+    monkeypatch.setattr(sabnzbd, "__version__", "4.0.0")
+    monkeypatch.setattr(sabnzbd, "WINDOWS", False)
 
 
 class TestBuildParser:
@@ -37,12 +37,10 @@ class TestBuildParser:
 
     def _build(self, windows=False):
         import sabnzbd
-
-        sabnzbd.WINDOWS = windows
-        sabnzbd.MY_NAME = "SABnzbd"
-        sabnzbd.__version__ = "4.0.0"
         from SABnzbd import build_parser
 
+        if windows:
+            sabnzbd.WINDOWS = windows
         return build_parser()
 
     def test_parser_returns_argument_parser(self):
@@ -239,14 +237,9 @@ class TestCommandlineHandler:
     """Tests for commandline_handler()."""
 
     def _run_handler(self, args):
-        import sabnzbd
+        from SABnzbd import commandline_handler
 
-        sabnzbd.MY_NAME = "SABnzbd"
-        sabnzbd.__version__ = "4.0.0"
-        sabnzbd.WINDOWS = False
         with mock.patch("sys.argv", ["SABnzbd", *args]):
-            from SABnzbd import commandline_handler
-
             return commandline_handler()
 
     def test_simple_flags(self):
