@@ -910,10 +910,10 @@ def main():
         no_file_log = True
     if opts.no_login:
         no_login = True
-    if opts.pid:
+    if getattr(opts, "pid", None):
         pid_path = opts.pid
         sabnzbd.RESTART_ARGS.extend(["--pid", pid_path])
-    if opts.pidfile:
+    if getattr(opts, "pidfile", None):
         pid_file = opts.pidfile
         sabnzbd.RESTART_ARGS.extend(["--pidfile", pid_file])
     if opts.new:
