@@ -63,6 +63,7 @@ from sabnzbd.filesystem import (
     globber_full,
     set_permissions,
     cleanup_empty_directories,
+    remove_empty_parent_directories,
     fix_unix_encoding,
     sanitize_and_trim_path,
     sanitize_files,
@@ -525,7 +526,7 @@ def process_job(nzo: NzbObject) -> bool:
 
             if all_ok:
                 # Remove files matching the cleanup list
-                cleanup_list(tmp_workdir_complete, skip_nzb=True)
+                newfiles = cleanup_list(newfiles, tmp_workdir_complete, skip_nzb=True)
 
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
@@ -538,7 +539,7 @@ def process_job(nzo: NzbObject) -> bool:
                     cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     # Full cleanup including nzb's
-                    cleanup_list(tmp_workdir_complete, skip_nzb=False)
+                    newfiles = cleanup_list(newfiles, tmp_workdir_complete, skip_nzb=False)
 
         # No further processing for NZB-only downloads
         if not nzb_list:
@@ -574,7 +575,7 @@ def process_job(nzo: NzbObject) -> bool:
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sorter_active:
                 if newfiles:
-                    workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
+                    workdir_complete, ok, newfiles = file_sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         nzo.fail_msg = T("Failed to move files")
@@ -646,7 +647,7 @@ def process_job(nzo: NzbObject) -> bool:
 
         # Cleanup again, including NZB files
         if all_ok and os.path.isdir(workdir_complete):
-            cleanup_list(workdir_complete, False)
+            cleanup_list(newfiles, workdir_complete, skip_nzb=False)
 
         # Force error for empty result
         all_ok = all_ok and not empty
@@ -1146,30 +1147,32 @@ def handle_empty_queue():
             sabnzbd.LIBC.malloc_trim(0)
 
 
-def cleanup_list(wdir: str, skip_nzb: bool, base_dir: Optional[str] = None):
-    """Remove all files whose extension matches the cleanup list,
-    optionally ignoring the nzb extension
+def cleanup_list(filelist: list[str], base_dir: str, skip_nzb: bool) -> list[str]:
+    """Remove all files of the job that match the cleanup list,
+    optionally ignoring the nzb extension.
+    Only the tracked files are considered, so files of other jobs
+    in a shared folder are left alone. Returns the remaining files.
     """
-    if cfg.cleanup_list():
-        if base_dir is None:
-            base_dir = wdir
-        try:
-            with os.scandir(wdir) as files:
-                for entry in files:
-                    if entry.is_dir():
-                        cleanup_list(entry.path, skip_nzb, base_dir)
-                        cleanup_empty_directories(entry.path)
-                    else:
-                        relative_path = os.path.relpath(entry.path, base_dir)
-                        if on_cleanup_list(entry.name, skip_nzb, relative_path):
-                            try:
-                                logging.info("Removing unwanted file %s", entry.path)
-                                remove_file(entry.path)
-                            except Exception:
-                                logging.error(T("Removing %s failed"), clip_path(entry.path))
-                                logging.info("Traceback: ", exc_info=True)
-        except Exception:
-            logging.info("Traceback: ", exc_info=True)
+    if not cfg.cleanup_list():
+        return filelist
+
+    remaining_files = []
+    removed_files = []
+    for path in filelist:
+        if os.path.isfile(path) and on_cleanup_list(get_filename(path), skip_nzb, os.path.relpath(path, base_dir)):
+            try:
+                logging.info("Removing unwanted file %s", path)
+                remove_file(path)
+                removed_files.append(path)
+                continue
+            except Exception:
+                logging.error(T("Removing %s failed"), clip_path(path))
+                logging.info("Traceback: ", exc_info=True)
+        remaining_files.append(path)
+
+    # Remove the directories the removed files left behind, if they are now empty
+    remove_empty_parent_directories(base_dir, removed_files)
+    return remaining_files
 
 
 def prefix(path: str, pre: str) -> str:

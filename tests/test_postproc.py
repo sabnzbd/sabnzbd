@@ -262,6 +262,84 @@ class TestPostProc:
         _func()
 
 
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestCleanupList:
+    @staticmethod
+    def _create_file(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as f:
+            f.write(b"data")
+        assert os.path.exists(path)
+        return path
+
+    @pytest.mark.config({"cleanup_list": ["exe", "nzb"]})
+    def test_cleanup_list_only_tracked_files(self):
+        """Only files of the job may be removed, not other files in the same folder"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_cleanup")
+        job_files = [self._create_file(os.path.join(base_dir, f)) for f in ("job.mkv", "job.exe", "job.nzb")]
+        # Files matching the cleanup list, but not part of the job
+        unrelated_file = self._create_file(os.path.join(base_dir, "MyApplication", "fake.exe"))
+        # Tracked files that no longer exist shouldn't cause problems
+        gone_file = os.path.join(base_dir, "gone.exe")
+
+        remaining_files = postproc.cleanup_list([*job_files, gone_file], base_dir, skip_nzb=False)
+
+        assert remaining_files == [job_files[0], gone_file]
+        assert os.path.exists(job_files[0])
+        assert not os.path.exists(job_files[1])
+        assert not os.path.exists(job_files[2])
+        assert os.path.exists(unrelated_file)
+
+    @pytest.mark.config({"cleanup_list": ["exe", "nzb"]})
+    def test_cleanup_list_skip_nzb(self):
+        """The nzb extension should be ignored when skip_nzb is set"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_cleanup")
+        job_files = [self._create_file(os.path.join(base_dir, f)) for f in ("job.exe", "job.nzb")]
+
+        remaining_files = postproc.cleanup_list(job_files, base_dir, skip_nzb=True)
+
+        assert remaining_files == [job_files[1]]
+        assert not os.path.exists(job_files[0])
+        assert os.path.exists(job_files[1])
+
+    @pytest.mark.config({"cleanup_list": ["nfo"]})
+    def test_cleanup_list_removes_empty_parent_dirs(self):
+        """Directories left empty by the removed files are pruned, but never the base directory"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_cleanup")
+        job_file = self._create_file(os.path.join(base_dir, "sub", "deeper", "job.nfo"))
+        # Unrelated empty directory should be left alone
+        unrelated_dir = os.path.join(base_dir, "empty_dir")
+        os.makedirs(unrelated_dir, exist_ok=True)
+
+        assert postproc.cleanup_list([job_file], base_dir, skip_nzb=False) == []
+        assert not os.path.exists(os.path.join(base_dir, "sub"))
+        assert os.path.exists(unrelated_dir)
+        assert os.path.exists(base_dir)
+
+    @pytest.mark.config({"cleanup_list": ["images/*"]})
+    def test_cleanup_list_path_patterns(self):
+        """Path patterns are matched relative to the base directory"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_cleanup")
+        job_files = [
+            self._create_file(os.path.join(base_dir, f)) for f in (os.path.join("images", "pic.jpg"), "pic.jpg")
+        ]
+
+        remaining_files = postproc.cleanup_list(job_files, base_dir, skip_nzb=False)
+
+        assert remaining_files == [job_files[1]]
+        assert not os.path.exists(job_files[0])
+        assert os.path.exists(job_files[1])
+
+    @pytest.mark.config({"cleanup_list": []})
+    def test_cleanup_list_disabled(self):
+        """Without a cleanup list, nothing is removed"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_cleanup")
+        job_files = [self._create_file(os.path.join(base_dir, "job.exe"))]
+
+        assert postproc.cleanup_list(job_files, base_dir, skip_nzb=False) == job_files
+        assert os.path.exists(job_files[0])
+
+
 class TestNzbOnlyDownload:
     @mock.patch("sabnzbd.postproc.process_single_nzb")
     @mock.patch("sabnzbd.postproc.listdir_full")
