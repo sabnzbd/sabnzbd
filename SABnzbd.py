@@ -208,6 +208,16 @@ def _logging_type(value):
     return value
 
 
+_COPYRIGHT_TEMPLATE = (
+    "\n%(prog)s-%(version)s\n\n"
+    "(C) Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)\n"
+    "SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
+    "This is free software, and you are welcome to redistribute it\n"
+    "under certain conditions. It is licensed under the\n"
+    "GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.\n"
+)
+
+
 def build_parser():
     """Build the argument parser for SABnzbd CLI."""
     if sabnzbd.WINDOWS:
@@ -237,7 +247,13 @@ def build_parser():
         "-b", "--browser", type=int, choices=[0, 1], metavar="0..1", help="Auto browser launch (0=off, 1=on) [*]"
     )
     parser.add_argument("-d", "--daemon", action="store_true", help=daemon_help)
-    parser.add_argument("-v", "--version", action="version", version="%(prog)s-" + (sabnzbd.__version__ or ""))
+    parser.add_argument(
+        "-v", "--version", action="version",
+        version=_COPYRIGHT_TEMPLATE % {
+            "prog": sabnzbd.MY_NAME or "SABnzbd",
+            "version": sabnzbd.__version__ or "",
+        },
+    )
     parser.add_argument("-n", "--nobrowser", action="store_true", help="Disable auto browser launch")
     parser.add_argument("-c", "--clean", action="store_true", help="Remove queue, cache and logs")
     parser.add_argument("-p", "--pause", action="store_true", help="Start in paused mode")
@@ -861,7 +877,10 @@ def main():
     autobrowser = None
     autorestarted = False
 
-    _service, opts, _serv_opts, upload_nzbs = commandline_handler()
+    try:
+        _service, opts, _serv_opts, upload_nzbs = commandline_handler()
+    except SystemExit as e:
+        exit_sab(e.code)
 
     if opts.servicecall:
         sabnzbd.MY_FULLNAME = opts.servicecall

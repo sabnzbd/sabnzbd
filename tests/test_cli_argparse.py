@@ -19,14 +19,16 @@
 
 from unittest import mock
 
+import argparse
 import pytest
+
+import sabnzbd
+from SABnzbd import build_parser
 
 
 @pytest.fixture(autouse=True)
 def _mock_sabnzbd_env(monkeypatch):
     """Set sabnzbd module state for CLI tests."""
-    import sabnzbd
-
     monkeypatch.setattr(sabnzbd, "MY_NAME", "SABnzbd")
     monkeypatch.setattr(sabnzbd, "__version__", "4.0.0")
     monkeypatch.setattr(sabnzbd, "WINDOWS", False)
@@ -35,22 +37,12 @@ def _mock_sabnzbd_env(monkeypatch):
 class TestBuildParser:
     """Tests for build_parser()."""
 
-    def _build(self, windows=False):
-        import sabnzbd
-        from SABnzbd import build_parser
-
-        if windows:
-            sabnzbd.WINDOWS = windows
-        return build_parser()
-
     def test_parser_returns_argument_parser(self):
-        import argparse
-
-        parser = self._build()
+        parser = build_parser()
         assert isinstance(parser, argparse.ArgumentParser)
 
     def test_boolean_flags(self):
-        parser = self._build()
+        parser = build_parser()
         for flag in [
             "--daemon",
             "--nobrowser",
@@ -71,7 +63,7 @@ class TestBuildParser:
             assert getattr(opts, attr) is True, f"{flag} should be True"
 
     def test_short_boolean_flags(self):
-        parser = self._build()
+        parser = build_parser()
         for short, attr in [
             ("-d", "daemon"),
             ("-n", "nobrowser"),
@@ -83,139 +75,141 @@ class TestBuildParser:
             assert getattr(opts, attr) is True, f"{short} should set {attr}"
 
     def test_config_file_option(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["-f", "/tmp/test.ini"])
         assert opts.config_file == "/tmp/test.ini"
 
     def test_config_file_long_option(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--config-file", "/tmp/test.ini"])
         assert opts.config_file == "/tmp/test.ini"
 
     def test_config_file_alias(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--config", "/tmp/test.ini"])
         assert opts.config_file == "/tmp/test.ini"
 
     def test_server_option(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["-s", "0.0.0.0:8080"])
         assert opts.server == "0.0.0.0:8080"
 
     def test_templates_option(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["-t", "/my/templates"])
         assert opts.templates == "/my/templates"
 
     def test_logging_valid_range(self):
-        parser = self._build()
+        parser = build_parser()
         for level in (-1, 0, 1, 2):
             processed = ["--logging=%d" % level]
             opts = parser.parse_args(processed)
             assert opts.logging == level
 
     def test_logging_invalid_range(self):
-        parser = self._build()
+        parser = build_parser()
         with pytest.raises(SystemExit):
             parser.parse_args(["--logging=3"])
 
     def test_logging_invalid_negative(self):
-        parser = self._build()
+        parser = build_parser()
         with pytest.raises(SystemExit):
             parser.parse_args(["--logging=-5"])
 
     def test_browser_option(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["-b", "1"])
         assert opts.browser == 1
 
     def test_browser_off(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["-b", "0"])
         assert opts.browser == 0
 
     def test_https_port(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--https", "9090"])
         assert opts.https == 9090
 
     def test_ipv6_hosting(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--ipv6_hosting", "1"])
         assert opts.ipv6_hosting == 1
 
     def test_ipv6_alias(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--ipv6", "1"])
         assert opts.ipv6_hosting == 1
 
     def test_inet_exposure_valid(self):
-        parser = self._build()
+        parser = build_parser()
         for level in range(6):
             opts = parser.parse_args(["--inet_exposure", str(level)])
             assert opts.inet_exposure == level
 
     def test_inet_exposure_invalid(self):
-        parser = self._build()
+        parser = build_parser()
         with pytest.raises(SystemExit):
             parser.parse_args(["--inet_exposure", "6"])
 
     def test_inet_alias(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--inet", "3"])
         assert opts.inet_exposure == 3
 
     def test_disable_file_log_alias(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--disable"])
         assert opts.disable_file_log is True
 
     def test_pid_option(self):
-        parser = self._build(windows=False)
+        parser = build_parser()
         opts = parser.parse_args(["--pid", "/var/run/sabnzbd.pid"])
         assert opts.pid == "/var/run/sabnzbd.pid"
 
     def test_pidfile_option(self):
-        parser = self._build(windows=False)
+        parser = build_parser()
         opts = parser.parse_args(["--pidfile", "/var/run/sabnzbd.pid"])
         assert opts.pidfile == "/var/run/sabnzbd.pid"
 
-    def test_pid_not_on_windows(self):
-        parser = self._build(windows=True)
+    def test_pid_not_on_windows(self, monkeypatch):
+        monkeypatch.setattr(sabnzbd, "WINDOWS", True)
+        parser = build_parser()
         with pytest.raises(SystemExit):
             parser.parse_args(["--pid", "/tmp/pid"])
 
-    def test_pidfile_not_on_windows(self):
-        parser = self._build(windows=True)
+    def test_pidfile_not_on_windows(self, monkeypatch):
+        monkeypatch.setattr(sabnzbd, "WINDOWS", True)
+        parser = build_parser()
         with pytest.raises(SystemExit):
             parser.parse_args(["--pidfile", "/tmp/pid"])
 
     def test_nzb_files_as_remaining_args(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["movie.nzb", "album.nzb"])
         assert opts.args == ["movie.nzb", "album.nzb"]
 
     def test_mixed_flags_and_nzb_files(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["-d", "-c", "movie.nzb"])
         assert opts.daemon is True
         assert opts.clean is True
         assert opts.args == ["movie.nzb"]
 
     def test_win32_service_options_hidden(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args(["--password", "secret", "--username", "admin"])
         assert opts.password == "secret"
         assert opts.username == "admin"
 
     def test_version_flag(self):
-        parser = self._build()
+        parser = build_parser()
         with pytest.raises(SystemExit) as exc_info:
             parser.parse_args(["--version"])
         assert exc_info.value.code == 0
 
     def test_help_flag(self, capsys):
-        parser = self._build()
+        parser = build_parser()
         with pytest.raises(SystemExit) as exc_info:
             parser.parse_args(["--help"])
         assert exc_info.value.code == 0
@@ -223,7 +217,7 @@ class TestBuildParser:
         assert "config-file" in captured.out.lower() or "config" in captured.out.lower()
 
     def test_no_args_defaults(self):
-        parser = self._build()
+        parser = build_parser()
         opts = parser.parse_args([])
         assert opts.config_file is None
         assert opts.server is None
