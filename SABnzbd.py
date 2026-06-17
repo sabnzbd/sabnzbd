@@ -248,8 +248,11 @@ def build_parser():
     )
     parser.add_argument("-d", "--daemon", action="store_true", help=daemon_help)
     parser.add_argument(
-        "-v", "--version", action="version",
-        version=_COPYRIGHT_TEMPLATE % {
+        "-v",
+        "--version",
+        action="version",
+        version=_COPYRIGHT_TEMPLATE
+        % {
             "prog": sabnzbd.MY_NAME or "SABnzbd",
             "version": sabnzbd.__version__ or "",
         },
