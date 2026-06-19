@@ -1189,7 +1189,7 @@ msgstr "kütük dosyasına bakın"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
-msgstr ""
+msgstr "Açma atlandı, TAR desteği Python 3.12 veya daha yenisini gerektirir"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
