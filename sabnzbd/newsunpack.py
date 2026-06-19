@@ -757,16 +757,17 @@ def rar_extract_core(
         if not char:
             break
 
-        # Skip empty lines
-        line = linebuf.getvalue().strip()
-        if not line:
-            continue
+        line = linebuf.getvalue()
 
         # Handle whole lines
         if char == "\n":
-            lines.append(line)
             linebuf.truncate(0)
             linebuf.seek(0)
+            # Skip empty lines
+            line = line[:-1]
+            if not line:
+                continue
+            lines.append(line)
             if line.startswith("Extracting from"):
                 filename = re.search(RAR_EXTRACTFROM_RE, line).group(1)
                 if filename not in rarfiles:
@@ -879,12 +880,12 @@ def rar_extract_core(
                 if cfg.flat_unpack():
                     unpacked_file = os.path.basename(unpacked_file)
                 extracted.append(real_path(extraction_path, unpacked_file))
-        elif line.endswith("[C]ontinue, [Q]uit"):
+        elif line.endswith("[C]ontinue, [Q]uit "):
             fail = 1
             with suppress(IOError):
                 p.stdin.write(b"Q\n")
                 time.sleep(0.2)
-        elif line.endswith("[R]etry, [A]bort"):
+        elif line.endswith("[R]etry, [A]bort "):
             fail = 1
             with suppress(IOError):
                 p.stdin.write(b"A\n")
