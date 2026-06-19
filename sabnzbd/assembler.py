@@ -208,7 +208,9 @@ class Assembler(Thread):
         # Always write
         if article_has_first_part and filename_checked and not import_finished:
             return True
-        next_ready = (next_article := nzf.assembler_next_article) and (next_article.decoded or next_article.on_disk)
+        next_ready = (next_article := nzf.assembler_next_article) and (
+            next_article.decoded or next_article.on_disk or next_article.failed
+        )
         # Trigger every 5 seconds if next article is decoded or on_disk
         if next_ready and time.monotonic() > self.queued_next_time.get(nzf.nzf_id, 0):
             return True
@@ -385,7 +387,7 @@ class Assembler(Thread):
                     break
 
                 # Skip already written articles
-                if article.on_disk:
+                if article.on_disk or article.failed:
                     if fd is not None and article.decoded_size is not None:
                         # Move the file descriptor forward past this article
                         offset += article.decoded_size

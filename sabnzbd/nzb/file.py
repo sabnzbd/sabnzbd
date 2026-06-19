@@ -143,6 +143,13 @@ class NzbFile(TryList):
             return self.decodetable[next_index]
         return None
 
+    @synchronized()
+    def on_disk(self) -> Optional[list[bool]]:
+        """List of each articles on_disk state, if any are not on_disk"""
+        if self.import_finished and any(not article.on_disk for article in self.decodetable):
+            return [bool(article.on_disk) for article in self.decodetable]
+        return None
+
     def finish_import(self):
         """Load the article objects from disk"""
         logging.debug("Finishing import on %s", self.filename)
@@ -161,6 +168,7 @@ class NzbFile(TryList):
     def add_article(self, article_info):
         """Add article to object database and return article object"""
         article = Article(article_info[0], article_info[1], self)
+        article.on_disk = self.assembled
         self.articles[article] = article
         self.decodetable.append(article)
         return article
@@ -171,6 +179,8 @@ class NzbFile(TryList):
         if self.articles.pop(article, None) is not None:
             if success:
                 self.bytes_left -= article.bytes
+            else:
+                article.failed = True
         # Only on fully loaded files we can know if it's really done
         return self.import_finished and not self.articles
 

@@ -22,6 +22,7 @@ CONFIG_VERSION = 19
 
 QUEUE_VERSION = 10
 POSTPROC_QUEUE_VERSION = 3
+ONDISK_VERSION = 1
 
 REC_RAR_VERSION = 550
 RAR_MAX_PASSWORD = 127  #: Max number of utf-16 chars in passwords.
@@ -48,6 +49,7 @@ FUTURE_Q_FOLDER = "future"
 JOB_ADMIN = "__ADMIN__"
 VERIFIED_FILE = "__verified__"
 RENAMES_FILE = "__renames__"
+ONDISK_FILE = "__ondisk__"
 ATTRIB_FILE = "SABnzbd_attrib"
 NZO_FILE = "SABnzbd_nzo_data"
 REPAIR_REQUEST = "repair-all.sab"
