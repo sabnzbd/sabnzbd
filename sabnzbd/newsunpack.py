@@ -729,7 +729,7 @@ def rar_extract_core(
 
     # On Windows, UnRar uses a custom argument parser
     # See: https://github.com/sabnzbd/sabnzbd/issues/1043
-    p = build_and_run_command(command, windows_unrar_command=True)
+    p = build_and_run_command(command, windows_unrar_command=True, stdin=subprocess.PIPE)
     sabnzbd.PostProcessor.external_process = p
 
     nzo.set_action_line(T("Unpacking"), "00/%02d" % numrars)
@@ -883,12 +883,15 @@ def rar_extract_core(
         elif line.endswith("[C]ontinue, [Q]uit "):
             fail = 1
             with suppress(IOError):
-                p.stdin.write(b"Q\n")
+                p.stdin.write("Q\n")
                 time.sleep(0.2)
         elif line.endswith("[R]etry, [A]bort "):
             fail = 1
+            msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line)
+            nzo.fail_msg = msg
+            nzo.set_unpack_info("Unpack", msg, setname)
             with suppress(IOError):
-                p.stdin.write(b"A\n")
+                p.stdin.write("A\n")
                 time.sleep(0.2)
 
         if fail:
