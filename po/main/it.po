@@ -1,19 +1,19 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
-# 
+#
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2026
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Italian (https://app.transifex.com/sabnzbd/teams/111101/it/)\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. Notification - Status page, table column header, actual message
@@ -154,6 +154,8 @@ msgstr ""
 #: sabnzbd/__init__.py
 msgid "Windows ARM version of SABnzbd is available from our Downloads page!"
 msgstr ""
+"La versione Windows ARM di SABnzbd è disponibile nella nostra pagina dei "
+"download!"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -631,6 +633,9 @@ msgid ""
 "Total number of configured connections (%d) is greater than the operating "
 "system limit (512), downloading will crash if all connections become active"
 msgstr ""
+"Il numero totale di connessioni configurate (%d) è maggiore del limite del "
+"sistema operativo (512); il download andrà in crash se tutte le connessioni "
+"diventano attive"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -802,6 +807,9 @@ msgid ""
 "files. For details and possible solutions, see: "
 "https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
+"La modalità Direct Write è stata disabilitata perché %s non supporta i file "
+"sparsi. Per dettagli e possibili soluzioni, vedi: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -911,6 +919,8 @@ msgid ""
 "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
 " %f MB/s"
 msgstr ""
+"La larghezza di banda Internet di IPv4 è significativamente diversa da IPv6:"
+" %f MB/s contro %f MB/s"
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -1190,7 +1200,7 @@ msgstr "vedere file di log"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
-msgstr ""
+msgstr "Estrazione saltata, il supporto TAR richiede Python 3.12 o successivo"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
@@ -3016,6 +3026,9 @@ msgid ""
 "download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
 "(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
+"Elenco di estensioni di file, nomi file o schemi da eliminare dopo il "
+"download.<br />Esempi: <b>nfo, sfv</b> (estensioni) o <b>thumbs.db</b> (nomi"
+" file) o <b>*.tmp, images/*, */test.jpg</b> (schemi)."
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3406,6 +3419,9 @@ msgid ""
 "all jobs will be marked as Completed and moved to the Complete folder even "
 "if they are incomplete."
 msgstr ""
+"Prova a estrarre solo i processi che hanno superato la fase di verifica. Se "
+"disattivato, tutti i processi verranno contrassegnati come Completato e "
+"spostati nella cartella Completi anche se incompleti."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3500,6 +3516,8 @@ msgstr "Abilita controlli basati su SFV"
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
 msgstr ""
+"Se non sono disponibili file par2, usa i file sfv (se presenti) per "
+"verificare i file"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3922,7 +3940,7 @@ msgstr "Abilita"
 
 #: sabnzbd/skintext.py
 msgid "Articles per request"
-msgstr ""
+msgstr "Articoli per richiesta"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3930,6 +3948,9 @@ msgid ""
 "first.<br />This can improve download speeds, especially on connections with"
 " higher latency."
 msgstr ""
+"Richiedi più articoli per connessione senza attendere prima ogni "
+"risposta.<br />Questo può migliorare la velocità di download, soprattutto "
+"sulle connessioni con latenza più elevata."
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
