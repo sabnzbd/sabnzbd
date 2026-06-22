@@ -31,6 +31,21 @@ Quick usage:
    python tools/po_to_json.py --mode merge --input tools/cs.json --languages cs --dry-run
 4) Apply merge:
    python tools/po_to_json.py --mode merge --input tools/cs.json --languages cs
+
+Guidance for (AI) translators:
+Before filling the `translation` fields, read the existing translations in the
+same target `.po` file and use them as the primary style reference. Each JSON
+entry includes its `file` so you know which `.po` to consult. Match the existing
+translations of that language, specifically:
+- Tone and formality (for example, Dutch uses the informal "je").
+- Established terminology and word choices already used for recurring terms
+  (for example, in Dutch a "job" is translated as "download").
+- Reuse existing phrasings for concepts that already appear (for example, the
+  Dutch "map voor voltooide downloads" for the completed-download folder).
+- Keep formatting intact: placeholders (%s, %d, %f), HTML tags (<br />, <b>),
+  and URLs must be preserved exactly as in the `msgid`.
+The goal is consistency with the existing translation, not a literal,
+word-for-word conversion.
 """
 
 from __future__ import annotations

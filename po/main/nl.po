@@ -1,21 +1,21 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2007-2026 by The SABnzbd-Team (sabnzbd.org)
-# 
+#
 # Translators:
 # Rik Brouwer, 2022
 # Robert Lampe, 2023
 # Safihre <safihre@sabnzbd.org>, 2026
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-5.1.0\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2026\n"
 "Language-Team: Dutch (https://app.transifex.com/sabnzbd/teams/111101/nl/)\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Notification - Status page, table column header, actual message
@@ -633,6 +633,9 @@ msgid ""
 "Total number of configured connections (%d) is greater than the operating "
 "system limit (512), downloading will crash if all connections become active"
 msgstr ""
+"Het totale aantal ingestelde verbindingen (%d) is hoger dan de limiet van "
+"het besturingssysteem (512); het downloaden zal crashen als alle "
+"verbindingen actief worden"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -806,6 +809,9 @@ msgid ""
 "files. For details and possible solutions, see: "
 "https://sabnzbd.org/wiki/advanced/direct-write"
 msgstr ""
+"Direct Write-modus is uitgeschakeld omdat %s geen sparse-bestanden "
+"ondersteunt. Zie voor details en mogelijke oplossingen: "
+"https://sabnzbd.org/wiki/advanced/direct-write"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
@@ -915,6 +921,8 @@ msgid ""
 "Internet Bandwidth of IPv4 significantly different from IPv6: %f MB/s versus"
 " %f MB/s"
 msgstr ""
+"Internet Bandbreedte van IPv4 wijkt aanzienlijk af van IPv6: %f MB/s "
+"tegenover %f MB/s"
 
 #. Footer: indicator of warnings
 #: sabnzbd/macosmenu.py, sabnzbd/skintext.py
@@ -1196,6 +1204,7 @@ msgstr "zie logbestand"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking skipped, TAR support requires Python 3.12 or later"
 msgstr ""
+"Uitpakken overgeslagen, TAR-ondersteuning vereist Python 3.12 of nieuwer"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
@@ -3021,6 +3030,10 @@ msgid ""
 "download.<br />Examples: <b>nfo, sfv</b> (extensions) or <b>thumbs.db</b> "
 "(filenames) or <b>*.tmp, images/*, */test.jpg</b> (patterns)."
 msgstr ""
+"Lijst met bestandsextensies, bestandsnamen of patronen die na het downloaden"
+" verwijderd moeten worden.<br />Voorbeelden: <b>nfo, sfv</b> (extensies) of "
+"<b>thumbs.db</b> (bestandsnamen) of <b>*.tmp, images/*, */test.jpg</b> "
+"(patronen)."
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
@@ -3403,6 +3416,10 @@ msgid ""
 "all jobs will be marked as Completed and moved to the Complete folder even "
 "if they are incomplete."
 msgstr ""
+"Probeer alleen downloads uit te pakken die de verificatiefase met succes "
+"hebben doorlopen. Als dit is uitgeschakeld, worden alle downloads als "
+"Voltooid gemarkeerd en naar de map voor voltooide downloads verplaatst, ook "
+"als ze onvolledig zijn."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3499,6 +3516,8 @@ msgstr "Voer SFV-gebaseerde controles uit"
 msgid ""
 "If no par2 files are available, use sfv files (if present) to verify files"
 msgstr ""
+"Als er geen par2-bestanden beschikbaar zijn, gebruik dan sfv-bestanden "
+"(indien aanwezig) om bestanden te verifiëren"
 
 #: sabnzbd/skintext.py
 msgid "User script can flag job as failed"
@@ -3931,6 +3950,9 @@ msgid ""
 "first.<br />This can improve download speeds, especially on connections with"
 " higher latency."
 msgstr ""
+"Vraag meerdere artikelen per verbinding aan zonder eerst op elke reactie te "
+"wachten.<br />Dit kan de downloadsnelheid verbeteren, vooral bij "
+"verbindingen met een hogere latency."
 
 #. Button: Remove server
 #: sabnzbd/skintext.py
