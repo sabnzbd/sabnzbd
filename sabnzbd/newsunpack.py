@@ -880,11 +880,6 @@ def rar_extract_core(
                 if cfg.flat_unpack():
                     unpacked_file = os.path.basename(unpacked_file)
                 extracted.append(real_path(extraction_path, unpacked_file))
-        elif line.endswith("[C]ontinue, [Q]uit "):
-            fail = 1
-            with suppress(IOError):
-                p.stdin.write("Q\n")
-                time.sleep(0.2)
         elif line.endswith("[R]etry, [A]bort "):
             fail = 1
             msg = "%s %s" % (T("Unpacking failed, write error or disk is full?"), line)
