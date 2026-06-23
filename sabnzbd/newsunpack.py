@@ -887,7 +887,6 @@ def rar_extract_core(
             nzo.set_unpack_info("Unpack", msg, setname)
             with suppress(IOError):
                 p.stdin.write("A\n")
-                time.sleep(0.2)
 
         if fail:
             if requires_kill:
