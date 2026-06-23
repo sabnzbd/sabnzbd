@@ -288,18 +288,19 @@ class NzbFile(TryList):
         return offset
 
     @synchronized()
-    def contiguous_ready_bytes(self) -> int:
-        """How many bytes from assembler_next_index onward are ready to write to file contiguously?"""
-        bytes_ready: int = 0
+    def has_contiguous_ready_bytes(self, bytes_ready: int) -> bool:
+        """Are there at least bytes_ready bytes from assembler_next_index onward ready to write to file contiguously?"""
         for article in self.decodetable[self.assembler_next_index :]:
             if not article.decoded:
                 break
-            if article.on_disk:
+            if article.on_disk or article.failed:
                 continue
             if article.decoded_size is None:
                 break
-            bytes_ready += article.decoded_size
-        return bytes_ready
+            bytes_ready -= article.decoded_size
+            if bytes_ready <= 0:
+                break
+        return bytes_ready <= 0
 
     def sort_key(self) -> tuple[Any, ...]:
         """Comparison function for sorting NZB files.
