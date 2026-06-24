@@ -27,6 +27,7 @@ import os.path
 import shutil
 import sys
 import tarfile
+from typing import Optional
 from unittest import mock
 from unittest.mock import call
 
@@ -288,7 +289,7 @@ class TestPar2Repair:
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestRarUnpack:
     @staticmethod
-    def _create_test_nzo(temp_dir, filename: str = "test.nzb", password: str = ""):
+    def _create_test_nzo(temp_dir, filename: str = "test.nzb", password: Optional[str] = None):
         """Create a mock NZO object for testing"""
         nzo = mock.Mock()
         nzo.download_path = temp_dir
@@ -348,7 +349,7 @@ class TestRarUnpack:
         sabnzbd.PostProcessor = mock.Mock()
 
         # Create mock NZO
-        nzo = TestRarUnpack._create_test_nzo(temp_test_dir, password=password or "")
+        nzo = TestRarUnpack._create_test_nzo(temp_test_dir, password=password)
 
         # Apply custom NZO settings if provided
         if custom_nzo_settings:
