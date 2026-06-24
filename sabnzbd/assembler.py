@@ -219,7 +219,7 @@ class Assembler(Thread):
             return (
                 next_ready
                 and ready_bytes >= self.assembler_trigger
-                and nzf.contiguous_ready_bytes() >= self.assembler_trigger
+                and nzf.has_contiguous_ready_bytes(self.assembler_trigger)
             )
         # Direct Write
         if allow_non_contiguous:
