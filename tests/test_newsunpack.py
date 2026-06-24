@@ -27,6 +27,7 @@ import os.path
 import shutil
 import sys
 import tarfile
+from typing import Optional
 from unittest import mock
 from unittest.mock import call
 
@@ -36,7 +37,7 @@ import sabnzbd
 import sabnzbd.newsunpack as newsunpack
 from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import SAB_CACHE_DIR
-from sabnzbd.misc import format_time_string
+from sabnzbd.misc import format_time_string, SABRarFile
 from sabnzbd.filesystem import long_path, create_all_dirs, listdir_full
 
 
@@ -288,7 +289,7 @@ class TestPar2Repair:
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestRarUnpack:
     @staticmethod
-    def _create_test_nzo(temp_dir, filename="test.nzb"):
+    def _create_test_nzo(temp_dir, filename: str = "test.nzb", password: Optional[str] = None):
         """Create a mock NZO object for testing"""
         nzo = mock.Mock()
         nzo.download_path = temp_dir
@@ -301,10 +302,10 @@ class TestRarUnpack:
         nzo.set_action_line = mock.Mock()
 
         # Mock password-related attributes
-        nzo.password = ""  # No password by default
+        nzo.password = password
         nzo.nzo_info = {}  # Empty nzo_info
         nzo.meta = {}  # Empty meta data
-        nzo.correct_password = ""  # No correct password found yet
+        nzo.correct_password = password
 
         return nzo
 
@@ -316,6 +317,7 @@ class TestRarUnpack:
         custom_temp_test_dir=None,
         custom_temp_complete_dir=None,
         custom_nzo_settings=None,
+        password=None,
     ):
         """Run rar_unpack with test data"""
         # Base
@@ -347,7 +349,7 @@ class TestRarUnpack:
         sabnzbd.PostProcessor = mock.Mock()
 
         # Create mock NZO
-        nzo = TestRarUnpack._create_test_nzo(temp_test_dir)
+        nzo = TestRarUnpack._create_test_nzo(temp_test_dir, password=password)
 
         # Apply custom NZO settings if provided
         if custom_nzo_settings:
@@ -409,14 +411,64 @@ class TestRarUnpack:
             extracted_files_set
         ), f"{expected_full_paths} should be in {extracted_files_set}"
 
-    def test_basic_rar_unpack(self):
-        """Test basic RAR unpacking functionality"""
-        test_dir = "tests/data/basic_rar5"
-        rar_files = ["testfile.rar"]
-        expected_files = {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"}
+    @pytest.mark.parametrize(
+        "test_dir, rar_files, expected_files, password",
+        [
+            (
+                "tests/data/basic_rar3",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                None,
+            ),
+            # RAR3 does not support header encryption
+            (
+                "tests/data/basic_rar3_64",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+            ),
+            (
+                "tests/data/basic_rar4_16_header",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42e",
+            ),
+            # Long password triggers Rar3Sha1 slow path
+            (
+                "tests/data/basic_rar4_64_header",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+            ),
+            # Password truncated to 127
+            (
+                "tests/data/basic_rar4_128_header",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "sgq6gxzcjupw6kmn3zk49dudy9iuwkuo4232zm3ygafo3me7wuj47grf3oap3sk6gfr7d7u6zobvjoxwo98xuuuqa78vqqmhxyxq7ego7modk49bhuw6cahfdqr7hyf",
+            ),
+            (
+                "tests/data/basic_rar5",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                None,
+            ),
+            (
+                "tests/data/basic_rar5_64_header_blake2",
+                ["testfile.rar"],
+                {"Testfile_1234.bin", "testfile.bin", "My_Test_Download.bin"},
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+            ),
+        ],
+    )
+    def test_basic_rar_unpack(self, test_dir, rar_files, expected_files, password):
+        for rar_file in rar_files:
+            with SABRarFile(os.path.join(test_dir, rar_file), part_only=True) as zf:
+                zf.setpassword(password)
+                assert zf.namelist()
 
         error_code, extracted_files, complete_contents, download_contents, _nzo, temp_complete_dir = (
-            self._run_rar_unpack(test_dir, rar_files)
+            self._run_rar_unpack(test_dir, rar_files, password=password)
         )
 
         self._assert_successful_extraction(

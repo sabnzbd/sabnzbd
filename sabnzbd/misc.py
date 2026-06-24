@@ -35,6 +35,7 @@ import inspect
 import queue
 import html
 import ipaddress
+import sabctools
 import socks
 import math
 import rarfile
@@ -1711,3 +1712,7 @@ class SABRarFile(rarfile.RarFile):
     def trigger_parse(self):
         """Force re-parse, wich is needed to trigger password checking logic"""
         self._parse()
+
+
+# Replace rar3_s2k with native implementation which is faster for longer passwords
+rarfile.rar3_s2k = sabctools.rarfile_rar3_s2k
