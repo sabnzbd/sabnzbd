@@ -1,24 +1,30 @@
-Release Notes - SABnzbd 5.1.0 Beta 1
+Release Notes - SABnzbd 5.1.0 Beta 2
 =========================================================
 
-This is the first beta release of version 5.1.
-We will probably add new features in upcoming testing releases,
+This is the second beta release of version 5.1.
+We will probably add (a few) new features in upcoming testing releases,
 but we already wanted to share the current improvements with you!
 
 ## New features in 5.1.0
 
 * Refreshed the interface.
+* When Retrying a job, only the actually missing articles are tried again.
+  This only works for jobs downloaded in 5.1.0 (or newer).
 * RSS-items are now stored in the database instead of on disk.
 * Downloaded RSS-items are cleared from RSS-database after 3 days.
 * Add support for filename and path pattern matching to the `Cleanup List`.
 * Allow job setting changes directly from `Extra queue columns`.
 * Added support for unpacking `.tar` files during post-processing.
 * Improved anonymization of the logs when using `Show Logging`.
+* New Servers will default to 16 connections instead of 8.
+* Parsing of header-encrypted RAR's will use significantly less resources.
+* Removed redundant `INSTALL.txt` file.
 * Dropped support for Python 3.9.
 
 ## Bug fixes in 5.1.0
 
 * Prevent incorrect warnings about non-writeable directories.
+* Files unrelated to job could get removed by the `Cleanup List` logic.
 * Windows: Uninstall would not remove Settings or Windows Service.
 * Windows: Warn for OS-limit if more than 1024 connections are configured.
 * macOS: AppleDouble files could result in failures in `Moving` stage.
