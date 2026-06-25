@@ -49,11 +49,11 @@ class TestDownloadSorting(DownloadFlowBasics):
         [
             (
                 "sea_sort_s01_4k_uhd-SABnzbd",
-                ["Sea.Sort.S01E0" + str(n) + ".data" for n in (1, 2, 3, 5)],
+                ["Sea.Sort.S01E0" + str(n) + ".iso" for n in (1, 2, 3, 5)],
             ),  # Data files with season and episode markers, one episode number intentionally missing
             (
                 "sea_sort_s02_4k_uhd-SABnzbd",
-                ["Sea.Sort.S02E0" + str(n) + ".data" for n in (4, 6, 7, 9)],
+                ["Sea.Sort.S02E0" + str(n) + ".iso" for n in (4, 6, 7, 9)],
             ),  # Data files with episode markers only, one episode number intentionally missing
         ],
     )
@@ -66,11 +66,11 @@ class TestDownloadSorting(DownloadFlowBasics):
         [
             (
                 "Long_live_CDs_2023_576i_mono-SABnzbd",
-                ["Movie_DVD_" + str(n) + ".disc" for n in (1, 2, 3)],
+                ["Movie_DVD_" + str(n) + ".iso" for n in (1, 2, 3)],
             ),  # Data files with "CD n" sequence markers
             (
                 "Its_all_about_parts_2023_576i_mono-SABnzbd",
-                ["Movie_DVD_" + str(n) + ".disc" for n in (6, 7, 8)],
+                ["Movie_DVD_" + str(n) + ".iso" for n in (6, 7, 8)],
             ),  # Data file with "Part n" sequence markers
         ],
     )

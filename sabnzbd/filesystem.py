@@ -318,7 +318,7 @@ def sanitize_and_trim_path(path: str) -> str:
         new_path = "/"
     for part in parts:
         new_path = os.path.join(new_path, sanitize_foldername(part))
-    return os.path.abspath(os.path.normpath(new_path))
+    return os.path.abspath(new_path)
 
 
 def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] = None) -> list[str]:
@@ -884,6 +884,23 @@ def cleanup_empty_directories(path: str):
             pass
 
 
+def remove_empty_parent_directories(base_dir: str, files: list[str]):
+    """Remove directories below 'base_dir' that are left empty
+    after 'files' were moved or removed. Other (unrelated) empty
+    directories and 'base_dir' itself are never removed."""
+    base_dir = os.path.normpath(base_dir)
+    for check_dir in {os.path.normpath(os.path.dirname(filepath)) for filepath in files}:
+        # Walk up towards base_dir, removing directories as long as they are empty
+        while check_dir != base_dir and check_dir.startswith(base_dir + os.path.sep):
+            try:
+                if os.listdir(check_dir):
+                    break
+                remove_dir(check_dir)
+            except OSError:
+                break
+            check_dir = os.path.dirname(check_dir)
+
+
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
     Optionally allows the creation of local directories if they don't exist yet
@@ -1373,7 +1390,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
             path = os.path.dirname(path)
 
     # Fix up the path and find the parent
-    path = os.path.abspath(os.path.normpath(path))
+    path = os.path.abspath(path)
     parent_path = os.path.dirname(path)
 
     # If we're at the root then the next step is the meta-node showing our drive letters
