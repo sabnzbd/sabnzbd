@@ -629,8 +629,8 @@ def move_to_parent_directory(workdir: str, files: list[str]) -> tuple[str, bool,
     """Move the job 'files' under 'workdir' into 'workdir/..'
     and return the updated locations of the files"""
     # Determine 'folder'/..
-    workdir = os.path.abspath(os.path.normpath(workdir))
-    dest = os.path.abspath(os.path.normpath(os.path.join(workdir, "..")))
+    workdir = os.path.abspath(workdir)
+    dest = os.path.abspath(os.path.join(workdir, ".."))
 
     # Check for DVD folders and bail out if found
     for item in os.listdir(workdir):
@@ -641,7 +641,7 @@ def move_to_parent_directory(workdir: str, files: list[str]) -> tuple[str, bool,
 
     moved_files = []
     for nr, path in enumerate(files):
-        path = os.path.abspath(os.path.normpath(path))
+        path = os.path.abspath(path)
         if not path.startswith(workdir + os.path.sep):
             # Not inside the directory we move, keep as-is
             moved_files.append(path)

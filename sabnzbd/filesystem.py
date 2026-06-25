@@ -318,7 +318,7 @@ def sanitize_and_trim_path(path: str) -> str:
         new_path = "/"
     for part in parts:
         new_path = os.path.join(new_path, sanitize_foldername(part))
-    return os.path.abspath(os.path.normpath(new_path))
+    return os.path.abspath(new_path)
 
 
 def sanitize_files(folder: Optional[str] = None, filelist: Optional[list[str]] = None) -> list[str]:
@@ -1390,7 +1390,7 @@ def pathbrowser(path: str, show_hidden: bool = False, show_files: bool = False) 
             path = os.path.dirname(path)
 
     # Fix up the path and find the parent
-    path = os.path.abspath(os.path.normpath(path))
+    path = os.path.abspath(path)
     parent_path = os.path.dirname(path)
 
     # If we're at the root then the next step is the meta-node showing our drive letters
