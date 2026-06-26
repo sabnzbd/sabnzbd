@@ -47,11 +47,14 @@ jobs:
       id: windows_binary
       run: python builder/package.py binary
     - name: Upload Windows standalone binary (unsigned)
+      # When releasing, SignPath consumes this artifact directly and requires the
+      # zip-in-zip layout because they don't support the archive-flag
       uses: actions/upload-artifact@v7
       id: upload-unsigned-binary
       with:
-        archive: false
+        archive: ${{ contains(github.ref, 'refs/tags/') }}
         path: "*-win*-bin.zip"
+        name: Windows standalone binary (${{ matrix.architecture }})
     - name: Sign Windows standalone binary
       uses: signpath/github-action-submit-signing-request@v2
       if: contains(github.ref, 'refs/tags/')
@@ -65,11 +68,12 @@ jobs:
         wait-for-completion: true
         output-artifact-directory: "signed"
     - name: Upload Windows standalone binary (signed)
+      # The release file is a .zip, which download-artifact would extract if
+      # uploaded raw, so keep it archived and let the release job unpack it
       uses: actions/upload-artifact@v7
       if: contains(github.ref, 'refs/tags/')
       with:
-        archive: false
-        overwrite: true
+        name: Windows standalone binary (${{ matrix.architecture }}, signed)
         path: "signed/*-win*-bin.zip"
     - name: Build Windows installer
       if: matrix.architecture == 'x64'
@@ -79,8 +83,9 @@ jobs:
       uses: actions/upload-artifact@v7
       id: upload-unsigned-installer
       with:
-        archive: false
+        archive: ${{ contains(github.ref, 'refs/tags/') }}
         path: "*-win-setup.exe"
+        name: Windows installer (${{ matrix.architecture }})
     - name: Sign Windows installer
       if: matrix.architecture == 'x64' && contains(github.ref, 'refs/tags/')
       uses: signpath/github-action-submit-signing-request@v2
@@ -98,7 +103,6 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         archive: false
-        overwrite: true
         path: "signed/*-win-setup.exe"
 
   build_macos:
@@ -191,9 +195,19 @@ jobs:
           python-version: "3.14"
           cache: pip
           cache-dependency-path: "builder/release-requirements.txt"
-      - name: Download all artifacts
+      - name: Download release artifacts
+        # The installer, source and macOS builds are uploaded with archive: false,
+        # so their artifact name is the release filename
         uses: actions/download-artifact@v8
         with:
+          pattern: "SABnzbd-*"
+          merge-multiple: true
+      - name: Download signed Windows binaries
+        # These stay archived (.zip release files), so download-artifact unpacks
+        # them back into the release .zip
+        uses: actions/download-artifact@v8
+        with:
+          pattern: "*signed*"
           merge-multiple: true
       - name: Prepare official release
         env:
