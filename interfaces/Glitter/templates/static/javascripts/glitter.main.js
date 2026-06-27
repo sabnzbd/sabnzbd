@@ -105,6 +105,14 @@ function ViewModel() {
         return self.speed() + ' ' + (self.speedMetrics[self.speedMetric()] ? self.speedMetrics[self.speedMetric()] : "B/s");
     });
 
+    self.timeLeftLabel = ko.pureComputed(function() {
+        return 'Time remaining: ' + self.timeLeft();
+    });
+
+    self.speedMenuLabel = ko.pureComputed(function() {
+        return 'Download speed: ' + self.speedText() + '. Open speed limit menu';
+    });
+
     // Dynamic icon
     self.SABIcon = ko.pureComputed(function() {
         if (self.downloadsPaused()) {
