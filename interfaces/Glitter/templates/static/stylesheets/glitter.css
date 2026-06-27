@@ -2289,7 +2289,8 @@ legend {
 
 .pagination>li>a,
 .pagination>li>span,
-.pagination>li>span:hover {
+.pagination>li>span:hover,
+.pagination>li.disabled>span {
     color: var(--clr-text);
     background-color: var(--clr-input-bg);
     border-color: var(--clr-border-subtle);
