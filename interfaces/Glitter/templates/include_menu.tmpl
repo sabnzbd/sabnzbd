@@ -1,6 +1,6 @@
 <nav class="navbar navbar-inverse main-navbar">
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-label="Toggle SABnzbd navigation menu" aria-controls="navbar-collapse" aria-expanded="false">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-label="$T('Glitter-toggleNavigation')" aria-controls="navbar-collapse" aria-expanded="false">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -13,7 +13,7 @@
                 <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')', 'aria-label': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
                     <span class="glyphicon" data-bind="css: { 'glyphicon-play' : downloadsPaused(), 'glyphicon-pause' : !downloadsPaused() }"></span>
                 </button>
-                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-label="$T('pauseFor')" aria-haspopup="true">
+                <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-label="$T('pauseFor')" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
@@ -26,7 +26,7 @@
                     <li class="divider"></li>
                     <li><a href="#" data-bind="click: openCustomPauseTime">$T('Glitter-custom')</a></li>
                 </ul>
-                <span class="btn btn-default navbar-btn navbar-timeleft" role="status" aria-live="polite" data-bind="text: timeLeft, attr: { 'aria-label': timeLeftLabel }">0:00</span>
+                <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft" data-toggle="dropdown">0:00</span>
             </div>
         </div>
     </div>
@@ -37,13 +37,13 @@
             <li class="speedlimit-dropdown dropdown">
                 <div class="btn-group">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown" aria-haspopup="true" data-bind="attr: { 'aria-label': speedMenuLabel }">
+                        <button type="button" class="btn btn-default navbar-btn navbar-speed" data-toggle="dropdown" aria-haspopup="true">
                             <span data-bind="text: speedText">0 KB/s</span>
                         </button>
                         <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" onclick="keepOpen(this)" aria-hidden="true" tabindex="-1">
                             <span class="caret"></span>
                         </button>
-                        <a href="#" class="max-speed-input-clear hover-button" aria-label="Clear speed limit" data-bind="click: clearSpeedLimit, visible:(speedLimit() < 100 && speedLimit() > 0)" style="display: none;">
+                        <a href="#" class="max-speed-input-clear hover-button" aria-label="$T('button-clear')" data-bind="click: clearSpeedLimit, visible:(speedLimit() < 100 && speedLimit() > 0)" style="display: none;">
                             <span class="glyphicon glyphicon-link"></span>
                         </a>
                         <div class="dropdown-menu max-speed-input">
@@ -82,7 +82,7 @@
                 <a href="./config/" aria-label="SABnzbd $T('menu-config')"><span class="glyphicon glyphicon-cog"></span></a>
             </li>
             <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': finishaction()}">
-                <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)" aria-label="Open SABnzbd main menu" aria-haspopup="true">
+                <a href="#" data-toggle="dropdown"  onclick="keepOpen(this)" aria-label="$T('Glitter-mainMenu')" aria-haspopup="true" aria-expanded="false">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
