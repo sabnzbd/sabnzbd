@@ -155,6 +155,50 @@ class TestApiInternals:
         )
 
 
+class TestOrphanPathTraversal:
+    """Orphaned-job handlers must not allow deleting/adding paths outside the download folder"""
+
+    @pytest.fixture
+    def download_dir(self, tmp_path):
+        """Point cfg.download_dir at a temporary folder for the duration of a test"""
+        ddir = tmp_path / "incomplete"
+        ddir.mkdir()
+        with mock.patch.object(api.cfg.download_dir, "get_path", return_value=str(ddir)):
+            yield str(ddir)
+
+    # Values that must be silently rejected: absolute paths and '..' traversal escape the
+    # download folder, an empty value resolves to the download folder itself
+    traversal_values = [
+        "/etc/passwd",  # absolute path overrides the join base
+        "../../../etc/passwd",  # traversal with ..
+        "..",  # the parent of the download folder
+        "sub/../../escape",  # traversal hidden behind a valid component
+        "",  # resolves to the download folder itself
+    ]
+
+    @pytest.mark.parametrize("value", traversal_values)
+    def test_delete_orphan_does_not_remove_outside(self, download_dir, value):
+        with mock.patch.object(api, "remove_all") as remove_all_mock:
+            api._api_delete_orphan(value, {})
+            remove_all_mock.assert_not_called()
+
+    def test_delete_orphan_removes_valid_child(self, download_dir):
+        with mock.patch.object(api, "remove_all") as remove_all_mock:
+            api._api_delete_orphan("myjob", {})
+            remove_all_mock.assert_called_once_with(os.path.join(download_dir, "myjob"), recursive=True)
+
+    @pytest.mark.parametrize("value", traversal_values)
+    def test_add_orphan_does_not_repair_outside(self, download_dir, value):
+        with mock.patch.object(sabnzbd, "NzbQueue", create=True) as nzbqueue_mock:
+            api._api_add_orphan(value, {})
+            nzbqueue_mock.repair_job.assert_not_called()
+
+    def test_add_orphan_repairs_valid_child(self, download_dir):
+        with mock.patch.object(sabnzbd, "NzbQueue", create=True) as nzbqueue_mock:
+            api._api_add_orphan("myjob", {})
+            nzbqueue_mock.repair_job.assert_called_once_with(os.path.join(download_dir, "myjob"), None, None)
+
+
 def set_remote_host_or_ip(hostname: str = "localhost", remote_ip: str = "127.0.0.1"):
     """Change CherryPy's "Host" and "remote.ip"-values"""
     cherrypy.request.headers["Host"] = hostname

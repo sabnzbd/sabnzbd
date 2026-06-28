@@ -83,7 +83,16 @@ from sabnzbd.misc import (
     is_loopback_addr,
     is_lan_addr,
 )
-from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts, purge_log_files, pathbrowser
+from sabnzbd.filesystem import (
+    diskspace,
+    get_ext,
+    clip_path,
+    remove_all,
+    list_scripts,
+    purge_log_files,
+    pathbrowser,
+    same_directory,
+)
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
 from sabnzbd.database import HistoryDB
@@ -453,12 +462,14 @@ def _api_unblock_server(value: str, kwargs: ApiParams) -> bytes:
 def _api_delete_orphan(value: str, kwargs: ApiParams) -> bytes:
     """Remove orphaned job"""
     if value:
-        path = os.path.join(cfg.download_dir.get_path(), value)
-        logging.info("Removing orphaned job %s", path)
-        remove_all(path, recursive=True)
-        return report()
-    else:
-        return report(_MSG_NO_ITEM)
+        download_dir = cfg.download_dir.get_path()
+        path = os.path.join(download_dir, value)
+        # Only remove paths inside the download folder (prevent path-traversal)
+        if same_directory(download_dir, path) == 2:
+            logging.info("Removing orphaned job %s", path)
+            remove_all(path, recursive=True)
+            return report()
+    return report(_MSG_NO_ITEM)
 
 
 def _api_delete_all_orphan(value: str, kwargs: ApiParams) -> bytes:
@@ -472,12 +483,14 @@ def _api_delete_all_orphan(value: str, kwargs: ApiParams) -> bytes:
 def _api_add_orphan(value: str, kwargs: ApiParams):
     """Add orphaned job"""
     if value:
-        path = os.path.join(cfg.download_dir.get_path(), value)
-        logging.info("Re-adding orphaned job %s", path)
-        sabnzbd.NzbQueue.repair_job(path, None, None)
-        return report()
-    else:
-        return report(_MSG_NO_ITEM)
+        download_dir = cfg.download_dir.get_path()
+        path = os.path.join(download_dir, value)
+        # Only re-add paths inside the download folder (prevent path-traversal)
+        if same_directory(download_dir, path) == 2:
+            logging.info("Re-adding orphaned job %s", path)
+            sabnzbd.NzbQueue.repair_job(path, None, None)
+            return report()
+    return report(_MSG_NO_ITEM)
 
 
 def _api_add_all_orphan(value: str, kwargs: ApiParams) -> bytes:
