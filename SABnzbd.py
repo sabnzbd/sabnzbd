@@ -116,7 +116,7 @@ try:
     from win32com.shell import shell, shellcon
 
     from sabnzbd.utils.apireg import get_connection_info, set_connection_info
-    import sabnzbd.sabtray
+    import sabnzbd.sabtraywin
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
@@ -1171,7 +1171,7 @@ def main():
     # Handle the several tray icons
     if sabnzbd.cfg.tray_icon() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WINDOWS:
-            sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
+            sabnzbd.WINTRAY = sabnzbd.sabtraywin.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
             try:
                 import gi
