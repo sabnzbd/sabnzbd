@@ -45,7 +45,8 @@
     "jaraco.text",
     "jaraco.context",
     "jaraco.collections",
-    "tempora"
+    "tempora",
+    "cryptography"
   ],
   "packageRules": [
     {
