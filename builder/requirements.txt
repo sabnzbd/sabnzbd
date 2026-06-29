@@ -1,7 +1,7 @@
 # All sub-dependencies are listed below and installed with --no-dependencies for security
-pyinstaller==6.20.0
+pyinstaller==6.21.0
 packaging==26.2
-pyinstaller-hooks-contrib==2026.5
+pyinstaller-hooks-contrib==2026.6
 altgraph==0.17.5
 wrapt==2.2.1
 setuptools==82.0.1
