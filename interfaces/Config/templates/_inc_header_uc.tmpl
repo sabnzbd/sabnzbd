@@ -170,14 +170,14 @@
                     </a>
                 </li>
                 <li class="dropdown" id="search-menu">
-                    <a data-toggle="dropdown" href="#">
+                    <a data-toggle="dropdown" href="#" aria-label="$T('cmenu-search')" aria-controls="search-dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-search"></span>
                         <strong><span class="glyphicon glyphicon-search"></span></strong>
                     </a>
                     <ul class="dropdown-menu" id="search-dropdown">
                         <li>
                             <form onsubmit="return false">
-                                <input type="text" name="config-search" id="search-box" placeholder="$T('cmenu-search')" onkeyup="doConfigSearch(this)">
+                                <input type="text" name="config-search" id="search-box" placeholder="$T('cmenu-search')" aria-label="$T('cmenu-search')" aria-controls="search-dropdown" onkeyup="doConfigSearch(this)">
                             </form>
                         </li>
                     </ul>
