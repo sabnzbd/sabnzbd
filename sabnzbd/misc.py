@@ -43,6 +43,13 @@ from threading import Thread, RLock
 from collections.abc import Iterable
 from typing import Any, AnyStr, Optional, Collection
 
+from hachoir.parser import createParser as hachoir_create_parser
+from hachoir.metadata import extractMetadata as hachoir_extract_metadata
+from hachoir.core.log import log as hachoir_log
+
+# Keep hachoir from printing parser warnings straight to the console
+hachoir_log.use_print = False
+
 import sabnzbd
 import sabnzbd.getipaddress
 from sabnzbd.constants import (
@@ -79,12 +86,17 @@ if sabnzbd.WINDOWS:
 if sabnzbd.MACOS:
     from sabnzbd.utils import sleepless
 
+
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
-RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
 RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
+
+# Media shorter than this (in seconds) can be an actual sample; anything longer
+# is considered real content even when its name matches the sample pattern
+RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
+SAMPLE_MAX_DURATION = 2 * 60
 
 # Name patterns for NZB parsing
 RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
@@ -1073,9 +1085,38 @@ def get_all_passwords(nzo) -> list[str]:
     return unique_passwords
 
 
-def is_sample(filename: str) -> bool:
-    """Try to determine if filename is (most likely) a sample"""
-    return bool(re.search(RE_SAMPLE, filename))
+def is_sample(filename: str, filepath: Optional[str] = None) -> bool:
+    """Try to determine if filename is (most likely) a sample.
+    When filepath points to the actual file on disk, the media duration is used
+    to rule out false-positives on titles that merely contain "sample" or
+    "proof" (e.g. "The.Moment.of.Proof.S01E01")."""
+    if not re.search(RE_SAMPLE, filename):
+        return False
+
+    # Long media files are never a sample, no matter what its name suggests
+    if filepath:
+        if duration := get_media_duration(filepath):
+            logging.debug("Media duration of %s is %s seconds", filepath, duration)
+            return duration <= SAMPLE_MAX_DURATION
+    return True
+
+
+def get_media_duration(filepath: str) -> Optional[float]:
+    """Return the duration of a media file in seconds using the pure-Python
+    hachoir parser (no external tools required), or None when it cannot be
+    determined (not a media file, unreadable, or missing duration metadata)."""
+    if not os.path.isfile(filepath):
+        return None
+    try:
+        parser = hachoir_create_parser(filepath)
+        if not parser:
+            return None
+        with parser:
+            if duration := hachoir_extract_metadata(parser).get("duration", 0):
+                return duration.total_seconds()
+    except Exception:
+        logging.debug("Failed to read media duration of %s", filepath, exc_info=True)
+    return None
 
 
 def find_on_path(targets: str | tuple[str, ...]) -> Optional[str]:

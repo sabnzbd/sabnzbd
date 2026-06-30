@@ -1263,8 +1263,9 @@ def remove_samples(path: str):
     for root, _dirs, files in os.walk(path):
         for file_to_match in files:
             nr_files += 1
-            if is_sample(file_to_match):
-                files_to_delete.append(os.path.join(root, file_to_match))
+            full_path = os.path.join(root, file_to_match)
+            if is_sample(file_to_match, full_path):
+                files_to_delete.append(full_path)
 
     # Make sure we skip false-positives
     if len(files_to_delete) < nr_files:

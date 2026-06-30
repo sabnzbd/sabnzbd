@@ -25,6 +25,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import wave
 from random import randint, sample
 from unittest import mock
 
@@ -457,8 +458,67 @@ class TestMisc:
         ],
     )
     def test_is_sample_known_false_positives(self, name, result):
-        """We know these fail, but don't have a better solution for them at the moment."""
+        """These cannot be resolved by name alone; they are handled by inspecting
+        the actual media duration when the file is available (see #2083 tests below)."""
         assert misc.is_sample(name) != result
+
+    @staticmethod
+    def _write_wav(path: str, seconds: float):
+        """Create a real WAV file of the given length (pure Python, no external tools)"""
+        framerate = 8000
+        with wave.open(path, "wb") as wav:
+            wav.setnchannels(1)
+            wav.setsampwidth(2)
+            wav.setframerate(framerate)
+            wav.writeframes(b"\x00\x00" * int(framerate * seconds))
+
+    def test_get_media_duration(self, tmp_path):
+        wav_file = os.path.join(tmp_path, "tone.wav")
+        self._write_wav(wav_file, 2.5)
+        assert misc.get_media_duration(wav_file) == pytest.approx(2.5, abs=0.1)
+
+        # Not a media file and a non-existent file both yield no duration
+        not_media = os.path.join(tmp_path, "notmedia.bin")
+        with open(not_media, "wb") as fp:
+            fp.write(b"this is not a media file")
+        assert misc.get_media_duration(not_media) is None
+        assert misc.get_media_duration(os.path.join(tmp_path, "does_not_exist.mkv")) is None
+
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "Not Death Proof (2022) 1080p x264 (DD5.1) BE Subs.mkv",
+            "Proof.of.Everything.(2042).4320p.x266-4U.mkv",
+            "Crime_Scene_S01E13_Free_Sample_For_Sale_480p-OhDear.mp4",
+            "Sample That 2011 480p WEB-DL.H265-aMiGo.avi",
+        ],
+    )
+    def test_is_sample_long_media_not_a_sample(self, name, tmp_path, monkeypatch):
+        """Real content whose title contains 'sample'/'proof' must not be flagged as
+        a sample once the actual (long) media file is available on disk (#2083)."""
+        media_file = os.path.join(tmp_path, name)
+        self._write_wav(media_file, 2.0)
+        # Treat anything over 1s as "long" so the short test file counts as real content
+        monkeypatch.setattr(misc, "SAMPLE_MAX_DURATION", 1)
+        # The name alone still trips the detector...
+        assert misc.is_sample(name) is True
+        # ...but with the real (long) file on disk it is correctly kept
+        assert misc.is_sample(name, media_file) is False
+
+    def test_is_sample_short_media_still_a_sample(self, tmp_path):
+        """A genuinely short media file matching the sample pattern stays a sample"""
+        media_file = os.path.join(tmp_path, "Something.1080p.H264-EMRG-sample.avi")
+        self._write_wav(media_file, 2.0)
+        assert misc.is_sample(os.path.basename(media_file), media_file) is True
+
+    def test_is_sample_unanalysable_file_falls_back_to_name(self, tmp_path):
+        """When the file cannot be analysed, fall back to the name-based result"""
+        non_media = os.path.join(tmp_path, "file-sample.mkv")
+        with open(non_media, "wb") as fp:
+            fp.write(b"not really an mkv")
+        assert misc.is_sample("file-sample.mkv", non_media) is True
+        # A non-sample name is never a sample, regardless of the file on disk
+        assert misc.is_sample("regular-movie.mkv", non_media) is False
 
     @pytest.mark.parametrize(
         "test_input, expected_output",
