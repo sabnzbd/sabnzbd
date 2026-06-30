@@ -813,6 +813,8 @@ SKIN_TEXT = {
     "Glitter-pause6h": TT("Pause for 6 hours"),
     "Glitter-setMaxLinespeed": TT("You must set a maximum bandwidth before you can set a bandwidth limit"),
     "Glitter-left": TT("left"),
+    "Glitter-toggleNavigation": TT("Toggle SABnzbd navigation menu"),
+    "Glitter-mainMenu": TT("Open SABnzbd main menu"),
     "Glitter-free": TT("Free Space"),
     "Glitter-freeTemp": TT("Temp Folder"),
     "Glitter-search": TT("Search"),
