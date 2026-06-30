@@ -4795,6 +4795,14 @@ msgid "Filename"
 msgstr "Dateiname"
 
 #: sabnzbd/skintext.py
+msgid "Toggle SABnzbd navigation menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Open SABnzbd main menu"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Free Space"
 msgstr "Freier Speicherplatz"
 
