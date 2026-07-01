@@ -626,6 +626,44 @@ function QueueModel(parent, data) {
         return rewriteTime(self.timeLeft());
     });
 
+    self.labelWithName = function(label) {
+        var name = self.name();
+        return name ? label + ' ' + name : label;
+    };
+    self.selectLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.selectJob);
+    });
+    self.pauseToggleLabel = ko.pureComputed(function() {
+        return self.labelWithName(self.pausedStatus() ? glitterTranslate.resume : glitterTranslate.pause);
+    });
+    self.removeLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.removeNZB);
+    });
+    self.moveTopLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.top);
+    });
+    self.moveBottomLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.bottom);
+    });
+    self.renameLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.rename);
+    });
+    self.detailsLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.details);
+    });
+    self.categorySelectLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.category);
+    });
+    self.prioritySelectLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.priorityText);
+    });
+    self.processingSelectLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.processing);
+    });
+    self.scriptSelectLabel = ko.pureComputed(function() {
+        return self.labelWithName(glitterTranslate.scripts);
+    });
+
     // Icon to better show force-priority
     self.queueIcon = ko.computed(function() {
         // Force comes first

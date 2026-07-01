@@ -149,6 +149,8 @@ tr.queue-item>td:first-child>a {
 
 .queue-table td.name .name-options {
     display: inline-block;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .queue-table td.name .name-options small {
