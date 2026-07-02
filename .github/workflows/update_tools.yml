@@ -5,6 +5,9 @@ on:
     # Nightly check for new releases of the bundled tools
     - cron: "30 4 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - feature/fun-update
 
 permissions:
   contents: write
