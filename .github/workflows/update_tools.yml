@@ -13,14 +13,10 @@ permissions:
   contents: write
   pull-requests: write
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: false
-
-# Each tool gets its own job so a failure in one does not block the others.
 jobs:
   unrar:
     name: Update unrar
+    if: github.repository == 'sabnzbd/sabnzbd'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -74,6 +70,8 @@ jobs:
             echo "Bundled unrar is already at version $VERSION"
             exit 0
           fi
+          git config user.name "SABnzbd Automation"
+          git config user.email "bugs@sabnzbd.org"
           git add macos/unrar win/unrar
           git commit -m "unrar $VERSION"
           # Skip the push if an open PR already contains these exact binaries
@@ -91,6 +89,7 @@ jobs:
 
   sevenzip:
     name: Update 7-Zip
+    if: github.repository == 'sabnzbd/sabnzbd'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -137,8 +136,8 @@ jobs:
             echo "Bundled 7-Zip is already at version $VERSION"
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "SABnzbd Automation"
+          git config user.email "bugs@sabnzbd.org"
           git add macos/7zip win/7zip
           git commit -m "7-Zip $VERSION"
           # Skip the push if an open PR already contains these exact binaries
@@ -156,6 +155,7 @@ jobs:
 
   par2:
     name: Update par2cmdline-turbo
+    if: github.repository == 'sabnzbd/sabnzbd'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -201,8 +201,8 @@ jobs:
             echo "Bundled par2cmdline-turbo is already at version $VERSION"
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "SABnzbd Automation"
+          git config user.email "bugs@sabnzbd.org"
           git add macos/par2 win/par2
           git commit -m "par2cmdline-turbo $VERSION"
           # Skip the push if an open PR already contains these exact binaries
