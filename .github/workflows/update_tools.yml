@@ -23,32 +23,31 @@ jobs:
       - name: Determine latest unrar version
         id: version
         run: |
-          curl -fsSL --retry 3 https://www.rarlab.com/download.htm -o "$RUNNER_TEMP/download.htm"
-          RAW=$(grep -oE 'rarmacos-x64-[0-9]+\.tar\.gz' "$RUNNER_TEMP/download.htm" | grep -oE '[0-9]+' | sort -n | tail -1)
-          if [ -z "$RAW" ]; then
+          RAW_VERSION=$(curl -fsSL --retry 3 https://www.rarlab.com/download.htm -o- | sed -n 's%.*/rarmacos-x64-\([0-9]\+\)\.tar\.gz.*%\1%p' | head -1)
+          if [ -z "$RAW_VERSION" ]; then
             echo "Could not determine the latest unrar version from the rarlab download page"
             exit 1
           fi
           # Version is encoded without separator, e.g. 723 = 7.23
-          VERSION="${RAW%??}.${RAW: -2}"
+          VERSION="${RAW_VERSION%??}.${RAW_VERSION: -2}"
           echo "Latest unrar version: $VERSION"
-          echo "raw=$RAW" >> "$GITHUB_OUTPUT"
+          echo "raw_version=$RAW_VERSION" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Download and extract new binaries
         env:
-          RAW: ${{ steps.version.outputs.raw }}
+          RAW_VERSION: ${{ steps.version.outputs.raw_version }}
         run: |
           mkdir -p "$RUNNER_TEMP/unrar"
           cd "$RUNNER_TEMP/unrar"
-          for FILE in "rarmacos-x64-$RAW.tar.gz" "rarmacos-arm-$RAW.tar.gz" "winrar-x64-$RAW.exe"; do
+          for FILE in "rarmacos-x64-$RAW_VERSION.tar.gz" "rarmacos-arm-$RAW_VERSION.tar.gz" "winrar-x64-$RAW_VERSION.exe"; do
             curl -fsSL --retry 3 -o "$FILE" "https://www.rarlab.com/rar/$FILE"
           done
           mkdir macos-x64 macos-arm64 windows
-          tar -xzf "rarmacos-x64-$RAW.tar.gz" -C macos-x64
-          tar -xzf "rarmacos-arm-$RAW.tar.gz" -C macos-arm64
+          tar -xzf "rarmacos-x64-$RAW_VERSION.tar.gz" -C macos-x64
+          tar -xzf "rarmacos-arm-$RAW_VERSION.tar.gz" -C macos-arm64
           # Unpack UnRAR.exe from the WinRAR installer, which is a self-extracting
           # RAR archive that the preinstalled 7-Zip can read
-          7z x -y -owindows "winrar-x64-$RAW.exe" UnRAR.exe > /dev/null
+          7z x -y -owindows "winrar-x64-$RAW_VERSION.exe" UnRAR.exe > /dev/null
       - name: Copy binaries into the repository
         run: |
           install -m 755 "$RUNNER_TEMP/unrar/macos-x64/rar/unrar" macos/unrar/unrar
@@ -93,24 +92,24 @@ jobs:
         run: |
           VERSION=$(gh api repos/ip7z/7zip/releases/latest --jq .tag_name)
           # Assets are named without separator, e.g. 7z2602-extra.7z for 26.02
-          RAW="${VERSION//./}"
+          RAW_VERSION="${VERSION//./}"
           echo "Latest 7-Zip version: $VERSION"
-          echo "raw=$RAW" >> "$GITHUB_OUTPUT"
+          echo "raw_version=$RAW_VERSION" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Download and extract new binaries
         env:
-          RAW: ${{ steps.version.outputs.raw }}
+          RAW_VERSION: ${{ steps.version.outputs.raw_version }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           mkdir -p "$RUNNER_TEMP/7zip"
           cd "$RUNNER_TEMP/7zip"
           gh release download "$VERSION" --repo ip7z/7zip \
-            --pattern "7z$RAW-extra.7z" --pattern "7z$RAW-mac.tar.xz"
+            --pattern "7z$RAW_VERSION-extra.7z" --pattern "7z$RAW_VERSION-mac.tar.xz"
           mkdir macos windows
-          tar -xJf "7z$RAW-mac.tar.xz" -C macos
+          tar -xJf "7z$RAW_VERSION-mac.tar.xz" -C macos
           # The preinstalled 7-Zip unpacks the extra package that contains
           # the standalone Windows console version
-          7z x -y -owindows "7z$RAW-extra.7z" 7za.exe > /dev/null
+          7z x -y -owindows "7z$RAW_VERSION-extra.7z" 7za.exe > /dev/null
       - name: Copy binaries into the repository
         run: |
           install -m 644 "$RUNNER_TEMP/7zip/windows/7za.exe" win/7zip/7za.exe
