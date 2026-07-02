@@ -74,8 +74,6 @@ jobs:
             echo "Bundled unrar is already at version $VERSION"
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add macos/unrar win/unrar
           git commit -m "unrar $VERSION"
           # Skip the push if an open PR already contains these exact binaries
