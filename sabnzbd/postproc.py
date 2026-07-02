@@ -1264,7 +1264,7 @@ def remove_samples(path: str):
         for file_to_match in files:
             nr_files += 1
             full_path = os.path.join(root, file_to_match)
-            if is_sample(file_to_match, full_path):
+            if is_sample(full_path):
                 files_to_delete.append(full_path)
 
     # Make sure we skip false-positives

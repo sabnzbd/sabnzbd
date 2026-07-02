@@ -1085,19 +1085,23 @@ def get_all_passwords(nzo) -> list[str]:
     return unique_passwords
 
 
-def is_sample(filename: str, filepath: Optional[str] = None) -> bool:
-    """Try to determine if filename is (most likely) a sample.
-    When filepath points to the actual file on disk, the media duration is used
+def is_sample(filename_or_filepath: str) -> bool:
+    """Try to determine if the file is (most likely) a sample.
+    When given a path to an actual file on disk, the media duration is used
     to rule out false-positives on titles that merely contain "sample" or
     "proof" (e.g. "The.Moment.of.Proof.S01E01")."""
-    if not re.search(RE_SAMPLE, filename):
+    if not re.search(RE_SAMPLE, os.path.basename(filename_or_filepath)):
         return False
 
     # Long media files are never a sample, no matter what its name suggests
-    if filepath:
-        if duration := get_media_duration(filepath):
-            logging.debug("Media duration of %s is %s seconds", filepath, duration)
+    if os.path.isfile(filename_or_filepath):
+        if duration := get_media_duration(filename_or_filepath):
+            logging.debug("Media duration of %s is %s seconds", filename_or_filepath, duration)
             return duration <= SAMPLE_MAX_DURATION
+        logging.debug(
+            "Could not determine media duration of %s, using filename-based sample detection",
+            filename_or_filepath,
+        )
     return True
 
 

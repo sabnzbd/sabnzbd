@@ -503,22 +503,22 @@ class TestMisc:
         # The name alone still trips the detector...
         assert misc.is_sample(name) is True
         # ...but with the real (long) file on disk it is correctly kept
-        assert misc.is_sample(name, media_file) is False
+        assert misc.is_sample(media_file) is False
 
     def test_is_sample_short_media_still_a_sample(self, tmp_path):
         """A genuinely short media file matching the sample pattern stays a sample"""
         media_file = os.path.join(tmp_path, "Something.1080p.H264-EMRG-sample.avi")
         self._write_wav(media_file, 2.0)
-        assert misc.is_sample(os.path.basename(media_file), media_file) is True
+        assert misc.is_sample(media_file) is True
 
     def test_is_sample_unanalysable_file_falls_back_to_name(self, tmp_path):
         """When the file cannot be analysed, fall back to the name-based result"""
         non_media = os.path.join(tmp_path, "file-sample.mkv")
         with open(non_media, "wb") as fp:
             fp.write(b"not really an mkv")
-        assert misc.is_sample("file-sample.mkv", non_media) is True
+        assert misc.is_sample(non_media) is True
         # A non-sample name is never a sample, regardless of the file on disk
-        assert misc.is_sample("regular-movie.mkv", non_media) is False
+        assert misc.is_sample(os.path.join(tmp_path, "regular-movie.mkv")) is False
 
     @pytest.mark.parametrize(
         "test_input, expected_output",

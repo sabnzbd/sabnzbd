@@ -520,7 +520,7 @@ class Sorter:
             get_ext(f) not in EXCLUDED_FILE_EXTS
             and os.path.exists(filepath)
             and os.stat(filepath).st_size >= self.rename_limit
-            and not is_sample(f, filepath)
+            and not is_sample(filepath)
         )
 
     def rename(self, files: list[str], base_path: str) -> tuple[str, bool, list[str]]:
