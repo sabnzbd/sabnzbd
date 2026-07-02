@@ -514,11 +514,13 @@ class Sorter:
 
     def _filter_files(self, f: str, base_path: str) -> bool:
         filepath = self._to_filepath(f, base_path)
+        # Cheap checks first; the media-duration sample check
+        # only runs for files that are otherwise kept
         return (
-            not is_sample(f)
-            and get_ext(f) not in EXCLUDED_FILE_EXTS
+            get_ext(f) not in EXCLUDED_FILE_EXTS
             and os.path.exists(filepath)
             and os.stat(filepath).st_size >= self.rename_limit
+            and not is_sample(filepath)
         )
 
     def rename(self, files: list[str], base_path: str) -> tuple[str, bool, list[str]]:
