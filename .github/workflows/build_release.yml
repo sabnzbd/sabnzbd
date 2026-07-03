@@ -6,9 +6,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Setting PYTHONNODEBUGRANGES reduces binary size
 env:
+  # Setting PYTHONNODEBUGRANGES reduces binary size
   PYTHONNODEBUGRANGES: 1
+  # For macOS we download the official Python, because the GitHub one only support newer macOS 11+ versions
+  # We also use the specific pin for Windows release, so Renovate can update it all at once
+  PYTHON_VERSION: "3.14.6"
 
 jobs:
   build_windows:
@@ -30,7 +33,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: "3.14"
+        python-version: ${{ env.PYTHON_VERSION }}
         architecture: ${{ matrix.architecture }}
         cache: pip
         cache-dependency-path: "**/requirements.txt"
@@ -110,10 +113,8 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 15
     env:
-      # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: "3.14.6"
       MACOSX_DEPLOYMENT_TARGET: "10.15"
       # We need to force compile for universal2 support
       CFLAGS: -arch x86_64 -arch arm64
