@@ -548,7 +548,7 @@ SectionEnd
   LangString MsgNoWin7      ${LANG_SIMPCHINESE} "SABnzbd 仅支持 Windows 8.1 及更高版本。"
 
   LangString MsgARM64Notice ${LANG_ENGLISH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
-  LangString MsgARM64Notice ${LANG_CZECH} "An ARM version of SABnzbd is available on our Downloads page. This installer only contains the regular version.$\nPress OK to continue or Cancel to exit."
+  LangString MsgARM64Notice ${LANG_CZECH} "Na naší stránce „Ke stažení“ je k dispozici verze SABnzbd pro architekturu ARM. Tento instalační program obsahuje pouze standardní verzi.$\nStiskněte tlačítko OK pro pokračování nebo Zrušit pro ukončení."
   LangString MsgARM64Notice ${LANG_DANISH} "En ARM-version af SABnzbd er tilgængelig på vores downloadside. Dette installationsprogram indeholder kun den almindelige version.$\nTryk på OK for at fortsætte eller Annuller for at afslutte."
   LangString MsgARM64Notice ${LANG_GERMAN} "Eine ARM-Version von SABnzbd ist auf unserer Downloads-Seite verfügbar. Dieses Installationsprogramm enthält nur die reguläre Version.$\nKlicken Sie auf OK, um fortzufahren, oder auf Abbrechen, um zu beenden."
   LangString MsgARM64Notice ${LANG_SPANISH} "Hay una versión ARM de SABnzbd disponible en nuestra página de descargas. Este instalador solo contiene la versión normal.$\nPulsa Aceptar para continuar o Cancelar para salir."
