@@ -481,6 +481,8 @@ $(document).ready(function () {
     }
 
     // Add tooltips
+    // Render tooltips in the body, otherwise they get clipped by sections with overflow: hidden
+    jQuery.fn.tooltip.Constructor.DEFAULTS.container = 'body'
     jQuery('[title]').tooltip()
 });
 
