@@ -83,6 +83,10 @@ def active_socks5_proxy() -> Optional[str]:
 
 def dnslookup() -> bool:
     """Perform a basic DNS lookup"""
+    if not sabnzbd.cfg.selftest_host():
+        logging.debug("Skipping DNS lookup, no selftest host set")
+        return False
+
     start = time.time()
     try:
         addresslookup(sabnzbd.cfg.selftest_host())
@@ -120,6 +124,10 @@ def public_ip(family: int = socket.AF_UNSPEC) -> Optional[str]:
     """
     Reports the client's public IP address (IPv4 or IPv6, if specified by family), as reported by selftest host
     """
+    if not sabnzbd.cfg.selftest_host():
+        logging.debug("Skipping public IP address lookup, no selftest host set")
+        return None
+
     start = time.time()
     if resolvehostaddress := get_fastest_addrinfo(
         sabnzbd.cfg.selftest_host(),
