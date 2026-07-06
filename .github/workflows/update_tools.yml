@@ -19,7 +19,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       BRANCH: automation/update-unrar
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Determine latest unrar version
         id: version
         run: |
@@ -86,7 +86,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       BRANCH: automation/update-7zip
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Determine latest 7-Zip version
         id: version
         run: |
@@ -147,7 +147,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       BRANCH: automation/update-par2
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Determine latest par2cmdline-turbo version
         id: version
         run: |

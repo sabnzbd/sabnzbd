@@ -19,7 +19,7 @@ jobs:
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # Need the parent commit too so we can diff HEAD and detect local translation edits
           fetch-depth: 2

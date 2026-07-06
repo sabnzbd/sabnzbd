@@ -14,7 +14,7 @@ jobs:
     name: Black and Ruff checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: pip install ruff black
       - name: Black code formatter
         run: >
@@ -50,7 +50,7 @@ jobs:
             python-version: "3.14"
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:

@@ -29,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
@@ -120,7 +120,7 @@ jobs:
       CFLAGS: -arch x86_64 -arch arm64
       ARCHFLAGS: -arch x86_64 -arch arm64
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python
       # Only use this for the caching of pip packages!
       uses: actions/setup-python@v6
@@ -189,7 +189,7 @@ jobs:
     if: contains(github.ref, 'refs/tags/')
     environment: release
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
