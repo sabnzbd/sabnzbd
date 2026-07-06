@@ -34,7 +34,7 @@ jobs:
             linux_arch: arm64
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Cache par2cmdline-turbo tarball
         uses: actions/cache@v5
         id: cache-par2cmdline
