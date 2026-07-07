@@ -149,6 +149,29 @@ class TestNzbQueue:
         # Try list restored
         assert sabnzbd.Downloader.servers[0] in next(iter(joba.files[0].articles)).try_list
 
+    def test_queue_info_search_filters_download_queue(self):
+        q = NzbQueue()
+
+        alpha = make_dummy_nzo("alpha")
+        alpha.final_name = "Alpha Release"
+        beta = make_dummy_nzo("beta")
+        beta.final_name = "Beta Release"
+
+        q.add(alpha)
+        q.add(beta)
+
+        _, _, _, queued_items, _, matched_items = q.queue_info(search="alpha")
+
+        assert matched_items == 1
+        assert len(queued_items) == 1
+        assert queued_items[0].final_name == "Alpha Release"
+
+        _, _, _, queued_items_casefold, _, matched_items_casefold = q.queue_info(search="ALPHA")
+
+        assert matched_items_casefold == 1
+        assert len(queued_items_casefold) == 1
+        assert queued_items_casefold[0].final_name == "Alpha Release"
+
     def test_stop_idle_jobs_no_crash_on_exhausted_articles(self):
         """Regression test: stop_idle_jobs must not raise RuntimeError when
         register_article removes an article from nzf.articles (a dict) while
