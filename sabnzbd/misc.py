@@ -1768,7 +1768,7 @@ class SABRarFile(rarfile.RarFile):
                 self._file_parser._info_map[rar_obj.filename.rstrip("/")] = rar_obj
 
     def info_callback_verify_password(self, rar_obj: rarfile.RarInfo):
-        """For RAR5 when header encryption is not used attempt to very the password"""
+        """For RAR5 when header encryption is not used attempt to verify the password"""
         # First parse call will not have the password
         if not self._password:
             return
