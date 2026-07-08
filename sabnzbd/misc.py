@@ -1794,42 +1794,34 @@ class SABRarFile(rarfile.RarFile):
 
 @lru_cache(maxsize=64)
 def rarfile_rar5_file_verify_check_value(
-    password: AnyStr, salt: bytes, kdf_count_shift: int, stored_check_value: bytes
+    password: AnyStr, salt: bytes, kdf_count_shift: int, check_value: bytes
 ) -> bool:
-    """Verify a stored_check_value gainst a password, salt and kdf_count_shift"""
-    if len(stored_check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
+    """Verify a check_value gainst a password, salt and kdf_count_shift"""
+    if len(check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
         return False
-
-    # Restrict maximum accepted iteration count
     if kdf_count_shift > 24:
         raise rarfile.BadRarFile("Too large kdf_count")
 
-    if not isinstance(password, str):
-        password = password.decode("utf8")
-    wstr = password.encode("utf-16le")[: RAR_MAX_PASSWORD * 2]
-    ustr = wstr.decode("utf-16le").encode("utf8")
+    hdr_check = check_value[: rarfile.RAR5_PW_CHECK_SIZE]
+    hdr_sum = check_value[rarfile.RAR5_PW_CHECK_SIZE :]
+    sum_hash = hashlib.sha256(hdr_check).digest()
+    if sum_hash[: rarfile.RAR5_PW_SUM_SIZE] != hdr_sum:
+        return False
 
     kdf_count = (1 << kdf_count_shift) + 32
-    psw_check_value = hashlib.pbkdf2_hmac("sha256", ustr, salt, kdf_count)
+    if not isinstance(password, str):
+        password = password.decode("utf8")
+    password = password.encode("utf-16le")[: RAR_MAX_PASSWORD * 2]
+    password = password.decode("utf-16le").encode("utf8")
+    password_hash = hashlib.pbkdf2_hmac("sha256", password, salt, kdf_count)
 
     # Fold the 32-byte value into 8 bytes
     pwd_check = bytearray(rarfile.RAR5_PW_CHECK_SIZE)
     len_mask = rarfile.RAR5_PW_CHECK_SIZE - 1
-    for i, v in enumerate(psw_check_value):
+    for i, v in enumerate(password_hash):
         pwd_check[i & len_mask] ^= v
 
-    # First 8 bytes must match
-    if pwd_check != stored_check_value[: rarfile.RAR5_PW_CHECK_SIZE]:
-        return False
-
-    # Last 4 bytes are SHA256(pwd_check)[:4]
-    if (
-        hashlib.sha256(pwd_check).digest()[: rarfile.RAR5_PW_SUM_SIZE]
-        != stored_check_value[rarfile.RAR5_PW_CHECK_SIZE :]
-    ):
-        return False
-
-    return True
+    return pwd_check == hdr_check
 
 
 # Replace rar3_s2k with native implementation which is faster for longer passwords
