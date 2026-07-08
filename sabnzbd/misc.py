@@ -1773,6 +1773,7 @@ class SABRarFile(rarfile.RarFile):
         if not self._password:
             return
         # Encrypted headers already verify the password
+        # We ignore that each file could have a different password
         if self._file_parser and self._file_parser.has_header_encryption():
             return
         if isinstance(rar_obj, rarfile.Rar5FileInfo) and rar_obj.is_file():
