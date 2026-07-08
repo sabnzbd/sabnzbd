@@ -644,7 +644,6 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
-                                    zf.trigger_parse()
                                     password_hit = password
                                     break
                                 except rarfile.RarWrongPassword:
@@ -691,7 +690,6 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> tuple[b
                     if nzo.correct_password and not zf.namelist():
                         try:
                             zf.setpassword(nzo.correct_password)
-                            zf.trigger_parse()
                         except Exception:
                             pass
                     for somefile in zf.namelist():

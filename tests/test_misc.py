@@ -26,10 +26,12 @@ import subprocess
 import sys
 import tempfile
 import wave
+from contextlib import nullcontext
 from random import randint, sample
 from unittest import mock
 
 import pytest
+import rarfile
 
 import sabnzbd
 import sabnzbd.cfg
@@ -42,6 +44,7 @@ from sabnzbd.constants import (
     HIGH_PRIORITY,
     NORMAL_PRIORITY,
 )
+from sabnzbd.misc import SABRarFile
 from tests.testhelper import SAB_BASE_DIR
 
 
@@ -1159,3 +1162,52 @@ class TestBuildAndRunCommand:
             self.script_path,
             "input 1",
         ]
+
+
+class TestSABRarFile:
+    @pytest.mark.parametrize(
+        "rar_file, password, expected_correct",
+        [
+            (
+                "tests/data/basic_rar3/testfile.rar",
+                "NOT_ENCRYPTED_AND_CHECK_NOT_SUPPORTED",
+                True,
+            ),
+            (
+                "tests/data/basic_rar3_64/testfile.rar",
+                "CHECK_NOT_SUPPORTED",
+                True,
+            ),
+            (
+                "tests/data/basic_rar5/testfile.rar",
+                "NOT_ENCRYPTED",
+                True,
+            ),
+            (
+                "tests/data/basic_rar5_64/testfile.rar",
+                "WRONG_PASSWORD",
+                False,
+            ),
+            (
+                "tests/data/basic_rar5_64_header_blake2/testfile.rar",
+                "HEADER_ENCRYPTION_WRONG_PASSWORD",
+                False,
+            ),
+            (
+                "tests/data/basic_rar5_64/testfile.rar",
+                "WRONG_PASSWORD",
+                False,
+            ),
+            (
+                "tests/data/basic_rar5_64/testfile.rar",
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+                True,
+            ),
+        ],
+    )
+    def test_rar5_check_password(self, rar_file, password, expected_correct):
+        expected = nullcontext() if expected_correct else pytest.raises(rarfile.RarWrongPassword)
+
+        with SABRarFile(rar_file, part_only=True) as zf:
+            with expected:
+                zf.setpassword(password)

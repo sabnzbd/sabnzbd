@@ -39,9 +39,11 @@ import sabctools
 import socks
 import math
 import rarfile
+import hashlib
 from threading import Thread, RLock
 from collections.abc import Iterable
 from typing import Any, AnyStr, Optional, Collection
+from functools import lru_cache
 
 from hachoir.parser import createParser as hachoir_create_parser
 from hachoir.metadata import extractMetadata as hachoir_extract_metadata
@@ -59,6 +61,7 @@ from sabnzbd.constants import (
     DEF_ARTICLE_CACHE_MAX,
     REPAIR_REQUEST,
     GUESSIT_SORT_TYPES,
+    RAR_MAX_PASSWORD,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -1722,6 +1725,17 @@ def subject_name_extractor(subject: str) -> str:
     return subject
 
 
+def chain_callbacks(*callbacks):
+    """Chain multiple callbacks into one, ignoring None entries"""
+    callbacks = [cb for cb in callbacks if cb is not None]
+
+    def chained(*args, **kwargs):
+        for cb in callbacks:
+            cb(*args, **kwargs)
+
+    return chained
+
+
 ##
 ## SABnzbd patched rarfile classes
 ## Patch for https://github.com/markokr/rarfile/issues/56#issuecomment-711146569
@@ -1734,13 +1748,16 @@ class SABRarFile(rarfile.RarFile):
     def __init__(self, *args, **kwargs):
         """Patch RarFile-call when using `part_only`
         to store filenames inside the RAR-files"""
-        if kwargs.get("part_only"):
-            kwargs["info_callback"] = self.info_callback
+        kwargs["info_callback"] = chain_callbacks(
+            self.info_callback_part if kwargs.get("part_only") else None,
+            self.info_callback_verify_password,
+            kwargs.get("info_callback"),
+        )
 
         # Let RarFile handle the rest!
         super().__init__(*args, **kwargs)
 
-    def info_callback(self, rar_obj: rarfile.RarInfo):
+    def info_callback_part(self, rar_obj: rarfile.RarInfo):
         """Called for every RarInfo-object found"""
         # We only care about files inside the Rar
         # For Rar5 there is a separate object, for Rar3 we need to check if a filename was parsed
@@ -1750,13 +1767,69 @@ class SABRarFile(rarfile.RarFile):
                 self._file_parser._info_list.append(rar_obj)
                 self._file_parser._info_map[rar_obj.filename.rstrip("/")] = rar_obj
 
+    def info_callback_verify_password(self, rar_obj: rarfile.RarInfo):
+        """For RAR5 when header encryption is not used attempt to very the password"""
+        # First parse call will not have the password
+        if not self._password:
+            return
+        # Encrypted headers already verify the password
+        if self._file_parser and self._file_parser.has_header_encryption():
+            return
+        if isinstance(rar_obj, rarfile.Rar5FileInfo) and rar_obj.is_file():
+            if rar_obj.needs_password() and rar_obj.file_encryption[:-1]:
+                _algo, flags, kdf_count, salt, _iv, checkval = rar_obj.file_encryption
+                if flags & rarfile.RAR5_XENC_CHECKVAL:
+                    if not rarfile_rar5_file_verify_check_value(self._password, salt, kdf_count, checkval):
+                        raise rarfile.RarWrongPassword()
+
     def filelist(self) -> list[str]:
         """Return list of filenames in archive."""
         return [f.filename for f in self.infolist() if not f.isdir()]
 
-    def trigger_parse(self):
-        """Force re-parse, wich is needed to trigger password checking logic"""
-        self._parse()
+    def setpassword(self, pwd):
+        """Sets the password to use when extracting."""
+        self._file_parser = None  # Always trigger parse
+        super().setpassword(pwd)
+
+
+@lru_cache(maxsize=64)
+def rarfile_rar5_file_verify_check_value(
+    password: AnyStr, salt: bytes, kdf_count_shift: int, stored_check_value: bytes
+) -> bool:
+    """Verify a stored_check_value gainst a password, salt and kdf_count_shift"""
+    if len(stored_check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
+        return False
+
+    # Restrict maximum accepted iteration count
+    if kdf_count_shift > 24:
+        raise rarfile.BadRarFile("Too large kdf_count")
+
+    if not isinstance(password, str):
+        password = password.decode("utf8")
+    wstr = password.encode("utf-16le")[: RAR_MAX_PASSWORD * 2]
+    ustr = wstr.decode("utf-16le").encode("utf8")
+
+    kdf_count = (1 << kdf_count_shift) + 32
+    psw_check_value = hashlib.pbkdf2_hmac("sha256", ustr, salt, kdf_count)
+
+    # Fold the 32-byte value into 8 bytes
+    pwd_check = bytearray(rarfile.RAR5_PW_CHECK_SIZE)
+    len_mask = rarfile.RAR5_PW_CHECK_SIZE - 1
+    for i, v in enumerate(psw_check_value):
+        pwd_check[i & len_mask] ^= v
+
+    # First 8 bytes must match
+    if pwd_check != stored_check_value[: rarfile.RAR5_PW_CHECK_SIZE]:
+        return False
+
+    # Last 4 bytes are SHA256(pwd_check)[:4]
+    if (
+        hashlib.sha256(pwd_check).digest()[: rarfile.RAR5_PW_SUM_SIZE]
+        != stored_check_value[rarfile.RAR5_PW_CHECK_SIZE :]
+    ):
+        return False
+
+    return True
 
 
 # Replace rar3_s2k with native implementation which is faster for longer passwords
