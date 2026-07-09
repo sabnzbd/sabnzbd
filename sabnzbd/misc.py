@@ -1752,9 +1752,6 @@ class SABRarFile(rarfile.RarFile):
                 self._file_parser._info_list.append(rar_obj)
                 self._file_parser._info_map[rar_obj.filename.rstrip("/")] = rar_obj
 
-    def info_callback_verify_password(self, rar_obj: rarfile.RarInfo):
-        """For RAR5 when header encryption is not used attempt to verify the password"""
-
     def filelist(self) -> list[str]:
         """Return list of filenames in archive."""
         return [f.filename for f in self.infolist() if not f.isdir()]
