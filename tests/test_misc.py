@@ -1184,14 +1184,14 @@ class TestSABRarFile:
                 True,
             ),
             (
-                "tests/data/basic_rar5_64/testfile.rar",
-                "WRONG_PASSWORD",
+                "tests/data/basic_rar5_64_header_blake2/testfile.rar",
+                "HEADER_ENCRYPTION_WRONG_PASSWORD",
                 False,
             ),
             (
                 "tests/data/basic_rar5_64_header_blake2/testfile.rar",
-                "HEADER_ENCRYPTION_WRONG_PASSWORD",
-                False,
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+                True,
             ),
             (
                 "tests/data/basic_rar5_64/testfile.rar",
