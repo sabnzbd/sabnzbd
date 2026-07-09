@@ -1760,7 +1760,9 @@ class SABRarFile(rarfile.RarFile):
         """Sets the password to use when extracting."""
         self._file_parser = None  # Always trigger parse
         super().setpassword(pwd)
-        # Let parse finish before verifying passwords
+
+    def _parse(self):
+        super()._parse()
         self._verify_file_passwords()
 
     def _verify_file_passwords(self):
