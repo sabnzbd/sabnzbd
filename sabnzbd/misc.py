@@ -1778,14 +1778,12 @@ class SABRarFile(rarfile.RarFile):
                 if rar_obj.is_file() and rar_obj.needs_password():
                     _algo, flags, kdf_count, salt, _iv, checkval = rar_obj.file_encryption
                     if flags & rarfile.RAR5_XENC_CHECKVAL:
-                        if not rarfile_rar5_file_verify_check_value(self._password, salt, kdf_count, checkval):
+                        if not rar5_check_password(self._password, salt, kdf_count, checkval):
                             raise rarfile.RarWrongPassword()
 
 
-@lru_cache
-def rarfile_rar5_file_verify_check_value(
-    password: str | bytes, salt: bytes, kdf_count_shift: int, check_value: bytes
-) -> bool:
+@lru_cache(maxsize=128)
+def rar5_check_password(password: str | bytes, salt: bytes, kdf_count_shift: int, check_value: bytes) -> bool:
     """Verify a check_value against a password, salt and kdf_count_shift"""
     if len(check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
         return False
