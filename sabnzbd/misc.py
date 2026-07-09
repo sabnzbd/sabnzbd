@@ -1797,7 +1797,7 @@ class SABRarFile(rarfile.RarFile):
 def rarfile_rar5_file_verify_check_value(
     password: AnyStr, salt: bytes, kdf_count_shift: int, check_value: bytes
 ) -> bool:
-    """Verify a check_value gainst a password, salt and kdf_count_shift"""
+    """Verify a check_value against a password, salt and kdf_count_shift"""
     if len(check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
         return False
     if kdf_count_shift > 24:
