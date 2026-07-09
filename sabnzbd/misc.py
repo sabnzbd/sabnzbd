@@ -1794,7 +1794,7 @@ class SABRarFile(rarfile.RarFile):
 
 @lru_cache
 def rarfile_rar5_file_verify_check_value(
-    password: AnyStr, salt: bytes, kdf_count_shift: int, check_value: bytes
+    password: str | bytes, salt: bytes, kdf_count_shift: int, check_value: bytes
 ) -> bool:
     """Verify a check_value against a password, salt and kdf_count_shift"""
     if len(check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
@@ -1821,5 +1821,5 @@ def rarfile_rar5_file_verify_check_value(
 
 
 # Replace rar3_s2k with native implementation which is faster for longer passwords
-rarfile.rar3_s2k = lru_cache()(sabctools.rarfile_rar3_s2k)
-rarfile.rar5_s2k = lru_cache()(rarfile.rar5_s2k)
+rarfile.rar3_s2k = lru_cache(maxsize=128)(sabctools.rarfile_rar3_s2k)
+rarfile.rar5_s2k = lru_cache(maxsize=128)(rarfile.rar5_s2k)
