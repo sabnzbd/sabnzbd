@@ -61,7 +61,6 @@ from sabnzbd.constants import (
     DEF_ARTICLE_CACHE_MAX,
     REPAIR_REQUEST,
     GUESSIT_SORT_TYPES,
-    RAR_MAX_PASSWORD,
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -1777,7 +1776,7 @@ class SABRarFile(rarfile.RarFile):
         if self._file_parser and self._file_parser.has_header_encryption():
             return
         if isinstance(rar_obj, rarfile.Rar5FileInfo) and rar_obj.is_file():
-            if rar_obj.needs_password() and rar_obj.file_encryption[:-1]:
+            if rar_obj.needs_password():
                 _algo, flags, kdf_count, salt, _iv, checkval = rar_obj.file_encryption
                 if flags & rarfile.RAR5_XENC_CHECKVAL:
                     if not rarfile_rar5_file_verify_check_value(self._password, salt, kdf_count, checkval):
@@ -1793,14 +1792,14 @@ class SABRarFile(rarfile.RarFile):
         super().setpassword(pwd)
 
 
-@lru_cache(maxsize=64)
+@lru_cache
 def rarfile_rar5_file_verify_check_value(
     password: AnyStr, salt: bytes, kdf_count_shift: int, check_value: bytes
 ) -> bool:
     """Verify a check_value against a password, salt and kdf_count_shift"""
     if len(check_value) != rarfile.RAR5_PW_CHECK_SIZE + rarfile.RAR5_PW_SUM_SIZE:
         return False
-    if kdf_count_shift > 24:
+    if kdf_count_shift > rarfile.RAR_MAX_KDF_SHIFT:
         raise rarfile.BadRarFile("Too large kdf_count")
 
     hdr_check = check_value[: rarfile.RAR5_PW_CHECK_SIZE]
@@ -1810,11 +1809,7 @@ def rarfile_rar5_file_verify_check_value(
         return False
 
     kdf_count = (1 << kdf_count_shift) + 32
-    if not isinstance(password, str):
-        password = password.decode("utf8")
-    password = password.encode("utf-16le")[: RAR_MAX_PASSWORD * 2]
-    password = password.decode("utf-16le").encode("utf8")
-    password_hash = hashlib.pbkdf2_hmac("sha256", password, salt, kdf_count)
+    password_hash = rarfile.rar5_s2k(password, salt, kdf_count)
 
     # Fold the 32-byte value into 8 bytes
     pwd_check = bytearray(rarfile.RAR5_PW_CHECK_SIZE)
@@ -1826,4 +1821,5 @@ def rarfile_rar5_file_verify_check_value(
 
 
 # Replace rar3_s2k with native implementation which is faster for longer passwords
-rarfile.rar3_s2k = sabctools.rarfile_rar3_s2k
+rarfile.rar3_s2k = lru_cache()(sabctools.rarfile_rar3_s2k)
+rarfile.rar5_s2k = lru_cache()(rarfile.rar5_s2k)
