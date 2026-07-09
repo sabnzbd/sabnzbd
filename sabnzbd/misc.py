@@ -1724,17 +1724,6 @@ def subject_name_extractor(subject: str) -> str:
     return subject
 
 
-def chain_callbacks(*callbacks):
-    """Chain multiple callbacks into one, ignoring None entries"""
-    callbacks = [cb for cb in callbacks if cb is not None]
-
-    def chained(*args, **kwargs):
-        for cb in callbacks:
-            cb(*args, **kwargs)
-
-    return chained
-
-
 ##
 ## SABnzbd patched rarfile classes
 ## Patch for https://github.com/markokr/rarfile/issues/56#issuecomment-711146569
@@ -1747,16 +1736,13 @@ class SABRarFile(rarfile.RarFile):
     def __init__(self, *args, **kwargs):
         """Patch RarFile-call when using `part_only`
         to store filenames inside the RAR-files"""
-        kwargs["info_callback"] = chain_callbacks(
-            self.info_callback_part if kwargs.get("part_only") else None,
-            self.info_callback_verify_password,
-            kwargs.get("info_callback"),
-        )
+        if kwargs.get("part_only"):
+            kwargs["info_callback"] = self.info_callback
 
         # Let RarFile handle the rest!
         super().__init__(*args, **kwargs)
 
-    def info_callback_part(self, rar_obj: rarfile.RarInfo):
+    def info_callback(self, rar_obj: rarfile.RarInfo):
         """Called for every RarInfo-object found"""
         # We only care about files inside the Rar
         # For Rar5 there is a separate object, for Rar3 we need to check if a filename was parsed
@@ -1768,19 +1754,6 @@ class SABRarFile(rarfile.RarFile):
 
     def info_callback_verify_password(self, rar_obj: rarfile.RarInfo):
         """For RAR5 when header encryption is not used attempt to verify the password"""
-        # First parse call will not have the password
-        if not self._password:
-            return
-        # Encrypted headers already verify the password
-        # We ignore that each file could have a different password
-        if self._file_parser and self._file_parser.has_header_encryption():
-            return
-        if isinstance(rar_obj, rarfile.Rar5FileInfo) and rar_obj.is_file():
-            if rar_obj.needs_password():
-                _algo, flags, kdf_count, salt, _iv, checkval = rar_obj.file_encryption
-                if flags & rarfile.RAR5_XENC_CHECKVAL:
-                    if not rarfile_rar5_file_verify_check_value(self._password, salt, kdf_count, checkval):
-                        raise rarfile.RarWrongPassword()
 
     def filelist(self) -> list[str]:
         """Return list of filenames in archive."""
@@ -1790,6 +1763,23 @@ class SABRarFile(rarfile.RarFile):
         """Sets the password to use when extracting."""
         self._file_parser = None  # Always trigger parse
         super().setpassword(pwd)
+        # Let parse finish before verifying passwords
+        self._verify_file_passwords()
+
+    def _verify_file_passwords(self):
+        """Verify passwords for all files in archive"""
+        if not self._password:
+            return
+        if isinstance(self._file_parser, rarfile.RAR5Parser):
+            # Encrypted headers already verify the password, and we assume all files use the same password
+            if self._file_parser.has_header_encryption():
+                return
+            for rar_obj in self.infolist():
+                if rar_obj.is_file() and rar_obj.needs_password():
+                    _algo, flags, kdf_count, salt, _iv, checkval = rar_obj.file_encryption
+                    if flags & rarfile.RAR5_XENC_CHECKVAL:
+                        if not rarfile_rar5_file_verify_check_value(self._password, salt, kdf_count, checkval):
+                            raise rarfile.RarWrongPassword()
 
 
 @lru_cache
