@@ -1,7 +1,7 @@
 Release Notes - SABnzbd 5.1.0 Beta 2
 =========================================================
 
-This is the second beta release of version 5.1.
+This is the third beta release of version 5.1.
 We will probably add (a few) new features in upcoming testing releases,
 but we already wanted to share the current improvements with you!
 
@@ -17,14 +17,19 @@ but we already wanted to share the current improvements with you!
 * Added support for unpacking `.tar` files during post-processing.
 * Improved anonymization of the logs when using `Show Logging`.
 * New Servers will default to 16 connections instead of 8.
+* Use media duration as part of `Ignore Samples` detection.
 * Parsing of header-encrypted RAR's will use significantly less resources.
 * Removed redundant `INSTALL.txt` file.
 * Dropped support for Python 3.9.
+* Windows and macOS: Updated Python to 3.14.6, Unrar to 7.23 and 7zip to 26.02.
 
 ## Bug fixes in 5.1.0
 
 * Prevent incorrect warnings about non-writeable directories.
 * Files unrelated to job could get removed by the `Cleanup List` logic.
+* Prevent path traversal in orphaned job API's.
+* `Disk Full` errors from unrar were not handled gracefully during unpacking.
+* Memory leak could occur during article decoding.
 * Windows: Uninstall would not remove Settings or Windows Service.
 * Windows: Warn for OS-limit if more than 1024 connections are configured.
 * macOS: AppleDouble files could result in failures in `Moving` stage.
