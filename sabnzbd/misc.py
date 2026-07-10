@@ -1762,6 +1762,7 @@ class SABRarFile(rarfile.RarFile):
         super().setpassword(pwd)
 
     def _parse(self):
+        """Run parser for file type"""
         super()._parse()
         self._verify_file_passwords()
 
