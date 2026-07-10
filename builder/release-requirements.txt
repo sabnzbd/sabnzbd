@@ -12,6 +12,7 @@ urllib3==2.7.0
 
 # praw dependencies
 prawcore==4.0.0
+defusedxml==0.7.1
 update-checker==1.0.0
 websocket-client==1.9.0
 
