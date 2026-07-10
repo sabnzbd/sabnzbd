@@ -26,10 +26,12 @@ import subprocess
 import sys
 import tempfile
 import wave
+from contextlib import nullcontext
 from random import randint, sample
 from unittest import mock
 
 import pytest
+import rarfile
 
 import sabnzbd
 import sabnzbd.cfg
@@ -42,6 +44,7 @@ from sabnzbd.constants import (
     HIGH_PRIORITY,
     NORMAL_PRIORITY,
 )
+from sabnzbd.misc import SABRarFile
 from tests.testhelper import SAB_BASE_DIR
 
 
@@ -1159,3 +1162,81 @@ class TestBuildAndRunCommand:
             self.script_path,
             "input 1",
         ]
+
+
+class TestSABRarFile:
+    @pytest.mark.parametrize(
+        "test_dir, rar_files, password, expected_correct",
+        [
+            (
+                "tests/data/basic_rar3",
+                ["testfile.rar"],
+                "NOT_ENCRYPTED_AND_CHECK_NOT_SUPPORTED",
+                True,
+            ),
+            (
+                "tests/data/basic_rar3_64",
+                ["testfile.rar"],
+                "CHECK_NOT_SUPPORTED",
+                True,
+            ),
+            (
+                "tests/data/basic_rar5",
+                ["testfile.rar"],
+                "NOT_ENCRYPTED",
+                True,
+            ),
+            (
+                "tests/data/basic_rar5_64_header_blake2",
+                ["testfile.rar"],
+                "HEADER_ENCRYPTION_WRONG_PASSWORD",
+                False,
+            ),
+            (
+                "tests/data/basic_rar5_64_header_blake2",
+                ["testfile.rar"],
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+                True,
+            ),
+            (
+                "tests/data/basic_rar5_64",
+                ["testfile.rar"],
+                "WRONG_PASSWORD",
+                False,
+            ),
+            (
+                "tests/data/basic_rar5_64",
+                ["testfile.rar"],
+                "75f8c9f91969b42eaaadc389739df9ed65e8970f9ad333a146e4f73e3875b69a",
+                True,
+            ),
+        ],
+    )
+    def test_rar5_check_password(self, test_dir, rar_files, password, expected_correct):
+        expected = nullcontext() if expected_correct else pytest.raises(rarfile.RarWrongPassword)
+
+        for rar_file in rar_files:
+            with SABRarFile(os.path.join(test_dir, rar_file), part_only=True) as zf:
+                with expected:
+                    zf.setpassword(password)
+                if zf._file_parser.has_header_encryption():
+                    assert zf.namelist()
+
+    @pytest.mark.parametrize(
+        "test_dir, rar_files, expected_files",
+        [
+            (
+                "tests/data/basic_rar5_64",
+                ["testfile.rar"],
+                ["My_Test_Download.bin", "testfile.bin", "Testfile_1234.bin"],
+            ),
+        ],
+    )
+    def test_rar5_check_password_after_parse(self, test_dir, rar_files, expected_files):
+        """The password check should occur after parse finishes so
+        that infolist is fully populated when headers are not encrypted"""
+        for rar_file in rar_files:
+            with SABRarFile(os.path.join(test_dir, rar_file), part_only=True) as zf:
+                with pytest.raises(rarfile.RarWrongPassword):
+                    zf.setpassword("WRONG_PASSWORD")
+                assert zf.namelist() == expected_files

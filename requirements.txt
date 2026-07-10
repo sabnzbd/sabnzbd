@@ -25,7 +25,7 @@ portend==3.2.1
 PySocks==1.7.1
 puremagic # Version-less for Python 3.11 and below
 puremagic==2.2.0; python_version > '3.11'
-rarfile==4.2
+rarfile==4.3
 guessit==3.8.0
 babelfish==0.6.1
 rebulk==3.2.0
