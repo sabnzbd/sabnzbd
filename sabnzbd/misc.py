@@ -1779,8 +1779,7 @@ class SABRarFile(rarfile.RarFile):
                     if flags & rarfile.RAR5_XENC_CHECKVAL:
                         if not rar5_check_password(self._password, salt, kdf_count, checkval):
                             raise rarfile.RarWrongPassword()
-                        # RAR5 salts are per-file, so lru_cache won't dedupe across files.
-                        # We assume all files use the same password so early exit if one file passes.
+                        # All files typically share the same password and usually even the same salt, so one successful check is enough
                         return
 
 
