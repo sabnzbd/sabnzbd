@@ -1219,7 +1219,7 @@ class TestSABRarFile:
             with SABRarFile(os.path.join(test_dir, rar_file), part_only=True) as zf:
                 with expected:
                     zf.setpassword(password)
-                if zf._file_parser.has_header_encryption():
+                if zf._file_parser.has_header_encryption() and expected_correct:
                     assert zf.namelist()
 
     @pytest.mark.parametrize(
