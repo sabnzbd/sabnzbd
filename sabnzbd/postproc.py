@@ -970,6 +970,14 @@ def try_rar_check(nzo: NzbObject, rars: list[str]) -> bool:
         return True
 
 
+def rename_rar_file(filename: str, setname: str, download_path: str, extension: str) -> None:
+    """Rename a rar file to its setname plus the original extension"""
+    new_rar_name = os.path.join(download_path, "%s.%s" % (setname, extension))
+    new_rar_name = get_unique_filename(new_rar_name)
+    logging.debug("Deobfuscate: Renaming %s to %s", filename, new_rar_name)
+    renamer(filename, new_rar_name)
+
+
 def rar_renamer(nzo: NzbObject) -> int:
     """Deobfuscate rar file names: Use header and content information to give RAR-files decent names"""
     nzo.status = Status.VERIFYING
@@ -979,7 +987,7 @@ def rar_renamer(nzo: NzbObject) -> int:
     renamed_files = 0
 
     # This is the most important datastructure (in case of mixed obfuscated rarsets)
-    rarvolnr = {}
+    rarvolnr: dict[int, dict[str, list[str]]] = {}
     # rarvolnr will contain per rar vol number the rarfilenames and their respective contents (and maybe other characteristics, like filesizes).
     # for example: rarvolnr[6]['somerandomfilename.rar']={'readme.txt', 'linux.iso'},
     # which means 'somerandomfilename.rar' has rarvolnumber 6, and contents 'readme.txt' and 'linux.iso'
@@ -988,46 +996,37 @@ def rar_renamer(nzo: NzbObject) -> int:
     # The volume number and real extension of a (obfuscated) rar file
     # so volnrext['dfakjldfalkjdfl.blabla'] = (14, 'part014.rar') or (2, 'r000')
     # Not really needed, but handy to avoid a second lookup at the renaming
-    volnrext = {}
+    volnrext: dict[str, tuple[int, str]] = {}
 
     # Scan rar files in workdir, but not subdirs
-    workdir_files = os.listdir(nzo.download_path)
-    for file_to_check in workdir_files:
+    for file_to_check in os.listdir(nzo.download_path):
         file_to_check = os.path.join(nzo.download_path, file_to_check)
 
-        # We only want files:
-        if not os.path.isfile(file_to_check):
+        # We only want rar files; guard against cbr files due to pr#3114
+        if (
+            not os.path.isfile(file_to_check)
+            or get_ext(file_to_check) == ".cbr"
+            or not rarfile.is_rarfile(file_to_check)
+        ):
             continue
 
-        # guard against cbr files due to pr#3114
-        if get_ext(file_to_check) == ".cbr":
-            continue
+        # if a rar file is fully encrypted, RarFile() will return an empty list:
+        rar_contents = SABRarFile(file_to_check, part_only=True).filelist()
+        if not rar_contents:
+            logging.info(
+                "Download %s contains a fully encrypted & obfuscated rar-file: %s.",
+                nzo.final_name,
+                file_to_check,
+            )
+            # bail out
+            return renamed_files
 
-        if rarfile.is_rarfile(file_to_check):
-            # if a rar file is fully encrypted, RarFile() will return an empty list:
-            if not SABRarFile(file_to_check, part_only=True).filelist():
-                logging.info(
-                    "Download %s contains a fully encrypted & obfuscated rar-file: %s.",
-                    nzo.final_name,
-                    file_to_check,
-                )
-                # bail out
-                return renamed_files
-
-        # The function will check if it's a RAR-file
-        # We do a sanity-check for the returned number
         rar_vol, new_extension = rarvolinfo.get_rar_extension(file_to_check)
-        if 0 < rar_vol < 1000:
+        if rar_vol > 0:
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
             volnrext[file_to_check] = (rar_vol, new_extension)
-            # The files inside rar file
-            rar_contents = SABRarFile(os.path.join(nzo.download_path, file_to_check), part_only=True).filelist()
-            try:
-                rarvolnr[rar_vol]
-            except Exception:
-                # does not yet exist, so create:
-                rarvolnr[rar_vol] = {}
-            rarvolnr[rar_vol][file_to_check] = rar_contents  # store them for matching (if needed)
+            # Store the files inside the rar file for matching (if needed)
+            rarvolnr.setdefault(rar_vol, {})[file_to_check] = rar_contents
         else:
             logging.debug("No RAR-volume-number found in %s", file_to_check)
 
@@ -1035,24 +1034,17 @@ def rar_renamer(nzo: NzbObject) -> int:
     logging.debug("Deobfuscate: volnrext is: %s", volnrext)
 
     # Could be that there are no rar-files, we stop
-    if not len(rarvolnr):
+    if not rarvolnr:
         return renamed_files
 
-    # this can probably done with a max-key-lambda oneliner, but ... how?
-    numberofrarsets = 0
-    for mykey in rarvolnr.keys():
-        numberofrarsets = max(numberofrarsets, len(rarvolnr[mykey]))
+    numberofrarsets = max(len(rar_sets) for rar_sets in rarvolnr.values())
     logging.debug("Number of rarset is %s", numberofrarsets)
 
     if numberofrarsets == 1:
         # Just one obfuscated rarset ... that's easy
         logging.debug("Deobfuscate: Just one obfuscated rarset")
         for filename in volnrext:
-            new_rar_name = "%s.%s" % (nzo.final_name, volnrext[filename][1])
-            new_rar_name = os.path.join(nzo.download_path, new_rar_name)
-            new_rar_name = get_unique_filename(new_rar_name)
-            logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
-            renamer(filename, new_rar_name)
+            rename_rar_file(filename, nzo.final_name, nzo.download_path, volnrext[filename][1])
             renamed_files += 1
         return renamed_files
 
@@ -1060,18 +1052,17 @@ def rar_renamer(nzo: NzbObject) -> int:
 
     # Sanity check of the rar set
     # Get the highest rar part number (that's the upper limit):
-    highest_rar = sorted(rarvolnr.keys())[-1]
+    highest_rar = max(rarvolnr)
     # A staircase check: number of rarsets should no go up, but stay the same or go down
     how_many_previous = 1000  # 1000 rarset mixed ... should be enough ... typical is 1, 2 or maybe 3
     # Start at part001.rar and go the highest
     for rar_set_number in range(1, highest_rar + 1):
-        try:
-            how_many_here = len(rarvolnr[rar_set_number])
-        except Exception:
+        if rar_set_number not in rarvolnr:
             # rarset does not exist at all
             logging.warning("rarset %s is missing completely, so I can't deobfuscate.", rar_set_number)
             return 0
         # OK, it exists, now let's check it's not higher
+        how_many_here = len(rarvolnr[rar_set_number])
         if how_many_here > how_many_previous:
             # this should not happen: higher number of rarset than previous number of rarset
             logging.warning("no staircase! rarset %s is higher than previous, so I can't deobfuscate.", rar_set_number)
@@ -1094,8 +1085,8 @@ def rar_renamer(nzo: NzbObject) -> int:
     # So, all rar files with rarvolnr 1, find the contents (files inside the rar),
     # and match with rarfiles with rarvolnr 2, and put them in the correct rarset.
     # And so on, until the highest rarvolnr minus 1 matched against highest rarvolnr
-    for n in range(1, len(rarvolnr)):
-        logging.debug("Deobfuscate: Finding matches between rar sets %s and %s" % (n, n + 1))
+    for n in range(1, highest_rar):
+        logging.debug("Deobfuscate: Finding matches between rar sets %s and %s", n, n + 1)
         for base_obfuscated_filename in rarvolnr[n]:
             matchcounter = 0
             for next_obfuscated_filename in rarvolnr[n + 1]:
@@ -1112,11 +1103,7 @@ def rar_renamer(nzo: NzbObject) -> int:
 
     # Do the renaming:
     for filename in rarsetname:
-        new_rar_name = "%s.%s" % (rarsetname[filename], volnrext[filename][1])
-        new_rar_name = os.path.join(nzo.download_path, new_rar_name)
-        new_rar_name = get_unique_filename(new_rar_name)
-        logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
-        renamer(filename, new_rar_name)
+        rename_rar_file(filename, rarsetname[filename], nzo.download_path, volnrext[filename][1])
         renamed_files += 1
 
     # Done: The obfuscated rar files have now been renamed to regular formatted filenames
