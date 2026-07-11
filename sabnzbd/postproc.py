@@ -74,6 +74,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     get_filename,
+    has_unwanted_extension,
 )
 from sabnzbd.nzb import NzbObject
 from sabnzbd.sorting import Sorter
@@ -499,6 +500,9 @@ def process_job(nzo: NzbObject) -> bool:
 
                 # Sanitize the resulting files
                 newfiles = sanitize_files(filelist=newfiles)
+
+                # Check unpacked files for unwanted extensions, the download-time check can miss files hidden inside archives
+                newfiles = remove_unwanted_files(nzo, newfiles, tmp_workdir_complete)
                 logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():
@@ -1161,6 +1165,40 @@ def cleanup_list(filelist: list[str], base_dir: str, skip_nzb: bool) -> list[str
                 logging.error(T("Removing %s failed"), clip_path(path))
                 logging.info("Traceback: ", exc_info=True)
         remaining_files.append(path)
+
+    # Remove the directories the removed files left behind, if they are now empty
+    remove_empty_parent_directories(base_dir, removed_files)
+    return remaining_files
+
+
+def remove_unwanted_files(nzo: NzbObject, filelist: list[str], base_dir: str) -> list[str]:
+    """Remove all files of the job that match the unwanted extensions.
+    The download-time check can be bypassed, for example by files
+    hidden inside nested archives, or within PAR2 repair data,
+    so the files produced by unpacking are verified again.
+    Only the tracked files are considered, so files of other jobs
+    in a shared folder are left alone. Returns the remaining files.
+    """
+    # Skip if not configured or after an explicit user override of the unwanted extension pause
+    if not cfg.unwanted_extensions() or not cfg.action_on_unwanted_extensions() or nzo.unwanted_ext == 2:
+        return filelist
+
+    remaining_files = []
+    removed_files = []
+    for path in filelist:
+        if os.path.isfile(path) and has_unwanted_extension(get_filename(path)):
+            try:
+                logging.info("Removing unwanted file %s", path)
+                remove_file(path)
+                removed_files.append(path)
+                continue
+            except Exception:
+                logging.error(T("Removing %s failed"), clip_path(path))
+                logging.info("Traceback: ", exc_info=True)
+        remaining_files.append(path)
+
+    if removed_files:
+        nzo.set_unpack_info("Unpack", T("Removed %s files with unwanted extensions") % len(removed_files))
 
     # Remove the directories the removed files left behind, if they are now empty
     remove_empty_parent_directories(base_dir, removed_files)
