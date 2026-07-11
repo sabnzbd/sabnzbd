@@ -316,49 +316,66 @@ class FakeHistoryDB(db.HistoryDB):
         db.HistoryDB.db_path = db_path
         super().__init__()
 
+    def add_fake_history_job(
+        self,
+        name: str,
+        status: str = Status.COMPLETED,
+        category: str = "*",
+        password: str = "",
+        path: Optional[str] = None,
+        futuretype: bool = False,
+        archive: bool = False,
+        completed: Optional[float] = None,
+    ) -> str:
+        """Add a single history entry, with random values for anything not specified"""
+        nzo = mock.Mock()
+
+        nzo.password = password
+        nzo.correct_password = "secret"
+        nzo.final_name = name
+        nzo.filename = "%s%s.nzb" % (name, "{{" + password + "}}" if password else "")
+        nzo.cat = category
+        nzo.script = "placeholder_script"
+        nzo.url = "placeholder_url"
+        nzo.status = status
+        nzo.fail_msg = "Failure" if status == Status.FAILED else ""
+        nzo.nzo_id = str(uuid.uuid4())
+        nzo.bytes_downloaded = randint(1024, 1024**4)
+        nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
+        nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
+        nzo.nzo_info = {"download_time": randint(1, 10**4)}
+        nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
+        nzo.duplicate_key = "show/season/episode"
+        nzo.time_added = int(time.time())
+        nzo.futuretype = futuretype  # for "report", only True when fetching an URL
+        if path is None:
+            path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
+        nzo.download_path = path
+
+        # Mock time when calling add_history_db() to randomize completion times
+        almost_time = mock.Mock(return_value=completed if completed is not None else time.time() - randint(0, 10**8))
+        with mock.patch("time.time", almost_time):
+            self.add_history_db(
+                nzo,
+                storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
+                postproc_time=randint(1, 10**3),
+                script_output="",
+                script_line="",
+            )
+        if archive:
+            self.archive(nzo.nzo_id)
+
+        return nzo.nzo_id
+
     def add_fake_history_jobs(self, number_of_entries=1):
         """Generate a history db with any number of fake entries"""
-
         for _ in range(0, number_of_entries):
-            nzo = mock.Mock()
-
-            # Mock all input build_history_info() needs
-            distro_choice = choice(self.distro_names)
-            distro_random = random_name()
-            nzo.password = choice(["secret", ""])
-            nzo.correct_password = "secret"
-            nzo.final_name = "%s.%s.Linux.ISO-Usenet" % (distro_choice, distro_random)
-            nzo.filename = "%s.%s.Linux-Usenet%s.nzb" % (
-                (distro_choice, distro_random, "{{" + nzo.password + "}}")
-                if nzo.password
-                else (distro_choice, distro_random, "")
+            self.add_fake_history_job(
+                name="%s.%s.Linux.ISO-Usenet" % (choice(self.distro_names), random_name()),
+                status=choice([Status.COMPLETED, choice(self.status_options)]),
+                category=choice(self.category_options),
+                password=choice(["secret", ""]),
             )
-            nzo.cat = choice(self.category_options)
-            nzo.script = "placeholder_script"
-            nzo.url = "placeholder_url"
-            nzo.status = choice([Status.COMPLETED, choice(self.status_options)])
-            nzo.fail_msg = "¡Fracaso absoluto!" if nzo.status == Status.FAILED else ""
-            nzo.nzo_id = str(uuid.uuid4())
-            nzo.bytes_downloaded = randint(1024, 1024**4)
-            nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-            nzo.repair, nzo.unpack, nzo.delete = pp_to_opts(choice(list(PP_LOOKUP.keys())))  # for "pp"
-            nzo.nzo_info = {"download_time": randint(1, 10**4)}
-            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
-            nzo.duplicate_key = "show/season/episode"
-            nzo.time_added = int(time.time())
-            nzo.futuretype = False  # for "report", only True when fetching an URL
-            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
-
-            # Mock time when calling add_history_db() to randomize completion times
-            almost_time = mock.Mock(return_value=time.time() - randint(0, 10**8))
-            with mock.patch("time.time", almost_time):
-                self.add_history_db(
-                    nzo,
-                    storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
-                    postproc_time=randint(1, 10**3),
-                    script_output="",
-                    script_line="",
-                )
 
 
 @pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")

@@ -868,11 +868,7 @@ def _api_rss_now(name: str, kwargs: ApiParams) -> bytes:
 
 def _api_retry_all(name: str, kwargs: ApiParams) -> bytes:
     """API: Retry all failed items in History"""
-    items = sabnzbd.api.build_history()[0]
-    nzo_ids = []
-    for item in items:
-        if item["retry"]:
-            nzo_ids.append(retry_job(item["nzo_id"]))
+    nzo_ids = [retry_job(job["nzo_id"]) for job in sabnzbd.get_db_connection().get_retryable_jobs()]
     return report(keyword="status", data=nzo_ids)
 
 

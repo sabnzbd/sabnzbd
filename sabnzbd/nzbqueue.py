@@ -33,6 +33,7 @@ from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
 from sabnzbd.decorators import NzbQueueLocker
+from sabnzbd.database import HistoryDB
 from sabnzbd.constants import (
     QUEUE_FILE_NAME,
     QUEUE_VERSION,
@@ -144,20 +145,16 @@ class NzbQueue:
         result = []
         # Folders from the download queue
         if all_jobs:
-            registered = []
+            registered = set()
         else:
-            registered = [nzo.work_name for nzo in self.__nzo_list]
+            registered = {nzo.work_name for nzo in self.__nzo_list}
 
         # Retryable folders from History
-        items = sabnzbd.api.build_history()[0]
-        # Anything waiting or active or retryable is a known item
-        registered.extend(
-            [
-                os.path.basename(item["path"])
-                for item in items
-                if item["retry"] or item["loaded"] or item["status"] == Status.QUEUED
-            ]
-        )
+        with HistoryDB() as history_db:
+            registered.update(os.path.basename(job["path"]) for job in history_db.get_retryable_jobs())
+
+        # Anything waiting or active in post-processing is also a known item
+        registered.update(os.path.basename(nzo.download_path) for nzo in sabnzbd.PostProcessor.get_queue())
 
         # Repair unregistered folders
         for folder in globber_full(cfg.download_dir.get_path()):
