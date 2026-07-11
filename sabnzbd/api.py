@@ -1930,8 +1930,8 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
 
 
 def build_history(
-    start: int = 0,
-    limit: int = 1000000,
+    start: int,
+    limit: int,
     archive: bool = False,
     search: Optional[str] = None,
     categories: Optional[list[str]] = None,
