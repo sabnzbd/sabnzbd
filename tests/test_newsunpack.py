@@ -19,12 +19,15 @@
 tests.test_newsunpack - Tests of various functions in newspack
 """
 
+import datetime
 import glob
 import io
+import json
 import logging
 import os
 import os.path
 import shutil
+import stat
 import sys
 import tarfile
 from typing import Optional
@@ -900,3 +903,193 @@ class TestTarUnpack:
             should_delete_original=True,
             original_files=tar_files,
         )
+
+
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestExternalProcessingEnv:
+    """Harness for the SAB_* environment variables passed to post-processing scripts.
+
+    external_processing() builds the environment (via create_env) and runs a user script.
+    These tests invoke a *real* receiving script that captures every SAB_* variable it sees
+    and echoes them back as JSON, so any SAB_* variable can be asserted on. The round-trip
+    proves the script decodes exactly the values SAB sent.
+
+    SAB_FILES gets extra attention because its value is itself a JSON list of the new files:
+    emojis, non-latin characters and characters that must be JSON-escaped (quotes,
+    backslashes, tabs, newlines, control chars) all have to survive the round-trip intact.
+    """
+
+    # Receiving script: capture every SAB_* variable and echo it back. SAB_FILES is the only
+    # variable SAB JSON-encodes, so it is the only one this script json-decodes; all other
+    # values are passed through as plain strings. The script deliberately has no shebang,
+    # so build_and_run_command() prepends the current interpreter (sys.executable) and it
+    # runs under the same Python as the test suite. The captured mapping is re-emitted as
+    # ASCII-safe JSON purely to ferry it back over stdout, independent of the console encoding.
+    RECEIVING_SCRIPT = (
+        "import os, json\n"
+        "env = {k: v for k, v in os.environ.items() if k.startswith('SAB_')}\n"
+        "if 'SAB_FILES' in env:\n"
+        "    env['SAB_FILES'] = json.loads(env['SAB_FILES'])\n"
+        "print(json.dumps(env))\n"
+    )
+
+    # Realistic defaults so every SAB_<field> derived from the NZO is a clean string unless
+    # a test overrides it. Keys mirror newsunpack.ENV_NZO_FIELDS.
+    NZO_DEFAULTS = {
+        "bytes": 1024,
+        "bytes_downloaded": 1024,
+        "bytes_tried": 1024,
+        "cat": "movies",
+        "correct_password": "",
+        "duplicate": False,
+        "duplicate_key": "",
+        "encrypted": 0,
+        "fail_msg": "",
+        "filename": "test.nzb",
+        "final_name": "Test Job",
+        "group": "alt.binaries.test",
+        "nzo_id": "SABnzbd_nzo_abc123",
+        "oversized": False,
+        "password": "",
+        "pp": 3,
+        "priority": 0,
+        "repair": True,
+        "script": "recv.py",
+        "status": "Completed",
+        "unpack": True,
+        "unwanted_ext": 0,
+        "url": "",
+    }
+
+    @staticmethod
+    def _write_receiving_script(directory: str) -> str:
+        """Write the receiving script and give it the execute bit post-proc scripts need."""
+        script_path = os.path.join(directory, "recv_sab_env.py")
+        with open(script_path, "w", encoding="utf-8") as script_file:
+            script_file.write(TestExternalProcessingEnv.RECEIVING_SCRIPT)
+        os.chmod(
+            script_path,
+            os.stat(script_path).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH,
+        )
+        return script_path
+
+    @classmethod
+    def _make_nzo(cls, admin_dir: str, overrides: dict):
+        """A mock NZO with clean string values for every field create_env reads."""
+        nzo = mock.Mock()
+        for field, value in {**cls.NZO_DEFAULTS, **overrides}.items():
+            setattr(nzo, field, value)
+        nzo.nzo_info = {}
+        nzo.admin_path = admin_dir
+        nzo.avg_bps_total = 0
+        nzo.avg_bps_freq = 0
+        nzo.avg_date = datetime.datetime(2026, 1, 1)
+        return nzo
+
+    def _run(self, filenames=None, status=0, nzo_overrides=None):
+        """Invoke external_processing with a real script.
+
+        Returns (sab_env, complete_dir, ret) where 'sab_env' is the dict of every SAB_*
+        variable exactly as the receiving script saw it.
+        """
+        base = long_path(os.path.join(SAB_CACHE_DIR, "sab_env"))
+        complete_dir = os.path.join(base, "complete")
+        admin_dir = os.path.join(base, JOB_ADMIN)
+        assert create_all_dirs(complete_dir), f"Failed to create {complete_dir}"
+        assert create_all_dirs(admin_dir), f"Failed to create {admin_dir}"
+
+        script_path = self._write_receiving_script(base)
+
+        # Full paths as external_processing receives them
+        newfiles = [os.path.join(complete_dir, name) for name in (filenames or [])]
+
+        nzo = self._make_nzo(admin_dir, nzo_overrides or {})
+        sabnzbd.PostProcessor = mock.Mock()
+        output, ret = newsunpack.external_processing(script_path, nzo, complete_dir, status, newfiles)
+
+        sab_env = json.loads(output)
+        return sab_env, complete_dir, ret
+
+    def _run_files(self, filenames):
+        """SAB_FILES convenience wrapper: returns (decoded_files, expected, ret).
+
+        The receiving script already json-decodes SAB_FILES, so sab_env["SAB_FILES"] is the
+        list the script parsed out of the environment variable.
+        """
+        sab_env, complete_dir, ret = self._run(filenames=filenames)
+        decoded = sab_env["SAB_FILES"]
+        expected = sorted(os.path.relpath(os.path.join(complete_dir, name), complete_dir) for name in filenames)
+        return decoded, expected, ret
+
+    @pytest.mark.parametrize(
+        "filenames",
+        [
+            pytest.param(["movie.mkv", "sample.mkv", "readme.txt"], id="plain-ascii"),
+            pytest.param(
+                ['quote".mkv', "back\\slash.mkv", "tab\tchar.txt", "new\nline.txt", "control\x01.dat"],
+                id="json-escaped",
+            ),
+            pytest.param(["clip_🎬.mkv", "party_🎉🎉.mkv", "flag_🏴‍☠️.txt"], id="emoji"),
+            pytest.param(
+                ["naïve.txt", "Пример.mkv", "测试文件.mkv", "日本語のファイル.txt", "ملف.txt", "Ω_Δ.dat"],
+                id="non-latin",
+            ),
+            pytest.param(['Movie (2026) 🎬 — naïve 测试 "final".mkv'], id="mixed"),
+        ],
+    )
+    def test_sab_files_round_trip(self, filenames):
+        """The receiving script decodes SAB_FILES to exactly the filenames that went in."""
+        decoded, expected, ret = self._run_files(filenames)
+        assert ret == 0
+        assert decoded == expected
+
+    def test_sab_files_is_sorted(self):
+        """Unsorted input arrives at the script as a sorted list."""
+        decoded, expected, ret = self._run_files(["zebra.mkv", "apple.mkv", "Éclair.mkv", "mango.mkv"])
+        assert ret == 0
+        assert decoded == sorted(decoded)
+        assert decoded == expected
+
+    def test_sab_files_relative_paths(self):
+        """Files in subdirectories are made relative to the complete dir, no absolute leak."""
+        decoded, expected, ret = self._run_files([os.path.join("Season 1", "épisode 🎬.mkv"), "root.mkv"])
+        assert ret == 0
+        assert decoded == expected
+        assert all(not os.path.isabs(path) for path in decoded)
+
+    def test_sab_files_empty(self):
+        """No new files; SAB_FILES is an empty JSON list."""
+        decoded, expected, ret = self._run_files([])
+        assert ret == 0
+        assert decoded == []
+        assert expected == []
+
+    @pytest.mark.parametrize(
+        "field, value, env_var",
+        [
+            pytest.param("cat", "tv 📺", "SAB_CAT", id="cat-emoji"),
+            pytest.param("final_name", "Naïve.Show.测试.S01", "SAB_FINAL_NAME", id="final_name-non-latin"),
+            pytest.param("nzo_id", "SABnzbd_nzo_xyz789", "SAB_NZO_ID", id="nzo_id"),
+            pytest.param("group", 'alt."quoted".group', "SAB_GROUP", id="group-quotes"),
+        ],
+    )
+    def test_sab_nzo_field_round_trip(self, field, value, env_var):
+        """Any NZO-derived SAB_* variable arrives at the script unchanged."""
+        sab_env, _complete_dir, ret = self._run(nzo_overrides={field: value})
+        assert ret == 0
+        assert sab_env[env_var] == value
+
+    def test_sab_bool_field_is_normalised(self):
+        """Boolean NZO fields are passed as '1'/'0' (create_env's str(value * 1))."""
+        sab_env, _complete_dir, ret = self._run(nzo_overrides={"repair": True, "duplicate": False})
+        assert ret == 0
+        assert sab_env["SAB_REPAIR"] == "1"
+        assert sab_env["SAB_DUPLICATE"] == "0"
+
+    def test_sab_always_supplied_fields(self):
+        """The always-present SAB_* variables reflect the arguments and SAB globals."""
+        sab_env, complete_dir, ret = self._run(status=2)
+        assert ret == 0
+        assert sab_env["SAB_VERSION"] == sabnzbd.__version__
+        assert sab_env["SAB_COMPLETE_DIR"] == complete_dir
+        assert sab_env["SAB_PP_STATUS"] == "2"
