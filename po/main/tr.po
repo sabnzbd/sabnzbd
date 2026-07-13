@@ -4714,11 +4714,11 @@ msgstr "Dosya ismi"
 
 #: sabnzbd/skintext.py
 msgid "Toggle SABnzbd navigation menu"
-msgstr ""
+msgstr "SABnzbd gezinti menüsünü aç veya kapat"
 
 #: sabnzbd/skintext.py
 msgid "Open SABnzbd main menu"
-msgstr ""
+msgstr "SABnzbd ana menüsünü aç"
 
 #: sabnzbd/skintext.py
 msgid "Free Space"
