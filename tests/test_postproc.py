@@ -340,6 +340,97 @@ class TestCleanupList:
         assert os.path.exists(job_files[0])
 
 
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestRemoveUnwantedFiles:
+    @staticmethod
+    def _create_file(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as f:
+            f.write(b"data")
+        assert os.path.exists(path)
+        return path
+
+    @staticmethod
+    def _fake_nzo(unwanted_ext=0):
+        fake_nzo = mock.Mock()
+        fake_nzo.final_name = "TestDownload"
+        fake_nzo.unwanted_ext = unwanted_ext
+        return fake_nzo
+
+    @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
+    def test_remove_unwanted_files_only_tracked_files(self):
+        """Only files of the job may be removed, not other files in the same folder"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_files = [self._create_file(os.path.join(base_dir, f)) for f in ("job.mkv", "job.exe")]
+        # File matching the unwanted extensions, but not part of the job
+        unrelated_file = self._create_file(os.path.join(base_dir, "MyApplication", "fake.exe"))
+        # Tracked files that no longer exist shouldn't cause problems
+        gone_file = os.path.join(base_dir, "gone.exe")
+        fake_nzo = self._fake_nzo()
+
+        remaining_files = postproc.remove_unwanted_files(fake_nzo, [*job_files, gone_file], base_dir)
+
+        assert remaining_files == [job_files[0], gone_file]
+        assert os.path.exists(job_files[0])
+        assert not os.path.exists(job_files[1])
+        assert os.path.exists(unrelated_file)
+        fake_nzo.set_unpack_info.assert_called_once()
+
+    @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 1})
+    def test_remove_unwanted_files_removes_empty_parent_dirs(self):
+        """Directories left empty by the removed files are pruned, but never the base directory"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_file = self._create_file(os.path.join(base_dir, "sub", "deeper", "job.exe"))
+
+        assert postproc.remove_unwanted_files(self._fake_nzo(), [job_file], base_dir) == []
+        assert not os.path.exists(os.path.join(base_dir, "sub"))
+        assert os.path.exists(base_dir)
+
+    @pytest.mark.config(
+        {"unwanted_extensions": ["mkv", "srt"], "unwanted_extensions_mode": 1, "action_on_unwanted_extensions": 2}
+    )
+    def test_remove_unwanted_files_whitelist_mode(self):
+        """In whitelist mode anything not listed is removed, except files without extension"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_files = [self._create_file(os.path.join(base_dir, f)) for f in ("job.mkv", "job.exe", "no_extension")]
+
+        remaining_files = postproc.remove_unwanted_files(self._fake_nzo(), job_files, base_dir)
+
+        assert remaining_files == [job_files[0], job_files[2]]
+        assert os.path.exists(job_files[0])
+        assert not os.path.exists(job_files[1])
+        assert os.path.exists(job_files[2])
+
+    @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 0})
+    def test_remove_unwanted_files_no_action_configured(self):
+        """Without an action configured, nothing is removed"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_files = [self._create_file(os.path.join(base_dir, "job.exe"))]
+        fake_nzo = self._fake_nzo()
+
+        assert postproc.remove_unwanted_files(fake_nzo, job_files, base_dir) == job_files
+        assert os.path.exists(job_files[0])
+        fake_nzo.set_unpack_info.assert_not_called()
+
+    @pytest.mark.config({"unwanted_extensions": [], "action_on_unwanted_extensions": 2})
+    def test_remove_unwanted_files_no_extensions_configured(self):
+        """Without unwanted extensions configured, nothing is removed"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_files = [self._create_file(os.path.join(base_dir, "job.exe"))]
+
+        assert postproc.remove_unwanted_files(self._fake_nzo(), job_files, base_dir) == job_files
+        assert os.path.exists(job_files[0])
+
+    @pytest.mark.config({"unwanted_extensions": ["exe"], "action_on_unwanted_extensions": 2})
+    def test_remove_unwanted_files_user_override(self):
+        """Skip the check after the user resumed a job paused for an unwanted extension"""
+        base_dir = os.path.join(SAB_CACHE_DIR, "complete_unwanted")
+        job_files = [self._create_file(os.path.join(base_dir, "job.exe"))]
+
+        assert postproc.remove_unwanted_files(self._fake_nzo(unwanted_ext=2), job_files, base_dir) == job_files
+        assert os.path.exists(job_files[0])
+
+
 class TestNzbOnlyDownload:
     @mock.patch("sabnzbd.postproc.process_single_nzb")
     @mock.patch("sabnzbd.postproc.listdir_full")
