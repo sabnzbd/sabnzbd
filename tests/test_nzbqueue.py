@@ -25,16 +25,24 @@ import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Optional
+from unittest import mock
 
 import pytest
 
 import sabnzbd
-from sabnzbd.constants import NORMAL_PRIORITY, JOB_ADMIN, ONDISK_VERSION, ONDISK_FILE, RENAMES_FILE
+from sabnzbd.constants import NORMAL_PRIORITY, JOB_ADMIN, ONDISK_VERSION, ONDISK_FILE, RENAMES_FILE, Status
+from sabnzbd.database import HistoryDB
 from sabnzbd.downloader import Server
 from sabnzbd.filesystem import save_compressed, save_data
 from sabnzbd.nzb import NzbFile, NzbObject
 from sabnzbd.nzbqueue import NzbQueue
-from tests.testhelper import SAB_DATA_DIR, SAB_NEWSSERVER_HOST, SAB_NEWSSERVER_PORT, create_and_read_nzb_fp
+from tests.testhelper import (
+    FakeHistoryDB,
+    SAB_DATA_DIR,
+    SAB_NEWSSERVER_HOST,
+    SAB_NEWSSERVER_PORT,
+    create_and_read_nzb_fp,
+)
 
 
 @pytest.fixture()
@@ -92,6 +100,31 @@ def make_dummy_nzo(name: str, priority: int = NORMAL_PRIORITY, files: int = 50, 
         for file in range(files)
     ]
 
+    return nzo
+
+
+def make_dummy_postproc_nzo(name: str, download_path: str, status: str = Status.QUEUED, pp_active: bool = False):
+    """Mock NzbObject in the post-processing queue, with all the attributes
+    add_active_history() needs so it can pass through build_history()"""
+    nzo = mock.Mock()
+    nzo.nzo_id = f"SABnzbd_nzo_{name}"
+    nzo.final_name = name
+    nzo.filename = f"{name}.nzb"
+    nzo.cat = "*"
+    nzo.script = "none"
+    nzo.url = ""
+    nzo.status = status
+    nzo.pp_active = pp_active
+    nzo.repair = nzo.unpack = nzo.delete = True
+    nzo.nzo_info = {}
+    nzo.unpack_info = {}
+    nzo.bytes_downloaded = 1024
+    nzo.fail_msg = ""
+    nzo.correct_password = ""
+    nzo.action_line = ""
+    nzo.duplicate_key = ""
+    nzo.time_added = 0
+    nzo.download_path = download_path
     return nzo
 
 
@@ -260,3 +293,56 @@ class TestNzbQueue:
         # renamed.rar is on disk, but it has missing articles
         assert nzo.files
         assert not nzo.finished_files
+
+    def test_scan_jobs_known_jobs(self, mocker, monkeypatch, tmp_path):
+        """Folders belonging to jobs in the download queue, the post-processing
+        queue, or retryable from History must not be treated as orphans.
+        Anything else in the incomplete folder is an orphan."""
+        monkeypatch.setattr(HistoryDB, "db_path", str(tmp_path / "history1.db"))
+        monkeypatch.setattr(HistoryDB, "startup_done", False)
+
+        def make_job_folder(name: str) -> str:
+            path = os.path.join(sabnzbd.cfg.download_dir.get_path(), name)
+            os.makedirs(path, exist_ok=True)
+            return path
+
+        # Job in the download queue
+        queued_nzo = make_dummy_nzo("queued", files=1, articles=1)
+        sabnzbd.NzbQueue.add(queued_nzo, save=False)
+        make_job_folder(queued_nzo.work_name)
+
+        # Job waiting in the post-processing queue
+        postproc_path = make_job_folder("job-postproc")
+        pp_nzo = make_dummy_postproc_nzo("job-postproc", postproc_path)
+        mocker.patch.object(sabnzbd, "PostProcessor", create=True)
+        sabnzbd.PostProcessor.get_queue.return_value = [pp_nzo]
+
+        with FakeHistoryDB(str(tmp_path / "history1.db")) as history_db:
+            # The postproc job is also already in the history database, which briefly happens at the end of post-processing
+            history_db.add_fake_history_job("job-postproc", Status.COMPLETED, path=postproc_path)
+            # Failed job with the incomplete folder still on disk: retryable
+            history_db.add_fake_history_job("job-failed", Status.FAILED, path=make_job_folder("job-failed"))
+            # Failed job whose recorded incomplete folder no longer exists is not retryable, so a same-named folder is an orphan
+            make_job_folder("job-gone")
+            history_db.add_fake_history_job("job-gone", Status.FAILED, path=str(tmp_path / "elsewhere" / "job-gone"))
+            # A failed URL-fetch (report = 'future') is always retryable, regardless of status or whether the folder exists
+            history_db.add_fake_history_job(
+                "job-future", Status.COMPLETED, path=make_job_folder("job-future"), futuretype=True
+            )
+            # Completed job: its folder should no longer exist, so treat leftovers as orphans
+            history_db.add_fake_history_job("job-completed", Status.COMPLETED, path=make_job_folder("job-completed"))
+            # Archived jobs are not visible to queue repair, even when they would
+            # otherwise be retryable, so the folder is treated as an orphan
+            history_db.add_fake_history_job(
+                "job-archived", Status.FAILED, path=make_job_folder("job-archived"), archive=True
+            )
+
+        # Folder not known anywhere
+        make_job_folder("job-orphan")
+
+        orphans = sabnzbd.NzbQueue.scan_jobs(action=False)
+        assert sorted(orphans) == ["job-archived", "job-completed", "job-gone", "job-orphan"]
+
+        # With all_jobs=True the download queue itself is not considered registered
+        orphans_all = sabnzbd.NzbQueue.scan_jobs(all_jobs=True, action=False)
+        assert queued_nzo.work_name in orphans_all

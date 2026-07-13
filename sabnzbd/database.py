@@ -443,6 +443,20 @@ class HistoryDB:
 
         return items, total_items
 
+    def get_retryable_jobs(self) -> list[dict[str, Any]]:
+        """Return the nzo_id and path of all history items that can be retried,
+        failed jobs whose incomplete folder still exists and failed URL-fetches
+        """
+        jobs = []
+        if self.execute(
+            "SELECT nzo_id, path, report FROM history WHERE archive IS NULL AND (status = ? OR report = 'future')",
+            (Status.FAILED,),
+        ):
+            for item in self.cursor:
+                if item["report"] == "future" or (item["path"] and os.path.exists(item["path"])):
+                    jobs.append({"nzo_id": item["nzo_id"], "path": item["path"]})
+        return jobs
+
     def have_duplicate_key(self, duplicate_key: str) -> bool:
         """Check whether History contains this duplicate key"""
         if self.execute(
