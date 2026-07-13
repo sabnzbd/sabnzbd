@@ -1758,6 +1758,10 @@ msgstr "%s 没有匹配的早期 rar 文件"
 msgid "Removing %s failed"
 msgstr "移除 %s 失败"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"

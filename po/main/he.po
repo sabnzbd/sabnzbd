@@ -1791,6 +1791,10 @@ msgstr "אין קובץ rar קודם תואם עבור %s"
 msgid "Removing %s failed"
 msgstr "הסרת %s נכשלה"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"

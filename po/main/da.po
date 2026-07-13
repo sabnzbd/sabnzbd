@@ -1823,6 +1823,10 @@ msgstr "Ingen matchende tidligere rar-fil for %s"
 msgid "Removing %s failed"
 msgstr "Fjernelse af %s mislykkedes"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"

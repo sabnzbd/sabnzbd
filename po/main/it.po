@@ -1847,6 +1847,10 @@ msgstr "Nessun file rar precedente corrispondente per %s"
 msgid "Removing %s failed"
 msgstr "Rimozione di %s fallita"
 
+#: sabnzbd/postproc.py
+msgid "Removed %s files with unwanted extensions"
+msgstr ""
+
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
