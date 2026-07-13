@@ -28,7 +28,7 @@ puremagic==2.2.0; python_version > '3.11'
 rarfile==4.3
 guessit==3.8.0
 babelfish==0.6.1
-rebulk==3.2.0
+rebulk==4.2.2
 hachoir==3.3.0
 
 # Recent cryptography versions require Rust. If you run into issues compiling this
