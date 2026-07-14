@@ -608,7 +608,9 @@ def process_job(nzo: NzbObject) -> bool:
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T("Running script"), nzo.script)
                 nzo.set_unpack_info("Script", T("Running user script %s") % nzo.script, unique=True)
-                script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete), job_result)
+                script_log, script_ret = external_processing(
+                    script_path, nzo, clip_path(workdir_complete), job_result, newfiles
+                )
 
                 # Format output depending on return status
                 script_line = get_last_line(script_log)

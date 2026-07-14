@@ -21,6 +21,7 @@ sabnzbd.newsunpack
 
 import os
 import sys
+import json
 import re
 import subprocess
 import logging
@@ -209,7 +210,9 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(extern_proc: str, nzo: NzbObject, complete_dir: str, status: int) -> tuple[str, int]:
+def external_processing(
+    extern_proc: str, nzo: NzbObject, complete_dir: str, status: int, newfiles: list[str]
+) -> tuple[str, int]:
     """Run a user postproc script, return console output and exit value"""
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
@@ -237,6 +240,7 @@ def external_processing(extern_proc: str, nzo: NzbObject, complete_dir: str, sta
         "avg_bps": int(nzo.avg_bps_total / nzo.avg_bps_freq) if nzo.avg_bps_freq else 0,
         "age": calc_age(nzo.avg_date),
         "orig_nzb_gz": clip_path(nzb_paths[0]) if nzb_paths else "",
+        "files": json.dumps(sorted([os.path.relpath(newfile, complete_dir) for newfile in newfiles])),
     }
 
     # Make sure that if we run a Python script it's output is unbuffered, so we can show it to the user
