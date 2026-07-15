@@ -616,7 +616,9 @@ class TestRSS:
         # An age filter must not apply (returns None -> "go to next filter")
         age_rule = rss.FeedRule(type="G", value=">10d")
         assert (
-            age_rule.matches(title=entry.title, category=None, size=entry.size, season=0, episode=0, rule_index=0, age=entry.age)
+            age_rule.matches(
+                title=entry.title, category=None, size=entry.size, season=0, episode=0, rule_index=0, age=entry.age
+            )
             is None
         )
 
