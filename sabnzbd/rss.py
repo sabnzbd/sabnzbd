@@ -185,7 +185,8 @@ class ResolvedEntry:
         """Build NormalisedEntry from feedparser entry"""
         link: str = ""
         size: int = 0
-        age: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
+        # Unknown until a date is parsed from the feed; age filters skip a None age
+        age: Optional[datetime.datetime] = None
 
         # Try standard link and enclosures first
         if entry.get("enclosures"):
@@ -230,8 +231,6 @@ class ResolvedEntry:
                 age = datetime.datetime(*entry.published_parsed[:6], tzinfo=datetime.timezone.utc)
             except Exception:
                 pass
-        finally:
-            age = age.replace(tzinfo=datetime.timezone.utc)
 
         # Maybe the newznab also provided SxxExx info
         try:
@@ -795,7 +794,8 @@ class RSSRepository:
             entry.episode,
             entry.size,
             entry.rule,
-            int(entry.age.timestamp()),
+            # age column is NOT NULL; fallback to seen_at (now) when the feed gave no date
+            int((entry.age or entry.seen_at).timestamp()),
             entry.initial_scan,
             int(entry.seen_at.timestamp()),
             int(entry.downloaded_at.timestamp()) if entry.downloaded_at else None,

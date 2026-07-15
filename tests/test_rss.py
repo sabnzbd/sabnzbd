@@ -595,6 +595,55 @@ class TestRSS:
             actual = getattr(job, k, None)
             assert actual == expected, f"Expected {k!r}: {actual!r} == {expected!r}"
 
+    def test_from_feed_entry_age_defaults_to_none_without_date(self):
+        """A feed item with no parseable date has age None so age filters skip it."""
+        import feedparser
+
+        xml = (
+            '<?xml version="1.0" encoding="utf-8"?>'
+            '<rss version="2.0"><channel><title>f</title><link>http://x/</link>'
+            "<description>f</description>"
+            "<item><title>No Date Item</title><link>http://LINK</link>"
+            '<enclosure url="http://LINK" length="1000" type="application/x-nzb" />'
+            "</item></channel></rss>"
+        )
+        parsed = feedparser.parse(xml)
+        entry = ResolvedEntry.from_feed_entry("feed", parsed.entries[0])
+
+        assert entry is not None
+        assert entry.age is None
+
+        # An age filter must not apply (returns None -> "go to next filter")
+        age_rule = rss.FeedRule(type="G", value=">10d")
+        assert (
+            age_rule.matches(title=entry.title, category=None, size=entry.size, season=0, episode=0, rule_index=0, age=entry.age)
+            is None
+        )
+
+    def test_none_age_persists_as_fallback_and_round_trips(self, tmp_rss):
+        """The NOT NULL age column is satisfied by a fallback when age is unknown."""
+        repo, _reader = tmp_rss
+        entry = ResolvedEntry(
+            feed="feed",
+            link="http://example.test/no-age",
+            infourl=None,
+            category=None,
+            title="No age",
+            size=1000,
+            age=None,
+            season=0,
+            episode=0,
+            state=RSSState.GOOD,
+        )
+        repo.upsert(entry)
+
+        stored = repo.find_job_by_url("feed", "http://example.test/no-age")
+        assert stored is not None
+        # Persisted as a fallback (~seen_at) rather than NULL, so it reloads as a datetime.
+        # Storage is integer seconds, so compare at whole-second resolution.
+        assert stored.age is not None
+        assert int(stored.age.timestamp()) == int(entry.seen_at.timestamp())
+
     def test_rssstore_random_crud(self, tmp_rss):
         rnd = random.Random(123)
         repo, _reader = tmp_rss
