@@ -30,6 +30,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Optional, Any, Generator, Iterable
 from enum import Enum
+from dateutil.relativedelta import relativedelta
 from more_itertools import batched
 
 import sabnzbd
@@ -59,10 +60,20 @@ _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_BR = re.compile(r"<br\s*/?>", re.I)  # Strip content after first <br/>
 _RE_TAG = re.compile(r"<[^>]+>")  # Strip HTML tags from descriptions
-# Age rule value, e.g. ">3d", "<12h", "30m". Optional leading comparator, integer
-# amount and an optional unit suffix (weeks/days/hours/minutes/seconds).
-_RE_AGE = re.compile(r"^\s*([<>])?\s*(\d+)\s*([wdhms]?)\s*$", re.I)
-_AGE_UNIT_SECONDS = {"w": 604800, "d": 86400, "h": 3600, "m": 60, "s": 1}
+# Age rule value, e.g. ">3d", "<12h", "1y", "6mo". Optional leading comparator,
+# integer amount and an optional unit suffix (years/months/weeks/days/hours/
+# minutes/seconds). "mo" (months) must be tried before the single-char "m" (minutes).
+_RE_AGE = re.compile(r"^\s*([<>])?\s*(\d+)\s*(mo|[ywdhms])?\s*$", re.I)
+# Map to relativedelta keyword so calendar units (years/months) honor variable-length months/leap days relative to "now".
+_AGE_UNIT_FIELD = {
+    "y": "years",
+    "mo": "months",
+    "w": "weeks",
+    "d": "days",
+    "h": "hours",
+    "m": "minutes",
+    "s": "seconds",
+}
 
 
 class RSSState(str, Enum):
@@ -399,8 +410,8 @@ class FeedRule:
         """Return True if the entry `age` satisfies the age bound `expr`.
 
         expr is a comparator (> minimum age, < maximum age) followed by
-        an amount and optional unit suffix (w/d/h/m/s, default
-        days), e.g. ">3d", "<12h", "30m". A bare value with no
+        an amount and optional unit suffix (y/mo/w/d/h/m/s, default
+        days), e.g. ">3d", "<12h", "1y", "6mo". A bare value with no
         comparator is treated as a maximum age (<), i.e. only recent entries
         pass. Unparseable expressions are ignored (treated as a match).
         """
@@ -412,17 +423,17 @@ class FeedRule:
         comparator = m.group(1) or "<"
         amount = int(m.group(2))
         unit = m.group(3).lower() or "d"
-        threshold = amount * _AGE_UNIT_SECONDS[unit]
 
-        # How old is the entry, in seconds (age is always tz-aware, see ResolvedEntry)
+        # Cutoff instant; using relativedelta means calendar units (years) respect
+        # variable-length years/leap days relative to "now" (age is always tz-aware).
         now = datetime.datetime.now(datetime.timezone.utc)
-        entry_age = (now - age).total_seconds()
+        cutoff = now - relativedelta(**{_AGE_UNIT_FIELD[unit]: amount})
 
         if comparator == ">":
-            # Minimum age: entry must be at least `threshold` old
-            return entry_age >= threshold
-        # Maximum age: entry must be no older than `threshold`
-        return entry_age <= threshold
+            # Minimum age: entry must be older than the cutoff
+            return age <= cutoff
+        # Maximum age: entry must be no older than the cutoff
+        return age >= cutoff
 
     @staticmethod
     def episode_matches(season: int, episode: int, expr: str, title: Optional[str] = None):
