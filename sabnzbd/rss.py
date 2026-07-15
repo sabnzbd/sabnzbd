@@ -60,10 +60,10 @@ _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_BR = re.compile(r"<br\s*/?>", re.I)  # Strip content after first <br/>
 _RE_TAG = re.compile(r"<[^>]+>")  # Strip HTML tags from descriptions
-# Age rule value, e.g. ">3d", "<12h", "1y", "6mo". Optional leading comparator,
-# integer amount and an optional unit suffix (years/months/weeks/days/hours/
-# minutes/seconds). "mo" (months) must be tried before the single-char "m" (minutes).
-_RE_AGE = re.compile(r"^\s*([<>])?\s*(\d+)\s*(mo|[ywdhms])?\s*$", re.I)
+# Age rule value, e.g. ">3d", "<=12h", "1y", "6mo".
+# Optional leading comparator (<, >, <=, >=; the reversed =<, => are accepted too),
+# an integer amount and an optional unit suffix (years/months/weeks/days/hours/minutes/seconds).
+_RE_AGE = re.compile(r"^\s*(<=|>=|=<|=>|[<>])?\s*(\d+)\s*(mo|[ywdhms])?\s*$", re.I)
 # Map to relativedelta keyword so calendar units (years/months) honor variable-length months/leap days relative to "now".
 _AGE_UNIT_FIELD = {
     "y": "years",
@@ -408,11 +408,13 @@ class FeedRule:
     def age_matches(age: datetime.datetime, expr: str) -> bool:
         """Return True if the entry `age` satisfies the age bound `expr`.
 
-        expr is a comparator (> minimum age, < maximum age) followed by
-        an amount and optional unit suffix (y/mo/w/d/h/m/s, default
-        days), e.g. ">3d", "<12h", "1y", "6mo". A bare value with no
-        comparator is treated as a maximum age (<), i.e. only recent entries
-        pass. Unparseable expressions are ignored (treated as a match).
+        expr is a comparator (>/>= minimum age, </<= maximum age; the reversed
+        =>/=< are accepted too) followed by an amount and optional unit suffix
+        (y/mo/w/d/h/m/s, default days), e.g. ">3d", "<=12h", "1y", "6mo". Because
+        age is compared against a live clock, the inclusive/strict distinction is
+        a measure-zero boundary, so >= is treated as an alias of > (and <= of <).
+        A bare value with no comparator is treated as a maximum age, i.e. only
+        recent entries pass. Unparseable expressions are ignored (match).
         """
         m = _RE_AGE.match(expr or "")
         if not m:
@@ -428,11 +430,13 @@ class FeedRule:
         now = datetime.datetime.now(datetime.timezone.utc)
         cutoff = now - relativedelta(**{_AGE_UNIT_FIELD[unit]: amount})
 
-        if comparator == ">":
-            # Minimum age: entry must be older than the cutoff
-            return age <= cutoff
-        # Maximum age: entry must be no older than the cutoff
-        return age >= cutoff
+        match comparator:
+            case ">" | ">=" | "=>":
+                # Minimum age: entry must be at least this old (older than the cutoff)
+                return age <= cutoff
+            case _:
+                # "<", "<=", "=<" or bare -> maximum age: entry no older than the cutoff
+                return age >= cutoff
 
     @staticmethod
     def episode_matches(season: int, episode: int, expr: str, title: Optional[str] = None):

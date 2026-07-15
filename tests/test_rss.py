@@ -325,6 +325,26 @@ class TestRSS:
                 0,
                 {"rule": 0, "season": 0, "episode": 0, "state": RSSState.BAD},
             ),
+            (  # age: >= comparator (inclusive alias of >) minimum-age satisfied -> accept
+                (None, None, None, None),
+                [("", "", "", "G", ">=1y", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 1, "season": 0, "episode": 0},
+            ),
+            (  # age: <= comparator (inclusive alias of <) maximum-age violated -> rejected
+                (None, None, None, None),
+                [("", "", "", "G", "<=30d", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
+                "Title",
+                None,
+                1000,
+                0,
+                0,
+                {"rule": 0, "season": 0, "episode": 0, "state": RSSState.BAD},
+            ),
             (  # age: maximum-age violated (item older than 30d) -> rejected on the age rule
                 (None, None, None, None),
                 [("", "", "", "G", "<30d", "", "1"), ("", "", "", "A", "*", DEFAULT_PRIORITY, "1")],
@@ -621,6 +641,27 @@ class TestRSS:
             )
             is None
         )
+
+    def test_age_comparator_aliases(self):
+        """<=, >= and the reversed =<, => behave as inclusive aliases of < and >."""
+        now = datetime.datetime.now(datetime.timezone.utc)
+        old = now - datetime.timedelta(days=66)
+        recent = now - datetime.timedelta(days=2)
+
+        def matches(value, age):
+            return rss.FeedRule(type="G", value=value).matches(
+                title="T", category=None, size=0, season=0, episode=0, rule_index=0, age=age
+            )
+
+        # Minimum-age family: satisfied by the old item, violated by the recent one
+        for value in (">30d", ">=30d", "=>30d"):
+            assert matches(value, old) is None, value
+            assert matches(value, recent) is False, value
+
+        # Maximum-age family: satisfied by the recent item, violated by the old one
+        for value in ("<30d", "<=30d", "=<30d", "30d"):
+            assert matches(value, recent) is None, value
+            assert matches(value, old) is False, value
 
     def test_none_age_persists_as_fallback_and_round_trips(self, tmp_rss):
         """The NOT NULL age column is satisfied by a fallback when age is unknown."""
