@@ -30,6 +30,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Optional, Any, Generator, Iterable
 from enum import Enum
+from dateutil.relativedelta import relativedelta
 from more_itertools import batched
 
 import sabnzbd
@@ -59,6 +60,20 @@ _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]?)B\W*", re.I)
 _RE_BR = re.compile(r"<br\s*/?>", re.I)  # Strip content after first <br/>
 _RE_TAG = re.compile(r"<[^>]+>")  # Strip HTML tags from descriptions
+# Age rule value, e.g. ">3d", "<=12h", "1y", "6mo".
+# Optional leading comparator (<, >, <=, >=; the reversed =<, => are accepted too),
+# an integer amount and an optional unit suffix (years/months/weeks/days/hours/minutes/seconds).
+_RE_AGE = re.compile(r"^\s*(<=|>=|=<|=>|[<>])?\s*(\d+)\s*(mo|[ywdhms])?\s*$", re.I)
+# Map to relativedelta keyword so calendar units (years/months) honor variable-length months/leap days relative to "now".
+_AGE_UNIT_FIELD = {
+    "y": "years",
+    "mo": "months",
+    "w": "weeks",
+    "d": "days",
+    "h": "hours",
+    "m": "minutes",
+    "s": "seconds",
+}
 
 
 class RSSState(str, Enum):
@@ -68,6 +83,31 @@ class RSSState(str, Enum):
     BAD = "B"  # Rejected by filter rules
     DOWNLOADED = "D"  # Successfully downloaded to queue
     EXPIRED = "X"  # No longer in feed (marked for cleanup)
+
+
+class FeedRuleType(str, Enum):
+    """Type of RSS feed filter rule"""
+
+    ACCEPT = "A"  # Accept on title regex match (positive)
+    MUST = "M"  # Reject unless title regex matches (mandatory)
+    REJECT = "R"  # Reject on title regex match
+    CATEGORY = "C"  # Reject unless category regex matches
+    AT_MOST = "<"  # Reject if size is larger than value
+    AT_LEAST = ">"  # Reject if size is smaller than value
+    FROM = "F"  # Reject episodes before the given SxxEyy
+    FROM_SHOW = "S"  # Accept given show from the given SxxEyy onwards
+    AGE = "G"  # Reject if entry age is outside the given bound
+
+
+NON_REGEX_FEED_RULE_TYPES = frozenset(
+    {
+        FeedRuleType.AT_MOST,
+        FeedRuleType.AT_LEAST,
+        FeedRuleType.FROM,
+        FeedRuleType.FROM_SHOW,
+        FeedRuleType.AGE,
+    }
+)
 
 
 @dataclass(slots=True)
@@ -147,7 +187,8 @@ class ResolvedEntry:
         """Build NormalisedEntry from feedparser entry"""
         link: str = ""
         size: int = 0
-        age: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
+        # Unknown until a date is parsed from the feed; age filters skip a None age
+        age: Optional[datetime.datetime] = None
 
         # Try standard link and enclosures first
         if entry.get("enclosures"):
@@ -192,8 +233,6 @@ class ResolvedEntry:
                 age = datetime.datetime(*entry.published_parsed[:6], tzinfo=datetime.timezone.utc)
             except Exception:
                 pass
-        finally:
-            age = age.replace(tzinfo=datetime.timezone.utc)
 
         # Maybe the newznab also provided SxxExx info
         try:
@@ -294,7 +333,7 @@ class FeedRule:
 
     def __post_init__(self):
         # Convert regex if needed
-        if self.type not in {"<", ">", "F", "S"}:
+        if self.type not in NON_REGEX_FEED_RULE_TYPES:
             self.regex = convert_filter(self.value)
         # Normalise "default-ish" values to None
         self.category = _normalise_str_or_none(self.category)
@@ -303,7 +342,15 @@ class FeedRule:
         self.script = _normalise_str_or_none(self.script)
 
     def matches(
-        self, *, title: str, category: Optional[str], size: int, season: int, episode: int, rule_index: int
+        self,
+        *,
+        title: str,
+        category: Optional[str],
+        size: int,
+        season: int,
+        episode: int,
+        rule_index: int,
+        age: Optional[datetime.datetime] = None,
     ) -> Optional[bool]:
         """
         Returns:
@@ -312,25 +359,31 @@ class FeedRule:
             None  -> rule does not apply
         """
         # Category rule
-        if category and self.type == "C":
+        if category and self.type == FeedRuleType.CATEGORY:
             found = bool(self.regex is not None and re.search(self.regex, category))
             if not found:
                 logging.debug("Filter rejected on rule %d (category mismatch)", rule_index)
                 return False
 
         # Size rules
-        elif self.type == "<" and size and from_units(self.value) < size:
+        elif self.type == FeedRuleType.AT_MOST and size and from_units(self.value) < size:
             logging.debug("Filter rejected on rule %d (size too large)", rule_index)
             return False
-        elif self.type == ">" and size and from_units(self.value) > size:
+        elif self.type == FeedRuleType.AT_LEAST and size and from_units(self.value) > size:
             logging.debug("Filter rejected on rule %d (size too small)", rule_index)
             return False
 
+        # Age rule (age is optional; a missing age means the rule does not apply)
+        elif self.type == FeedRuleType.AGE:
+            if age is not None and not self.age_matches(age, self.value):
+                logging.debug("Filter rejected on rule %d (age out of bounds)", rule_index)
+                return False
+
         # Episode / season rules
-        elif self.type == "F" and not self.episode_matches(season, episode, self.value):
+        elif self.type == FeedRuleType.FROM and not self.episode_matches(season, episode, self.value):
             logging.debug("Filter rejected on rule %d (episode too early)", rule_index)
             return False
-        elif self.type == "S" and self.episode_matches(season, episode, self.value, title):
+        elif self.type == FeedRuleType.FROM_SHOW and self.episode_matches(season, episode, self.value, title):
             logging.debug("Filter matched on rule %d (show SxxEyy match)", rule_index)
             return True
 
@@ -341,17 +394,51 @@ class FeedRule:
             found = False
 
         # Standard match types
-        if self.type == "M" and not found:
+        if self.type == FeedRuleType.MUST and not found:
             logging.debug("Filter rejected on rule %d (mandatory match failed)", rule_index)
             return False
-        if self.type == "A" and found:
+        if self.type == FeedRuleType.ACCEPT and found:
             logging.debug("Filter matched on rule %d (always match)", rule_index)
             return True
-        if self.type == "R" and found:
+        if self.type == FeedRuleType.REJECT and found:
             logging.debug("Filter rejected on rule %d (reject match)", rule_index)
             return False
 
         return None
+
+    @staticmethod
+    def age_matches(age: datetime.datetime, expr: str) -> bool:
+        """Return True if the entry `age` satisfies the age bound `expr`.
+
+        expr is a comparator (>/>= minimum age, </<= maximum age; the reversed
+        =>/=< are accepted too) followed by an amount and optional unit suffix
+        (y/mo/w/d/h/m/s, default days), e.g. ">3d", "<=12h", "1y", "6mo". Because
+        age is compared against a live clock, the inclusive/strict distinction is
+        a measure-zero boundary, so >= is treated as an alias of > (and <= of <).
+        A bare value with no comparator is treated as a maximum age, i.e. only
+        recent entries pass. Unparseable expressions are ignored (match).
+        """
+        m = _RE_AGE.match(expr or "")
+        if not m:
+            logging.debug("Ignoring unparseable age filter %r", expr)
+            return True
+
+        comparator = m.group(1) or "<"
+        amount = int(m.group(2))
+        unit = (m.group(3) or "d").lower()
+
+        # Cutoff instant; using relativedelta means calendar units (years) respect
+        # variable-length years/leap days relative to "now" (age is always tz-aware).
+        now = datetime.datetime.now(datetime.timezone.utc)
+        cutoff = now - relativedelta(**{_AGE_UNIT_FIELD[unit]: amount})
+
+        match comparator:
+            case ">" | ">=" | "=>":
+                # Minimum age: entry must be at least this old (older than the cutoff)
+                return age <= cutoff
+            case _:
+                # "<", "<=", "=<" or bare -> maximum age: entry no older than the cutoff
+                return age >= cutoff
 
     @staticmethod
     def episode_matches(season: int, episode: int, expr: str, title: Optional[str] = None):
@@ -430,6 +517,7 @@ class FeedConfig:
         size: int,
         season: int,
         episode: int,
+        age: Optional[datetime.datetime] = None,
     ) -> FeedEvaluation:
         """Evaluate rules for a single RSS entry."""
         entry_cat = category
@@ -463,6 +551,7 @@ class FeedConfig:
                 season=feed_season,
                 episode=feed_episode,
                 rule_index=idx,
+                age=age,
             )
 
             if outcome is None:
@@ -711,7 +800,8 @@ class RSSRepository:
             entry.episode,
             entry.size,
             entry.rule,
-            int(entry.age.timestamp()),
+            # age column is NOT NULL; fallback to seen_at (now) when the feed gave no date
+            int((entry.age or entry.seen_at).timestamp()),
             entry.initial_scan,
             int(entry.seen_at.timestamp()),
             int(entry.downloaded_at.timestamp()) if entry.downloaded_at else None,
@@ -1053,6 +1143,7 @@ class RSSReader:
             size=feed_entry.size,
             season=feed_entry.season,
             episode=feed_entry.episode,
+            age=feed_entry.age,
         )
 
         is_starred = first or feed_entry.is_starred

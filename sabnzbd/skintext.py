@@ -625,6 +625,7 @@ SKIN_TEXT = {
     "rss-atmost": TT("At most"),  #: Config->RSS filter-type selection menu
     "rss-from": TT("From SxxEyy"),  #: Config->RSS filter-type selection menu "From Season/Episode"
     "rss-from-show": TT("From Show SxxEyy"),  #: Config->RSS filter-type selection menu "From Show Season/Episode"
+    "rss-age": TT("Age"),  #: Config->RSS filter-type selection menu (e.g. ">3d", "<12h")
     "rss-matched": TT("Matched"),  #: Config->RSS section header
     "rss-notMatched": TT("Not Matched"),  #: Config->RSS section header
     "rss-done": TT("Downloaded"),  #: Config->RSS section header

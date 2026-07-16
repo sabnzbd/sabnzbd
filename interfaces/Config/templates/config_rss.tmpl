@@ -156,7 +156,8 @@
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
                                     <option value="F"> $T('rss-from')</option>
-                                    <option value="F"> $T('rss-from-show') ($T('rss-accept'))</option>
+                                    <option value="S"> $T('rss-from-show') ($T('rss-accept'))</option>
+                                    <option value="G"> $T('rss-age')</option>
                                 </select>
                             </td>
                             <td>
@@ -230,6 +231,7 @@
                                     <option value="<"> $T('rss-atmost')</option>
                                     <option value="F"> $T('rss-from')</option>
                                     <option value="S"> $T('rss-from-show') ($T('rss-accept'))</option>
+                                    <option value="G"> $T('rss-age')</option>
                                 </select>
                             </td>
                             <td>
@@ -306,6 +308,7 @@
                                         <option value="<" <!--#if $filter[3]=="&lt;" then 'selected="selected"' else ""#-->> $T('rss-atmost')</option>
                                         <option value="F" <!--#if $filter[3]=="F" then 'selected="selected"' else ""#-->> $T('rss-from')</option>
                                         <option value="S" <!--#if $filter[3]=="S" then 'selected="selected"' else ""#-->> $T('rss-from-show') ($T('rss-accept'))</option>
+                                        <option value="G" <!--#if $filter[3]=="G" then 'selected="selected"' else ""#-->> $T('rss-age')</option>
                                     </select>
                                 </td>
                                 <td>
