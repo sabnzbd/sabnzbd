@@ -653,13 +653,15 @@ class TestRSS:
                 title="T", category=None, size=0, season=0, episode=0, rule_index=0, age=age
             )
 
-        # Minimum-age family: satisfied by the old item, violated by the recent one
-        for value in (">30d", ">=30d", "=>30d"):
+        # Minimum-age family: satisfied by the old item, violated by the recent one.
+        # A missing unit defaults to days, so ">30" behaves like ">30d".
+        for value in (">30d", ">=30d", "=>30d", ">30", ">=30", "=>30"):
             assert matches(value, old) is None, value
             assert matches(value, recent) is False, value
 
-        # Maximum-age family: satisfied by the recent item, violated by the old one
-        for value in ("<30d", "<=30d", "=<30d", "30d"):
+        # Maximum-age family: satisfied by the recent item, violated by the old one.
+        # A bare value with no comparator or unit ("30") is an inclusive maximum age.
+        for value in ("<30d", "<=30d", "=<30d", "30d", "<30", "<=30", "=<30", "30"):
             assert matches(value, recent) is None, value
             assert matches(value, old) is False, value
 
