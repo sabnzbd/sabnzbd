@@ -20,6 +20,7 @@ sabnzbd.interface - webinterface
 """
 
 import os
+import secrets
 import threading
 import time
 import logging
@@ -34,11 +35,13 @@ from random import randint
 
 import uvicorn
 from starlette.applications import Starlette
+from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import MultiDict, QueryParams
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response
 from starlette.middleware import Middleware
 from starlette.middleware.gzip import GZipMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 from Cheetah.Template import Template
@@ -249,6 +252,7 @@ def check_hostname(request: Request) -> bool:
 
 # Create a more unique ID for each instance
 COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
+COOKIE_SESSION = "sabnzbd_session"
 
 
 def remote_ip_from_xff(xff_ips: list[str]) -> str:
@@ -1240,19 +1244,13 @@ def handle_server(params, new_svr=False):
 # Standalone RSS filter functions (used by both route handlers and api.py)
 ##############################################################################
 
-# Module-level state for RSS page (replaces ConfigRss instance state)
-_rss_refresh_readout = None
-_rss_refresh_download = False
-_rss_refresh_force = False
-_rss_refresh_ignore = False
-_rss_evaluate = False
-_rss_show_eval_button = False
-_rss_last_msg = ""
-
 
 def do_upd_rss_filter(kwargs):
-    """Update or add an RSS filter. Called by route handler and api.py."""
-    global _rss_evaluate, _rss_show_eval_button
+    """Update or add an RSS filter. Called by route handler and api.py.
+
+    Performs the config mutation and re-evaluates the feed against the new
+    filters so the cached match log reflects the change. Holds no UI state.
+    """
     try:
         feed_cfg = config.get_rss()[kwargs.get("feed")]
     except KeyError:
@@ -1280,13 +1278,15 @@ def do_upd_rss_filter(kwargs):
             feed_cfg.filters.move(int(index), int_conv(new_index))
 
         config.save_config()
-    _rss_evaluate = False
-    _rss_show_eval_button = True
+    # Re-evaluate cached items against the updated filters (no network read-out)
+    sabnzbd.RSSReader.process_feed(kwargs.get("feed"), readout=False)
 
 
 def do_del_rss_filter(kwargs):
-    """Delete an RSS filter. Called by route handler and api.py."""
-    global _rss_evaluate, _rss_show_eval_button
+    """Delete an RSS filter. Called by route handler and api.py.
+
+    Performs the config mutation and re-evaluates the feed. Holds no UI state.
+    """
     try:
         feed_cfg = config.get_rss()[kwargs.get("feed")]
     except KeyError:
@@ -1294,8 +1294,8 @@ def do_del_rss_filter(kwargs):
 
     feed_cfg.filters.delete(int(kwargs.get("index", 0)))
     config.save_config()
-    _rss_evaluate = False
-    _rss_show_eval_button = True
+    # Re-evaluate cached items against the remaining filters (no network read-out)
+    sabnzbd.RSSReader.process_feed(kwargs.get("feed"), readout=False)
 
 
 ##############################################################################
@@ -1306,11 +1306,24 @@ def do_del_rss_filter(kwargs):
 _RSS_ROOT = "/config/rss"
 
 
+def _rss_redirect(feed: str = "") -> RedirectResponse:
+    """Redirect back to the RSS page, optionally selecting a feed."""
+    if feed:
+        return BaseRedirectResponse(_RSS_ROOT, feed=feed)
+    return BaseRedirectResponse(_RSS_ROOT)
+
+
+def _rss_flash_redirect(request: Request, feed: str, msg: str = "") -> RedirectResponse:
+    """Store a feed read-out result as a one-shot flash in the client session and
+    redirect back to the RSS page. The flash lives in the per-client signed
+    session cookie rather than shared module state, so concurrent requests (other
+    tabs, the API path) can't clobber each other's result."""
+    request.session["rss_flash"] = {"feed": feed, "msg": msg}
+    return _rss_redirect(feed)
+
+
 @secured_expose(route="/config/rss", check_configlock=True, methods=["GET"])
 async def config_rss_index(request: Request):
-    global _rss_refresh_readout, _rss_refresh_download, _rss_refresh_force
-    global _rss_refresh_ignore, _rss_evaluate, _rss_show_eval_button, _rss_last_msg
-
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
     conf["scripts"] = list_scripts(default=True)
@@ -1342,34 +1355,12 @@ async def config_rss_index(request: Request):
     conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.RSSReader.next_run))
 
     if active_feed:
-        readout = bool(_rss_refresh_readout)
-        logging.debug("RSS READOUT = %s", readout)
-        if not readout:
-            _rss_refresh_download = False
-            _rss_refresh_force = False
-            _rss_refresh_ignore = False
-        if _rss_evaluate:
-            msg = sabnzbd.RSSReader.process_feed(
-                active_feed,
-                download=_rss_refresh_download,
-                force=_rss_refresh_force,
-                ignore_first=_rss_refresh_ignore,
-                readout=readout,
-            )
-        else:
-            msg = ""
-        _rss_evaluate = False
-        if readout:
-            _rss_last_msg = msg
-        else:
-            msg = _rss_last_msg
-        _rss_refresh_readout = None
-        conf["evalButton"] = _rss_show_eval_button
-        conf["error"] = msg
-
+        # This is a plain GET: no feed processing happens here. Any read-out or
+        # re-evaluation is performed by the POST action handler that redirected
+        # us, which leaves its result message as a one-shot flash in the session.
+        flash = request.session.pop("rss_flash", None)
+        conf["error"] = flash["msg"] if flash and flash.get("feed") == active_feed else ""
         conf["downloaded"], conf["matched"], conf["unmatched"] = GetRssLog(active_feed)
-    else:
-        _rss_last_msg = ""
 
     # Find a unique new Feed name
     unum = 1
@@ -1398,7 +1389,6 @@ async def config_rss_upd_rss_feed(request: Request):
     """Update Feed level attributes,
     legacy version: ignores 'enable' parameter
     """
-    global _rss_evaluate, _rss_show_eval_button
     params = request.query_params
     kwargs = dict(params)
     if params.get("enable") is not None:
@@ -1413,10 +1403,7 @@ async def config_rss_upd_rss_feed(request: Request):
         cf.set_dict(kwargs)
         config.save_config()
 
-    _rss_evaluate = False
-    _rss_show_eval_button = True
-    feed = params.get("feed")
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+    return _rss_redirect(params.get("feed"))
 
 
 @secured_expose(route="/config/rss/save_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1467,8 +1454,6 @@ async def config_rss_toggle_rss_feed(request: Request):
 @secured_expose(route="/config/rss/add_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_add_rss_feed(request: Request):
     """Add one new RSS feed definition"""
-    global _rss_refresh_readout, _rss_refresh_download, _rss_refresh_force
-    global _rss_refresh_ignore, _rss_evaluate
     params = request.query_params
     kwargs = dict(params)
     feed = Strip(params.get("feed", "")).strip("[]")
@@ -1487,12 +1472,10 @@ async def config_rss_add_rss_feed(request: Request):
             with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
                 repo.clear_feed(feed)
             config.save_config()
-            _rss_refresh_readout = feed
-            _rss_refresh_download = False
-            _rss_refresh_force = False
-            _rss_refresh_ignore = True
-            _rss_evaluate = True
-            return BaseRedirectResponse(_RSS_ROOT, feed=feed)
+            # Read out the new feed now (off the event loop) and carry the
+            # result message to the redirected page via the session flash.
+            msg = await run_in_threadpool(sabnzbd.RSSReader.process_feed, feed, readout=True, ignore_first=True)
+            return _rss_flash_redirect(request, feed, msg)
         else:
             return BaseRedirectResponse(_RSS_ROOT)
     else:
@@ -1503,8 +1486,7 @@ async def config_rss_add_rss_feed(request: Request):
 async def config_rss_upd_rss_filter(request: Request):
     """Save updated filter definition"""
     do_upd_rss_filter(dict(request.query_params))
-    feed = request.query_params.get("feed")
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+    return _rss_redirect(request.query_params.get("feed"))
 
 
 @secured_expose(route="/config/rss/del_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1522,67 +1504,51 @@ async def config_rss_del_rss_feed(request: Request):
 async def config_rss_del_rss_filter(request: Request):
     """Remove one RSS filter"""
     do_del_rss_filter(dict(request.query_params))
-    feed = request.query_params.get("feed")
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+    return _rss_redirect(request.query_params.get("feed"))
 
 
 @secured_expose(route="/config/rss/download_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_download_rss_feed(request: Request):
     """Force download of all matching jobs in a feed"""
-    global _rss_refresh_readout, _rss_refresh_download, _rss_refresh_force
-    global _rss_refresh_ignore, _rss_evaluate
     feed = request.query_params.get("feed")
-    if feed:
-        _rss_refresh_readout = feed
-        _rss_refresh_download = True
-        _rss_refresh_force = True
-        _rss_refresh_ignore = False
-        _rss_evaluate = True
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+    if not feed:
+        return _rss_redirect()
+    # Network read-out with forced download; run off the event loop.
+    msg = await run_in_threadpool(sabnzbd.RSSReader.process_feed, feed, readout=True, download=True, force=True)
+    return _rss_flash_redirect(request, feed, msg)
 
 
 @secured_expose(route="/config/rss/clean_rss_jobs", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_clean_rss_jobs(request: Request):
     """Remove processed RSS jobs from UI"""
-    global _rss_evaluate
     feed = request.query_params.get("feed")
     if feed:
         with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
             repo.clear_downloaded(feed)
-    _rss_evaluate = True
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+        # Re-evaluate cached items (no network read-out) so the log refreshes.
+        sabnzbd.RSSReader.process_feed(feed, readout=False)
+    return _rss_redirect(feed)
 
 
 @secured_expose(route="/config/rss/test_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_test_rss_feed(request: Request):
     """Read the feed content again and show results"""
-    global _rss_refresh_readout, _rss_refresh_download, _rss_refresh_force
-    global _rss_refresh_ignore, _rss_evaluate, _rss_show_eval_button
     feed = request.query_params.get("feed")
-    if feed:
-        _rss_refresh_readout = feed
-        _rss_refresh_download = False
-        _rss_refresh_force = False
-        _rss_refresh_ignore = True
-        _rss_evaluate = True
-        _rss_show_eval_button = False
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+    if not feed:
+        return _rss_redirect()
+    # Network read-out; run off the event loop.
+    msg = await run_in_threadpool(sabnzbd.RSSReader.process_feed, feed, readout=True, ignore_first=True)
+    return _rss_flash_redirect(request, feed, msg)
 
 
 @secured_expose(route="/config/rss/eval_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
 async def config_rss_eval_rss_feed(request: Request):
     """Re-apply the filters to the feed"""
-    global _rss_refresh_download, _rss_refresh_force, _rss_refresh_ignore
-    global _rss_show_eval_button, _rss_evaluate
     feed = request.query_params.get("feed")
     if feed:
-        _rss_refresh_download = False
-        _rss_refresh_force = False
-        _rss_refresh_ignore = False
-        _rss_show_eval_button = False
-        _rss_evaluate = True
-
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+        # Re-evaluate cached items against current filters (no network read-out).
+        sabnzbd.RSSReader.process_feed(feed, readout=False)
+    return _rss_redirect(feed)
 
 
 @secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -1611,7 +1577,7 @@ async def config_rss_download(request: Request):
                 nzo_info=NzoInfo(RSS=feed),
             )
         repo.flag_downloaded(feed, url)
-    return BaseRedirectResponse(_RSS_ROOT, feed=feed) if feed else BaseRedirectResponse(_RSS_ROOT)
+    return _rss_redirect(feed)
 
 
 @secured_expose(route="/config/rss/rss_now", check_api_key=True, check_configlock=True, methods=["POST"])
@@ -2302,6 +2268,18 @@ routes = [
 ]
 
 
-middleware = [Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2)]
+middleware = [
+    Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2),
+    # Signed session cookie, used for short-lived per-client UI state such as the
+    # RSS read-out result message (flash). Secret key is regenerated each run,
+    # so sessions naturally expire on restart, which is fine for flash messages.
+    Middleware(
+        SessionMiddleware,
+        secret_key=secrets.token_hex(),
+        session_cookie=COOKIE_SESSION,
+        same_site="lax",
+        https_only=bool(cfg.enable_https()),
+    ),
+]
 
 app = Starlette(middleware=middleware, routes=routes)
