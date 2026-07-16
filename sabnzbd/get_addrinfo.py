@@ -48,8 +48,6 @@ IPV6_MAPPING = {
     "news.sunnyusenet.com": "news6.sunnyusenet.com",
     "news.newshosting.com": "news6.newshosting.com",
     "news.usenetserver.com": "news6.usenetserver.com",
-    "news.frugalusenet.com": "news-v6.frugalusenet.com",
-    "eunews.frugalusenet.com": "eunews-v6.frugalusenet.com",
 }
 
 
