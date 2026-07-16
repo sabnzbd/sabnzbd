@@ -98,14 +98,16 @@ class FeedRuleType(str, Enum):
     FROM_SHOW = "S"  # Accept given show from the given SxxEyy onwards
     AGE = "G"  # Reject if entry age is outside the given bound
 
-    @classmethod
-    def _missing_(cls, value):
-        return None
 
-    @classmethod
-    def non_regex_types(cls) -> frozenset["FeedRuleType"]:
-        """Types whose value is not a title regex."""
-        return frozenset({cls.AT_MOST, cls.AT_LEAST, cls.FROM, cls.FROM_SHOW, cls.AGE})
+NON_REGEX_FEED_RULE_TYPES = frozenset(
+    {
+        FeedRuleType.AT_MOST,
+        FeedRuleType.AT_LEAST,
+        FeedRuleType.FROM,
+        FeedRuleType.FROM_SHOW,
+        FeedRuleType.AGE,
+    }
+)
 
 
 @dataclass(slots=True)
@@ -331,7 +333,7 @@ class FeedRule:
 
     def __post_init__(self):
         # Convert regex if needed
-        if self.type not in FeedRuleType.non_regex_types():
+        if self.type not in NON_REGEX_FEED_RULE_TYPES:
             self.regex = convert_filter(self.value)
         # Normalise "default-ish" values to None
         self.category = _normalise_str_or_none(self.category)
@@ -423,7 +425,7 @@ class FeedRule:
 
         comparator = m.group(1) or "<"
         amount = int(m.group(2))
-        unit = m.group(3).lower() or "d"
+        unit = (m.group(3) or "d").lower()
 
         # Cutoff instant; using relativedelta means calendar units (years) respect
         # variable-length years/leap days relative to "now" (age is always tz-aware).
