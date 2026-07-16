@@ -1513,7 +1513,8 @@ msgstr "YAYINLANIYOR %s dakika"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "%s içinde ortalama %sB/s hızında indirildi"
 
-#. Job details page, file age column header
+#. Config->RSS filter-type selection menu (e.g. ">3d", "<12h") - Job details
+#. page, file age column header
 #: sabnzbd/nzb/object.py, sabnzbd/skintext.py
 msgid "Age"
 msgstr "Yaş"
