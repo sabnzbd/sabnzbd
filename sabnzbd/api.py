@@ -687,8 +687,11 @@ def _api_resume(name: str, kwargs: QueryParams) -> Response:
 
 
 def _api_shutdown(name: str, kwargs: QueryParams) -> Response:
-    # In separate thread, because the server thread cannot shut down itself
-    Thread(target=sabnzbd.shutdown_program).start()
+    if not sabnzbd.SABSTOP:
+        # Persist all state before replying (see the /shutdown route). The web server
+        # cannot be stopped from within its own thread, so that part is deferred.
+        sabnzbd.halt()
+        Thread(target=sabnzbd.shutdown_program).start()
     return report(kwargs)
 
 

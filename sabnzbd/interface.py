@@ -505,8 +505,13 @@ async def shutdown(request: Request):
     if pid_in and int(pid_in) != os.getpid():
         return PlainTextResponse("Incorrect PID for this instance, remove PID from URL to initiate shutdown.")
 
-    # In separate thread, because the server thread cannot shut down itself
-    threading.Thread(target=sabnzbd.shutdown_program).start()
+    if not sabnzbd.SABSTOP:
+        # Persist all state before replying, matching the pre-uvicorn behaviour where
+        # the request blocked until shutdown had saved everything. Run halt() off the
+        # event loop so we don't block it. The web server itself cannot be stopped from
+        # within its own event loop, so that part is deferred to a separate thread.
+        await run_in_threadpool(sabnzbd.halt)
+        threading.Thread(target=sabnzbd.shutdown_program).start()
     return PlainTextResponse(T("SABnzbd shutdown finished"))
 
 
