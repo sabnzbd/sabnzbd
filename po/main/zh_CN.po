@@ -4513,6 +4513,10 @@ msgid "Hold shift key to select a range"
 msgstr "按 shift 键可选择范围"
 
 #: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Check all"
 msgstr "全选"
 

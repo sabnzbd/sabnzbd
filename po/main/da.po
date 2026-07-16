@@ -4703,6 +4703,10 @@ msgid "Hold shift key to select a range"
 msgstr "Hold Skiftetasten nede for at vælge et område"
 
 #: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Check all"
 msgstr "Tjek alle"
 

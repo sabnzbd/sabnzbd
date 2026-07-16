@@ -4601,6 +4601,10 @@ msgid "Hold shift key to select a range"
 msgstr "Ține-ți tasta shift pentru a selecta un interval"
 
 #: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Check all"
 msgstr "Selectează tot"
 

@@ -4758,6 +4758,10 @@ msgid "Hold shift key to select a range"
 msgstr "Tieni premuto il tasto Maiusc per selezionare un intervallo"
 
 #: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Check all"
 msgstr "Seleziona tutto"
 

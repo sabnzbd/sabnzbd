@@ -4621,6 +4621,10 @@ msgid "Hold shift key to select a range"
 msgstr "החזק את מקש Shift כדי לבחור טווח"
 
 #: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Check all"
 msgstr "סמן הכל"
 

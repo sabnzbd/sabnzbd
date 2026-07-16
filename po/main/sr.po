@@ -4543,6 +4543,10 @@ msgid "Hold shift key to select a range"
 msgstr "Držite taster shift pritisnut da bi ste odabrali raspon"
 
 #: sabnzbd/skintext.py
+msgid "Select job"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Check all"
 msgstr "Proveri sve"
 
