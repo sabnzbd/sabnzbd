@@ -13,7 +13,7 @@ from builder.common import EXTRA_FILES, EXTRA_FOLDERS, RELEASE_VERSION, RELEASE_
 extra_pyinstaller_files = []
 
 # Add hidden imports
-extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
+extra_hiddenimports = ["Cheetah.DummyTransaction", "certifi"]
 extra_hiddenimports.extend(collect_submodules("apprise"))
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 extra_hiddenimports.extend(collect_submodules("guessit.data"))

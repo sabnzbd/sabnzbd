@@ -109,6 +109,10 @@ class Option:
             except KeyError:
                 pass
 
+    def get_from_dict(self, values: dict[str, Any], kw: str) -> Any:
+        """Extract this option's value from a dict by key, raising KeyError if absent"""
+        return values[kw]
+
     def set(self, value: Any):
         """Set new value, no validation"""
         if value is not None:
@@ -330,6 +334,14 @@ class OptionList(Option):
                 super().set(value)
         return error
 
+    def get_from_dict(self, values: dict[str, Any], kw: str) -> Any:
+        """Extract list value using getlist() for MultiDict sources, falling back to plain key access"""
+        if hasattr(values, "getlist"):
+            if lst := values.getlist(kw):
+                return lst
+            raise KeyError(kw)
+        return values[kw]
+
     def get_string(self) -> str:
         """Return the list as a comma-separated string"""
         return ", ".join(self.get())
@@ -486,8 +498,8 @@ class ConfigServer:
             "notes",
         ):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
         if not self.displayname():
@@ -552,8 +564,8 @@ class ConfigCat:
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
 
@@ -596,8 +608,8 @@ class ConfigSorter:
         """Set one or more fields, passed as dictionary"""
         for kw in ("order", "min_size", "multipart_label", "sort_string", "sort_cats", "sort_type", "is_active"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
 
@@ -708,8 +720,8 @@ class ConfigRSS:
         """Set one or more fields, passed as dictionary"""
         for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
             try:
-                value = values[kw]
-                getattr(self, kw).set(value)
+                attr = getattr(self, kw)
+                attr.set(attr.get_from_dict(values, kw))
             except KeyError:
                 continue
         self.filters.set_dict(values)

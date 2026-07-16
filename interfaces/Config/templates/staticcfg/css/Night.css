@@ -186,7 +186,8 @@ ul.tabs a,
 #addFeed,
 #addFeedContent,
 #subscriptions,
-.RSS form[action="add_rss_feed"] tr:nth-child(even) {
+.RSS form[action="rss/add_rss_feed"] tr:nth-child(even),
+.Config .table {
     border: 1px solid var(--clr-border);
 }
 

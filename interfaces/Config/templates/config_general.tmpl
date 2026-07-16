@@ -8,9 +8,8 @@
             <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
         </label>
     </div>
-    <form action="saveGeneral" method="post" name="fullform" class="fullform" autocomplete="off">
+    <form action="general/save" method="post" class="fullform" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
-        <input type="hidden" id="ajax" name="ajax" value="1" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
             <div class="col2">
@@ -46,7 +45,6 @@
                             <!--#end if#-->
                         <!--#end for#-->
                         </select>
-                        <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url">$caller_url</a></span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="language">$T('opt-language')</label>
@@ -223,9 +221,8 @@
         </div><!-- /section -->
     </form>
 
-    <form action="uploadConfig" method="post" name="fullform" class="fullform" autocomplete="off" enctype="multipart/form-data">
+    <form action="general/upload_config" method="post" class="fullform" autocomplete="off" enctype="multipart/form-data">
         <input type="hidden" name="apikey" value="$apikey" />
-        <input type="hidden" name="ajax" value="1" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
             <div class="col2">
@@ -280,8 +277,6 @@ jQuery(document).ready(function(){
             // Skip the fancy stuff, just submit
             this.submit()
         })
-        // No JSON response
-        jQuery('#ajax').val('')
     })
     hideOrShowTranslate()
 
