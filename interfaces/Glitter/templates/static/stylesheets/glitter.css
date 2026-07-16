@@ -685,7 +685,12 @@ td.name .row-wrap-text {
     height: 1.5em;
 }
 
-.queue-table td.name .name-options,
+.queue-table td.name .name-options {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+}
+
 .queue-table td.name:hover .queue-item-password {
     display: none;
 }
@@ -713,8 +718,10 @@ td.name .row-wrap-text {
     display: none;
 }
 
-.queue-table td.name:hover .name-options {
-    display: block;
+.queue-table td.name:hover .name-options,
+.queue-table td.name .name-options:focus-within {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .queue-table td.name:hover .glyphicon-folder-open {

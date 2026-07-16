@@ -820,6 +820,7 @@ SKIN_TEXT = {
     "Glitter-search": TT("Search"),
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
+    "Glitter-selectJob": TT("Select job"),
     "Glitter-checkAll": TT("Check all"),
     "Glitter-restartSab": TT("Restart SABnzbd"),
     "Glitter-onFinish": TT("On queue finish"),
