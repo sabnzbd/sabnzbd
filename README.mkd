@@ -1,24 +1,29 @@
-Release Notes - SABnzbd 5.1.0 Beta 2
+Release Notes - SABnzbd 5.1.0 Release Candidate 1
 =========================================================
 
-This is the third beta release of version 5.1.
-We will probably add (a few) new features in upcoming testing releases,
-but we already wanted to share the current improvements with you!
+This is the first release candidate of version 5.1.
+Like many other projects out there, we were able to use the
+shiny new AI tools to add quite a lot of long-requested features!
 
 ## New features in 5.1.0
 
 * Refreshed the interface.
 * When Retrying a job, only the actually missing articles are tried again.
   This only works for jobs downloaded in 5.1.0 (or newer).
-* RSS-items are now stored in the database instead of on disk.
-* Downloaded RSS-items are cleared from RSS-database after 3 days.
-* Add support for filename and path pattern matching to the `Cleanup List`.
+* RSS items are now stored in the database instead of on disk.
+* New RSS `Age` rule to filter jobs based on their age.
+* Downloaded RSS items are cleared from the RSS database after 3 days.
+* Added support for filename and path pattern matching to the `Cleanup List`.
+* `Unwanted extensions` will also be removed after unpacking.
 * Allow job setting changes directly from `Extra queue columns`.
 * Added support for unpacking `.tar` files during post-processing.
 * Improved anonymization of the logs when using `Show Logging`.
+* Added `SAB_FILES` environment variable to Post-processing scripts,
+  listing all files that resulted from the job.
 * New Servers will default to 16 connections instead of 8.
 * Use media duration as part of `Ignore Samples` detection.
-* Parsing of header-encrypted RAR's will use significantly less resources.
+* Improved support for screen readers.
+* Parsing of header-encrypted RARs will use significantly fewer resources.
 * Removed redundant `INSTALL.txt` file.
 * Dropped support for Python 3.9.
 * Windows and macOS: Updated Python to 3.14.6, Unrar to 7.23 and 7zip to 26.02.
@@ -27,7 +32,7 @@ but we already wanted to share the current improvements with you!
 
 * Prevent incorrect warnings about non-writeable directories.
 * Files unrelated to job could get removed by the `Cleanup List` logic.
-* Prevent path traversal in orphaned job API's.
+* Prevent path traversal in orphaned job APIs.
 * `Disk Full` errors from unrar were not handled gracefully during unpacking.
 * Memory leak could occur during article decoding.
 * Windows: Uninstall would not remove Settings or Windows Service.
@@ -39,8 +44,6 @@ but we already wanted to share the current improvements with you!
 
 * You can directly upgrade from version 3.0.0 and newer.
 * Upgrading from older versions will require performing a `Queue repair`.
-* Downgrading from version 4.2.0 or newer to 3.7.2 or older will require
-  performing a `Queue repair` due to changes in the internal data format.
 
 ## Known problems and solutions
 
