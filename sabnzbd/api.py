@@ -80,6 +80,7 @@ from sabnzbd.misc import (
     match_str,
     bool_conv,
     get_platform_description,
+    helpful_warning,
     is_loopback_addr,
     is_lan_addr,
 )
@@ -1519,6 +1520,20 @@ def test_nntp_server_dict(kwargs: ApiParams) -> tuple[bool, str]:
     # Fallback in case no data was received or unknown status
     if not return_status:
         return_status = (False, T("Could not determine connection result (%s)") % nntp_message)
+
+    # On high-latency connections a higher pipelining setting can significantly improve speed
+    if return_status[0] and nw.nntp:
+        response_time_ms = round(nw.nntp.addrinfo.connection_time * 1000)
+        if response_time_ms > 50 and pipelining_requests < 5:
+            helpful_warning(
+                T(
+                    "Server %s took %d ms to respond. On high-latency connections, increasing 'Articles per request' "
+                    "to a value between 5 and 10 can improve download speed. "
+                    "See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+                ),
+                host,
+                response_time_ms,
+            )
 
     # Close the connection and return result
     nw.hard_reset()
