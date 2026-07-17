@@ -335,8 +335,8 @@ def set_login_cookie(request: Request, response: Response, remove=False, remembe
 
 def check_login(request: Request) -> bool:
     """Check if user is logged in (Starlette version)"""
-    # Not when no authentication required or basic-auth is on
-    if not cfg.html_login() or not cfg.username() or not cfg.password():
+    # No authentication required when no username/password is set
+    if not cfg.username() or not cfg.password():
         return True
 
     # If we show login for external IP, by using access_type=6 we can check if IP match
@@ -479,14 +479,11 @@ async def main_index(request: Request):
         info["cpusimd"] = sabnzbd.decoder.SABCTOOLS_SIMD
         info["platform"] = sabnzbd.PLATFORM
 
-        # Have logout only with HTML and if inet=5, only when we are external
+        # Have logout only if inet=5, only when we are external
         info["have_logout"] = (
             cfg.username()
             and cfg.password()
-            and (
-                cfg.html_login()
-                and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6)))
-            )
+            and (cfg.inet_exposure() < 5 or (cfg.inet_exposure() == 5 and not check_access(request, access_type=6)))
         )
 
         bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
@@ -931,7 +928,6 @@ SPECIAL_BOOL_LIST = (
     "ipv6_hosting",
     "keep_awake",
     "new_nzb_on_failure",
-    "html_login",
     "disable_archive",
     "wait_for_dfolder",
     "enable_broadcast",

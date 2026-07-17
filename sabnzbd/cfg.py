@@ -513,7 +513,6 @@ backup_for_duplicates = OptionBool("misc", "backup_for_duplicates", False)
 wait_for_dfolder = OptionBool("misc", "wait_for_dfolder", False)
 rss_filenames = OptionBool("misc", "rss_filenames", False)
 api_logging = OptionBool("misc", "api_logging", True)
-html_login = OptionBool("misc", "html_login", True)
 disable_archive = OptionBool("misc", "disable_archive", False)
 warn_dupl_jobs = OptionBool("misc", "warn_dupl_jobs", False)
 
