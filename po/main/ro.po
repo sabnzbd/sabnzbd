@@ -266,6 +266,14 @@ msgstr ""
 "Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
 "din nou mai târziu"
 
+#. Warning message
+#: sabnzbd/api.py
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
+
 #: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "Reolvare adresă"

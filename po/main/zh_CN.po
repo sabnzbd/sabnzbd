@@ -254,6 +254,14 @@ msgstr "身份认证失败，请检查用户名/密码。"
 msgid "Too many connections, please pause downloading or try again later"
 msgstr "连接数过多，请先暂停下载或稍后再试"
 
+#. Warning message
+#: sabnzbd/api.py
+msgid ""
+"Server %s took %d ms to respond. On high-latency connections, increasing "
+"'Articles per request' to a value between 5 and 10 can improve download "
+"speed. See: https://sabnzbd.org/wiki/advanced/nntp-pipelining"
+msgstr ""
+
 #: sabnzbd/api.py
 msgid "Resolving address"
 msgstr "正在解析地址"
