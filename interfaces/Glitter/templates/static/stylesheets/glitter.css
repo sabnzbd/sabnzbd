@@ -685,10 +685,6 @@ td.name .row-wrap-text {
     height: 1.5em;
 }
 
-.queue-table td.name .name-options {
-    pointer-events: none;
-}
-
 .queue-table td.name .name-options,
 .queue-table td.name:hover .queue-item-password {
     display: none;
