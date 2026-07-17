@@ -38,7 +38,7 @@ from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import MultiDict, QueryParams
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response
+from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response, FileResponse
 from starlette.middleware import Middleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -531,13 +531,13 @@ async def scriptlog(request: Request):
     return PlainTextResponse("")
 
 
-@secured_expose(methods=["GET"])
+@secured_expose(route="/robots.txt", check_for_login=False, methods=["GET"])
 async def robots_txt(request: Request):
     """Keep web crawlers out"""
     return PlainTextResponse("User-agent: *\nDisallow: /\n")
 
 
-@secured_expose(methods=["GET"])
+@secured_expose(route="/description.xml", check_for_login=False, methods=["GET"])
 async def description_xml(request: Request):
     """Provide the description.xml which was broadcast via SSDP"""
     if is_lan_addr(request.client.host):
@@ -545,6 +545,12 @@ async def description_xml(request: Request):
         return response
     else:
         return Response(status_code=404)
+
+
+@secured_expose(route="/favicon.ico", check_for_login=False, methods=["GET"])
+async def favicon_ico(request: Request):
+    """Provide the favicon.ico"""
+    return FileResponse(os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg", "ico", "favicon.ico"))
 
 
 ##############################################################################
