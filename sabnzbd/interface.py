@@ -2241,23 +2241,60 @@ async def config_notify_save(request: Request):
 
 
 class ThreadedServer(uvicorn.Server):
+    """uvicorn server running in a background thread, so the main thread stays
+    free for the SABnzbd main loop."""
+
+    # Give up on a server that has not reached the serving state by then
+    STARTUP_TIMEOUT = 30.0
+
     def __init__(self, *args, **kwargs):
-        self.thread = None
+        self.thread: Optional[threading.Thread] = None
+        self._startup_exc: Optional[BaseException] = None
+        # Set once the server is either serving or done trying
+        self._startup_done = threading.Event()
         super().__init__(*args, **kwargs)
 
-    def install_signal_handlers(self):
-        pass
+    async def startup(self, sockets=None):
+        await super().startup(sockets=sockets)
+        # Only signal here on success, a failure is signalled by _run() so that
+        # the exception is always recorded before run_in_thread() wakes up
+        self._startup_done.set()
+
+    def _run(self):
+        # Capture any start-up failure (bad cert, port grabbed after the free
+        # check, bad host, etc.) so run_in_thread() can report it. uvicorn raises
+        # SystemExit on a bind error, so catch BaseException rather than Exception.
+        try:
+            self.run()
+        except BaseException as exc:
+            self._startup_exc = exc
+        finally:
+            # No-op after a successful start-up, but releases run_in_thread()
+            # when the thread dies before it ever started serving
+            self._startup_done.set()
 
     def run_in_thread(self):
-        self.thread = threading.Thread(target=self.run)
+        """Start the server in a background thread and block until it is serving.
+
+        Raises RuntimeError if the server thread exits before signalling that it
+        has started, or if it takes too long, so the caller can abort instead of
+        waiting forever.
+        """
+        self.thread = threading.Thread(target=self._run, name="WebServer")
         self.thread.start()
 
-        while not self.started:
-            time.sleep(1e-3)
+        if not self._startup_done.wait(self.STARTUP_TIMEOUT):
+            raise RuntimeError("Web server did not start within %s seconds" % self.STARTUP_TIMEOUT)
+
+        if not self.started:
+            raise RuntimeError("Web server failed to start") from self._startup_exc
 
     def stop(self):
+        """Ask the server to shut down and wait for the thread to finish.
+        Safe to call more than once and before the server was ever started."""
         self.should_exit = True
-        self.thread.join()
+        if self.thread and self.thread is not threading.current_thread():
+            self.thread.join()
 
 
 def create_app() -> Starlette:

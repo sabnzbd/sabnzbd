@@ -1215,7 +1215,14 @@ def main():
         ssl_ca_certs=https_chain if enable_https else None,
     )
     sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config)
-    sabnzbd.WEB_SERVER.run_in_thread()
+    try:
+        sabnzbd.WEB_SERVER.run_in_thread()
+    except Exception:
+        # The webserver runs in a separate thread; if it fails to start (bad cert,
+        # port taken between the free-check and bind, bad host) surface the error
+        # and abort instead of hanging. Details are also shown on the console.
+        logging.error(T("Failed to start web-interface: "), exc_info=True)
+        abort_and_show_error(browserhost, web_port)
 
     # Set URL for browser
     if enable_https:
