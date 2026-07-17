@@ -2260,33 +2260,41 @@ class ThreadedServer(uvicorn.Server):
         self.thread.join()
 
 
-INTERFACE_ROUTES.extend(
-    [
-        Route("/sabnzbd", endpoint=main_index, methods=["GET"]),
-        Mount("/static", app=StaticFiles(directory="interfaces/Glitter/templates/static"), name="static"),
-        Mount("/staticcfg", app=StaticFiles(directory="interfaces/Config/templates/staticcfg"), name="staticcfg"),
-        Mount("/wizard/static", app=StaticFiles(directory="interfaces/wizard/static"), name="wizard_static"),
+def create_app() -> Starlette:
+    """Build the Starlette application"""
+    interface_routes = [
+        *INTERFACE_ROUTES,
+        Mount("/static", app=StaticFiles(directory=os.path.join(sabnzbd.WEB_DIR, "static")), name="static"),
+        Mount(
+            "/staticcfg", app=StaticFiles(directory=os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg")), name="staticcfg"
+        ),
+        Mount(
+            "/wizard/static",
+            app=StaticFiles(directory=os.path.join(sabnzbd.WIZARD_DIR, "static")),
+            name="wizard_static",
+        ),
     ]
-)
 
-routes = [
-    Mount("/sabnzbd", routes=INTERFACE_ROUTES),
-    Mount("/", routes=INTERFACE_ROUTES),
-]
+    # Always serve at the root, and when a URL base is configured (e.g. behind a
+    # reverse proxy) additionally under that base.The base mount must come
+    # first so it is matched before the catch-all root mount.
+    routes = []
+    if url_base := cfg.url_base():
+        routes.append(Mount(url_base, routes=interface_routes))
+    routes.append(Mount("/", routes=interface_routes))
 
+    middleware = [
+        Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2),
+        # Signed session cookie, used for short-lived per-client UI state such as the
+        # RSS read-out result message (flash). Secret key is regenerated each run,
+        # so sessions naturally expire on restart, which is fine for flash messages.
+        Middleware(
+            SessionMiddleware,
+            secret_key=secrets.token_hex(),
+            session_cookie=COOKIE_SESSION,
+            same_site="lax",
+            https_only=bool(cfg.enable_https()),
+        ),
+    ]
 
-middleware = [
-    Middleware(GZipMiddleware, minimum_size=1000, compresslevel=2),
-    # Signed session cookie, used for short-lived per-client UI state such as the
-    # RSS read-out result message (flash). Secret key is regenerated each run,
-    # so sessions naturally expire on restart, which is fine for flash messages.
-    Middleware(
-        SessionMiddleware,
-        secret_key=secrets.token_hex(),
-        session_cookie=COOKIE_SESSION,
-        same_site="lax",
-        https_only=bool(cfg.enable_https()),
-    ),
-]
-
-app = Starlette(middleware=middleware, routes=routes)
+    return Starlette(middleware=middleware, routes=routes)

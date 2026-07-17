@@ -1206,7 +1206,7 @@ def main():
     }
 
     server_config = uvicorn.Config(
-        sabnzbd.interface.app,
+        sabnzbd.interface.create_app(),
         host=web_host,
         port=web_port,
         log_config=uvicorn_logging_config,
