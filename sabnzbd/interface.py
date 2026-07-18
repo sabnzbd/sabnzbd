@@ -706,39 +706,38 @@ def get_access_info(request: Optional[Request] = None):
 
 
 @secured_expose(route="/login", check_for_login=False)
-def login_index(request: Request):
+async def login_index(request: Request):
+    # Already logged in, or no username/password set at all
+    if check_login(request):
+        return RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
+
     # Base output var
     info = build_header(sabnzbd.WEB_DIR_CONFIG)
     info["error"] = ""
 
-    # Use unified params - works for both GET and POST requests
-    username = request_params(request).get("username")
-    password = request_params(request).get("password")
-    remember_me = request_params(request).get("remember_me", False)
+    if request.method == "POST":
+        username = request_params(request).get("username")
+        password = request_params(request).get("password")
+        remember_me = bool(request_params(request).get("remember_me", False))
 
-    # Check if there's even a username/password set
-    if check_login(request):
-        return RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
-
-    # Check login info
-    if username == cfg.username() and password == cfg.password():
-        # Create redirect response
-        response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
-        # Save login cookie
-        set_login_cookie(request, response, remember_me=remember_me)
-        # Log the success
-        remote_info = "%s:%s" % client_address(request)
-        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-            remote_info += f" (X-Forwarded-For: {xff_ips})"
-        logging.info("Successful login from %s", remote_info)
-        return response
-    elif username or password:
-        info["error"] = T("Authentication failed, check username/password.")
-        # Warn about the potential security problem
-        remote_info = "%s:%s" % client_address(request)
-        if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
-            remote_info += f" (X-Forwarded-For: {xff_ips})"
-        logging.warning(T("Unsuccessful login attempt from %s"), remote_info)
+        if username == cfg.username() and password == cfg.password():
+            # Create redirect response
+            response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
+            # Save login cookie
+            set_login_cookie(request, response, remember_me=remember_me)
+            # Log the success
+            remote_info = "%s:%s" % client_address(request)
+            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+                remote_info += f" (X-Forwarded-For: {xff_ips})"
+            logging.info("Successful login from %s", remote_info)
+            return response
+        elif username or password:
+            info["error"] = T("Authentication failed, check username/password.")
+            # Warn about the potential security problem
+            remote_info = "%s:%s" % client_address(request)
+            if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
+                remote_info += f" (X-Forwarded-For: {xff_ips})"
+            logging.warning(T("Unsuccessful login attempt from %s"), remote_info)
 
     # Show login
     return template_filtered_response(
