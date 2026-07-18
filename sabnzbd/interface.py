@@ -509,7 +509,7 @@ def main_index(request: Request):
 async def shutdown(request: Request):
     # Check for PID
     pid_in = request_params(request).get("pid")
-    if pid_in and int(pid_in) != os.getpid():
+    if pid_in and int_conv(pid_in) != os.getpid():
         return PlainTextResponse("Incorrect PID for this instance, remove PID from URL to initiate shutdown.")
 
     await halt_and_shutdown()
