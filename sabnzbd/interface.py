@@ -20,6 +20,7 @@ sabnzbd.interface - webinterface
 """
 
 import os
+import inspect
 import secrets
 import threading
 import time
@@ -98,6 +99,7 @@ from sabnzbd.api import (
     list_cats,
     del_from_section,
     api_handler,
+    halt_and_shutdown,
     build_header,
     Ttemplate,
 )
@@ -480,20 +482,18 @@ async def shutdown(request: Request):
     if pid_in and int(pid_in) != os.getpid():
         return PlainTextResponse("Incorrect PID for this instance, remove PID from URL to initiate shutdown.")
 
-    if not sabnzbd.SABSTOP:
-        # Persist all state before replying, matching the pre-uvicorn behaviour where
-        # the request blocked until shutdown had saved everything. Run halt() off the
-        # event loop so we don't block it. The web server itself cannot be stopped from
-        # within its own event loop, so that part is deferred to a separate thread.
-        await run_in_threadpool(sabnzbd.halt)
-        threading.Thread(target=sabnzbd.shutdown_program).start()
+    await halt_and_shutdown()
     return PlainTextResponse(T("SABnzbd shutdown finished"))
 
 
 @secured_expose(route="/api", check_api_key=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
-    return api_handler(request_params(request))
+    response = api_handler(request_params(request))
+    # Some API functions (e.g. shutdown) are coroutine functions
+    if inspect.isawaitable(response):
+        response = await response
+    return response
 
 
 @secured_expose(route="/scriptlog", methods=["GET"])

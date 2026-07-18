@@ -28,8 +28,9 @@ import socket
 import time
 import getpass
 from threading import Thread
-from typing import Any, Callable, Optional, TypeAlias
+from typing import Any, Awaitable, Callable, Optional, TypeAlias
 
+from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import QueryParams
 from starlette.responses import Response, StreamingResponse
 
@@ -124,9 +125,21 @@ _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
 
 
-def api_handler(kwargs: QueryParams) -> Response:
-    """API Dispatcher"""
+def api_handler(kwargs: QueryParams) -> Response | Awaitable[Response]:
+    """API Dispatcher. Handlers are either plain functions returning a Response,
+    or coroutine functions (e.g. shutdown) whose result must be awaited by the caller."""
     return _api_table.get(kwargs.get("mode", ""), (_api_undefined, 2))[0](kwargs.get("name", ""), kwargs)
+
+
+async def halt_and_shutdown():
+    """Single implementation for both the /shutdown route and mode=shutdown API-call.
+    Persist all state before replying, matching the pre-uvicorn behaviour where the
+    request blocked until shutdown had saved everything. Run halt() off the event
+    loop so we don't block it. The web server itself cannot be stopped from within
+    its own event loop, so that part is deferred to a separate thread."""
+    if not sabnzbd.SABSTOP:
+        await run_in_threadpool(sabnzbd.halt)
+        Thread(target=sabnzbd.shutdown_program).start()
 
 
 def _api_get_config(name: str, kwargs: QueryParams) -> Response:
@@ -686,12 +699,8 @@ def _api_resume(name: str, kwargs: QueryParams) -> Response:
     return report(kwargs)
 
 
-def _api_shutdown(name: str, kwargs: QueryParams) -> Response:
-    if not sabnzbd.SABSTOP:
-        # Persist all state before replying (see the /shutdown route). The web server
-        # cannot be stopped from within its own thread, so that part is deferred.
-        sabnzbd.halt()
-        Thread(target=sabnzbd.shutdown_program).start()
+async def _api_shutdown(name: str, kwargs: QueryParams) -> Response:
+    await halt_and_shutdown()
     return report(kwargs)
 
 
