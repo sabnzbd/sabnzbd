@@ -19,10 +19,13 @@
 tests.test_database - Testing the HistoryDB connection pool
 """
 
+import sqlite3
 import threading
+from unittest import mock
 
 import pytest
 
+import sabnzbd
 import sabnzbd.database as db
 
 
@@ -118,3 +121,48 @@ class TestHistoryDBPool:
         with pool.connection() as history_db:
             history_db.execute("PRAGMA journal_mode;")
             assert history_db.cursor.fetchone()[0] == "wal"
+
+
+class TestHistoryDBSnapshot:
+    @staticmethod
+    def _count_history_rows(db_file: str) -> int:
+        connection = sqlite3.connect(db_file)
+        try:
+            return connection.execute("SELECT COUNT(*) FROM history").fetchone()[0]
+        except sqlite3.Error:
+            # Empty or inconsistent database
+            return 0
+        finally:
+            connection.close()
+
+    def test_snapshot_includes_uncheckpointed_wal_data(self, pool, tmp_path, monkeypatch):
+        """The snapshot must contain transactions still in the WAL, which a
+        raw copy of the main database file misses"""
+        monkeypatch.setattr(sabnzbd, "db_pool", pool)
+        with pool.connection() as history_db:
+            assert history_db.execute(
+                "INSERT INTO history (completed, name, nzb_name) VALUES (?, ?, ?)", (123, "job", "job.nzb")
+            )
+
+        # Snapshot sees the row
+        snapshot = db.history_db_snapshot()
+        assert snapshot
+        snapshot_file = str(tmp_path / "snapshot.db")
+        with open(snapshot_file, "wb") as snapshot_ref:
+            snapshot_ref.write(snapshot)
+        assert self._count_history_rows(snapshot_file) == 1
+
+        # While the row is not in the main database file yet: it is in the WAL
+        raw_file = str(tmp_path / "raw_copy.db")
+        with open(db.HistoryDB.db_path, "rb") as source_ref, open(raw_file, "wb") as raw_ref:
+            raw_ref.write(source_ref.read())
+        assert self._count_history_rows(raw_file) == 0
+
+    def test_snapshot_failure_returns_none(self, pool, monkeypatch):
+        monkeypatch.setattr(sabnzbd, "db_pool", pool)
+        with pool.connection() as history_db:
+            pass
+        # sqlite3.Connection attributes are read-only, so replace the HistoryDB
+        # instance attribute with a mock whose backup() fails
+        monkeypatch.setattr(history_db, "connection", mock.Mock(backup=mock.Mock(side_effect=sqlite3.Error)))
+        assert db.history_db_snapshot() is None

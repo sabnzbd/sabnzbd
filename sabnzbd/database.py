@@ -20,6 +20,7 @@ sabnzbd.database - Database Support
 """
 
 import os
+import tempfile
 import time
 import uuid
 import zlib
@@ -882,3 +883,33 @@ def unpack_history_info(item: sqlite3.Row) -> dict[str, Any]:
 def scheduled_history_purge():
     with sabnzbd.db_pool.connection() as history_db:
         history_db.auto_history_purge()
+
+
+def history_db_snapshot() -> Optional[bytes]:
+    """Return a consistent snapshot of the history database as bytes, for backups.
+
+    Under WAL the main database file alone misses any transactions that have not
+    been checkpointed yet, so a raw file copy would silently lose recent history
+    (and could even be inconsistent when copied mid-checkpoint). SQLite's online
+    backup API produces a consistent, checkpointed, single-file copy that is safe
+    to take while other connections are reading or writing.
+    """
+    snapshot_fd, snapshot_path = tempfile.mkstemp(suffix=".db")
+    os.close(snapshot_fd)
+    try:
+        with sabnzbd.db_pool.connection() as history_db:
+            snapshot_connection = sqlite3.connect(snapshot_path)
+            try:
+                history_db.connection.backup(snapshot_connection)
+            finally:
+                snapshot_connection.close()
+        with open(snapshot_path, "rb") as snapshot_data:
+            return snapshot_data.read()
+    except Exception:
+        logging.info("Failed to snapshot history database: ", exc_info=True)
+        return None
+    finally:
+        try:
+            remove_file(snapshot_path)
+        except Exception:
+            pass

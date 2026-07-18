@@ -41,6 +41,7 @@ from sabnzbd.constants import (
     DEFAULT_PRIORITY,
     CONFIG_BACKUP_FILES,
     CONFIG_BACKUP_HTTPS,
+    DB_HISTORY_NAME,
     DEF_INI_FILE,
     DEF_SORTER_RENAME_SIZE,
     DEF_PIPELINING_REQUESTS,
@@ -973,7 +974,21 @@ class SABnzbdConfig(configobj.ConfigObj):
                 with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_ref:
                     for filename in CONFIG_BACKUP_FILES:
                         full_path = os.path.join(admin_path, filename)
-                        if os.path.isfile(full_path):
+                        # A raw copy of the live database file misses un-checkpointed WAL
+                        # transactions and can be inconsistent while SABnzbd runs, so take
+                        # a snapshot through SQLite's online backup instead. Fall back to
+                        # a plain file copy if the file is not the database in active use,
+                        # or the snapshot fails.
+                        snapshot = None
+                        if (
+                            filename == DB_HISTORY_NAME
+                            and sabnzbd.database.HistoryDB.db_path
+                            and full_path == sabnzbd.database.HistoryDB.db_path
+                        ):
+                            snapshot = sabnzbd.database.history_db_snapshot()
+                        if snapshot:
+                            zip_ref.writestr(filename, snapshot)
+                        elif os.path.isfile(full_path):
                             with open(full_path, "rb") as data:
                                 zip_ref.writestr(filename, data.read())
                     for filename, setting in CONFIG_BACKUP_HTTPS.items():
@@ -1033,6 +1048,14 @@ class SABnzbdConfig(configobj.ConfigObj):
                             logging.debug("Writing backup of %s to %s", filename, destination_file)
                             with open(destination_file, "wb") as destination_ref:
                                 destination_ref.write(zip_ref.read(filename))
+                            if filename == DB_HISTORY_NAME:
+                                # Remove any stale WAL sidecar files left by the replaced
+                                # database, so SQLite cannot try to recover the restored
+                                # database with the old write-ahead log
+                                for sidecar in (destination_file + "-wal", destination_file + "-shm"):
+                                    if os.path.isfile(sidecar):
+                                        logging.debug("Removing stale database sidecar %s", sidecar)
+                                        remove_file(sidecar)
                             # For HTTPS config files, point the associated setting to the restored file
                             if setting := CONFIG_BACKUP_HTTPS.get(filename):
                                 logging.debug("Setting value of %s to restored file %s", setting, filename)
