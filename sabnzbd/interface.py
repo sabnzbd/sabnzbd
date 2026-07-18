@@ -146,6 +146,24 @@ def secured_expose(
         # to be retrieved with request_params(request) in the handlers
         request.state.params = await get_request_params(request)
 
+        # Log all requests
+        if cfg.api_logging():
+            if xff_ips := request.headers.get("X-Forwarded-For"):
+                remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
+                    client_address(request).host,
+                    xff_ips,
+                    request.headers.get("User-Agent"),
+                )
+            else:
+                remote_label = "%s [%s]" % (client_address(request).host, request.headers.get("User-Agent"))
+            logging.debug(
+                "Request %s %s from %s %s",
+                request.method,
+                request.url.path,
+                remote_label,
+                dict(request.state.params),
+            )
+
         # Check if config is locked
         if check_configlock and cfg.configlock():
             if cfg.api_warnings():
