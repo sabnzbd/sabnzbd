@@ -151,6 +151,7 @@ tr.queue-item>td:first-child>a {
     display: inline-block;
     opacity: 1;
     pointer-events: auto;
+    position: static;
 }
 
 .queue-table td.name .name-options small {

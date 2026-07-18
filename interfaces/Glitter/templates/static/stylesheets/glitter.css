@@ -685,8 +685,15 @@ td.name .row-wrap-text {
     height: 1.5em;
 }
 
-.queue-table td.name .name-options,
-.queue-table td.name:hover .queue-item-password {
+.queue-table td.name .name-options {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+.queue-table td.name:hover .queue-item-password,
+.queue-table td.name:focus-within .queue-item-password {
     display: none;
 }
 
@@ -704,20 +711,27 @@ td.name .row-wrap-text {
     max-width: calc(100% - 75px);
 }
 
-.queue-table td.name:hover .row-wrap-text {
+.queue-table td.name:hover .row-wrap-text,
+.queue-table td.name:focus-within .row-wrap-text {
     max-width: calc(100% - 125px);
     /* Change for each size! */
 }
 
-.queue-table td.name:hover .direct-unpack {
+.queue-table td.name:hover .direct-unpack,
+.queue-table td.name:focus-within .direct-unpack {
     display: none;
 }
 
-.queue-table td.name:hover .name-options {
+.queue-table td.name:hover .name-options,
+.queue-table td.name:focus-within .name-options {
     display: block;
+    opacity: 1;
+    pointer-events: auto;
+    position: static;
 }
 
-.queue-table td.name:hover .glyphicon-folder-open {
+.queue-table td.name:hover .glyphicon-folder-open,
+.queue-table td.name:focus-within .glyphicon-folder-open {
     width: 1.5em;
     margin-left: 1px;
 }
