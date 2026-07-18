@@ -26,7 +26,7 @@ from random import choice, randint
 from unittest import mock
 from unittest.mock import Mock, patch
 from starlette.requests import Request
-from starlette.datastructures import Headers, Address, QueryParams
+from starlette.datastructures import Headers, Address, QueryParams, State
 
 import sabnzbd.api as api
 import sabnzbd.interface as interface
@@ -176,8 +176,11 @@ def create_mock_request(
         request_headers.update(headers)
     mock_request.headers = Headers(request_headers)
 
-    # Set up query params
+    # Set up query params, both on the Request itself and on request.state.params,
+    # where secured_expose stores the merged GET/POST params (see request_params)
     mock_request.query_params = QueryParams(query_params or {})
+    mock_request.state = State()
+    mock_request.state.params = mock_request.query_params
 
     return mock_request
 
