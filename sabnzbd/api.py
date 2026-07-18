@@ -100,7 +100,6 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.getipaddress import local_ipv4, public_ipv4, public_ipv6, dnslookup, active_socks5_proxy
-from sabnzbd.database import HistoryDB
 from sabnzbd.lang import is_rtl
 from sabnzbd.nzb import NzbObject, TryList
 from sabnzbd.newswrapper import NewsWrapper, NNTPPermanentError
@@ -536,34 +535,34 @@ def _api_history_delete(value: str, kwargs: QueryParams) -> Response:
     special = value.lower()
     del_files = bool_conv(kwargs.get("del_files"))
     if special in ("all", "failed", "completed"):
-        history_db = sabnzbd.get_db_connection()
-        if special in ("all", "failed"):
-            if del_files:
-                del_job_files(history_db.get_failed_paths(search))
-            if archive:
-                history_db.archive_with_status(Status.FAILED, search)
-            else:
-                history_db.remove_with_status(Status.FAILED, search)
-        if special in ("all", "completed"):
-            if archive:
-                history_db.archive_with_status(Status.COMPLETED, search)
-            else:
-                history_db.remove_with_status(Status.COMPLETED, search)
+        with sabnzbd.db_pool.connection() as history_db:
+            if special in ("all", "failed"):
+                if del_files:
+                    del_job_files(history_db.get_failed_paths(search))
+                if archive:
+                    history_db.archive_with_status(Status.FAILED, search)
+                else:
+                    history_db.remove_with_status(Status.FAILED, search)
+            if special in ("all", "completed"):
+                if archive:
+                    history_db.archive_with_status(Status.COMPLETED, search)
+                else:
+                    history_db.remove_with_status(Status.COMPLETED, search)
         history_updated()
         return report(kwargs)
     elif value:
-        for job in clean_comma_separated_list(value):
-            if sabnzbd.PostProcessor.get_path(job):
-                # This is always a permanent delete, no archiving
-                sabnzbd.PostProcessor.delete(job, del_files=del_files)
-            else:
-                history_db = sabnzbd.get_db_connection()
-                if del_files:
-                    remove_all(history_db.get_incomplete_path(job), recursive=True)
-                if archive:
-                    history_db.archive(job)
+        with sabnzbd.db_pool.connection() as history_db:
+            for job in clean_comma_separated_list(value):
+                if sabnzbd.PostProcessor.get_path(job):
+                    # This is always a permanent delete, no archiving
+                    sabnzbd.PostProcessor.delete(job, del_files=del_files)
                 else:
-                    history_db.remove(job)
+                    if del_files:
+                        remove_all(history_db.get_incomplete_path(job), recursive=True)
+                    if archive:
+                        history_db.archive(job)
+                    else:
+                        history_db.remove(job)
         history_updated()
         return report(kwargs)
     else:
@@ -573,15 +572,15 @@ def _api_history_delete(value: str, kwargs: QueryParams) -> Response:
 def _api_history_mark_as_completed(value: str, kwargs: QueryParams) -> Response:
     """API: accepts value(=nzo_id)"""
     if value:
-        history_db = sabnzbd.get_db_connection()
-        for job in clean_comma_separated_list(value):
-            # Get incomplete path before marking as completed
-            incomplete_path = history_db.get_incomplete_path(job)
-            history_db.mark_as_completed(job)
+        with sabnzbd.db_pool.connection() as history_db:
+            for job in clean_comma_separated_list(value):
+                # Get incomplete path before marking as completed
+                incomplete_path = history_db.get_incomplete_path(job)
+                history_db.mark_as_completed(job)
 
-            # Remove incomplete folder if it exists
-            if incomplete_path:
-                remove_all(incomplete_path, recursive=True)
+                # Remove incomplete folder if it exists
+                if incomplete_path:
+                    remove_all(incomplete_path, recursive=True)
 
         history_updated()
         return report(kwargs)
@@ -890,7 +889,9 @@ def _api_rss_now(name: str, kwargs: QueryParams) -> Response:
 
 def _api_retry_all(name: str, kwargs: QueryParams) -> Response:
     """API: Retry all failed items in History"""
-    nzo_ids = [retry_job(job["nzo_id"]) for job in sabnzbd.get_db_connection().get_retryable_jobs()]
+    with sabnzbd.db_pool.connection() as history_db:
+        retryable_jobs = history_db.get_retryable_jobs()
+    nzo_ids = [retry_job(job["nzo_id"]) for job in retryable_jobs]
     return report(kwargs, keyword="status", data=nzo_ids)
 
 
@@ -1849,17 +1850,17 @@ def retry_job(
 ) -> Optional[str]:
     """Re enter failed job in the download queue"""
     if job:
-        history_db = sabnzbd.get_db_connection()
-        futuretype, url, pp, script, cat = history_db.get_other(job)
-        if futuretype:
-            nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat, dup_check=False)
-        else:
-            path = history_db.get_incomplete_path(job)
-            nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)
-        if nzo_id:
-            # Only remove from history if we repaired something
-            history_db.remove(job)
-            return nzo_id
+        with sabnzbd.db_pool.connection() as history_db:
+            futuretype, url, pp, script, cat = history_db.get_other(job)
+            if futuretype:
+                nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat, dup_check=False)
+            else:
+                path = history_db.get_incomplete_path(job)
+                nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)
+            if nzo_id:
+                # Only remove from history if we repaired something
+                history_db.remove(job)
+                return nzo_id
     return None
 
 
@@ -2008,37 +2009,29 @@ def build_history(
         postproc_queue = []
         postproc_queue_size = 0
 
-    # Acquire the db instance
-    try:
-        history_db = sabnzbd.get_db_connection()
-        close_db = False
-    except Exception:
-        # Required for repairs at startup because Cherrypy isn't active yet
-        history_db = HistoryDB()
-        close_db = True
-
     # Fetch history items
-    if not database_history_limit:
-        items, total_items = history_db.fetch_history(
-            start=database_history_start,
-            limit=1,
-            archive=archive,
-            search=search,
-            categories=categories,
-            statuses=statuses,
-            nzo_ids=nzo_ids,
-        )
-        items = []
-    else:
-        items, total_items = history_db.fetch_history(
-            start=database_history_start,
-            limit=database_history_limit,
-            archive=archive,
-            search=search,
-            categories=categories,
-            statuses=statuses,
-            nzo_ids=nzo_ids,
-        )
+    with sabnzbd.db_pool.connection() as history_db:
+        if not database_history_limit:
+            items, total_items = history_db.fetch_history(
+                start=database_history_start,
+                limit=1,
+                archive=archive,
+                search=search,
+                categories=categories,
+                statuses=statuses,
+                nzo_ids=nzo_ids,
+            )
+            items = []
+        else:
+            items, total_items = history_db.fetch_history(
+                start=database_history_start,
+                limit=database_history_limit,
+                archive=archive,
+                search=search,
+                categories=categories,
+                statuses=statuses,
+                nzo_ids=nzo_ids,
+            )
 
     # Add the postproc items to the top of the history
     # Reverse the queue to add items to the top (faster than insert)
@@ -2046,9 +2039,6 @@ def build_history(
     add_active_history(postproc_queue, items)
     total_items += postproc_queue_size
     items.reverse()
-
-    if close_db:
-        history_db.close()
 
     return items, postproc_queue_size, total_items
 
@@ -2162,7 +2152,7 @@ def del_from_section(kwargs: dict[str, str | list[str]]) -> bool:
 def history_remove_failed():
     """Remove all failed jobs from history, including files"""
     logging.info("Scheduled removal of all failed jobs")
-    with HistoryDB() as history_db:
+    with sabnzbd.db_pool.connection() as history_db:
         del_job_files(history_db.get_failed_paths())
         history_db.remove_with_status(Status.FAILED)
 
@@ -2170,5 +2160,5 @@ def history_remove_failed():
 def history_remove_completed():
     """Remove all completed jobs from history"""
     logging.info("Scheduled removal of all completed jobs")
-    with HistoryDB() as history_db:
+    with sabnzbd.db_pool.connection() as history_db:
         history_db.remove_with_status(Status.COMPLETED)

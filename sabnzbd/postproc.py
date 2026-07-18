@@ -95,7 +95,6 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.emailer as emailer
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.database as database
 import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
@@ -362,7 +361,7 @@ class PostProcessor(Thread):
             process_job(nzo)
 
             if nzo.to_be_removed:
-                with database.HistoryDB() as history_db:
+                with sabnzbd.db_pool.connection() as history_db:
                     history_db.remove(nzo.nzo_id)
                 nzo.purge_data()
 
@@ -726,7 +725,7 @@ def process_job(nzo: NzbObject) -> bool:
     # Log the overall time taken for postprocessing
     postproc_time = int(time.time() - start)
 
-    with database.HistoryDB() as history_db:
+    with sabnzbd.db_pool.connection() as history_db:
         # Add the nzo to the database. Only the path, script and time taken is passed
         # Other information is obtained from the nzo
         history_db.add_history_db(nzo, workdir_complete, postproc_time, script_log, script_line)

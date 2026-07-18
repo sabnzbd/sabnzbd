@@ -502,8 +502,8 @@ def scriptlog(request: Request):
     """Needed for all skins, URL is fixed due to postproc"""
     # No session key check, due to fixed URLs in history database
     if name := request_params(request).get("name"):
-        history_db = sabnzbd.get_db_connection()
-        return PlainTextResponse(history_db.get_script_log(name))
+        with sabnzbd.db_pool.connection() as history_db:
+            return PlainTextResponse(history_db.get_script_log(name))
     return PlainTextResponse("")
 
 
@@ -1455,7 +1455,7 @@ def config_rss_add_rss_feed(request: Request):
             config.ConfigRSS(feed, kwargs)
             # Clear out any existing reference to this feed name
             # Otherwise first-run detection can fail
-            with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+            with sabnzbd.rss.rss_repository() as repo:
                 repo.clear_feed(feed)
             config.save_config()
             # Read out the new feed now (this handler runs in the threadpool) and
@@ -1481,7 +1481,7 @@ def config_rss_del_rss_feed(request: Request):
     feed = request_params(request).get("feed")
     kw = {"section": "rss", "keyword": feed}
     del_from_section(kw)
-    with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+    with sabnzbd.rss.rss_repository() as repo:
         repo.clear_feed(feed)
     return BaseRedirectResponse(_RSS_ROOT)
 
@@ -1509,7 +1509,7 @@ def config_rss_clean_rss_jobs(request: Request):
     """Remove processed RSS jobs from UI"""
     feed = request_params(request).get("feed")
     if feed:
-        with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+        with sabnzbd.rss.rss_repository() as repo:
             repo.clear_downloaded(feed)
         # Re-evaluate cached items (no network read-out) so the log refreshes.
         sabnzbd.RSSReader.process_feed(feed, readout=False)
@@ -1543,26 +1543,26 @@ def config_rss_download(request: Request):
     params = request_params(request)
     feed = params.get("feed")
     url = params.get("url")
-    repo = sabnzbd.rss.RSSRepository(sabnzbd.get_db_connection())
-    if att := repo.find_job_by_url(feed, url):
-        nzbname = params.get("nzbname")
-        pp = att.pp
-        cat = att.cat
-        script = att.script
-        priority = att.priority
+    with sabnzbd.rss.rss_repository() as repo:
+        if att := repo.find_job_by_url(feed, url):
+            nzbname = params.get("nzbname")
+            pp = att.pp
+            cat = att.cat
+            script = att.script
+            priority = att.priority
 
-        if url:
-            logging.info("Adding %s (%s) to queue", url, nzbname)
-            sabnzbd.urlgrabber.add_url(
-                url,
-                pp=pp,
-                script=script,
-                cat=cat,
-                priority=priority,
-                nzbname=nzbname,
-                nzo_info=NzoInfo(RSS=feed),
-            )
-        repo.flag_downloaded(feed, url)
+            if url:
+                logging.info("Adding %s (%s) to queue", url, nzbname)
+                sabnzbd.urlgrabber.add_url(
+                    url,
+                    pp=pp,
+                    script=script,
+                    cat=cat,
+                    priority=priority,
+                    nzbname=nzbname,
+                    nzo_info=NzoInfo(RSS=feed),
+                )
+            repo.flag_downloaded(feed, url)
     return _rss_redirect(feed)
 
 
@@ -1987,7 +1987,7 @@ def GetRssLog(feed):
 
         return job
 
-    with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
+    with sabnzbd.rss.rss_repository() as repo:
         good, bad, done = ([], [], [])
         for job in repo.get_feed_jobs(feed, states=[RSSState.GOOD, RSSState.BAD, RSSState.DOWNLOADED]):
             if job.is_good:

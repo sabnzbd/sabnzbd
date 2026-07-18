@@ -26,7 +26,6 @@ from typing import Optional
 import platform
 import concurrent.futures
 import sys
-import threading
 from threading import Lock, Condition
 
 ##############################################################################
@@ -217,14 +216,9 @@ def sig_handler(signum=None, frame=None):
 INIT_LOCK = Lock()
 
 
-_thread_local = threading.local()
-
-
-def get_db_connection(thread_index=0):
-    # Create a connection and store it in the current thread
-    if not getattr(_thread_local, "history_db", None):
-        _thread_local.history_db = sabnzbd.database.HistoryDB()
-    return _thread_local.history_db
+# Pool of History database connections, shared by web handlers and workers.
+# Borrow with: with sabnzbd.db_pool.connection() as history_db
+db_pool = sabnzbd.database.HistoryDBPool()
 
 
 @synchronized(INIT_LOCK)
@@ -424,6 +418,11 @@ def halt():
         # We must tell the scheduler to deactivate.
         logging.debug("Terminating scheduler")
         sabnzbd.Scheduler.abort()
+
+        # All writers have stopped; close the database connections so the
+        # WAL is checkpointed into the main database file
+        logging.debug("Closing database pool")
+        sabnzbd.db_pool.close()
 
         logging.info("All processes stopped")
 

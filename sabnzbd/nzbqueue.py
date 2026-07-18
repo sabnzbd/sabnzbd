@@ -32,7 +32,6 @@ from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
 from sabnzbd.decorators import NzbQueueLocker
-from sabnzbd.database import HistoryDB
 from sabnzbd.constants import (
     QUEUE_FILE_NAME,
     QUEUE_VERSION,
@@ -149,7 +148,7 @@ class NzbQueue:
             registered = {nzo.work_name for nzo in self.__nzo_list}
 
         # Retryable folders from History
-        with HistoryDB() as history_db:
+        with sabnzbd.db_pool.connection() as history_db:
             registered.update(os.path.basename(job["path"]) for job in history_db.get_retryable_jobs())
 
         # Anything waiting or active in post-processing is also a known item
