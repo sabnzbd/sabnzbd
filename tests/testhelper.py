@@ -21,6 +21,7 @@ tests.testhelper - Basic helper functions
 
 import io
 import os
+import socket
 import time
 import uuid
 from http.client import RemoteDisconnected
@@ -56,15 +57,36 @@ import sabnzbd.filesystem as filesystem
 import tests.sabnews
 
 SAB_HOST = "127.0.0.1"
-SAB_PORT = randint(4200, 4299)
+SAB_NEWSSERVER_HOST = "127.0.0.1"
+
+# Each pytest-xdist worker runs in its own process and imports its own copy of
+# these module-level constants. Many test modules capture them with
+# `from tests.testhelper import SAB_PORT, SAB_CACHE_DIR, ...`, so the values must
+# be settled here at import time and never mutated afterwards. To let workers run
+# in parallel (-n auto) without colliding on the shared cache dir or on fixed TCP
+# ports, derive a per-worker suffix and bind free ports once, right here.
+#
+# For a normal single-process run PYTEST_XDIST_WORKER is unset, so the suffix is
+# empty and the cache dir keeps its historical "tests/cache" path.
+_XDIST_WORKER = os.environ.get("PYTEST_XDIST_WORKER", "")
+_WORKER_SUFFIX = ("_" + _XDIST_WORKER) if _XDIST_WORKER else ""
+
+
+def _find_free_port(host: str = SAB_HOST) -> int:
+    """Ask the OS for a currently-unused TCP port and return it."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind((host, 0))
+        return sock.getsockname()[1]
+
+
+SAB_PORT = _find_free_port()
 SAB_APIKEY = "apikey"
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
+SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache" + _WORKER_SUFFIX)
 SAB_DATA_DIR = os.path.join(SAB_BASE_DIR, "data")
 SAB_INCOMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "incomplete")
 SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "complete")
-SAB_NEWSSERVER_HOST = "127.0.0.1"
-SAB_NEWSSERVER_PORT = 8888
+SAB_NEWSSERVER_PORT = _find_free_port(SAB_NEWSSERVER_HOST)
 
 
 @pytest.fixture(autouse=True)

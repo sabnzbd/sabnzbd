@@ -193,8 +193,18 @@ class TestNewsWrapper:
     @pytest.mark.parametrize(
         "test_host, local_ip, ip_protocol",
         [
-            (TEST_HOST, get_local_ip(protocol_version=IPProtocolVersion.IPV4), IPProtocolVersion.IPV4),
-            (TEST_HOST_IPV6, get_local_ip(protocol_version=IPProtocolVersion.IPV6), IPProtocolVersion.IPV6),
+            pytest.param(
+                TEST_HOST,
+                get_local_ip(protocol_version=IPProtocolVersion.IPV4),
+                IPProtocolVersion.IPV4,
+                id="ipv4",
+            ),
+            pytest.param(
+                TEST_HOST_IPV6,
+                get_local_ip(protocol_version=IPProtocolVersion.IPV6),
+                IPProtocolVersion.IPV6,
+                id="ipv6",
+            ),
             (TEST_HOST, "", None),
             (TEST_HOST_IPV6, "", None),
         ],

@@ -51,8 +51,11 @@ class TestNewsUnpackFunctions:
         assert not newsunpack.is_sfv_file("tests/data/only_comments.sfv")
         assert not newsunpack.is_sfv_file("tests/data/random.bin")
 
-    def test_is_sevenfile(self):
-        # False, because the command is not set
+    def test_is_sevenfile(self, monkeypatch):
+        # False, because the command is not set. Force it explicitly: SEVENZIP_COMMAND
+        # is a module global that another test in this class may have populated via
+        # find_programs(), and under pytest-xdist tests share no ordering guarantee.
+        monkeypatch.setattr(newsunpack, "SEVENZIP_COMMAND", None)
         assert not newsunpack.SEVENZIP_COMMAND
         assert not newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
@@ -65,6 +68,11 @@ class TestNewsUnpackFunctions:
         assert newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
 
     def test_sevenzip(self):
+        # Make the test self-sufficient: SEVENZIP_COMMAND is a module global and
+        # under pytest-xdist this test may land on a worker where no earlier test
+        # called find_programs(), leaving it None (SevenZip would then wrongly raise
+        # "File is not a 7zip file"). find_programs() is idempotent.
+        newsunpack.find_programs(".")
         testzip = newsunpack.SevenZip("tests/data/test_7zip/testfile.7z")
         assert testzip.namelist() == ["My_Test_Download.bin"]
         # Basic check that we can get data from the 7zip
