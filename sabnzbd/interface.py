@@ -37,7 +37,7 @@ from random import randint
 import uvicorn
 from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
-from starlette.datastructures import MultiDict, QueryParams
+from starlette.datastructures import Address, MultiDict, QueryParams
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse, Response, FileResponse
 from starlette.middleware import Middleware
@@ -189,6 +189,13 @@ def secured_expose(
     return internal_wrap
 
 
+def client_address(request: Request) -> Address:
+    """Safe access to request.client, which can be None (e.g. when serving on a
+    unix socket, or with some test clients). Treated as an unknown, non-local
+    client, so access checks fail closed."""
+    return request.client or Address("", 0)
+
+
 def check_access(request: Request, access_type: int = 4, warn_user: bool = False) -> bool:
     """Check if external address is allowed given access_type (Starlette version):
     1=nzb
@@ -205,7 +212,7 @@ def check_access(request: Request, access_type: int = 4, warn_user: bool = False
     # uvicorn.Config in SABnzbd.py): when verify_xff_header is enabled and the
     # connecting peer is a trusted local proxy, request.client already holds the
     # effective client address taken from the XFF chain.
-    remote_ip = request.client.host
+    remote_ip = client_address(request).host
 
     # Check if the client IP is a loopback address or considered local
     is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
@@ -267,7 +274,7 @@ def set_login_cookie(request: Request, response: Response, remove=False, remembe
 
     # request.client is the effective client: uvicorn resolves the XFF header
     # from trusted proxies when verify_xff_header is enabled
-    cookie_str = utob(str(salt) + request.client.host + COOKIE_SECRET)
+    cookie_str = utob(str(salt) + client_address(request).host + COOKIE_SECRET)
     cookie_value = hashlib.sha1(cookie_str).hexdigest()
 
     secure = cfg.enable_https()
@@ -341,7 +348,7 @@ def check_login_cookie(request: Request) -> bool:
 
     # request.client is the effective client: uvicorn resolves the XFF header
     # from trusted proxies when verify_xff_header is enabled
-    cookie_str = utob(str(login_salt) + request.client.host + COOKIE_SECRET)
+    cookie_str = utob(str(login_salt) + client_address(request).host + COOKIE_SECRET)
     return login_cookie == hashlib.sha1(cookie_str).hexdigest()
 
 
@@ -393,7 +400,7 @@ def template_filtered_response(file: str, search_list: dict[str, Any]):
 def log_warning_and_ip(request: Request, txt: str):
     """Include the IP and the Proxy-IP for warnings (Starlette version)"""
     if cfg.api_warnings():
-        remote_info = f"{request.client.host}:{request.client.port}"
+        remote_info = "%s:%s" % client_address(request)
         if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
             remote_info += f" (X-Forwarded-For: {xff_ips})"
         logging.warning("%s %s", txt, remote_info)
@@ -516,7 +523,7 @@ def robots_txt(request: Request):
 @secured_expose(route="/description.xml", check_for_login=False, methods=["GET"])
 def description_xml(request: Request):
     """Provide the description.xml which was broadcast via SSDP"""
-    if is_lan_addr(request.client.host):
+    if is_lan_addr(client_address(request).host):
         response = Response(content=sabnzbd.utils.ssdp.server_ssdp_xml(), media_type="application/xml")
         return response
     else:
@@ -703,7 +710,7 @@ def login_index(request: Request):
         # Save login cookie
         set_login_cookie(request, response, remember_me=remember_me)
         # Log the success
-        remote_info = f"{request.client.host}:{request.client.port}"
+        remote_info = "%s:%s" % client_address(request)
         if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
             remote_info += f" (X-Forwarded-For: {xff_ips})"
         logging.info("Successful login from %s", remote_info)
@@ -711,7 +718,7 @@ def login_index(request: Request):
     elif username or password:
         info["error"] = T("Authentication failed, check username/password.")
         # Warn about the potential security problem
-        remote_info = f"{request.client.host}:{request.client.port}"
+        remote_info = "%s:%s" % client_address(request)
         if cfg.verify_xff_header() and (xff_ips := request.headers.get("X-Forwarded-For")):
             remote_info += f" (X-Forwarded-For: {xff_ips})"
         logging.warning(T("Unsuccessful login attempt from %s"), remote_info)

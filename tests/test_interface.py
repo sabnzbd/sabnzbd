@@ -274,6 +274,19 @@ class TestInterfaceFunctions:
 
         _func()
 
+    @pytest.mark.parametrize("access_type", [1, 2, 3, 4, 5, 6])
+    @pytest.mark.parametrize("inet_exposure", [0, 2, 4])
+    @pytest.mark.config(lambda params: {"inet_exposure": params["inet_exposure"], "api_warnings": True})
+    def test_check_access_without_client(self, access_type, inet_exposure):
+        # request.client can be None (e.g. unix sockets or some test clients);
+        # this must not raise and must fail closed for restricted access types
+        request = create_mock_request()
+        request.client = None
+
+        assert interface.check_access(request, access_type, warn_user=True) is (access_type <= inet_exposure)
+        # The logging helpers must not raise either
+        interface.log_warning_and_ip(request, "txt")
+
     @pytest.mark.parametrize(
         "local_ranges, expected_networks, unexpected_networks",
         [
