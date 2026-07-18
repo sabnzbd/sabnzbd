@@ -622,7 +622,6 @@ def get_access_info(request: Optional[Request] = None):
     # Access_url is used to provide the user a link to SABnzbd depending on the host
     web_host = cfg.web_host()
     host = socket.gethostname().lower()
-    logging.info("hostname is", host)
     socks = [host]
 
     try:
