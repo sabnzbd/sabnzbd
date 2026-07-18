@@ -204,14 +204,14 @@ function QueueListModel(parent) {
     // Clear searchterm
     self.clearSearchTerm = function(data, event) {
         // Was it escape key or click?
-        if(event.type === 'mousedown' || (event.keyCode && event.keyCode === 27)) {
+        if(event.type === 'click' || (event.keyCode && event.keyCode === 27)) {
             self.isLoading(true)
             self.searchTerm('');
         }
         // Was it click and the field is empty? Then we focus on the field
-        if(event.type === 'mousedown' && self.searchTerm() === '') {
+        if(event.type === 'click' && self.searchTerm() === '') {
             $(event.target).parents('.search-box').find('input[type="text"]').focus()
-            return;
+            return false;
         }
         // Need to return true to allow typing
         return true;

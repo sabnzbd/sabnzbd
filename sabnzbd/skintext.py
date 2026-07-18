@@ -819,6 +819,7 @@ SKIN_TEXT = {
     "Glitter-free": TT("Free Space"),
     "Glitter-freeTemp": TT("Temp Folder"),
     "Glitter-search": TT("Search"),
+    "Glitter-clearSearch": TT("Clear search"),
     "Glitter-multiOperations": TT("Multi-Operations"),
     "Glitter-multiSelect": TT("Hold shift key to select a range"),
     "Glitter-selectJob": TT("Select job"),
