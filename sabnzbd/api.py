@@ -802,7 +802,7 @@ def _api_showlog(name: str, kwargs: QueryParams) -> StreamingResponse:
     return StreamingResponse(
         _generate_log(),
         media_type="application/x-download;charset=utf-8",
-        headers={"Content-Disposition": 'attachment;filename="sabnzbd.log"'},
+        headers={"Content-Disposition": 'attachment;filename="sabnzbd.log"', "Cache-Control": "no-store"},
     )
 
 
@@ -1241,10 +1241,14 @@ def report(
 
         response = utob(json.dumps(info))
 
+    # No-store: API responses must never be cached, by browsers or intermediaries.
+    # Pragma is kept only for ancient HTTP/1.0 proxies; Cache-Control is what
+    # modern clients actually honor (Pragma is not a defined response header).
     return Response(
         response,
         media_type=content,
         headers={
+            "Cache-Control": "no-store",
             "Pragma": "no-cache",
             "Access-Control-Allow-Origin": "*",
         },
