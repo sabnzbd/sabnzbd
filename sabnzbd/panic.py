@@ -246,39 +246,3 @@ def show_error_dialog(msg):
     if sabnzbd.WINDOWS:
         ctypes.windll.user32.MessageBoxW(0, msg, T("Fatal error"), 0)
     print(msg)
-
-
-def error_page_401(status, message, traceback, version):
-    """Custom handler for 401 error"""
-    title = T("Access denied")
-    body = T("Error %s: You need to provide a valid username and password.") % status
-    return r"""
-<html>
-    <head>
-    <title>%s</title>
-    </head>
-    <body>
-    <br/><br/>
-    <font color="#0000FF">%s</font>
-    </body>
-</html>
-""" % (
-        title,
-        body,
-    )
-
-
-def error_page_404(status, message, traceback, version):
-    """Custom handler for 404 error, redirect to main page"""
-    return r"""
-<html>
-    <head>
-      <script type="text/javascript">
-      <!--
-      location.href = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '%s' ;
-      //-->
-      </script>
-    </head>
-    <body><br/></body>
-</html>
-""" % cfg.url_base()

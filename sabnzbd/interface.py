@@ -2321,6 +2321,11 @@ class ThreadedServer(uvicorn.Server):
             self.thread.join()
 
 
+async def not_found_redirect(request: Request, exc):
+    """Catch-all for unknown URLs: redirect to the UI root"""
+    return BaseRedirectResponse("/")
+
+
 def create_app() -> Starlette:
     """Build the Starlette application"""
     interface_routes = [
@@ -2359,4 +2364,8 @@ def create_app() -> Starlette:
         ),
     ]
 
-    return Starlette(middleware=middleware, routes=routes)
+    return Starlette(
+        middleware=middleware,
+        routes=routes,
+        exception_handlers={404: not_found_redirect},
+    )
