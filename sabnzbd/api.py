@@ -21,6 +21,7 @@ sabnzbd.api - api
 
 import os
 import sys
+import inspect
 import logging
 import re
 import gc
@@ -28,7 +29,7 @@ import socket
 import time
 import getpass
 from threading import Thread
-from typing import Any, Awaitable, Callable, Optional, TypeAlias
+from typing import Any, Callable, Optional, TypeAlias
 
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import QueryParams
@@ -125,10 +126,15 @@ _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
 
 
-def api_handler(kwargs: QueryParams) -> Response | Awaitable[Response]:
-    """API Dispatcher. Handlers are either plain functions returning a Response,
-    or coroutine functions (e.g. shutdown) whose result must be awaited by the caller."""
-    return _api_table.get(kwargs.get("mode", ""), (_api_undefined, 2))[0](kwargs.get("name", ""), kwargs)
+async def api_handler(kwargs: QueryParams) -> Response:
+    """API Dispatcher. Coroutine handlers (e.g. shutdown) are awaited on the
+    event loop; plain sync handlers are executed in the threadpool so blocking
+    work (disk, database, network tests, benchmarks) cannot stall the loop.
+    This also allows incremental conversion of handlers to native async."""
+    handler = _api_table.get(kwargs.get("mode", ""), (_api_undefined, 2))[0]
+    if inspect.iscoroutinefunction(handler):
+        return await handler(kwargs.get("name", ""), kwargs)
+    return await run_in_threadpool(handler, kwargs.get("name", ""), kwargs)
 
 
 async def halt_and_shutdown():

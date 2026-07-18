@@ -175,8 +175,13 @@ def secured_expose(
                     return PlainTextResponse(msg, status_code=403)
                 return PlainTextResponse("", status_code=403)
 
-        # All good, cool!
-        return await wrap_func(request, *args, **kwargs)
+        # All good, cool! Coroutine handlers are awaited on the event loop, so they
+        # must never block; plain sync handlers are executed in the threadpool so
+        # blocking work (template rendering, disk and database access) cannot stall
+        # the event loop.
+        if inspect.iscoroutinefunction(wrap_func):
+            return await wrap_func(request, *args, **kwargs)
+        return await run_in_threadpool(wrap_func, request, *args, **kwargs)
 
     if route:
         INTERFACE_ROUTES.append(Route(route, endpoint=internal_wrap, methods=methods))
@@ -448,7 +453,7 @@ def BaseRedirectResponse(root: str = "", **kwargs) -> RedirectResponse:
 
 
 @secured_expose(route="/", methods=["GET"])
-async def main_index(request: Request):
+def main_index(request: Request):
     # Redirect to wizard if no servers are set
     if request_params(request).get("skip_wizard") or config.get_servers():
         info = build_header()
@@ -489,15 +494,11 @@ async def shutdown(request: Request):
 @secured_expose(route="/api", check_api_key=True, access_type=1)
 async def api(request: Request):
     """Redirect to API-handler, we check the access_type in the API-handler"""
-    response = api_handler(request_params(request))
-    # Some API functions (e.g. shutdown) are coroutine functions
-    if inspect.isawaitable(response):
-        response = await response
-    return response
+    return await api_handler(request_params(request))
 
 
 @secured_expose(route="/scriptlog", methods=["GET"])
-async def scriptlog(request: Request):
+def scriptlog(request: Request):
     """Needed for all skins, URL is fixed due to postproc"""
     # No session key check, due to fixed URLs in history database
     if name := request_params(request).get("name"):
@@ -507,13 +508,13 @@ async def scriptlog(request: Request):
 
 
 @secured_expose(route="/robots.txt", check_for_login=False, methods=["GET"])
-async def robots_txt(request: Request):
+def robots_txt(request: Request):
     """Keep web crawlers out"""
     return PlainTextResponse("User-agent: *\nDisallow: /\n")
 
 
 @secured_expose(route="/description.xml", check_for_login=False, methods=["GET"])
-async def description_xml(request: Request):
+def description_xml(request: Request):
     """Provide the description.xml which was broadcast via SSDP"""
     if is_lan_addr(request.client.host):
         response = Response(content=sabnzbd.utils.ssdp.server_ssdp_xml(), media_type="application/xml")
@@ -523,7 +524,7 @@ async def description_xml(request: Request):
 
 
 @secured_expose(route="/favicon.ico", check_for_login=False, methods=["GET"])
-async def favicon_ico(request: Request):
+def favicon_ico(request: Request):
     """Provide the favicon.ico"""
     return FileResponse(os.path.join(sabnzbd.WEB_DIR_CONFIG, "staticcfg", "ico", "favicon.ico"))
 
@@ -534,7 +535,7 @@ async def favicon_ico(request: Request):
 
 
 @secured_expose(route="/wizard/", check_configlock=True, methods=["GET"])
-async def wizard_index(request: Request):
+def wizard_index(request: Request):
     """Show the language selection page"""
     if sabnzbd.WINDOWS:
         from sabnzbd.utils.apireg import get_install_lng
@@ -549,7 +550,7 @@ async def wizard_index(request: Request):
 
 
 @secured_expose(route="/wizard/one", check_configlock=True, methods=["GET", "POST"])
-async def wizard_page_one(request: Request):
+def wizard_page_one(request: Request):
     """Accept language and show server page"""
     if request_params(request).get("lang"):
         cfg.language.set(request_params(request).get("lang"))
@@ -593,7 +594,7 @@ async def wizard_page_one(request: Request):
 
 
 @secured_expose(route="/wizard/two", check_configlock=True, methods=["GET", "POST"])
-async def wizard_page_two(request: Request):
+def wizard_page_two(request: Request):
     """Accept server and show the final page for restart"""
     # Save server details if submitted — no host means the user skipped server setup
     if request_params(request).get("host"):
@@ -681,7 +682,7 @@ def get_access_info(request: Optional[Request] = None):
 
 
 @secured_expose(route="/login", check_for_login=False)
-async def login_index(request: Request):
+def login_index(request: Request):
     # Base output var
     info = build_header(sabnzbd.WEB_DIR_CONFIG)
     info["error"] = ""
@@ -723,7 +724,7 @@ async def login_index(request: Request):
 
 
 @secured_expose(route="/logout", check_for_login=False, methods=["GET"])
-async def logout_index(request: Request):
+def logout_index(request: Request):
     response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
     set_login_cookie(request, response, remove=True)
     return response
@@ -735,7 +736,7 @@ async def logout_index(request: Request):
 
 
 @secured_expose(route="/config", check_configlock=True, methods=["GET"])
-async def config_general_index(request: Request):
+def config_general_index(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["configfn"] = clip_path(config.get_filename())
     conf["cmdline"] = sabnzbd.CMDLINE
@@ -776,7 +777,7 @@ LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
 
 
 @secured_expose(route="/config/folders", check_configlock=True, methods=["GET"])
-async def index_config_folders(request: Request):
+def index_config_folders(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["file_exts"] = ", ".join(VALID_NZB_FILES + VALID_ARCHIVES)
 
@@ -790,7 +791,7 @@ async def index_config_folders(request: Request):
 
 
 @secured_expose(route="/config/folders/save", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_folder_save(request: Request):
+def config_folder_save(request: Request):
     for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
             return report(request_params(request), error=msg)
@@ -849,7 +850,7 @@ SWITCH_LIST = (
 
 
 @secured_expose(route="/config/switches", check_configlock=True, methods=["GET"])
-async def index_config_switches(request: Request):
+def index_config_switches(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["have_nice"] = bool(sabnzbd.newsunpack.NICE_COMMAND)
     conf["have_ionice"] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
@@ -868,7 +869,7 @@ async def index_config_switches(request: Request):
 
 
 @secured_expose(route="/config/switches/save", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_switches_save(request: Request):
+def config_switches_save(request: Request):
     for kw in SWITCH_LIST:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
             return report(request_params(request), error=msg)
@@ -946,7 +947,7 @@ SPECIAL_LIST_LIST = (
 
 
 @secured_expose(route="/config/special", check_configlock=True, methods=["GET"])
-async def index_config_special(request: Request):
+def index_config_special(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["switches"] = [
         (kw, config.get_config("misc", kw)(), config.get_config("misc", kw).default) for kw in SPECIAL_BOOL_LIST
@@ -968,7 +969,7 @@ async def index_config_special(request: Request):
 
 
 @secured_expose(route="/config/special/save", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_special_save(request: Request):
+def config_special_save(request: Request):
     for kw in SPECIAL_BOOL_LIST + SPECIAL_VALUE_LIST + SPECIAL_LIST_LIST:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
             return report(request_params(request), error=msg)
@@ -1002,7 +1003,7 @@ GENERAL_LIST = (
 
 
 @secured_expose(route="/config/general", check_configlock=True, methods=["GET"])
-async def index_config_general(request: Request):
+def index_config_general(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
     web_list = []
@@ -1035,7 +1036,7 @@ async def index_config_general(request: Request):
 
 
 @secured_expose(route="/config/general/save", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_general_save(request: Request):
+def config_general_save(request: Request):
     # Handle general options
     for kw in GENERAL_LIST:
         if msg := config.get_config("misc", kw).set(request_params(request).get(kw)):
@@ -1086,7 +1087,7 @@ def change_web_dir(web_dir):
 
 
 @secured_expose(route="/config/server", check_configlock=True, methods=["GET"])
-async def index_config_server(request: Request):
+def index_config_server(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     new = []
     servers = config.get_servers()
@@ -1122,24 +1123,24 @@ async def index_config_server(request: Request):
 
 
 @secured_expose(route="/config/server/add_server", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_server_add(request: Request):
+def config_server_add(request: Request):
     return handle_server(request_params(request), new_svr=True)
 
 
 @secured_expose(route="/config/server/save_server", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_server_save(request: Request):
+def config_server_save(request: Request):
     return handle_server(request_params(request))
 
 
 @secured_expose(route="/config/server/delete_server", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_server_del(request: Request):
+def config_server_del(request: Request):
     kw = {"section": "servers", "keyword": request_params(request).get("server")}
     del_from_section(kw)
     return BaseRedirectResponse("/config/server")
 
 
 @secured_expose(route="/config/server/clear_server", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_server_clr(request: Request):
+def config_server_clr(request: Request):
     server = request_params(request).get("server")
     if server:
         sabnzbd.BPSMeter.clear_server(server)
@@ -1147,7 +1148,7 @@ async def config_server_clr(request: Request):
 
 
 @secured_expose(route="/config/server/toggle_server", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_server_toggle(request: Request):
+def config_server_toggle(request: Request):
     server = request_params(request).get("server")
     if server:
         svr = config.get_config("servers", server)
@@ -1308,7 +1309,7 @@ def _rss_flash_redirect(request: Request, feed: str, msg: str = "") -> RedirectR
 
 
 @secured_expose(route="/config/rss", check_configlock=True, methods=["GET"])
-async def config_rss_index(request: Request):
+def config_rss_index(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
     conf["scripts"] = list_scripts(default=True)
@@ -1361,7 +1362,7 @@ async def config_rss_index(request: Request):
 
 
 @secured_expose(route="/config/rss/save_rss_rate", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_save_rss_rate(request: Request):
+def config_rss_save_rss_rate(request: Request):
     """Save changed RSS automatic readout rate"""
     cfg.rss_rate.set(request_params(request).get("rss_rate"))
     config.save_config()
@@ -1370,7 +1371,7 @@ async def config_rss_save_rss_rate(request: Request):
 
 
 @secured_expose(route="/config/rss/upd_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_upd_rss_feed(request: Request):
+def config_rss_upd_rss_feed(request: Request):
     """Update Feed level attributes,
     legacy version: ignores 'enable' parameter
     """
@@ -1392,7 +1393,7 @@ async def config_rss_upd_rss_feed(request: Request):
 
 
 @secured_expose(route="/config/rss/save_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_save_rss_feed(request: Request):
+def config_rss_save_rss_feed(request: Request):
     """Update Feed level attributes"""
     params = request_params(request)
     kwargs = dict(params)
@@ -1419,7 +1420,7 @@ async def config_rss_save_rss_feed(request: Request):
 
 
 @secured_expose(route="/config/rss/toggle_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_toggle_rss_feed(request: Request):
+def config_rss_toggle_rss_feed(request: Request):
     """Toggle automatic read-out flag of Feed"""
     params = request_params(request)
     try:
@@ -1437,7 +1438,7 @@ async def config_rss_toggle_rss_feed(request: Request):
 
 
 @secured_expose(route="/config/rss/add_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_add_rss_feed(request: Request):
+def config_rss_add_rss_feed(request: Request):
     """Add one new RSS feed definition"""
     params = request_params(request)
     kwargs = dict(params)
@@ -1457,9 +1458,9 @@ async def config_rss_add_rss_feed(request: Request):
             with sabnzbd.rss.rss_repository(sabnzbd.get_db_connection()) as repo:
                 repo.clear_feed(feed)
             config.save_config()
-            # Read out the new feed now (off the event loop) and carry the
-            # result message to the redirected page via the session flash.
-            msg = await run_in_threadpool(sabnzbd.RSSReader.process_feed, feed, readout=True, ignore_first=True)
+            # Read out the new feed now (this handler runs in the threadpool) and
+            # carry the result message to the redirected page via the session flash.
+            msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
             return _rss_flash_redirect(request, feed, msg)
         else:
             return BaseRedirectResponse(_RSS_ROOT)
@@ -1468,14 +1469,14 @@ async def config_rss_add_rss_feed(request: Request):
 
 
 @secured_expose(route="/config/rss/upd_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_upd_rss_filter(request: Request):
+def config_rss_upd_rss_filter(request: Request):
     """Save updated filter definition"""
     do_upd_rss_filter(dict(request_params(request)))
     return _rss_redirect(request_params(request).get("feed"))
 
 
 @secured_expose(route="/config/rss/del_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_del_rss_feed(request: Request):
+def config_rss_del_rss_feed(request: Request):
     """Remove complete RSS feed"""
     feed = request_params(request).get("feed")
     kw = {"section": "rss", "keyword": feed}
@@ -1486,25 +1487,25 @@ async def config_rss_del_rss_feed(request: Request):
 
 
 @secured_expose(route="/config/rss/del_rss_filter", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_del_rss_filter(request: Request):
+def config_rss_del_rss_filter(request: Request):
     """Remove one RSS filter"""
     do_del_rss_filter(dict(request_params(request)))
     return _rss_redirect(request_params(request).get("feed"))
 
 
 @secured_expose(route="/config/rss/download_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_download_rss_feed(request: Request):
+def config_rss_download_rss_feed(request: Request):
     """Force download of all matching jobs in a feed"""
     feed = request_params(request).get("feed")
     if not feed:
         return _rss_redirect()
-    # Network read-out with forced download; run off the event loop.
-    msg = await run_in_threadpool(sabnzbd.RSSReader.process_feed, feed, readout=True, download=True, force=True)
+    # Network read-out with forced download; this handler runs in the threadpool.
+    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, download=True, force=True)
     return _rss_flash_redirect(request, feed, msg)
 
 
 @secured_expose(route="/config/rss/clean_rss_jobs", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_clean_rss_jobs(request: Request):
+def config_rss_clean_rss_jobs(request: Request):
     """Remove processed RSS jobs from UI"""
     feed = request_params(request).get("feed")
     if feed:
@@ -1516,18 +1517,18 @@ async def config_rss_clean_rss_jobs(request: Request):
 
 
 @secured_expose(route="/config/rss/test_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_test_rss_feed(request: Request):
+def config_rss_test_rss_feed(request: Request):
     """Read the feed content again and show results"""
     feed = request_params(request).get("feed")
     if not feed:
         return _rss_redirect()
-    # Network read-out; run off the event loop.
-    msg = await run_in_threadpool(sabnzbd.RSSReader.process_feed, feed, readout=True, ignore_first=True)
+    # Network read-out; this handler runs in the threadpool.
+    msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
     return _rss_flash_redirect(request, feed, msg)
 
 
 @secured_expose(route="/config/rss/eval_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_eval_rss_feed(request: Request):
+def config_rss_eval_rss_feed(request: Request):
     """Re-apply the filters to the feed"""
     feed = request_params(request).get("feed")
     if feed:
@@ -1537,7 +1538,7 @@ async def config_rss_eval_rss_feed(request: Request):
 
 
 @secured_expose(route="/config/rss/download", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_download(request: Request):
+def config_rss_download(request: Request):
     """Download NZB from provider (Download button)"""
     params = request_params(request)
     feed = params.get("feed")
@@ -1566,7 +1567,7 @@ async def config_rss_download(request: Request):
 
 
 @secured_expose(route="/config/rss/rss_now", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_rss_rss_now(request: Request):
+def config_rss_rss_now(request: Request):
     """Run an automatic RSS run now"""
     sabnzbd.Scheduler.force_rss()
     return BaseRedirectResponse(_RSS_ROOT)
@@ -1619,7 +1620,7 @@ _SCHED_ROOT = "/config/scheduling"
 
 
 @secured_expose(route="/config/scheduling", check_configlock=True, methods=["GET"])
-async def config_scheduling_index(request: Request):
+def config_scheduling_index(request: Request):
     def get_days():
         days = {
             "*": T("Daily"),
@@ -1713,7 +1714,7 @@ async def config_scheduling_index(request: Request):
 
 
 @secured_expose(route="/config/scheduling/add_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_scheduling_add(request: Request):
+def config_scheduling_add(request: Request):
     params = request_params(request)
     servers = config.get_servers()
     minute = params.get("minute")
@@ -1762,7 +1763,7 @@ async def config_scheduling_add(request: Request):
 
 
 @secured_expose(route="/config/scheduling/del_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_scheduling_del(request: Request):
+def config_scheduling_del(request: Request):
     schedules = cfg.schedules()
     line = request_params(request).get("line")
     if line and line in schedules:
@@ -1774,7 +1775,7 @@ async def config_scheduling_del(request: Request):
 
 
 @secured_expose(route="/config/scheduling/toggle_schedule", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_scheduling_toggle(request: Request):
+def config_scheduling_toggle(request: Request):
     schedules = cfg.schedules()
     line = request_params(request).get("line")
     if line:
@@ -1797,7 +1798,7 @@ async def config_scheduling_toggle(request: Request):
 
 
 @secured_expose(route="/config/categories", check_configlock=True, methods=["GET"])
-async def index_config_categories(request: Request):
+def index_config_categories(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
     conf["scripts"] = list_scripts(default=True)
@@ -1826,7 +1827,7 @@ async def index_config_categories(request: Request):
 
 
 @secured_expose(route="/config/categories/delete", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_categories_delete(request: Request):
+def config_categories_delete(request: Request):
     kw = {
         "section": "categories",
         "keyword": request_params(request).get("name"),
@@ -1836,7 +1837,7 @@ async def config_categories_delete(request: Request):
 
 
 @secured_expose(route="/config/categories/save", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_categories_save(request: Request):
+def config_categories_save(request: Request):
     name = request_params(request).get("name", "*")
     newname = request_params(request).get("newname", "")
     if name == "*":
@@ -1871,7 +1872,7 @@ _SORTING_ROOT = "/config/sorting"
 
 
 @secured_expose(route="/config/sorting", check_configlock=True, methods=["GET"])
-async def config_sorting_index(request: Request):
+def config_sorting_index(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
     sorters = config.get_ordered_sorters()
@@ -1901,14 +1902,14 @@ async def config_sorting_index(request: Request):
 
 
 @secured_expose(route="/config/sorting/delete", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_sorting_delete(request: Request):
+def config_sorting_delete(request: Request):
     kw = {"section": "sorters", "keyword": request_params(request).get("name")}
     del_from_section(kw)
     return BaseRedirectResponse(_SORTING_ROOT)
 
 
 @secured_expose(route="/config/sorting/save_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_sorting_save_sorter(request: Request):
+def config_sorting_save_sorter(request: Request):
     params = request_params(request)
     kwargs = dict(params)
     name = params.get("name", "*")
@@ -1928,7 +1929,7 @@ async def config_sorting_save_sorter(request: Request):
 
 
 @secured_expose(route="/config/sorting/toggle_sorter", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_sorting_toggle_sorter(request: Request):
+def config_sorting_toggle_sorter(request: Request):
     """Toggle is_active flag of a sorter"""
     try:
         sorter = config.get_sorters()[request_params(request).get("sorter")]
@@ -2182,7 +2183,7 @@ NOTIFY_OPTIONS = {
 
 
 @secured_expose(route="/config/notify", check_configlock=True, methods=["GET"])
-async def index_config_notify(request: Request):
+def index_config_notify(request: Request):
     conf = build_header(sabnzbd.WEB_DIR_CONFIG)
     conf["notify_types"] = sabnzbd.notifier.NOTIFICATION_TYPES
     conf["categories"] = list_cats(False)
@@ -2204,7 +2205,7 @@ async def index_config_notify(request: Request):
 
 
 @secured_expose(route="/config/notify/save", check_api_key=True, check_configlock=True, methods=["POST"])
-async def config_notify_save(request: Request):
+def config_notify_save(request: Request):
     for section in NOTIFY_OPTIONS:
         for option in NOTIFY_OPTIONS[section]:
             if msg := config.get_config(section, option).set(request_params(request).get(option)):

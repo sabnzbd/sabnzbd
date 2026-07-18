@@ -19,6 +19,7 @@
 tests.test_api - Tests for API functions
 """
 
+import asyncio
 import os
 from functools import cached_property
 import pytest
@@ -26,6 +27,7 @@ from random import choice, randint
 from unittest import mock
 from unittest.mock import Mock, patch
 from starlette.requests import Request
+from starlette.responses import Response
 from starlette.datastructures import Headers, Address, QueryParams, State
 
 import sabnzbd.api as api
@@ -38,26 +40,31 @@ from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR
 from tests.test_interface import resolve_client
 
 
+def run_api_handler(kwargs) -> Response:
+    """Run the (async) api_handler to completion, like the /api route does"""
+    return asyncio.run(api.api_handler(kwargs))
+
+
 class TestApiInternals:
     """Test internal functions of the API"""
 
     def test_empty(self):
         with pytest.raises(AttributeError):
-            api.api_handler(None)
+            run_api_handler(None)
         # Empty string should work but result in undefined mode
-        result = api.api_handler(QueryParams({}))
+        result = run_api_handler(QueryParams({}))
         assert "not implemented" in result.body.decode()
 
     def test_mode_invalid(self):
-        result = api.api_handler(QueryParams({"mode": "invalid"}))
+        result = run_api_handler(QueryParams({"mode": "invalid"}))
         assert "not implemented" in result.body.decode()
 
     def test_version(self):
-        result = api.api_handler(QueryParams({"mode": "version"}))
+        result = run_api_handler(QueryParams({"mode": "version"}))
         assert sabnzbd.__version__ in result.body.decode()
 
     def test_auth(self):
-        result = api.api_handler(QueryParams({"mode": "auth"}))
+        result = run_api_handler(QueryParams({"mode": "auth"}))
         assert "apikey" in result.body.decode()
 
     @pytest.mark.parametrize(
@@ -283,7 +290,7 @@ class TestSecuredExpose:
     def api_wrapper(self, **kwargs):
         """Wrapper to test API calls with query parameters"""
         request = create_mock_request(query_params=kwargs)
-        return api.api_handler(request.query_params)
+        return run_api_handler(request.query_params)
 
     def check_full_access(self, hostname="localhost", remote_ip="127.0.0.1"):
         """Basic test if we have full access to API and interface"""
