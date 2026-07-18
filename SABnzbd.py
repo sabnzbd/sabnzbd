@@ -1354,7 +1354,8 @@ def main():
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")
     logging.info("Leaving SABnzbd")
     sabnzbd.pid_file()
-    sabnzbd.WEB_SERVER.stop()
+    if sabnzbd.WEB_SERVER:
+        sabnzbd.WEB_SERVER.stop()
 
     try:
         sys.stderr.flush()
