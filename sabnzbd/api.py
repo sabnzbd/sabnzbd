@@ -179,10 +179,7 @@ def _api_set_config_default(name: str, kwargs: QueryParams) -> Response:
     """API: Reset requested config variables back to defaults. Currently only for misc-section"""
     if cfg.configlock():
         return report(kwargs, _MSG_CONFIG_LOCKED)
-    keywords = kwargs.get("keyword", [])
-    if not isinstance(keywords, list):
-        keywords = [keywords]
-    for keyword in keywords:
+    for keyword in kwargs.getlist("keyword"):
         item = config.get_config("misc", keyword)
         if item:
             item.set(item.default)
