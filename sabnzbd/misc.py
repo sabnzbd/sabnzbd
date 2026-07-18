@@ -1335,6 +1335,35 @@ def is_local_addr(ip: str) -> bool:
         return is_lan_addr(ip)
 
 
+def xff_trusted_networks() -> list[str]:
+    """Networks from which the X-Forwarded-For header may be trusted, for use as
+    uvicorn's forwarded_allow_ips. Mirrors is_loopback_addr plus is_local_addr:
+    loopback and the user-defined local_ranges, or the private LAN address space
+    when no local_ranges are set.
+
+    Uvicorn compares the raw peer address without normalization, so for every
+    IPv4 entry the IPv4-mapped IPv6 form (::ffff:a.b.c.d) is added as well.
+    """
+    networks = ["127.0.0.0/8", "::1"]
+    if local_ranges := cfg.local_ranges():
+        networks.extend(local_ranges)
+    else:
+        # Private address space, matching is_lan_addr()
+        networks.extend(["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"])
+
+    # Add IPv4-mapped IPv6 equivalents of all IPv4 entries
+    mapped = []
+    for network in networks:
+        try:
+            net = ipaddress.ip_network(network, strict=False)
+        except ValueError:
+            # Not a valid IP or network; leave it to uvicorn as a literal
+            continue
+        if net.version == 4:
+            mapped.append("::ffff:%s/%d" % (net.network_address, net.prefixlen + 96))
+    return networks + mapped
+
+
 def ip_extract() -> list[str]:
     """Return list of IP addresses of this system"""
     ips = []

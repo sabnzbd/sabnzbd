@@ -35,6 +35,7 @@ import sabnzbd.database as db
 from sabnzbd.constants import DB_HISTORY_NAME, DEF_ADMIN_DIR, PP_LOOKUP
 from sabnzbd.misc import pp_to_opts
 from tests.testhelper import FakeHistoryDB, SAB_CACHE_DIR
+from tests.test_interface import resolve_client
 
 
 class TestApiInternals:
@@ -423,22 +424,29 @@ class TestSecuredExpose:
 
     @pytest.mark.config({"inet_exposure": 2, "verify_xff_header": True})
     def test_inet_exposure_with_xff_headers(self):
-        """Test inet_exposure behavior with X-Forwarded-For headers"""
-        # XFF is only checked when remote IP is local/loopback but XFF contains non-local IPs
-        # Test with local remote IP but external XFF
+        """Test inet_exposure behavior with X-Forwarded-For headers.
+
+        The XFF chain is resolved by uvicorn's ProxyHeadersMiddleware before
+        check_access sees the request (see tests/test_interface.py), so
+        request.client already holds the effective client address here.
+        """
+        # Local remote IP with external XFF: uvicorn rewrites the client to the
+        # external XFF address, which should be denied
         local_request_external_xff = create_mock_request(
-            remote_ip="192.168.1.1", headers={"X-Forwarded-For": "8.8.8.8"}
+            remote_ip=resolve_client(remote_ip="192.168.1.1", xff_header="8.8.8.8").host
         )
 
-        # Test with local remote IP and local XFF
+        # Local remote IP with local XFF: effective client is the (local) XFF address
         local_request_local_xff = create_mock_request(
-            remote_ip="192.168.1.1", headers={"X-Forwarded-For": "192.168.1.10"}
+            remote_ip=resolve_client(remote_ip="192.168.1.1", xff_header="192.168.1.10").host
         )
 
-        # Test with external remote IP (XFF should be ignored)
-        external_request = create_mock_request(remote_ip="8.8.8.8", headers={"X-Forwarded-For": "192.168.1.10"})
+        # External remote IP: untrusted peer, XFF is ignored and the client is untouched
+        external_request = create_mock_request(
+            remote_ip=resolve_client(remote_ip="8.8.8.8", xff_header="192.168.1.10").host
+        )
 
-        # Local IP with external XFF should be denied (XFF verification fails)
+        # Local IP with external XFF should be denied
         assert interface.check_access(local_request_external_xff, access_type=4) is False
 
         # Local IP with local XFF should be allowed

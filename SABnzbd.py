@@ -86,6 +86,7 @@ from sabnzbd.misc import (
     split_host,
     port_is_free,
     find_free_port,
+    xff_trusted_networks,
     create_https_certificates,
     ip_extract,
     set_serv_parms,
@@ -1213,6 +1214,8 @@ def main():
         ssl_keyfile=https_key if enable_https else None,
         ssl_certfile=https_cert if enable_https else None,
         ssl_ca_certs=https_chain if enable_https else None,
+        proxy_headers=bool(sabnzbd.cfg.verify_xff_header()),
+        forwarded_allow_ips=xff_trusted_networks(),
     )
     sabnzbd.WEB_SERVER = sabnzbd.interface.ThreadedServer(config=server_config)
     try:

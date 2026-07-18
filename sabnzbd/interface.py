@@ -64,7 +64,6 @@ from sabnzbd.misc import (
     recursive_html_escape,
     is_none,
     get_cpu_name,
-    clean_comma_separated_list,
 )
 from sabnzbd.filesystem import (
     real_path,
@@ -194,20 +193,14 @@ def check_access(request: Request, access_type: int = 4, warn_user: bool = False
     if access_type <= cfg.inet_exposure():
         return True
 
+    # X-Forwarded-For is resolved by uvicorn's ProxyHeadersMiddleware (see the
+    # uvicorn.Config in SABnzbd.py): when verify_xff_header is enabled and the
+    # connecting peer is a trusted local proxy, request.client already holds the
+    # effective client address taken from the XFF chain.
     remote_ip = request.client.host
 
     # Check if the client IP is a loopback address or considered local
     is_allowed = is_loopback_addr(remote_ip) or is_local_addr(remote_ip)
-
-    # Never check the XFF header unless access would have been granted based on the remote IP alone!
-    if (
-        is_allowed
-        and cfg.verify_xff_header()
-        and (xff_ips := clean_comma_separated_list(request.headers.get("X-Forwarded-For")))
-    ):
-        is_allowed = all(is_local_addr(ip) or is_loopback_addr(ip) for ip in xff_ips)
-        if not is_allowed:
-            logging.debug("Denying access based on X-Forwarded-For IPs '%s'", xff_ips)
 
     if not is_allowed and warn_user:
         log_warning_and_ip(request, T("Refused connection from:"))
@@ -255,19 +248,6 @@ COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 COOKIE_SESSION = "sabnzbd_session"
 
 
-def remote_ip_from_xff(xff_ips: list[str]) -> str:
-    # Per MDN docs, the first non-local/non-trusted IP (rtl) is our "client"
-    # However, it's possible that all IPs are local/trusted, so we may also
-    # return the first ip in the list as it "should" be the client
-    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For#selecting_an_ip_address
-    for ip in reversed(xff_ips):
-        if not is_local_addr(ip) and not is_loopback_addr(ip):
-            return ip
-    else:
-        # If no non-local/non-trusted IPs found, return the first IP in the list
-        return xff_ips[0]
-
-
 def set_login_cookie(request: Request, response: Response, remove=False, remember_me=False):
     """Set login cookie for Starlette (updated version)
     We try to set a cookie as unique as possible
@@ -277,13 +257,9 @@ def set_login_cookie(request: Request, response: Response, remove=False, remembe
     """
     salt = randint(1, 1000)
 
-    # If we are using XFF headers, get remote IP from XFF if possible
-    if cfg.verify_xff_header() and (xff_ips := clean_comma_separated_list(request.headers.get("X-Forwarded-For"))):
-        remote_ip = remote_ip_from_xff(xff_ips)
-    else:
-        remote_ip = request.client.host
-
-    cookie_str = utob(str(salt) + remote_ip + COOKIE_SECRET)
+    # request.client is the effective client: uvicorn resolves the XFF header
+    # from trusted proxies when verify_xff_header is enabled
+    cookie_str = utob(str(salt) + request.client.host + COOKIE_SECRET)
     cookie_value = hashlib.sha1(cookie_str).hexdigest()
 
     secure = cfg.enable_https()
@@ -355,13 +331,9 @@ def check_login_cookie(request: Request) -> bool:
     if not login_cookie or not login_salt:
         return False
 
-    # If we are using XFF headers, get remote IP from XFF if possible
-    if cfg.verify_xff_header() and (xff_ips := clean_comma_separated_list(request.headers.get("X-Forwarded-For"))):
-        remote_ip = remote_ip_from_xff(xff_ips)
-    else:
-        remote_ip = request.client.host
-
-    cookie_str = utob(str(login_salt) + remote_ip + COOKIE_SECRET)
+    # request.client is the effective client: uvicorn resolves the XFF header
+    # from trusted proxies when verify_xff_header is enabled
+    cookie_str = utob(str(login_salt) + request.client.host + COOKIE_SECRET)
     return login_cookie == hashlib.sha1(cookie_str).hexdigest()
 
 
