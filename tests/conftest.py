@@ -48,6 +48,7 @@ from tests.testhelper import (
     SABnzbdBaseTest,
     get_api_result,
     get_url_result,
+    wait_for,
 )
 
 # Re-export the shared fixtures so they are registered suite-wide. These are
@@ -102,27 +103,17 @@ def _port_is_open(host, port):
         return sock.connect_ex((host, port)) == 0
 
 
-def _wait_for_port_release(host, port, timeout=30):
-    """Block until nothing is listening on host:port, returns False on timeout"""
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        if not _port_is_open(host, port):
-            return True
-        time.sleep(0.1)
-    return False
-
-
 @pytest.fixture(scope="module")
 def clean_cache_dir(request):
-    # Remove cache if already there
+    # Remove cache if already there. PermissionError is retried (not swallowed):
+    # on Windows a just-stopped instance can hold file handles for a moment, and
+    # skipping the clean-up would leave a previous module's state behind.
     for x in range(100):
         try:
             if os.path.exists(SAB_CACHE_DIR):
                 shutil.rmtree(SAB_CACHE_DIR)
             # Create an empty placeholder
             os.makedirs(SAB_CACHE_DIR)
-            break
-        except PermissionError:
             break
         except OSError:
             time.sleep(0.1)
@@ -163,12 +154,13 @@ def run_sabnzbd(clean_cache_dir, compiled_language_files, request):
             sabnzbd_process.kill()
             sabnzbd_process.communicate(timeout=30)
 
-        # The tracked PID exiting is not proof the instance is gone. Within a single
-        # worker the port and cache dir are reused by every module, so a lingering
-        # instance (slow shutdown, re-exec, orphaned worker) can keep re-saving its
-        # own config over the cache dir.
+        # The tracked PID exiting is not proof the instance is gone: SAB_PORT is a
+        # single random port reused by every module in the session, and a lingering
+        # instance (slow shutdown, re-exec, orphaned worker) keeps re-saving its own
+        # config over the shared cache dir. That is what intermittently wipes the
+        # freshly-copied module ini (e.g. dropping the converted [sorters] section).
         # Block until the port is actually free so the next module starts clean.
-        if not _wait_for_port_release(SAB_HOST, SAB_PORT):
+        if not wait_for(lambda: not _port_is_open(SAB_HOST, SAB_PORT), timeout=15):
             sabnzbd_process.kill()
             warn("Port %s:%s still in use after SABnzbd shutdown" % (SAB_HOST, SAB_PORT))
 
@@ -195,8 +187,11 @@ def run_sabnzbd(clean_cache_dir, compiled_language_files, request):
         ]
     )
 
-    # Wait for SAB to respond
+    # Wait for SAB to respond. Also bail out early if the process died during
+    # start-up, otherwise we'd keep polling a port that a stale instance may own.
     for _ in range(600):
+        if sabnzbd_process.poll() is not None:
+            pytest.fail("SABnzbd exited during start-up (code %s)" % sabnzbd_process.returncode)
         try:
             get_url_result()
             # Woohoo, we're up!
