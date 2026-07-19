@@ -145,9 +145,13 @@ def secured_expose(
 
     @functools.wraps(wrap_func)
     async def internal_wrap(request: Request, *args, **kwargs):
-        # Store the merged parameters for this method on request.state,
-        # to be retrieved with request_params(request) in the handlers
-        request.state.params = await get_request_params(request)
+        # Store the parameters for this method on request.state, to be retrieved
+        # with request_params(request) in the handlers.Page routes are strict:
+        # GET reads the query string and POST reads the form body only. The /api
+        # route merges the query string with the form body (body wins), which
+        # third-party API clients rely on (e.g. multipart NZB uploads with
+        # mode/apikey in the URL).
+        request.state.params = await get_request_params(request, merge_query=check_api_key)
 
         # Log all requests
         if cfg.api_logging():
@@ -427,22 +431,36 @@ def log_warning_and_ip(request: Request, txt: str):
         logging.warning("%s %s", txt, remote_info)
 
 
-async def get_request_params(request: Request) -> MultiDict | QueryParams:
+async def get_request_params(request: Request, merge_query: bool = False) -> MultiDict | QueryParams:
     """Return request parameters as a mutable MultiDict.
 
     For POST requests the form body is read (both urlencoded and multipart).
-    File uploads in multipart bodies are kept as UploadFile objects.
+    File uploads in multipart bodies are kept as UploadFile objects. A page
+    POST never reads the query string, so parameters cannot be smuggled into
+    form handlers via the URL.
 
-    For GET (and any non-form POST) only the URL query string is used.
+    The /api route (merge_query) keeps the CherryPy behavior instead: the
+    query string and the form body are merged, with the body winning per key.
+    3rd-party clients traditionally POST an NZB as a multipart body while
+    passing mode/apikey/output in the query string, or POST with all
+    parameters in the query string and no form body at all.
 
     secured_expose stores the result on request.state.params so that
     request_params(request) returns it in every handler without an extra await.
     """
     if request.method == "POST":
-        if request.headers.get("content-type", "").startswith(
+        is_form = request.headers.get("content-type", "").startswith(
             ("application/x-www-form-urlencoded", "multipart/form-data")
-        ):
-            return MultiDict(await request.form())
+        )
+        if not merge_query:
+            return MultiDict(await request.form()) if is_form else MultiDict()
+        if is_form:
+            # Body values replace query values for the same key
+            params = MultiDict(await request.form())
+            for key, value in request.query_params.multi_items():
+                if key not in params:
+                    params.append(key, value)
+            return params
 
     return request.query_params
 
