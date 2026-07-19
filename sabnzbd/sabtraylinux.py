@@ -24,6 +24,16 @@ from gi.repository import Gtk, GLib
 import logging
 
 try:
+    gi.require_version("AyatanaAppIndicator3", "0.1")
+    from gi.repository import AyatanaAppIndicator3
+
+    HAVE_APPINDICATOR = True
+    logging.debug("AyatanaAppIndicator3 found: %s", AyatanaAppIndicator3)
+except Exception:
+    HAVE_APPINDICATOR = False
+    logging.debug("AyatanaAppIndicator3 not available")
+
+try:
     gi.require_version("XApp", "1.0")
     from gi.repository import XApp
 
@@ -66,17 +76,31 @@ class StatusIcon(Thread):
             logging.debug("language file not loaded, waiting")
 
         self.sabpaused = False
-        if HAVE_XAPP:
+        if HAVE_APPINDICATOR:
+            self.statusicon = AyatanaAppIndicator3.Indicator.new(
+                "sabnzbd",
+                self.sabicons["default"],
+                AyatanaAppIndicator3.IndicatorCategory.APPLICATION_STATUS,
+            )
+            self.statusicon.set_status(AyatanaAppIndicator3.IndicatorStatus.ACTIVE)
+        elif HAVE_XAPP:
             self.statusicon = XApp.StatusIcon()
         else:
             self.statusicon = Gtk.StatusIcon()
-        self.statusicon.set_name("SABnzbd")
-        self.statusicon.set_visible(True)
+
+        if not HAVE_APPINDICATOR:
+            self.statusicon.set_name("SABnzbd")
+            self.statusicon.set_visible(True)
+
         self.icon = self.sabicons["default"]
         self.refresh_icon()
         self.tooltip = "SABnzbd %s" % sabnzbd.__version__
         self.refresh_tooltip()
-        if HAVE_XAPP:
+
+        if HAVE_APPINDICATOR:
+            self.menu = self.create_menu()
+            self.statusicon.set_menu(self.menu)
+        elif HAVE_XAPP:
             self.statusicon.connect("activate", self.right_click_event)
         else:
             self.statusicon.connect("popup-menu", self.right_click_event)
@@ -85,14 +109,19 @@ class StatusIcon(Thread):
         Gtk.main()
 
     def refresh_icon(self):
-        if HAVE_XAPP:
+        if HAVE_APPINDICATOR:
+            self.statusicon.set_icon_full(self.icon, "SABnzbd")
+        elif HAVE_XAPP:
             # icon path must be absolute in XApp
             self.statusicon.set_icon_name(self.icon)
         else:
             self.statusicon.set_from_file(self.icon)
 
     def refresh_tooltip(self):
-        self.statusicon.set_tooltip_text(self.tooltip)
+        if HAVE_APPINDICATOR:
+            self.statusicon.set_title(self.tooltip)
+        else:
+            self.statusicon.set_tooltip_text(self.tooltip)
 
     # run this every updatefreq ms
     def run(self):
@@ -115,8 +144,7 @@ class StatusIcon(Thread):
         self.refresh_tooltip()
         return 1
 
-    def right_click_event(self, icon, button, time):
-        """menu"""
+    def create_menu(self):
         menu = Gtk.Menu()
 
         maddnzb = Gtk.MenuItem(label=T("Add NZB"))
@@ -148,6 +176,11 @@ class StatusIcon(Thread):
         menu.append(mshutdown)
 
         menu.show_all()
+        return menu
+
+    def right_click_event(self, icon, button, time):
+        """menu"""
+        menu = self.create_menu()
         menu.popup(None, None, None, self.statusicon, button, time)
 
     def addnzb(self, icon):
