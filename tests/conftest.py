@@ -133,6 +133,9 @@ def run_sabnzbd(clean_cache_dir, request):
         except requests.ConnectionError:
             sabnzbd_process.kill()
             sabnzbd_process.communicate(timeout=30)
+        except requests.exceptions.ChunkedEncodingError:
+            # Occurs when the server disappears while responding
+            pass
         except Exception as err:
             warn("Failed to shutdown the sabnzbd process: %s" % err)
 
