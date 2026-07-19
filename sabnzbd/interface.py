@@ -178,7 +178,7 @@ def secured_expose(
 
         # Verify login status, only for non-key pages
         if check_for_login and not check_api_key and not check_login(request):
-            return RedirectResponse(url=f"{cfg.url_base()}/login")
+            return BaseRedirectResponse("/login")
 
         # Verify host used for the visit
         if not check_hostname(request):
@@ -502,7 +502,7 @@ def main_index(request: Request):
         return template_filtered_response(file=os.path.join(sabnzbd.WEB_DIR, "main.tmpl"), search_list=info)
     else:
         # Redirect to the setup wizard
-        return RedirectResponse(url="%s/wizard/" % cfg.url_base())
+        return BaseRedirectResponse("/wizard/")
 
 
 @secured_expose(route="/shutdown", check_api_key=True)
@@ -709,7 +709,7 @@ def get_access_info(request: Optional[Request] = None):
 async def login_index(request: Request):
     # Already logged in, or no username/password set at all
     if check_login(request):
-        return RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
+        return BaseRedirectResponse("/")
 
     # Base output var
     info = build_header(sabnzbd.WEB_DIR_CONFIG)
@@ -722,7 +722,7 @@ async def login_index(request: Request):
 
         if username == cfg.username() and password == cfg.password():
             # Create redirect response
-            response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
+            response = BaseRedirectResponse("/")
             # Save login cookie
             set_login_cookie(request, response, remember_me=remember_me)
             # Log the success
@@ -748,7 +748,7 @@ async def login_index(request: Request):
 
 @secured_expose(route="/logout", check_for_login=False, methods=["GET"])
 def logout_index(request: Request):
-    response = RedirectResponse(url=f"{cfg.url_base()}/", status_code=302)
+    response = BaseRedirectResponse("/")
     set_login_cookie(request, response, remove=True)
     return response
 
