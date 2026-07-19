@@ -432,18 +432,22 @@ def log_warning_and_ip(request: Request, txt: str):
 
 
 async def get_request_params(request: Request, merge_query: bool = False) -> MultiDict | QueryParams:
-    """Return request parameters as a mutable MultiDict.
+    """Parse the request's parameters.
 
-    For POST requests the form body is read (both urlencoded and multipart).
-    File uploads in multipart bodies are kept as UploadFile objects. A page
-    POST never reads the query string, so parameters cannot be smuggled into
-    form handlers via the URL.
+    A GET renders a page and never changes state, so only the URL query
+    string is used, returned as the request's immutable QueryParams.
 
-    The /api route (merge_query) keeps the CherryPy behavior instead: the
-    query string and the form body are merged, with the body winning per key.
+    A page POST reads the form body only (urlencoded or multipart, with file
+    uploads kept as UploadFile objects) into a mutable MultiDict; the query
+    string is ignored, so parameters cannot be smuggled into form handlers
+    via the URL. A POST without a form body yields an empty MultiDict.
+
+    The /api route (merge_query) keeps the CherryPy behavior instead:
     3rd-party clients traditionally POST an NZB as a multipart body while
-    passing mode/apikey/output in the query string, or POST with all
-    parameters in the query string and no form body at all.
+    passing mode/apikey/output in the query string, so a form body is merged
+    with the query string into a mutable MultiDict, the body winning per key.
+    An /api POST without a form body uses the query string alone, returned as
+    the immutable QueryParams.
 
     secured_expose stores the result on request.state.params so that
     request_params(request) returns it in every handler without an extra await.
@@ -466,7 +470,10 @@ async def get_request_params(request: Request, merge_query: bool = False) -> Mul
 
 
 def request_params(request: Request) -> MultiDict | QueryParams:
-    """Accessor for the merged GET/POST parameters stored by secured_expose"""
+    """The request's parameters, parsed once by secured_expose: the query
+    string for a GET, the form body for a page POST, or the form body merged
+    with the query string for an /api POST. See get_request_params for the
+    exact rules and the returned types."""
     return request.state.params
 
 
