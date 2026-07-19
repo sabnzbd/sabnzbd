@@ -8,7 +8,7 @@
             <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
         </label>
     </div>
-    <form action="general/save" method="post" class="fullform" autocomplete="off">
+    <form action="$url('config/general/save')" method="post" class="fullform" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
@@ -221,7 +221,7 @@
         </div><!-- /section -->
     </form>
 
-    <form action="general/upload_config" method="post" class="fullform" autocomplete="off" enctype="multipart/form-data">
+    <form action="$url('config/general/upload_config')" method="post" class="fullform" autocomplete="off" enctype="multipart/form-data">
         <input type="hidden" name="apikey" value="$apikey" />
         <input type="hidden" name="output" value="json" />
         <div class="section">
@@ -313,7 +313,7 @@ jQuery(document).ready(function(){
       if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
-          url: "../../api",
+          url: "$url('api')",
           data: {mode:'config', name:'set_apikey', apikey: jQuery('#apikey').val()},
           success: function(msg){
             jQuery('#apikey').val(msg);
@@ -326,7 +326,7 @@ jQuery(document).ready(function(){
       if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
-          url: "../../api",
+          url: "$url('api')",
           data: { mode:'config', name:'set_nzbkey', apikey: jQuery('#apikey').val() },
           success: function(msg){
             jQuery('#nzbkey').val(msg);
@@ -361,7 +361,7 @@ jQuery(document).ready(function(){
         // Submit request and then restart
         $.ajax({
             type: "POST",
-            url: "../../api",
+            url: "$url('api')",
             data: { mode: 'config', name: 'regenerate_certs', apikey: jQuery('#apikey').val() },
             success: function(msg) {
                 do_restart()
@@ -399,7 +399,7 @@ jQuery(document).ready(function(){
     jQuery('#create_backup').click(function () {
         $.ajax({
           type: "POST",
-          url: "../../api",
+          url: "$url('api')",
           data: {mode:'config', name:'create_backup', output:'json', apikey: jQuery('#apikey').val()},
           success: function(data) {
               if(data.value.result) {

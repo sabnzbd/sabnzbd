@@ -208,17 +208,17 @@ class TestConfigRSS(SABnzbdBaseTest):
 
         # Uncheck enabled-checkbox for new feeds
         self.selenium_wrapper(
-            self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//input[@name="enable"]'
+            self.driver.find_element, By.XPATH, '//form[@data-form="add-rss-feed"]//input[@name="enable"]'
         ).click()
         input_name = self.selenium_wrapper(
-            self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//input[@name="feed"]'
+            self.driver.find_element, By.XPATH, '//form[@data-form="add-rss-feed"]//input[@name="feed"]'
         )
         input_name.clear()
         input_name.send_keys(self.rss_name)
         self.selenium_wrapper(
-            self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//input[@name="uri"]'
+            self.driver.find_element, By.XPATH, '//form[@data-form="add-rss-feed"]//input[@name="uri"]'
         ).send_keys(rss_url)
-        self.selenium_wrapper(self.driver.find_element, By.XPATH, '//form[@action="rss/add_rss_feed"]//button').click()
+        self.selenium_wrapper(self.driver.find_element, By.XPATH, '//form[@data-form="add-rss-feed"]//button').click()
 
         # Check if we have results
         tab_results = int(

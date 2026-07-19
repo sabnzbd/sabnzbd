@@ -28,11 +28,13 @@ import gc
 import socket
 import time
 import getpass
+import urllib.parse
 from threading import Thread
 from typing import Any, Callable, Optional, TypeAlias
 
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import QueryParams
+from starlette.requests import Request
 from starlette.responses import Response, StreamingResponse
 
 # For json.dumps, orjson is magnitudes faster than ujson, but it is harder to
@@ -1906,7 +1908,69 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(webdir: str = "", for_template: bool = True, trans_functions: bool = True) -> dict[str, Any]:
+def url_for(path: str = "", request: Optional[Request] = None, absolute: bool = True, **kwargs) -> str:
+    """Build an absolute URL below the configured URL base.
+
+    Templates reach this as $url(...), so a link never depends on the depth of the
+    page it appears on: $url("config/general") yields the full scheme://host/<base>/config/general.
+    Query parameters are passed as keyword arguments and a #fragment may be part of
+    the path: $url("config/general#cache_limit").
+
+    Pass absolute=False to get a root-relative URL instead (/<base>/config/general), which
+    is what a Location header wants and what stays correct if the page is reached by some
+    other host or scheme than the one that generated it."""
+    # Split off the fragment first so query parameters stay in front of it
+    path, _, fragment = path.partition("#")
+
+    # url_base() is either empty or starts with a slash and has no trailing one,
+    # so normalising the path to a single leading slash is enough to join them
+    url = cfg.url_base() + "/" + path.lstrip("/")
+
+    if absolute:
+        url = url_origin(request) + url
+    if kwargs:
+        url = "%s?%s" % (url, urllib.parse.urlencode(kwargs))
+    if fragment:
+        url = "%s#%s" % (url, fragment)
+    return url
+
+
+def url_netloc(host: str, scheme: str, port: Optional[int]) -> str:
+    """Join a host and port, leaving the port off when it is the default for the scheme.
+
+    An explicit :80 on http or :443 on https is redundant, and carrying it around makes
+    otherwise identical URLs compare as different."""
+    # Bare IPv6 addresses need bracketing before a port can be appended
+    if ":" in host and not host.startswith("["):
+        host = "[%s]" % host
+
+    if port is None or (scheme == "https" and port == 443) or (scheme == "http" and port == 80):
+        return host
+    return "%s:%s" % (host, port)
+
+
+def url_origin(request: Optional[Request] = None) -> str:
+    """The scheme://host[:port] SABnzbd was reached by, for use in absolute URLs.
+
+    Taken from the request when there is one: uvicorn's ProxyHeadersMiddleware has
+    already applied X-Forwarded-Proto by then (when verify_xff_header is enabled), so
+    this stays correct behind a reverse proxy terminating TLS on another port. Without
+    a request there is nothing to observe, so fall back to the configured scheme and
+    port on localhost."""
+    if request:
+        return "%s://%s" % (request.url.scheme, url_netloc(request.url.hostname, request.url.scheme, request.url.port))
+
+    scheme = "https" if cfg.enable_https() else "http"
+    port = cfg.https_port() if cfg.enable_https() else cfg.web_port()
+    return "%s://%s" % (scheme, url_netloc("localhost", scheme, port))
+
+
+def build_header(
+    webdir: str = "",
+    for_template: bool = True,
+    trans_functions: bool = True,
+    request: Optional[Request] = None,
+) -> dict[str, Any]:
     """Build the basic header"""
     header = {}
 
@@ -1916,6 +1980,16 @@ def build_header(webdir: str = "", for_template: bool = True, trans_functions: b
         if trans_functions:
             header["T"] = Ttemplate
             header["Tspec"] = Tspec
+
+            # Bound to this request so $url() can see the scheme and host it was reached by.
+            # Deliberately a closure rather than functools.partial: template_filtered_response
+            # deep-copies the search list, and deepcopy treats a function as atomic but walks a
+            # partial's keywords -- which would drag in the request's scope, the app and its
+            # whole route graph, and blow the recursion limit.
+            def bound_url_for(path: str = "", **kwargs) -> str:
+                return url_for(path, request=request, **kwargs)
+
+            header["url"] = bound_url_for
 
         header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""

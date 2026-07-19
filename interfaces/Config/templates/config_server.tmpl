@@ -40,7 +40,7 @@
             <h3>$T('addServer') <a href="$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div>
         <div class="col1">
-            <form action="server/add_server" method="post" autocomplete="off">
+            <form data-form="add-server" action="$url('config/server/add_server')" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="output" value="json" />
                 <fieldset>
@@ -153,7 +153,7 @@
     <!--#set $cur_prio_color = -1 #-->
     <!--#set $last_prio = -1 #-->
     <!--#for $cur, $server in enumerate($servers) #-->
-        <form action="server/save_server" method="post" class="fullform" autocomplete="off">
+        <form action="$url('config/server/save_server')" method="post" class="fullform" autocomplete="off">
             <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="output" value="json" />
             <input type="hidden" name="server" value="$server['name']" />
@@ -327,8 +327,8 @@
     <!--#end for#-->
 </div>
 
-<script type="text/javascript" src="${root}staticcfg/js/chartist.min.js"></script>
-<script type="text/javascript" src="${root}staticcfg/js/filesize.min.js"></script>
+<script type="text/javascript" src="$url('staticcfg/js/chartist.min.js', v=$cache_buster)"></script>
+<script type="text/javascript" src="$url('staticcfg/js/filesize.min.js', v=$cache_buster)"></script>
 <script type="text/javascript">
     // Standardize chart options
     var chartOptions = {
@@ -550,7 +550,7 @@
             theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
             jQuery.ajax({
                 type: "POST",
-                url: "../../api",
+                url: "$url('api')",
                 data: "mode=config&name=test_server&" + jQuery(this).parents('form:first').serialize()
             }).then(function(data) {
                 // Let's replace the link
@@ -568,7 +568,7 @@
                     resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
 
                     // Allow adding the new server if we are in the new-server section
-                    if(theButton.parents("form[action='server/add_server']").length) {
+                    if(theButton.parents("form[data-form='add-server']").length) {
                         jQuery(".addNewServer").removeAttr("disabled")
                         jQuery(".addNewServer").removeAttr("data-toggle")
                         jQuery(".addNewServer").removeAttr("title")
@@ -579,7 +579,7 @@
                     resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
 
                     // Disable the adding of new server, just to be sure
-                    if(theButton.parents("form[action='server/add_server']").length) {
+                    if(theButton.parents("form[data-form='add-server']").length) {
                         jQuery(".addNewServer").attr("disabled", "disabled")
                         jQuery(".addNewServer").attr("data-toggle", "tooltip")
                         jQuery(".addNewServer").attr("data-placement", "top")
@@ -598,7 +598,7 @@
             theButton.attr("disabled", "disabled")
             jQuery.ajax({
                 type: "POST",
-                url: "server/add_server",
+                url: "$url('config/server/add_server')",
                 data: theButton.parents('form:first').serialize()
             }).then(function(data) {
                 if(data.status) {
@@ -617,7 +617,7 @@
 
         jQuery('.delServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                jQuery(this).parents('form:first').attr('action','server/delete_server').submit();
+                jQuery(this).parents('form:first').attr('action',"$url('config/server/delete_server')").submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -628,7 +628,7 @@
 
         jQuery('.clrServer').click(function(){
             if( confirm("$T('confirm')") ) {
-                jQuery(this).parents('form:first').attr('action','server/clear_server').submit();
+                jQuery(this).parents('form:first').attr('action',"$url('config/server/clear_server')").submit();
                 // Let us leave!
                 formWasSubmitted = true;
                 formHasChanged = false;
@@ -641,7 +641,7 @@
             var whichServer = jQuery(this).attr("name");
             jQuery.ajax({
                 type: "POST",
-                url: "server/toggle_server",
+                url: "$url('config/server/toggle_server')",
                 data: {server: whichServer, apikey: "$apikey" }
             }).done(function() {
                 // Let us leave!

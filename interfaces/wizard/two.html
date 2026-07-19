@@ -12,8 +12,8 @@
             <p>$T('wizard-tip4')</p>
 
             <div class="quoteBlock">
-                <!--#for $url in $urls#-->
-                    <a href="$url">$url</a><br />
+                <!--#for $access_url in $urls#-->
+                    <a href="$access_url">$access_url</a><br />
                 <!--#end for#-->
             </div>
 
@@ -22,13 +22,13 @@
             <p><strong>$T('opt-complete_dir')</strong></p>
             <div class="quoteBlock">
                 $complete_dir
-                <a href="${access_url}/config/folders#complete_dir" class="indented"><span class="glyphicon glyphicon-cog"></span></a>
+                <a href="$url('config/folders#complete_dir')" class="indented"><span class="glyphicon glyphicon-cog"></span></a>
             </div>
 
             <p><strong>$T('opt-download_dir')</strong></p>
             <div class="quoteBlock">
                 $download_dir
-                <a href="${access_url}/config/folders#complete_dir" class="indented"><span class="glyphicon glyphicon-cog"></span></a>
+                <a href="$url('config/folders#complete_dir')" class="indented"><span class="glyphicon glyphicon-cog"></span></a>
             </div>
 
             <hr/>
@@ -39,7 +39,7 @@
         <div class="row">
             <div class="col-xs-12 text-center">
                 <input type="hidden" name="apikey" id="apikey" value="$apikey"/>
-                <a class="btn btn-success" href="$access_url">$T('wizard-goto') <span class="glyphicon glyphicon-chevron-right"></span></a>
+                <a class="btn btn-success" href="$url()">$T('wizard-goto') <span class="glyphicon glyphicon-chevron-right"></span></a>
             </div>
         </div>
     </div>
