@@ -1733,7 +1733,7 @@ def config_scheduling_add(request: Request):
     servers = config.get_servers()
     minute = params.get("minute")
     hour = params.get("hour")
-    days_of_week = "".join([str(x) for x in params.get("daysofweek", "")])
+    days_of_week = "".join([str(x) for x in params.getlist("daysofweek")])
     if not days_of_week:
         days_of_week = "1234567"
     action = params.get("action")
