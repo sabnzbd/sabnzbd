@@ -23,6 +23,9 @@ import gi
 from gi.repository import Gtk, GLib
 import logging
 
+HAVE_APPINDICATOR = False
+HAVE_XAPP = False
+
 try:
     gi.require_version("AyatanaAppIndicator3", "0.1")
     from gi.repository import AyatanaAppIndicator3
@@ -30,20 +33,19 @@ try:
     HAVE_APPINDICATOR = True
     logging.debug("AyatanaAppIndicator3 found: %s", AyatanaAppIndicator3)
 except Exception:
-    HAVE_APPINDICATOR = False
     logging.debug("AyatanaAppIndicator3 not available")
 
-try:
-    gi.require_version("XApp", "1.0")
-    from gi.repository import XApp
+if not HAVE_APPINDICATOR:
+    try:
+        gi.require_version("XApp", "1.0")
+        from gi.repository import XApp
 
-    if not hasattr(XApp, "StatusIcon"):
-        raise ImportError
-    HAVE_XAPP = True
-    logging.debug("XApp found: %s" % XApp)
-except Exception:
-    HAVE_XAPP = False
-    logging.debug("XApp not available, falling back to Gtk.StatusIcon")
+        if not hasattr(XApp, "StatusIcon"):
+            raise ImportError
+        HAVE_XAPP = True
+        logging.debug("XApp found: %s", XApp)
+    except Exception:
+        logging.debug("XApp not available, falling back to Gtk.StatusIcon")
 from time import sleep
 import subprocess
 from threading import Thread
