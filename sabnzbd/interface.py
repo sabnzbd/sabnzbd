@@ -502,7 +502,7 @@ def main_index(request: Request):
         return template_filtered_response(file=os.path.join(sabnzbd.WEB_DIR, "main.tmpl"), search_list=info)
     else:
         # Redirect to the setup wizard
-        return BaseRedirectResponse("/wizard/")
+        return BaseRedirectResponse("/wizard")
 
 
 @secured_expose(route="/shutdown", check_api_key=True)
@@ -559,7 +559,7 @@ def favicon_ico(request: Request):
 ##############################################################################
 
 
-@secured_expose(route="/wizard/", check_configlock=True, methods=["GET"])
+@secured_expose(route="/wizard", check_configlock=True, methods=["GET"])
 def wizard_index(request: Request):
     """Show the language selection page"""
     if sabnzbd.WINDOWS:
