@@ -1563,7 +1563,13 @@ def config_rss_test_rss_feed(request: Request):
         return _rss_redirect()
     # Network read-out; this handler runs in the threadpool.
     msg = sabnzbd.RSSReader.process_feed(feed, readout=True, ignore_first=True)
-    return _rss_flash_redirect(request, feed, msg)
+    # This endpoint is only called via AJAX; the client navigates to the feed
+    # page itself once we return. Returning a redirect here would make the XHR
+    # follow it transparently and consume the one-shot session flash before the
+    # browser navigation can read it, so store the flash and return a plain
+    # response instead.
+    request.session["rss_flash"] = {"feed": feed, "msg": msg}
+    return PlainTextResponse(msg)
 
 
 @secured_expose(route="/config/rss/eval_rss_feed", check_api_key=True, check_configlock=True, methods=["POST"])
